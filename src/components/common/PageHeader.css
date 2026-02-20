@@ -1,0 +1,54 @@
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header-breadcrumbs {
+  margin-bottom: 8px;
+}
+
+.page-header-breadcrumbs .ant-breadcrumb-link a {
+  color: var(--text-secondary, #6b7280);
+}
+
+.page-header-breadcrumbs .ant-breadcrumb-link a:hover {
+  color: #5E60CE;
+}
+
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-header-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary, #6b7280);
+}
+
+.page-header-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0;
+}
+
+.page-header-subtitle {
+  color: var(--text-secondary, #6b7280);
+  font-size: 14px;
+  margin: 4px 0 0 0;
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

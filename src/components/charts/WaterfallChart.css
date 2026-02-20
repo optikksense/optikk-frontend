@@ -1,0 +1,158 @@
+.waterfall-chart {
+  background: var(--bg-secondary, #0D0D0D);
+  border: 1px solid var(--border-color, #2D2D2D);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.waterfall-empty {
+  padding: 60px;
+  text-align: center;
+  color: var(--text-muted, #666);
+  font-size: 14px;
+}
+
+.waterfall-header {
+  display: flex;
+  border-bottom: 2px solid var(--border-color, #2D2D2D);
+  background: var(--bg-tertiary, #1A1A1A);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.waterfall-labels-column {
+  width: 250px;
+  min-width: 250px;
+  border-right: 1px solid var(--border-color, #2D2D2D);
+  padding: 12px 8px;
+}
+
+.waterfall-header-title {
+  color: var(--text-primary, #111827);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-left: 8px;
+}
+
+.waterfall-timeline-column {
+  flex: 1;
+  position: relative;
+  padding: 12px 8px;
+}
+
+.waterfall-time-axis {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.waterfall-time-label {
+  color: var(--text-muted, #666);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.waterfall-body {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.waterfall-row {
+  display: flex;
+  border-bottom: 1px solid var(--border-color, #2D2D2D);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.waterfall-row:hover {
+  background: var(--bg-hover, #222);
+}
+
+.waterfall-row.selected {
+  background: rgba(94, 96, 206, 0.15);
+  border-left: 3px solid #5E60CE;
+}
+
+.waterfall-row.hovered {
+  background: var(--bg-hover, #252525);
+}
+
+.waterfall-span-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+}
+
+.waterfall-service-name {
+  color: var(--text-muted, #9ca3af);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.waterfall-operation-name {
+  color: var(--text-primary, #111827);
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.waterfall-bar-container {
+  position: relative;
+  height: 100%;
+  padding: 12px 0;
+}
+
+.waterfall-bar {
+  position: absolute;
+  height: 24px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 6px;
+  min-width: 2px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.waterfall-bar:hover {
+  opacity: 0.9;
+  transform: scaleY(1.1);
+}
+
+.waterfall-bar-duration {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Scrollbar styling */
+.waterfall-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.waterfall-body::-webkit-scrollbar-track {
+  background: var(--scrollbar-track, #0f0f0f);
+}
+
+.waterfall-body::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, #333);
+  border-radius: 4px;
+}
+
+.waterfall-body::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, #444);
+}

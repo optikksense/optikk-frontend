@@ -1,0 +1,187 @@
+import { useState, useMemo } from 'react';
+import { CHART_COLORS, STATUS_COLORS } from '@config/constants';
+import { formatDuration } from '@utils/formatters';
+import './WaterfallChart.css';
+
+/**
+ * WaterfallChart - Displays trace spans in a waterfall/timeline view
+ *
+ * @param {Array} spans - Array of span objects with span_id, parent_span_id, operation_name, etc.
+ * @param {Function} onSpanClick - Callback when a span bar is clicked
+ * @param {string} selectedSpanId - Currently selected span ID
+ */
+export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId }) {
+  const [hoveredSpanId, setHoveredSpanId] = useState(null);
+
+  // Build span tree and calculate depths
+  const { spanTree, traceStart, traceEnd, traceDuration } = useMemo(() => {
+    if (!spans || spans.length === 0) {
+      return { spanTree: [], traceStart: 0, traceEnd: 0, traceDuration: 0 };
+    }
+
+    // Calculate trace time boundaries
+    const startTimes = spans.map(s => new Date(s.start_time).getTime());
+    const endTimes = spans.map(s => new Date(s.end_time).getTime());
+    const traceStart = Math.min(...startTimes);
+    const traceEnd = Math.max(...endTimes);
+    const traceDuration = traceEnd - traceStart;
+
+    // Build parent-child map
+    const childrenMap = {};
+    const spanMap = {};
+
+    spans.forEach(span => {
+      spanMap[span.span_id] = span;
+      if (!childrenMap[span.span_id]) {
+        childrenMap[span.span_id] = [];
+      }
+    });
+
+    spans.forEach(span => {
+      if (span.parent_span_id) {
+        if (!childrenMap[span.parent_span_id]) {
+          childrenMap[span.parent_span_id] = [];
+        }
+        childrenMap[span.parent_span_id].push(span.span_id);
+      }
+    });
+
+    // Find root spans (no parent or parent not in this trace)
+    const roots = spans.filter(s => !s.parent_span_id || !spanMap[s.parent_span_id]);
+
+    // Build tree with depths using DFS
+    const tree = [];
+    const visited = new Set();
+
+    const dfs = (spanId, depth) => {
+      if (visited.has(spanId)) return;
+      visited.add(spanId);
+
+      const span = spanMap[spanId];
+      if (!span) return;
+
+      tree.push({ ...span, depth });
+
+      // Visit children sorted by start time
+      const children = childrenMap[spanId] || [];
+      children
+        .map(id => spanMap[id])
+        .filter(Boolean)
+        .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
+        .forEach(child => dfs(child.span_id, depth + 1));
+    };
+
+    // Process all root spans
+    roots
+      .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
+      .forEach(root => dfs(root.span_id, 0));
+
+    return { spanTree: tree, traceStart, traceEnd, traceDuration };
+  }, [spans]);
+
+  // Get color for service
+  const getServiceColor = (serviceName, status) => {
+    if (status === 'ERROR') {
+      return STATUS_COLORS.ERROR;
+    }
+    // Hash service name to get consistent color
+    const hash = serviceName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return CHART_COLORS[hash % CHART_COLORS.length];
+  };
+
+  // Calculate bar position and width
+  const getBarStyle = (span) => {
+    const startTime = new Date(span.start_time).getTime();
+    const endTime = new Date(span.end_time).getTime();
+    const leftPercent = ((startTime - traceStart) / traceDuration) * 100;
+    const widthPercent = ((endTime - startTime) / traceDuration) * 100;
+
+    return {
+      left: `${leftPercent}%`,
+      width: `${Math.max(widthPercent, 0.5)}%`,
+      backgroundColor: getServiceColor(span.service_name, span.status),
+    };
+  };
+
+  // Generate time axis labels
+  const getTimeAxisLabels = () => {
+    const labels = [];
+    const steps = 5;
+    for (let i = 0; i <= steps; i++) {
+      const timeMs = (traceDuration * i) / steps;
+      labels.push(formatDuration(timeMs));
+    }
+    return labels;
+  };
+
+  if (!spans || spans.length === 0) {
+    return (
+      <div className="waterfall-empty">
+        No spans available
+      </div>
+    );
+  }
+
+  const timeLabels = getTimeAxisLabels();
+
+  return (
+    <div className="waterfall-chart">
+      {/* Time axis header */}
+      <div className="waterfall-header">
+        <div className="waterfall-labels-column">
+          <span className="waterfall-header-title">Span</span>
+        </div>
+        <div className="waterfall-timeline-column">
+          <div className="waterfall-time-axis">
+            {timeLabels.map((label, idx) => (
+              <span key={idx} className="waterfall-time-label">
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Span rows */}
+      <div className="waterfall-body">
+        {spanTree.map((span) => (
+          <div
+            key={span.span_id}
+            className={`waterfall-row ${selectedSpanId === span.span_id ? 'selected' : ''} ${
+              hoveredSpanId === span.span_id ? 'hovered' : ''
+            }`}
+            onClick={() => onSpanClick && onSpanClick(span)}
+            onMouseEnter={() => setHoveredSpanId(span.span_id)}
+            onMouseLeave={() => setHoveredSpanId(null)}
+          >
+            {/* Left side: service name + operation name with indentation */}
+            <div className="waterfall-labels-column">
+              <div
+                className="waterfall-span-label"
+                style={{ paddingLeft: `${span.depth * 20 + 8}px` }}
+              >
+                <span className="waterfall-service-name">{span.service_name}</span>
+                <span className="waterfall-operation-name">{span.operation_name}</span>
+              </div>
+            </div>
+
+            {/* Right side: timeline bar */}
+            <div className="waterfall-timeline-column">
+              <div className="waterfall-bar-container">
+                <div
+                  className="waterfall-bar"
+                  style={getBarStyle(span)}
+                  title={`${span.operation_name} - ${formatDuration(span.duration_ms)}`}
+                >
+                  <span className="waterfall-bar-duration">
+                    {formatDuration(span.duration_ms)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,277 @@
+.service-map-page {
+  padding: 24px;
+  min-height: 100vh;
+  background: #0f0f0f;
+}
+
+/* Statistics Row */
+.stats-row {
+  margin-bottom: 24px;
+}
+
+/* Content Row */
+.content-row {
+  margin-bottom: 24px;
+}
+
+/* Service Graph Card */
+.service-graph-card {
+  background: #1a1a1a;
+  border-radius: 8px;
+  min-height: 650px;
+}
+
+.service-graph-card .ant-card-head {
+  background: #1a1a1a;
+  border-bottom: 1px solid #2a2a2a;
+  color: #E5E7EB;
+}
+
+.service-graph-card .ant-card-head-title {
+  color: #E5E7EB;
+  font-weight: 600;
+}
+
+.service-graph-card .ant-card-body {
+  padding: 0;
+  background: #1a1a1a;
+}
+
+/* Service List Card */
+.service-list-card {
+  background: #1a1a1a;
+  border-radius: 8px;
+  max-height: 650px;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-list-card .ant-card-head {
+  background: #1a1a1a;
+  border-bottom: 1px solid #2a2a2a;
+  color: #E5E7EB;
+  flex-shrink: 0;
+}
+
+.service-list-card .ant-card-head-title {
+  color: #E5E7EB;
+  font-weight: 600;
+}
+
+.service-list-card .ant-card-body {
+  padding: 0;
+  background: #1a1a1a;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Service List */
+.service-list {
+  height: 100%;
+}
+
+.service-list .ant-list-item {
+  border-bottom: 1px solid #2a2a2a;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.service-list .ant-list-item:hover {
+  background-color: #252525;
+}
+
+.service-list .ant-list-item:last-child {
+  border-bottom: none;
+}
+
+.service-list-item-content {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.service-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.service-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #E5E7EB;
+}
+
+.service-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 32px;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.metric-label {
+  color: #9CA3AF;
+}
+
+.metric-value {
+  color: #E5E7EB;
+  font-weight: 500;
+}
+
+.metric-value.error-high {
+  color: #F04438;
+}
+
+.arrow-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6B7280;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.service-list-item:hover .arrow-icon {
+  opacity: 1;
+}
+
+/* Loading States */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 600px;
+  background: #1a1a1a;
+}
+
+.loading-container-small {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 24px;
+}
+
+/* Error States */
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 600px;
+  background: #1a1a1a;
+}
+
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #F04438;
+}
+
+.error-message p {
+  margin: 0;
+  color: #E5E7EB;
+}
+
+.error-details {
+  font-size: 14px;
+  color: #9CA3AF !important;
+}
+
+/* Empty States */
+.empty-state {
+  padding: 48px 24px;
+}
+
+.empty-state-small {
+  padding: 24px;
+}
+
+.empty-state .ant-empty-description,
+.empty-state-small .ant-empty-description {
+  color: #6B7280;
+}
+
+/* Ant Design Overrides */
+.service-map-page .ant-card {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+}
+
+.service-map-page .ant-spin-dot-item {
+  background-color: #3B82F6;
+}
+
+.service-map-page .ant-spin-text {
+  color: #9CA3AF;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .service-list-card {
+    max-height: 500px;
+  }
+
+  .service-graph-card {
+    min-height: 500px;
+  }
+
+  .loading-container {
+    min-height: 500px;
+  }
+
+  .error-container {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .service-map-page {
+    padding: 16px;
+  }
+
+  .service-list-card {
+    max-height: 400px;
+  }
+
+  .service-graph-card {
+    min-height: 400px;
+  }
+
+  .loading-container {
+    min-height: 400px;
+  }
+
+  .error-container {
+    min-height: 400px;
+  }
+
+  .service-list-item-content {
+    padding: 12px;
+  }
+
+  .service-metrics {
+    padding-left: 28px;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-row {
+    margin-bottom: 16px;
+  }
+
+  .content-row {
+    margin-bottom: 16px;
+  }
+}

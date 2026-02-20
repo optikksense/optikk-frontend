@@ -1,0 +1,165 @@
+.services-page {
+  padding: 0;
+}
+
+.services-tabs .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+.services-tabs .ant-tabs-tab {
+  color: var(--text-muted, #666) !important;
+  font-size: 13px;
+}
+
+.services-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #5E60CE !important;
+}
+
+.services-tabs .ant-tabs-ink-bar {
+  background: #5E60CE !important;
+}
+
+.services-tabs .ant-tabs-nav::before {
+  border-bottom: 1px solid var(--border-color, #2D2D2D) !important;
+}
+
+.services-panel-card,
+.services-filter-card,
+.services-grid-card {
+  background: var(--bg-secondary, #0D0D0D) !important;
+  border: 1px solid var(--border-color, #2D2D2D) !important;
+  border-radius: 8px !important;
+}
+
+.services-panel-card .ant-card-head,
+.services-risk-card .ant-card-head,
+.services-graph-card .ant-card-head {
+  border-bottom: 1px solid var(--border-color, #2D2D2D);
+}
+
+.services-panel-card .ant-card-head-title,
+.services-risk-card .ant-card-head-title,
+.services-graph-card .ant-card-head-title {
+  color: var(--text-primary, #fff);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.services-panel-card .ant-card-body {
+  padding: 16px;
+}
+
+.services-filter-card .ant-card-body {
+  padding: 12px;
+}
+
+.services-filter-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.services-health-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.services-health-tags .ant-tag {
+  margin-inline-end: 0;
+}
+
+.services-graph-card .ant-card-body {
+  padding: 0;
+}
+
+.services-risk-card {
+  height: 100%;
+}
+
+.services-risk-card .ant-card-body {
+  max-height: 640px;
+  overflow: auto;
+}
+
+.services-risk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.services-risk-item {
+  border: 1px solid var(--border-color, #2D2D2D);
+  background: transparent;
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--text-primary, #fff);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.services-risk-item:hover {
+  background: var(--bg-tertiary, #1A1A1A);
+  border-color: #5E60CE;
+}
+
+.services-risk-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.services-risk-service {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.services-risk-service span {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.services-risk-meta {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--text-muted, #98A2B3);
+  font-size: 12px;
+}
+
+.services-loading-container {
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.services-empty {
+  padding: 48px 24px;
+}
+
+.services-dep-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.services-card-extra {
+  color: var(--text-muted, #98A2B3);
+  font-size: 12px;
+}
+
+@media (max-width: 992px) {
+  .services-risk-card .ant-card-body {
+    max-height: none;
+  }
+}

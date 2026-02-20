@@ -1,0 +1,20 @@
+.detail-drawer .ant-drawer-header {
+  border-bottom: 1px solid var(--border-color, #2D2D2D);
+}
+
+.detail-drawer .ant-drawer-body {
+  padding: 16px 24px;
+}
+
+.detail-drawer-section {
+  margin-bottom: 24px;
+}
+
+.detail-drawer-section-title {
+  color: var(--text-primary, #111827);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color, #2D2D2D);
+}

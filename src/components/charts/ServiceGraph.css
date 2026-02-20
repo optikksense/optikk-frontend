@@ -1,0 +1,205 @@
+.service-graph-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: var(--bg-tertiary, #1a1a1a);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.service-graph-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.service-graph-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #6B7280;
+  font-size: 16px;
+}
+
+/* Zoom Controls */
+.graph-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+
+.graph-control-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color, #4a5568);
+  background: var(--bg-secondary, #2d3748);
+  color: var(--text-primary, #E5E7EB);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.graph-control-btn:hover {
+  background: var(--color-primary, #5E60CE);
+  border-color: var(--color-primary, #5E60CE);
+}
+
+/* Nodes */
+.node {
+  transition: all 0.2s ease;
+}
+
+.node:hover {
+  filter: brightness(1.2);
+}
+
+.node-circle {
+  transition: all 0.2s ease;
+}
+
+.node-label {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  pointer-events: none;
+  user-select: none;
+}
+
+.node-count {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Pulse animation for unhealthy nodes */
+.node-pulse {
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    opacity: 0.6;
+    r: 39;
+  }
+
+  100% {
+    opacity: 0;
+    r: 55;
+  }
+}
+
+/* Edges */
+.edge {
+  transition: all 0.2s ease;
+}
+
+.edge:hover .edge-path {
+  stroke-width: 3 !important;
+  opacity: 1 !important;
+}
+
+.edge-path {
+  transition: stroke-width 0.2s ease, opacity 0.2s ease;
+}
+
+/* Edge flow animation */
+.edge-flow {
+  animation: dash-flow 1.5s linear infinite;
+}
+
+@keyframes dash-flow {
+  0% {
+    stroke-dashoffset: 24;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.edge-label {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 11px;
+  fill: #9CA3AF;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Tooltip */
+.service-graph-tooltip {
+  position: absolute;
+  background: #2d3748;
+  border: 1px solid #4a5568;
+  border-radius: 6px;
+  padding: 12px;
+  pointer-events: none;
+  z-index: 1000;
+  min-width: 200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: #E5E7EB;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #4a5568;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.tooltip-row:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-label {
+  color: #9CA3AF;
+  margin-right: 12px;
+}
+
+.tooltip-value {
+  color: #E5E7EB;
+  font-weight: 500;
+}
+
+.tooltip-value.status-healthy {
+  color: #73C991;
+}
+
+.tooltip-value.status-degraded {
+  color: #F79009;
+}
+
+.tooltip-value.status-unhealthy {
+  color: #F04438;
+}
+
+@media (max-width: 768px) {
+  .service-graph-container {
+    min-height: 400px;
+  }
+
+  .node-label {
+    font-size: 12px;
+  }
+
+  .service-graph-tooltip {
+    min-width: 180px;
+    padding: 10px;
+  }
+}

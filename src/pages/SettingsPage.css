@@ -1,0 +1,320 @@
+.settings-page {
+  padding: 24px;
+  min-height: 100vh;
+  background-color: #0a0a0a;
+}
+
+.settings-tabs {
+  margin-top: 24px;
+}
+
+.settings-tabs .ant-tabs-nav {
+  background-color: #141414;
+  border-radius: 8px 8px 0 0;
+  padding: 0 16px;
+}
+
+.settings-tabs .ant-tabs-tab {
+  color: #8c8c8c;
+  padding: 16px 24px;
+}
+
+.settings-tabs .ant-tabs-tab:hover {
+  color: #e8e8e8;
+}
+
+.settings-tabs .ant-tabs-tab-active {
+  color: #1890ff;
+}
+
+.settings-tabs .ant-tabs-ink-bar {
+  background-color: #1890ff;
+}
+
+.settings-tabs .tab-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-card {
+  background-color: #141414;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  margin-top: 24px;
+}
+
+.settings-card .ant-card-body {
+  padding: 24px;
+}
+
+/* Profile Tab */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.profile-avatar {
+  background-color: #1890ff;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.profile-info h3 {
+  margin: 0;
+  color: #e8e8e8;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.profile-role {
+  margin: 4px 0 0 0;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* Form Styling */
+.settings-card .ant-form-item-label > label {
+  color: #e8e8e8;
+  font-weight: 500;
+}
+
+.settings-card .ant-input {
+  background-color: #1f1f1f;
+  border-color: #434343;
+  color: #e8e8e8;
+}
+
+.settings-card .ant-input:hover,
+.settings-card .ant-input:focus {
+  border-color: #1890ff;
+  background-color: #1f1f1f;
+}
+
+.settings-card .ant-input-disabled {
+  background-color: #262626;
+  color: #595959;
+  cursor: not-allowed;
+}
+
+.settings-card .ant-input-prefix {
+  color: #8c8c8c;
+}
+
+.settings-card .ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  height: 40px;
+  font-weight: 500;
+}
+
+.settings-card .ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* Preferences Tab */
+.preference-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.preference-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.preference-label svg {
+  color: #1890ff;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.preference-label h4 {
+  margin: 0;
+  color: #e8e8e8;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.preference-label p {
+  margin: 4px 0 0 0;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.settings-card .ant-switch {
+  background-color: #434343;
+}
+
+.settings-card .ant-switch-checked {
+  background-color: #1890ff;
+}
+
+.settings-card .ant-select-selector {
+  background-color: #1f1f1f;
+  border-color: #434343;
+  color: #e8e8e8;
+}
+
+.settings-card .ant-select-selector:hover {
+  border-color: #1890ff;
+}
+
+.settings-card .ant-select-arrow {
+  color: #8c8c8c;
+}
+
+.settings-card .ant-select-dropdown {
+  background-color: #1f1f1f;
+  border: 1px solid #434343;
+}
+
+.settings-card .ant-select-item {
+  color: #e8e8e8;
+}
+
+.settings-card .ant-select-item:hover {
+  background-color: #262626;
+}
+
+.settings-card .ant-select-item-option-selected {
+  background-color: #1a3a52;
+  color: #1890ff;
+}
+
+/* Team Tab */
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.team-header svg {
+  color: #1890ff;
+}
+
+.team-header h3 {
+  margin: 0;
+  color: #e8e8e8;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.settings-card .ant-descriptions {
+  background-color: transparent;
+}
+
+.settings-card .ant-descriptions-item-label {
+  background-color: #1f1f1f;
+  color: #8c8c8c;
+  font-weight: 500;
+  border: 1px solid #262626;
+}
+
+.settings-card .ant-descriptions-item-content {
+  background-color: #141414;
+  color: #e8e8e8;
+  border: 1px solid #262626;
+}
+
+.team-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.team-name {
+  color: #e8e8e8;
+  font-weight: 500;
+}
+
+
+.team-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.team-api-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8c8c8c;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  word-break: break-all;
+}
+.team-role {
+  color: #1890ff;
+  font-size: 14px;
+  padding: 4px 12px;
+  background-color: #1a3a52;
+  border-radius: 4px;
+}
+
+.no-teams {
+  text-align: center;
+  color: #8c8c8c;
+  padding: 32px;
+  font-style: italic;
+}
+
+/* Divider */
+.settings-card .ant-divider {
+  border-color: #262626;
+  margin: 24px 0;
+}
+
+/* Loading State */
+.settings-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 0;
+}
+
+.settings-loading .ant-spin-dot-item {
+  background-color: #1890ff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 16px;
+  }
+
+  .settings-tabs .ant-tabs-tab {
+    padding: 12px 16px;
+  }
+
+  .settings-tabs .tab-label span {
+    display: none;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .preference-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .preference-label {
+    width: 100%;
+  }
+
+  .team-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

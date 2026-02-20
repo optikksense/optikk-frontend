@@ -1,0 +1,122 @@
+.infrastructure-page {
+  padding: 0;
+}
+
+.infrastructure-page .stats-row {
+  margin-bottom: 24px;
+}
+
+.infrastructure-page .infrastructure-table-card {
+  background-color: var(--bg-secondary, #141414);
+  border: 1px solid var(--border-color, #262626);
+  border-radius: 8px;
+}
+
+.infrastructure-page .infrastructure-table-card .ant-card-body {
+  padding: 0;
+}
+
+.infrastructure-host,
+.infrastructure-pod {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary, #e8e8e8);
+}
+
+.infrastructure-host svg,
+.infrastructure-pod svg {
+  color: #1890ff;
+  flex-shrink: 0;
+}
+
+.error-rate-cell {
+  width: 100%;
+}
+
+.services-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.expanded-services {
+  padding: 16px;
+  background-color: var(--bg-primary, #0a0a0a);
+  border-radius: 4px;
+}
+
+.expanded-services strong {
+  color: var(--text-primary, #e8e8e8);
+  font-size: 14px;
+}
+
+/* Grid View */
+.infra-grid-card {
+  height: 100%;
+  transition: all 0.2s ease;
+}
+
+.infra-grid-card:hover {
+  border-color: var(--color-primary, #5E60CE);
+  transform: translateY(-1px);
+}
+
+.infra-grid-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.infra-grid-host {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary, #fff);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.infra-grid-gauge {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.infra-grid-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.infra-grid-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.infra-grid-stat-label {
+  color: var(--text-muted, #666);
+}
+
+.infra-grid-stat-value {
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+}
+
+.infra-grid-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color, #2D2D2D);
+}
+
+@media (max-width: 768px) {
+  .infrastructure-page .stats-row {
+    margin-bottom: 16px;
+  }
+}

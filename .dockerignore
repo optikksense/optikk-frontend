@@ -1,0 +1,36 @@
+# Node modules
+node_modules
+npm-debug.log
+
+# Build output
+dist
+dist-ssr
+*.local
+
+# Development files
+.vscode
+.idea
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Environment files
+.env
+.env.local
+.env.production.local
+.env.development.local
+.env.test.local
+
+# Development scripts
+start-dev.sh
+
+# Logs
+logs
+*.log
+

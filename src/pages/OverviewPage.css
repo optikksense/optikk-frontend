@@ -1,0 +1,142 @@
+.overview-page {
+  padding: 0;
+}
+
+.page-loading,
+.page-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.chart-card {
+  background: var(--bg-secondary, #0D0D0D) !important;
+  border: 1px solid var(--border-color, #2D2D2D) !important;
+  border-radius: 8px !important;
+  height: 100%;
+}
+
+.chart-card .ant-card-head {
+  border-bottom: 1px solid var(--border-color, #2D2D2D);
+}
+
+.chart-card .ant-card-head-title {
+  color: var(--text-primary, #fff);
+  font-weight: 600;
+}
+
+.chart-card .ant-card-body {
+  padding: 16px;
+}
+
+/* SLO Indicators */
+.slo-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.slo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.slo-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+  margin-top: 4px;
+}
+
+.slo-target {
+  font-size: 11px;
+  color: var(--text-muted, #666);
+}
+
+/* Service Health Grid */
+.service-health-card {
+  background: var(--bg-tertiary, #1A1A1A);
+  border: 1px solid var(--border-color, #2D2D2D);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.service-health-card:hover {
+  border-color: var(--color-primary, #5E60CE);
+  transform: translateY(-1px);
+}
+
+.service-health-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.service-health-metric {
+  font-size: 11px;
+  color: var(--text-muted, #666);
+  margin-top: 2px;
+}
+
+/* Recent Alerts */
+.recent-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.recent-alert-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color, #2D2D2D);
+}
+
+.recent-alert-item:last-child {
+  border-bottom: none;
+}
+
+.alert-severity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.alert-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #fff);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.alert-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.alert-time {
+  font-size: 11px;
+  color: var(--text-muted, #666);
+}

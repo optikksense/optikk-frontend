@@ -1,0 +1,439 @@
+import { useState, useMemo } from 'react';
+import {
+  Card, Row, Col, Button, Drawer, Descriptions, Tag, Switch, Popconfirm, Modal, Form,
+  Input, Select, InputNumber,
+} from 'antd';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { HeartPulse, Plus, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { useTimeRange } from '@hooks/useTimeRangeQuery';
+import { v1Service } from '@services/v1Service';
+import { HEALTH_CHECK_TYPES, HEALTH_CHECK_STATUSES } from '@config/constants';
+import { formatNumber, formatTimestamp } from '@utils/formatters';
+import PageHeader from '@components/common/PageHeader';
+import StatCard from '@components/common/StatCard';
+import DataTable from '@components/common/DataTable';
+import toast from 'react-hot-toast';
+
+const STATUS_COLOR = {
+  up: '#73C991',
+  down: '#F04438',
+  degraded: '#F79009',
+};
+
+function CreateCheckModal({ open, onCancel, onSubmit, loading }) {
+  const [form] = Form.useForm();
+  const [checkType, setCheckType] = useState('http');
+
+  const handleOk = async () => {
+    try {
+      const values = await form.validateFields();
+      onSubmit(values);
+      form.resetFields();
+    } catch {
+      // validation failed
+    }
+  };
+
+  return (
+    <Modal
+      title="Add Health Check"
+      open={open}
+      onOk={handleOk}
+      onCancel={() => { form.resetFields(); onCancel(); }}
+      confirmLoading={loading}
+      destroyOnClose
+    >
+      <Form form={form} layout="vertical" preserve={false} initialValues={{ intervalSeconds: 60, timeoutMs: 5000, expectedStatus: 200, type: 'http' }}>
+        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+          <Input placeholder="e.g., API Gateway Health" />
+        </Form.Item>
+
+        <Form.Item name="type" label="Type" rules={[{ required: true }]}>
+          <Select
+            options={HEALTH_CHECK_TYPES}
+            onChange={(v) => setCheckType(v)}
+          />
+        </Form.Item>
+
+        <Form.Item name="targetUrl" label="Target URL" rules={[{ required: true }, { type: 'url', message: 'Enter a valid URL' }]}>
+          <Input placeholder="https://api.example.com/health" />
+        </Form.Item>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item name="intervalSeconds" label="Interval (seconds)" rules={[{ required: true }]}>
+              <InputNumber style={{ width: '100%' }} min={10} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="timeoutMs" label="Timeout (ms)" rules={[{ required: true }]}>
+              <InputNumber style={{ width: '100%' }} min={100} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {checkType === 'http' && (
+          <Form.Item name="expectedStatus" label="Expected HTTP Status">
+            <InputNumber style={{ width: '100%' }} min={100} max={599} />
+          </Form.Item>
+        )}
+
+        <Form.Item name="tags" label="Tags">
+          <Input placeholder="e.g., production, critical" />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+}
+
+export default function HealthChecksPage() {
+  const queryClient = useQueryClient();
+  const { selectedTeamId, startTime, endTime, refreshKey } = useTimeRange();
+  const [selectedCheck, setSelectedCheck] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editingCheck, setEditingCheck] = useState(null);
+
+  // CRUD queries
+  const { data: checksData, isLoading: checksLoading } = useQuery({
+    queryKey: ['health-checks', selectedTeamId],
+    queryFn: () => v1Service.getHealthChecks(selectedTeamId),
+    enabled: !!selectedTeamId,
+  });
+
+  // Analytics queries
+  const { data: statusData, isLoading: statusLoading } = useQuery({
+    queryKey: ['health-checks-status', selectedTeamId, startTime, endTime, refreshKey],
+    queryFn: () => v1Service.getHealthCheckStatus(selectedTeamId, startTime, endTime),
+    enabled: !!selectedTeamId,
+  });
+
+  const { data: resultsData, isLoading: resultsLoading } = useQuery({
+    queryKey: ['health-check-results', selectedTeamId, selectedCheck?.checkId, startTime, endTime],
+    queryFn: () =>
+      v1Service.getHealthCheckResults(selectedTeamId, selectedCheck.checkId, startTime, endTime, { limit: 50 }),
+    enabled: !!selectedTeamId && !!selectedCheck?.checkId && drawerOpen,
+  });
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['health-checks'] });
+    queryClient.invalidateQueries({ queryKey: ['health-checks-status'] });
+  };
+
+  const createMutation = useMutation({
+    mutationFn: (data) => v1Service.createHealthCheck(selectedTeamId, data),
+    onSuccess: () => { toast.success('Health check created'); setCreateModalOpen(false); invalidate(); },
+    onError: (err) => toast.error(err.message || 'Failed to create'),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => v1Service.updateHealthCheck(selectedTeamId, id, data),
+    onSuccess: () => { toast.success('Health check updated'); setEditingCheck(null); invalidate(); },
+    onError: (err) => toast.error(err.message || 'Failed to update'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => v1Service.deleteHealthCheck(selectedTeamId, id),
+    onSuccess: () => { toast.success('Health check deleted'); invalidate(); },
+    onError: (err) => toast.error(err.message || 'Failed to delete'),
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: (id) => v1Service.toggleHealthCheck(selectedTeamId, id),
+    onSuccess: () => { invalidate(); },
+    onError: (err) => toast.error(err.message || 'Failed to toggle'),
+  });
+
+  const checks = checksData?.data ?? checksData ?? [];
+  const statusMap = useMemo(() => {
+    const map = {};
+    const statusList = statusData?.data ?? statusData ?? [];
+    statusList.forEach((s) => { map[s.check_id] = s; });
+    return map;
+  }, [statusData]);
+
+  const stats = useMemo(() => {
+    const statusList = statusData?.data ?? statusData ?? [];
+    const up = statusList.filter((s) => s.current_status === 'up').length;
+    const down = statusList.filter((s) => s.current_status === 'down').length;
+    const degraded = statusList.filter((s) => s.current_status === 'degraded').length;
+    const total = statusList.length;
+    const uptime = total > 0
+      ? (statusList.reduce((sum, s) => sum + (Number(s.uptime_pct) || 0), 0) / total).toFixed(1)
+      : 'N/A';
+    return { up, down, degraded, uptime };
+  }, [statusData]);
+
+  const openDetail = (check) => {
+    setSelectedCheck({ ...check, checkId: String(check.id) });
+    setDrawerOpen(true);
+  };
+
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      width: 200,
+      render: (name, record) => (
+        <a onClick={() => openDetail(record)} style={{ fontWeight: 600 }}>{name}</a>
+      ),
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      width: 90,
+      render: (type) => <Tag>{type?.toUpperCase()}</Tag>,
+    },
+    {
+      title: 'Target URL',
+      dataIndex: 'targetUrl',
+      key: 'targetUrl',
+      ellipsis: true,
+      render: (url) => (
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12 }}>
+          {url}
+        </a>
+      ),
+    },
+    {
+      title: 'Interval',
+      dataIndex: 'intervalSeconds',
+      key: 'intervalSeconds',
+      width: 90,
+      render: (v) => `${v}s`,
+    },
+    {
+      title: 'Status',
+      key: 'status',
+      width: 100,
+      render: (_, record) => {
+        const s = statusMap[String(record.id)];
+        const status = s?.current_status || 'unknown';
+        const color = STATUS_COLOR[status] || '#98A2B3';
+        return <Tag color={color} style={{ color: '#fff' }}>{status.toUpperCase()}</Tag>;
+      },
+    },
+    {
+      title: 'Uptime %',
+      key: 'uptime',
+      width: 90,
+      render: (_, record) => {
+        const s = statusMap[String(record.id)];
+        return s?.uptime_pct != null ? `${Number(s.uptime_pct).toFixed(1)}%` : '-';
+      },
+    },
+    {
+      title: 'Avg Response',
+      key: 'avgResponse',
+      width: 110,
+      render: (_, record) => {
+        const s = statusMap[String(record.id)];
+        return s?.avg_response_ms != null ? `${Number(s.avg_response_ms).toFixed(0)}ms` : '-';
+      },
+    },
+    {
+      title: 'Enabled',
+      dataIndex: 'enabled',
+      key: 'enabled',
+      width: 80,
+      render: (enabled, record) => (
+        <Switch
+          checked={enabled}
+          size="small"
+          loading={toggleMutation.isPending}
+          onChange={() => toggleMutation.mutate(record.id)}
+          onClick={(_, e) => e.stopPropagation()}
+        />
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      width: 100,
+      render: (_, record) => (
+        <Popconfirm
+          title="Delete this health check?"
+          onConfirm={() => deleteMutation.mutate(record.id)}
+          okText="Delete"
+          okButtonProps={{ danger: true }}
+        >
+          <Button
+            size="small"
+            danger
+            onClick={(e) => e.stopPropagation()}
+            loading={deleteMutation.isPending}
+          >
+            Delete
+          </Button>
+        </Popconfirm>
+      ),
+    },
+  ];
+
+  const resultColumns = [
+    {
+      title: 'Time',
+      dataIndex: 'timestamp',
+      key: 'timestamp',
+      width: 160,
+      render: (v) => v ? formatTimestamp(v) : '-',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      width: 90,
+      render: (status) => {
+        const color = STATUS_COLOR[status] || '#98A2B3';
+        return <Tag color={color} style={{ color: '#fff' }}>{status?.toUpperCase()}</Tag>;
+      },
+    },
+    {
+      title: 'Response Time',
+      dataIndex: 'response_time_ms',
+      key: 'response_time_ms',
+      width: 120,
+      render: (v) => v != null ? `${Number(v).toFixed(0)}ms` : '-',
+    },
+    {
+      title: 'HTTP Status',
+      dataIndex: 'http_status_code',
+      key: 'http_status_code',
+      width: 100,
+      render: (v) => v || '-',
+    },
+    {
+      title: 'Error',
+      dataIndex: 'error_message',
+      key: 'error_message',
+      ellipsis: true,
+      render: (v) => v || '-',
+    },
+  ];
+
+  const drawerCheck = selectedCheck;
+  const drawerStatus = drawerCheck ? statusMap[String(drawerCheck.id)] : null;
+
+  return (
+    <div className="health-checks-page">
+      <PageHeader
+        title="Health Checks"
+        icon={<HeartPulse size={24} />}
+        actions={
+          <Button type="primary" icon={<Plus size={16} />} onClick={() => setCreateModalOpen(true)}>
+            Add Check
+          </Button>
+        }
+      />
+
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <StatCard
+            title="Up"
+            value={stats.up}
+            icon={<CheckCircle2 size={20} />}
+            iconColor="#73C991"
+          />
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <StatCard
+            title="Down"
+            value={stats.down}
+            icon={<XCircle size={20} />}
+            iconColor="#F04438"
+          />
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <StatCard
+            title="Degraded"
+            value={stats.degraded}
+            icon={<AlertTriangle size={20} />}
+            iconColor="#F79009"
+          />
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <StatCard
+            title="Overall Uptime"
+            value={stats.uptime !== 'N/A' ? `${stats.uptime}%` : 'N/A'}
+            icon={<HeartPulse size={20} />}
+            iconColor="#5E60CE"
+            description="Average across all checks"
+          />
+        </Col>
+      </Row>
+
+      <Card loading={checksLoading || statusLoading}>
+        <DataTable
+          columns={columns}
+          data={checks}
+          rowKey="id"
+          scroll={{ x: 1100 }}
+          onRow={(record) => ({
+            onClick: () => openDetail(record),
+            style: { cursor: 'pointer' },
+          })}
+          emptyText="No health checks configured"
+        />
+      </Card>
+
+      {/* Detail Drawer */}
+      <Drawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        title={drawerCheck?.name || 'Health Check Detail'}
+        width={640}
+      >
+        {drawerCheck && (
+          <div>
+            <Descriptions column={2} size="small" bordered style={{ marginBottom: 24 }}>
+              <Descriptions.Item label="Type" span={1}>{drawerCheck.type?.toUpperCase()}</Descriptions.Item>
+              <Descriptions.Item label="Status" span={1}>
+                {drawerStatus ? (
+                  <Tag color={STATUS_COLOR[drawerStatus.current_status] || '#98A2B3'} style={{ color: '#fff' }}>
+                    {drawerStatus.current_status?.toUpperCase()}
+                  </Tag>
+                ) : '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Target URL" span={2}>
+                <a href={drawerCheck.targetUrl} target="_blank" rel="noopener noreferrer">
+                  {drawerCheck.targetUrl}
+                </a>
+              </Descriptions.Item>
+              <Descriptions.Item label="Interval">{drawerCheck.intervalSeconds}s</Descriptions.Item>
+              <Descriptions.Item label="Timeout">{drawerCheck.timeoutMs}ms</Descriptions.Item>
+              <Descriptions.Item label="Uptime">
+                {drawerStatus?.uptime_pct != null ? `${Number(drawerStatus.uptime_pct).toFixed(1)}%` : '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Avg Response">
+                {drawerStatus?.avg_response_ms != null ? `${Number(drawerStatus.avg_response_ms).toFixed(0)}ms` : '-'}
+              </Descriptions.Item>
+              {drawerCheck.tags && (
+                <Descriptions.Item label="Tags" span={2}>{drawerCheck.tags}</Descriptions.Item>
+              )}
+            </Descriptions>
+
+            <h4 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>Result History</h4>
+            <DataTable
+              columns={resultColumns}
+              data={resultsData?.data ?? resultsData ?? []}
+              loading={resultsLoading}
+              rowKey={(r, i) => `${r.timestamp}-${i}`}
+              pagination={false}
+              scroll={{ x: 600 }}
+              emptyText="No results yet"
+            />
+          </div>
+        )}
+      </Drawer>
+
+      <CreateCheckModal
+        open={createModalOpen}
+        onCancel={() => setCreateModalOpen(false)}
+        onSubmit={(values) => createMutation.mutate(values)}
+        loading={createMutation.isPending}
+      />
+    </div>
+  );
+}
