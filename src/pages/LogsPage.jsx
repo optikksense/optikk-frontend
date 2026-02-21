@@ -1,59 +1,441 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useCallback } from 'react';
 import {
-  Card, Tag, Button, Row, Col, Badge, Switch, Tabs, Select, Input, Space, Progress,
+  Button, Switch, Select, Input, Tag, Tooltip, Spin,
 } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { FileText, Download, Radio, Filter, Search, ShieldAlert, Link2 } from 'lucide-react';
+import {
+  Search, Download, Radio, ChevronRight, ChevronDown,
+  Link2, AlertTriangle, Copy, ExternalLink, X, WrapText,
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { v1Service } from '@services/v1Service';
 import { useAppStore } from '@store/appStore';
-import { formatTimestamp, formatNumber } from '@utils/formatters';
 import { LOG_LEVELS } from '@config/constants';
-import { PageHeader, DataTable, DetailDrawer, StatCard } from '@components/common';
+import { formatNumber } from '@utils/formatters';
 import LogHistogram from '@components/charts/LogHistogram';
+
+// ─── helpers ────────────────────────────────────────────────────────────────
 
 function safeLower(v) {
   return String(v || '').toLowerCase();
 }
 
+function tsLabel(ts) {
+  try {
+    const d = new Date(ts);
+    return d.toLocaleString([], {
+      month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      fractionalSecondDigits: 3,
+    });
+  } catch {
+    return String(ts || '');
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard?.writeText(text).catch(() => {});
+}
+
+// ─── log level badge ─────────────────────────────────────────────────────────
+
+function LevelBadge({ level }) {
+  const cfg = LOG_LEVELS[String(level).toUpperCase()] || { label: level, color: '#98A2B3' };
+  return (
+    <span style={{
+      display: 'inline-block',
+      minWidth: 38,
+      padding: '1px 5px',
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+      borderRadius: 3,
+      background: cfg.color + '22',
+      color: cfg.color,
+      border: `1px solid ${cfg.color}55`,
+      lineHeight: '16px',
+      textAlign: 'center',
+      flexShrink: 0,
+    }}>
+      {cfg.label}
+    </span>
+  );
+}
+
+// ─── syntax-highlight a log message ──────────────────────────────────────────
+
+function HighlightedMessage({ message, wrap }) {
+  if (!message) return <span style={{ color: 'var(--text-muted)' }}>—</span>;
+  const msg = String(message);
+  const parts = msg.split(
+    /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b\d+(?:\.\d+)?\b|\b(?:ERROR|WARN|FATAL|null|true|false|undefined|NULL)\b)/g
+  );
+  return (
+    <span style={{
+      fontFamily: '"JetBrains Mono", "Fira Code", "Cascadia Code", monospace',
+      fontSize: 12,
+      whiteSpace: wrap ? 'pre-wrap' : 'nowrap',
+      overflow: wrap ? 'visible' : 'hidden',
+      textOverflow: wrap ? 'clip' : 'ellipsis',
+      wordBreak: 'break-all',
+    }}>
+      {parts.map((part, i) => {
+        if (/^["']/.test(part)) return <span key={i} style={{ color: '#06AED5' }}>{part}</span>;
+        if (/^\d/.test(part)) return <span key={i} style={{ color: '#73C991' }}>{part}</span>;
+        if (/^(ERROR|FATAL)$/i.test(part)) return <span key={i} style={{ color: '#F04438', fontWeight: 700 }}>{part}</span>;
+        if (/^WARN$/i.test(part)) return <span key={i} style={{ color: '#F79009', fontWeight: 700 }}>{part}</span>;
+        if (/^(null|true|false|undefined|NULL)$/.test(part)) return <span key={i} style={{ color: '#9E77ED' }}>{part}</span>;
+        return <span key={i} style={{ color: 'var(--text-primary)' }}>{part}</span>;
+      })}
+    </span>
+  );
+}
+
+// ─── expanded log detail panel ────────────────────────────────────────────────
+
+function LogDetailPanel({ log, contextLogs, navigate }) {
+  const [tab, setTab] = useState('fields');
+
+  const fields = [
+    { k: 'timestamp', label: 'timestamp', v: tsLabel(log.timestamp) },
+    { k: 'level', label: 'level', v: log.level },
+    { k: 'service_name', label: 'service', v: log.service_name },
+    { k: 'host', label: 'host', v: log.host },
+    { k: 'pod', label: 'pod', v: log.pod },
+    { k: 'container', label: 'container', v: log.container },
+    { k: 'trace_id', label: 'trace_id', v: log.trace_id },
+    { k: 'span_id', label: 'span_id', v: log.span_id },
+    { k: 'logger', label: 'logger', v: log.logger },
+    { k: 'exception', label: 'exception', v: log.exception },
+  ].filter((f) => f.v);
+
+  const tabStyle = (t) => ({
+    padding: '4px 10px',
+    fontSize: 12,
+    cursor: 'pointer',
+    borderBottom: tab === t ? '2px solid #5E60CE' : '2px solid transparent',
+    color: tab === t ? '#5E60CE' : 'var(--text-muted)',
+    background: 'none',
+    border: 'none',
+    borderBottom: tab === t ? '2px solid #5E60CE' : '2px solid transparent',
+  });
+
+  return (
+    <div style={{
+      background: '#111',
+      borderTop: '1px solid #2D2D2D',
+      borderBottom: '1px solid #2D2D2D',
+      padding: '10px 16px 12px',
+    }}>
+      {/* mini tabs */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 10, borderBottom: '1px solid #2D2D2D', paddingBottom: 0 }}>
+        {['fields', 'context', 'json'].map((t) => (
+          <button key={t} style={tabStyle(t)} onClick={() => setTab(t)}>
+            {t.charAt(0).toUpperCase() + t.slice(1)}
+          </button>
+        ))}
+        {log.trace_id && (
+          <Tooltip title="Open trace">
+            <button
+              style={{ ...tabStyle('x'), marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}
+              onClick={() => navigate(`/traces/${log.trace_id}`)}
+            >
+              <ExternalLink size={12} /> Trace
+            </button>
+          </Tooltip>
+        )}
+        <Tooltip title="Copy JSON">
+          <button
+            style={{ ...tabStyle('x'), display: 'flex', alignItems: 'center', gap: 4 }}
+            onClick={() => copyToClipboard(JSON.stringify(log, null, 2))}
+          >
+            <Copy size={12} /> Copy
+          </button>
+        </Tooltip>
+      </div>
+
+      {tab === 'fields' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '4px 24px' }}>
+          {fields.map(({ k, label, v }) => (
+            <div key={k} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 12, padding: '3px 0' }}>
+              <span style={{
+                color: '#5E60CE',
+                fontFamily: 'monospace',
+                whiteSpace: 'nowrap',
+                minWidth: 100,
+                flexShrink: 0,
+              }}>
+                {label}
+              </span>
+              <span style={{
+                color: 'var(--text-primary)',
+                fontFamily: 'monospace',
+                wordBreak: 'break-all',
+                flex: 1,
+              }}>
+                {k === 'exception'
+                  ? <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontSize: 11, color: '#F04438' }}>{v}</pre>
+                  : String(v)
+                }
+              </span>
+              <Tooltip title="Copy value">
+                <Copy
+                  size={11}
+                  style={{ color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0, marginTop: 2 }}
+                  onClick={() => copyToClipboard(String(v))}
+                />
+              </Tooltip>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === 'context' && (
+        <div style={{ maxHeight: 260, overflow: 'auto', fontFamily: 'monospace', fontSize: 11 }}>
+          {contextLogs.length === 0
+            ? <span style={{ color: 'var(--text-muted)' }}>No surrounding logs (requires trace_id)</span>
+            : contextLogs.map((cl, i) => {
+              const isCurrent = cl.timestamp === log.timestamp && cl.span_id === log.span_id;
+              const cfg = LOG_LEVELS[String(cl.level).toUpperCase()] || { color: '#98A2B3', label: cl.level };
+              return (
+                <div key={i} style={{
+                  display: 'flex', gap: 8, padding: '3px 6px',
+                  background: isCurrent ? 'rgba(94,96,206,0.12)' : 'transparent',
+                  borderLeft: `3px solid ${isCurrent ? '#5E60CE' : 'transparent'}`,
+                }}>
+                  <span style={{ color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{tsLabel(cl.timestamp)}</span>
+                  <span style={{ color: cfg.color, minWidth: 38, textAlign: 'center' }}>{cfg.label}</span>
+                  <span style={{ color: 'var(--text-primary)', wordBreak: 'break-all' }}>{cl.message}</span>
+                </div>
+              );
+            })}
+        </div>
+      )}
+
+      {tab === 'json' && (
+        <pre style={{
+          margin: 0, fontSize: 11, fontFamily: 'monospace',
+          color: 'var(--text-primary)', whiteSpace: 'pre-wrap',
+          maxHeight: 300, overflow: 'auto',
+        }}>
+          {JSON.stringify(log, null, 2)}
+        </pre>
+      )}
+    </div>
+  );
+}
+
+// ─── single log row ───────────────────────────────────────────────────────────
+
+function LogRow({ log, isExpanded, onToggle, wrap, contextLogs, navigate }) {
+  const levelKey = String(log.level || '').toUpperCase();
+  const cfg = LOG_LEVELS[levelKey] || { color: '#98A2B3' };
+
+  return (
+    <div style={{ borderBottom: '1px solid #1A1A1A' }}>
+      {/* ── main row ── */}
+      <div
+        onClick={onToggle}
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 0,
+          cursor: 'pointer',
+          padding: '3px 0',
+          background: isExpanded ? 'rgba(94,96,206,0.06)' : 'transparent',
+          borderLeft: `3px solid ${isExpanded ? '#5E60CE' : cfg.color + '44'}`,
+          transition: 'background 0.1s',
+        }}
+        onMouseEnter={(e) => { if (!isExpanded) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+        onMouseLeave={(e) => { if (!isExpanded) e.currentTarget.style.background = 'transparent'; }}
+      >
+        {/* expand chevron */}
+        <span style={{ color: 'var(--text-muted)', padding: '2px 6px', flexShrink: 0, marginTop: 1 }}>
+          {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+        </span>
+
+        {/* timestamp */}
+        <span style={{
+          fontFamily: 'monospace',
+          fontSize: 11,
+          color: '#666',
+          whiteSpace: 'nowrap',
+          padding: '3px 8px 3px 0',
+          flexShrink: 0,
+          minWidth: 170,
+        }}>
+          {tsLabel(log.timestamp)}
+        </span>
+
+        {/* level */}
+        <span style={{ padding: '2px 8px 2px 0', flexShrink: 0 }}>
+          <LevelBadge level={log.level} />
+        </span>
+
+        {/* service */}
+        {log.service_name && (
+          <span style={{
+            fontSize: 11,
+            color: '#5E60CE',
+            fontFamily: 'monospace',
+            padding: '3px 10px 3px 0',
+            flexShrink: 0,
+            maxWidth: 160,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}>
+            {log.service_name}
+          </span>
+        )}
+
+        {/* message */}
+        <span style={{ flex: 1, padding: '3px 8px 3px 0', minWidth: 0 }}>
+          <HighlightedMessage message={log.message} wrap={wrap} />
+        </span>
+
+        {/* trace pill */}
+        {log.trace_id && (
+          <span style={{ flexShrink: 0, padding: '3px 8px 3px 0' }}>
+            <Tooltip title={`Trace: ${log.trace_id}`}>
+              <Link2 size={11} style={{ color: '#5E60CE', opacity: 0.7 }} />
+            </Tooltip>
+          </span>
+        )}
+        {log.exception && (
+          <span style={{ flexShrink: 0, padding: '3px 8px 3px 0' }}>
+            <Tooltip title="Has exception">
+              <AlertTriangle size={11} style={{ color: '#F04438', opacity: 0.8 }} />
+            </Tooltip>
+          </span>
+        )}
+      </div>
+
+      {/* ── expanded detail ── */}
+      {isExpanded && (
+        <LogDetailPanel log={log} contextLogs={contextLogs} navigate={navigate} />
+      )}
+    </div>
+  );
+}
+
+// ─── facet section ────────────────────────────────────────────────────────────
+
+function FacetSection({ title, items, selected, onToggle, colorMap, total }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div
+        style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', marginBottom: 6, userSelect: 'none' }}
+        onClick={() => setCollapsed((c) => !c)}
+      >
+        {collapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+        <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+          {title}
+        </span>
+      </div>
+      {!collapsed && (
+        <div>
+          {items.map(([key, count]) => {
+            const pct = total > 0 ? (Number(count) / total) * 100 : 0;
+            const color = colorMap?.[String(key).toUpperCase()]?.color || '#98A2B3';
+            const isSelected = selected.includes(key);
+            return (
+              <div
+                key={key}
+                onClick={() => onToggle(key)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '3px 6px',
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  background: isSelected ? 'rgba(94,96,206,0.15)' : 'transparent',
+                  marginBottom: 1,
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+                onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+              >
+                {/* background fill bar */}
+                <div style={{
+                  position: 'absolute', left: 0, top: 0, bottom: 0,
+                  width: `${pct}%`,
+                  background: color + '18',
+                  borderRadius: 4,
+                  pointerEvents: 'none',
+                }} />
+
+                <span style={{
+                  display: 'inline-block',
+                  width: 8, height: 8, borderRadius: '50%',
+                  background: color,
+                  flexShrink: 0,
+                  position: 'relative',
+                }} />
+                <span style={{
+                  flex: 1, fontSize: 12, color: isSelected ? '#fff' : 'var(--text-primary)',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  position: 'relative',
+                }}>
+                  {key}
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, position: 'relative' }}>
+                  {formatNumber(count)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── main page ────────────────────────────────────────────────────────────────
+
 export default function LogsPage() {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const navigate = useNavigate();
 
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  // ── server-side filter state
   const [searchText, setSearchText] = useState('');
   const [selectedLevels, setSelectedLevels] = useState([]);
   const [selectedServices, setSelectedServices] = useState([]);
+
+  // ── client-side filter state
   const [hostFilter, setHostFilter] = useState('');
-  const [containerFilter, setContainerFilter] = useState('');
   const [traceFilter, setTraceFilter] = useState('');
   const [hasExceptionOnly, setHasExceptionOnly] = useState(false);
   const [correlatedOnly, setCorrelatedOnly] = useState(false);
+
+  // ── ui state
   const [liveTail, setLiveTail] = useState(false);
+  const [wrap, setWrap] = useState(false);
+  const [expandedKeys, setExpandedKeys] = useState(new Set());
+  const [page, setPage] = useState(1);
+  const pageSize = 100; // Grafana-style: load more logs, paginate less
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedLog, setSelectedLog] = useState(null);
-  const [drawerTab, setDrawerTab] = useState('details');
-
+  // ── data fetch: logs
   const offset = (page - 1) * pageSize;
-
   const { data, isLoading } = useQuery({
     queryKey: [
       'logs-v2',
-      selectedTeamId,
-      timeRange.value,
-      page,
-      pageSize,
-      searchText,
-      selectedLevels,
-      selectedServices,
+      selectedTeamId, timeRange.value,
+      page, pageSize,
+      searchText, selectedLevels, selectedServices,
       refreshKey,
     ],
     queryFn: () => {
       const endTime = Date.now();
       const startTime = endTime - timeRange.minutes * 60 * 1000;
       return v1Service.getLogs(selectedTeamId, startTime, endTime, {
-        levels: selectedLevels.length > 0 ? selectedLevels : undefined,
-        services: selectedServices.length > 0 ? selectedServices : undefined,
+        levels: selectedLevels.length ? selectedLevels : undefined,
+        services: selectedServices.length ? selectedServices : undefined,
         search: searchText || undefined,
         limit: pageSize,
         offset,
@@ -63,6 +445,7 @@ export default function LogsPage() {
     refetchInterval: liveTail ? 3000 : false,
   });
 
+  // ── data fetch: histogram
   const { data: histogramData } = useQuery({
     queryKey: ['log-histogram', selectedTeamId, timeRange.value, refreshKey],
     queryFn: () => {
@@ -71,463 +454,331 @@ export default function LogsPage() {
       return v1Service.getLogHistogram(selectedTeamId, startTime, endTime);
     },
     enabled: !!selectedTeamId,
+    refetchInterval: liveTail ? 10000 : false,
   });
 
+  // ── data fetch: context (for expanded log with trace)
+  const [contextLog, setContextLog] = useState(null);
   const { data: contextData } = useQuery({
-    queryKey: ['log-context', selectedTeamId, selectedLog?.trace_id, selectedLog?.span_id, selectedLog?.timestamp],
+    queryKey: ['log-context', selectedTeamId, contextLog?.trace_id, contextLog?.span_id, contextLog?.timestamp],
     queryFn: () =>
-      v1Service.getLogDetail(selectedTeamId, selectedLog.trace_id, selectedLog.span_id, selectedLog.timestamp),
-    enabled: !!selectedTeamId && !!selectedLog?.trace_id && drawerTab === 'context',
+      v1Service.getLogDetail(selectedTeamId, contextLog.trace_id, contextLog.span_id, contextLog.timestamp),
+    enabled: !!selectedTeamId && !!contextLog?.trace_id,
   });
 
+  const contextLogs = contextData?.logs || [];
+
+  // ── derived data
   const rawLogs = Array.isArray(data?.logs) ? data.logs : [];
   const serverTotal = Number(data?.total || 0);
   const rawFacets = data?.facets || {};
 
-  const facets = {
-    levels: Array.isArray(rawFacets.levels)
-      ? rawFacets.levels.reduce((acc, item) => {
-        acc[item.level] = item.count;
-        return acc;
-      }, {})
-      : (rawFacets.levels || {}),
-    services: Array.isArray(rawFacets.services)
-      ? rawFacets.services.reduce((acc, item) => {
-        acc[item.service_name] = item.count;
-        return acc;
-      }, {})
-      : (rawFacets.services || {}),
-  };
+  const facets = useMemo(() => {
+    const levels = Array.isArray(rawFacets.levels)
+      ? rawFacets.levels.reduce((acc, item) => { acc[item.level] = item.count; return acc; }, {})
+      : (rawFacets.levels || {});
+    const services = Array.isArray(rawFacets.services)
+      ? rawFacets.services.reduce((acc, item) => { acc[item.service_name] = item.count; return acc; }, {})
+      : (rawFacets.services || {});
+    return { levels, services };
+  }, [rawFacets]);
 
-  const histogramRaw = histogramData || [];
-  const histogram = Array.isArray(histogramRaw)
-    ? histogramRaw.map((h) => ({ ...h, timestamp: h.time_bucket || h.timestamp }))
-    : [];
+  const histogram = useMemo(() => {
+    const raw = histogramData || [];
+    return Array.isArray(raw)
+      ? raw.map((h) => ({ ...h, timestamp: h.time_bucket || h.timestamp }))
+      : [];
+  }, [histogramData]);
 
-  const contextLogs = contextData?.logs || [];
-
-  const clientFilteredLogs = useMemo(() => {
+  const filteredLogs = useMemo(() => {
     return rawLogs.filter((log) => {
-      const hostOk = !hostFilter || safeLower(log.host).includes(safeLower(hostFilter));
-      const containerOk = !containerFilter || safeLower(log.container).includes(safeLower(containerFilter));
-      const traceOk = !traceFilter || safeLower(log.trace_id).includes(safeLower(traceFilter));
-      const exceptionOk = !hasExceptionOnly || !!log.exception;
-      const correlatedOk = !correlatedOnly || !!log.trace_id || !!log.span_id;
-      return hostOk && containerOk && traceOk && exceptionOk && correlatedOk;
+      if (hostFilter && !safeLower(log.host).includes(safeLower(hostFilter))) return false;
+      if (traceFilter && !safeLower(log.trace_id).includes(safeLower(traceFilter))) return false;
+      if (hasExceptionOnly && !log.exception) return false;
+      if (correlatedOnly && !log.trace_id && !log.span_id) return false;
+      return true;
     });
-  }, [rawLogs, hostFilter, containerFilter, traceFilter, hasExceptionOnly, correlatedOnly]);
+  }, [rawLogs, hostFilter, traceFilter, hasExceptionOnly, correlatedOnly]);
 
-  const stats = useMemo(() => {
-    const total = clientFilteredLogs.length;
-    const errorLike = clientFilteredLogs.filter((l) => ['ERROR', 'FATAL'].includes(String(l.level).toUpperCase())).length;
-    const warn = clientFilteredLogs.filter((l) => String(l.level).toUpperCase() === 'WARN').length;
-    const exceptions = clientFilteredLogs.filter((l) => !!l.exception).length;
-    const correlated = clientFilteredLogs.filter((l) => !!l.trace_id || !!l.span_id).length;
-    const uniqueServices = new Set(clientFilteredLogs.map((l) => l.service_name).filter(Boolean)).size;
+  // ── facet lists sorted by count
+  const levelFacetList = useMemo(() =>
+    Object.entries(facets.levels).sort((a, b) => Number(b[1]) - Number(a[1])),
+    [facets.levels]
+  );
+  const serviceFacetList = useMemo(() =>
+    Object.entries(facets.services).sort((a, b) => Number(b[1]) - Number(a[1])).slice(0, 20),
+    [facets.services]
+  );
 
-    return {
-      total,
-      errorLike,
-      warn,
-      exceptions,
-      correlated,
-      uniqueServices,
-      errorRate: total > 0 ? (errorLike / total) * 100 : 0,
-      correlationRate: total > 0 ? (correlated / total) * 100 : 0,
-    };
-  }, [clientFilteredLogs]);
+  // ── row key helper
+  const rowKey = (log, i) =>
+    log.trace_id && log.span_id
+      ? `${log.trace_id}-${log.span_id}-${log.timestamp}`
+      : `log-${i}-${log.timestamp}`;
 
-  const topHosts = useMemo(() => {
-    const counts = {};
-    clientFilteredLogs.forEach((l) => {
-      const host = l.host || 'unknown';
-      counts[host] = (counts[host] || 0) + 1;
+  // ── toggle row expansion
+  const toggleRow = useCallback((key, log) => {
+    setExpandedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+        if (log?.trace_id) setContextLog(log);
+      }
+      return next;
     });
-    return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 6);
-  }, [clientFilteredLogs]);
+  }, []);
 
-  const topServices = useMemo(() => {
-    const counts = facets.services || {};
-    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
-  }, [facets.services]);
-
-  const openLogDetail = (log) => {
-    setSelectedLog(log);
-    setDrawerOpen(true);
-    setDrawerTab('details');
-  };
-
-  const highlightMessage = (msg) => {
-    if (!msg) return '-';
-    const message = String(msg);
-    return (
-      <span style={{ fontFamily: 'monospace', fontSize: 12 }}>
-        {message.split(/(".*?"|'.*?'|\b\d+\.?\d*\b|\b(?:ERROR|WARN|FATAL|null|true|false|undefined|NULL)\b)/g).map((part, i) => {
-          if (/^["'].*["']$/.test(part)) return <span key={i} style={{ color: '#06AED5' }}>{part}</span>;
-          if (/^\d+\.?\d*$/.test(part)) return <span key={i} style={{ color: '#73C991' }}>{part}</span>;
-          if (/^(ERROR|FATAL)$/i.test(part)) return <span key={i} style={{ color: '#F04438', fontWeight: 600 }}>{part}</span>;
-          if (/^WARN$/i.test(part)) return <span key={i} style={{ color: '#F79009', fontWeight: 600 }}>{part}</span>;
-          if (/^(null|true|false|undefined|NULL)$/.test(part)) return <span key={i} style={{ color: '#9E77ED' }}>{part}</span>;
-          return <span key={i}>{part}</span>;
-        })}
-      </span>
+  // ── facet toggle helpers
+  const toggleLevel = (level) => {
+    setSelectedLevels((prev) =>
+      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
     );
+    setPage(1);
+    setExpandedKeys(new Set());
   };
 
-  const columns = [
-    {
-      title: 'Timestamp',
-      dataIndex: 'timestamp',
-      key: 'timestamp',
-      width: 180,
-      render: (timestamp) => {
-        try {
-          return formatTimestamp(timestamp);
-        } catch {
-          return '-';
-        }
-      },
-    },
-    {
-      title: 'Level',
-      dataIndex: 'level',
-      key: 'level',
-      width: 100,
-      render: (level) => {
-        const config = LOG_LEVELS[level] || LOG_LEVELS.INFO || { label: 'Info', color: '#73C991' };
-        return <Tag color={config.color}>{config.label}</Tag>;
-      },
-    },
-    {
-      title: 'Service',
-      dataIndex: 'service_name',
-      key: 'service_name',
-      width: 160,
-    },
-    {
-      title: 'Host',
-      dataIndex: 'host',
-      key: 'host',
-      width: 140,
-      render: (v) => v || '-',
-    },
-    {
-      title: 'Message',
-      dataIndex: 'message',
-      key: 'message',
-      ellipsis: true,
-      render: highlightMessage,
-    },
-    {
-      title: 'Trace ID',
-      dataIndex: 'trace_id',
-      key: 'trace_id',
-      width: 200,
-      render: (traceId) => (traceId ? <code style={{ fontSize: 11 }}>{String(traceId).substring(0, 16)}...</code> : '-'),
-    },
-  ];
+  const toggleService = (svc) => {
+    setSelectedServices((prev) =>
+      prev.includes(svc) ? prev.filter((s) => s !== svc) : [...prev, svc]
+    );
+    setPage(1);
+    setExpandedKeys(new Set());
+  };
 
-  const levelOptions = Object.entries(LOG_LEVELS).map(([key, value]) => ({
-    label: value.label,
-    value: key,
-  }));
+  // ── clear all
+  const clearFilters = () => {
+    setSearchText('');
+    setSelectedLevels([]);
+    setSelectedServices([]);
+    setHostFilter('');
+    setTraceFilter('');
+    setHasExceptionOnly(false);
+    setCorrelatedOnly(false);
+    setPage(1);
+  };
 
-  const serviceOptions = Object.keys(facets.services || {}).map((service) => ({ label: service, value: service }));
+  const hasActiveFilters = searchText || selectedLevels.length || selectedServices.length
+    || hostFilter || traceFilter || hasExceptionOnly || correlatedOnly;
 
-  const exportCurrentRows = () => {
-    const rows = clientFilteredLogs.map((l) => ({
-      timestamp: l.timestamp,
-      level: l.level,
-      service: l.service_name,
-      host: l.host,
-      trace_id: l.trace_id,
-      message: String(l.message || '').replace(/\n/g, ' '),
-    }));
-
+  // ── CSV export
+  const exportCSV = () => {
     const header = ['timestamp', 'level', 'service', 'host', 'trace_id', 'message'];
-    const csv = [
-      header.join(','),
-      ...rows.map((r) => header.map((h) => `"${String(r[h] || '').replace(/"/g, '""')}"`).join(',')),
-    ].join('\n');
-
+    const rows = filteredLogs.map((l) => [
+      l.timestamp, l.level, l.service_name, l.host, l.trace_id,
+      String(l.message || '').replace(/\n/g, ' '),
+    ]);
+    const csv = [header, ...rows]
+      .map((r) => r.map((v) => `"${String(v || '').replace(/"/g, '""')}"`).join(','))
+      .join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `logs-export-${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `logs-${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
+  // ─────────────────────────────────────────────────────────────────────────────
   return (
-    <div>
-      <PageHeader title="Logs" icon={<FileText size={24} />} subtitle="Enterprise log search, correlation, and triage" />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard title="Visible Logs" value={formatNumber(stats.total)} icon={<FileText size={18} />} />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Error Ratio"
-            value={`${stats.errorRate.toFixed(2)}%`}
-            icon={<ShieldAlert size={18} />}
-            iconColor={stats.errorRate > 8 ? '#F04438' : stats.errorRate > 2 ? '#F79009' : '#73C991'}
-            description={`${formatNumber(stats.errorLike)} errors`}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard title="Correlated" value={`${stats.correlationRate.toFixed(1)}%`} icon={<Link2 size={18} />} description={`${formatNumber(stats.correlated)} with trace/span`} />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard title="Unique Services" value={stats.uniqueServices} icon={<Filter size={18} />} description={`${formatNumber(serverTotal)} server-side total`} />
-        </Col>
-      </Row>
+      {/* ── top toolbar ─────────────────────────────────────────────────────── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+        padding: '8px 0 10px',
+        borderBottom: '1px solid #2D2D2D',
+        marginBottom: 0,
+      }}>
+        <Input
+          prefix={<Search size={13} style={{ color: 'var(--text-muted)' }} />}
+          allowClear
+          placeholder="Search logs…"
+          value={searchText}
+          onChange={(e) => { setSearchText(e.target.value); setPage(1); setExpandedKeys(new Set()); }}
+          style={{ width: 280 }}
+          size="small"
+        />
 
+        <Input
+          allowClear
+          placeholder="host filter"
+          value={hostFilter}
+          onChange={(e) => setHostFilter(e.target.value)}
+          style={{ width: 140 }}
+          size="small"
+        />
+
+        <Input
+          allowClear
+          placeholder="trace ID filter"
+          value={traceFilter}
+          onChange={(e) => setTraceFilter(e.target.value)}
+          style={{ width: 155 }}
+          size="small"
+        />
+
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <Switch size="small" checked={hasExceptionOnly} onChange={(v) => { setHasExceptionOnly(v); setPage(1); }} />
+          Exceptions
+        </span>
+
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <Switch size="small" checked={correlatedOnly} onChange={(v) => { setCorrelatedOnly(v); setPage(1); }} />
+          Correlated
+        </span>
+
+        <span style={{ fontSize: 12, color: liveTail ? '#73C991' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <Radio size={13} className={liveTail ? 'live-tail-icon-active' : ''} />
+          <Switch size="small" checked={liveTail} onChange={setLiveTail} />
+          Live
+        </span>
+
+        <span style={{ fontSize: 12, color: wrap ? '#5E60CE' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <WrapText size={13} />
+          <Switch size="small" checked={wrap} onChange={setWrap} />
+          Wrap
+        </span>
+
+        <div style={{ flex: 1 }} />
+
+        {hasActiveFilters && (
+          <Button size="small" icon={<X size={12} />} onClick={clearFilters} type="text" style={{ color: 'var(--text-muted)' }}>
+            Clear
+          </Button>
+        )}
+
+        <Button size="small" icon={<Download size={12} />} onClick={exportCSV} type="text" style={{ color: 'var(--text-muted)' }}>
+          Export
+        </Button>
+
+        <span style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+          {isLoading ? 'Loading…' : `${formatNumber(serverTotal)} logs`}
+        </span>
+      </div>
+
+      {/* ── histogram ───────────────────────────────────────────────────────── */}
       {histogram.length > 0 && (
-        <Card className="chart-card" style={{ marginBottom: 16 }}>
-          <LogHistogram data={histogram} />
-        </Card>
+        <div style={{ padding: '8px 0 4px', borderBottom: '1px solid #2D2D2D' }}>
+          <LogHistogram data={histogram} height={72} />
+        </div>
       )}
 
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-          <Input
-            prefix={<Search size={14} />}
-            allowClear
-            placeholder="Full-text search"
-            value={searchText}
-            onChange={(e) => {
-              setPage(1);
-              setSearchText(e.target.value);
-            }}
-            style={{ width: 260 }}
-          />
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Levels"
-            options={levelOptions}
-            value={selectedLevels}
-            onChange={(v) => {
-              setPage(1);
-              setSelectedLevels(v || []);
-            }}
-            style={{ minWidth: 180 }}
-          />
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="Services"
-            options={serviceOptions}
-            value={selectedServices}
-            onChange={(v) => {
-              setPage(1);
-              setSelectedServices(v || []);
-            }}
-            style={{ minWidth: 220 }}
-          />
-          <Input
-            allowClear
-            placeholder="Host contains"
-            value={hostFilter}
-            onChange={(e) => setHostFilter(e.target.value)}
-            style={{ width: 170 }}
-          />
-          <Input
-            allowClear
-            placeholder="Container contains"
-            value={containerFilter}
-            onChange={(e) => setContainerFilter(e.target.value)}
-            style={{ width: 180 }}
-          />
-          <Input
-            allowClear
-            placeholder="Trace ID contains"
-            value={traceFilter}
-            onChange={(e) => setTraceFilter(e.target.value)}
-            style={{ width: 190 }}
-          />
-        </div>
-        <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <Space size={16}>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-              Exception Only <Switch size="small" checked={hasExceptionOnly} onChange={setHasExceptionOnly} />
-            </span>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-              Correlated Only <Switch size="small" checked={correlatedOnly} onChange={setCorrelatedOnly} />
-            </span>
-            <span style={{ fontSize: 12, color: liveTail ? '#73C991' : 'var(--text-muted)' }}>
-              <Radio size={14} className={liveTail ? 'live-tail-icon-active' : ''} style={{ marginRight: 6 }} />
-              Live Tail <Switch size="small" checked={liveTail} onChange={setLiveTail} />
-            </span>
-          </Space>
-          <Button icon={<Download size={14} />} onClick={exportCurrentRows}>Export Visible</Button>
-        </div>
-      </Card>
+      {/* ── body: sidebar + log stream ──────────────────────────────────────── */}
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} lg={12}>
-          <Card title="Level Distribution" size="small">
-            {Object.entries(LOG_LEVELS).map(([key, cfg]) => {
-              const count = Number(facets.levels?.[key] || 0);
-              const pct = serverTotal > 0 ? (count / serverTotal) * 100 : 0;
-              return (
-                <div key={key} style={{ marginBottom: 10 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                    <span style={{ color: 'var(--text-primary)' }}>{cfg.label}</span>
-                    <span style={{ color: 'var(--text-muted)' }}>{formatNumber(count)}</span>
-                  </div>
-                  <Progress percent={Number(pct.toFixed(2))} size="small" showInfo={false} strokeColor={cfg.color} />
-                </div>
-              );
-            })}
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card title="Top Services and Hosts" size="small">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>Services</div>
-                {topServices.length === 0 ? <span style={{ color: 'var(--text-muted)' }}>No data</span> : topServices.map(([name, count]) => (
-                  <div key={name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
-                    <span style={{ color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}>{name}</span>
-                    <span style={{ color: 'var(--text-muted)' }}>{formatNumber(count)}</span>
-                  </div>
-                ))}
+        {/* ── facet sidebar ─────────────────────────────────────────────────── */}
+        <div style={{
+          width: 200,
+          flexShrink: 0,
+          borderRight: '1px solid #2D2D2D',
+          overflowY: 'auto',
+          padding: '12px 8px 12px 0',
+        }}>
+          <FacetSection
+            title="Log Level"
+            items={levelFacetList}
+            selected={selectedLevels}
+            onToggle={toggleLevel}
+            colorMap={LOG_LEVELS}
+            total={serverTotal}
+          />
+          {serviceFacetList.length > 0 && (
+            <FacetSection
+              title="Service"
+              items={serviceFacetList}
+              selected={selectedServices}
+              onToggle={toggleService}
+              colorMap={null}
+              total={serverTotal}
+            />
+          )}
+
+          {/* active filter chips */}
+          {(selectedLevels.length > 0 || selectedServices.length > 0) && (
+            <div style={{ marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Active
               </div>
-              <div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>Hosts</div>
-                {topHosts.length === 0 ? <span style={{ color: 'var(--text-muted)' }}>No data</span> : topHosts.map(([name, count]) => (
-                  <div key={name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
-                    <span style={{ color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}>{name}</span>
-                    <span style={{ color: 'var(--text-muted)' }}>{formatNumber(count)}</span>
-                  </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {selectedLevels.map((l) => (
+                  <Tag
+                    key={l}
+                    closable
+                    onClose={() => toggleLevel(l)}
+                    color={LOG_LEVELS[l]?.color}
+                    style={{ fontSize: 10, cursor: 'pointer' }}
+                  >
+                    {l}
+                  </Tag>
+                ))}
+                {selectedServices.map((s) => (
+                  <Tag key={s} closable onClose={() => toggleService(s)} style={{ fontSize: 10, cursor: 'pointer' }}>
+                    {s.length > 14 ? s.slice(0, 12) + '…' : s}
+                  </Tag>
                 ))}
               </div>
             </div>
-          </Card>
-        </Col>
-      </Row>
+          )}
+        </div>
 
-      <Card>
-        <DataTable
-          columns={columns}
-          data={clientFilteredLogs}
-          loading={isLoading}
-          rowKey={(record, index) =>
-            (record.trace_id && record.span_id)
-              ? `${record.trace_id}-${record.span_id}-${record.timestamp}`
-              : `log-${index}-${record.timestamp}`
-          }
-          page={liveTail ? 1 : page}
-          pageSize={pageSize}
-          total={serverTotal}
-          onPageChange={(p, ps) => {
-            setPage(p);
-            setPageSize(ps);
-          }}
-          onRow={(record) => ({ onClick: () => openLogDetail(record), style: { cursor: 'pointer' } })}
-          emptyText="No logs matched your filters"
-        />
-      </Card>
+        {/* ── log stream ────────────────────────────────────────────────────── */}
+        <div style={{ flex: 1, overflowY: 'auto', minWidth: 0 }}>
+          {isLoading && filteredLogs.length === 0 ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+              <Spin size="large" />
+            </div>
+          ) : filteredLogs.length === 0 ? (
+            <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: 48, fontSize: 13 }}>
+              No logs matched your filters
+            </div>
+          ) : (
+            <>
+              {filteredLogs.map((log, i) => {
+                const key = rowKey(log, i);
+                return (
+                  <LogRow
+                    key={key}
+                    log={log}
+                    isExpanded={expandedKeys.has(key)}
+                    onToggle={() => toggleRow(key, log)}
+                    wrap={wrap}
+                    contextLogs={expandedKeys.has(key) && contextLog?.trace_id === log.trace_id ? contextLogs : []}
+                    navigate={navigate}
+                  />
+                );
+              })}
 
-      <DetailDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        title="Log Detail"
-        width={700}
-        data={selectedLog}
-        sections={[
-          {
-            title: (
-              <Tabs
-                activeKey={drawerTab}
-                onChange={setDrawerTab}
-                size="small"
-                items={[
-                  { key: 'details', label: 'Details' },
-                  { key: 'context', label: 'Context' },
-                  { key: 'json', label: 'JSON' },
-                ]}
-              />
-            ),
-            fields: drawerTab === 'details'
-              ? [
-                { label: 'Timestamp', key: 'timestamp', render: (v) => formatTimestamp(v) },
-                {
-                  label: 'Level',
-                  key: 'level',
-                  render: (v) => {
-                    const config = LOG_LEVELS[v] || LOG_LEVELS.INFO;
-                    return <Tag color={config.color}>{config.label}</Tag>;
-                  },
-                },
-                { label: 'Service', key: 'service_name' },
-                { label: 'Message', key: 'message' },
-                { label: 'Trace ID', key: 'trace_id' },
-                { label: 'Span ID', key: 'span_id' },
-                { label: 'Host', key: 'host' },
-                { label: 'Pod', key: 'pod' },
-                { label: 'Container', key: 'container' },
-                {
-                  label: 'Exception',
-                  key: 'exception',
-                  render: (v) => (v ? <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>{v}</pre> : '-'),
-                },
-              ]
-              : drawerTab === 'context'
-                ? [
-                  {
-                    label: 'Surrounding Logs',
-                    key: '_context',
-                    render: () => (
-                      <div style={{ maxHeight: 420, overflow: 'auto' }}>
-                        {contextLogs.length > 0 ? contextLogs.map((log, i) => {
-                          const isCurrent = log.trace_id === selectedLog?.trace_id
-                            && log.span_id === selectedLog?.span_id
-                            && log.timestamp === selectedLog?.timestamp;
-                          return (
-                            <div
-                              key={i}
-                              style={{
-                                padding: '6px 8px',
-                                fontSize: 11,
-                                fontFamily: 'monospace',
-                                background: isCurrent ? 'rgba(94, 96, 206, 0.15)' : 'transparent',
-                                borderLeft: isCurrent ? '3px solid #5E60CE' : '3px solid transparent',
-                              }}
-                            >
-                              <span style={{ color: 'var(--text-muted)' }}>{formatTimestamp(log.timestamp)}</span>
-                              {' '}
-                              <Tag color={(LOG_LEVELS[log.level] || LOG_LEVELS.INFO).color} style={{ fontSize: 10 }}>{log.level}</Tag>
-                              {' '}
-                              <span style={{ color: 'var(--text-primary)' }}>{log.message}</span>
-                            </div>
-                          );
-                        }) : <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>No context logs available</span>}
-                      </div>
-                    ),
-                  },
-                ]
-                : [
-                  {
-                    label: 'Raw JSON',
-                    key: '_json',
-                    render: () => (
-                      <pre style={{ whiteSpace: 'pre-wrap', fontSize: 11, fontFamily: 'monospace', maxHeight: 500, overflow: 'auto', color: 'var(--text-primary)' }}>
-                        {JSON.stringify(selectedLog, null, 2)}
-                      </pre>
-                    ),
-                  },
-                ],
-          },
-        ]}
-      />
+              {/* ── pagination ── */}
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '10px 12px', borderTop: '1px solid #2D2D2D',
+                fontSize: 12, color: 'var(--text-muted)',
+              }}>
+                <span>
+                  Showing {offset + 1}–{Math.min(offset + filteredLogs.length, serverTotal)} of {formatNumber(serverTotal)}
+                </span>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <Button size="small" disabled={page === 1} onClick={() => { setPage((p) => p - 1); setExpandedKeys(new Set()); }}>
+                    ← Newer
+                  </Button>
+                  <Button
+                    size="small"
+                    disabled={offset + pageSize >= serverTotal}
+                    onClick={() => { setPage((p) => p + 1); setExpandedKeys(new Set()); }}
+                  >
+                    Older →
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
 
       <style>{`
         .live-tail-icon-active { color: #73C991; animation: pulse 1.5s infinite; }
