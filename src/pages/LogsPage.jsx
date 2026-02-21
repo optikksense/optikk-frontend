@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { v1Service } from '@services/v1Service';
 import { useAppStore } from '@store/appStore';
@@ -10,7 +10,9 @@ import LogsTopNav from '@components/logs/LogsTopNav';
 import LogsQueryBar from '@components/logs/LogsQueryBar';
 import LogsRawView from '@components/logs/LogsRawView';
 import LogsChartView from '@components/logs/LogsChartView';
-import LogRow from '@components/logs/LogRow';
+import LogRow, { LogDetailPanel } from '@components/logs/LogRow';
+
+import './LogsPage.css';
 
 function safeLower(v) {
   return String(v || '').toLowerCase();
@@ -21,22 +23,21 @@ export default function LogsPage() {
   const navigate = useNavigate();
 
   // ── server-side filter state
-  const [searchText] = useState('');
+  const [searchText, setSearchText] = useState('');
   const [selectedLevels, setSelectedLevels] = useState([]);
   const [selectedServices, setSelectedServices] = useState([]);
 
-  // ── client-side query builder state
-  const [filters, setFilters] = useState([]);
-  const [rawQuery, setRawQuery] = useState('');
+  // ── client-side filter state
   const [traceFilter, setTraceFilter] = useState('');
   const [spanFilter, setSpanFilter] = useState('');
   const [messageFilter, setMessageFilter] = useState('');
 
   // ── ui state
-  const [viewMode, setViewMode] = useState('raw'); // 'raw', 'chart', 'patterns'
+  const [viewMode, setViewMode] = useState('raw');
   const [liveTail, setLiveTail] = useState(false);
   const [wrap] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState(new Set());
+  const [selectedLog, setSelectedLog] = useState(null);
   const pageSize = 100;
 
   // ── data fetch: logs
@@ -71,16 +72,6 @@ export default function LogsPage() {
     refetchInterval: liveTail ? 3000 : false,
   });
 
-  // ── data fetch: context (for expanded log with trace)
-  const [contextLog, setContextLog] = useState(null);
-  const { data: contextData } = useQuery({
-    queryKey: ['log-context', selectedTeamId, contextLog?.trace_id, contextLog?.span_id, contextLog?.timestamp],
-    queryFn: () =>
-      v1Service.getLogDetail(selectedTeamId, contextLog.trace_id, contextLog.span_id, contextLog.timestamp),
-    enabled: !!selectedTeamId && !!contextLog?.trace_id,
-  });
-  const contextLogs = contextData?.logs || [];
-
   // ── derived data
   const rawLogs = data?.pages ? data.pages.flatMap((page) => page.logs || []) : [];
   const serverTotal = Number(data?.pages?.[0]?.total || 0);
@@ -101,13 +92,9 @@ export default function LogsPage() {
       if (traceFilter && !safeLower(log.trace_id).includes(safeLower(traceFilter))) return false;
       if (spanFilter && !safeLower(log.span_id).includes(safeLower(spanFilter))) return false;
       if (messageFilter && !safeLower(log.message).includes(safeLower(messageFilter))) return false;
-
-      // Basic mock client filtering for our filter pills
-      if (filters.some(f => f.field === 'container' && f.value) && !safeLower(log.container).includes(safeLower(filters.find(f => f.field === 'container').value))) return false;
-
       return true;
     });
-  }, [rawLogs, traceFilter, spanFilter, messageFilter, filters]);
+  }, [rawLogs, traceFilter, spanFilter, messageFilter]);
 
   // ── facet lists sorted by count
   const levelFacetList = useMemo(() =>
@@ -129,20 +116,23 @@ export default function LogsPage() {
       const next = new Set(prev);
       if (next.has(key)) {
         next.delete(key);
-        if (contextLog && contextLog.trace_id === log.trace_id) setContextLog(null);
+        if (selectedLog?.trace_id === log.trace_id && selectedLog?.timestamp === log.timestamp) {
+          setSelectedLog(null);
+        }
       } else {
         next.add(key);
-        setContextLog(log);
+        setSelectedLog(log);
       }
       return next;
     });
-  }, [contextLog]);
+  }, [selectedLog]);
 
   const toggleLevel = (level) => {
     setSelectedLevels((prev) =>
       prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
     );
     setExpandedKeys(new Set());
+    setSelectedLog(null);
   };
 
   const toggleService = (svc) => {
@@ -150,10 +140,27 @@ export default function LogsPage() {
       prev.includes(svc) ? prev.filter((s) => s !== svc) : [...prev, svc]
     );
     setExpandedKeys(new Set());
+    setSelectedLog(null);
   };
 
+  const handleCloseDetail = useCallback(() => {
+    setSelectedLog(null);
+    setExpandedKeys(new Set());
+  }, []);
+
+  const handleClearAll = useCallback(() => {
+    setSearchText('');
+    setSelectedLevels([]);
+    setSelectedServices([]);
+    setTraceFilter('');
+    setSpanFilter('');
+    setMessageFilter('');
+    setExpandedKeys(new Set());
+    setSelectedLog(null);
+  }, []);
+
   return (
-    <div style={{ display: 'flex', height: '100%', minHeight: 0, backgroundColor: '#0F0F0F', color: '#E0E0E0' }}>
+    <div className="logs-page">
 
       {/* ── Left Sidebar ── */}
       <LogsSidebar
@@ -171,20 +178,26 @@ export default function LogsPage() {
       />
 
       {/* ── Main Content Area ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative' }}>
+      <div className="logs-main">
 
         {/* Top Navbar */}
         <LogsTopNav
           viewMode={viewMode} setViewMode={setViewMode}
           liveTail={liveTail} setLiveTail={setLiveTail}
           refresh={refetch} isLoading={isLoading}
-          addQuery={(type) => setFilters([...filters, { field: type, value: `New ${type}` }])}
         />
 
         {/* Query Builder Bar */}
         <LogsQueryBar
-          filters={filters} setFilters={setFilters}
-          rawQuery={rawQuery} setRawQuery={setRawQuery}
+          searchText={searchText} setSearchText={setSearchText}
+          traceFilter={traceFilter} setTraceFilter={setTraceFilter}
+          spanFilter={spanFilter} setSpanFilter={setSpanFilter}
+          messageFilter={messageFilter} setMessageFilter={setMessageFilter}
+          selectedLevels={selectedLevels}
+          selectedServices={selectedServices}
+          onClearLevel={toggleLevel}
+          onClearService={toggleService}
+          onClearAll={handleClearAll}
         />
 
         {/* Content Body Based on Tab */}
@@ -196,8 +209,6 @@ export default function LogsPage() {
             wrap={wrap}
             expandedKeys={expandedKeys}
             toggleRow={toggleRow}
-            contextLog={contextLog}
-            contextLogs={contextLogs}
             navigate={navigate}
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
@@ -210,14 +221,16 @@ export default function LogsPage() {
         {viewMode === 'chart' && (
           <LogsChartView />
         )}
-
-        {viewMode === 'patterns' && (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-            Patterns Feature Coming Soon
-          </div>
-        )}
-
       </div>
+
+      {/* ── Log Detail Panel (fixed position overlay) ── */}
+      {selectedLog && (
+        <LogDetailPanel
+          log={selectedLog}
+          onClose={handleCloseDetail}
+          navigate={navigate}
+        />
+      )}
     </div>
   );
 }
