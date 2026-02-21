@@ -1,14 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useAppStore } from '@store/appStore';
 
 /**
  * Custom hook that wraps useQuery with automatic time range and team ID from appStore.
- * Eliminates the repeated boilerplate of extracting selectedTeamId, timeRange,
- * calculating startTime/endTime, and building queryKey.
  *
- * IMPORTANT: This hook uses timeRange.value (e.g., '1h', '24h') in the query key
- * instead of actual timestamps to prevent unnecessary refetches on every render.
- * The actual timestamps are calculated fresh when the query function runs.
+ * Every time the time range picker changes (or manual refresh), appStore.setTimeRange()
+ * bumps refreshKey, which changes the query key and forces React Query to discard any
+ * cached result and re-fetch from the backend with fresh timestamps.
  *
  * @param {string} key - The base query key (e.g. 'overview', 'logs')
  * @param {Function} queryFn - (teamId, startTime, endTime) => Promise
@@ -21,15 +19,26 @@ export function useTimeRangeQuery(key, queryFn, options = {}) {
   const { extraKeys = [], enabled, ...queryOptions } = options;
 
   return useQuery({
-    // Use timeRange.value instead of actual timestamps to prevent constant refetching
+    // refreshKey is bumped on every time-range change and manual refresh → unique key → forced fetch
     queryKey: [key, selectedTeamId, timeRange.value, refreshKey, ...extraKeys],
     queryFn: () => {
-      // Calculate fresh timestamps when the query actually runs
-      const endTime = Date.now();
-      const startTime = endTime - timeRange.minutes * 60 * 1000;
+      // For custom ranges use the absolute timestamps; otherwise compute relative
+      let startTime, endTime;
+      if (timeRange.value === 'custom' && timeRange.startTime && timeRange.endTime) {
+        startTime = timeRange.startTime;
+        endTime = timeRange.endTime;
+      } else {
+        endTime = Date.now();
+        startTime = endTime - timeRange.minutes * 60 * 1000;
+      }
       return queryFn(selectedTeamId, startTime, endTime);
     },
     enabled: !!selectedTeamId && (enabled !== false),
+    // Always refetch from the backend, but keep previous data visible during refetch
+    staleTime: 0,
+    gcTime: 30_000, // keep cache 30s so switching back quickly doesn't flash empty
+    refetchOnMount: 'always',
+    placeholderData: keepPreviousData, // show old data while new query is in-flight
     ...queryOptions,
   });
 }
@@ -49,6 +58,9 @@ export function useTimeRange() {
 
   // Helper function to get fresh timestamps when needed
   const getTimeRange = () => {
+    if (timeRange.value === 'custom' && timeRange.startTime && timeRange.endTime) {
+      return { startTime: timeRange.startTime, endTime: timeRange.endTime };
+    }
     const endTime = Date.now();
     const startTime = endTime - timeRange.minutes * 60 * 1000;
     return { startTime, endTime };

@@ -2,10 +2,10 @@ import api from './api';
 import { API_CONFIG } from '@config/constants';
 
 export const alertService = {
-  async getAlerts(status) {
-    return api.get(API_CONFIG.ENDPOINTS.ALERTS.LIST, {
-      params: status ? { status } : {},
-    });
+  async getAlerts(params = {}) {
+    // Accepts either a string (legacy: status) or an object with {teamId, startTime, endTime, status}
+    const p = typeof params === 'string' ? { status: params } : params;
+    return api.get(API_CONFIG.ENDPOINTS.ALERTS.LIST, { params: p });
   },
 
   async getActiveAlertCount() {

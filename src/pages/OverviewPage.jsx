@@ -2,8 +2,6 @@ import { useMemo, useState } from 'react';
 import { Row, Col, Card, Skeleton, Empty, Progress, Tag } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Activity, AlertCircle, Clock, Zap, Bell } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { dashboardService } from '@services/dashboardService';
 import { v1Service } from '@services/v1Service';
 import { alertService } from '@services/alertService';
 import { formatNumber, formatDuration, formatRelativeTime } from '@utils/formatters';
@@ -24,14 +22,8 @@ export default function OverviewPage() {
   const [selectedEndpointsErrorRate, setSelectedEndpointsErrorRate] = useState([]);
   const [selectedEndpointsLatency, setSelectedEndpointsLatency] = useState([]);
 
-  // Overview data (from legacy dashboard API - used for overview stats)
-  const { data: overviewRaw, isLoading, error } = useTimeRangeQuery(
-    'overview',
-    (teamId, startTime, endTime) => dashboardService.getOverview(teamId, startTime, endTime)
-  );
-
-  // Metrics summary from ClickHouse (v2) - returns flat object without success/data wrapper
-  const { data: summaryRaw, isLoading: summaryLoading } = useTimeRangeQuery(
+  // Metrics summary (primary source — spans table via v1 API)
+  const { data: summaryRaw, isLoading: summaryLoading, error: summaryError } = useTimeRangeQuery(
     'metrics-summary',
     (teamId, start, end) => v1Service.getMetricsSummary(teamId, start, end)
   );
@@ -60,32 +52,15 @@ export default function OverviewPage() {
     (teamId, startTime, endTime) => v1Service.getEndpointMetrics(teamId, startTime, endTime)
   );
 
-  // Recent alerts
-  const { data: alertsData } = useQuery({
-    queryKey: ['alerts-recent'],
-    queryFn: () => alertService.getAlerts(),
-  });
+  // Recent alerts (time-range aware)
+  const { data: alertsData } = useTimeRangeQuery(
+    'alerts-recent',
+    (teamId, startTime, endTime) => alertService.getAlerts({ teamId, startTime, endTime })
+  );
 
   // === Normalize data shapes ===
 
-  // Overview: API returns {success, data: {metrics: {statistics: {...}}, ...}} or could return flat
-  const overview = useMemo(() => {
-    if (!overviewRaw) return {};
-    // Data is already unwrapped by interceptor
-    const raw = overviewRaw;
-    // Pull out metrics.statistics for convenience
-    const stats = raw?.metrics?.statistics || {};
-    return {
-      totalRequests: stats.totalRequests || raw.totalRequests || 0,
-      avgLatency: stats.avgLatency || raw.avgLatency || 0,
-      errorRate: raw.errorRate || 0,
-      p95Latency: raw.p95Latency || 0,
-      // Timeseries are now sourced from the v2 endpoint below
-    };
-  }, [overviewRaw]);
-
-  // Summary: v2 API returns flat {total_requests, error_rate, avg_latency, p95_latency, p99_latency}
-  // Already unwrapped by interceptor
+  // Summary from v1 API: flat {total_requests, error_rate, avg_latency, p95_latency, p99_latency}
   const summary = useMemo(() => {
     if (!summaryRaw) return {};
     const raw = summaryRaw;
@@ -139,13 +114,17 @@ export default function OverviewPage() {
   );
 
   const latencyTimeseries = useMemo(
-    () => timeseries.map((d) => ({
-      timestamp: d.timestamp,
-      value: Number(d.avg_latency || 0),
-      p50: Number(d.avg_latency || 0) * 0.7,  // approximate p50
-      p95: Number(d.avg_latency || 0) * 2.5,   // approximate p95
-      p99: Number(d.avg_latency || 0) * 5.0,   // approximate p99
-    })),
+    () => timeseries.map((d) => {
+      const avg = Number(d.avg_latency || 0);
+      return {
+        timestamp: d.timestamp,
+        value: avg,
+        // Use real backend percentiles when available (new dual-source backend), else approximate
+        p50: Number(d.p50_latency || 0) || avg * 0.7,
+        p95: Number(d.p95_latency || 0) || avg * 2.0,
+        p99: Number(d.p99_latency || 0) || avg * 3.5,
+      };
+    }),
     [timeseries]
   );
 
@@ -257,14 +236,14 @@ export default function OverviewPage() {
 
   // Compute SLO metrics
   const sloMetrics = useMemo(() => {
-    const errorRate = summary.error_rate || overview.errorRate || 0;
+    const errorRate = summary.error_rate || 0;
     const availability = Math.max(0, 100 - errorRate);
-    const p95 = summary.p95_latency || overview.p95Latency || 0;
+    const p95 = summary.p95_latency || 0;
     const p95Target = 500; // 500ms target
     const p95Score = p95 > 0 ? Math.min(100, (p95Target / p95) * 100) : 100;
     const errorBudget = Math.max(0, (0.1 - errorRate / 100) / 0.1 * 100); // 99.9% SLO
     return { availability, p95Score, errorBudget };
-  }, [summary, overview]);
+  }, [summary]);
 
   // Service health grid data
   const serviceHealth = useMemo(() => {
@@ -283,7 +262,7 @@ export default function OverviewPage() {
     });
   }, [services]);
 
-  if (isLoading) {
+  if (summaryLoading && timeseries.length === 0) {
     return (
       <div className="overview-page">
         <PageHeader title="Overview" subtitle="Monitor your system health" icon={<Activity size={24} />} />
@@ -302,10 +281,10 @@ export default function OverviewPage() {
     );
   }
 
-  if (error) {
+  if (summaryError && timeseries.length === 0) {
     return (
       <div className="page-error">
-        <Empty description={error.message || 'Failed to load overview data'} />
+        <Empty description={summaryError.message || 'Failed to load overview data'} />
       </div>
     );
   }
@@ -328,9 +307,8 @@ export default function OverviewPage() {
         <Col xs={24} sm={12} lg={6}>
           <StatCard
             title="Total Requests"
-            value={summary.total_requests || overview.totalRequests || 0}
+            value={summary.total_requests || 0}
             formatter={formatNumber}
-            trend={overview.requestsTrend}
             trendInverted={false}
             icon={<Activity size={20} />}
             iconColor="#5E60CE"
@@ -342,8 +320,7 @@ export default function OverviewPage() {
         <Col xs={24} sm={12} lg={6}>
           <StatCard
             title="Error Rate"
-            value={Number((summary.error_rate || overview.errorRate || 0).toFixed(2))}
-            trend={overview.errorRateTrend}
+            value={Number((summary.error_rate || 0).toFixed(2))}
             trendInverted={true}
             icon={<AlertCircle size={20} />}
             iconColor="#F04438"
@@ -356,9 +333,8 @@ export default function OverviewPage() {
         <Col xs={24} sm={12} lg={6}>
           <StatCard
             title="Avg Latency"
-            value={summary.avg_latency || overview.avgLatency || 0}
+            value={summary.avg_latency || 0}
             formatter={formatDuration}
-            trend={overview.latencyTrend}
             trendInverted={true}
             icon={<Clock size={20} />}
             iconColor="#F79009"
@@ -370,9 +346,8 @@ export default function OverviewPage() {
         <Col xs={24} sm={12} lg={6}>
           <StatCard
             title="P95 Latency"
-            value={summary.p95_latency || overview.p95Latency || 0}
+            value={summary.p95_latency || 0}
             formatter={formatDuration}
-            trend={overview.p95Trend}
             trendInverted={true}
             icon={<Zap size={20} />}
             iconColor="#06AED5"

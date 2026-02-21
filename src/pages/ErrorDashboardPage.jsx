@@ -4,6 +4,7 @@ import { AlertCircle, ExternalLink, Clock, Server } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
+import { useChartTimeBuckets } from '@hooks/useChartTimeBuckets';
 import { v1Service } from '@services/v1Service';
 import PageHeader from '@components/common/PageHeader';
 import StatCard from '@components/common/StatCard';
@@ -14,6 +15,7 @@ import './ErrorDashboardPage.css';
 export default function ErrorDashboardPage() {
   const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState(null);
+  const { timeBuckets, labels } = useChartTimeBuckets();
 
   // Cross-service error groups
   const { data: errorGroupsRaw, isLoading: groupsLoading } = useTimeRangeQuery(
@@ -48,25 +50,48 @@ export default function ErrorDashboardPage() {
   }, [serviceMetricsRaw]);
 
   const stats = useMemo(() => {
-    const totalErrors = errorGroups.reduce((sum, g) => sum + Number(g.error_count || 0), 0);
-    const uniqueServices = new Set(errorGroups.map((g) => g.service_name)).size;
-    const uniqueOperations = new Set(errorGroups.map((g) => g.operation_name)).size;
-    const topErrorCount = errorGroups[0]?.error_count || 0;
-    return { totalErrors, uniqueServices, uniqueOperations, topErrorCount };
-  }, [errorGroups]);
+    // Primary source: error groups (from /errors/groups endpoint)
+    if (errorGroups.length > 0) {
+      const totalErrors = errorGroups.reduce((sum, g) => sum + Number(g.error_count || 0), 0);
+      const uniqueServices = new Set(errorGroups.map((g) => g.service_name)).size;
+      const uniqueOperations = new Set(errorGroups.map((g) => g.operation_name)).size;
+      const topErrorCount = errorGroups[0]?.error_count || 0;
+      return { totalErrors, uniqueServices, uniqueOperations, topErrorCount };
+    }
 
-  // Build chart.js multi-line dataset from per-service error timeseries
+    // Fallback: derive stats from error timeseries (same data source as the chart)
+    const tsRaw = Array.isArray(errorTimeseriesRaw) ? errorTimeseriesRaw : [];
+    if (tsRaw.length > 0) {
+      // Aggregate per service
+      const svcAgg = {};
+      for (const row of tsRaw) {
+        const svc = row.service_name || 'unknown';
+        if (!svcAgg[svc]) svcAgg[svc] = { errors: 0, operations: new Set() };
+        svcAgg[svc].errors += Number(row.error_count || 0);
+        if (row.operation_name) svcAgg[svc].operations.add(row.operation_name);
+      }
+      const totalErrors = Object.values(svcAgg).reduce((sum, s) => sum + s.errors, 0);
+      const uniqueServices = Object.keys(svcAgg).length;
+      const uniqueOperations = Object.values(svcAgg).reduce((sum, s) => sum + s.operations.size, 0);
+      const topErrorCount = Math.max(...Object.values(svcAgg).map(s => s.errors), 0);
+      return { totalErrors, uniqueServices, uniqueOperations, topErrorCount };
+    }
+
+    return { totalErrors: 0, uniqueServices: 0, uniqueOperations: 0, topErrorCount: 0 };
+  }, [errorGroups, errorTimeseriesRaw]);
+
+  // Build chart.js multi-line dataset from per-service error timeseries.
+  // Uses the full requested time window for x-axis labels so the axis always
+  // reflects the selected range, even if data only exists for a subset.
   const errorRateChartData = useMemo(() => {
     const raw = Array.isArray(errorTimeseriesRaw) ? errorTimeseriesRaw : [];
-    const tsSet = new Set();
     const svcSet = new Set();
     for (const row of raw) {
-      tsSet.add(row.timestamp);
       svcSet.add(row.service_name || 'unknown');
     }
-    const timestamps = Array.from(tsSet).sort((a, b) => new Date(a) - new Date(b));
     const svcNames = Array.from(svcSet);
 
+    // Build lookup: service → timestamp → error_rate
     const lookup = {};
     for (const row of raw) {
       const svc = row.service_name || 'unknown';
@@ -74,22 +99,17 @@ export default function ErrorDashboardPage() {
       lookup[svc][row.timestamp] = Number(row.error_rate || 0);
     }
 
-    const labels = timestamps.map((ts) => {
-      const d = new Date(ts);
-      return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-    });
-
     const datasets = svcNames.map((svc, i) =>
       createLineDataset(
         svc,
-        timestamps.map((ts) => lookup[svc]?.[ts] ?? 0),
+        timeBuckets.map((ts) => lookup[svc]?.[ts] ?? 0),
         getChartColor(i),
         true
       )
     );
 
     return { labels, datasets };
-  }, [errorTimeseriesRaw]);
+  }, [errorTimeseriesRaw, timeBuckets, labels]);
 
   const errorRateOptions = createChartOptions({
     plugins: {

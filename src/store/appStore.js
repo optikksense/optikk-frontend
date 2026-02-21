@@ -28,8 +28,15 @@ export const useAppStore = create((set) => ({
     const range = TIME_RANGES.find((r) => r.value === val);
     if (range) {
       localStorage.setItem(STORAGE_KEYS.TIME_RANGE, range.value);
-      set({ timeRange: range });
+      // Bump refreshKey so every useTimeRangeQuery refetches with fresh timestamps
+      set((state) => ({ timeRange: range, refreshKey: state.refreshKey + 1 }));
     }
+  },
+
+  // Custom absolute time range with explicit start/end timestamps
+  setCustomTimeRange: (customRange) => {
+    localStorage.setItem(STORAGE_KEYS.TIME_RANGE, 'custom');
+    set((state) => ({ timeRange: customRange, refreshKey: state.refreshKey + 1 }));
   },
 
   toggleSidebar: () => {
