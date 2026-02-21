@@ -2,7 +2,7 @@ import { useMemo, useState, useRef, useCallback } from 'react';
 import {
   Button, Switch, Select, Input, Tag, Tooltip, Spin,
 } from 'antd';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import {
   Search, Download, Radio, ChevronRight, ChevronDown,
   Link2, AlertTriangle, Copy, ExternalLink, X, WrapText,
@@ -40,23 +40,35 @@ function copyToClipboard(text) {
 // ─── log level badge ─────────────────────────────────────────────────────────
 
 function LevelBadge({ level }) {
-  const cfg = LOG_LEVELS[String(level).toUpperCase()] || { label: level, color: '#98A2B3' };
+  const cfg = LOG_LEVELS[String(level).toUpperCase()] || { label: level, color: '#98A2B3', bg: '#2b2d31' };
+
+  // Create a high-contrast Datadog-style badge
+  let bgColor = cfg.color + '1A'; // 10% opacity
+  let textColor = cfg.color;
+  if (/ERROR|FATAL/.test(level)) {
+    bgColor = '#F04438';
+    textColor = '#FFFFFF';
+  } else if (/WARN/.test(level)) {
+    bgColor = '#F79009';
+    textColor = '#FFFFFF';
+  }
+
   return (
     <span style={{
       display: 'inline-block',
-      minWidth: 38,
-      padding: '1px 5px',
+      width: 50,
+      padding: '2px 0',
       fontSize: 10,
-      fontWeight: 700,
-      letterSpacing: '0.04em',
+      fontWeight: 800,
+      letterSpacing: '0.05em',
       textTransform: 'uppercase',
-      borderRadius: 3,
-      background: cfg.color + '22',
-      color: cfg.color,
-      border: `1px solid ${cfg.color}55`,
-      lineHeight: '16px',
+      borderRadius: 2,
+      background: bgColor,
+      color: textColor,
+      lineHeight: '14px',
       textAlign: 'center',
       flexShrink: 0,
+      fontFamily: '"SF Pro Text", -apple-system, sans-serif'
     }}>
       {cfg.label}
     </span>
@@ -121,10 +133,11 @@ function LogDetailPanel({ log, contextLogs, navigate }) {
 
   return (
     <div style={{
-      background: '#111',
-      borderTop: '1px solid #2D2D2D',
-      borderBottom: '1px solid #2D2D2D',
-      padding: '10px 16px 12px',
+      background: '#0D0D0D', // Very dark background for expanded area
+      borderTop: '1px solid #1A1A1A',
+      borderBottom: '1px solid #1A1A1A',
+      padding: '16px 24px',
+      boxShadow: 'inset 0 4px 6px -4px rgba(0,0,0,0.5)',
     }}>
       {/* mini tabs */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 10, borderBottom: '1px solid #2D2D2D', paddingBottom: 0 }}>
@@ -237,15 +250,16 @@ function LogRow({ log, isExpanded, onToggle, wrap, contextLogs, navigate }) {
         onClick={onToggle}
         style={{
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'baseline',
           gap: 0,
           cursor: 'pointer',
-          padding: '3px 0',
-          background: isExpanded ? 'rgba(94,96,206,0.06)' : 'transparent',
-          borderLeft: `3px solid ${isExpanded ? '#5E60CE' : cfg.color + '44'}`,
-          transition: 'background 0.1s',
+          padding: '4px 8px',
+          background: isExpanded ? '#141414' : 'transparent',
+          borderLeft: `4px solid ${isExpanded ? '#5E60CE' : 'transparent'}`,
+          transition: 'background 0.05s ease',
+          fontFamily: '"JetBrains Mono", "Fira Code", monospace',
         }}
-        onMouseEnter={(e) => { if (!isExpanded) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+        onMouseEnter={(e) => { if (!isExpanded) e.currentTarget.style.background = '#1A1A1A'; }}
         onMouseLeave={(e) => { if (!isExpanded) e.currentTarget.style.background = 'transparent'; }}
       >
         {/* expand chevron */}
@@ -255,37 +269,37 @@ function LogRow({ log, isExpanded, onToggle, wrap, contextLogs, navigate }) {
 
         {/* timestamp */}
         <span style={{
-          fontFamily: 'monospace',
-          fontSize: 11,
-          color: '#666',
+          fontSize: 12,
+          color: '#888',
           whiteSpace: 'nowrap',
-          padding: '3px 8px 3px 0',
+          padding: '0 12px 0 0',
           flexShrink: 0,
-          minWidth: 170,
+          width: 175,
         }}>
           {tsLabel(log.timestamp)}
         </span>
 
         {/* level */}
-        <span style={{ padding: '2px 8px 2px 0', flexShrink: 0 }}>
+        <span style={{ padding: '0 12px 0 0', flexShrink: 0 }}>
           <LevelBadge level={log.level} />
         </span>
 
         {/* service */}
-        {log.service_name && (
+        {log.service_name ? (
           <span style={{
-            fontSize: 11,
-            color: '#5E60CE',
-            fontFamily: 'monospace',
-            padding: '3px 10px 3px 0',
+            fontSize: 12,
+            color: '#A0A0A0', // Muted color like Datadog hosts/services
+            padding: '0 16px 0 0',
             flexShrink: 0,
-            maxWidth: 160,
+            width: 180,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}>
             {log.service_name}
           </span>
+        ) : (
+          <span style={{ width: 180, padding: '0 16px 0 0', flexShrink: 0 }} />
         )}
 
         {/* message */}
@@ -415,20 +429,24 @@ export default function LogsPage() {
   const [liveTail, setLiveTail] = useState(false);
   const [wrap, setWrap] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState(new Set());
-  const [page, setPage] = useState(1);
   const pageSize = 100; // Grafana-style: load more logs, paginate less
 
   // ── data fetch: logs
-  const offset = (page - 1) * pageSize;
-  const { data, isLoading } = useQuery({
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage
+  } = useInfiniteQuery({
     queryKey: [
-      'logs-v2',
+      'logs-v2-infinite',
       selectedTeamId, timeRange.value,
-      page, pageSize,
+      pageSize,
       searchText, selectedLevels, selectedServices,
       refreshKey,
     ],
-    queryFn: () => {
+    queryFn: ({ pageParam = 0 }) => {
       const endTime = Date.now();
       const startTime = endTime - timeRange.minutes * 60 * 1000;
       return v1Service.getLogs(selectedTeamId, startTime, endTime, {
@@ -436,9 +454,10 @@ export default function LogsPage() {
         services: selectedServices.length ? selectedServices : undefined,
         search: searchText || undefined,
         limit: pageSize,
-        offset,
+        cursor: pageParam || undefined
       });
     },
+    getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor : undefined,
     enabled: !!selectedTeamId,
     refetchInterval: liveTail ? 3000 : false,
   });
@@ -467,9 +486,9 @@ export default function LogsPage() {
   const contextLogs = contextData?.logs || [];
 
   // ── derived data
-  const rawLogs = Array.isArray(data?.logs) ? data.logs : [];
-  const serverTotal = Number(data?.total || 0);
-  const rawFacets = data?.facets || {};
+  const rawLogs = data?.pages ? data.pages.flatMap((page) => page.logs || []) : [];
+  const serverTotal = Number(data?.pages?.[0]?.total || 0);
+  const rawFacets = data?.pages?.[0]?.facets || {};
 
   const facets = useMemo(() => {
     const levels = Array.isArray(rawFacets.levels)
@@ -533,7 +552,6 @@ export default function LogsPage() {
     setSelectedLevels((prev) =>
       prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
     );
-    setPage(1);
     setExpandedKeys(new Set());
   };
 
@@ -541,7 +559,6 @@ export default function LogsPage() {
     setSelectedServices((prev) =>
       prev.includes(svc) ? prev.filter((s) => s !== svc) : [...prev, svc]
     );
-    setPage(1);
     setExpandedKeys(new Set());
   };
 
@@ -554,7 +571,6 @@ export default function LogsPage() {
     setTraceFilter('');
     setHasExceptionOnly(false);
     setCorrelatedOnly(false);
-    setPage(1);
   };
 
   const hasActiveFilters = searchText || selectedLevels.length || selectedServices.length
@@ -587,62 +603,64 @@ export default function LogsPage() {
 
       {/* ── top toolbar ─────────────────────────────────────────────────────── */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-        padding: '8px 0 10px',
-        borderBottom: '1px solid #2D2D2D',
+        display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+        padding: '12px 16px',
+        backgroundColor: '#0F0F0F',
+        borderBottom: '1px solid #222',
         marginBottom: 0,
       }}>
         <Input
-          prefix={<Search size={13} style={{ color: 'var(--text-muted)' }} />}
+          prefix={<Search size={14} style={{ color: '#888' }} />}
           allowClear
           placeholder="Search logs…"
           value={searchText}
-          onChange={(e) => { setSearchText(e.target.value); setPage(1); setExpandedKeys(new Set()); }}
-          style={{ width: 280 }}
-          size="small"
+          onChange={(e) => { setSearchText(e.target.value); setExpandedKeys(new Set()); }}
+          style={{ width: 350, background: '#1A1A1A', borderColor: '#333' }}
+          size="middle"
         />
+
+        <div style={{ width: 1, height: 24, background: '#333', margin: '0 8px' }} />
 
         <Input
           allowClear
-          placeholder="host filter"
+          placeholder="Host:"
           value={hostFilter}
           onChange={(e) => setHostFilter(e.target.value)}
-          style={{ width: 140 }}
+          style={{ width: 120, background: '#1A1A1A', borderColor: '#333' }}
           size="small"
         />
 
         <Input
           allowClear
-          placeholder="trace ID filter"
+          placeholder="Trace ID:"
           value={traceFilter}
           onChange={(e) => setTraceFilter(e.target.value)}
-          style={{ width: 155 }}
+          style={{ width: 140, background: '#1A1A1A', borderColor: '#333' }}
           size="small"
         />
 
-        <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <Switch size="small" checked={hasExceptionOnly} onChange={(v) => { setHasExceptionOnly(v); setPage(1); }} />
-          Exceptions
-        </span>
-
-        <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <Switch size="small" checked={correlatedOnly} onChange={(v) => { setCorrelatedOnly(v); setPage(1); }} />
-          Correlated
-        </span>
-
-        <span style={{ fontSize: 12, color: liveTail ? '#73C991' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <Radio size={13} className={liveTail ? 'live-tail-icon-active' : ''} />
-          <Switch size="small" checked={liveTail} onChange={setLiveTail} />
-          Live
-        </span>
-
-        <span style={{ fontSize: 12, color: wrap ? '#5E60CE' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <WrapText size={13} />
-          <Switch size="small" checked={wrap} onChange={setWrap} />
-          Wrap
-        </span>
-
         <div style={{ flex: 1 }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, background: '#1A1A1A', padding: '4px 12px', borderRadius: 4, border: '1px solid #333' }}>
+          <span style={{ fontSize: 12, color: hasExceptionOnly ? '#F04438' : '#A0A0A0', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+            <Switch size="small" checked={hasExceptionOnly} onChange={(v) => { setHasExceptionOnly(v); }} />
+            Exceptions
+          </span>
+          <span style={{ fontSize: 12, color: correlatedOnly ? '#5E60CE' : '#A0A0A0', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+            <Switch size="small" checked={correlatedOnly} onChange={(v) => { setCorrelatedOnly(v); }} />
+            Correlated
+          </span>
+          <span style={{ fontSize: 12, color: liveTail ? '#73C991' : '#A0A0A0', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+            <Radio size={14} className={liveTail ? 'live-tail-icon-active' : ''} style={{ margin: 0 }} />
+            <Switch size="small" checked={liveTail} onChange={setLiveTail} />
+            Live Tail
+          </span>
+          <span style={{ fontSize: 12, color: wrap ? '#5E60CE' : '#A0A0A0', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+            <WrapText size={14} />
+            <Switch size="small" checked={wrap} onChange={setWrap} />
+            Wrap
+          </span>
+        </div>
 
         {hasActiveFilters && (
           <Button size="small" icon={<X size={12} />} onClick={clearFilters} type="text" style={{ color: 'var(--text-muted)' }}>
@@ -661,7 +679,7 @@ export default function LogsPage() {
 
       {/* ── histogram ───────────────────────────────────────────────────────── */}
       {histogram.length > 0 && (
-        <div style={{ padding: '8px 0 4px', borderBottom: '1px solid #2D2D2D' }}>
+        <div style={{ padding: '12px 16px 4px', borderBottom: '1px solid #222', backgroundColor: '#0A0A0A' }}>
           <LogHistogram data={histogram} height={72} />
         </div>
       )}
@@ -751,28 +769,26 @@ export default function LogsPage() {
                 );
               })}
 
-              {/* ── pagination ── */}
-              <div style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '10px 12px', borderTop: '1px solid #2D2D2D',
-                fontSize: 12, color: 'var(--text-muted)',
-              }}>
-                <span>
-                  Showing {offset + 1}–{Math.min(offset + filteredLogs.length, serverTotal)} of {formatNumber(serverTotal)}
-                </span>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <Button size="small" disabled={page === 1} onClick={() => { setPage((p) => p - 1); setExpandedKeys(new Set()); }}>
-                    ← Newer
-                  </Button>
+              {/* ── infinite load more ── */}
+              {hasNextPage && (
+                <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid #2D2D2D' }}>
                   <Button
-                    size="small"
-                    disabled={offset + pageSize >= serverTotal}
-                    onClick={() => { setPage((p) => p + 1); setExpandedKeys(new Set()); }}
+                    type="primary"
+                    ghost
+                    loading={isFetchingNextPage}
+                    onClick={() => fetchNextPage()}
+                    style={{ minWidth: 200, borderColor: '#5E60CE', color: '#5E60CE' }}
                   >
-                    Older →
+                    Load Older Logs
                   </Button>
                 </div>
-              </div>
+              )}
+
+              {!hasNextPage && filteredLogs.length > 0 && (
+                <div style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 12, borderTop: '1px solid #2D2D2D' }}>
+                  End of matching logs
+                </div>
+              )}
             </>
           )}
         </div>
