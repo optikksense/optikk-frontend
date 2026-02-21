@@ -64,11 +64,15 @@ export default function LogHistogram({ data = [], height = 80, onBrush }) {
   }
 
   const options = createChartOptions({
+    layout: {
+      padding: { top: 5, bottom: 30 },
+    },
     plugins: {
       legend: { display: false },
       tooltip: {
         mode: 'index',
         intersect: false,
+        yAlign: 'bottom',
         callbacks: {
           label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}`,
         },
