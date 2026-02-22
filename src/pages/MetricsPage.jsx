@@ -6,9 +6,7 @@ import { BarChart3, Activity, AlertCircle, Clock, AlertTriangle, TrendingUp, Tre
 import { useAppStore } from '@store/appStore';
 import { v1Service } from '@services/v1Service';
 import { dashboardService } from '@services/dashboardService';
-import PageHeader from '@components/common/PageHeader';
-import FilterBar from '@components/common/FilterBar';
-import StatCard from '@components/common/StatCard';
+import { PageHeader, FilterBar, StatCard, StatCardsGrid, TopEndpointsList } from '@components/common';
 import RequestChart from '@components/charts/RequestChart';
 import LatencyChart from '@components/charts/LatencyChart';
 import ErrorRateChart from '@components/charts/ErrorRateChart';
@@ -172,7 +170,7 @@ export default function MetricsPage() {
     if (!metricsData || metricsData.length < 2) return {};
     const recent = metricsData.slice(-10);
     const older = metricsData.slice(0, 10);
-    
+
     const recentAvg = recent.reduce((sum, m) => sum + (m.request_count || 0), 0) / recent.length;
     const olderAvg = older.reduce((sum, m) => sum + (m.request_count || 0), 0) / older.length;
     const requestTrend = olderAvg > 0 ? ((recentAvg - olderAvg) / olderAvg) * 100 : 0;
@@ -255,58 +253,53 @@ export default function MetricsPage() {
       />
 
       {/* Enhanced Stats Cards with Trends */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Total Requests"
-            value={summary.total_requests || 0}
-            formatter={(val) => val.toLocaleString()}
-            icon={<Activity size={20} />}
-            iconColor="#3B82F6"
-            loading={summaryLoading}
-            sparklineData={requestSparkline}
-            sparklineColor="#3B82F6"
-            trend={trends.requestTrend}
-            trendInverted={false}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Error Rate"
-            value={summary.error_rate || 0}
-            formatter={(val) => `${Number(val).toFixed(2)}%`}
-            icon={<AlertCircle size={20} />}
-            iconColor="#F04438"
-            loading={summaryLoading}
-            sparklineData={errorSparkline}
-            sparklineColor="#F04438"
-            trend={trends.errorTrend}
-            trendInverted={true}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Avg Latency"
-            value={summary.avg_latency || 0}
-            formatter={(val) => `${val.toFixed(0)}ms`}
-            icon={<Clock size={20} />}
-            iconColor="#10B981"
-            loading={summaryLoading}
-            sparklineData={latencySparkline}
-            sparklineColor="#10B981"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="P95 Latency"
-            value={summary.p95_latency || 0}
-            formatter={(val) => `${val.toFixed(0)}ms`}
-            icon={<Clock size={20} />}
-            iconColor="#F59E0B"
-            loading={summaryLoading}
-          />
-        </Col>
-      </Row>
+      <StatCardsGrid
+        style={{ marginBottom: 24 }}
+        stats={[
+          {
+            title: "Total Requests",
+            value: summary.total_requests || 0,
+            formatter: (val) => val.toLocaleString(),
+            icon: <Activity size={20} />,
+            iconColor: "#3B82F6",
+            loading: summaryLoading,
+            sparklineData: requestSparkline,
+            sparklineColor: "#3B82F6",
+            trend: trends.requestTrend,
+            trendInverted: false
+          },
+          {
+            title: "Error Rate",
+            value: summary.error_rate || 0,
+            formatter: (val) => `${Number(val).toFixed(2)}%`,
+            icon: <AlertCircle size={20} />,
+            iconColor: "#F04438",
+            loading: summaryLoading,
+            sparklineData: errorSparkline,
+            sparklineColor: "#F04438",
+            trend: trends.errorTrend,
+            trendInverted: true
+          },
+          {
+            title: "Avg Latency",
+            value: summary.avg_latency || 0,
+            formatter: (val) => `${val.toFixed(0)}ms`,
+            icon: <Clock size={20} />,
+            iconColor: "#10B981",
+            loading: summaryLoading,
+            sparklineData: latencySparkline,
+            sparklineColor: "#10B981"
+          },
+          {
+            title: "P95 Latency",
+            value: summary.p95_latency || 0,
+            formatter: (val) => `${val.toFixed(0)}ms`,
+            icon: <Clock size={20} />,
+            iconColor: "#F59E0B",
+            loading: summaryLoading
+          }
+        ]}
+      />
 
       {/* Tabs for different views */}
       <Card>
@@ -328,228 +321,54 @@ export default function MetricsPage() {
                   ) : (
                     <Row gutter={[16, 16]}>
                       <Col xs={24} lg={12}>
-                        <Card title="Request Rate" className="chart-card">
-                          <RequestChart 
-                            data={metrics} 
+                        <Card title="Request Rate" className="chart-card" styles={{ body: { padding: '8px' } }}>
+                          <RequestChart
+                            data={metrics}
                             endpoints={topEndpointsByRequests}
                             selectedEndpoints={selectedEndpointsRequests}
                           />
-                          {topEndpointsByRequests.length > 0 && (
-                            <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border-color, #2D2D2D)' }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Top Endpoints by Requests
-                              </div>
-                              <div style={{ 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                gap: 8, 
-                                maxHeight: '200px', 
-                                overflowY: 'auto', 
-                                paddingRight: 4,
-                                scrollbarWidth: 'thin',
-                                scrollbarColor: 'var(--border-color, #2D2D2D) var(--bg-secondary, #0D0D0D)'
-                              }}>
-                                {topEndpointsByRequests.map((ep, idx) => {
-                                  const isSelected = selectedEndpointsRequests.includes(ep.key);
-                                  const isFaded = selectedEndpointsRequests.length > 0 && !isSelected;
-                                  return (
-                                    <div
-                                      key={idx}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleEndpointToggleRequests(ep.key);
-                                      }}
-                                      style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '8px 12px',
-                                        background: isSelected ? 'rgba(94, 96, 206, 0.2)' : 'var(--bg-secondary, #0D0D0D)',
-                                        borderRadius: 4,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        opacity: isFaded ? 0.3 : 1,
-                                        border: isSelected ? '1px solid #5E60CE' : '1px solid transparent',
-                                      }}
-                                      onMouseEnter={(e) => {
-                                        if (!isFaded) {
-                                          e.currentTarget.style.background = isSelected ? 'rgba(94, 96, 206, 0.3)' : 'var(--bg-tertiary, #1A1A1A)';
-                                        }
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = isSelected ? 'rgba(94, 96, 206, 0.2)' : 'var(--bg-secondary, #0D0D0D)';
-                                      }}
-                                    >
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {ep.endpoint}
-                                      </div>
-                                      {ep.service && (
-                                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                                          {ep.service}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#1890ff', marginLeft: 12 }}>
-                                      {formatNumber(ep.request_count || 0)}
-                                    </div>
-                                  </div>
-                                );
-                                })}
-                              </div>
-                            </div>
-                          )}
+                          <TopEndpointsList
+                            title="Requests"
+                            type="requests"
+                            endpoints={topEndpointsByRequests}
+                            selectedEndpoints={selectedEndpointsRequests}
+                            onToggle={handleEndpointToggleRequests}
+                          />
                         </Card>
                       </Col>
                       <Col xs={24} lg={12}>
-                        <Card title="Error Rate" className="chart-card">
-                          <ErrorRateChart 
+                        <Card title="Error Rate" className="chart-card" styles={{ body: { padding: '8px' } }}>
+                          <ErrorRateChart
                             data={metrics.map(m => ({
                               ...m,
                               value: m.error_rate || (m.request_count > 0 ? (m.error_count / m.request_count) * 100 : 0),
-                            }))} 
+                            }))}
                             endpoints={topEndpointsByErrorRate}
                             selectedEndpoints={selectedEndpointsErrorRate}
                           />
-                          {topEndpointsByErrorRate.length > 0 && (
-                            <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border-color, #2D2D2D)' }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Top Endpoints by Error Rate
-                              </div>
-                              <div style={{ 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                gap: 8, 
-                                maxHeight: '200px', 
-                                overflowY: 'auto', 
-                                paddingRight: 4,
-                                scrollbarWidth: 'thin',
-                                scrollbarColor: 'var(--border-color, #2D2D2D) var(--bg-secondary, #0D0D0D)'
-                              }}>
-                                {topEndpointsByErrorRate.map((ep, idx) => {
-                                  const isSelected = selectedEndpointsErrorRate.includes(ep.key);
-                                  const isFaded = selectedEndpointsErrorRate.length > 0 && !isSelected;
-                                  return (
-                                    <div
-                                      key={idx}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleEndpointToggleErrorRate(ep.key);
-                                      }}
-                                      style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '8px 12px',
-                                        background: isSelected ? 'rgba(240, 68, 56, 0.2)' : 'var(--bg-secondary, #0D0D0D)',
-                                        borderRadius: 4,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        opacity: isFaded ? 0.3 : 1,
-                                        border: isSelected ? '1px solid #F04438' : '1px solid transparent',
-                                      }}
-                                      onMouseEnter={(e) => {
-                                        if (!isFaded) {
-                                          e.currentTarget.style.background = isSelected ? 'rgba(240, 68, 56, 0.3)' : 'var(--bg-tertiary, #1A1A1A)';
-                                        }
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = isSelected ? 'rgba(240, 68, 56, 0.2)' : 'var(--bg-secondary, #0D0D0D)';
-                                      }}
-                                    >
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {ep.endpoint}
-                                      </div>
-                                      {ep.service && (
-                                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                                          {ep.service}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: ep.errorRate > 5 ? '#F04438' : ep.errorRate > 1 ? '#F79009' : '#F79009', marginLeft: 12 }}>
-                                      {ep.errorRate.toFixed(2)}%
-                                    </div>
-                                  </div>
-                                );
-                                })}
-                              </div>
-                            </div>
-                          )}
+                          <TopEndpointsList
+                            title="Error Rate"
+                            type="errorRate"
+                            endpoints={topEndpointsByErrorRate}
+                            selectedEndpoints={selectedEndpointsErrorRate}
+                            onToggle={handleEndpointToggleErrorRate}
+                          />
                         </Card>
                       </Col>
                       <Col xs={24}>
-                        <Card title="Latency Distribution" className="chart-card">
-                          <LatencyChart 
-                            data={metrics} 
+                        <Card title="Latency Distribution" className="chart-card" styles={{ body: { padding: '8px' } }}>
+                          <LatencyChart
+                            data={metrics}
                             endpoints={topEndpointsByLatency}
                             selectedEndpoints={selectedEndpointsLatency}
                           />
-                          {topEndpointsByLatency.length > 0 && (
-                            <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border-color, #2D2D2D)' }}>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Top Endpoints by Latency
-                              </div>
-                              <div style={{ 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                gap: 8, 
-                                maxHeight: '200px', 
-                                overflowY: 'auto', 
-                                paddingRight: 4,
-                                scrollbarWidth: 'thin',
-                                scrollbarColor: 'var(--border-color, #2D2D2D) var(--bg-secondary, #0D0D0D)'
-                              }}>
-                                {topEndpointsByLatency.map((ep, idx) => {
-                                  const isSelected = selectedEndpointsLatency.includes(ep.key);
-                                  const isFaded = selectedEndpointsLatency.length > 0 && !isSelected;
-                                  return (
-                                    <div
-                                      key={idx}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleEndpointToggleLatency(ep.key);
-                                      }}
-                                      style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '8px 12px',
-                                        background: isSelected ? 'rgba(247, 144, 9, 0.2)' : 'var(--bg-secondary, #0D0D0D)',
-                                        borderRadius: 4,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        opacity: isFaded ? 0.3 : 1,
-                                        border: isSelected ? '1px solid #F79009' : '1px solid transparent',
-                                      }}
-                                      onMouseEnter={(e) => {
-                                        if (!isFaded) {
-                                          e.currentTarget.style.background = isSelected ? 'rgba(247, 144, 9, 0.3)' : 'var(--bg-tertiary, #1A1A1A)';
-                                        }
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = isSelected ? 'rgba(247, 144, 9, 0.2)' : 'var(--bg-secondary, #0D0D0D)';
-                                      }}
-                                    >
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {ep.endpoint}
-                                      </div>
-                                      {ep.service && (
-                                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                                          {ep.service}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: ep.latency > 500 ? '#F04438' : ep.latency > 200 ? '#F79009' : '#73C991', marginLeft: 12 }}>
-                                      {formatDuration(ep.latency)}
-                                    </div>
-                                  </div>
-                                );
-                                })}
-                              </div>
-                            </div>
-                          )}
+                          <TopEndpointsList
+                            title="Latency"
+                            type="latency"
+                            endpoints={topEndpointsByLatency}
+                            selectedEndpoints={selectedEndpointsLatency}
+                            onToggle={handleEndpointToggleLatency}
+                          />
                         </Card>
                       </Col>
                     </Row>

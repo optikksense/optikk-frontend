@@ -233,7 +233,7 @@ export default function TraceDetailPage() {
           </Row>
 
           {/* Waterfall Chart */}
-          <Card title="Trace Timeline" className="trace-detail-card">
+          <Card title="Trace Timeline" className="trace-detail-card" styles={{ body: { padding: '8px' } }}>
             <WaterfallChart
               spans={spans}
               onSpanClick={handleSpanClick}

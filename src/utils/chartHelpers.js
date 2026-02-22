@@ -18,19 +18,27 @@ export const BASE_CHART_OPTIONS = {
       titleColor: '#fff',
       bodyColor: 'rgba(255,255,255,0.8)',
       padding: 10,
+      titleFont: { size: 12 },
+      bodyFont: { size: 12 },
     },
   },
   scales: {
     x: {
-      grid: { color: '#2D2D2D' },
-      ticks: { color: '#666', maxRotation: 0, maxTicksLimit: 12, autoSkip: true },
+      grid: { color: 'rgba(255, 255, 255, 0.05)', tickLength: 0 },
+      ticks: { color: '#8e8e8e', maxRotation: 0, maxTicksLimit: 12, autoSkip: true, font: { size: 11 } },
+      border: { display: false },
     },
     y: {
-      grid: { color: '#2D2D2D' },
-      ticks: { color: '#666' },
+      grid: { color: 'rgba(255, 255, 255, 0.05)', tickLength: 0 },
+      ticks: { color: '#8e8e8e', font: { size: 11 } },
       beginAtZero: true,
+      border: { display: false },
     },
   },
+  elements: {
+    point: { radius: 0, hoverRadius: 0 },
+    line: { borderWidth: 1.5, tension: 0.1 }
+  }
 };
 
 /**
@@ -66,10 +74,10 @@ export function createLineDataset(label, data, color, fill = false) {
     borderColor: color,
     backgroundColor: fill ? `${color}1A` : 'transparent',
     fill,
-    tension: 0.4,
+    tension: 0.1,
     pointRadius: 0,
-    pointHoverRadius: 4,
-    borderWidth: 2,
+    pointHoverRadius: 0,
+    borderWidth: 1.5,
   };
 }
 

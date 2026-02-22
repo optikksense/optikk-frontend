@@ -9,3 +9,6 @@ export { default as SearchInput } from './SearchInput';
 export { default as HealthIndicator } from './HealthIndicator';
 export { default as TrendIndicator } from './TrendIndicator';
 export { default as TimeRangePicker } from './TimeRangePicker';
+export { default as StatCardsGrid } from './StatCardsGrid';
+export { default as TopEndpointsList } from './TopEndpointsList';
+export { default as Timeline } from './Timeline';

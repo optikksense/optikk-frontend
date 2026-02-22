@@ -5,8 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { GitBranch, Download, AlertCircle, Clock, Activity } from 'lucide-react';
 import { useAppStore } from '@store/appStore';
 import { v1Service } from '@services/v1Service';
-import { PageHeader, FilterBar, DataTable, StatusBadge } from '@components/common';
-import StatCard from '@components/common/StatCard';
+import { PageHeader, FilterBar, DataTable, StatusBadge, StatCard, StatCardsGrid } from '@components/common';
 import { TRACE_STATUSES } from '@config/constants';
 import { formatTimestamp, formatDuration, formatNumber } from '@utils/formatters';
 import LatencyHistogram from '@components/charts/LatencyHistogram';
@@ -161,48 +160,19 @@ export default function TracesPage() {
       <PageHeader title="Traces" icon={<GitBranch size={24} />} />
 
       {/* Trace Summary Stat Cards */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Total Traces"
-            value={totalTraces}
-            formatter={(val) => formatNumber(val || 0)}
-            icon={<Activity size={20} />}
-            iconColor="#3B82F6"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Error Rate"
-            value={errorRate}
-            formatter={(val) => `${(val || 0).toFixed(2)}%`}
-            icon={<AlertCircle size={20} />}
-            iconColor="#F04438"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="P95 Duration"
-            value={summary.p95_duration || 0}
-            formatter={(val) => formatDuration(val || 0)}
-            icon={<Clock size={20} />}
-            iconColor="#10B981"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="P99 Duration"
-            value={summary.p99_duration || 0}
-            formatter={(val) => formatDuration(val || 0)}
-            icon={<Clock size={20} />}
-            iconColor="#F59E0B"
-          />
-        </Col>
-      </Row>
+      <StatCardsGrid
+        style={{ marginBottom: 16 }}
+        stats={[
+          { title: "Total Traces", value: totalTraces, formatter: (val) => formatNumber(val || 0), icon: <Activity size={20} />, iconColor: "#3B82F6" },
+          { title: "Error Rate", value: errorRate, formatter: (val) => `${(val || 0).toFixed(2)}%`, icon: <AlertCircle size={20} />, iconColor: "#F04438" },
+          { title: "P95 Duration", value: summary.p95_duration || 0, formatter: (val) => formatDuration(val || 0), icon: <Clock size={20} />, iconColor: "#10B981" },
+          { title: "P99 Duration", value: summary.p99_duration || 0, formatter: (val) => formatDuration(val || 0), icon: <Clock size={20} />, iconColor: "#F59E0B" }
+        ]}
+      />
 
       {/* Latency Histogram */}
       {traces.length > 0 && (
-        <Card style={{ marginBottom: 16 }} className="chart-card">
+        <Card style={{ marginBottom: 16 }} className="chart-card" styles={{ body: { padding: '8px' } }}>
           <LatencyHistogram traces={traces} height={120} />
         </Card>
       )}

@@ -13,16 +13,16 @@ import LatencyHistogramChart from '@components/charts/LatencyHistogram';
 import LatencyHeatmapChart from '@components/charts/LatencyHeatmapChart';
 
 const HISTOGRAM_BUCKETS = [
-  { label: '0-10ms',    key: '0_10ms' },
-  { label: '10-25ms',   key: '10_25ms' },
-  { label: '25-50ms',   key: '25_50ms' },
-  { label: '50-100ms',  key: '50_100ms' },
+  { label: '0-10ms', key: '0_10ms' },
+  { label: '10-25ms', key: '10_25ms' },
+  { label: '25-50ms', key: '25_50ms' },
+  { label: '50-100ms', key: '50_100ms' },
   { label: '100-250ms', key: '100_250ms' },
   { label: '250-500ms', key: '250_500ms' },
-  { label: '500ms-1s',  key: '500ms_1s' },
-  { label: '1s-2.5s',   key: '1s_2500ms' },
-  { label: '2.5s-5s',   key: '2500ms_5s' },
-  { label: '>5s',       key: 'gt_5s' },
+  { label: '500ms-1s', key: '500ms_1s' },
+  { label: '1s-2.5s', key: '1s_2500ms' },
+  { label: '2.5s-5s', key: '2500ms_5s' },
+  { label: '>5s', key: 'gt_5s' },
 ];
 
 function bucketColor(label) {
@@ -100,25 +100,38 @@ export default function LatencyAnalysisPage({ embedded = false }) {
 
   // Percentile table columns
   const percentileColumns = [
-    { title: 'Bucket', dataIndex: 'bucket', key: 'bucket',
+    {
+      title: 'Bucket', dataIndex: 'bucket', key: 'bucket',
       render: (b) => {
         const found = HISTOGRAM_BUCKETS.find((hb) => hb.key === b);
         const label = found?.label || b;
         return <Tag color={bucketColor(label)}>{label}</Tag>;
       }
     },
-    { title: 'Span Count', dataIndex: 'span_count', key: 'span_count',
-      render: (v) => formatNumber(Number(v) || 0) },
-    { title: 'P50', dataIndex: 'p50_ms', key: 'p50_ms',
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-' },
-    { title: 'P95', dataIndex: 'p95_ms', key: 'p95_ms',
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-' },
-    { title: 'P99', dataIndex: 'p99_ms', key: 'p99_ms',
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-' },
-    { title: 'Max', dataIndex: 'max_ms', key: 'max_ms',
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-' },
-    { title: 'Avg', dataIndex: 'avg_ms', key: 'avg_ms',
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-' },
+    {
+      title: 'Span Count', dataIndex: 'span_count', key: 'span_count',
+      render: (v) => formatNumber(Number(v) || 0)
+    },
+    {
+      title: 'P50', dataIndex: 'p50_ms', key: 'p50_ms',
+      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-'
+    },
+    {
+      title: 'P95', dataIndex: 'p95_ms', key: 'p95_ms',
+      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-'
+    },
+    {
+      title: 'P99', dataIndex: 'p99_ms', key: 'p99_ms',
+      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-'
+    },
+    {
+      title: 'Max', dataIndex: 'max_ms', key: 'max_ms',
+      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-'
+    },
+    {
+      title: 'Avg', dataIndex: 'avg_ms', key: 'avg_ms',
+      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-'
+    },
   ];
 
   const tabItems = [
@@ -126,7 +139,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
       key: 'histogram',
       label: 'Histogram',
       children: (
-        <Card>
+        <Card className="chart-card" styles={{ body: { padding: '8px' } }}>
           <LatencyHistogramChart traces={histogramTraces} height={280} />
         </Card>
       ),
@@ -135,7 +148,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
       key: 'heatmap',
       label: 'Heatmap',
       children: (
-        <Card loading={heatLoading}>
+        <Card loading={heatLoading} className="chart-card" styles={{ body: { padding: '8px' } }}>
           <LatencyHeatmapChart data={heatmap} />
         </Card>
       ),

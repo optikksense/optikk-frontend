@@ -426,11 +426,11 @@ export default function ServiceDetailPage() {
                   {/* Charts */}
                   <Row gutter={16} style={{ marginBottom: 24 }}>
                     <Col xs={24} lg={8}>
-                      <Card title="Request Rate" className="chart-card" size="small">
+                      <Card title="Request Rate" className="chart-card" size="small" styles={{ body: { padding: '8px' } }}>
                         {timeSeries.length > 0 ? (
                           <>
-                            <RequestChart 
-                              data={timeSeries} 
+                            <RequestChart
+                              data={timeSeries}
                               endpoints={endpointsWithKeys}
                               selectedEndpoints={selectedEndpointsRequests}
                             />
@@ -439,12 +439,12 @@ export default function ServiceDetailPage() {
                                 <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase' }}>
                                   Top Endpoints
                                 </div>
-                                <div style={{ 
-                                  display: 'flex', 
-                                  flexDirection: 'column', 
-                                  gap: 6, 
-                                  maxHeight: '150px', 
-                                  overflowY: 'auto', 
+                                <div style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 6,
+                                  maxHeight: '150px',
+                                  overflowY: 'auto',
                                   paddingRight: 4,
                                   scrollbarWidth: 'thin',
                                   scrollbarColor: 'var(--border-color, #2D2D2D) var(--bg-secondary, #0D0D0D)'
@@ -484,14 +484,14 @@ export default function ServiceDetailPage() {
                                             e.currentTarget.style.background = isSelected ? 'rgba(94, 96, 206, 0.2)' : 'var(--bg-secondary, #0D0D0D)';
                                           }}
                                         >
-                                        <span style={{ fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                                          {ep.http_method} {ep.operation_name}
-                                        </span>
-                                        <span style={{ color: '#1890ff', marginLeft: 8, fontWeight: 600 }}>
-                                          {formatNumber(ep.request_count || 0)}
-                                        </span>
-                                      </div>
-                                    );
+                                          <span style={{ fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                            {ep.http_method} {ep.operation_name}
+                                          </span>
+                                          <span style={{ color: '#1890ff', marginLeft: 8, fontWeight: 600 }}>
+                                            {formatNumber(ep.request_count || 0)}
+                                          </span>
+                                        </div>
+                                      );
                                     })}
                                 </div>
                               </div>
@@ -503,11 +503,11 @@ export default function ServiceDetailPage() {
                       </Card>
                     </Col>
                     <Col xs={24} lg={8}>
-                      <Card title="Error Rate" className="chart-card" size="small">
+                      <Card title="Error Rate" className="chart-card" size="small" styles={{ body: { padding: '8px' } }}>
                         {errorTimeSeries.length > 0 ? (
                           <>
-                            <ErrorRateChart 
-                              data={errorTimeSeries} 
+                            <ErrorRateChart
+                              data={errorTimeSeries}
                               endpoints={endpointsWithKeys}
                               selectedEndpoints={selectedEndpointsErrorRate}
                             />
@@ -516,12 +516,12 @@ export default function ServiceDetailPage() {
                                 <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase' }}>
                                   Top by Error Rate
                                 </div>
-                                <div style={{ 
-                                  display: 'flex', 
-                                  flexDirection: 'column', 
-                                  gap: 6, 
-                                  maxHeight: '150px', 
-                                  overflowY: 'auto', 
+                                <div style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 6,
+                                  maxHeight: '150px',
+                                  overflowY: 'auto',
                                   paddingRight: 4,
                                   scrollbarWidth: 'thin',
                                   scrollbarColor: 'var(--border-color, #2D2D2D) var(--bg-secondary, #0D0D0D)'
@@ -566,14 +566,14 @@ export default function ServiceDetailPage() {
                                             e.currentTarget.style.background = isSelected ? 'rgba(240, 68, 56, 0.2)' : 'var(--bg-secondary, #0D0D0D)';
                                           }}
                                         >
-                                        <span style={{ fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                                          {ep.http_method} {ep.operation_name}
-                                        </span>
-                                        <span style={{ color: ep.errorRate > 5 ? '#F04438' : '#F79009', marginLeft: 8, fontWeight: 600 }}>
-                                          {Number(ep.errorRate).toFixed(2)}%
-                                        </span>
-                                      </div>
-                                    );
+                                          <span style={{ fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                            {ep.http_method} {ep.operation_name}
+                                          </span>
+                                          <span style={{ color: ep.errorRate > 5 ? '#F04438' : '#F79009', marginLeft: 8, fontWeight: 600 }}>
+                                            {Number(ep.errorRate).toFixed(2)}%
+                                          </span>
+                                        </div>
+                                      );
                                     })}
                                 </div>
                               </div>
@@ -585,11 +585,11 @@ export default function ServiceDetailPage() {
                       </Card>
                     </Col>
                     <Col xs={24} lg={8}>
-                      <Card title="Latency" className="chart-card" size="small">
+                      <Card title="Latency" className="chart-card" size="small" styles={{ body: { padding: '8px' } }}>
                         {timeSeries.length > 0 ? (
                           <>
-                            <LatencyChart 
-                              data={timeSeries} 
+                            <LatencyChart
+                              data={timeSeries}
                               endpoints={endpointsWithKeys}
                               selectedEndpoints={selectedEndpointsLatency}
                             />
@@ -598,12 +598,12 @@ export default function ServiceDetailPage() {
                                 <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase' }}>
                                   Top by Latency
                                 </div>
-                                <div style={{ 
-                                  display: 'flex', 
-                                  flexDirection: 'column', 
-                                  gap: 6, 
-                                  maxHeight: '150px', 
-                                  overflowY: 'auto', 
+                                <div style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 6,
+                                  maxHeight: '150px',
+                                  overflowY: 'auto',
                                   paddingRight: 4,
                                   scrollbarWidth: 'thin',
                                   scrollbarColor: 'var(--border-color, #2D2D2D) var(--bg-secondary, #0D0D0D)'
@@ -643,14 +643,14 @@ export default function ServiceDetailPage() {
                                             e.currentTarget.style.background = isSelected ? 'rgba(247, 144, 9, 0.2)' : 'var(--bg-secondary, #0D0D0D)';
                                           }}
                                         >
-                                        <span style={{ fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                                          {ep.http_method} {ep.operation_name}
-                                        </span>
-                                        <span style={{ color: ep.avg_latency > 500 ? '#F04438' : ep.avg_latency > 200 ? '#F79009' : '#73C991', marginLeft: 8, fontWeight: 600 }}>
-                                          {formatDuration(ep.avg_latency || 0)}
-                                        </span>
-                                      </div>
-                                    );
+                                          <span style={{ fontFamily: 'monospace', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                                            {ep.http_method} {ep.operation_name}
+                                          </span>
+                                          <span style={{ color: ep.avg_latency > 500 ? '#F04438' : ep.avg_latency > 200 ? '#F79009' : '#73C991', marginLeft: 8, fontWeight: 600 }}>
+                                            {formatDuration(ep.avg_latency || 0)}
+                                          </span>
+                                        </div>
+                                      );
                                     })}
                                 </div>
                               </div>

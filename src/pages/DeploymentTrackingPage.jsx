@@ -9,11 +9,7 @@ import { useTimeRangeQuery, useTimeRange } from '@hooks/useTimeRangeQuery';
 import { v1Service } from '@services/v1Service';
 import { DEPLOYMENT_STATUSES, DEPLOYMENT_ENVIRONMENTS } from '@config/constants';
 import { formatTimestamp, formatRelativeTime } from '@utils/formatters';
-import PageHeader from '@components/common/PageHeader';
-import FilterBar from '@components/common/FilterBar';
-import StatCard from '@components/common/StatCard';
-import DataTable from '@components/common/DataTable';
-import Timeline from '@components/common/Timeline';
+import { PageHeader, FilterBar, StatCard, StatCardsGrid, DataTable, Timeline } from '@components/common';
 import toast from 'react-hot-toast';
 
 const statusColor = (status) => {
@@ -199,7 +195,7 @@ export default function DeploymentTrackingPage() {
       <FilterBar
         filters={[
           {
-            type: 'input',
+            type: 'search',
             key: 'service',
             placeholder: 'Filter by service...',
             value: serviceFilter,
@@ -224,38 +220,16 @@ export default function DeploymentTrackingPage() {
         ]}
       />
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={12} sm={6}>
-          <StatCard
-            title="Total Deploys"
-            value={stats.total}
-            icon={<Rocket size={20} />}
-          />
-        </Col>
-        <Col xs={12} sm={6}>
-          <StatCard
-            title="Successful"
-            value={stats.successful}
-            icon={<CheckCircle size={20} />}
-            valueStyle={{ color: '#73C991' }}
-          />
-        </Col>
-        <Col xs={12} sm={6}>
-          <StatCard
-            title="Failed"
-            value={stats.failed}
-            icon={<XCircle size={20} />}
-            valueStyle={{ color: '#F04438' }}
-          />
-        </Col>
-        <Col xs={12} sm={6}>
-          <StatCard
-            title="Avg Duration"
-            value={`${stats.avgDuration}s`}
-            icon={<Clock size={20} />}
-          />
-        </Col>
-      </Row>
+      <StatCardsGrid
+        style={{ marginBottom: 16 }}
+        defaultColProps={{ xs: 12, sm: 6 }}
+        stats={[
+          { title: "Total Deploys", value: stats.total, icon: <Rocket size={20} /> },
+          { title: "Successful", value: stats.successful, icon: <CheckCircle size={20} />, valueStyle: { color: '#73C991' } },
+          { title: "Failed", value: stats.failed, icon: <XCircle size={20} />, valueStyle: { color: '#F04438' } },
+          { title: "Avg Duration", value: stats.avgDuration ? `${stats.avgDuration}s` : '-', icon: <Clock size={20} /> }
+        ]}
+      />
 
       {viewMode === 'table' ? (
         <Card>

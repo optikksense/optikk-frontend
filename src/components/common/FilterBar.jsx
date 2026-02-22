@@ -23,6 +23,7 @@ export default function FilterBar({ filters = [], actions }) {
                 placeholder={filter.placeholder || 'Search...'}
                 onSearch={filter.onSearch}
                 onChange={filter.onChange}
+                value={filter.value}
                 style={{ width: filter.width || 300 }}
                 prefix={<Search size={16} />}
                 allowClear

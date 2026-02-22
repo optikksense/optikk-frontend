@@ -18,7 +18,7 @@
 }
 
 .err-chart-card .ant-card-body {
-  padding: 16px;
+  padding: 8px;
 }
 
 /* Table overrides */
@@ -26,7 +26,7 @@
   background: transparent !important;
 }
 
-.err-chart-card .ant-table-thead > tr > th {
+.err-chart-card .ant-table-thead>tr>th {
   background: var(--bg-tertiary, #1A1A1A) !important;
   color: var(--text-muted, #666) !important;
   border-bottom: 1px solid var(--border-color, #2D2D2D) !important;
@@ -35,20 +35,20 @@
   letter-spacing: 0.5px;
 }
 
-.err-chart-card .ant-table-tbody > tr > td {
+.err-chart-card .ant-table-tbody>tr>td {
   border-bottom: 1px solid var(--border-color, #2D2D2D) !important;
   background: transparent !important;
 }
 
-.err-chart-card .ant-table-tbody > tr:hover > td {
+.err-chart-card .ant-table-tbody>tr:hover>td {
   background: var(--bg-tertiary, #1A1A1A) !important;
 }
 
-.err-chart-card .ant-table-tbody > tr.high-error-row > td {
+.err-chart-card .ant-table-tbody>tr.high-error-row>td {
   background: rgba(240, 68, 56, 0.05) !important;
 }
 
-.err-chart-card .ant-table-tbody > tr.high-error-row:hover > td {
+.err-chart-card .ant-table-tbody>tr.high-error-row:hover>td {
   background: rgba(240, 68, 56, 0.1) !important;
 }
 

@@ -9,9 +9,7 @@ import { useTimeRange } from '@hooks/useTimeRangeQuery';
 import { v1Service } from '@services/v1Service';
 import { HEALTH_CHECK_TYPES, HEALTH_CHECK_STATUSES } from '@config/constants';
 import { formatNumber, formatTimestamp } from '@utils/formatters';
-import PageHeader from '@components/common/PageHeader';
-import StatCard from '@components/common/StatCard';
-import DataTable from '@components/common/DataTable';
+import { PageHeader, StatCard, StatCardsGrid, DataTable } from '@components/common';
 import toast from 'react-hot-toast';
 
 const STATUS_COLOR = {
@@ -328,41 +326,15 @@ export default function HealthChecksPage() {
         }
       />
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Up"
-            value={stats.up}
-            icon={<CheckCircle2 size={20} />}
-            iconColor="#73C991"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Down"
-            value={stats.down}
-            icon={<XCircle size={20} />}
-            iconColor="#F04438"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Degraded"
-            value={stats.degraded}
-            icon={<AlertTriangle size={20} />}
-            iconColor="#F79009"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Overall Uptime"
-            value={stats.uptime !== 'N/A' ? `${stats.uptime}%` : 'N/A'}
-            icon={<HeartPulse size={20} />}
-            iconColor="#5E60CE"
-            description="Average across all checks"
-          />
-        </Col>
-      </Row>
+      <StatCardsGrid
+        style={{ marginBottom: 16 }}
+        stats={[
+          { title: "Up", value: stats.up, icon: <CheckCircle2 size={20} />, iconColor: "#73C991" },
+          { title: "Down", value: stats.down, icon: <XCircle size={20} />, iconColor: "#F04438" },
+          { title: "Degraded", value: stats.degraded, icon: <AlertTriangle size={20} />, iconColor: "#F79009" },
+          { title: "Overall Uptime", value: stats.uptime !== 'N/A' ? `${stats.uptime}%` : 'N/A', icon: <HeartPulse size={20} />, iconColor: "#5E60CE", description: "Average across all checks" }
+        ]}
+      />
 
       <Card loading={checksLoading || statusLoading}>
         <DataTable

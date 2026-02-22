@@ -19,7 +19,7 @@
 }
 
 .sat-chart-card .ant-card-body {
-  padding: 16px;
+  padding: 8px;
 }
 
 /* Table overrides */
@@ -27,7 +27,7 @@
   background: transparent !important;
 }
 
-.sat-chart-card .ant-table-thead > tr > th {
+.sat-chart-card .ant-table-thead>tr>th {
   background: var(--bg-tertiary, #1A1A1A) !important;
   color: var(--text-muted, #666) !important;
   border-bottom: 1px solid var(--border-color, #2D2D2D) !important;
@@ -36,12 +36,12 @@
   letter-spacing: 0.5px;
 }
 
-.sat-chart-card .ant-table-tbody > tr > td {
+.sat-chart-card .ant-table-tbody>tr>td {
   border-bottom: 1px solid var(--border-color, #2D2D2D) !important;
   background: transparent !important;
 }
 
-.sat-chart-card .ant-table-tbody > tr:hover > td {
+.sat-chart-card .ant-table-tbody>tr:hover>td {
   background: var(--bg-tertiary, #1A1A1A) !important;
 }
 

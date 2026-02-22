@@ -14,7 +14,7 @@ import {
   GitBranch,
 } from 'lucide-react';
 import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import { PageHeader, DataTable, StatCard, HealthIndicator } from '@components/common';
+import { PageHeader, DataTable, StatCard, HealthIndicator, StatCardsGrid, FilterBar } from '@components/common';
 import SparklineChart from '@components/charts/SparklineChart';
 import ServiceGraph from '@components/charts/ServiceGraph';
 import { v1Service } from '@services/v1Service';
@@ -528,71 +528,31 @@ export default function ServicesPage() {
 
   const renderOverviewTab = () => (
     <>
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} lg={4}>
-          <StatCard title="Total Services" value={totalServices} icon={<Layers size={20} />} iconColor="#6366F1" loading={isLoading} />
-        </Col>
-        <Col xs={24} sm={12} lg={4}>
-          <StatCard
-            title="Healthy"
-            value={healthyServices}
-            icon={<Activity size={20} />}
-            iconColor="#73C991"
-            loading={isLoading}
-            description={`${totalServices > 0 ? Number(((healthyServices / totalServices) * 100)).toFixed(2) : 0}% of total`}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={4}>
-          <StatCard
-            title="Degraded"
-            value={degradedServices}
-            icon={<AlertCircle size={20} />}
-            iconColor="#F79009"
-            loading={isLoading}
-            description={`${totalServices > 0 ? Number(((degradedServices / totalServices) * 100)).toFixed(2) : 0}% of total`}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={4}>
-          <StatCard
-            title="Unhealthy"
-            value={unhealthyServices}
-            icon={<ShieldAlert size={20} />}
-            iconColor="#F04438"
-            loading={isLoading}
-            description={`${totalServices > 0 ? Number(((unhealthyServices / totalServices) * 100)).toFixed(2) : 0}% of total`}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={4}>
-          <StatCard
-            title="Avg Error Rate"
-            value={`${avgErrorRate.toFixed(2)}%`}
-            icon={<AlertCircle size={20} />}
-            iconColor={avgErrorRate > 5 ? '#F04438' : avgErrorRate > 1 ? '#F79009' : '#73C991'}
-            loading={isLoading}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={4}>
-          <StatCard
-            title="Avg Latency"
-            value={formatDuration(avgLatency)}
-            icon={<Activity size={20} />}
-            iconColor={avgLatency > 1000 ? '#F79009' : '#06AED5'}
-            loading={isLoading}
-          />
-        </Col>
-      </Row>
+      <StatCardsGrid
+        style={{ marginBottom: 24 }}
+        defaultColProps={{ xs: 24, sm: 12, lg: 4 }}
+        stats={[
+          { title: "Total Services", value: totalServices, icon: <Layers size={20} />, iconColor: "#6366F1", loading: isLoading },
+          { title: "Healthy", value: healthyServices, icon: <Activity size={20} />, iconColor: "#73C991", loading: isLoading, description: `${totalServices > 0 ? Number(((healthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+          { title: "Degraded", value: degradedServices, icon: <AlertCircle size={20} />, iconColor: "#F79009", loading: isLoading, description: `${totalServices > 0 ? Number(((degradedServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+          { title: "Unhealthy", value: unhealthyServices, icon: <ShieldAlert size={20} />, iconColor: "#F04438", loading: isLoading, description: `${totalServices > 0 ? Number(((unhealthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+          { title: "Avg Error Rate", value: `${avgErrorRate.toFixed(2)}%`, icon: <AlertCircle size={20} />, iconColor: avgErrorRate > 5 ? '#F04438' : avgErrorRate > 1 ? '#F79009' : '#73C991', loading: isLoading },
+          { title: "Avg Latency", value: formatDuration(avgLatency), icon: <Activity size={20} />, iconColor: avgLatency > 1000 ? '#F79009' : '#06AED5', loading: isLoading }
+        ]}
+      />
 
-      <Card className="services-filter-card" size="small" style={{ marginBottom: 16 }}>
-        <div className="services-filter-row">
-          <Input
-            placeholder="Search services..."
-            prefix={<Search size={16} />}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            allowClear
-            style={{ maxWidth: 460 }}
-          />
-
+      <FilterBar
+        filters={[
+          {
+            type: 'search',
+            key: 'search',
+            placeholder: 'Search services...',
+            value: searchQuery,
+            onChange: (e) => setSearchQuery(e.target.value),
+            width: 460,
+          }
+        ]}
+        actions={
           <Segmented
             value={viewMode}
             onChange={setViewMode}
@@ -601,8 +561,8 @@ export default function ServicesPage() {
               { value: 'grid', icon: <LayoutGrid size={14} /> },
             ]}
           />
-        </div>
-      </Card>
+        }
+      />
 
       <div className="services-health-tags" style={{ marginBottom: 16 }}>
         <Tag color="green">Healthy ({healthyServices})</Tag>
@@ -713,56 +673,28 @@ export default function ServicesPage() {
 
   const renderTopologyTab = () => (
     <>
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Services in Graph"
-            value={formatNumber(topologyStats.graphServices)}
-            icon={<Network size={20} />}
-            iconColor="#5E60CE"
-            loading={topologyLoading}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Dependencies"
-            value={formatNumber(topologyStats.dependencies)}
-            icon={<GitBranch size={20} />}
-            iconColor="#06AED5"
-            loading={topologyLoading}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Critical Services"
-            value={formatNumber(topologyStats.criticalServices)}
-            icon={<ShieldAlert size={20} />}
-            iconColor="#F79009"
-            loading={topologyLoading}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="High-Risk Edges"
-            value={formatNumber(topologyStats.highRiskEdges)}
-            icon={<ArrowRight size={20} />}
-            iconColor="#F04438"
-            loading={topologyLoading}
-          />
-        </Col>
-      </Row>
+      <StatCardsGrid
+        style={{ marginBottom: 16 }}
+        stats={[
+          { title: "Services in Graph", value: formatNumber(topologyStats.graphServices), icon: <Network size={20} />, iconColor: "#5E60CE", loading: topologyLoading },
+          { title: "Dependencies", value: formatNumber(topologyStats.dependencies), icon: <GitBranch size={20} />, iconColor: "#06AED5", loading: topologyLoading },
+          { title: "Critical Services", value: formatNumber(topologyStats.criticalServices), icon: <ShieldAlert size={20} />, iconColor: "#F79009", loading: topologyLoading },
+          { title: "High-Risk Edges", value: formatNumber(topologyStats.highRiskEdges), icon: <ArrowRight size={20} />, iconColor: "#F04438", loading: topologyLoading }
+        ]}
+      />
 
-      <Card className="services-filter-card" size="small" style={{ marginBottom: 16 }}>
-        <div className="services-filter-row">
-          <Input
-            placeholder="Filter graph by service name..."
-            prefix={<Search size={16} />}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            allowClear
-            style={{ maxWidth: 460 }}
-          />
-
+      <FilterBar
+        filters={[
+          {
+            type: 'search',
+            key: 'searchGraph',
+            placeholder: 'Filter graph by service name...',
+            value: searchQuery,
+            onChange: (e) => setSearchQuery(e.target.value),
+            width: 460,
+          }
+        ]}
+        actions={
           <div className="services-health-tags">
             {healthOptions.map((opt) => (
               <Tag
@@ -775,12 +707,12 @@ export default function ServicesPage() {
               </Tag>
             ))}
           </div>
-        </div>
-      </Card>
+        }
+      />
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
-          <Card title="Service Dependency Graph" className="services-panel-card services-graph-card" bordered={false}>
+          <Card title="Service Dependency Graph" className="services-panel-card services-graph-card" bordered={false} styles={{ body: { padding: '8px' } }}>
             {topologyLoading ? (
               <div className="services-loading-container">
                 <Skeleton active paragraph={{ rows: 9 }} />
