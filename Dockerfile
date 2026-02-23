@@ -1,7 +1,7 @@
 # Multi-stage build for React frontend
 
-# Stage 1: Build the React app
-FROM node:18-alpine AS builder
+# Stage 1: Build the React app (Forced to AMD64)
+FROM --platform=linux/amd64 node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -17,8 +17,8 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Stage 2: Serve with NGINX
-FROM nginx:alpine
+# Stage 2: Serve with NGINX (Forced to AMD64)
+FROM --platform=linux/amd64 nginx:alpine
 
 # Install OpenSSL for certificate generation
 RUN apk add --no-cache openssl
@@ -33,7 +33,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 RUN mkdir -p /etc/nginx/ssl
 
 # Generate self-signed SSL certificate
-# This is for development/testing. In production, use proper certificates from Let's Encrypt or your CA.
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout /etc/nginx/ssl/key.pem \
     -out /etc/nginx/ssl/cert.pem \
@@ -55,4 +54,3 @@ RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
 
 # Use the startup script as entrypoint
 CMD ["/docker-entrypoint.sh"]
-
