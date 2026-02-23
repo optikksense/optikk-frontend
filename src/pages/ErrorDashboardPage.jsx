@@ -62,7 +62,7 @@ export default function ErrorDashboardPage() {
       // Aggregate per service
       const svcAgg = {};
       for (const row of tsRaw) {
-        const svc = row.service_name || 'unknown';
+        const svc = row.service_name || '';
         if (!svcAgg[svc]) svcAgg[svc] = { errors: 0, operations: new Set() };
         svcAgg[svc].errors += Number(row.error_count || 0);
         if (row.operation_name) svcAgg[svc].operations.add(row.operation_name);
@@ -82,7 +82,7 @@ export default function ErrorDashboardPage() {
     const raw = Array.isArray(errorTimeseriesRaw) ? errorTimeseriesRaw : [];
     const map = {};
     for (const row of raw) {
-      const svc = row.service_name || 'unknown';
+      const svc = row.service_name || '';
       if (!map[svc]) map[svc] = [];
       map[svc].push(row);
     }

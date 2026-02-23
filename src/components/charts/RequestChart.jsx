@@ -28,7 +28,7 @@ export default function RequestChart({
     // Deduplicate by service name
     const serviceMap = {};
     for (const ep of endpointList) {
-      const svc = ep.service_name || ep.service || 'unknown';
+      const svc = ep.service_name || ep.service || '';
       if (!serviceMap[svc]) serviceMap[svc] = ep;
     }
 
@@ -92,10 +92,7 @@ export default function RequestChart({
 
   const options = createChartOptions({
     plugins: {
-      legend: {
-        display: chartData.datasets.length > 1,
-        labels: { color: '#666', font: { size: 11 }, boxWidth: 16, padding: 10 },
-      },
+      legend: { display: false },
       tooltip: {
         callbacks: {
           label: (ctx) => {

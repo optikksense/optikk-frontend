@@ -80,7 +80,7 @@ export default function SaturationPage() {
     const filtered = selectedService ? raw.filter((r) => r.service_name === selectedService) : raw;
     const map = {};
     for (const row of filtered) {
-      const svc = row.service_name || 'unknown';
+      const svc = row.service_name || '';
       if (!map[svc]) map[svc] = [];
       map[svc].push(row);
     }

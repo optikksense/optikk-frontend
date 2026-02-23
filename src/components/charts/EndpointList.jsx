@@ -142,7 +142,7 @@ export default function EndpointList({
                 }}>
                   {ep.http_method || 'N/A'} {ep.operation_name || ep.endpoint_name || 'Unknown'}
                 </div>
-                {ep.service && (
+                {ep.service && ep.service !== 'unknown' && (
                   <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
                     {ep.service}
                   </div>

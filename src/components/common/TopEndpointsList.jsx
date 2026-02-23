@@ -90,7 +90,7 @@ export default function TopEndpointsList({
                                         <div style={{ width: '12px', height: '2px', backgroundColor: seriesColor, flexShrink: 0 }}></div>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <span style={{ color: '#e0e0e0', fontWeight: 500 }}>{ep.endpoint}</span>
-                                            {ep.service && <span style={{ color: '#8e8e8e', fontSize: '11px' }}>{ep.service}</span>}
+                                            {ep.service && ep.service !== 'unknown' && <span style={{ color: '#8e8e8e', fontSize: '11px' }}>{ep.service}</span>}
                                         </div>
                                     </td>
                                     <td style={{ padding: '4px 8px', textAlign: 'right', color: valueColor, fontFamily: 'monospace' }}>

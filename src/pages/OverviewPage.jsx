@@ -83,7 +83,7 @@ export default function OverviewPage() {
     const raw = Array.isArray(serviceTimeseriesRaw) ? serviceTimeseriesRaw : [];
     const map = {};
     for (const row of raw) {
-      const svc = row.service_name || 'unknown';
+      const svc = row.service_name || '';
       if (!map[svc]) map[svc] = [];
       map[svc].push(row);
     }
