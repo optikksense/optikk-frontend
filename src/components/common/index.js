@@ -12,3 +12,5 @@ export { default as TimeRangePicker } from './TimeRangePicker';
 export { default as StatCardsGrid } from './StatCardsGrid';
 export { default as TopEndpointsList } from './TopEndpointsList';
 export { default as Timeline } from './Timeline';
+export { default as QueueMetricsList } from './QueueMetricsList';
+export { default as DatabaseTopTablesList } from './DatabaseTopTablesList';

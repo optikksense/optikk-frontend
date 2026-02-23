@@ -1,7 +1,7 @@
 import { Row, Col, Card } from 'antd';
 import { Database, Timer, Layers3 } from 'lucide-react';
 import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import { PageHeader, StatCard, DataTable } from '@components/common';
+import { PageHeader, StatCard, DataTable, DatabaseTopTablesList } from '@components/common';
 import { v1Service } from '@services/v1Service';
 
 const n = (v) => (v == null || Number.isNaN(Number(v)) ? 0 : Number(v));
@@ -15,6 +15,8 @@ export default function DatabaseCachePerformancePage() {
   const summary = data?.summary || {};
   const cache = data?.cache || {};
   const slowLogs = Array.isArray(data?.slowLogs?.logs) ? data.slowLogs.logs : [];
+
+  const topTables = Array.isArray(data?.tableMetrics) ? data.tableMetrics.map(t => ({ ...t, key: `${t.table_name}-${t.service_name}` })) : [];
 
   const cols = [
     { title: 'Timestamp', dataIndex: 'timestamp', key: 'timestamp', render: (v) => new Date(v).toLocaleString() },
@@ -34,9 +36,18 @@ export default function DatabaseCachePerformancePage() {
         <Col xs={24} sm={12} lg={6}><StatCard title="Replication Lag" value={`${n(summary.avg_replication_lag_ms).toFixed(1)} ms`} icon={<Database size={18} />} loading={isLoading} /></Col>
       </Row>
 
-      <Card title="Slow Logs">
-        <DataTable columns={cols} data={slowLogs.map((r, i) => ({ ...r, key: `slow-${i}` }))} rowKey="key" loading={isLoading} />
-      </Card>
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col xs={24} lg={12}>
+          <Card title="Slow Logs" style={{ height: '100%' }}>
+            <DataTable columns={cols} data={slowLogs.map((r, i) => ({ ...r, key: `slow-${i}` }))} rowKey="key" loading={isLoading} />
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card title="Query Performance by Table" style={{ height: '100%' }} styles={{ body: { padding: '8px' } }}>
+            <DatabaseTopTablesList tables={topTables} />
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }

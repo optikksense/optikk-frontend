@@ -2,7 +2,7 @@ import { Row, Col, Card, Spin } from 'antd';
 import { useMemo } from 'react';
 import { Network, Activity, AlertTriangle, ArrowUpRight, ArrowDownRight, Layers, Clock } from 'lucide-react';
 import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import { PageHeader, StatCard } from '@components/common';
+import { PageHeader, StatCard, QueueMetricsList } from '@components/common';
 import { v1Service } from '@services/v1Service';
 import RequestChart from '@components/charts/RequestChart';
 
@@ -30,6 +30,28 @@ export default function MessagingQueueMonitoringPage() {
   }, [ts]);
 
   const uniqueQueues = Object.keys(serviceTimeseriesMap);
+
+  const topQueues = useMemo(() => {
+    return Array.isArray(data?.topQueues)
+      ? data.topQueues.map(q => ({ ...q, key: q.queue_name }))
+      : [];
+  }, [data?.topQueues]);
+
+  const topQueuesSortedByDepth = useMemo(() => {
+    return [...topQueues].sort((a, b) => b.avg_queue_depth - a.avg_queue_depth);
+  }, [topQueues]);
+
+  const topQueuesSortedByLag = useMemo(() => {
+    return [...topQueues].sort((a, b) => b.max_consumer_lag - a.max_consumer_lag);
+  }, [topQueues]);
+
+  const topQueuesSortedByPublish = useMemo(() => {
+    return [...topQueues].sort((a, b) => b.avg_publish_rate - a.avg_publish_rate);
+  }, [topQueues]);
+
+  const topQueuesSortedByReceive = useMemo(() => {
+    return [...topQueues].sort((a, b) => b.avg_receive_rate - a.avg_receive_rate);
+  }, [topQueues]);
 
   return (
     <div>
@@ -61,6 +83,7 @@ export default function MessagingQueueMonitoringPage() {
               <div style={{ height: 280 }}>
                 <RequestChart serviceTimeseriesMap={serviceTimeseriesMap} valueKey="avg_publish_rate" />
               </div>
+              <QueueMetricsList type="productionRate" title="Production Rate" queues={topQueuesSortedByPublish} />
             </Card>
           </Col>
           <Col xs={24} lg={12}>
@@ -68,6 +91,7 @@ export default function MessagingQueueMonitoringPage() {
               <div style={{ height: 280 }}>
                 <RequestChart serviceTimeseriesMap={serviceTimeseriesMap} valueKey="avg_receive_rate" />
               </div>
+              <QueueMetricsList type="consumptionRate" title="Consumption Rate" queues={topQueuesSortedByReceive} />
             </Card>
           </Col>
           <Col xs={24} lg={12}>
@@ -75,6 +99,7 @@ export default function MessagingQueueMonitoringPage() {
               <div style={{ height: 280 }}>
                 <RequestChart serviceTimeseriesMap={serviceTimeseriesMap} valueKey="avg_consumer_lag" />
               </div>
+              <QueueMetricsList type="consumerLag" title="Max Lag" queues={topQueuesSortedByLag} />
             </Card>
           </Col>
           <Col xs={24} lg={12}>
@@ -82,6 +107,7 @@ export default function MessagingQueueMonitoringPage() {
               <div style={{ height: 280 }}>
                 <RequestChart serviceTimeseriesMap={serviceTimeseriesMap} valueKey="avg_queue_depth" />
               </div>
+              <QueueMetricsList type="depth" title="Avg Depth" queues={topQueuesSortedByDepth} />
             </Card>
           </Col>
         </Row>
