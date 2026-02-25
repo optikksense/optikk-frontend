@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Skeleton, Card, Row, Col } from 'antd';
+import { Skeleton } from 'antd';
 import { useAuthStore } from '@store/authStore';
 import { useAppStore } from '@store/appStore';
 import ErrorBoundary from '@components/common/ErrorBoundary';
@@ -19,6 +19,7 @@ import OverviewHubPage from '@pages/OverviewHubPage';
 import LogsHubPage from '@pages/LogsHubPage';
 import InfrastructureHubPage from '@pages/InfrastructureHubPage';
 import SaturationHubPage from '@pages/SaturationHubPage';
+import ExplorePage from '@pages/ExplorePage';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -67,6 +68,7 @@ function App() {
         <Route index element={<Navigate to="/overview" replace />} />
         <Route path="overview" element={<ErrorBoundary><OverviewHubPage /></ErrorBoundary>} />
         <Route path="logs" element={<ErrorBoundary><LogsHubPage /></ErrorBoundary>} />
+        <Route path="explore" element={<ErrorBoundary><ExplorePage /></ErrorBoundary>} />
         <Route path="traces" element={<ErrorBoundary><TracesPage /></ErrorBoundary>} />
         <Route path="traces/:traceId" element={<ErrorBoundary><TraceDetailPage /></ErrorBoundary>} />
         <Route path="services" element={<ErrorBoundary><ServicesPage /></ErrorBoundary>} />
