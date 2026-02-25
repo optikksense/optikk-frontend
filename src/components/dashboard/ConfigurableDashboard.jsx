@@ -440,7 +440,7 @@ function buildGroupedListFromTimeseries(serviceTimeseriesMap, chartConfig) {
 /**
  * A single configurable chart card rendered from YAML config.
  */
-function ConfigurableChartCard({ chartConfig, dataSources, extraContext }) {
+export function ConfigurableChartCard({ chartConfig, dataSources, extraContext }) {
   const [selectedEndpoints, setSelectedEndpoints] = useState([]);
 
   const toggleEndpoint = (key) => {

@@ -1,20 +1,32 @@
 import { useMemo, useState } from 'react';
-import { Row, Col, Card, Skeleton, Empty, Progress, Tag } from 'antd';
+import { Row, Col, Card, Skeleton, Empty, Progress, Tag, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { Activity, AlertCircle, Clock, Zap, Bell } from 'lucide-react';
+import { Activity, AlertCircle, Clock, Zap, Bell, Pencil } from 'lucide-react';
 import { v1Service } from '@services/v1Service';
 import { alertService } from '@services/alertService';
 import { formatNumber, formatDuration, formatRelativeTime } from '@utils/formatters';
 import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import { useDashboardConfig } from '@hooks/useDashboardConfig';
+import { useDashboardConfig, useSaveDashboardConfig } from '@hooks/useDashboardConfig';
+import { useTemplateVariables } from '@hooks/useTemplateVariables';
 import { useAppStore } from '@store/appStore';
+import { useDashboardBuilderStore } from '@store/dashboardBuilderStore';
 import { PageHeader, StatCard, StatCardsGrid, HealthIndicator } from '@components/common';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
+import DashboardBuilder from '@components/dashboard/DashboardBuilder';
+import TemplateVariableBar from '@components/dashboard/TemplateVariableBar';
+import VersionHistory from '@components/dashboard/VersionHistory';
+import ShareDashboardModal from '@components/dashboard/ShareDashboardModal';
+import { configToYaml } from '@utils/yamlHelpers';
 import './OverviewPage.css';
 
 export default function OverviewPage() {
   const navigate = useNavigate();
   const { config } = useDashboardConfig('overview');
+  const saveMutation = useSaveDashboardConfig('overview');
+  const { isEditMode, enterEditMode, exitEditMode, dirtyConfig } = useDashboardBuilderStore();
+  const templateVars = useTemplateVariables(config?.variables || []);
+  const [versionHistoryOpen, setVersionHistoryOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   // Metrics summary (primary source — spans table via v1 API)
   const { data: summaryRaw, isLoading: summaryLoading, error: summaryError } = useTimeRangeQuery(
@@ -167,6 +179,18 @@ export default function OverviewPage() {
         title="Overview"
         subtitle="Monitor your system health"
         icon={<Activity size={24} />}
+        actions={
+          !isEditMode && (
+            <Button
+              icon={<Pencil size={14} />}
+              onClick={() => config && enterEditMode(config)}
+              disabled={!config}
+              size="small"
+            >
+              Edit Dashboard
+            </Button>
+          )
+        }
       />
 
       {/* Key Metrics with Sparklines */}
@@ -260,14 +284,37 @@ export default function OverviewPage() {
         </Col>
       </Row>
 
+      {/* Template Variables */}
+      {!isEditMode && config?.variables?.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <TemplateVariableBar
+            variables={templateVars.variablesWithOptions}
+            values={templateVars.values}
+            onChange={templateVars.setVariable}
+          />
+        </div>
+      )}
+
       {/* Charts — driven by YAML config */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24}>
-          <ConfigurableDashboard
-            config={config}
-            dataSources={dataSources}
-            isLoading={summaryLoading}
-          />
+          {isEditMode ? (
+            <DashboardBuilder
+              pageId="overview"
+              dataSources={dataSources}
+              onSave={(yamlStr) => saveMutation.mutateAsync(yamlStr)}
+              onExit={exitEditMode}
+              onVersionHistory={() => setVersionHistoryOpen(true)}
+              onShare={() => setShareOpen(true)}
+              templateVariables={templateVars}
+            />
+          ) : (
+            <ConfigurableDashboard
+              config={config}
+              dataSources={dataSources}
+              isLoading={summaryLoading}
+            />
+          )}
         </Col>
       </Row>
 
@@ -338,6 +385,23 @@ export default function OverviewPage() {
           </Card>
         </Col>
       </Row>
+
+      {/* Version History Drawer */}
+      <VersionHistory
+        open={versionHistoryOpen}
+        pageId="overview"
+        currentYaml={dirtyConfig ? configToYaml(dirtyConfig) : (config ? configToYaml(config) : '')}
+        onClose={() => setVersionHistoryOpen(false)}
+        onRollback={exitEditMode}
+      />
+
+      {/* Share Modal */}
+      <ShareDashboardModal
+        open={shareOpen}
+        pageId="overview"
+        templateVariables={templateVars}
+        onClose={() => setShareOpen(false)}
+      />
     </div>
   );
 }

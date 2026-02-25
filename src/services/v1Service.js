@@ -261,4 +261,28 @@ export const v1Service = {
   async listDashboardPages(teamId) {
     return api.get(`${BASE}/dashboard-config/pages`);
   },
+
+  // ==================== DASHBOARD VERSIONING ====================
+
+  async listDashboardConfigVersions(teamId, pageId, limit = 20, offset = 0) {
+    return api.get(`${BASE}/dashboard-config/${pageId}/versions`, { params: { limit, offset } });
+  },
+
+  async getDashboardConfigVersion(teamId, pageId, version) {
+    return api.get(`${BASE}/dashboard-config/${pageId}/versions/${version}`);
+  },
+
+  async rollbackDashboardConfig(teamId, pageId, version) {
+    return api.post(`${BASE}/dashboard-config/${pageId}/rollback`, { version });
+  },
+
+  // ==================== DASHBOARD SHARING ====================
+
+  async createDashboardShare(teamId, pageId, params) {
+    return api.post(`${BASE}/dashboard-config/${pageId}/share`, params);
+  },
+
+  async getDashboardShare(shareId) {
+    return api.get(`${BASE}/dashboard-config/shared/${shareId}`);
+  },
 };
