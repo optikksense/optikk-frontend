@@ -5,21 +5,21 @@ import { useAuthStore } from '@store/authStore';
 import { useAppStore } from '@store/appStore';
 import ErrorBoundary from '@components/common/ErrorBoundary';
 import MainLayout from '@components/layout/MainLayout';
-
-// Import pages from feature-based subdirectories (SOLID principle - organized by feature)
-import { LoginPage } from '@pages/login';
-import { TracesPage, TraceDetailPage } from '@pages/traces';
-import { ServicesPage, ServiceDetailPage } from '@pages/services';
-import { AlertsHubPage } from '@pages/alerts';
-import { MetricsPage } from '@pages/metrics';
-import { SettingsPage } from '@pages/settings';
-import { ErrorDashboardPage } from '@pages/errors';
-import { AiObservabilityPage } from '@pages/ai-observability';
-import { OverviewHubPage } from '@pages/overview';
-import { LogsHubPage } from '@pages/logs';
-import { InfrastructureHubPage } from '@pages/infrastructure';
-import { SaturationHubPage } from '@pages/saturation';
-import { ExplorePage } from '@pages/explore';
+import LoginPage from '@pages/LoginPage';
+import TracesPage from '@pages/TracesPage';
+import TraceDetailPage from '@pages/TraceDetailPage';
+import ServicesPage from '@pages/ServicesPage';
+import ServiceDetailPage from '@pages/ServiceDetailPage';
+import AlertsHubPage from '@pages/AlertsHubPage';
+import MetricsPage from '@pages/MetricsPage';
+import SettingsPage from '@pages/SettingsPage';
+import ErrorDashboardPage from '@pages/ErrorDashboardPage';
+import AiObservabilityPage from '@pages/AiObservabilityPage';
+import OverviewHubPage from '@pages/OverviewHubPage';
+import LogsHubPage from '@pages/LogsHubPage';
+import InfrastructureHubPage from '@pages/InfrastructureHubPage';
+import SaturationHubPage from '@pages/SaturationHubPage';
+import ExplorePage from '@pages/ExplorePage';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
