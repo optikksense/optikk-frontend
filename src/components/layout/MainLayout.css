@@ -27,7 +27,8 @@
 }
 
 .main-content-layout>.ant-layout-header {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 200;
 }
 

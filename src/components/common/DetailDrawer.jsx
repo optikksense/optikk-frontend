@@ -34,6 +34,8 @@ export default function DetailDrawer({
       title={title}
       width={width}
       className="detail-drawer"
+      zIndex={1100}
+      styles={{ header: { paddingTop: 16 } }}
     >
       {sections.map((section, idx) => (
         <div key={idx} className="detail-drawer-section">

@@ -22,6 +22,22 @@ const INTERVAL_MS = {
   '30m': 1_800_000, '1h': 3_600_000, '6h': 21_600_000,
 };
 
+function getBucketTimeValue(row) {
+  return row?.timeBucket || row?.time_bucket || row?.timestamp;
+}
+
+function parseBucketMs(value) {
+  const timeStr = String(value ?? '');
+  const isSqlFormat = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(timeStr);
+  return new Date(isSqlFormat ? timeStr.replace(' ', 'T') + 'Z' : timeStr).getTime();
+}
+
+function getPointCount(row) {
+  const raw = row?.count ?? row?.total ?? row?.value ?? 0;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : 0;
+}
+
 function fmtTime(ms) {
   const d = new Date(ms);
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -116,7 +132,12 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
     // Determine time boundaries — use provided range or derive from data
     let tStart = startTime, tEnd = endTime;
     if (!tStart || !tEnd) {
-      const allTs = data.map((d) => new Date(d.time_bucket || d.timestamp).getTime());
+      const allTs = data
+        .map((d) => parseBucketMs(getBucketTimeValue(d)))
+        .filter((ts) => Number.isFinite(ts));
+      if (allTs.length === 0) {
+        return { labels: [], datasets: [], activeLevels: [], hasData: false };
+      }
       tStart = Math.min(...allTs);
       tEnd = Math.max(...allTs);
     }
@@ -130,14 +151,13 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
       const stepMs = INTERVAL_MS[interval] || 60_000;
 
       data.forEach((d) => {
-        const timeStr = String(d.time_bucket || d.timestamp);
-        const isSqlFormat = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(timeStr);
-        const ts = new Date(isSqlFormat ? timeStr.replace(' ', 'T') + 'Z' : timeStr).getTime();
+        const ts = parseBucketMs(getBucketTimeValue(d));
+        if (!Number.isFinite(ts)) return;
         // Snap to nearest bucket
         const bucketMs = Math.round(ts / stepMs) * stepMs;
         const lvl = String(d.level || 'INFO').toUpperCase();
         if (!countMap[bucketMs]) countMap[bucketMs] = {};
-        countMap[bucketMs][lvl] = (countMap[bucketMs][lvl] || 0) + Number(d.count || 0);
+        countMap[bucketMs][lvl] = (countMap[bucketMs][lvl] || 0) + getPointCount(d);
       });
 
       const activeLevels = LEVEL_ORDER.filter(
@@ -164,11 +184,10 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
     const stepMs = INTERVAL_MS[interval] || 60_000;
     const countByBucket = {};
     data.forEach((d) => {
-      const timeStr = String(d.time_bucket || d.timestamp);
-      const isSqlFormat = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(timeStr);
-      const ts = new Date(isSqlFormat ? timeStr.replace(' ', 'T') + 'Z' : timeStr).getTime();
+      const ts = parseBucketMs(getBucketTimeValue(d));
+      if (!Number.isFinite(ts)) return;
       const bucketMs = Math.round(ts / stepMs) * stepMs;
-      countByBucket[bucketMs] = (countByBucket[bucketMs] || 0) + Number(d.count || d.value || 0);
+      countByBucket[bucketMs] = (countByBucket[bucketMs] || 0) + getPointCount(d);
     });
 
     return {

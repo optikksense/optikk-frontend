@@ -41,6 +41,10 @@
 .trace-detail-card .ant-card-head {
   border-bottom: 1px solid var(--border-color, #2D2D2D);
   color: var(--text-primary, #111827);
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  background: var(--bg-secondary, #0D0D0D);
 }
 
 .trace-detail-card .ant-card-body {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Row, Col, Card, Spin, Empty, Tag, Table } from 'antd';
-import { GitBranch, Layers, Clock, AlertCircle, ArrowLeft, FileText } from 'lucide-react';
+import { GitBranch, Layers, Clock, AlertCircle, ArrowLeft, FileText, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { v1Service } from '@services/v1Service';
 import { useAppStore } from '@store/appStore';
 import { formatDuration, formatTimestamp } from '@utils/formatters';
@@ -17,6 +17,7 @@ export default function TraceDetailPage() {
   const navigate = useNavigate();
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
   const [selectedSpanId, setSelectedSpanId] = useState(null);
+  const [waterfallCollapsed, setWaterfallCollapsed] = useState(false);
 
   // Fetch trace spans
   const { data: spansData, isLoading } = useQuery({
@@ -233,12 +234,44 @@ export default function TraceDetailPage() {
           </Row>
 
           {/* Waterfall Chart */}
-          <Card title="Trace Timeline" className="trace-detail-card" styles={{ body: { padding: '8px' } }}>
-            <WaterfallChart
-              spans={spans}
-              onSpanClick={handleSpanClick}
-              selectedSpanId={selectedSpanId}
-            />
+          <Card
+            title={
+              <span
+                style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                onClick={() => setWaterfallCollapsed((c) => !c)}
+              >
+                {waterfallCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                Trace Timeline
+              </span>
+            }
+            className="trace-detail-card"
+            styles={{ body: { padding: waterfallCollapsed ? 0 : '8px' } }}
+            extra={
+              <button
+                onClick={() => setWaterfallCollapsed((c) => !c)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-muted, #666)',
+                  cursor: 'pointer',
+                  padding: 4,
+                  borderRadius: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                title={waterfallCollapsed ? 'Expand waterfall' : 'Collapse waterfall'}
+              >
+                <X size={16} />
+              </button>
+            }
+          >
+            {!waterfallCollapsed && (
+              <WaterfallChart
+                spans={spans}
+                onSpanClick={handleSpanClick}
+                selectedSpanId={selectedSpanId}
+              />
+            )}
           </Card>
 
           {/* Associated Logs */}
