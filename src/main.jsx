@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConfigProvider, theme as antdTheme } from 'antd';
 import { Toaster } from 'react-hot-toast';
-import ErrorBoundary from '@components/common/ErrorBoundary';
+import ErrorBoundary from '@components/common/feedback/ErrorBoundary';
 import { useAppStore } from '@store/appStore';
 import App from './App';
 import './utils/chartSetup';

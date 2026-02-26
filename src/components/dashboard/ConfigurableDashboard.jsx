@@ -7,12 +7,12 @@ import {
   BarChart3, Server, ShieldCheck, TrendingDown,
 } from 'lucide-react';
 import { Line, Bar } from 'react-chartjs-2';
-import RequestChart from '@components/charts/RequestChart';
-import ErrorRateChart from '@components/charts/ErrorRateChart';
-import LatencyChart from '@components/charts/LatencyChart';
-import LogHistogram, { LogHistogramPanel } from '@components/charts/LogHistogram';
-import LatencyHistogram from '@components/charts/LatencyHistogram';
-import LatencyHeatmapChart from '@components/charts/LatencyHeatmapChart';
+import RequestChart from '@components/charts/time-series/RequestChart';
+import ErrorRateChart from '@components/charts/time-series/ErrorRateChart';
+import LatencyChart from '@components/charts/time-series/LatencyChart';
+import LogHistogram, { LogHistogramPanel } from '@components/charts/distributions/LogHistogram';
+import LatencyHistogram from '@components/charts/distributions/LatencyHistogram';
+import LatencyHeatmapChart from '@components/charts/specialized/LatencyHeatmapChart';
 import { TopEndpointsList, QueueMetricsList } from '@components/common';
 import { createChartOptions, createLineDataset, createBarDataset, getChartColor } from '@utils/chartHelpers';
 
@@ -30,6 +30,28 @@ const CHART_COMPONENTS = {
   'error-rate': ErrorRateChart,
   'latency': LatencyChart,
 };
+
+function firstValue(row, keys, fallback = '') {
+  if (!row || typeof row !== 'object') return fallback;
+  for (const key of keys) {
+    const value = row[key];
+    if (value !== undefined && value !== null && value !== '') {
+      return value;
+    }
+  }
+  return fallback;
+}
+
+function strValue(row, keys, fallback = '') {
+  const value = firstValue(row, keys, fallback);
+  return value == null ? fallback : String(value);
+}
+
+function numValue(row, keys, fallback = 0) {
+  const value = firstValue(row, keys, fallback);
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
 
 // ─── Specialized chart renderers ─────────────────────────────────────────────
 
@@ -258,10 +280,11 @@ function getIcon(name, size = 16) {
  * Builds an endpoint key from raw data — matches the format used across pages.
  */
 function buildEndpointKey(row) {
-  const method = (row.http_method || '').toUpperCase();
-  const op = row.operation_name || row.endpoint_name || 'Unknown';
+  const method = strValue(row, ['http_method', 'httpMethod']).toUpperCase();
+  const op = strValue(row, ['operation_name', 'operationName', 'endpoint_name', 'endpointName'], 'Unknown');
   const cleanOp = op.startsWith(method + ' ') ? op.substring(method.length + 1) : op;
-  return `${method} ${cleanOp}_${row.service_name || ''}`;
+  const serviceName = strValue(row, ['service_name', 'serviceName']);
+  return `${method} ${cleanOp}_${serviceName}`;
 }
 
 /**
@@ -270,17 +293,20 @@ function buildEndpointKey(row) {
 function groupTimeseries(rows, groupByKey) {
   const map = {};
   for (const row of rows) {
+    const serviceName = strValue(row, ['service_name', 'serviceName']);
+    const queueName = strValue(row, ['queue_name', 'queueName'], 'unknown');
+    const podName = strValue(row, ['pod', 'pod_name', 'podName']);
     let key;
     if (groupByKey === 'queue') {
-      key = `${row.queue_name || 'unknown'}::${row.service_name || 'unknown'}`;
+      key = `${queueName || 'unknown'}::${serviceName || 'unknown'}`;
     } else if (groupByKey === 'service') {
-      key = row.service_name || '';
+      key = serviceName;
     } else if (groupByKey === 'pod') {
-      key = row.pod || '';
+      key = podName;
     } else if (groupByKey === 'endpoint') {
       key = buildEndpointKey(row);
     } else {
-      key = row.service_name || row.queue_name || '';
+      key = serviceName || queueName || '';
     }
     if (!key) continue;
     if (!map[key]) map[key] = [];
@@ -294,7 +320,7 @@ function groupTimeseries(rows, groupByKey) {
  */
 function buildQueueEndpoints(topQueues, sortField, scope) {
   if (!Array.isArray(topQueues)) return [];
-  const queueSeriesKey = (q) => `${q.queue_name || 'unknown'}::${q.service_name || 'unknown'}`;
+  const queueSeriesKey = (q) => `${strValue(q, ['queue_name', 'queueName'], 'unknown')}::${strValue(q, ['service_name', 'serviceName'], 'unknown')}`;
   return [...topQueues]
     .sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0))
     .map((q) => ({
@@ -311,15 +337,23 @@ function buildEndpointList(endpointMetrics, listType) {
   if (!Array.isArray(endpointMetrics) || endpointMetrics.length === 0) return [];
 
   const mapped = endpointMetrics.map((ep) => {
-    const method = (ep.http_method || '').toUpperCase();
-    const op = ep.operation_name || ep.endpoint_name || 'Unknown';
+    const method = strValue(ep, ['http_method', 'httpMethod']).toUpperCase();
+    const op = strValue(ep, ['operation_name', 'operationName', 'endpoint_name', 'endpointName'], 'Unknown');
     const cleanOp = op.startsWith(method + ' ') ? op.substring(method.length + 1) : op;
+    const serviceName = strValue(ep, ['service_name', 'serviceName']);
+    const requestCount = numValue(ep, ['request_count', 'requestCount']);
+    const errorCount = numValue(ep, ['error_count', 'errorCount']);
+    const avgLatency = numValue(ep, ['avg_latency', 'avgLatency']);
     return {
       ...ep,
       endpoint: `${method} ${cleanOp}`,
-      service: ep.service_name,
-      key: `${method} ${cleanOp}_${ep.service_name || ''}`,
-      errorRate: ep.request_count > 0 ? (ep.error_count / ep.request_count) * 100 : 0,
+      service_name: serviceName,
+      service: serviceName,
+      request_count: requestCount,
+      error_count: errorCount,
+      avg_latency: avgLatency,
+      key: `${method} ${cleanOp}_${serviceName || ''}`,
+      errorRate: requestCount > 0 ? (errorCount / requestCount) * 100 : 0,
     };
   });
 
@@ -338,14 +372,15 @@ function buildServiceListFromMetrics(serviceMetrics, listType) {
 
   const mapped = serviceMetrics
     .map((svc) => {
-      const name = svc.service_name || svc.service || '';
+      const name = strValue(svc, ['service_name', 'serviceName', 'service'], '');
       if (!name) return null;
-      const requestCount = Number(svc.request_count || 0);
-      const errorCount = Number(svc.error_count || 0);
-      const avgLatency = Number(svc.avg_latency || 0);
+      const requestCount = numValue(svc, ['request_count', 'requestCount']);
+      const errorCount = numValue(svc, ['error_count', 'errorCount']);
+      const avgLatency = numValue(svc, ['avg_latency', 'avgLatency']);
       const errorRate = requestCount > 0 ? (errorCount * 100.0) / requestCount : 0;
       return {
         ...svc,
+        service_name: name,
         endpoint: name,
         service: name,
         key: name,
@@ -397,18 +432,18 @@ function buildGroupedListFromTimeseries(serviceTimeseriesMap, chartConfig) {
       let valueTotal = 0;
 
       for (const row of groupRows) {
-        const req = Number(row.request_count || 0);
-        const err = Number(row.error_count || 0);
+        const req = numValue(row, ['request_count', 'requestCount']);
+        const err = numValue(row, ['error_count', 'errorCount']);
         if (!Number.isNaN(req)) requestCount += req;
         if (!Number.isNaN(err)) errorCount += err;
 
-        const latencyVal = Number(row.avg_latency ?? row.avg_duration_ms ?? row[valueKey]);
+        const latencyVal = numValue(row, ['avg_latency', 'avgLatency', 'avg_duration_ms', 'avgDurationMs', valueKey], 0);
         if (!Number.isNaN(latencyVal) && latencyVal > 0) {
           latencySum += latencyVal;
           latencyCount += 1;
         }
 
-        const value = Number(row[valueKey] ?? 0);
+        const value = numValue(row, [valueKey], 0);
         if (!Number.isNaN(value)) valueTotal += value;
       }
 
@@ -548,12 +583,12 @@ function ConfigurableChartCard({ chartConfig, dataSources, extraContext }) {
   // For charts that use direct data array (not serviceTimeseriesMap)
   if (!chartConfig.groupByKey && !chartConfig.endpointDataSource) {
     chartProps.data = timeseriesData.map((d) => ({
-      timestamp: d.timestamp,
-      value: d[chartConfig.valueField || chartConfig.valueKey || 'value'] ?? d.value ?? 0,
+      timestamp: firstValue(d, ['timestamp', 'time_bucket', 'timeBucket'], ''),
+      value: firstValue(d, [chartConfig.valueField || chartConfig.valueKey || 'value', 'value'], 0),
       ...(chartConfig.type === 'latency' ? {
-        p50: d.p50_latency || d.p50 || 0,
-        p95: d.p95_latency || d.p95 || 0,
-        p99: d.p99_latency || d.p99 || 0,
+        p50: firstValue(d, ['p50_latency', 'p50Latency', 'p50'], 0),
+        p95: firstValue(d, ['p95_latency', 'p95Latency', 'p95'], 0),
+        p99: firstValue(d, ['p99_latency', 'p99Latency', 'p99'], 0),
       } : {}),
     }));
   }

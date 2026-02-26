@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import CommandPalette from '../common/CommandPalette';
+import CommandPalette from '../common/overlay/CommandPalette';
 import { useAppStore } from '@store/appStore';
 import './MainLayout.css';
 
