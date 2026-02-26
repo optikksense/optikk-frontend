@@ -1,0 +1,28 @@
+.panel-editor-drawer .ant-drawer-body {
+  padding: 12px 16px;
+}
+
+.panel-editor-drawer .ant-form-item {
+  margin-bottom: 12px;
+}
+
+.threshold-section {
+  margin-top: 8px;
+}
+
+.threshold-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-secondary, #a0a0b0);
+}
+
+.threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}

@@ -1,0 +1,29 @@
+.template-variable-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: var(--bg-elevated, #1a1a2e);
+  border: 1px solid var(--border-color, #2d2d3d);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.template-variable-icon {
+  color: var(--text-muted, #666);
+  flex-shrink: 0;
+}
+
+.template-variable-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.template-variable-label {
+  margin: 0 !important;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

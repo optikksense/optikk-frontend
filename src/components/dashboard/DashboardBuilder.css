@@ -1,0 +1,142 @@
+/* ─── Builder Toolbar ─────────────────────────────────────────────── */
+.builder-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: var(--bg-elevated, #1a1a2e);
+  border: 1px solid var(--border-color, #2d2d3d);
+  border-radius: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.builder-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.builder-toolbar-right {
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Panel Wrapper ──────────────────────────────────────────────── */
+.panel-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color, #2d2d3d);
+  border-radius: 8px;
+  background: var(--bg-card, #16162a);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.panel-wrapper:hover {
+  border-color: var(--primary-color, #5E60CE);
+  box-shadow: 0 0 0 1px var(--primary-color, #5E60CE);
+}
+
+.panel-drag-handle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--bg-elevated, #1a1a2e);
+  border-bottom: 1px solid var(--border-color, #2d2d3d);
+  cursor: grab;
+  user-select: none;
+  min-height: 28px;
+}
+
+.panel-drag-handle:active {
+  cursor: grabbing;
+}
+
+.panel-drag-title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #a0a0b0);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.panel-wrapper:hover .panel-actions {
+  opacity: 1;
+}
+
+.panel-action-btn {
+  color: var(--text-muted, #666) !important;
+  padding: 2px 4px !important;
+}
+
+.panel-action-btn:hover {
+  color: var(--text-primary, #e0e0e0) !important;
+}
+
+.panel-action-btn-danger:hover {
+  color: #F04438 !important;
+}
+
+.panel-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Override chart card styles inside builder panels */
+.panel-content .chart-card {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.panel-content .chart-card .ant-card-head {
+  display: none;
+}
+
+/* ─── Grid ───────────────────────────────────────────────────────── */
+.builder-grid {
+  min-height: 200px;
+}
+
+.builder-grid .react-grid-item {
+  transition: all 200ms ease;
+}
+
+.builder-grid .react-grid-item.react-grid-placeholder {
+  background: var(--primary-color, #5E60CE) !important;
+  opacity: 0.15 !important;
+  border-radius: 8px;
+}
+
+.builder-grid .react-grid-item > .react-resizable-handle {
+  z-index: 10;
+}
+
+.builder-grid .react-grid-item > .react-resizable-handle::after {
+  border-color: var(--text-muted, #666) !important;
+}
+
+.builder-grid .react-grid-item:hover > .react-resizable-handle::after {
+  border-color: var(--primary-color, #5E60CE) !important;
+}
+
+/* ─── Dashboard Builder container ────────────────────────────────── */
+.dashboard-builder {
+  position: relative;
+}
