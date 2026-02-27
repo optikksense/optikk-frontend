@@ -1,9 +1,21 @@
+.detail-drawer .ant-drawer-content {
+  background: rgba(13, 13, 13, 0.7) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.detail-drawer {
+  z-index: 2000 !important;
+}
+
 .detail-drawer .ant-drawer-header {
-  border-bottom: 1px solid var(--border-color, #2D2D2D);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
 }
 
 .detail-drawer .ant-drawer-body {
-  padding: 16px 24px;
+  padding: 24px;
 }
 
 .detail-drawer-section {
@@ -11,10 +23,33 @@
 }
 
 .detail-drawer-section-title {
-  color: var(--text-primary, #111827);
+  color: #e5e7eb;
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-color, #2D2D2D);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.02em;
+}
+
+.detail-drawer .ant-descriptions-bordered .ant-descriptions-view {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.detail-drawer .ant-descriptions-bordered .ant-descriptions-item-label {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted, #9ca3af);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 16px;
+  width: 30%;
+}
+
+.detail-drawer .ant-descriptions-bordered .ant-descriptions-item-content {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #e5e7eb);
+  padding: 12px 16px;
 }

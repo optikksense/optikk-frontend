@@ -90,16 +90,24 @@ export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId
   };
 
   // Calculate bar position and width
-  const getBarStyle = (span) => {
+  const getBarStyle = (span, index) => {
     const startTime = new Date(span.start_time).getTime();
     const endTime = new Date(span.end_time).getTime();
     const leftPercent = ((startTime - traceStart) / traceDuration) * 100;
     const widthPercent = ((endTime - startTime) / traceDuration) * 100;
 
+    const baseColor = getServiceColor(span.service_name, span.status);
+    // Create a subtle gradient for the bar
+    let backgroundStr = baseColor;
+    if (baseColor.startsWith('#')) {
+      backgroundStr = `linear-gradient(90deg, ${baseColor}, ${baseColor}dd)`;
+    }
+
     return {
       left: `${leftPercent}%`,
       width: `${Math.max(widthPercent, 0.5)}%`,
-      backgroundColor: getServiceColor(span.service_name, span.status),
+      background: backgroundStr,
+      animationDelay: `${Math.min(index * 0.05, 1.5)}s`,
     };
   };
 
@@ -147,9 +155,8 @@ export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId
         {spanTree.map((span) => (
           <div
             key={span.span_id}
-            className={`waterfall-row ${selectedSpanId === span.span_id ? 'selected' : ''} ${
-              hoveredSpanId === span.span_id ? 'hovered' : ''
-            }`}
+            className={`waterfall-row ${selectedSpanId === span.span_id ? 'selected' : ''} ${hoveredSpanId === span.span_id ? 'hovered' : ''
+              }`}
             onClick={() => onSpanClick && onSpanClick(span)}
             onMouseEnter={() => setHoveredSpanId(span.span_id)}
             onMouseLeave={() => setHoveredSpanId(null)}
@@ -170,7 +177,7 @@ export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId
               <div className="waterfall-bar-container">
                 <div
                   className="waterfall-bar"
-                  style={getBarStyle(span)}
+                  style={getBarStyle(span, spanTree.indexOf(span))}
                   title={`${span.operation_name} - ${formatDuration(span.duration_ms)}`}
                 >
                   <span className="waterfall-bar-duration">
