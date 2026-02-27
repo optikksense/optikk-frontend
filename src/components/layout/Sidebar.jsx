@@ -16,7 +16,6 @@ import {
   Sun,
   Moon,
   LogOut,
-  Search,
 } from 'lucide-react';
 import { useAppStore } from '@store/appStore';
 import { useAuthStore } from '@store/authStore';
@@ -65,12 +64,7 @@ export default function Sidebar() {
       icon: <FileText size={18} />,
       label: 'Logs',
     },
-    {
-      key: '/explore',
-      icon: <Search size={18} />,
-      label: 'Explore',
-    },
-    {
+{
       key: '/traces',
       icon: <GitBranch size={18} />,
       label: 'Traces',
@@ -139,8 +133,7 @@ export default function Sidebar() {
     const path = location.pathname;
     if (path.startsWith('/services/')) return '/services';
     if (path.startsWith('/traces/')) return '/traces';
-    if (path.startsWith('/explore')) return '/explore';
-    if (path.startsWith('/errors')) return '/overview';
+if (path.startsWith('/errors')) return '/overview';
     if (path.startsWith('/deployments')) return '/infrastructure';
     if (path.startsWith('/health-checks')) return '/infrastructure';
     if (path.startsWith('/incidents')) return '/alerts';

@@ -19,7 +19,6 @@ import OverviewHubPage from '@features/overview/pages/OverviewHubPage';
 import LogsHubPage from '@features/log/pages/LogsHubPage';
 import InfrastructureHubPage from '@features/infrastructure/pages/InfrastructureHubPage';
 import SaturationHubPage from '@features/metrics/pages/SaturationHubPage';
-import ExplorePage from '@features/overview/pages/ExplorePage';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -68,8 +67,7 @@ function App() {
         <Route index element={<Navigate to="/overview" replace />} />
         <Route path="overview" element={<ErrorBoundary><OverviewHubPage /></ErrorBoundary>} />
         <Route path="logs" element={<ErrorBoundary><LogsHubPage /></ErrorBoundary>} />
-        <Route path="explore" element={<ErrorBoundary><ExplorePage /></ErrorBoundary>} />
-        <Route path="traces" element={<ErrorBoundary><TracesPage /></ErrorBoundary>} />
+<Route path="traces" element={<ErrorBoundary><TracesPage /></ErrorBoundary>} />
         <Route path="traces/:traceId" element={<ErrorBoundary><TraceDetailPage /></ErrorBoundary>} />
         <Route path="services" element={<ErrorBoundary><ServicesPage /></ErrorBoundary>} />
         <Route path="services/:serviceName" element={<ErrorBoundary><ServiceDetailPage /></ErrorBoundary>} />
