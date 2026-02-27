@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Switch, Tooltip, Select, Spin } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -10,10 +11,11 @@ import {
   TrendingUp,
   BarChart3,
   Server,
+  GitBranch,
 } from 'lucide-react';
 import { useAppStore } from '@store/appStore';
 import { v1Service } from '@services/v1Service';
-import { PageHeader, ObservabilityQueryBar, ObservabilityDataBoard, ObservabilityDetailPanel } from '@components/common';
+import { PageHeader, ObservabilityQueryBar, ObservabilityDataBoard, ObservabilityDetailPanel, boardHeight } from '@components/common';
 import { formatNumber } from '@utils/formatters';
 import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
 import { LevelBadge, tsLabel, relativeTime } from '@features/log/components/log/LogRow';
@@ -252,6 +254,7 @@ function KpiCard({ title, value, icon: Icon, accentColor, accentBg, trend, subti
 /* ─── Main page ───────────────────────────────────────────────────────────── */
 export default function LogsHubPage() {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const navigate = useNavigate();
 
   /* ── State ── */
   const [filters, setFilters] = useState([]);
@@ -259,7 +262,7 @@ export default function LogsHubPage() {
   const [selectedService, setSelectedService] = useState(null);
   const [errorsOnly, setErrorsOnly] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(50);
+  const [pageSize, setPageSize] = useState(20);
   const [selectedLog, setSelectedLog] = useState(null);
 
   /* ── Backend params derived from filters ── */
@@ -515,7 +518,7 @@ export default function LogsHubPage() {
         </div>
 
         {/* Data board */}
-        <div style={{ height: 520, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: boardHeight(pageSize), display: 'flex', flexDirection: 'column' }}>
           <ObservabilityDataBoard
             columns={LOG_COLUMNS}
             rows={logs}
@@ -584,6 +587,17 @@ export default function LogsHubPage() {
             >
               {selectedLog.message || '—'}
             </span>
+          }
+          actions={
+            (selectedLog.traceId || selectedLog.trace_id) ? (
+              <button
+                className="logs-view-trace-btn"
+                onClick={() => navigate(`/traces/${selectedLog.traceId || selectedLog.trace_id}`)}
+              >
+                <GitBranch size={13} />
+                View Trace
+              </button>
+            ) : null
           }
           fields={detailFields}
           rawData={selectedLog}

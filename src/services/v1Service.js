@@ -74,6 +74,10 @@ export const v1Service = {
     return api.get(`${BASE}/traces/${traceId}/spans`);
   },
 
+  async getSpanTree(teamId, spanId) {
+    return api.get(`${BASE}/spans/${spanId}/tree`);
+  },
+
   async getTraceLogs(teamId, traceId) {
     return api.get(`${BASE}/traces/${traceId}/logs`);
   },

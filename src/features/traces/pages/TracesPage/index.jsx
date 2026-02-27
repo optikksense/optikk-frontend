@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@store/appStore';
 import { v1Service } from '@services/v1Service';
-import { PageHeader, ObservabilityQueryBar, ObservabilityDataBoard, ObservabilityDetailPanel } from '@components/common';
+import { PageHeader, ObservabilityQueryBar, ObservabilityDataBoard, ObservabilityDetailPanel, boardHeight } from '@components/common';
 import { formatTimestamp, formatDuration, formatNumber } from '@utils/formatters';
 import LatencyHistogram from '@components/charts/distributions/LatencyHistogram';
 import { useDashboardConfig } from '@hooks/useDashboardConfig';
@@ -61,6 +61,7 @@ const TRACE_COLUMNS = [
 /* ─── Normalizers ─────────────────────────────────────────────────────────── */
 const normalizeTrace = (t = {}) => ({
   ...t,
+  span_id: t.span_id ?? t.spanId ?? '',
   trace_id: t.trace_id ?? t.traceId ?? '',
   service_name: t.service_name ?? t.serviceName ?? '',
   operation_name: t.operation_name ?? t.operationName ?? '',
@@ -179,7 +180,7 @@ function TraceRow({ trace, colWidths, visibleCols, maxDuration, onRowClick, onOp
         return (
           <span
             className="traces-trace-id"
-            onClick={(e) => { e.stopPropagation(); onRowClick(trace.trace_id); }}
+            onClick={(e) => { e.stopPropagation(); onRowClick(trace.span_id || trace.trace_id); }}
             title={trace.trace_id}
           >
             <ArrowUpRight size={11} />
@@ -352,7 +353,7 @@ export default function TracesPage() {
         colWidths={colWidths}
         visibleCols={visibleCols}
         maxDuration={maxDuration}
-        onRowClick={(traceId) => navigate(`/traces/${traceId}`)}
+        onRowClick={(spanId) => navigate(`/traces/${spanId}`)}
         onOpenDetail={setSelectedTrace}
       />
     ),
@@ -471,7 +472,7 @@ export default function TracesPage() {
         </div>
 
         {/* Shared Data Board */}
-        <div style={{ height: 520, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: boardHeight(pageSize), display: 'flex', flexDirection: 'column' }}>
           <ObservabilityDataBoard
             columns={TRACE_COLUMNS}
             rows={traces}
@@ -550,13 +551,13 @@ export default function TracesPage() {
             <>
               <button
                 className="oboard__detail-action-btn oboard__detail-action-btn--primary"
-                onClick={() => { navigate(`/traces/${selectedTrace.trace_id}`); setSelectedTrace(null); }}
+                onClick={() => { navigate(`/traces/${selectedTrace.span_id || selectedTrace.trace_id}`); setSelectedTrace(null); }}
               >
                 <TraceIcon size={13} /> View Full Trace
               </button>
               <button
                 className="oboard__detail-action-btn"
-                onClick={() => { navigate(`/traces/${selectedTrace.trace_id}`); setSelectedTrace(null); }}
+                onClick={() => { navigate(`/traces/${selectedTrace.span_id || selectedTrace.trace_id}`); setSelectedTrace(null); }}
               >
                 <Layers size={13} /> Waterfall
               </button>

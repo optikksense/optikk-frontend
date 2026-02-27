@@ -4,7 +4,7 @@ export { default as FilterBar } from './forms/FilterBar';
 export { default as StatCard } from './cards/StatCard';
 export { default as StatCardsGrid } from './cards/StatCardsGrid';
 export { default as DataTable } from './data-display/DataTable';
-export { default as ObservabilityDataBoard, ObservabilityDetailPanel, BoardClickableCell } from './data-display/ObservabilityDataBoard';
+export { default as ObservabilityDataBoard, ObservabilityDetailPanel, BoardClickableCell, boardHeight } from './data-display/ObservabilityDataBoard';
 export { default as Timeline } from './data-display/Timeline';
 export { default as TrendIndicator } from './feedback/TrendIndicator';
 export { default as StatusBadge } from './feedback/StatusBadge';

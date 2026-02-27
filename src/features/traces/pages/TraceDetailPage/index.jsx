@@ -8,7 +8,7 @@ import { useAppStore } from '@store/appStore';
 import { formatDuration, formatTimestamp } from '@utils/formatters';
 import PageHeader from '@components/common/layout/PageHeader';
 import StatCard from '@components/common/cards/StatCard';
-import DetailDrawer from '@components/common/layout/DetailDrawer';
+import { ObservabilityDetailPanel } from '@components/common';
 import WaterfallChart from '@components/charts/specialized/WaterfallChart';
 import './TraceDetailPage.css';
 
@@ -68,17 +68,16 @@ export default function TraceDetailPage() {
     if (spanFromUrl) setSelectedSpanId(spanFromUrl);
   }, []);
 
-  // Fetch trace spans
+  // Fetch spans by root span_id (the URL parameter is a span_id from the traces list).
+  // Falls back to fetching by trace_id (e.g., when navigating here from a log's traceId).
   const { data: spansData, isLoading } = useQuery({
-    queryKey: ['trace-spans', selectedTeamId, traceId],
-    queryFn: () => v1Service.getTraceSpans(selectedTeamId, traceId),
-    enabled: !!selectedTeamId && !!traceId,
-  });
-
-  // Fetch logs associated with this trace
-  const { data: logsData, isLoading: logsLoading } = useQuery({
-    queryKey: ['trace-logs', selectedTeamId, traceId],
-    queryFn: () => v1Service.getTraceLogs(selectedTeamId, traceId),
+    queryKey: ['span-tree', selectedTeamId, traceId],
+    queryFn: async () => {
+      const bySpan = await v1Service.getSpanTree(selectedTeamId, traceId);
+      if (Array.isArray(bySpan) && bySpan.length > 0) return bySpan;
+      // Fallback: treat the id as a trace_id (e.g. navigated from logs)
+      return v1Service.getTraceSpans(selectedTeamId, traceId);
+    },
     enabled: !!selectedTeamId && !!traceId,
   });
 
@@ -86,6 +85,16 @@ export default function TraceDetailPage() {
     () => (Array.isArray(spansData) ? spansData : []).map(normalizeSpan),
     [spansData]
   );
+
+  // Resolve the actual trace_id from loaded spans (URL param may be a root span_id).
+  const resolvedTraceId = spans.length > 0 ? (spans[0].trace_id || traceId) : traceId;
+
+  // Fetch logs associated with this trace, keyed by the resolved trace_id.
+  const { data: logsData, isLoading: logsLoading } = useQuery({
+    queryKey: ['trace-logs', selectedTeamId, resolvedTraceId],
+    queryFn: () => v1Service.getTraceLogs(selectedTeamId, resolvedTraceId),
+    enabled: !!selectedTeamId && !!resolvedTraceId,
+  });
   const traceLogs = useMemo(
     () => (Array.isArray(logsData) ? logsData : []).map(normalizeTraceLog),
     [logsData]
@@ -176,61 +185,26 @@ export default function TraceDetailPage() {
     },
   ];
 
-  // Define drawer sections for span detail
-  const drawerSections = selectedSpan ? [
-    {
-      title: 'Span Info',
-      fields: [
-        { label: 'Span ID', key: 'span_id' },
-        { label: 'Parent Span ID', key: 'parent_span_id', render: (val) => val || '-' },
-        { label: 'Operation', key: 'operation_name' },
-        { label: 'Service', key: 'service_name' },
-        { label: 'Span Kind', key: 'span_kind' },
-        { label: 'Duration', key: 'duration_ms', render: (val) => formatDuration(val) },
-        {
-          label: 'Status',
-          key: 'status',
-          render: (val) => (
-            <Tag color={val === 'ERROR' ? 'red' : val === 'OK' ? 'green' : 'default'}>
-              {val || 'UNSET'}
-            </Tag>
-          )
-        },
-        { label: 'Status Message', key: 'status_message', render: (val) => val || '-' },
-        { label: 'Start Time', key: 'start_time', render: (val) => formatTimestamp(val) },
-        { label: 'End Time', key: 'end_time', render: (val) => formatTimestamp(val) },
-      ],
-    },
-    ...(selectedSpan.http_method ? [{
-      title: 'HTTP',
-      fields: [
-        { label: 'Method', key: 'http_method' },
-        { label: 'URL', key: 'http_url' },
-        { label: 'Status Code', key: 'http_status_code' },
-      ],
-    }] : []),
-    {
-      title: 'Infrastructure',
-      fields: [
-        { label: 'Host', key: 'host', render: (val) => val || '-' },
-        { label: 'Pod', key: 'pod', render: (val) => val || '-' },
-      ],
-    },
-    ...(selectedSpan.attributes && Object.keys(selectedSpan.attributes).length > 0 ? [{
-      title: 'Attributes',
-      fields: [
-        {
-          label: 'Raw JSON',
-          key: 'attributes',
-          render: (val) => (
-            <pre className="trace-detail-json">
-              {JSON.stringify(val, null, 2)}
-            </pre>
-          )
-        },
-      ],
-    }] : []),
-  ] : [];
+  // Build fields for the detail panel
+  const spanDetailFields = selectedSpan ? [
+    { key: 'span_id', label: 'Span ID', value: selectedSpan.span_id },
+    { key: 'parent_span_id', label: 'Parent Span ID', value: selectedSpan.parent_span_id || '—' },
+    { key: 'service_name', label: 'Service', value: selectedSpan.service_name, filterable: true },
+    { key: 'span_kind', label: 'Span Kind', value: selectedSpan.span_kind },
+    { key: 'status', label: 'Status', value: selectedSpan.status || 'UNSET' },
+    ...(selectedSpan.status_message ? [{ key: 'status_message', label: 'Status Message', value: selectedSpan.status_message }] : []),
+    { key: 'start_time', label: 'Start Time', value: formatTimestamp(selectedSpan.start_time) },
+    { key: 'end_time', label: 'End Time', value: formatTimestamp(selectedSpan.end_time) },
+    { key: 'duration', label: 'Duration', value: formatDuration(selectedSpan.duration_ms) },
+    { key: 'trace_id', label: 'Trace ID', value: selectedSpan.trace_id },
+    ...(selectedSpan.http_method ? [
+      { key: 'http_method', label: 'HTTP Method', value: selectedSpan.http_method },
+      { key: 'http_url', label: 'HTTP URL', value: selectedSpan.http_url },
+      { key: 'http_status_code', label: 'HTTP Status', value: String(selectedSpan.http_status_code) },
+    ] : []),
+    ...(selectedSpan.host ? [{ key: 'host', label: 'Host', value: selectedSpan.host }] : []),
+    ...(selectedSpan.pod ? [{ key: 'pod', label: 'Pod', value: selectedSpan.pod }] : []),
+  ].filter((f) => f.value && f.value !== '0') : [];
 
   return (
     <div className="trace-detail-page">
@@ -248,6 +222,25 @@ export default function TraceDetailPage() {
           </button>
         }
       />
+
+      {selectedSpan && (
+        <ObservabilityDetailPanel
+          title="Span Detail"
+          titleBadge={
+            <Tag
+              color={selectedSpan.status === 'ERROR' ? 'red' : selectedSpan.status === 'OK' ? 'green' : 'default'}
+              style={{ marginLeft: 8, fontSize: 11 }}
+            >
+              {selectedSpan.status || 'UNSET'}
+            </Tag>
+          }
+          metaLine={selectedSpan.operation_name}
+          metaRight={formatDuration(selectedSpan.duration_ms)}
+          fields={spanDetailFields}
+          rawData={selectedSpan}
+          onClose={handleCloseDrawer}
+        />
+      )}
 
       {isLoading ? (
         <div className="trace-detail-loading">
@@ -369,15 +362,7 @@ export default function TraceDetailPage() {
             )}
           </Card>
 
-          {/* Span Detail Drawer */}
-          <DetailDrawer
-            open={!!selectedSpanId}
-            onClose={handleCloseDrawer}
-            title={selectedSpan?.operation_name || 'Span Details'}
-            width={720}
-            sections={drawerSections}
-            data={selectedSpan}
-          />
+          {/* Span Detail Panel */}
         </>
       )}
     </div>

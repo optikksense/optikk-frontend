@@ -459,6 +459,28 @@
     white-space: nowrap;
 }
 
+/* ── View Trace button (in detail panel) ── */
+.logs-view-trace-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid #5E60CE;
+    background: rgba(94,96,206,0.1);
+    color: #8B8EFF;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.logs-view-trace-btn:hover {
+    background: rgba(94,96,206,0.22);
+    color: #fff;
+}
+
 /* ── Nav buttons ── */
 .logs-nav-btn {
     padding: 4px 12px;

@@ -6,6 +6,7 @@ const defaultTimeRange = TIME_RANGES.find((r) => r.value === '1h') || TIME_RANGE
 const savedTeamId = localStorage.getItem(STORAGE_KEYS.TEAM_ID);
 const savedTimeRange = localStorage.getItem(STORAGE_KEYS.TIME_RANGE);
 const savedCollapsed = localStorage.getItem(STORAGE_KEYS.SIDEBAR_COLLAPSED);
+const savedAutoRefresh = localStorage.getItem(STORAGE_KEYS.AUTO_REFRESH);
 
 export const useAppStore = create((set) => ({
   selectedTeamId: savedTeamId ? Number(savedTeamId) : 1,
@@ -14,6 +15,7 @@ export const useAppStore = create((set) => ({
     : defaultTimeRange,
   sidebarCollapsed: savedCollapsed === 'true',
   refreshKey: 0,
+  autoRefreshInterval: savedAutoRefresh !== null ? Number(savedAutoRefresh) : 10_000,
   theme: localStorage.getItem('observex_theme') || 'dark',
   notificationsEnabled: localStorage.getItem('observex_notifications') !== 'false',
   viewPreferences: JSON.parse(localStorage.getItem('observex_view_prefs') || '{}'),
@@ -49,6 +51,11 @@ export const useAppStore = create((set) => ({
 
   triggerRefresh: () => {
     set((state) => ({ refreshKey: state.refreshKey + 1 }));
+  },
+
+  setAutoRefreshInterval: (ms) => {
+    localStorage.setItem(STORAGE_KEYS.AUTO_REFRESH, String(ms));
+    set({ autoRefreshInterval: ms });
   },
 
   setTheme: (theme) => {

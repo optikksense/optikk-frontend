@@ -205,4 +205,15 @@ export const STORAGE_KEYS = {
   TEAM_ID: 'observex_team_id',
   TIME_RANGE: 'observex_time_range',
   SIDEBAR_COLLAPSED: 'observex_sidebar_collapsed',
+  AUTO_REFRESH: 'observex_auto_refresh',
 };
+
+// Auto-refresh interval options (value = milliseconds, 0 = off)
+export const AUTO_REFRESH_INTERVALS = [
+  { label: 'Off',   value: 0 },
+  { label: '10s',   value: 10_000 },
+  { label: '30s',   value: 30_000 },
+  { label: '1m',    value: 60_000 },
+  { label: '5m',    value: 300_000 },
+  { label: '10m',   value: 600_000 },
+];

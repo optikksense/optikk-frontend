@@ -3,6 +3,16 @@ import { Spin, Popover } from 'antd';
 import { Settings2, Download, Search, Check, Filter, Copy, X, Clock } from 'lucide-react';
 import './ObservabilityDataBoard.css';
 
+/* ─── Board height helper ─────────────────────────────────────────────────── */
+// Each data row is ~32px tall. The action bar + column header add ~72px fixed overhead.
+// Use this in any page that wraps ObservabilityDataBoard so the container always
+// fits exactly `pageSize` rows without an inner scrollbar.
+const BOARD_ROW_HEIGHT = 32;
+const BOARD_CHROME_HEIGHT = 72; // action bar (36px) + column header (36px)
+export function boardHeight(pageSize) {
+    return pageSize * BOARD_ROW_HEIGHT + BOARD_CHROME_HEIGHT;
+}
+
 /* ─── Utilities ───────────────────────────────────────────────────────────── */
 
 function downloadFile(content, filename, type) {
