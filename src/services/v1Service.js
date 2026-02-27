@@ -108,12 +108,24 @@ export const v1Service = {
 
   // ==================== SATURATION ====================
 
-  async getSaturationMetrics(teamId, startTime, endTime) {
-    return api.get(`${BASE}/saturation/metrics`, { params: { startTime, endTime } });
+  async getKafkaQueueLag(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/kafka/queue-lag`, { params: { startTime, endTime } });
   },
 
-  async getSaturationTimeSeries(teamId, startTime, endTime, interval = '5m') {
-    return api.get(`${BASE}/saturation/timeseries`, { params: { startTime, endTime, interval } });
+  async getKafkaProductionRate(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/kafka/production-rate`, { params: { startTime, endTime } });
+  },
+
+  async getKafkaConsumptionRate(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/kafka/consumption-rate`, { params: { startTime, endTime } });
+  },
+
+  async getDatabaseQueryByTable(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/database/query-by-table`, { params: { startTime, endTime } });
+  },
+
+  async getDatabaseAvgLatency(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/database/avg-latency`, { params: { startTime, endTime } });
   },
 
   // ==================== INCIDENTS ====================
@@ -137,11 +149,11 @@ export const v1Service = {
   },
 
   async getDatabaseCacheInsights(teamId, startTime, endTime) {
-    return api.get(`${BASE}/insights/database-cache`, { params: { startTime, endTime } });
+    return api.get(`${BASE}/saturation/database-cache`, { params: { startTime, endTime } });
   },
 
   async getMessagingQueueInsights(teamId, startTime, endTime, interval = '5m') {
-    return api.get(`${BASE}/insights/messaging-queue`, { params: { startTime, endTime, interval } });
+    return api.get(`${BASE}/saturation/messaging-queue`, { params: { startTime, endTime, interval } });
   },
 
   // ==================== AI OBSERVABILITY ====================

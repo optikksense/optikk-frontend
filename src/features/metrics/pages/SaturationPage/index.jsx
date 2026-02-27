@@ -33,38 +33,26 @@ function normalizeServiceMetric(row = {}) {
   };
 }
 
-function normalizeSaturationMetric(row = {}) {
+function normalizeKafkaMetric(row = {}) {
   return {
     ...row,
-    service_name: row.service_name ?? row.serviceName ?? '',
-    span_count: Number(row.span_count ?? row.spanCount ?? 0),
-    avg_duration_ms: Number(row.avg_duration_ms ?? row.avgDurationMs ?? 0),
-    p95_duration_ms: Number(row.p95_duration_ms ?? row.p95DurationMs ?? 0),
-    max_duration_ms: Number(row.max_duration_ms ?? row.maxDurationMs ?? 0),
-    error_count: Number(row.error_count ?? row.errorCount ?? 0),
-    avg_db_pool_util: Number(row.avg_db_pool_util ?? row.avgDbPoolUtil ?? 0),
-    max_db_pool_util: Number(row.max_db_pool_util ?? row.maxDbPoolUtil ?? 0),
-    avg_consumer_lag: Number(row.avg_consumer_lag ?? row.avgConsumerLag ?? 0),
-    max_consumer_lag: Number(row.max_consumer_lag ?? row.maxConsumerLag ?? 0),
-    avg_thread_pool_active: Number(row.avg_thread_pool_active ?? row.avgThreadPoolActive ?? 0),
-    max_thread_pool_size: Number(row.max_thread_pool_size ?? row.maxThreadPoolSize ?? 0),
-    avg_queue_depth: Number(row.avg_queue_depth ?? row.avgQueueDepth ?? 0),
-    max_queue_depth: Number(row.max_queue_depth ?? row.maxQueueDepth ?? 0),
+    queue: row.queue ?? row.topic ?? '',
+    avg_consumer_lag: Number(row.avg_consumer_lag ?? 0),
+    max_consumer_lag: Number(row.max_consumer_lag ?? 0),
+    avg_queue_depth: Number(row.avg_queue_depth ?? 0),
+    max_queue_depth: Number(row.max_queue_depth ?? 0),
+    avg_publish_rate: Number(row.avg_publish_rate ?? 0),
+    avg_receive_rate: Number(row.avg_receive_rate ?? 0),
   };
 }
 
-function normalizeSaturationTimeSeries(row = {}) {
+function normalizeDatabaseMetric(row = {}) {
   return {
     ...row,
-    service_name: row.service_name ?? row.serviceName ?? '',
-    timestamp: row.timestamp ?? row.time_bucket ?? row.timeBucket ?? '',
-    span_count: Number(row.span_count ?? row.spanCount ?? 0),
-    error_count: Number(row.error_count ?? row.errorCount ?? 0),
-    avg_duration_ms: Number(row.avg_duration_ms ?? row.avgDurationMs ?? 0),
-    avg_db_pool_util: Number(row.avg_db_pool_util ?? row.avgDbPoolUtil ?? 0),
-    avg_consumer_lag: Number(row.avg_consumer_lag ?? row.avgConsumerLag ?? 0),
-    avg_thread_active: Number(row.avg_thread_active ?? row.avgThreadActive ?? 0),
-    avg_queue_depth: Number(row.avg_queue_depth ?? row.avgQueueDepth ?? 0),
+    table_name: row.table_name ?? row.sql_table ?? '',
+    avg_latency_ms: Number(row.avg_latency_ms ?? 0),
+    p95_latency_ms: Number(row.p95_latency_ms ?? 0),
+    query_count: Number(row.query_count ?? 0),
   };
 }
 
@@ -91,162 +79,107 @@ function SatGauge({ label, value, max, color }) {
 }
 
 export default function SaturationPage() {
-  const [selectedService, setSelectedService] = useState(null);
+  const [selectedQueue, setSelectedQueue] = useState(null);
   const { config } = useDashboardConfig('saturation');
 
-  const { data: metricsRaw, isLoading: metricsLoading } = useTimeRangeQuery(
-    'saturation-metrics',
-    (teamId, start, end) => v1Service.getSaturationMetrics(teamId, start, end)
+  // Request isolated dataset paths
+  const { data: kafkaLagRaw, isLoading: lagLoading } = useTimeRangeQuery(
+    'saturation-kafka-lag',
+    (teamId, start, end) => v1Service.getKafkaQueueLag(teamId, start, end)
+  );
+  const { data: dbLatencyRaw, isLoading: dbLatencyLoading } = useTimeRangeQuery(
+    'saturation-db-latency',
+    (teamId, start, end) => v1Service.getDatabaseAvgLatency(teamId, start, end)
+  );
+  const { data: dbQueryRaw, isLoading: dbQueryLoading } = useTimeRangeQuery(
+    'saturation-db-queries',
+    (teamId, start, end) => v1Service.getDatabaseQueryByTable(teamId, start, end)
   );
 
-  const { data: timeseriesRaw, isLoading: tsLoading } = useTimeRangeQuery(
-    'saturation-timeseries',
-    (teamId, start, end) => v1Service.getSaturationTimeSeries(teamId, start, end, '5m')
-  );
+  const kafkaLag = useMemo(() => {
+    const raw = Array.isArray(kafkaLagRaw) ? kafkaLagRaw : [];
+    return raw.map(normalizeKafkaLagMetric);
+  }, [kafkaLagRaw]);
 
-  const { data: serviceMetricsRaw } = useTimeRangeQuery(
-    'services-metrics-sat',
-    (teamId, start, end) => v1Service.getServiceMetrics(teamId, start, end)
-  );
+  const dbLatency = useMemo(() => {
+    const raw = Array.isArray(dbLatencyRaw) ? dbLatencyRaw : [];
+    return raw.map(normalizeDatabaseMetric);
+  }, [dbLatencyRaw]);
 
-  const serviceMetrics = useMemo(() => {
-    const raw = Array.isArray(serviceMetricsRaw) ? serviceMetricsRaw : [];
-    return raw.map(normalizeServiceMetric);
-  }, [serviceMetricsRaw]);
+  const dbQueries = useMemo(() => {
+    const raw = Array.isArray(dbQueryRaw) ? dbQueryRaw : [];
+    return raw.map(normalizeDatabaseMetric);
+  }, [dbQueryRaw]);
 
-  const services = useMemo(() => {
-    return serviceMetrics.map((s) => s.service_name).filter(Boolean);
-  }, [serviceMetrics]);
-
-  const metricsAll = useMemo(() => {
-    const raw = Array.isArray(metricsRaw) ? metricsRaw : [];
-    return raw.map(normalizeSaturationMetric);
-  }, [metricsRaw]);
-
-  const metrics = useMemo(() => (
-    selectedService ? metricsAll.filter((r) => r.service_name === selectedService) : metricsAll
-  ), [metricsAll, selectedService]);
-
-  const timeseries = useMemo(() => {
-    const raw = Array.isArray(timeseriesRaw) ? timeseriesRaw : [];
-    return raw.map(normalizeSaturationTimeSeries);
-  }, [timeseriesRaw]);
+  // Derive unique queues
+  const queues = useMemo(() => {
+    return Array.from(new Set(kafkaLag.map((k) => k.queue).filter(Boolean)));
+  }, [kafkaLag]);
 
   const summary = useMemo(() => {
-    if (!metrics.length) return { maxDbPool: 0, maxLag: 0, maxThread: 0, maxQueue: 0 };
-    const maxDbPool = Math.max(...metrics.map((m) => safePercent(m.max_db_pool_util)));
-    const maxLag = Math.max(...metrics.map((m) => pct(m.max_consumer_lag) ?? 0));
-    const maxThread = Math.max(...metrics.map((m) => pct(m.avg_thread_pool_active) ?? 0));
-    const maxQueue = Math.max(...metrics.map((m) => pct(m.max_queue_depth) ?? 0));
-    return { maxDbPool, maxLag, maxThread, maxQueue };
-  }, [metrics]);
+    const maxLag = kafkaLag.length ? Math.max(...kafkaLag.map((m) => pct(m.max_consumer_lag) ?? 0)) : 0;
+    const maxQueue = kafkaLag.length ? Math.max(...kafkaLag.map((m) => pct(m.max_queue_depth) ?? 0)) : 0;
+    const avgDbLat = dbLatency.length ? dbLatency.reduce((acc, curr) => acc + curr.avg_latency_ms, 0) / dbLatency.length : 0;
+    const maxQueryTable = dbQueries.length ? Math.max(...dbQueries.map((m) => m.query_count)) : 0;
+    return { maxLag, maxQueue, avgDbLat, maxQueryTable };
+  }, [kafkaLag, dbLatency, dbQueries]);
 
-  const tableColumns = [
+  const kafkaColumns = [
     {
-      title: 'Service',
-      dataIndex: 'service_name',
-      key: 'service_name',
+      title: 'Kafka Queue',
+      dataIndex: 'queue',
+      key: 'queue',
       render: (v) => (
-        <Tag style={{ background: 'rgba(94,96,206,0.15)', color: '#5E60CE', border: '1px solid rgba(94,96,206,0.3)' }}>
-          {v}
+        <Tag style={{ background: 'rgba(247,144,9,0.15)', color: '#F79009', border: '1px solid rgba(247,144,9,0.3)' }}>
+          {v || 'unknown'}
         </Tag>
       ),
     },
     {
-      title: 'Span Count',
-      dataIndex: 'span_count',
-      key: 'span_count',
+      title: 'Consumer Lag (Avg)',
+      dataIndex: 'avg_consumer_lag',
+      key: 'avg_consumer_lag',
+      render: (v) => formatNumber(v),
+      sorter: (a, b) => Number(a.avg_consumer_lag) - Number(b.avg_consumer_lag),
+      align: 'right',
+    },
+    {
+      title: 'Queue Depth (Avg)',
+      dataIndex: 'avg_queue_depth',
+      key: 'avg_queue_depth',
+      render: (v) => formatNumber(v),
+      sorter: (a, b) => Number(a.avg_queue_depth) - Number(b.avg_queue_depth),
+      align: 'right',
+    }
+  ];
+
+  const dbTableColumns = [
+    {
+      title: 'Table Name',
+      dataIndex: 'table_name',
+      key: 'table_name',
+      render: (v) => (
+        <Tag style={{ background: 'rgba(94,96,206,0.15)', color: '#5E60CE', border: '1px solid rgba(94,96,206,0.3)' }}>
+          {v || 'unknown'}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Query Count',
+      dataIndex: 'query_count',
+      key: 'query_count',
       render: (v) => formatNumber(Number(v)),
-      sorter: (a, b) => Number(a.span_count) - Number(b.span_count),
+      sorter: (a, b) => Number(a.query_count) - Number(b.query_count),
       align: 'right',
     },
     {
-      title: 'Avg Duration',
-      dataIndex: 'avg_duration_ms',
-      key: 'avg_duration_ms',
+      title: 'Avg Latency',
+      dataIndex: 'avg_latency_ms',
+      key: 'avg_latency_ms',
       render: (v) => formatDuration(Number(v)),
-      sorter: (a, b) => Number(a.avg_duration_ms) - Number(b.avg_duration_ms),
+      sorter: (a, b) => Number(a.avg_latency_ms) - Number(b.avg_latency_ms),
       align: 'right',
-    },
-    {
-      title: 'P95 Duration',
-      dataIndex: 'p95_duration_ms',
-      key: 'p95_duration_ms',
-      render: (v) => {
-        const n = Number(v);
-        return (
-          <span style={{ color: n > 1000 ? '#F04438' : n > 500 ? '#F79009' : 'var(--text-primary)' }}>
-            {formatDuration(n)}
-          </span>
-        );
-      },
-      sorter: (a, b) => Number(a.p95_duration_ms) - Number(b.p95_duration_ms),
-      align: 'right',
-    },
-    {
-      title: 'DB Pool %',
-      dataIndex: 'avg_db_pool_util',
-      key: 'avg_db_pool_util',
-      render: (v) => {
-        const n = safePercent(v);
-        if (n == null || isNaN(n)) return <span style={{ color: 'var(--text-muted)' }}>N/A</span>;
-        const color = n > 80 ? '#F04438' : n > 60 ? '#F79009' : '#73C991';
-        return (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Progress percent={Math.min(n, 100)} size="small" showInfo={false} strokeColor={color} style={{ width: 80 }} />
-            <span style={{ color, fontSize: 12, fontWeight: 600 }}>{n.toFixed(1)}%</span>
-          </div>
-        );
-      },
-      sorter: (a, b) => safePercent(a.avg_db_pool_util) - safePercent(b.avg_db_pool_util),
-    },
-    {
-      title: 'Consumer Lag',
-      dataIndex: 'max_consumer_lag',
-      key: 'max_consumer_lag',
-      render: (v) => {
-        const n = pct(v);
-        if (n == null || isNaN(n)) return <span style={{ color: 'var(--text-muted)' }}>N/A</span>;
-        const color = n > 1000 ? '#F04438' : n > 100 ? '#F79009' : '#73C991';
-        return <span style={{ color, fontWeight: 600, fontSize: 13 }}>{formatNumber(n)}</span>;
-      },
-      sorter: (a, b) => (pct(a.max_consumer_lag) ?? -1) - (pct(b.max_consumer_lag) ?? -1),
-      align: 'right',
-    },
-    {
-      title: 'Thread Pool Active',
-      dataIndex: 'avg_thread_pool_active',
-      key: 'avg_thread_pool_active',
-      render: (v, record) => {
-        const active = pct(v);
-        const max = pct(record.max_thread_pool_size);
-        if (active == null || isNaN(active)) return <span style={{ color: 'var(--text-muted)' }}>N/A</span>;
-        const pctVal = max > 0 ? (active / max) * 100 : 0;
-        const color = pctVal > 80 ? '#F04438' : pctVal > 60 ? '#F79009' : '#73C991';
-        return (
-          <Tooltip title={max ? `${active} / ${max} threads` : `${active} active`}>
-            <span style={{ color, fontWeight: 600, fontSize: 13 }}>
-              {active.toFixed(0)}{max ? `/${max.toFixed(0)}` : ''}
-            </span>
-          </Tooltip>
-        );
-      },
-      sorter: (a, b) => (pct(a.avg_thread_pool_active) ?? -1) - (pct(b.avg_thread_pool_active) ?? -1),
-      align: 'right',
-    },
-    {
-      title: 'Queue Depth',
-      dataIndex: 'max_queue_depth',
-      key: 'max_queue_depth',
-      render: (v) => {
-        const n = pct(v);
-        if (n == null || isNaN(n)) return <span style={{ color: 'var(--text-muted)' }}>N/A</span>;
-        const color = n > 1000 ? '#F04438' : n > 100 ? '#F79009' : '#73C991';
-        return <span style={{ color, fontWeight: 600, fontSize: 13 }}>{formatNumber(n)}</span>;
-      },
-      sorter: (a, b) => (pct(a.max_queue_depth) ?? -1) - (pct(b.max_queue_depth) ?? -1),
-      align: 'right',
-    },
+    }
   ];
 
   return (
@@ -320,65 +253,59 @@ export default function SaturationPage() {
         />
       </div>
 
-      {/* DB pool utilization gauges */}
-      {metrics.length > 0 && (
-        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-          <Col xs={24} lg={12}>
-            <Card title="Per-Service DB Pool Utilization" className="sat-chart-card">
-              {metricsLoading ? (
-                <Skeleton active paragraph={{ rows: 4 }} />
-              ) : metrics.every((m) => pct(m.avg_db_pool_util) == null) ? (
-                <div className="sat-no-data">
-                  <Database size={32} style={{ color: 'var(--text-muted)' }} />
-                  <div>No data available</div>
-                  <div className="sat-no-data-hint">
-                    Instrument spans with <code>db.connection_pool.utilization</code> attribute
-                  </div>
-                </div>
-              ) : (
-                <div className="sat-gauges-row">
-                  {metrics.slice(0, 8).map((m, i) => {
-                    const v = safePercent(m.avg_db_pool_util);
-                    if (v == null) return null;
-                    const color = v > 80 ? '#F04438' : v > 60 ? '#F79009' : '#73C991';
-                    return (
-                      <div key={i} className="sat-gauge-wrapper">
-                        <SatGauge label={m.service_name} value={v} max={100} color={color} />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </Card>
-          </Col>
-        </Row>
-      )}
-
-      {/* Per-service saturation table */}
+      {/* Database saturation table */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24}>
           <Card
             title={
               <span>
-                Saturation by Service
+                Database Utilization by Table
                 <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 12 }}>
-                  Derived from OpenTelemetry span attributes
+                  Derived from db.sql.table
                 </span>
               </span>
             }
             className="sat-chart-card"
           >
-            {metricsLoading ? (
+            {dbQueryLoading ? (
               <Skeleton active paragraph={{ rows: 8 }} />
-            ) : metrics.length === 0 ? (
+            ) : dbQueries.length === 0 ? (
               <Empty description="No saturation data in selected time range" />
             ) : (
               <Table
-                dataSource={metrics.map((m, i) => ({ ...m, key: i }))}
-                columns={tableColumns}
+                dataSource={dbQueries.map((m, i) => ({ ...m, key: i }))}
+                columns={dbTableColumns}
                 size="small"
                 pagination={{ pageSize: 20 }}
-                scroll={{ x: 1000 }}
+                scroll={{ x: 800 }}
+              />
+            )}
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Kafka saturation table */}
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24}>
+          <Card
+            title={
+              <span>
+                Kafka Queue / Consumer Lag
+              </span>
+            }
+            className="sat-chart-card"
+          >
+            {lagLoading ? (
+              <Skeleton active paragraph={{ rows: 8 }} />
+            ) : kafkaLag.length === 0 ? (
+              <Empty description="No messaging data in selected time range" />
+            ) : (
+              <Table
+                dataSource={kafkaLag.map((m, i) => ({ ...m, key: i }))}
+                columns={kafkaColumns}
+                size="small"
+                pagination={{ pageSize: 20 }}
+                scroll={{ x: 800 }}
               />
             )}
           </Card>
