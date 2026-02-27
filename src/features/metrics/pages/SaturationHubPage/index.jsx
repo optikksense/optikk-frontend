@@ -1,16 +1,10 @@
 import { Tabs } from 'antd';
-import { Gauge, Database, Network } from 'lucide-react';
-import SaturationPage from '../SaturationPage';
+import { Database, Network } from 'lucide-react';
 import DatabaseCachePerformancePage from '../DatabaseCachePerformancePage';
 import MessagingQueueMonitoringPage from '../MessagingQueueMonitoringPage';
 
 export default function SaturationHubPage() {
   const items = [
-    {
-      key: 'sat',
-      label: <span><Gauge size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Saturation</span>,
-      children: <SaturationPage />,
-    },
     {
       key: 'db',
       label: <span><Database size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />DB & Cache</span>,
@@ -23,5 +17,5 @@ export default function SaturationHubPage() {
     },
   ];
 
-  return <Tabs defaultActiveKey="sat" items={items} />;
+  return <Tabs defaultActiveKey="db" items={items} />;
 }

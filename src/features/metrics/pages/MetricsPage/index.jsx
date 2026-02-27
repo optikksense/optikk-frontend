@@ -5,20 +5,16 @@ import { BarChart3, Activity, AlertCircle, Clock } from 'lucide-react';
 import { PageHeader, StatCardsGrid } from '@components/common';
 import { useDashboardConfig } from '@hooks/useDashboardConfig';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
-import LatencyAnalysisPage from '../LatencyAnalysisPage';
-
 import { useMetricsState } from '../../hooks/useMetricsState';
 import { useMetricsQueries } from '../../hooks/useMetricsQueries';
 import { calculateTrends } from '../../utils/trendCalculators';
 import {
   normalizeMetricSummary,
   normalizeTimeSeriesPoint,
-  normalizeServiceMetric,
   normalizeEndpointMetric
 } from '../../utils/metricNormalizers';
 
 import { MetricsFilterBar } from '../../components/MetricsFilterBar';
-import { ServiceMetricsGrid } from '../../components/ServiceMetricsGrid';
 
 export default function MetricsPage() {
   const { config } = useDashboardConfig('metrics');
@@ -35,7 +31,6 @@ export default function MetricsPage() {
     servicesData,
     summaryData, summaryLoading,
     metricsData, metricsLoading,
-    serviceMetricsData,
     endpointMetricsData,
     endpointTimeSeriesData
   } = useMetricsQueries({ selectedService, showErrorsOnly, activeTab });
@@ -50,11 +45,6 @@ export default function MetricsPage() {
 
   const metrics = showErrorsOnly ? metricsPoints.filter((m) => m.error_count > 0) : metricsPoints;
   const summary = useMemo(() => normalizeMetricSummary(summaryData || {}), [summaryData]);
-
-  const serviceMetrics = useMemo(
-    () => (Array.isArray(serviceMetricsData) ? serviceMetricsData : []).map(normalizeServiceMetric),
-    [serviceMetricsData]
-  );
 
   const endpointMetrics = useMemo(
     () => (Array.isArray(endpointMetricsData) ? endpointMetricsData : []).map(normalizeEndpointMetric),
@@ -80,11 +70,6 @@ export default function MetricsPage() {
   }, [metrics]);
 
   const latencySparkline = useMemo(() => (metrics || []).map(m => m.avg_latency || 0), [metrics]);
-
-  const handleServiceSelect = (serviceName) => {
-    setSelectedService(serviceName);
-    onTabChange('overview');
-  };
 
   // 5. UI Rendering Composition
   return (
@@ -171,21 +156,6 @@ export default function MetricsPage() {
                   isLoading={metricsLoading}
                 />
               ),
-            },
-            {
-              key: 'services',
-              label: `Services (${serviceMetrics.length})`,
-              children: (
-                <ServiceMetricsGrid
-                  serviceMetrics={serviceMetrics}
-                  onServiceSelect={handleServiceSelect}
-                />
-              ),
-            },
-            {
-              key: 'latency',
-              label: 'Latency',
-              children: <LatencyAnalysisPage embedded />,
             },
           ]}
         />

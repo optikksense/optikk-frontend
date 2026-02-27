@@ -7,6 +7,7 @@ import { ALERT_SEVERITIES, ALERT_STATUSES } from '@config/constants';
 import { formatTimestamp } from '@utils/formatters';
 import PageHeader from '@components/common/layout/PageHeader';
 import FilterBar from '@components/common/forms/FilterBar';
+import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
 import DataTable from '@components/common/data-display/DataTable';
 import AlertActions from '../../components/alerts/AlertActions';
 import CreateAlertModal from '../../components/alerts/CreateAlertModal';
@@ -14,6 +15,17 @@ import MuteDialog from '../../components/alerts/MuteDialog';
 import Timeline from '@components/common/data-display/Timeline';
 import toast from 'react-hot-toast';
 import './AlertsPage.css';
+
+const ALERT_COLUMNS = [
+  { key: 'name',        label: 'Name',      defaultWidth: 200 },
+  { key: 'severity',    label: 'Severity',  defaultWidth: 100 },
+  { key: 'status',      label: 'Status',    defaultWidth: 120 },
+  { key: 'type',        label: 'Type',      defaultWidth: 80 },
+  { key: 'serviceName', label: 'Service',   defaultWidth: 150 },
+  { key: 'condition',   label: 'Condition', defaultWidth: 180 },
+  { key: 'triggeredAt', label: 'Triggered', defaultWidth: 160 },
+  { key: 'actions',     label: 'Actions',   defaultWidth: 200, flex: true },
+];
 
 export default function AlertsPage() {
   const queryClient = useQueryClient();
@@ -126,51 +138,26 @@ export default function AlertsPage() {
     return idx >= 0 ? idx : 0;
   };
 
-  const columns = [
+  const tableColumns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      width: 200,
-      render: (name, record) => (
-        <a onClick={() => openDetail(record)} style={{ fontWeight: 600 }}>{name}</a>
-      ),
+      title: 'Name', dataIndex: 'name', key: 'name', width: 200,
+      render: (name, record) => <a onClick={() => openDetail(record)} style={{ fontWeight: 600 }}>{name}</a>,
     },
     {
-      title: 'Severity',
-      dataIndex: 'severity',
-      key: 'severity',
-      width: 100,
-      render: (sev) => (
-        <Tag color={severityColor(sev)} style={{ color: '#fff' }}>{sev?.toUpperCase()}</Tag>
-      ),
+      title: 'Severity', dataIndex: 'severity', key: 'severity', width: 100,
+      render: (sev) => <Tag color={severityColor(sev)} style={{ color: '#fff' }}>{sev?.toUpperCase()}</Tag>,
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      render: (status) => (
-        <Tag color={statusColor(status)} style={{ color: '#fff' }}>{status?.toUpperCase()}</Tag>
-      ),
+      title: 'Status', dataIndex: 'status', key: 'status', width: 120,
+      render: (status) => <Tag color={statusColor(status)} style={{ color: '#fff' }}>{status?.toUpperCase()}</Tag>,
     },
     {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      width: 80,
+      title: 'Type', dataIndex: 'type', key: 'type', width: 80,
       render: (type) => <span style={{ textTransform: 'capitalize' }}>{type}</span>,
     },
+    { title: 'Service', dataIndex: 'serviceName', key: 'serviceName', width: 150 },
     {
-      title: 'Service',
-      dataIndex: 'serviceName',
-      key: 'serviceName',
-      width: 150,
-    },
-    {
-      title: 'Condition',
-      key: 'condition',
-      width: 180,
+      title: 'Condition', key: 'condition', width: 180,
       render: (_, record) => {
         if (record.metric && record.operator && record.threshold != null) {
           return <code>{record.metric} {record.operator} {record.threshold}</code>;
@@ -179,16 +166,11 @@ export default function AlertsPage() {
       },
     },
     {
-      title: 'Triggered',
-      dataIndex: 'triggeredAt',
-      key: 'triggeredAt',
-      width: 160,
+      title: 'Triggered', dataIndex: 'triggeredAt', key: 'triggeredAt', width: 160,
       render: (ts) => ts ? formatTimestamp(ts) : '-',
     },
     {
-      title: 'Actions',
-      key: 'actions',
-      width: 200,
+      title: 'Actions', key: 'actions', width: 200,
       render: (_, record) => (
         <AlertActions
           alert={record}
@@ -213,7 +195,7 @@ export default function AlertsPage() {
           </Typography.Text>
         </div>
         <DataTable
-          columns={columns}
+          columns={tableColumns}
           data={groupAlerts}
           rowKey="id"
           pagination={false}
@@ -298,20 +280,76 @@ export default function AlertsPage() {
       )}
 
       {viewMode === 'table' && (
-        <Card>
-          <DataTable
-            columns={columns}
-            data={alerts}
-            loading={isLoading}
-            rowKey="id"
-            scroll={{ x: 1200 }}
-            rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
-            onRow={(record) => ({
-              onClick: () => openDetail(record),
-              style: { cursor: 'pointer' },
-            })}
+        <div style={{ height: boardHeight(25) }}>
+          <ObservabilityDataBoard
+            columns={ALERT_COLUMNS}
+            rows={alerts}
+            rowKey={(row) => row.id}
+            entityName="alert"
+            storageKey="alerts-board-cols"
+            isLoading={isLoading}
+            renderRow={(row, { colWidths, visibleCols }) => (
+              <>
+                {visibleCols.name && (
+                  <div
+                    style={{ width: colWidths.name, flexShrink: 0, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--color-primary, #5E60CE)' }}
+                    onClick={() => openDetail(row)}
+                  >
+                    {row.name}
+                  </div>
+                )}
+                {visibleCols.severity && (
+                  <div style={{ width: colWidths.severity, flexShrink: 0 }}>
+                    <Tag color={severityColor(row.severity)} style={{ color: '#fff' }}>{row.severity?.toUpperCase()}</Tag>
+                  </div>
+                )}
+                {visibleCols.status && (
+                  <div style={{ width: colWidths.status, flexShrink: 0 }}>
+                    <Tag color={statusColor(row.status)} style={{ color: '#fff' }}>{row.status?.toUpperCase()}</Tag>
+                  </div>
+                )}
+                {visibleCols.type && (
+                  <div style={{ width: colWidths.type, flexShrink: 0, textTransform: 'capitalize' }}>
+                    {row.type}
+                  </div>
+                )}
+                {visibleCols.serviceName && (
+                  <div style={{ width: colWidths.serviceName, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {row.serviceName || '-'}
+                  </div>
+                )}
+                {visibleCols.condition && (
+                  <div style={{ width: colWidths.condition, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {row.metric && row.operator && row.threshold != null
+                      ? <code style={{ fontSize: 11 }}>{row.metric} {row.operator} {row.threshold}</code>
+                      : (row.condition || '-')}
+                  </div>
+                )}
+                {visibleCols.triggeredAt && (
+                  <div style={{ width: colWidths.triggeredAt, flexShrink: 0, color: 'var(--text-muted)' }}>
+                    {row.triggeredAt ? formatTimestamp(row.triggeredAt) : '-'}
+                  </div>
+                )}
+                {visibleCols.actions && (
+                  <div style={{ flex: 1 }} onClick={(e) => e.stopPropagation()}>
+                    <AlertActions
+                      alert={row}
+                      onAcknowledge={(id) => ackMutation.mutate(id)}
+                      onResolve={(id) => resolveMutation.mutate(id)}
+                      onMuteWithReason={(id, minutes, reason) => muteWithReasonMutation.mutate({ id, minutes, reason })}
+                      loading={actionLoading}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+            emptyTips={[
+              { num: 1, text: <>Change the <strong>status filter</strong> above</> },
+              { num: 2, text: <>Check your <strong>alert rule</strong> conditions</> },
+              { num: 3, text: <>Ensure your services are sending <strong>metrics</strong></> },
+            ]}
           />
-        </Card>
+        </div>
       )}
 
       {viewMode === 'grouped' && (

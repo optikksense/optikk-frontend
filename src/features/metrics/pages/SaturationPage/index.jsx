@@ -9,12 +9,18 @@ import { v1Service } from '@services/v1Service';
 import PageHeader from '@components/common/layout/PageHeader';
 import StatCard from '@components/common/cards/StatCard';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
-import { formatNumber, formatDuration } from '@utils/formatters';
+import { formatNumber, formatDuration, normalizePercentage } from '@utils/formatters';
 import './SaturationPage.css';
 
 function pct(v) {
   const n = Number(v);
   return isNaN(n) ? null : Math.round(n * 100) / 100;
+}
+
+function safePercent(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return 0;
+  return Math.round(normalizePercentage(n) * 10) / 10;
 }
 
 function normalizeServiceMetric(row = {}) {
@@ -76,7 +82,7 @@ function SatGauge({ label, value, max, color }) {
         strokeColor={color}
         format={() => (
           <span style={{ fontSize: 11, color: 'var(--text-primary)' }}>
-            {max > 0 ? `${Number(value).toFixed(0)}%` : `${Number(pctVal).toFixed(1)}%`}
+            {max > 0 ? `${Number(Math.min(value, 100)).toFixed(0)}%` : `${Number(pctVal).toFixed(1)}%`}
           </span>
         )}
       />
@@ -128,7 +134,7 @@ export default function SaturationPage() {
 
   const summary = useMemo(() => {
     if (!metrics.length) return { maxDbPool: 0, maxLag: 0, maxThread: 0, maxQueue: 0 };
-    const maxDbPool = Math.max(...metrics.map((m) => pct(m.max_db_pool_util) ?? 0));
+    const maxDbPool = Math.max(...metrics.map((m) => safePercent(m.max_db_pool_util)));
     const maxLag = Math.max(...metrics.map((m) => pct(m.max_consumer_lag) ?? 0));
     const maxThread = Math.max(...metrics.map((m) => pct(m.avg_thread_pool_active) ?? 0));
     const maxQueue = Math.max(...metrics.map((m) => pct(m.max_queue_depth) ?? 0));
@@ -182,7 +188,7 @@ export default function SaturationPage() {
       dataIndex: 'avg_db_pool_util',
       key: 'avg_db_pool_util',
       render: (v) => {
-        const n = pct(v);
+        const n = safePercent(v);
         if (n == null || isNaN(n)) return <span style={{ color: 'var(--text-muted)' }}>N/A</span>;
         const color = n > 80 ? '#F04438' : n > 60 ? '#F79009' : '#73C991';
         return (
@@ -192,7 +198,7 @@ export default function SaturationPage() {
           </div>
         );
       },
-      sorter: (a, b) => (pct(a.avg_db_pool_util) ?? -1) - (pct(b.avg_db_pool_util) ?? -1),
+      sorter: (a, b) => safePercent(a.avg_db_pool_util) - safePercent(b.avg_db_pool_util),
     },
     {
       title: 'Consumer Lag',
@@ -332,7 +338,7 @@ export default function SaturationPage() {
               ) : (
                 <div className="sat-gauges-row">
                   {metrics.slice(0, 8).map((m, i) => {
-                    const v = pct(m.avg_db_pool_util);
+                    const v = safePercent(m.avg_db_pool_util);
                     if (v == null) return null;
                     const color = v > 80 ? '#F04438' : v > 60 ? '#F79009' : '#73C991';
                     return (

@@ -1,9 +1,20 @@
-import { Card, Col, Progress, Row, Segmented, Tag } from 'antd';
+import { Col, Progress, Row, Segmented, Tag } from 'antd';
 import { Activity, AlertCircle, Layers, LayoutGrid, List, ShieldAlert } from 'lucide-react';
-import { DataTable, FilterBar, HealthIndicator, StatCardsGrid } from '@components/common';
+import { FilterBar, HealthIndicator, StatCardsGrid } from '@components/common';
+import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
 import SparklineChart from '@components/charts/micro/SparklineChart';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
 import { formatNumber, formatDuration } from '@utils/formatters';
+
+const SERVICE_COLUMNS = [
+  { key: 'serviceName',  label: 'Service Name',    defaultWidth: 200 },
+  { key: 'status',       label: 'Status',          defaultWidth: 120 },
+  { key: 'requestCount', label: 'Total Requests',  defaultWidth: 150 },
+  { key: 'errorRate',    label: 'Error Rate',      defaultWidth: 120 },
+  { key: 'avgLatency',   label: 'Avg Latency',     defaultWidth: 120 },
+  { key: 'p95Latency',   label: 'P95 Latency',     defaultWidth: 120 },
+  { key: 'p99Latency',   label: 'P99 Latency',     defaultWidth: 120, flex: true },
+];
 
 export function ServiceOverviewTab({
     totalServices,
@@ -19,7 +30,6 @@ export function ServiceOverviewTab({
     setSearchQuery,
     viewMode,
     setViewMode,
-    columns,
     tableData,
     onNodeClick,
 }) {
@@ -77,30 +87,87 @@ export function ServiceOverviewTab({
             </div>
 
             {viewMode === 'table' ? (
-                <Card className="services-panel-card">
-                    <DataTable
-                        columns={columns}
-                        data={tableData}
-                        loading={isLoading}
-                        rowKey="serviceName"
-                        showPagination={false}
+                <div style={{ height: boardHeight(25) }}>
+                    <ObservabilityDataBoard
+                        columns={SERVICE_COLUMNS}
+                        rows={tableData}
+                        rowKey={(row) => row.serviceName}
+                        entityName="service"
+                        storageKey="services-overview-board-cols"
+                        isLoading={isLoading}
+                        renderRow={(row, { colWidths, visibleCols }) => (
+                            <>
+                                {visibleCols.serviceName && (
+                                    <div
+                                        style={{ width: colWidths.serviceName, flexShrink: 0, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--color-primary, #5E60CE)' }}
+                                        onClick={() => onNodeClick(row.serviceName)}
+                                    >
+                                        {row.serviceName}
+                                    </div>
+                                )}
+                                {visibleCols.status && (
+                                    <div style={{ width: colWidths.status, flexShrink: 0 }}>
+                                        <HealthIndicator status={row.status} showLabel />
+                                    </div>
+                                )}
+                                {visibleCols.requestCount && (
+                                    <div style={{ width: colWidths.requestCount, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <span>{formatNumber(row.requestCount)}</span>
+                                        {row.requestTrend && (
+                                            <SparklineChart data={row.requestTrend} color="#1890ff" width={50} height={18} />
+                                        )}
+                                    </div>
+                                )}
+                                {visibleCols.errorRate && (
+                                    <div style={{ width: colWidths.errorRate, flexShrink: 0, color: row.errorRate > 5 ? '#F04438' : row.errorRate > 1 ? '#F79009' : '#73C991', fontWeight: 600 }}>
+                                        {Number(row.errorRate).toFixed(2)}%
+                                    </div>
+                                )}
+                                {visibleCols.avgLatency && (
+                                    <div style={{ width: colWidths.avgLatency, flexShrink: 0, fontFamily: 'monospace', fontSize: 12 }}>
+                                        {formatDuration(row.avgLatency)}
+                                    </div>
+                                )}
+                                {visibleCols.p95Latency && (
+                                    <div style={{ width: colWidths.p95Latency, flexShrink: 0, fontFamily: 'monospace', fontSize: 12 }}>
+                                        {formatDuration(row.p95Latency)}
+                                    </div>
+                                )}
+                                {visibleCols.p99Latency && (
+                                    <div style={{ flex: 1, fontFamily: 'monospace', fontSize: 12 }}>
+                                        {formatDuration(row.p99Latency)}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                        emptyTips={[
+                            { num: 1, text: <>Clear the <strong>search</strong> filter above</> },
+                            { num: 2, text: <>Widen the <strong>time range</strong> in the top bar</> },
+                            { num: 3, text: <>Ensure your services are sending <strong>OTLP telemetry</strong></> },
+                        ]}
                     />
-                </Card>
+                </div>
             ) : (
                 <Row gutter={[16, 16]}>
                     {tableData.map((service) => {
                         const status = service.status;
                         return (
                             <Col xs={24} sm={12} md={8} lg={6} key={service.serviceName}>
-                                <Card
+                                <div
                                     className="services-grid-card"
-                                    hoverable
                                     onClick={() => onNodeClick(service.serviceName)}
                                     style={{
                                         borderLeft: `3px solid ${status === 'healthy' ? '#73C991' : status === 'degraded' ? '#F79009' : '#F04438'}`,
                                         height: '100%',
+                                        background: 'var(--bg-secondary)',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: 8,
+                                        padding: 16,
+                                        cursor: 'pointer',
+                                        transition: 'background 0.08s ease',
                                     }}
-                                    bodyStyle={{ padding: 16 }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-tertiary, #1A1A1A)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                                         <HealthIndicator status={status} size="small" />
@@ -168,7 +235,7 @@ export function ServiceOverviewTab({
                                         <span>Avg: {formatDuration(service.avgLatency)}</span>
                                         <span>P95: {formatDuration(service.p95Latency)}</span>
                                     </div>
-                                </Card>
+                                </div>
                             </Col>
                         );
                     })}

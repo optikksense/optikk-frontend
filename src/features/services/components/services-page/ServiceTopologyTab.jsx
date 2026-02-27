@@ -1,8 +1,18 @@
 import { Card, Col, Empty, Row, Skeleton, Tag } from 'antd';
 import { ArrowRight, GitBranch, Network, ShieldAlert } from 'lucide-react';
-import { FilterBar, HealthIndicator, StatCardsGrid, DataTable } from '@components/common';
+import { FilterBar, HealthIndicator, StatCardsGrid } from '@components/common';
+import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
 import ServiceGraph from '@components/charts/specialized/ServiceGraph';
 import { formatNumber, formatDuration } from '@utils/formatters';
+
+const DEP_COLUMNS = [
+    { key: 'source',     label: 'Source',      defaultWidth: 180 },
+    { key: 'target',     label: 'Target',      defaultWidth: 180 },
+    { key: 'callCount',  label: 'Calls',       defaultWidth: 120 },
+    { key: 'avgLatency', label: 'Avg Latency', defaultWidth: 120 },
+    { key: 'errorRate',  label: 'Error Rate',  defaultWidth: 120 },
+    { key: 'risk',       label: 'Risk Score',  defaultWidth: 120, flex: true },
+];
 
 export function ServiceTopologyTab({
     topologyStats,
@@ -16,7 +26,6 @@ export function ServiceTopologyTab({
     healthFilter,
     setHealthFilter,
     healthOptions,
-    dependencyColumns,
     dependencyRows,
     onNodeClick,
 }) {
@@ -60,7 +69,7 @@ export function ServiceTopologyTab({
             />
 
             <Row gutter={[16, 16]}>
-                <Col xs={24} lg={16}>
+                <Col xs={24}>
                     <Card title="Service Dependency Graph" className="services-panel-card services-graph-card" bordered={false} styles={{ body: { padding: '8px' } }}>
                         {topologyLoading ? (
                             <div className="services-loading-container">
@@ -79,8 +88,10 @@ export function ServiceTopologyTab({
                         )}
                     </Card>
                 </Col>
+            </Row>
 
-                <Col xs={24} lg={8}>
+            <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+                <Col xs={24}>
                     <Card title="Critical Service Risks" className="services-panel-card services-risk-card" bordered={false}>
                         {topologyLoading ? (
                             <Skeleton active paragraph={{ rows: 8 }} />
@@ -121,15 +132,52 @@ export function ServiceTopologyTab({
                 style={{ marginTop: 16 }}
                 extra={<span className="services-card-extra">Top edges ranked by risk score</span>}
             >
-                <DataTable
-                    columns={dependencyColumns}
-                    data={dependencyRows}
-                    loading={topologyLoading}
-                    rowKey="key"
-                    scroll={{ x: 900 }}
-                    showPagination={false}
-                    emptyText="No dependencies found"
-                />
+                <div style={{ height: boardHeight(15) }}>
+                    <ObservabilityDataBoard
+                        columns={DEP_COLUMNS}
+                        rows={dependencyRows}
+                        rowKey={(row) => row.key}
+                        entityName="dependency"
+                        storageKey="services-deps-board-cols"
+                        isLoading={topologyLoading}
+                        renderRow={(row, { colWidths, visibleCols }) => (
+                            <>
+                                {visibleCols.source && (
+                                    <div style={{ width: colWidths.source, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <HealthIndicator status={row.sourceStatus} size={7} />
+                                        <a onClick={() => onNodeClick(row.source)} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.source}</a>
+                                    </div>
+                                )}
+                                {visibleCols.target && (
+                                    <div style={{ width: colWidths.target, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <HealthIndicator status={row.targetStatus} size={7} />
+                                        <a onClick={() => onNodeClick(row.target)} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.target}</a>
+                                    </div>
+                                )}
+                                {visibleCols.callCount && (
+                                    <div style={{ width: colWidths.callCount, flexShrink: 0 }}>{formatNumber(row.callCount)}</div>
+                                )}
+                                {visibleCols.avgLatency && (
+                                    <div style={{ width: colWidths.avgLatency, flexShrink: 0 }}>{formatDuration(row.avgLatency)}</div>
+                                )}
+                                {visibleCols.errorRate && (
+                                    <div style={{ width: colWidths.errorRate, flexShrink: 0, color: row.errorRate > 5 ? '#F04438' : row.errorRate > 1 ? '#F79009' : '#73C991', fontWeight: 600 }}>
+                                        {row.errorRate.toFixed(2)}%
+                                    </div>
+                                )}
+                                {visibleCols.risk && (
+                                    <div style={{ flex: 1, color: row.risk > 70 ? '#F04438' : row.risk > 45 ? '#F79009' : '#73C991', fontWeight: 600 }}>
+                                        {row.risk}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                        emptyTips={[
+                            { num: 1, text: <>No service dependencies detected yet</> },
+                            { num: 2, text: <>Ensure services are making <strong>outbound calls</strong> to each other</> },
+                        ]}
+                    />
+                </div>
             </Card>
         </>
     );

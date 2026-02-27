@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Card, Row, Col, Drawer, Descriptions, Tag, Steps } from 'antd';
+import { Row, Col, Drawer, Descriptions, Tag, Steps } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, Clock, Activity, Timer } from 'lucide-react';
 import { useTimeRange } from '@hooks/useTimeRangeQuery';
@@ -9,27 +9,35 @@ import { INCIDENT_STATUSES, ALERT_SEVERITIES, ALERT_STATUSES } from '@config/con
 import { formatTimestamp, formatDuration } from '@utils/formatters';
 import PageHeader from '@components/common/layout/PageHeader';
 import FilterBar from '@components/common/forms/FilterBar';
-import DataTable from '@components/common/data-display/DataTable';
+import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
 import StatusBadge from '@components/common/feedback/StatusBadge';
 import StatCard from '@components/common/cards/StatCard';
-import HealthIndicator from '@components/common/cards/HealthIndicator';
 import Timeline from '@components/common/data-display/Timeline';
+
+const INCIDENT_COLUMNS = [
+  { key: 'title',        label: 'Incident', defaultWidth: 240 },
+  { key: 'service_name', label: 'Service',  defaultWidth: 160 },
+  { key: 'severity',     label: 'Severity', defaultWidth: 100 },
+  { key: 'status',       label: 'Status',   defaultWidth: 120 },
+  { key: 'created_at',   label: 'Created',  defaultWidth: 160, flex: true },
+];
+
+const PAGE_SIZE = 20;
 
 export default function IncidentsPage() {
   const { selectedTeamId, startTime, endTime, refreshKey } = useTimeRange();
   const [statusFilter, setStatusFilter] = useState(null);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['incidents', selectedTeamId, startTime, endTime, statusFilter, page, pageSize, refreshKey],
+    queryKey: ['incidents', selectedTeamId, startTime, endTime, statusFilter, page, PAGE_SIZE, refreshKey],
     queryFn: () =>
       v1Service.getIncidents(selectedTeamId, startTime, endTime, {
         statuses: statusFilter ? [statusFilter] : undefined,
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
+        limit: PAGE_SIZE,
+        offset: (page - 1) * PAGE_SIZE,
       }),
     enabled: !!selectedTeamId,
   });
@@ -44,18 +52,15 @@ export default function IncidentsPage() {
   });
   const relatedAlerts = relatedAlertsData?.data ?? relatedAlertsData ?? [];
 
-  // Compute stats
   const stats = useMemo(() => {
     const totalCount = incidents.length;
     const openCount = incidents.filter((i) => i.status === 'open' || i.status === 'investigating').length;
 
-    // MTTR: Mean Time to Resolve
     const resolved = incidents.filter((i) => i.resolved_at && i.created_at);
     const mttr = resolved.length > 0
       ? resolved.reduce((sum, i) => sum + (new Date(i.resolved_at) - new Date(i.created_at)), 0) / resolved.length
       : 0;
 
-    // MTTA: Mean Time to Acknowledge
     const acknowledged = incidents.filter((i) => i.acknowledged_at && i.created_at);
     const mtta = acknowledged.length > 0
       ? acknowledged.reduce((sum, i) => sum + (new Date(i.acknowledged_at) - new Date(i.created_at)), 0) / acknowledged.length
@@ -66,7 +71,6 @@ export default function IncidentsPage() {
 
   const statusOptions = INCIDENT_STATUSES.map((s) => ({ label: s.label, value: s.value }));
 
-  // Incident status to step index
   const getStepIndex = (status) => {
     const steps = ['open', 'investigating', 'identified', 'monitoring', 'resolved'];
     const idx = steps.indexOf(status?.toLowerCase());
@@ -78,7 +82,6 @@ export default function IncidentsPage() {
     setDrawerOpen(true);
   };
 
-  // Build incident timeline
   const incidentTimeline = useMemo(() => {
     if (!selectedIncident) return [];
     const items = [];
@@ -100,40 +103,7 @@ export default function IncidentsPage() {
     return items;
   }, [selectedIncident]);
 
-  const columns = [
-    {
-      title: 'Incident',
-      dataIndex: 'title',
-      key: 'title',
-      ellipsis: true,
-      render: (title, record) => (
-        <a onClick={() => openIncidentDetail(record)} style={{ fontWeight: 600 }}>{title}</a>
-      ),
-    },
-    {
-      title: 'Service',
-      dataIndex: 'service_name',
-      key: 'service_name',
-    },
-    {
-      title: 'Severity',
-      dataIndex: 'severity',
-      key: 'severity',
-      render: (severity) => <StatusBadge type="severity" status={severity} />,
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => <StatusBadge type="incident" status={status} />,
-    },
-    {
-      title: 'Created',
-      dataIndex: 'created_at',
-      key: 'created_at',
-      render: (val) => (val ? formatTimestamp(val) : '-'),
-    },
-  ];
+  const hasNextPage = total > page * PAGE_SIZE;
 
   return (
     <div className="incidents-page">
@@ -188,32 +158,63 @@ export default function IncidentsPage() {
             placeholder: 'All statuses',
             options: statusOptions,
             value: statusFilter,
-            onChange: setStatusFilter,
+            onChange: (v) => { setStatusFilter(v); setPage(1); },
             width: 180,
           },
         ]}
       />
 
-      <Card>
-        <DataTable
-          columns={columns}
-          data={incidents}
-          loading={isLoading}
-          rowKey="incident_id"
-          page={page}
-          pageSize={pageSize}
-          total={total}
-          onPageChange={(p, ps) => {
-            setPage(p);
-            setPageSize(ps);
-          }}
-          onRow={(record) => ({
-            onClick: () => openIncidentDetail(record),
-            style: { cursor: 'pointer' },
-          })}
-          emptyText="No incidents found"
+      <div style={{ height: boardHeight(PAGE_SIZE) }}>
+        <ObservabilityDataBoard
+          columns={INCIDENT_COLUMNS}
+          rows={incidents}
+          rowKey={(row) => row.incident_id}
+          entityName="incident"
+          storageKey="incidents-board-cols"
+          isLoading={isLoading}
+          serverTotal={total}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={false}
+          fetchNextPage={() => setPage((p) => p + 1)}
+          renderRow={(row, { colWidths, visibleCols }) => (
+            <>
+              {visibleCols.title && (
+                <div
+                  style={{ width: colWidths.title, flexShrink: 0, cursor: 'pointer', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                  onClick={() => openIncidentDetail(row)}
+                >
+                  {row.title}
+                </div>
+              )}
+              {visibleCols.service_name && (
+                <div style={{ width: colWidths.service_name, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {row.service_name || '-'}
+                </div>
+              )}
+              {visibleCols.severity && (
+                <div style={{ width: colWidths.severity, flexShrink: 0 }}>
+                  <StatusBadge type="severity" status={row.severity} />
+                </div>
+              )}
+              {visibleCols.status && (
+                <div style={{ width: colWidths.status, flexShrink: 0 }}>
+                  <StatusBadge type="incident" status={row.status} />
+                </div>
+              )}
+              {visibleCols.created_at && (
+                <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-muted)' }}>
+                  {row.created_at ? formatTimestamp(row.created_at) : '-'}
+                </div>
+              )}
+            </>
+          )}
+          emptyTips={[
+            { num: 1, text: <>Widen the <strong>time range</strong> in the top bar</> },
+            { num: 2, text: <>Change the <strong>status filter</strong> above</> },
+            { num: 3, text: <>Check that your alerting rules are <strong>configured</strong></> },
+          ]}
         />
-      </Card>
+      </div>
 
       {/* Incident Detail Drawer */}
       <Drawer
@@ -266,50 +267,23 @@ export default function IncidentsPage() {
             )}
 
             {/* Related Alerts */}
-            {selectedIncident.triggered_by && (
+            {selectedIncident.triggered_by && relatedAlerts.length > 0 && (
               <div style={{ marginTop: 24 }}>
                 <h4 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>Related Alerts</h4>
-                <DataTable
-                  columns={[
-                    {
-                      title: 'Name',
-                      dataIndex: 'name',
-                      key: 'name',
-                      ellipsis: true,
-                    },
-                    {
-                      title: 'Severity',
-                      dataIndex: 'severity',
-                      key: 'severity',
-                      width: 90,
-                      render: (sev) => {
-                        const color = ALERT_SEVERITIES.find((s) => s.value === sev)?.color || '#98A2B3';
-                        return <Tag color={color} style={{ color: '#fff' }}>{sev?.toUpperCase()}</Tag>;
-                      },
-                    },
-                    {
-                      title: 'Status',
-                      dataIndex: 'status',
-                      key: 'status',
-                      width: 110,
-                      render: (status) => {
-                        const color = ALERT_STATUSES.find((s) => s.value === status?.toUpperCase())?.color || '#98A2B3';
-                        return <Tag color={color} style={{ color: '#fff' }}>{status?.toUpperCase()}</Tag>;
-                      },
-                    },
-                    {
-                      title: 'Triggered',
-                      dataIndex: 'triggeredAt',
-                      key: 'triggeredAt',
-                      width: 140,
-                      render: (ts) => ts ? formatTimestamp(ts) : '-',
-                    },
-                  ]}
-                  data={relatedAlerts}
-                  rowKey="id"
-                  pagination={false}
-                  emptyText="No related alerts"
-                />
+                {relatedAlerts.map((alert) => {
+                  const color = ALERT_SEVERITIES.find((s) => s.value === alert.severity)?.color || '#98A2B3';
+                  const statusColor = ALERT_STATUSES.find((s) => s.value === alert.status?.toUpperCase())?.color || '#98A2B3';
+                  return (
+                    <div key={alert.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid var(--border-color)' }}>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{alert.name}</span>
+                      <Tag color={color} style={{ color: '#fff' }}>{alert.severity?.toUpperCase()}</Tag>
+                      <Tag color={statusColor} style={{ color: '#fff' }}>{alert.status?.toUpperCase()}</Tag>
+                      <span style={{ color: 'var(--text-muted)', fontSize: 11, flexShrink: 0 }}>
+                        {alert.triggeredAt ? formatTimestamp(alert.triggeredAt) : '-'}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

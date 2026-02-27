@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Card, Row, Col, Drawer, Descriptions, Tag } from 'antd';
-import { useQuery } from '@tanstack/react-query';
+import { Row, Col, Drawer, Descriptions, Tag } from 'antd';
 import { Server, CheckCircle2, AlertTriangle, XCircle, Box } from 'lucide-react';
-import { useTimeRange, useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
+import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
 import { v1Service } from '@services/v1Service';
 import { formatNumber, formatTimestamp } from '@utils/formatters';
 import PageHeader from '@components/common/layout/PageHeader';
 import FilterBar from '@components/common/forms/FilterBar';
 import StatCard from '@components/common/cards/StatCard';
-import DataTable from '@components/common/data-display/DataTable';
+import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
+
 
 function deriveNodeStatus(errorRate) {
   const rate = Number(errorRate) || 0;
@@ -23,8 +23,20 @@ const STATUS_CONFIG = {
   unhealthy: { label: 'Unhealthy', color: '#F04438', icon: <XCircle size={14} /> },
 };
 
+const NODE_COLUMNS = [
+  { key: 'host',            label: 'Host',        defaultWidth: 200 },
+  { key: 'status',          label: 'Status',      defaultWidth: 110 },
+  { key: 'pod_count',       label: 'Pods',        defaultWidth: 80 },
+  { key: 'container_count', label: 'Containers',  defaultWidth: 100 },
+  { key: 'request_count',   label: 'Requests',    defaultWidth: 100 },
+  { key: 'error_rate',      label: 'Error Rate',  defaultWidth: 100 },
+  { key: 'avg_latency_ms',  label: 'Avg Latency', defaultWidth: 110 },
+  { key: 'p95_latency_ms',  label: 'P95 Latency', defaultWidth: 110 },
+  { key: 'services',        label: 'Services',    defaultWidth: 180 },
+  { key: 'last_seen',       label: 'Last Seen',   defaultWidth: 150, flex: true },
+];
+
 export default function NodesPage() {
-  const { selectedTeamId } = useTimeRange();
   const [hostFilter, setHostFilter] = useState('');
   const [selectedNode, setSelectedNode] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -58,141 +70,6 @@ export default function NodesPage() {
     setSelectedNode(node);
     setDrawerOpen(true);
   };
-
-  const columns = [
-    {
-      title: 'Host',
-      dataIndex: 'host',
-      key: 'host',
-      width: 200,
-      render: (host, record) => (
-        <a onClick={() => openNodeDetail(record)} style={{ fontWeight: 600 }}>
-          {host}
-        </a>
-      ),
-    },
-    {
-      title: 'Status',
-      key: 'status',
-      width: 110,
-      render: (_, record) => {
-        const status = deriveNodeStatus(record.error_rate);
-        const cfg = STATUS_CONFIG[status];
-        return (
-          <Tag color={cfg.color} icon={cfg.icon} style={{ color: '#fff' }}>
-            {cfg.label}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: 'Pods',
-      dataIndex: 'pod_count',
-      key: 'pod_count',
-      width: 80,
-      render: (v) => formatNumber(Number(v) || 0),
-    },
-    {
-      title: 'Containers',
-      dataIndex: 'container_count',
-      key: 'container_count',
-      width: 100,
-      render: (v) => formatNumber(Number(v) || 0),
-    },
-    {
-      title: 'Requests',
-      dataIndex: 'request_count',
-      key: 'request_count',
-      width: 100,
-      render: (v) => formatNumber(Number(v) || 0),
-    },
-    {
-      title: 'Error Rate',
-      dataIndex: 'error_rate',
-      key: 'error_rate',
-      width: 100,
-      render: (v) => {
-        const rate = Number(v) || 0;
-        const color = rate > 10 ? '#F04438' : rate > 2 ? '#F79009' : '#73C991';
-        return <span style={{ color, fontWeight: 600 }}>{rate.toFixed(2)}%</span>;
-      },
-    },
-    {
-      title: 'Avg Latency',
-      dataIndex: 'avg_latency_ms',
-      key: 'avg_latency_ms',
-      width: 110,
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-',
-    },
-    {
-      title: 'P95 Latency',
-      dataIndex: 'p95_latency_ms',
-      key: 'p95_latency_ms',
-      width: 110,
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-',
-    },
-    {
-      title: 'Services',
-      dataIndex: 'services',
-      key: 'services',
-      render: (services) => {
-        const arr = Array.isArray(services) ? services : [];
-        return arr.slice(0, 3).map((s) => (
-          <Tag key={s} style={{ marginBottom: 2 }}>{s}</Tag>
-        )).concat(arr.length > 3 ? [<Tag key="more">+{arr.length - 3} more</Tag>] : []);
-      },
-    },
-    {
-      title: 'Last Seen',
-      dataIndex: 'last_seen',
-      key: 'last_seen',
-      width: 150,
-      render: (v) => v ? formatTimestamp(v) : '-',
-    },
-  ];
-
-  const serviceColumns = [
-    { title: 'Service', dataIndex: 'service_name', key: 'service_name', width: 180 },
-    {
-      title: 'Requests',
-      dataIndex: 'request_count',
-      key: 'request_count',
-      width: 100,
-      render: (v) => formatNumber(Number(v) || 0),
-    },
-    {
-      title: 'Error Rate',
-      dataIndex: 'error_rate',
-      key: 'error_rate',
-      width: 100,
-      render: (v) => {
-        const rate = Number(v) || 0;
-        const color = rate > 10 ? '#F04438' : rate > 2 ? '#F79009' : '#73C991';
-        return <span style={{ color, fontWeight: 600 }}>{rate.toFixed(2)}%</span>;
-      },
-    },
-    {
-      title: 'Avg Latency',
-      dataIndex: 'avg_latency_ms',
-      key: 'avg_latency_ms',
-      width: 110,
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-',
-    },
-    {
-      title: 'P95 Latency',
-      dataIndex: 'p95_latency_ms',
-      key: 'p95_latency_ms',
-      width: 110,
-      render: (v) => v != null ? `${Number(v).toFixed(1)}ms` : '-',
-    },
-    {
-      title: 'Pods',
-      dataIndex: 'pod_count',
-      key: 'pod_count',
-      width: 70,
-      render: (v) => formatNumber(Number(v) || 0),
-    },
-  ];
 
   const nodeStatus = selectedNode ? deriveNodeStatus(selectedNode.error_rate) : 'healthy';
   const nodeStatusCfg = STATUS_CONFIG[nodeStatus];
@@ -249,20 +126,88 @@ export default function NodesPage() {
         ]}
       />
 
-      <Card>
-        <DataTable
-          columns={columns}
-          data={nodes}
-          loading={isLoading}
-          rowKey="host"
-          scroll={{ x: 1100 }}
-          onRow={(record) => ({
-            onClick: () => openNodeDetail(record),
-            style: { cursor: 'pointer' },
-          })}
-          emptyText="No nodes found"
+      <div style={{ height: boardHeight(20) }}>
+        <ObservabilityDataBoard
+          columns={NODE_COLUMNS}
+          rows={nodes}
+          rowKey={(row) => row.host}
+          entityName="node"
+          storageKey="nodes-board-cols"
+          isLoading={isLoading}
+          renderRow={(row, { colWidths, visibleCols }) => {
+            const status = deriveNodeStatus(row.error_rate);
+            const cfg = STATUS_CONFIG[status];
+            const errorRate = Number(row.error_rate) || 0;
+            const errorColor = errorRate > 10 ? '#F04438' : errorRate > 2 ? '#F79009' : '#73C991';
+            const services = Array.isArray(row.services) ? row.services : [];
+            return (
+              <>
+                {visibleCols.host && (
+                  <div
+                    style={{ width: colWidths.host, flexShrink: 0, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--color-primary, #5E60CE)' }}
+                    onClick={() => openNodeDetail(row)}
+                  >
+                    {row.host}
+                  </div>
+                )}
+                {visibleCols.status && (
+                  <div style={{ width: colWidths.status, flexShrink: 0 }}>
+                    <Tag color={cfg.color} icon={cfg.icon} style={{ color: '#fff' }}>{cfg.label}</Tag>
+                  </div>
+                )}
+                {visibleCols.pod_count && (
+                  <div style={{ width: colWidths.pod_count, flexShrink: 0 }}>
+                    {formatNumber(Number(row.pod_count) || 0)}
+                  </div>
+                )}
+                {visibleCols.container_count && (
+                  <div style={{ width: colWidths.container_count, flexShrink: 0 }}>
+                    {formatNumber(Number(row.container_count) || 0)}
+                  </div>
+                )}
+                {visibleCols.request_count && (
+                  <div style={{ width: colWidths.request_count, flexShrink: 0 }}>
+                    {formatNumber(Number(row.request_count) || 0)}
+                  </div>
+                )}
+                {visibleCols.error_rate && (
+                  <div style={{ width: colWidths.error_rate, flexShrink: 0, color: errorColor, fontWeight: 600 }}>
+                    {errorRate.toFixed(2)}%
+                  </div>
+                )}
+                {visibleCols.avg_latency_ms && (
+                  <div style={{ width: colWidths.avg_latency_ms, flexShrink: 0 }}>
+                    {row.avg_latency_ms != null ? `${Number(row.avg_latency_ms).toFixed(1)}ms` : '-'}
+                  </div>
+                )}
+                {visibleCols.p95_latency_ms && (
+                  <div style={{ width: colWidths.p95_latency_ms, flexShrink: 0 }}>
+                    {row.p95_latency_ms != null ? `${Number(row.p95_latency_ms).toFixed(1)}ms` : '-'}
+                  </div>
+                )}
+                {visibleCols.services && (
+                  <div style={{ width: colWidths.services, flexShrink: 0, overflow: 'hidden' }}>
+                    {services.slice(0, 2).map((s) => (
+                      <Tag key={s} style={{ marginBottom: 0, marginRight: 4 }}>{s}</Tag>
+                    ))}
+                    {services.length > 2 && <Tag>+{services.length - 2}</Tag>}
+                  </div>
+                )}
+                {visibleCols.last_seen && (
+                  <div style={{ flex: 1, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {row.last_seen ? formatTimestamp(row.last_seen) : '-'}
+                  </div>
+                )}
+              </>
+            );
+          }}
+          emptyTips={[
+            { num: 1, text: <>Widen the <strong>time range</strong> in the top bar</> },
+            { num: 2, text: <>Clear the <strong>host filter</strong> above</> },
+            { num: 3, text: <>Ensure your agents are reporting <strong>node metrics</strong></> },
+          ]}
         />
-      </Card>
+      </div>
 
       <Drawer
         open={drawerOpen}
@@ -299,15 +244,52 @@ export default function NodesPage() {
             </Descriptions>
 
             <h4 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>Services on this Node</h4>
-            <DataTable
-              columns={serviceColumns}
-              data={nodeServicesData || []}
-              loading={servicesLoading}
-              rowKey="service_name"
-              pagination={false}
-              scroll={{ x: 600 }}
-              emptyText="No services found"
-            />
+            <div style={{ height: boardHeight(10) }}>
+              <ObservabilityDataBoard
+                columns={[
+                  { key: 'service_name', label: 'Service',    defaultWidth: 180 },
+                  { key: 'request_count', label: 'Requests',  defaultWidth: 100 },
+                  { key: 'error_rate',   label: 'Error Rate', defaultWidth: 100 },
+                  { key: 'avg_latency_ms', label: 'Avg Latency', defaultWidth: 110 },
+                  { key: 'p95_latency_ms', label: 'P95 Latency', defaultWidth: 110 },
+                  { key: 'pod_count',    label: 'Pods',       defaultWidth: 70, flex: true },
+                ]}
+                rows={nodeServicesData || []}
+                rowKey={(row) => row.service_name}
+                entityName="service"
+                isLoading={servicesLoading}
+                renderRow={(row, { colWidths, visibleCols }) => {
+                  const rate = Number(row.error_rate) || 0;
+                  const errColor = rate > 10 ? '#F04438' : rate > 2 ? '#F79009' : '#73C991';
+                  return (
+                    <>
+                      {visibleCols.service_name && (
+                        <div style={{ width: colWidths.service_name, flexShrink: 0, fontWeight: 600 }}>{row.service_name}</div>
+                      )}
+                      {visibleCols.request_count && (
+                        <div style={{ width: colWidths.request_count, flexShrink: 0 }}>{formatNumber(Number(row.request_count) || 0)}</div>
+                      )}
+                      {visibleCols.error_rate && (
+                        <div style={{ width: colWidths.error_rate, flexShrink: 0, color: errColor, fontWeight: 600 }}>{rate.toFixed(2)}%</div>
+                      )}
+                      {visibleCols.avg_latency_ms && (
+                        <div style={{ width: colWidths.avg_latency_ms, flexShrink: 0 }}>
+                          {row.avg_latency_ms != null ? `${Number(row.avg_latency_ms).toFixed(1)}ms` : '-'}
+                        </div>
+                      )}
+                      {visibleCols.p95_latency_ms && (
+                        <div style={{ width: colWidths.p95_latency_ms, flexShrink: 0 }}>
+                          {row.p95_latency_ms != null ? `${Number(row.p95_latency_ms).toFixed(1)}ms` : '-'}
+                        </div>
+                      )}
+                      {visibleCols.pod_count && (
+                        <div style={{ flex: 1 }}>{formatNumber(Number(row.pod_count) || 0)}</div>
+                      )}
+                    </>
+                  );
+                }}
+              />
+            </div>
           </div>
         )}
       </Drawer>

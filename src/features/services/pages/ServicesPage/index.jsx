@@ -317,7 +317,6 @@ export default function ServicesPage() {
                 setSearchQuery={setSearchQuery}
                 viewMode={viewMode}
                 setViewMode={setViewMode}
-                columns={columns}
                 tableData={tableData}
                 onNodeClick={onNodeClick}
               />
@@ -339,7 +338,6 @@ export default function ServicesPage() {
                 healthFilter={healthFilter}
                 setHealthFilter={setHealthFilter}
                 healthOptions={healthOptions}
-                dependencyColumns={dependencyColumns}
                 dependencyRows={dependencyRows}
                 onNodeClick={onNodeClick}
               />

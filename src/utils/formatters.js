@@ -60,8 +60,19 @@ export function formatBytes(bytes) {
 /**
  * Format percentage
  */
-export function formatPercentage(value, decimals = 2) {
-  return `${value.toFixed(decimals)}%`;
+export function normalizePercentage(value, clamp = true) {
+  const raw = Number(value);
+  if (!Number.isFinite(raw)) return 0;
+
+  // Accept both fraction form (0.72) and percentage form (72).
+  const percent = raw >= 0 && raw <= 1 ? raw * 100 : raw;
+  if (!clamp) return percent;
+  return Math.min(Math.max(percent, 0), 100);
+}
+
+export function formatPercentage(value, decimals = 2, clamp = true) {
+  const percent = normalizePercentage(value, clamp);
+  return `${percent.toFixed(decimals)}%`;
 }
 
 /**
