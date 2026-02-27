@@ -118,15 +118,45 @@ function TopQueuesTable({ queues = [] }) {
 export default function MessagingQueueMonitoringPage() {
   const { config } = useDashboardConfig('messaging-queue');
 
-  const { data, isLoading } = useTimeRangeQuery(
-    'messaging-queue-insights',
-    (teamId, start, end) => v1Service.getMessagingQueueInsights(teamId, start, end)
+  const { data: consumerLagData, isLoading: isLoadingConsumer } = useTimeRangeQuery(
+    'queue-consumer-lag',
+    (teamId, start, end) => v1Service.getQueueConsumerLag(teamId, start, end)
   );
 
-  const summary = data?.summary || {};
-  const topQueues = Array.isArray(data?.topQueues) ? data.topQueues : [];
+  const { data: topicLagData, isLoading: isLoadingTopic } = useTimeRangeQuery(
+    'queue-topic-lag',
+    (teamId, start, end) => v1Service.getQueueTopicLag(teamId, start, end)
+  );
 
-  const dataSources = useMemo(() => ({ 'messaging-queue-insights': data }), [data]);
+  const { data: productionRateData, isLoading: isLoadingProd } = useTimeRangeQuery(
+    'kafka-production-rate',
+    (teamId, start, end) => v1Service.getKafkaProductionRate(teamId, start, end)
+  );
+
+  const { data: consumptionRateData, isLoading: isLoadingConsump } = useTimeRangeQuery(
+    'kafka-consumption-rate',
+    (teamId, start, end) => v1Service.getKafkaConsumptionRate(teamId, start, end)
+  );
+
+  const { data: topQueuesData, isLoading: isLoadingTopQueues } = useTimeRangeQuery(
+    'queue-top-queues',
+    (teamId, start, end) => v1Service.getQueueTopQueuesStats(teamId, start, end)
+  );
+
+  const isLoading = isLoadingConsumer || isLoadingTopic || isLoadingTopQueues || isLoadingProd || isLoadingConsump;
+
+  const topQueues = Array.isArray(topQueuesData) ? topQueuesData : [];
+
+  const dataSources = useMemo(() => {
+    // Append `topQueues` feature wrapper so that ConfigurableDashboard can build legends
+    const withTop = (arr) => Object.assign(Array.isArray(arr) ? [...arr] : [], { topQueues });
+    return {
+      'queue-consumer-lag': withTop(consumerLagData),
+      'queue-topic-lag': withTop(topicLagData),
+      'kafka-production-rate': withTop(productionRateData),
+      'kafka-consumption-rate': withTop(consumptionRateData),
+    };
+  }, [consumerLagData, topicLagData, productionRateData, consumptionRateData, topQueues]);
 
   // Detect unique messaging systems
   const messagingSystems = useMemo(() => {
@@ -138,46 +168,6 @@ export default function MessagingQueueMonitoringPage() {
   return (
     <div>
       <PageHeader title="Messaging Queue Monitoring" icon={<Radio size={24} />} subtitle="Queue depth, consumer lag, publish and receive rates across messaging systems" />
-
-      {/* Stat cards */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Avg Queue Depth"
-            value={formatNumber(n(summary.avg_queue_depth))}
-            icon={<Layers3 size={18} />}
-            loading={isLoading}
-            description="Average pending messages"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Max Consumer Lag"
-            value={formatNumber(n(summary.max_consumer_lag))}
-            icon={<Timer size={18} />}
-            loading={isLoading}
-            description="Highest lag across all queues"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Publish Rate"
-            value={`${n(summary.avg_publish_rate).toFixed(1)}/s`}
-            icon={<TrendingUp size={18} />}
-            loading={isLoading}
-            description="Messages published per second"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            title="Receive Rate"
-            value={`${n(summary.avg_receive_rate).toFixed(1)}/s`}
-            icon={<BarChart3 size={18} />}
-            loading={isLoading}
-            description="Messages consumed per second"
-          />
-        </Col>
-      </Row>
 
       {/* Messaging systems detected pills */}
       {messagingSystems.length > 0 && (

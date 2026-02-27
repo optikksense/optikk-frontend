@@ -148,12 +148,28 @@ export const v1Service = {
     return api.get(`${BASE}/insights/logs-stream`, { params: { startTime, endTime, interval, limit } });
   },
 
-  async getDatabaseCacheInsights(teamId, startTime, endTime) {
-    return api.get(`${BASE}/saturation/database-cache`, { params: { startTime, endTime } });
+  async getDatabaseCacheSummary(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/database/latency-summary`, { params: { startTime, endTime } });
   },
 
-  async getMessagingQueueInsights(teamId, startTime, endTime, interval = '5m') {
-    return api.get(`${BASE}/saturation/messaging-queue`, { params: { startTime, endTime, interval } });
+  async getDatabaseSystemsBreakdown(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/database/systems`, { params: { startTime, endTime } });
+  },
+
+  async getDatabaseTopTablesMetrics(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/database/top-tables`, { params: { startTime, endTime } });
+  },
+
+  async getQueueConsumerLag(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/queue/consumer-lag`, { params: { startTime, endTime } });
+  },
+
+  async getQueueTopicLag(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/queue/topic-lag`, { params: { startTime, endTime } });
+  },
+
+  async getQueueTopQueuesStats(teamId, startTime, endTime) {
+    return api.get(`${BASE}/saturation/queue/top-queues`, { params: { startTime, endTime } });
   },
 
   // ==================== AI OBSERVABILITY ====================

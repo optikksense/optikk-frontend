@@ -120,17 +120,35 @@ function SystemBreakdownCard({ system }) {
 export default function DatabaseCachePerformancePage() {
   const { config } = useDashboardConfig('database-cache');
 
-  const { data, isLoading } = useTimeRangeQuery(
-    'database-cache-insights',
-    (teamId, start, end) => v1Service.getDatabaseCacheInsights(teamId, start, end)
+  const { data: summaryData, isLoading: isLoadingSummary } = useTimeRangeQuery(
+    'database-cache-summary',
+    (teamId, start, end) => v1Service.getDatabaseCacheSummary(teamId, start, end)
   );
 
-  const summary = data?.summary || {};
-  const cache = data?.cache || {};
-  const systemBreakdown = Array.isArray(data?.systemBreakdown) ? data.systemBreakdown : [];
-  const topTables = Array.isArray(data?.tableMetrics) ? data.tableMetrics.map(t => ({ ...t, key: `${t.table_name}-${t.service_name}` })) : [];
+  const { data: systemsData, isLoading: isLoadingSystems } = useTimeRangeQuery(
+    'database-systems-breakdown',
+    (teamId, start, end) => v1Service.getDatabaseSystemsBreakdown(teamId, start, end)
+  );
 
-  const dataSources = useMemo(() => ({ 'database-cache-insights': data }), [data]);
+  const { data: topTablesData, isLoading: isLoadingTables } = useTimeRangeQuery(
+    'database-top-tables',
+    (teamId, start, end) => v1Service.getDatabaseTopTablesMetrics(teamId, start, end)
+  );
+
+  const isLoading = isLoadingSummary || isLoadingSystems || isLoadingTables;
+
+  const summary = summaryData || {};
+  const cache = summaryData ? {
+    cacheHits: summaryData.cache_hits,
+    cacheMisses: summaryData.cache_misses,
+    cacheHitRatio: summaryData.cache_hits + summaryData.cache_misses > 0 ? (summaryData.cache_hits * 100.0) / (summaryData.cache_hits + summaryData.cache_misses) : 0
+  } : {};
+  const systemBreakdown = Array.isArray(systemsData) ? systemsData : [];
+  const topTables = Array.isArray(topTablesData) ? topTablesData.map(t => ({ ...t, key: `${t.table_name}-${t.service_name}` })) : [];
+
+  const dataSources = useMemo(() => ({
+    'database-cache-insights': { summary, tableMetrics: topTables, systemBreakdown, cache }
+  }), [summary, topTables, systemBreakdown, cache]);
 
   const totalSystems = systemBreakdown.length;
   const totalSpans = systemBreakdown.reduce((acc, s) => acc + (s.span_count || 0), 0);
