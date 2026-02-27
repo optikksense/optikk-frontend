@@ -13,6 +13,58 @@ import { v1Service } from '@services/v1Service';
 import { formatNumber, formatDuration, formatTimestamp } from '@utils/formatters';
 import { LOG_LEVELS } from '@config/constants';
 
+const n = (v) => (v == null || Number.isNaN(Number(v)) ? 0 : Number(v));
+
+const normalizeEndpoint = (row = {}) => ({
+  ...row,
+  service_name: row.service_name ?? row.serviceName ?? '',
+  operation_name: row.operation_name ?? row.operationName ?? '',
+  http_method: row.http_method ?? row.httpMethod ?? '',
+  request_count: n(row.request_count ?? row.requestCount),
+  error_count: n(row.error_count ?? row.errorCount),
+  avg_latency: n(row.avg_latency ?? row.avgLatency),
+  p95_latency: n(row.p95_latency ?? row.p95Latency),
+  p99_latency: n(row.p99_latency ?? row.p99Latency),
+});
+
+const normalizeErrorGroup = (row = {}) => ({
+  ...row,
+  service_name: row.service_name ?? row.serviceName ?? '',
+  operation_name: row.operation_name ?? row.operationName ?? '',
+  status_message: row.status_message ?? row.statusMessage ?? '',
+  http_status_code: n(row.http_status_code ?? row.httpStatusCode),
+  error_count: n(row.error_count ?? row.errorCount),
+  last_occurrence: row.last_occurrence ?? row.lastOccurrence ?? '',
+  first_occurrence: row.first_occurrence ?? row.firstOccurrence ?? '',
+  sample_trace_id: row.sample_trace_id ?? row.sampleTraceId ?? '',
+});
+
+const normalizeTimeSeriesPoint = (row = {}) => ({
+  ...row,
+  timestamp: row.timestamp ?? row.time_bucket ?? row.timeBucket ?? '',
+  request_count: n(row.request_count ?? row.requestCount),
+  error_count: n(row.error_count ?? row.errorCount),
+  avg_latency: n(row.avg_latency ?? row.avgLatency),
+  p95: n(row.p95 ?? row.p95_latency ?? row.p95Latency),
+  p99: n(row.p99 ?? row.p99_latency ?? row.p99Latency),
+});
+
+const normalizeLog = (row = {}) => ({
+  ...row,
+  timestamp: row.timestamp ?? '',
+  level: row.level ?? 'INFO',
+  message: row.message ?? '',
+  trace_id: row.trace_id ?? row.traceId ?? '',
+  span_id: row.span_id ?? row.spanId ?? '',
+});
+
+const normalizeDependency = (row = {}) => ({
+  ...row,
+  source: row.source ?? '',
+  target: row.target ?? '',
+  call_count: n(row.call_count ?? row.callCount),
+});
+
 export default function ServiceDetailPage() {
   const { serviceName } = useParams();
   const navigate = useNavigate();
@@ -76,11 +128,11 @@ export default function ServiceDetailPage() {
     enabled: !!selectedTeamId && !!serviceName && activeTab === 'dependencies',
   });
 
-  const endpoints = Array.isArray(endpointData) ? endpointData : [];
-  const errorGroups = Array.isArray(errorData) ? errorData : [];
-  const timeSeries = Array.isArray(timeSeriesData) ? timeSeriesData : [];
-  const logs = logsData?.logs || [];
-  const dependencies = Array.isArray(dependenciesData) ? dependenciesData : [];
+  const endpoints = Array.isArray(endpointData) ? endpointData.map(normalizeEndpoint) : [];
+  const errorGroups = Array.isArray(errorData) ? errorData.map(normalizeErrorGroup) : [];
+  const timeSeries = Array.isArray(timeSeriesData) ? timeSeriesData.map(normalizeTimeSeriesPoint) : [];
+  const logs = Array.isArray(logsData?.logs) ? logsData.logs.map(normalizeLog) : [];
+  const dependencies = Array.isArray(dependenciesData) ? dependenciesData.map(normalizeDependency) : [];
   const isLoading = endpointsLoading || errorsLoading || timeSeriesLoading;
 
   // Filter dependencies for this service
@@ -419,7 +471,11 @@ export default function ServiceDetailPage() {
                         config={config}
                         dataSources={{
                           'metrics-timeseries': timeSeries,
+                          'service-timeseries': timeSeries,
+                          'services-timeseries': timeSeries,
                           'endpoint-breakdown': endpoints,
+                          'endpoint-metrics': endpoints,
+                          'endpoints-metrics': endpoints,
                         }}
                         isLoading={timeSeriesLoading}
                       />

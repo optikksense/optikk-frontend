@@ -323,11 +323,11 @@ export default function TracesPage() {
 
   const total = data?.total || 0;
   const summary = data?.summary || {};
-  const totalTraces = summary.total_traces ?? total ?? rawTraces.length;
-  const errorTraces = summary.error_traces ?? 0;
+  const totalTraces = summary.total_traces ?? summary.totalTraces ?? total ?? rawTraces.length;
+  const errorTraces = summary.error_traces ?? summary.errorTraces ?? 0;
   const errorRate = totalTraces > 0 ? (errorTraces * 100) / totalTraces : 0;
-  const p95 = summary.p95_duration ?? 0;
-  const p99 = summary.p99_duration ?? 0;
+  const p95 = summary.p95_duration ?? summary.p95Duration ?? 0;
+  const p99 = summary.p99_duration ?? summary.p99Duration ?? 0;
 
   const maxDuration = useMemo(() => Math.max(...traces.map((t) => t.duration_ms), 1), [traces]);
 

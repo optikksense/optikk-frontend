@@ -173,6 +173,17 @@ export default function TraceDetailPage() {
       render: (service) => service || '-',
     },
     {
+      title: 'Trace ID',
+      dataIndex: 'trace_id',
+      key: 'trace_id',
+      width: 220,
+      render: (traceId) => (
+        <span style={{ fontFamily: 'monospace', fontSize: 12 }}>
+          {traceId || '-'}
+        </span>
+      ),
+    },
+    {
       title: 'Message',
       dataIndex: 'message',
       key: 'message',

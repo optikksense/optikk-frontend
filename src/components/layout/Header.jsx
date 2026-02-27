@@ -66,7 +66,7 @@ export default function Header() {
   // Get teams from user data
   const teams = user?.teams || [];
   const teamOptions = teams.map((team) => ({
-    label: team.name,
+    label: team.orgName ? `${team.orgName} / ${team.name}` : team.name,
     value: team.id,
   }));
 

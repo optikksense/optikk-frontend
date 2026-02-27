@@ -31,6 +31,8 @@ export default function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, theme, setTheme, selectedTeamId } = useAppStore();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
+  const currentTeam = (user?.teams || []).find((t) => t.id === selectedTeamId);
 
   const { data: activeCount } = useQuery({
     queryKey: ['alerts-active-count'],
@@ -161,7 +163,7 @@ if (path.startsWith('/errors')) return '/overview';
       {!sidebarCollapsed && (
         <div className="sidebar-context-strip">
           <div className="sidebar-context-badge">Enterprise</div>
-          <div className="sidebar-context-team">Workspace #{selectedTeamId}</div>
+          <div className="sidebar-context-team">{currentTeam?.name || `Workspace #${selectedTeamId}`}</div>
         </div>
       )}
 

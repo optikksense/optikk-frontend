@@ -11,6 +11,38 @@ import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
 import { formatNumber, formatRelativeTime } from '@utils/formatters';
 import './ErrorDashboardPage.css';
 
+const n = (v) => (v == null || Number.isNaN(Number(v)) ? 0 : Number(v));
+
+const normalizeErrorGroup = (row = {}) => ({
+  ...row,
+  service_name: row.service_name ?? row.serviceName ?? '',
+  operation_name: row.operation_name ?? row.operationName ?? '',
+  status_message: row.status_message ?? row.statusMessage ?? '',
+  http_status_code: n(row.http_status_code ?? row.httpStatusCode),
+  error_count: n(row.error_count ?? row.errorCount),
+  last_occurrence: row.last_occurrence ?? row.lastOccurrence ?? '',
+  sample_trace_id: row.sample_trace_id ?? row.sampleTraceId ?? '',
+});
+
+const normalizeServiceMetric = (row = {}) => ({
+  ...row,
+  service_name: row.service_name ?? row.serviceName ?? row.service ?? '',
+  request_count: n(row.request_count ?? row.requestCount),
+  error_count: n(row.error_count ?? row.errorCount),
+  avg_latency: n(row.avg_latency ?? row.avgLatency),
+  p95_latency: n(row.p95_latency ?? row.p95Latency),
+  p99_latency: n(row.p99_latency ?? row.p99Latency),
+});
+
+const normalizeTimeSeriesPoint = (row = {}) => ({
+  ...row,
+  timestamp: row.timestamp ?? row.time_bucket ?? row.timeBucket ?? '',
+  service_name: row.service_name ?? row.serviceName ?? '',
+  request_count: n(row.request_count ?? row.requestCount),
+  error_count: n(row.error_count ?? row.errorCount),
+  avg_latency: n(row.avg_latency ?? row.avgLatency),
+});
+
 export default function ErrorDashboardPage() {
   const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState(null);
@@ -40,13 +72,21 @@ export default function ErrorDashboardPage() {
 
   const errorGroups = useMemo(() => {
     if (!errorGroupsRaw) return [];
-    return Array.isArray(errorGroupsRaw) ? errorGroupsRaw : [];
+    return Array.isArray(errorGroupsRaw) ? errorGroupsRaw.map(normalizeErrorGroup) : [];
   }, [errorGroupsRaw]);
 
+  const normalizedServiceMetrics = useMemo(
+    () => (Array.isArray(serviceMetricsRaw) ? serviceMetricsRaw.map(normalizeServiceMetric) : []),
+    [serviceMetricsRaw]
+  );
+  const normalizedServiceTimeseries = useMemo(
+    () => (Array.isArray(serviceTimeseriesRaw) ? serviceTimeseriesRaw.map(normalizeTimeSeriesPoint) : []),
+    [serviceTimeseriesRaw]
+  );
+
   const services = useMemo(() => {
-    const raw = Array.isArray(serviceMetricsRaw) ? serviceMetricsRaw : [];
-    return raw.map((s) => s.service_name).filter(Boolean);
-  }, [serviceMetricsRaw]);
+    return normalizedServiceMetrics.map((s) => s.service_name).filter(Boolean);
+  }, [normalizedServiceMetrics]);
 
   // Derive stats from error groups
   const stats = useMemo(() => {
@@ -219,8 +259,8 @@ export default function ErrorDashboardPage() {
       <ConfigurableDashboard
         config={config}
         dataSources={{
-          'service-timeseries': Array.isArray(serviceTimeseriesRaw) ? serviceTimeseriesRaw : [],
-          'services-metrics': Array.isArray(serviceMetricsRaw) ? serviceMetricsRaw : [],
+          'service-timeseries': normalizedServiceTimeseries,
+          'services-metrics': normalizedServiceMetrics,
         }}
         isLoading={tsLoading}
       />

@@ -325,6 +325,7 @@ function buildQueueEndpoints(topQueues, sortField, scope) {
     .sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0))
     .map((q) => ({
       ...q,
+      endpoint: strValue(q, ['queue_name', 'queueName'], 'unknown'),
       seriesKey: queueSeriesKey(q),
       key: `${scope}::${queueSeriesKey(q)}`,
     }));
@@ -352,6 +353,7 @@ function buildEndpointList(endpointMetrics, listType) {
       request_count: requestCount,
       error_count: errorCount,
       avg_latency: avgLatency,
+      latency: avgLatency,
       key: `${method} ${cleanOp}_${serviceName || ''}`,
       errorRate: requestCount > 0 ? (errorCount / requestCount) * 100 : 0,
     };
@@ -584,7 +586,31 @@ function ConfigurableChartCard({ chartConfig, dataSources, extraContext }) {
   if (!chartConfig.groupByKey && !chartConfig.endpointDataSource) {
     chartProps.data = timeseriesData.map((d) => ({
       timestamp: firstValue(d, ['timestamp', 'time_bucket', 'timeBucket'], ''),
-      value: firstValue(d, [chartConfig.valueField || chartConfig.valueKey || 'value', 'value'], 0),
+      value: (() => {
+        const explicit = firstValue(
+          d,
+          [chartConfig.valueField || chartConfig.valueKey || 'value', 'value'],
+          null
+        );
+        if (explicit !== null && explicit !== undefined && explicit !== '') {
+          const parsed = Number(explicit);
+          return Number.isFinite(parsed) ? parsed : 0;
+        }
+
+        if (chartConfig.type === 'request') {
+          return numValue(d, ['request_count', 'requestCount'], 0);
+        }
+        if (chartConfig.type === 'error-rate') {
+          const total = numValue(d, ['request_count', 'requestCount'], 0);
+          const errors = numValue(d, ['error_count', 'errorCount'], 0);
+          if (total > 0) return (errors * 100.0) / total;
+          return numValue(d, ['error_rate', 'errorRate'], 0);
+        }
+        if (chartConfig.type === 'latency') {
+          return numValue(d, ['avg_latency', 'avgLatency', 'p50_latency', 'p50Latency', 'p50'], 0);
+        }
+        return 0;
+      })(),
       ...(chartConfig.type === 'latency' ? {
         p50: firstValue(d, ['p50_latency', 'p50Latency', 'p50'], 0),
         p95: firstValue(d, ['p95_latency', 'p95Latency', 'p95'], 0),
