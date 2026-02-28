@@ -67,7 +67,7 @@ function App() {
         <Route index element={<Navigate to="/overview" replace />} />
         <Route path="overview" element={<ErrorBoundary><OverviewHubPage /></ErrorBoundary>} />
         <Route path="logs" element={<ErrorBoundary><LogsHubPage /></ErrorBoundary>} />
-<Route path="traces" element={<ErrorBoundary><TracesPage /></ErrorBoundary>} />
+        <Route path="traces" element={<ErrorBoundary><TracesPage /></ErrorBoundary>} />
         <Route path="traces/:traceId" element={<ErrorBoundary><TraceDetailPage /></ErrorBoundary>} />
         <Route path="services" element={<ErrorBoundary><ServicesPage /></ErrorBoundary>} />
         <Route path="services/:serviceName" element={<ErrorBoundary><ServiceDetailPage /></ErrorBoundary>} />
@@ -82,7 +82,6 @@ function App() {
         <Route path="settings" element={<ErrorBoundary><SettingsPage /></ErrorBoundary>} />
         <Route path="deployments" element={<Navigate to="/infrastructure?tab=deployments" replace />} />
         <Route path="latency" element={<Navigate to="/metrics?tab=latency" replace />} />
-        <Route path="health-checks" element={<Navigate to="/infrastructure?tab=health-checks" replace />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

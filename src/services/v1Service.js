@@ -136,8 +136,36 @@ export const v1Service = {
 
   // ==================== OPERATIONAL INSIGHTS ====================
 
-  async getResourceUtilization(teamId, startTime, endTime) {
-    return api.get(`${BASE}/insights/resource-utilization`, { params: { startTime, endTime } });
+  async getAvgCPU(teamId, startTime, endTime) {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-cpu`, { params: { startTime, endTime } });
+  },
+
+  async getAvgMemory(teamId, startTime, endTime) {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-memory`, { params: { startTime, endTime } });
+  },
+
+  async getAvgNetwork(teamId, startTime, endTime) {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-network`, { params: { startTime, endTime } });
+  },
+
+  async getAvgConnPool(teamId, startTime, endTime) {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-conn-pool`, { params: { startTime, endTime } });
+  },
+
+  async getCPUUsagePercentage(teamId, startTime, endTime) {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/cpu-usage-percentage`, { params: { startTime, endTime } });
+  },
+
+  async getMemoryUsagePercentage(teamId, startTime, endTime) {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/memory-usage-percentage`, { params: { startTime, endTime } });
+  },
+
+  async getResourceUsageByService(teamId, startTime, endTime) {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/by-service`, { params: { startTime, endTime } });
+  },
+
+  async getResourceUsageByInstance(teamId, startTime, endTime) {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/by-instance`, { params: { startTime, endTime } });
   },
 
   async getSloSli(teamId, startTime, endTime, serviceName, interval = '5m') {
@@ -255,44 +283,6 @@ export const v1Service = {
   async getNodeServices(teamId, host, startTime, endTime) {
     return api.get(`${BASE}/infrastructure/nodes/${encodeURIComponent(host)}/services`, {
       params: { startTime, endTime },
-    });
-  },
-
-  // ==================== HEALTH CHECKS ====================
-
-  async getHealthChecks(teamId) {
-    return api.get(`${BASE}/health-checks`);
-  },
-
-  async createHealthCheck(teamId, data) {
-    return api.post(`${BASE}/health-checks`, data);
-  },
-
-  async updateHealthCheck(teamId, id, data) {
-    return api.put(`${BASE}/health-checks/${id}`, data);
-  },
-
-  async deleteHealthCheck(teamId, id) {
-    return api.delete(`${BASE}/health-checks/${id}`);
-  },
-
-  async toggleHealthCheck(teamId, id) {
-    return api.patch(`${BASE}/health-checks/${id}/toggle`);
-  },
-
-  async getHealthCheckStatus(teamId, startTime, endTime) {
-    return api.get(`${BASE}/health-checks/status`, { params: { startTime, endTime } });
-  },
-
-  async getHealthCheckResults(teamId, checkId, startTime, endTime, params = {}) {
-    return api.get(`${BASE}/health-checks/${checkId}/results`, {
-      params: { startTime, endTime, ...params },
-    });
-  },
-
-  async getHealthCheckTrend(teamId, checkId, startTime, endTime, interval = '5m') {
-    return api.get(`${BASE}/health-checks/${checkId}/trend`, {
-      params: { startTime, endTime, interval },
     });
   },
 

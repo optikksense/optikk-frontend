@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tabs } from 'antd';
-import { Server, Cpu, Network, Rocket, HeartPulse } from 'lucide-react';
-import InfrastructurePage from '../InfrastructurePage';
+import { Cpu, Network, Rocket } from 'lucide-react';
 import ResourceUtilizationPage from '@features/metrics/pages/ResourceUtilizationPage';
 import NodesPage from '../NodesPage';
 import DeploymentTrackingPage from '../DeploymentTrackingPage';
-import HealthChecksPage from '../HealthChecksPage';
 
 export default function InfrastructureHubPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'infra');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'resource');
 
   useEffect(() => {
-    const queryTab = searchParams.get('tab') || 'infra';
+    const queryTab = searchParams.get('tab') || 'resource';
     if (queryTab !== activeTab) {
       setActiveTab(queryTab);
     }
@@ -22,7 +20,7 @@ export default function InfrastructureHubPage() {
   const onTabChange = (key) => {
     setActiveTab(key);
     const next = new URLSearchParams(searchParams);
-    if (key === 'infra') {
+    if (key === 'resource') {
       next.delete('tab');
     } else {
       next.set('tab', key);
@@ -31,11 +29,6 @@ export default function InfrastructureHubPage() {
   };
 
   const items = [
-    {
-      key: 'infra',
-      label: <span><Server size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Infrastructure</span>,
-      children: <InfrastructurePage />,
-    },
     {
       key: 'resource',
       label: <span><Cpu size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Resource Utilization</span>,
@@ -50,11 +43,6 @@ export default function InfrastructureHubPage() {
       key: 'deployments',
       label: <span><Rocket size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Deployments</span>,
       children: <DeploymentTrackingPage />,
-    },
-    {
-      key: 'health-checks',
-      label: <span><HeartPulse size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Health Checks</span>,
-      children: <HealthChecksPage />,
     },
   ];
 

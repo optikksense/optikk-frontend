@@ -14,25 +14,73 @@ export default function ResourceUtilizationPage() {
   const { config } = useDashboardConfig('resource-utilization');
   const { data, isLoading } = useTimeRangeQuery(
     'resource-utilization-insights',
-    (teamId, start, end) => v1Service.getResourceUtilization(teamId, start, end)
+    async (teamId, start, end) => {
+      const [
+        avgCpu,
+        avgMemory,
+        avgNetwork,
+        avgConnPool,
+        cpuUsagePercentage,
+        memoryUsagePercentage,
+        byService,
+        byInstance
+      ] = await Promise.all([
+        v1Service.getAvgCPU(teamId, start, end),
+        v1Service.getAvgMemory(teamId, start, end),
+        v1Service.getAvgNetwork(teamId, start, end),
+        v1Service.getAvgConnPool(teamId, start, end),
+        v1Service.getCPUUsagePercentage(teamId, start, end),
+        v1Service.getMemoryUsagePercentage(teamId, start, end),
+        v1Service.getResourceUsageByService(teamId, start, end),
+        v1Service.getResourceUsageByInstance(teamId, start, end)
+      ]);
+
+      const timeseriesMap = new Map();
+      const getOrCreateBucket = (ts, pod) => {
+        const key = `${ts}-${pod}`;
+        if (!timeseriesMap.has(key)) {
+          timeseriesMap.set(key, { timestamp: ts, pod, avg_cpu_util: null, avg_memory_util: null });
+        }
+        return timeseriesMap.get(key);
+      };
+
+      (cpuUsagePercentage || []).forEach(b => {
+        const bucket = getOrCreateBucket(b.timestamp, b.pod);
+        bucket.avg_cpu_util = b.value;
+      });
+
+      (memoryUsagePercentage || []).forEach(b => {
+        const bucket = getOrCreateBucket(b.timestamp, b.pod);
+        bucket.avg_memory_util = b.value;
+      });
+
+      const timeseries = Array.from(timeseriesMap.values()).sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+
+      return {
+        stats: {
+          cpu: avgCpu?.value || 0,
+          memory: avgMemory?.value || 0,
+          network: avgNetwork?.value || 0,
+          connPool: avgConnPool?.value || 0,
+        },
+        timeseries,
+        byService: byService || [],
+        byInstance: byInstance || []
+      };
+    }
   );
 
   const byService = Array.isArray(data?.byService) ? data.byService : [];
   const byInstance = Array.isArray(data?.byInstance) ? data.byInstance : [];
 
   const stats = useMemo(() => {
-    if (!byService.length) {
-      return { cpu: 0, memory: 0, disk: 0, network: 0, connPool: 0 };
-    }
-    const avg = (key) => byService.reduce((s, r) => s + pct(r[key]), 0) / byService.length;
     return {
-      cpu: avg('avg_cpu_util'),
-      memory: avg('avg_memory_util'),
-      disk: avg('avg_disk_util'),
-      network: avg('avg_network_util'),
-      connPool: avg('avg_connection_pool_util'),
+      cpu: data?.stats?.cpu || 0,
+      memory: data?.stats?.memory || 0,
+      network: data?.stats?.network || 0,
+      connPool: data?.stats?.connPool || 0,
     };
-  }, [byService]);
+  }, [data]);
 
   const serviceCols = [
     { title: 'Service', dataIndex: 'service_name', key: 'service_name' },

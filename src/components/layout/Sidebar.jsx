@@ -66,7 +66,7 @@ export default function Sidebar() {
       icon: <FileText size={18} />,
       label: 'Logs',
     },
-{
+    {
       key: '/traces',
       icon: <GitBranch size={18} />,
       label: 'Traces',
@@ -135,9 +135,8 @@ export default function Sidebar() {
     const path = location.pathname;
     if (path.startsWith('/services/')) return '/services';
     if (path.startsWith('/traces/')) return '/traces';
-if (path.startsWith('/errors')) return '/overview';
+    if (path.startsWith('/errors')) return '/overview';
     if (path.startsWith('/deployments')) return '/infrastructure';
-    if (path.startsWith('/health-checks')) return '/infrastructure';
     if (path.startsWith('/incidents')) return '/alerts';
     if (path.startsWith('/latency')) return '/metrics';
     return path;
