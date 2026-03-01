@@ -27,7 +27,8 @@ export default function LatencyChart({
   serviceTimeseriesMap = {},
   targetThreshold = null,
   datasetLabel = 'Avg Latency (ms)',
-  color = '#5E60CE'
+  color = '#5E60CE',
+  valueKey = 'avg_latency'
 }: any) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets, labels } = useChartTimeBuckets();
@@ -52,7 +53,7 @@ export default function LatencyChart({
         const alignedTimeMs = Math.floor(rowTime / stepMs) * stepMs;
         const bucketKey = tsKey(new Date(alignedTimeMs).toISOString());
 
-        const latency = Number(firstValue(row, ['avg_latency', 'avgLatency', 'value'], 0));
+        const latency = Number(firstValue(row, [valueKey, 'avg_latency', 'avgLatency', 'avg_latency_ms', 'avgLatencyMs', 'value'], 0));
         tsMap[bucketKey] = Math.max(tsMap[bucketKey] || 0, Number.isFinite(latency) ? latency : 0);
       }
       const values = timeBuckets.map(d => tsMap[tsKey(d)] ?? 0);
@@ -101,7 +102,7 @@ export default function LatencyChart({
           if (!Number.isFinite(rowTime)) continue;
           const alignedTimeMs = Math.floor(rowTime / stepMs) * stepMs;
           const bucketKey = tsKey(new Date(alignedTimeMs).toISOString());
-          const latency = Number(firstValue(row, ['avg_latency', 'avgLatency', 'value'], 0));
+          const latency = Number(firstValue(row, [valueKey, 'avg_latency', 'avgLatency', 'avg_latency_ms', 'avgLatencyMs', 'value'], 0));
           tsMap[bucketKey] = Math.max(tsMap[bucketKey] || 0, Number.isFinite(latency) ? latency : 0);
         }
         const values = timeBuckets.map(d => tsMap[tsKey(d)] ?? 0);
@@ -112,7 +113,7 @@ export default function LatencyChart({
         const dataMap: Record<string, number> = {};
         for (const d of data as any[]) {
           const ts = firstValue(d, ['timestamp', 'time_bucket', 'timeBucket'], '');
-          dataMap[tsKey(ts)] = Number(firstValue(d, ['value', 'avg_latency', 'avgLatency'], 0));
+          dataMap[tsKey(ts)] = Number(firstValue(d, ['value', valueKey, 'avg_latency', 'avgLatency', 'avg_latency_ms', 'avgLatencyMs'], 0));
         }
         datasets = [createLineDataset(datasetLabel, timeBuckets.map(ts => dataMap[tsKey(ts)] ?? 0), color, true)];
       } else {
@@ -147,6 +148,18 @@ export default function LatencyChart({
     return { labels, datasets };
   }, [data, endpoints, selectedEndpoints, serviceTimeseriesMap, hasServiceData, targetThreshold, timeBuckets, labels]);
 
+  const yAxisMax = useMemo(() => {
+    let maxVal = 0;
+    chartData.datasets.forEach((ds: any) => {
+      const dsMax = Math.max(...(Array.isArray(ds.data) ? ds.data.map((v: any) => Number(v) || 0) : [0]), 0);
+      if (dsMax > maxVal) maxVal = dsMax;
+    });
+    if (maxVal <= 0) return 10;
+    if (maxVal < 10) return Math.max(Number((maxVal * 1.8).toFixed(2)), 5);
+    if (maxVal < 100) return Math.max(Math.ceil(maxVal * 1.4), 10);
+    return Math.max(Math.ceil(maxVal * 1.25), 10);
+  }, [chartData]);
+
   const options = createChartOptions({
     plugins: {
       legend: { display: false },
@@ -164,6 +177,7 @@ export default function LatencyChart({
         ticks: { color: '#666', callback: (v: any) => `${v}ms` },
         grid: { color: '#2D2D2D' },
         beginAtZero: true,
+        max: yAxisMax,
       },
     },
   });

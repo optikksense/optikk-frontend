@@ -103,10 +103,13 @@ export default function LogRow({ log, colWidths, visibleCols, columns, onOpenDet
             style={{
               fontSize: 12,
               fontFamily: 'monospace',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              whiteSpace: 'pre-wrap',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
               display: 'block',
+              width: '100%',
+              maxWidth: '100%',
+              lineHeight: 1.4,
               color: 'var(--text-primary)',
             }}
             title={log.message}
@@ -132,7 +135,20 @@ export default function LogRow({ log, colWidths, visibleCols, columns, onOpenDet
         </div>
       ))}
       {flexCol && (
-        <div className="oboard__td oboard__td--flex" onClick={() => onOpenDetail(log)}>
+        <div
+          className="oboard__td oboard__td--flex"
+          style={
+            flexCol.key === 'message'
+              ? {
+                  alignItems: 'flex-start',
+                  whiteSpace: 'normal',
+                  flex: '1 0 100ch',
+                  minWidth: '100ch',
+                }
+              : undefined
+          }
+          onClick={() => onOpenDetail(log)}
+        >
           {renderCell(flexCol.key)}
         </div>
       )}

@@ -25,17 +25,38 @@ import './LogsHubPage.css';
 
 /* ─── Filter fields ───────────────────────────────────────────────────────── */
 export const LOG_FILTER_FIELDS = [
-  { key: 'service_name', label: 'Service', icon: '⚙️', group: 'Service' },
+  {
+    key: 'service_name', label: 'Service', icon: '⚙️', group: 'Service',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'not_equals', label: 'not equals', symbol: '!=' }],
+  },
   {
     key: 'level', label: 'Level', icon: '🎚️', group: 'Log',
     operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'not_equals', label: 'not equals', symbol: '!=' }],
   },
-  { key: 'host', label: 'Host', icon: '🖥️', group: 'Infrastructure' },
-  { key: 'pod', label: 'Pod', icon: '📦', group: 'Infrastructure' },
-  { key: 'container', label: 'Container', icon: '🐳', group: 'Infrastructure' },
-  { key: 'logger', label: 'Logger', icon: '📝', group: 'Log' },
-  { key: 'trace_id', label: 'Trace ID', icon: '🔗', group: 'Correlation' },
-  { key: 'span_id', label: 'Span ID', icon: '🔀', group: 'Correlation' },
+  {
+    key: 'host', label: 'Host', icon: '🖥️', group: 'Infrastructure',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'not_equals', label: 'not equals', symbol: '!=' }],
+  },
+  {
+    key: 'pod', label: 'Pod', icon: '📦', group: 'Infrastructure',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+  },
+  {
+    key: 'container', label: 'Container', icon: '🐳', group: 'Infrastructure',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+  },
+  {
+    key: 'logger', label: 'Logger', icon: '📝', group: 'Log',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+  },
+  {
+    key: 'trace_id', label: 'Trace ID', icon: '🔗', group: 'Correlation',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+  },
+  {
+    key: 'span_id', label: 'Span ID', icon: '🔀', group: 'Correlation',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+  },
 ];
 
 /* ─── Column definitions ──────────────────────────────────────────────────── */
@@ -76,7 +97,8 @@ export default function LogsHubPage() {
       if (f.field === 'level' && f.operator === 'not_equals') params.excludeLevels = [f.value.toUpperCase()];
       if (f.field === 'service_name' && f.operator === 'equals') params.services = [f.value];
       if (f.field === 'service_name' && f.operator === 'not_equals') params.excludeServices = [f.value];
-      if (f.field === 'host') params.hosts = [f.value];
+      if (f.field === 'host' && f.operator === 'equals') params.hosts = [f.value];
+      if (f.field === 'host' && f.operator === 'not_equals') params.excludeHosts = [f.value];
       if (f.field === 'pod') params.pods = [f.value];
       if (f.field === 'container') params.containers = [f.value];
       if (f.field === 'logger') params.loggers = [f.value];

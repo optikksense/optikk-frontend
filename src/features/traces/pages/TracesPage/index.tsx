@@ -29,20 +29,32 @@ import './TracesPage.css';
 
 /* ─── Filter fields for the shared ObservabilityQueryBar ─────────────────── */
 export const TRACE_FILTER_FIELDS = [
-  { key: 'trace_id', label: 'Trace ID', icon: '🔗', group: 'Trace' },
-  { key: 'operation_name', label: 'Operation', icon: '⚡', group: 'Trace' },
+  {
+    key: 'trace_id', label: 'Trace ID', icon: '🔗', group: 'Trace',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'contains', label: 'contains', symbol: '~' }],
+  },
+  {
+    key: 'operation_name', label: 'Operation', icon: '⚡', group: 'Trace',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'contains', label: 'contains', symbol: '~' }],
+  },
   {
     key: 'status', label: 'Status', icon: '🔵', group: 'Trace',
-    operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'not_equals', label: 'not equals', symbol: '!=' }],
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
   },
-  { key: 'service_name', label: 'Service', icon: '⚙️', group: 'Service' },
-  { key: 'http_method', label: 'HTTP Method', icon: '🌐', group: 'HTTP' },
+  {
+    key: 'service_name', label: 'Service', icon: '⚙️', group: 'Service',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'contains', label: 'contains', symbol: '~' }],
+  },
+  {
+    key: 'http_method', label: 'HTTP Method', icon: '🌐', group: 'HTTP',
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+  },
   {
     key: 'http_status', label: 'HTTP Status Code', icon: '📡', group: 'HTTP',
-    operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'not_equals', label: 'not equals', symbol: '!=' }, { key: 'gt', label: 'greater than', symbol: '>' }, { key: 'lt', label: 'less than', symbol: '<' }],
+    operators: [{ key: 'equals', label: 'equals', symbol: '=' }, { key: 'gt', label: 'greater than', symbol: '>' }, { key: 'lt', label: 'less than', symbol: '<' }],
   },
   {
-    key: 'min_duration', label: 'Min Duration (ms)', icon: '⏱', group: 'Performance',
+    key: 'duration_ms', label: 'Duration (ms)', icon: '⏱', group: 'Performance',
     operators: [{ key: 'gt', label: 'greater than', symbol: '>' }, { key: 'lt', label: 'less than', symbol: '<' }],
   },
 ];
@@ -287,8 +299,12 @@ export default function TracesPage() {
     filters.forEach((f) => {
       if (f.field === 'status' && f.operator === 'equals') params.status = f.value;
       if (f.field === 'service_name' && f.operator === 'equals') params.services = [f.value];
-      if (f.field === 'min_duration' && f.operator === 'gt') params.minDuration = Number(f.value);
+      if (f.field === 'duration_ms' && f.operator === 'gt') params.minDuration = Number(f.value);
+      if (f.field === 'duration_ms' && f.operator === 'lt') params.maxDuration = Number(f.value);
       if (f.field === 'trace_id' && f.operator === 'equals') params.traceId = f.value;
+      if (f.field === 'operation_name' && (f.operator === 'equals' || f.operator === 'contains')) params.operationName = f.value;
+      if (f.field === 'http_method' && f.operator === 'equals') params.httpMethod = f.value;
+      if (f.field === 'http_status' && f.operator === 'equals') params.httpStatusCode = f.value;
     });
     return params;
   }, [filters, selectedService, errorsOnly, pageSize, page]);
@@ -311,15 +327,56 @@ export default function TracesPage() {
 
   /* ── Client-side free-text ── */
   const traces = useMemo(() => {
-    if (!searchText.trim()) return rawTraces;
-    const q = searchText.toLowerCase();
-    return rawTraces.filter(
-      (t) =>
-        t.trace_id?.toLowerCase().includes(q) ||
-        t.service_name?.toLowerCase().includes(q) ||
-        t.operation_name?.toLowerCase().includes(q)
-    );
-  }, [rawTraces, searchText]);
+    let filtered = rawTraces;
+
+    if (searchText.trim()) {
+      const q = searchText.toLowerCase();
+      filtered = filtered.filter(
+        (t) =>
+          t.trace_id?.toLowerCase().includes(q) ||
+          t.service_name?.toLowerCase().includes(q) ||
+          t.operation_name?.toLowerCase().includes(q)
+      );
+    }
+
+    for (const f of filters) {
+      const value = String(f.value ?? '').toLowerCase();
+      if (!value) continue;
+
+      filtered = filtered.filter((t) => {
+        if (f.field === 'trace_id') {
+          return f.operator === 'contains'
+            ? t.trace_id?.toLowerCase().includes(value)
+            : t.trace_id?.toLowerCase() === value;
+        }
+        if (f.field === 'operation_name') {
+          return f.operator === 'equals'
+            ? t.operation_name?.toLowerCase() === value
+            : t.operation_name?.toLowerCase().includes(value);
+        }
+        if (f.field === 'service_name' && f.operator === 'contains') {
+          return t.service_name?.toLowerCase().includes(value);
+        }
+        if (f.field === 'http_method') {
+          return t.http_method?.toLowerCase() === value;
+        }
+        if (f.field === 'http_status') {
+          const code = Number(f.value);
+          if (f.operator === 'gt') return t.http_status_code > code;
+          if (f.operator === 'lt') return t.http_status_code < code;
+          return t.http_status_code === code;
+        }
+        if (f.field === 'duration_ms') {
+          const ms = Number(f.value);
+          if (f.operator === 'gt') return t.duration_ms > ms;
+          if (f.operator === 'lt') return t.duration_ms < ms;
+        }
+        return true;
+      });
+    }
+
+    return filtered;
+  }, [rawTraces, searchText, filters]);
 
   const total = (data as any)?.total || 0;
   const summary = (data as any)?.summary || {};

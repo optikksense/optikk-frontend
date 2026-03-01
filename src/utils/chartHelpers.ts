@@ -143,7 +143,7 @@ export function getChartColor(index: number) {
  * spanning the full [startMs, endMs] range.
  *
  * Bucket size mirrors the backend's adaptive logic:
- *   ≤ 2 h  →  1-minute buckets
+ *   ≤ 3 h  →  1-minute buckets
  *   ≤ 24 h →  5-minute buckets
  *   > 24 h →  1-hour buckets
  *
@@ -154,7 +154,7 @@ export function getChartColor(index: number) {
 export function generateTimeBuckets(startMs: number, endMs: number) {
   const rangeMs = endMs - startMs;
   let stepMs;
-  if (rangeMs <= 2 * 60 * 60 * 1000) {
+  if (rangeMs <= 3 * 60 * 60 * 1000) {
     stepMs = 60 * 1000;          // 1 min
   } else if (rangeMs <= 24 * 60 * 60 * 1000) {
     stepMs = 5 * 60 * 1000;      // 5 min

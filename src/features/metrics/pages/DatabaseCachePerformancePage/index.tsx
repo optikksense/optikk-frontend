@@ -126,7 +126,17 @@ export default function DatabaseCachePerformancePage() {
     (teamId, start, end) => (v1Service as any).getDatabaseTopTablesMetrics(teamId, start, end)
   );
 
-  const isLoading = isLoadingSummary || isLoadingSystems || isLoadingTables;
+  const { data: queryByTableData, isLoading: isLoadingQueryVolume } = useTimeRangeQuery(
+    'database-query-by-table',
+    (teamId, start, end) => (v1Service as any).getDatabaseQueryByTable(teamId, start, end)
+  );
+
+  const { data: avgLatencyData, isLoading: isLoadingLatencySeries } = useTimeRangeQuery(
+    'database-avg-latency-series',
+    (teamId, start, end) => (v1Service as any).getDatabaseAvgLatency(teamId, start, end)
+  );
+
+  const isLoading = isLoadingSummary || isLoadingSystems || isLoadingTables || isLoadingQueryVolume || isLoadingLatencySeries;
 
   const summary = (summaryData as any) || {};
   const cache = summaryData ? {
@@ -135,11 +145,31 @@ export default function DatabaseCachePerformancePage() {
     cacheHitRatio: (summaryData as any).cache_hits + (summaryData as any).cache_misses > 0 ? ((summaryData as any).cache_hits * 100.0) / ((summaryData as any).cache_hits + (summaryData as any).cache_misses) : 0
   } : { cacheHits: 0, cacheMisses: 0, cacheHitRatio: 0 };
   const systemBreakdown = Array.isArray(systemsData) ? systemsData : [];
+  const queryByTable = Array.isArray(queryByTableData)
+    ? queryByTableData.map((row: any) => ({
+      ...row,
+      table_name: row.table_name ?? row.table ?? 'unknown',
+      query_count: Number(row.query_count ?? 0),
+      avg_latency_ms: Number(row.avg_latency_ms ?? 0),
+      p95_latency_ms: Number(row.p95_latency_ms ?? 0),
+      timestamp: row.timestamp ?? row.time_bucket ?? row.timeBucket ?? '',
+    }))
+    : [];
+  const avgLatency = Array.isArray(avgLatencyData)
+    ? avgLatencyData.map((row: any) => ({
+      ...row,
+      timestamp: row.timestamp ?? row.time_bucket ?? row.timeBucket ?? '',
+      avg_latency_ms: Number(row.avg_latency_ms ?? 0),
+      p95_latency_ms: Number(row.p95_latency_ms ?? 0),
+    }))
+    : [];
   const topTables = Array.isArray(topTablesData) ? topTablesData.map((t: any) => ({ ...t, key: `${t.table_name}-${t.service_name}` })) : [];
 
   const dataSources = useMemo(() => ({
+    'database-query-table': queryByTable,
+    'database-avg-latency': avgLatency,
     'database-cache-insights': { summary, tableMetrics: topTables, systemBreakdown, cache }
-  }), [summary, topTables, systemBreakdown, cache]);
+  }), [summary, topTables, systemBreakdown, cache, queryByTable, avgLatency]);
 
   const totalSystems = systemBreakdown.length;
   const totalSpans = systemBreakdown.reduce((acc: number, s: any) => acc + (s.span_count || 0), 0);

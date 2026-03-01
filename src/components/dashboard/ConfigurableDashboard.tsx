@@ -292,11 +292,14 @@ function groupTimeseries(rows: any[], groupByKey: string) {
   const map: Record<string, any[]> = {};
   for (const row of rows) {
     const serviceName = strValue(row, ['service_name', 'serviceName']);
-    const queueName = strValue(row, ['queue_name', 'queueName'], 'unknown');
+    const queueName = strValue(row, ['queue_name', 'queueName', 'queue'], 'unknown');
+    const tableName = strValue(row, ['table_name', 'tableName', 'table'], 'unknown');
     const podName = strValue(row, ['pod', 'pod_name', 'podName']);
     let key;
     if (groupByKey === 'queue') {
       key = `${queueName || 'unknown'}::${serviceName || 'unknown'}`;
+    } else if (groupByKey === 'table') {
+      key = tableName;
     } else if (groupByKey === 'service') {
       key = serviceName;
     } else if (groupByKey === 'pod') {
@@ -598,13 +601,13 @@ function ConfigurableChartCard({ chartConfig, dataSources, extraContext }: { cha
           return numValue(d, ['error_rate', 'errorRate'], 0);
         }
         if (chartConfig.type === 'latency') {
-          return numValue(d, ['avg_latency', 'avgLatency', 'p50_latency', 'p50Latency', 'p50'], 0);
+          return numValue(d, ['avg_latency', 'avgLatency', 'avg_latency_ms', 'avgLatencyMs', 'p50_latency', 'p50Latency', 'p50'], 0);
         }
         return 0;
       })(),
       ...(chartConfig.type === 'latency' ? {
-        p50: firstValue(d, ['p50_latency', 'p50Latency', 'p50'], 0),
-        p95: firstValue(d, ['p95_latency', 'p95Latency', 'p95'], 0),
+        p50: firstValue(d, ['p50_latency', 'p50Latency', 'p50', 'avg_latency_ms', 'avgLatencyMs'], 0),
+        p95: firstValue(d, ['p95_latency', 'p95Latency', 'p95', 'p95_latency_ms'], 0),
         p99: firstValue(d, ['p99_latency', 'p99Latency', 'p99'], 0),
       } : {}),
     }));

@@ -55,6 +55,23 @@ export default function RequestChart({
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets, labels } = useChartTimeBuckets();
 
+  const getSeriesRows = (seriesKey: string) => {
+    if ((serviceTimeseriesMap as any)[seriesKey]) {
+      return (serviceTimeseriesMap as any)[seriesKey];
+    }
+
+    if (!seriesKey.includes('::')) {
+      return [];
+    }
+
+    const [queueName] = seriesKey.split('::');
+    return (
+      (serviceTimeseriesMap as any)[`${queueName}::unknown`] ||
+      (serviceTimeseriesMap as any)[queueName] ||
+      []
+    );
+  };
+
   const buildServiceDatasets = (endpointList: any[]) => {
     const targetMap: Record<string, any> = {};
     for (const ep of endpointList) {
@@ -69,7 +86,7 @@ export default function RequestChart({
       : 60000;
 
     return Object.entries(targetMap).map(([, info]: [string, any], idx) => {
-      const tsData = (serviceTimeseriesMap as any)[info.seriesKey] || [];
+      const tsData = getSeriesRows(info.seriesKey);
       const tsMap: Record<string, number> = {};
 
       for (const row of tsData) {
