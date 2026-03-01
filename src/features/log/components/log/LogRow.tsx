@@ -35,13 +35,13 @@ export function relativeTime(value) {
 /* ─── Level badge ─────────────────────────────────────────────────────────── */
 
 const LEVEL_STYLES = {
-  FATAL:  { bg: '#D92D20', color: '#fff' },
-  ERROR:  { bg: '#F04438', color: '#fff' },
-  WARN:   { bg: '#F79009', color: '#fff' },
-  WARNING:{ bg: '#F79009', color: '#fff' },
-  INFO:   { bg: '#06AED5', color: '#fff' },
-  DEBUG:  { bg: '#5E60CE', color: '#fff' },
-  TRACE:  { bg: '#98A2B3', color: '#fff' },
+  FATAL: { bg: '#D92D20', color: '#fff' },
+  ERROR: { bg: '#F04438', color: '#fff' },
+  WARN: { bg: '#F79009', color: '#fff' },
+  WARNING: { bg: '#F79009', color: '#fff' },
+  INFO: { bg: '#06AED5', color: '#fff' },
+  DEBUG: { bg: '#5E60CE', color: '#fff' },
+  TRACE: { bg: '#98A2B3', color: '#fff' },
 };
 
 export function LevelBadge({ level }) {
@@ -123,13 +123,35 @@ export default function LogRow({ log, colWidths, visibleCols, columns, onOpenDet
   };
 
   return (
-    <>
+    <div
+      className="glass-panel"
+      style={{
+        display: 'flex',
+        width: '100%',
+        marginBottom: '4px',
+        background: 'var(--glass-bg)',
+        backdropFilter: 'var(--glass-blur)',
+        WebkitBackdropFilter: 'var(--glass-blur)',
+        border: '1px solid var(--glass-border)',
+        borderRadius: '8px',
+        transition: 'var(--transition-smooth)',
+        cursor: 'pointer'
+      }}
+      onClick={() => onOpenDetail(log)}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+        e.currentTarget.style.borderColor = 'var(--color-primary)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'var(--glass-bg)';
+        e.currentTarget.style.borderColor = 'var(--glass-border)';
+      }}
+    >
       {fixedCols.map((col) => (
         <div
           key={col.key}
           className="oboard__td"
-          style={{ width: colWidths[col.key] }}
-          onClick={() => onOpenDetail(log)}
+          style={{ width: colWidths[col.key], borderBottom: 'none' }}
         >
           {renderCell(col.key)}
         </div>
@@ -137,21 +159,19 @@ export default function LogRow({ log, colWidths, visibleCols, columns, onOpenDet
       {flexCol && (
         <div
           className="oboard__td oboard__td--flex"
-          style={
-            flexCol.key === 'message'
-              ? {
-                  alignItems: 'flex-start',
-                  whiteSpace: 'normal',
-                  flex: '1 0 100ch',
-                  minWidth: '100ch',
-                }
-              : undefined
-          }
-          onClick={() => onOpenDetail(log)}
+          style={{
+            ...((flexCol.key === 'message') ? {
+              alignItems: 'flex-start',
+              whiteSpace: 'normal',
+              flex: '1 0 100ch',
+              minWidth: '100ch',
+            } : {}),
+            borderBottom: 'none'
+          }}
         >
           {renderCell(flexCol.key)}
         </div>
       )}
-    </>
+    </div>
   );
 }

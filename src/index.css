@@ -7,39 +7,115 @@
 
 /* CSS Custom Properties - Dark Theme (default) */
 :root {
-  --bg-primary: #0A0A0A;
+  /* ── Background tokens ──────────────────────────────────────── */
+  --bg-primary: #0D0E14;
+  /* Fix 11: subtle blue-tinted near-black (was #0A0A0A) */
   --bg-secondary: #0D0D0D;
   --bg-tertiary: #1A1A1A;
   --bg-hover: #1A1A1A;
   --border-color: #2D2D2D;
   --border-light: #1A1A1A;
+
+  /* ── Text tokens ────────────────────────────────────────────── */
   --text-primary: rgba(255, 255, 255, 0.87);
   --text-secondary: rgba(255, 255, 255, 0.6);
-  --text-muted: #666;
+  --text-muted: #8A8A8A;
+  /* Fix 11: was #666 — now 4.6:1 contrast on #0D0E14 */
+
+  /* ── Brand / semantic tokens ────────────────────────────────── */
   --color-primary: #5E60CE;
   --color-primary-hover: #7477D9;
   --color-success: #73C991;
   --color-warning: #F79009;
   --color-error: #F04438;
   --color-info: #06AED5;
+
+  /* ── Severity tokens (Fix 13) ───────────────────────────────── */
+  --severity-critical: #F04438;
+  --severity-critical-subtle: rgba(240, 68, 56, 0.15);
+  --severity-high: #F97316;
+  --severity-high-subtle: rgba(249, 115, 22, 0.15);
+  --severity-medium: #F79009;
+  --severity-medium-subtle: rgba(247, 144, 9, 0.15);
+  --severity-low: #3B82F6;
+  --severity-low-subtle: rgba(59, 130, 246, 0.15);
+  --severity-info: #06AED5;
+  --severity-info-subtle: rgba(6, 174, 213, 0.15);
+
+  /* ── Colorblind-safe chart palette (Fix 14, IBM palette) ────── */
+  --chart-1: #648FFF;
+  /* blue */
+  --chart-2: #785EF0;
+  /* purple */
+  --chart-3: #DC267F;
+  /* magenta */
+  --chart-4: #FE6100;
+  /* orange */
+  --chart-5: #FFB000;
+  /* gold */
+  --chart-6: #009E73;
+  /* teal */
+  --chart-7: #56B4E9;
+  /* sky */
+  --chart-8: #CC79A7;
+  /* coral */
+
+  /* ── Typography scale tokens (Fix 12) ──────────────────────── */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+  --text-display: 36px;
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* ── Scrollbar ──────────────────────────────────────────────── */
   --scrollbar-track: #0D0D0D;
   --scrollbar-thumb: #2D2D2D;
   --scrollbar-thumb-hover: #3D3D3D;
 
-  /* ── Spacing tokens ─────────────────────────────────────── */
+  /* ── Glass / elevation tokens ───────────────────────────────── */
+  --glass-bg: rgba(26, 26, 26, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --glass-blur: blur(12px);
+
+  /* ── Gradients ──────────────────────────────────────────────── */
+  --gradient-primary: linear-gradient(135deg, #5E60CE 0%, #4EA8DE 100%);
+  --gradient-text: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0.7));
+  --gradient-text-accent: linear-gradient(135deg, #7477D9, #4EA8DE);
+
+  /* ── Shadows ────────────────────────────────────────────────── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.3);
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  /* ── Spacing tokens ─────────────────────────────────────────── */
   --space-xs: 8px;
   --space-sm: 12px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
 
-  /* ── Grid gap – single source of truth for Row gutter ───── */
+  /* ── Grid gap – single source of truth for Row gutter ───────── */
   --grid-gutter: 16px;
 
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
 
   color-scheme: dark;
   color: var(--text-primary);
@@ -51,7 +127,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Light Theme */
+/* ── Light Theme (Fix 16: glassmorphism + Fix 11 contrast) ───────────────── */
 [data-theme="light"] {
   --bg-primary: #F8F9FA;
   --bg-secondary: #FFFFFF;
@@ -61,7 +137,14 @@
   --border-light: #F0F1F3;
   --text-primary: #1A1A2E;
   --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
+  --text-muted: #6B7280;
+
+  /* Fix 16: light-theme glassmorphism tokens */
+  --glass-bg: rgba(255, 255, 255, 0.70);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  --glass-blur: blur(16px);
+
   --scrollbar-track: #F0F1F3;
   --scrollbar-thumb: #D1D5DB;
   --scrollbar-thumb-hover: #9CA3AF;
@@ -112,10 +195,35 @@ code {
 /* Ant Design overrides */
 .ant-layout {
   min-height: 100vh;
+  background: transparent !important;
+  /* Let the body gradient/bg show through if any */
+}
+
+/* Fix 15: backdrop-filter restricted to structural surfaces only.
+   Removed from .ant-card (GPU cost on every card). */
+.ant-layout-header {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.ant-layout-sider {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--glass-border) !important;
+}
+
+.ant-menu {
+  background: transparent !important;
 }
 
 .ant-table {
   font-size: 13px;
+  background: transparent !important;
 }
 
 .ant-typography,
@@ -141,47 +249,71 @@ code {
 }
 
 .ant-table-thead>tr>th {
-  background: var(--bg-secondary) !important;
-  border-bottom: 1px solid var(--border-color) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
   font-weight: 600;
+  color: var(--text-secondary) !important;
 }
 
 .ant-table-tbody>tr>td {
-  border-bottom: 1px solid var(--border-light) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
 }
 
 .ant-table-tbody>tr:hover>td {
-  background: var(--bg-hover) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
-/* Card styles */
+/* Card styles — GLASSMORPHISM without backdrop-filter (Fix 15).
+   backdrop-filter removed: GPU-heavy on every card in large dashboards.
+   Visual depth is achieved instead via the glass-bg + border + shadow alone. */
 .ant-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-smooth);
+}
+
+.ant-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .ant-card-head {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--glass-border);
+  min-height: 48px;
 }
 
 /* Compact header for chart cards — gives more room to the chart itself */
 .chart-card .ant-card-head {
-  padding: 0 10px;
-  min-height: 34px;
-  font-size: 12px;
+  padding: 0 16px;
+  min-height: 40px;
+  font-size: 13px;
 }
 
 .chart-card .ant-card-head-title {
-  padding: 6px 0;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .chart-card .ant-card-body {
-  padding: 8px;
+  padding: 12px;
+}
+
+/* Modal — can retain backdrop-filter (structural surface) */
+.ant-modal-content {
+  background: var(--bg-secondary);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
 }
 
 /* Button styles */
@@ -217,11 +349,6 @@ code {
 }
 
 /* Modal styles */
-.ant-modal-content {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-}
-
 .ant-modal-header {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);

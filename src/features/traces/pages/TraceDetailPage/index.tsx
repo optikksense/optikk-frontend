@@ -306,25 +306,33 @@ export default function TraceDetailPage() {
           </Row>
 
           {/* Waterfall Chart */}
-          <Card
-            title={
+          <div
+            className="glass-panel"
+            style={{
+              background: 'var(--glass-bg)',
+              backdropFilter: 'var(--glass-blur)',
+              WebkitBackdropFilter: 'var(--glass-blur)',
+              borderRadius: '16px',
+              border: '1px solid var(--glass-border)',
+              padding: waterfallCollapsed ? '12px 24px' : '24px',
+              boxShadow: 'var(--shadow-lg)',
+              marginBottom: '24px'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: waterfallCollapsed ? 0 : '16px' }}>
               <span
-                style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 600, fontSize: '16px' }}
                 onClick={() => setWaterfallCollapsed((c) => !c)}
               >
-                {waterfallCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                {waterfallCollapsed ? <ChevronRight size={18} /> : <ChevronDown size={18} />}
                 Trace Timeline
               </span>
-            }
-            className="trace-detail-card"
-            styles={{ body: { padding: waterfallCollapsed ? 0 : '8px' } }}
-            extra={
               <button
                 onClick={() => setWaterfallCollapsed((c) => !c)}
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--text-muted, #666)',
+                  color: 'var(--text-muted)',
                   cursor: 'pointer',
                   padding: 4,
                   borderRadius: 4,
@@ -335,8 +343,7 @@ export default function TraceDetailPage() {
               >
                 <X size={16} />
               </button>
-            }
-          >
+            </div>
             {!waterfallCollapsed && (
               <WaterfallChart
                 spans={spans}
@@ -344,30 +351,39 @@ export default function TraceDetailPage() {
                 selectedSpanId={selectedSpanId}
               />
             )}
-          </Card>
+          </div>
 
           {/* Associated Logs */}
-          <Card
-            title={
-              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FileText size={18} />
-                <span>Associated Logs</span>
-                {traceLogs.length > 0 && (
-                  <Tag color="default" style={{ marginLeft: 8 }}>
-                    {traceLogs.length} events
-                  </Tag>
-                )}
-              </span>
-            }
-            className="trace-detail-card"
-            style={{ marginTop: 24 }}
+          <div
+            className="glass-panel"
+            style={{
+              background: 'var(--glass-bg)',
+              backdropFilter: 'var(--glass-blur)',
+              WebkitBackdropFilter: 'var(--glass-blur)',
+              borderRadius: '12px',
+              border: '1px solid var(--glass-border)',
+              padding: '20px 24px',
+              boxShadow: 'var(--shadow-md)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px'
+            }}
           >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600, fontSize: '15px' }}>
+              <FileText size={18} />
+              <span>Associated Logs</span>
+              {traceLogs.length > 0 && (
+                <Tag color="default" style={{ marginLeft: 8, background: 'rgba(255,255,255,0.06)', border: 'none', color: 'var(--text-secondary)' }}>
+                  {traceLogs.length} events
+                </Tag>
+              )}
+            </div>
             {logsLoading ? (
-              <div className="trace-detail-loading">
+              <div className="trace-detail-loading" style={{ padding: '40px 0', textAlign: 'center' }}>
                 <Spin size="large" />
               </div>
             ) : traceLogs.length === 0 ? (
-              <Empty description="No logs associated with this trace in the selected time range" />
+              <Empty description="No logs associated with this trace" image={Empty.PRESENTED_IMAGE_SIMPLE} />
             ) : (
               <Table
                 columns={logColumns}
@@ -375,10 +391,11 @@ export default function TraceDetailPage() {
                 rowKey={(row, index) => `${row.timestamp}-${row.service_name}-${index}`}
                 size="small"
                 pagination={false}
-                scroll={{ y: 260 }}
+                scroll={{ y: 300 }}
+                className="glass-table"
               />
             )}
-          </Card>
+          </div>
 
           {/* Span Detail Panel */}
         </>

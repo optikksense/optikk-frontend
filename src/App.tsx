@@ -82,6 +82,22 @@ function App() {
 
   return (
     <Suspense fallback={<PageLoader />}>
+      {/* Dynamic Background Mesh */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: -1,
+          background: `
+            radial-gradient(circle at 15% 50%, rgba(94, 96, 206, 0.08), transparent 25%),
+            radial-gradient(circle at 85% 30%, rgba(78, 168, 222, 0.08), transparent 25%)
+          `,
+          pointerEvents: 'none'
+        }}
+      />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
 

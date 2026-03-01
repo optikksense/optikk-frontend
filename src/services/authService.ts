@@ -1,51 +1,76 @@
 /**
- * Authentication Service
+ * Authentication Service — Fix 1 (httpOnly cookie auth)
+ *
+ * JWT is now stored in an httpOnly cookie set by the backend on login.
+ * The browser sends it automatically on every request to the same origin —
+ * no manual Authorization header injection is needed.
+ *
+ * We still keep a lightweight "is logged in" flag in localStorage (non-sensitive)
+ * so the frontend can render the right UI without a round-trip, but we never
+ * store the JWT itself in localStorage any more.
  */
 import api from './api';
 import { API_CONFIG, STORAGE_KEYS } from '@config/constants';
-import { safeGet, safeSet, safeRemove, safeGetJSON } from '@utils/storage';
+import { safeSet, safeRemove, safeGetJSON } from '@utils/storage';
+
+/**
+ * A non-sensitive cookie-auth-presence flag written to localStorage so the
+ * frontend knows whether to show the authenticated UI on first render.
+ * The actual JWT never touches localStorage.
+ */
+const AUTH_PRESENT_KEY = 'optic_auth_present';
 
 export const authService = {
   /**
    * Axios interceptor unwraps ApiResponse and returns payload directly.
    * Keep a compatibility fallback for any wrapped callers.
    */
-  normalizeAuthPayload(response) {
+  normalizeAuthPayload(response: any) {
     if (!response) return null;
     if (response.success && response.data) return response.data;
     return response;
   },
 
   /**
-   * Login user
+   * Login user.
+   * On success the backend sets an httpOnly cookie named "token".
+   * We store non-sensitive metadata (user data, team ID) in localStorage.
    */
-  async login(email, password) {
+  async login(email: string, password: string) {
     const response = await api.post(API_CONFIG.ENDPOINTS.AUTH.LOGIN, {
       email,
       password,
     });
 
     const payload = this.normalizeAuthPayload(response);
-    if (payload?.token) {
-      // Store auth data
-      safeSet(STORAGE_KEYS.AUTH_TOKEN, payload.token);
+    if (payload?.user) {
+      // Mark that a session exists (used for initial render optimisation only).
+      safeSet(AUTH_PRESENT_KEY, '1');
       safeSet(STORAGE_KEYS.USER_DATA, JSON.stringify(payload.user));
 
-      // Store team ID if available - check both possible locations
-      const teamId = payload.currentTeam?.id ||
+      // Store team ID for cross-pod multi-team switching via X-Team-Id header.
+      const teamId =
+        payload.currentTeam?.id ||
         payload.teams?.[0]?.id ||
         payload.user?.teams?.[0]?.id;
 
       if (teamId) {
-        safeSet(STORAGE_KEYS.TEAM_ID, teamId);
+        safeSet(STORAGE_KEYS.TEAM_ID, String(teamId));
       }
+
+      // Legacy: if the server includes a token in the body (e.g. SDK clients),
+      // do NOT store it in localStorage. The cookie is the source of truth.
+      // The response payload may still include the token for SDK / API consumers
+      // accessing the service programmatically without a browser.
     }
 
     return payload || response;
   },
 
   /**
-   * Logout user
+   * Logout user.
+   * POSTing to /auth/logout tells the backend to clear the httpOnly cookie
+   * (Set-Cookie: token=; Max-Age=0) and revoke the JWT in Redis.
    */
   async logout() {
     try {
@@ -53,68 +78,43 @@ export const authService = {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      // Clear local storage
-      safeRemove(STORAGE_KEYS.AUTH_TOKEN);
+      // Clear all local non-sensitive session markers.
+      safeRemove(AUTH_PRESENT_KEY);
+      safeRemove(STORAGE_KEYS.AUTH_TOKEN); // legacy cleanup in case it lingers
       safeRemove(STORAGE_KEYS.USER_DATA);
       safeRemove(STORAGE_KEYS.TEAM_ID);
     }
   },
 
   /**
-   * Validate current session
+   * Validate current session by calling the /me endpoint.
+   * A 200 response means the cookie is still valid.
+   * A 401 response means the session is expired/logged out.
    */
-  async validateSession() {
+  async validateSession(): Promise<boolean> {
     try {
-      const response = await api.get(API_CONFIG.ENDPOINTS.AUTH.VALIDATE);
-      const payload = this.normalizeAuthPayload(response);
-      return payload?.valid === true;
-    } catch (error) {
+      await api.get(API_CONFIG.ENDPOINTS.AUTH.ME);
+      return true;
+    } catch {
+      safeRemove(AUTH_PRESENT_KEY);
       return false;
     }
   },
 
   /**
-   * Get current user from storage
+   * Optimistic check: returns true if we believe a session exists.
+   * Relies on the non-sensitive auth-presence flag in localStorage.
+   * Use validateSession() to do a real server-side check.
+   */
+  isAuthenticated(): boolean {
+    return localStorage.getItem(AUTH_PRESENT_KEY) === '1';
+  },
+
+  /**
+   * Get the currently stored user data (non-sensitive, from localStorage).
    */
   getCurrentUser() {
     return safeGetJSON(STORAGE_KEYS.USER_DATA, null);
-  },
-
-  /**
-   * Check if user is authenticated (token exists and is not expired).
-   */
-  isAuthenticated() {
-    const token = safeGet(STORAGE_KEYS.AUTH_TOKEN);
-    if (!token) return false;
-    return !this.isTokenExpired(token);
-  },
-
-  /**
-   * Decode JWT payload without verification and check the exp claim.
-   * Returns true if the token is expired or malformed.
-   */
-  isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (!payload.exp) return false;
-      // Consider expired 60 seconds early to avoid edge cases.
-      return Date.now() >= (payload.exp * 1000) - 60_000;
-    } catch {
-      return true;
-    }
-  },
-
-  /**
-   * Returns seconds until the token expires, or 0 if expired/invalid.
-   */
-  tokenExpiresIn(token: string): number {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (!payload.exp) return Infinity;
-      return Math.max(0, Math.floor((payload.exp * 1000 - Date.now()) / 1000));
-    } catch {
-      return 0;
-    }
   },
 
   /**
@@ -126,11 +126,8 @@ export const authService = {
       const response = await api.get(API_CONFIG.ENDPOINTS.AUTH.ME);
       const payload = this.normalizeAuthPayload(response);
       if (payload?.user) {
+        safeSet(AUTH_PRESENT_KEY, '1');
         safeSet(STORAGE_KEYS.USER_DATA, JSON.stringify(payload.user));
-        // If the server returns a new token, store it.
-        if (payload.token) {
-          safeSet(STORAGE_KEYS.AUTH_TOKEN, payload.token);
-        }
         return true;
       }
       return false;
@@ -139,4 +136,3 @@ export const authService = {
     }
   },
 };
-

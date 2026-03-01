@@ -1,6 +1,5 @@
 .waterfall-chart {
-  background: var(--bg-secondary, #0D0D0D);
-  border: 1px solid var(--border-color, #2D2D2D);
+  background: var(--glass-bg);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -8,14 +7,14 @@
 .waterfall-empty {
   padding: 60px;
   text-align: center;
-  color: var(--text-muted, #666);
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .waterfall-header {
   display: flex;
-  border-bottom: 2px solid var(--border-color, #2D2D2D);
-  background: var(--bg-tertiary, #1A1A1A);
+  border-bottom: 2px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.02);
   position: sticky;
   top: 0;
   z-index: 1;
@@ -24,12 +23,12 @@
 .waterfall-labels-column {
   width: 250px;
   min-width: 250px;
-  border-right: 1px solid var(--border-color, #2D2D2D);
+  border-right: 1px solid var(--glass-border);
   padding: 12px 8px;
 }
 
 .waterfall-header-title {
-  color: var(--text-primary, #111827);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 12px;
   text-transform: uppercase;
@@ -51,7 +50,7 @@
 }
 
 .waterfall-time-label {
-  color: var(--text-muted, #666);
+  color: var(--text-muted);
   font-size: 11px;
   font-weight: 500;
 }
@@ -63,7 +62,7 @@
 
 .waterfall-row {
   display: flex;
-  border-bottom: 1px solid var(--border-color, #2D2D2D);
+  border-bottom: 1px solid var(--glass-border);
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
@@ -89,7 +88,7 @@
 }
 
 .waterfall-service-name {
-  color: var(--text-muted, #9ca3af);
+  color: var(--text-muted);
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
@@ -97,7 +96,7 @@
 }
 
 .waterfall-operation-name {
-  color: var(--text-primary, #111827);
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 400;
   white-space: nowrap;
@@ -162,14 +161,14 @@
 }
 
 .waterfall-body::-webkit-scrollbar-track {
-  background: var(--scrollbar-track, #0f0f0f);
+  background: var(--scrollbar-track);
 }
 
 .waterfall-body::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb, #333);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 .waterfall-body::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover, #444);
+  background: var(--scrollbar-thumb-hover);
 }

@@ -1,8 +1,8 @@
 .detail-drawer .ant-drawer-content {
-  background: rgba(13, 13, 13, 0.7) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-left: 1px solid var(--glass-border);
 }
 
 .detail-drawer {
@@ -10,7 +10,7 @@
 }
 
 .detail-drawer .ant-drawer-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--glass-border);
   background: transparent;
 }
 
@@ -23,17 +23,17 @@
 }
 
 .detail-drawer-section-title {
-  color: #e5e7eb;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 16px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--glass-border);
   letter-spacing: 0.02em;
 }
 
 .detail-drawer .ant-descriptions-bordered .ant-descriptions-view {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.2);
@@ -41,15 +41,15 @@
 
 .detail-drawer .ant-descriptions-bordered .ant-descriptions-item-label {
   background: rgba(255, 255, 255, 0.02);
-  color: var(--text-muted, #9ca3af);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  border-right: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
   padding: 12px 16px;
   width: 30%;
 }
 
 .detail-drawer .ant-descriptions-bordered .ant-descriptions-item-content {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-primary, #e5e7eb);
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text-primary);
   padding: 12px 16px;
 }

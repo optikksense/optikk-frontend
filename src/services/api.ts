@@ -1,9 +1,22 @@
 /**
- * API Service - Axios instance with interceptors
+ * API Service — Axios instance with interceptors
+ *
+ * Fix 1 (httpOnly cookie auth):
+ * - JWT is stored in an httpOnly cookie set by the backend — we no longer
+ *   inject it as an Authorization header for browser requests.
+ * - withCredentials: true tells the browser to include the cookie on every
+ *   cross-origin request (requires Access-Control-Allow-Credentials: true on
+ *   the backend, which middleware.go now sets).
+ * - The client-side JWT decode/expiry check is removed — trust the server's 401.
+ * - SDK/CLI clients that pass an Authorization header still work because the
+ *   backend middleware accepts both (cookie fallback is only used when no
+ *   Authorization header is present).
  */
 import axios from 'axios';
 import { API_CONFIG, STORAGE_KEYS } from '@config/constants';
 import { safeGet, safeRemove } from '@utils/storage';
+
+const AUTH_PRESENT_KEY = 'optic_auth_present';
 
 // Create axios instance
 const api = axios.create({
@@ -12,9 +25,11 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Send the httpOnly cookie on every request (same-origin + cross-origin).
+  withCredentials: true,
 });
 
-// Request interceptor - Add auth token and check expiry
+// Request interceptor — cache headers + optional team switching header
 api.interceptors.request.use(
   (config) => {
     // Disable browser/proxy response caching for telemetry queries.
@@ -22,42 +37,22 @@ api.interceptors.request.use(
     config.headers.Pragma = 'no-cache';
     config.headers.Expires = '0';
 
-    const token = safeGet(STORAGE_KEYS.AUTH_TOKEN);
-    if (token) {
-      // Check if token is expired before sending the request.
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp && Date.now() >= payload.exp * 1000) {
-          // Token is expired — fire auth:expired and reject.
-          safeRemove(STORAGE_KEYS.AUTH_TOKEN);
-          safeRemove(STORAGE_KEYS.USER_DATA);
-          window.dispatchEvent(new CustomEvent('auth:expired'));
-          return Promise.reject({ status: 401, message: 'Token expired' });
-        }
-      } catch {
-        // Malformed token — clear and reject.
-        safeRemove(STORAGE_KEYS.AUTH_TOKEN);
-        window.dispatchEvent(new CustomEvent('auth:expired'));
-        return Promise.reject({ status: 401, message: 'Invalid token' });
-      }
-
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    // Add team ID to headers if available
+    // Multi-team switching: include X-Team-Id so the backend scope queries
+    // to the selected team. The backend validates this against the JWT's
+    // Teams claim (Fix 2) before honouring the override.
     const teamId = safeGet(STORAGE_KEYS.TEAM_ID);
     if (teamId) {
-      config.headers['X-Team-ID'] = teamId;
+      config.headers['X-Team-Id'] = teamId;
     }
 
+    // Note: No Authorization header injection — the httpOnly cookie is sent
+    // automatically by the browser via withCredentials.
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor - Handle errors
+// Response interceptor — unwrap ApiResponse, handle auth errors
 api.interceptors.response.use(
   (response) => {
     const data = response.data;
@@ -69,14 +64,13 @@ api.interceptors.response.use(
   },
   (error: any) => {
     if (error.response) {
-      // Server responded with error status
       const { status, data } = error.response;
 
       if (status === 401) {
-        // Unauthorized - clear auth and fire event for the React app to handle.
-        // Using a custom DOM event avoids the hard window.location.href redirect
-        // that used to destroy all SPA state.
-        safeRemove(STORAGE_KEYS.AUTH_TOKEN);
+        // Unauthorized — the cookie is invalid, expired, or was revoked.
+        // Clear the non-sensitive local markers and signal the React app.
+        safeRemove(AUTH_PRESENT_KEY);
+        safeRemove(STORAGE_KEYS.AUTH_TOKEN); // legacy cleanup
         safeRemove(STORAGE_KEYS.USER_DATA);
         window.dispatchEvent(new CustomEvent('auth:expired'));
       }
@@ -87,13 +81,11 @@ api.interceptors.response.use(
         data: data,
       });
     } else if (error.request) {
-      // Request made but no response
       return Promise.reject({
         status: 0,
         message: 'Network error - please check your connection',
       });
     } else {
-      // Something else happened
       return Promise.reject({
         status: 0,
         message: error.message || 'An unexpected error occurred',
@@ -103,4 +95,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
