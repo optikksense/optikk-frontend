@@ -12,6 +12,7 @@ export const API_CONFIG = {
       LOGIN: '/auth/login',
       LOGOUT: '/auth/logout',
       VALIDATE: '/auth/validate',
+      ME: '/auth/me',
     },
     DASHBOARD: {
       OVERVIEW: '/dashboard/overview',
