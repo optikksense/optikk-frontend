@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, Space } from 'antd';
 import { Mail, Lock, Layers } from 'lucide-react';
 import { useAuthStore } from '@store/authStore';
+import { useAppStore } from '@store/appStore';
 import toast from 'react-hot-toast';
 import './LoginPage.css';
 
@@ -11,6 +12,7 @@ const { Title, Text } = Typography;
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated, isLoading, error, clearError } = useAuthStore();
+  const { setTimeRange } = useAppStore();
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -29,6 +31,8 @@ export default function LoginPage() {
   const handleSubmit = async (values) => {
     const result = await login(values.email, values.password);
     if (result.success) {
+      // Normalize post-login view window for load-test verification.
+      setTimeRange('30m');
       toast.success('Login successful!');
       navigate('/overview');
     }

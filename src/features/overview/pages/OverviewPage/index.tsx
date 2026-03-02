@@ -229,7 +229,7 @@ export default function OverviewPage() {
           },
           {
             title: "Error Rate",
-            value: Number(((summary as any).error_rate || 0).toFixed(2)),
+            value: Number(Math.max(0, (summary as any).error_rate || 0).toFixed(2)),
             trend: 0,
             trendInverted: true,
             icon: <AlertCircle size={20} />,
@@ -336,7 +336,7 @@ export default function OverviewPage() {
                         {formatNumber(service.requestCount)} req
                       </div>
                       <div className="service-health-metric" style={{ color: service.errorRate > 1 ? '#F04438' : 'var(--text-muted)' }}>
-                        {Number(service.errorRate).toFixed(2)}% err
+                        {Math.max(0, Number(service.errorRate)).toFixed(2)}% err
                       </div>
                     </div>
                   </Col>

@@ -37,6 +37,12 @@ export const authService = {
    * We store non-sensitive metadata (user data, team ID) in localStorage.
    */
   async login(email: string, password: string) {
+    // Avoid carrying stale auth/team context across account switches.
+    safeRemove(AUTH_PRESENT_KEY);
+    safeRemove(STORAGE_KEYS.AUTH_TOKEN);
+    safeRemove(STORAGE_KEYS.USER_DATA);
+    safeRemove(STORAGE_KEYS.TEAM_ID);
+
     const response = await api.post(API_CONFIG.ENDPOINTS.AUTH.LOGIN, {
       email,
       password,
@@ -58,10 +64,12 @@ export const authService = {
         safeSet(STORAGE_KEYS.TEAM_ID, String(teamId));
       }
 
-      // Legacy: if the server includes a token in the body (e.g. SDK clients),
-      // do NOT store it in localStorage. The cookie is the source of truth.
-      // The response payload may still include the token for SDK / API consumers
-      // accessing the service programmatically without a browser.
+      // Compatibility fallback:
+      // Some backend runs return JWT in response body without setting cookie.
+      // Persist token so API interceptor can send Authorization header.
+      if (payload.token) {
+        safeSet(STORAGE_KEYS.AUTH_TOKEN, String(payload.token));
+      }
     }
 
     return payload || response;

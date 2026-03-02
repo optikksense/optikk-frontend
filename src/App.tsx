@@ -5,6 +5,7 @@ import { useAuthStore } from '@store/authStore';
 import { useAppStore } from '@store/appStore';
 import ErrorBoundary from '@components/common/feedback/ErrorBoundary';
 import MainLayout from '@components/layout/MainLayout';
+import { useRealtimeRefresh } from '@hooks/useRealtimeRefresh';
 
 // ── Lazy-loaded pages ─────────────────────────────────────────────────────
 // Each page is loaded on-demand, producing separate JS chunks.
@@ -64,6 +65,7 @@ function ProtectedRoute({ children }) {
 }
 
 function App() {
+  useRealtimeRefresh();
   const theme = useAppStore((state) => state.theme);
   const navigate = useNavigate();
 

@@ -66,8 +66,11 @@ export function useRealtimeRefresh(options: UseRealtimeRefreshOptions = {}) {
       }
 
       // Perform the invalidation immediately (first call in the window).
-      keys.forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: [key] });
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const baseKey = String(query.queryKey[0] || '');
+          return keys.some((k) => baseKey.includes(k));
+        },
       });
 
       // Set a debounce timer. During this window, subsequent events for the
@@ -78,8 +81,11 @@ export function useRealtimeRefresh(options: UseRealtimeRefreshOptions = {}) {
         if (pendingRef.current.has(signal)) {
           pendingRef.current.delete(signal);
           // Fire the trailing invalidation.
-          keys.forEach((key) => {
-            queryClient.invalidateQueries({ queryKey: [key] });
+          queryClient.invalidateQueries({
+            predicate: (query) => {
+              const baseKey = String(query.queryKey[0] || '');
+              return keys.some((k) => baseKey.includes(k));
+            },
           });
         }
       }, DEBOUNCE_MS);

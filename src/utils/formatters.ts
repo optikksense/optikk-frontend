@@ -6,7 +6,8 @@
  * Format large numbers with K, M, B suffixes
  */
 export function formatNumber(num) {
-  const value = Number(num);
+  let value = Number(num);
+  value = value === 0 ? 0 : value;
   if (!Number.isFinite(value)) return '0';
   if (value >= 1000000000) {
     return (value / 1000000000).toFixed(1) + 'B';
@@ -24,7 +25,8 @@ export function formatNumber(num) {
  * Format duration in milliseconds to human-readable format
  */
 export function formatDuration(ms) {
-  const value = Number(ms);
+  let value = Number(ms);
+  value = value === 0 ? 0 : value;
   if (!Number.isFinite(value)) return '0ms';
   if (value < 1) {
     return `${(value * 1000).toFixed(0)}μs`;
@@ -61,7 +63,8 @@ export function formatBytes(bytes) {
  * Format percentage
  */
 export function normalizePercentage(value, clamp = true) {
-  const raw = Number(value);
+  let raw = Number(value);
+  raw = raw === 0 ? 0 : raw;
   if (!Number.isFinite(raw)) return 0;
 
   // Accept both fraction form (0.72) and percentage form (72).

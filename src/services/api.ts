@@ -45,8 +45,13 @@ api.interceptors.request.use(
       config.headers['X-Team-Id'] = teamId;
     }
 
-    // Note: No Authorization header injection — the httpOnly cookie is sent
-    // automatically by the browser via withCredentials.
+    // Cookie-first auth, with token fallback for environments that return
+    // JWT in login response body but don't set httpOnly cookie.
+    const token = safeGet(STORAGE_KEYS.AUTH_TOKEN);
+    if (token && !config.headers['Authorization']) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
