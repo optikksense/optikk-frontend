@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tabs } from 'antd';
-import { Cpu, Network, Rocket } from 'lucide-react';
+import { Cpu, Network } from 'lucide-react';
 import ResourceUtilizationPage from '@features/metrics/pages/ResourceUtilizationPage';
 import NodesPage from '../NodesPage';
-import DeploymentTrackingPage from '../DeploymentTrackingPage';
 
 export default function InfrastructureHubPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,11 +37,6 @@ export default function InfrastructureHubPage() {
       key: 'nodes',
       label: <span><Network size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Nodes</span>,
       children: <NodesPage />,
-    },
-    {
-      key: 'deployments',
-      label: <span><Rocket size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Deployments</span>,
-      children: <DeploymentTrackingPage />,
     },
   ];
 

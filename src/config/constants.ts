@@ -18,15 +18,6 @@ export const API_CONFIG = {
       LIST: '/teams',
       SWITCH: '/teams/switch',
     },
-    ALERTS: {
-      LIST: '/alerts',
-      PAGED: '/alerts/paged',
-      CREATE: '/alerts',
-      ACKNOWLEDGE: '/alerts', // + /{id}/acknowledge
-      RESOLVE: '/alerts',     // + /{id}/resolve
-      MUTE: '/alerts',        // + /{id}/mute
-      ACTIVE_COUNT: '/alerts/count/active',
-    },
     V1_BASE: '/v1',
     SETTINGS: {
       PROFILE: '/settings/profile',
@@ -34,43 +25,6 @@ export const API_CONFIG = {
     },
   },
 };
-
-export const ALERT_SEVERITIES = [
-  { label: 'Critical', value: 'critical', color: '#F04438' },
-  { label: 'Warning', value: 'warning', color: '#F79009' },
-  { label: 'Info', value: 'info', color: '#06AED5' },
-];
-
-export const ALERT_STATUSES = [
-  { label: 'Active', value: 'ACTIVE', color: '#F04438' },
-  { label: 'Acknowledged', value: 'ACKNOWLEDGED', color: '#F79009' },
-  { label: 'Resolved', value: 'RESOLVED', color: '#73C991' },
-  { label: 'Muted', value: 'MUTED', color: '#98A2B3' },
-];
-
-export const ALERT_TYPES = [
-  { label: 'Metric', value: 'metric' },
-  { label: 'Log', value: 'log' },
-  { label: 'Trace', value: 'trace' },
-  { label: 'APM', value: 'apm' },
-];
-
-export const ALERT_OPERATORS = [
-  { label: '>', value: '>' },
-  { label: '<', value: '<' },
-  { label: '>=', value: '>=' },
-  { label: '<=', value: '<=' },
-  { label: '==', value: '==' },
-  { label: '!=', value: '!=' },
-];
-
-export const INCIDENT_STATUSES = [
-  { label: 'Open', value: 'open', color: '#F04438' },
-  { label: 'Investigating', value: 'investigating', color: '#F79009' },
-  { label: 'Identified', value: 'identified', color: '#06AED5' },
-  { label: 'Monitoring', value: 'monitoring', color: '#5E60CE' },
-  { label: 'Resolved', value: 'resolved', color: '#73C991' },
-];
 
 export const UI_CONFIG = {
   THEME: {
@@ -147,33 +101,6 @@ export const TRACE_STATUSES = [
   { label: 'OK', value: 'OK', color: '#73C991' },
   { label: 'Error', value: 'ERROR', color: '#F04438' },
   { label: 'Unset', value: 'UNSET', color: '#98A2B3' },
-];
-
-export const DEPLOYMENT_STATUSES = [
-  { label: 'Success', value: 'success', color: '#73C991' },
-  { label: 'Failed', value: 'failed', color: '#F04438' },
-  { label: 'In Progress', value: 'in_progress', color: '#F79009' },
-  { label: 'Rolled Back', value: 'rolled_back', color: '#98A2B3' },
-];
-
-export const DEPLOYMENT_ENVIRONMENTS = [
-  { label: 'Production', value: 'production' },
-  { label: 'Staging', value: 'staging' },
-  { label: 'Development', value: 'development' },
-  { label: 'QA', value: 'qa' },
-];
-
-export const HEALTH_CHECK_TYPES = [
-  { label: 'HTTP', value: 'http' },
-  { label: 'TCP', value: 'tcp' },
-  { label: 'ICMP', value: 'icmp' },
-  { label: 'Synthetic', value: 'synthetic' },
-];
-
-export const HEALTH_CHECK_STATUSES = [
-  { label: 'Up', value: 'up', color: '#73C991' },
-  { label: 'Down', value: 'down', color: '#F04438' },
-  { label: 'Degraded', value: 'degraded', color: '#F79009' },
 ];
 
 export const STORAGE_KEYS = {

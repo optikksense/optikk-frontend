@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Input } from 'antd';
 import {
-  BarChart3, FileText, GitBranch, Layers, Network, Bell,
+  BarChart3, FileText, GitBranch, Layers, Network,
   Server, Settings, Activity, RefreshCw, Sun, Search,
 } from 'lucide-react';
 import { useAppStore } from '@store/appStore';
@@ -16,10 +16,7 @@ const COMMANDS = [
   { id: 'services', label: 'Go to Services', icon: Layers, path: '/services', group: 'Navigate' },
   { id: 'service-map', label: 'Go to Service Map', icon: Network, path: '/service-map', group: 'Navigate' },
   { id: 'errors', label: 'Go to Errors', icon: Activity, path: '/overview?tab=errors', group: 'Navigate' },
-  { id: 'alerts', label: 'Go to Alerts', icon: Bell, path: '/alerts', group: 'Navigate' },
-  { id: 'incidents', label: 'Go to Incidents', icon: Bell, path: '/alerts?tab=incidents', group: 'Navigate' },
   { id: 'infrastructure', label: 'Go to Infrastructure', icon: Server, path: '/infrastructure', group: 'Navigate' },
-  { id: 'deployments', label: 'Go to Deployments', icon: Server, path: '/infrastructure?tab=deployments', group: 'Navigate' },
   { id: 'latency', label: 'Go to Latency', icon: BarChart3, path: '/metrics?tab=latency', group: 'Navigate' },
   { id: 'settings', label: 'Go to Settings', icon: Settings, path: '/settings', group: 'Navigate' },
   { id: 'refresh', label: 'Refresh Data', icon: RefreshCw, action: 'refresh', group: 'Actions' },

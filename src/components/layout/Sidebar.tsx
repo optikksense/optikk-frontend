@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@store/appStore';
 import { useAuthStore } from '@store/authStore';
-import { alertService } from '@services/alertService';
 import toast from 'react-hot-toast';
 import './Sidebar.css';
 
@@ -34,21 +33,6 @@ export default function Sidebar() {
   const user = useAuthStore((state) => state.user);
   const currentTeam = (user?.teams || []).find((t) => t.id === selectedTeamId);
 
-  const { data: activeCount } = useQuery({
-    queryKey: ['alerts-active-count'],
-    queryFn: () => alertService.getActiveAlertCount(),
-    refetchInterval: 30000,
-    enabled: isAuthenticated,
-  });
-
-  const alertLabel = (
-    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      Alerts
-      {activeCount > 0 && (
-        <Badge count={activeCount} size="small" style={{ backgroundColor: '#F04438' }} />
-      )}
-    </span>
-  );
 
   const observeItems = [
     {
@@ -94,11 +78,6 @@ export default function Sidebar() {
       icon: <Brain size={18} />,
       label: 'AI Observability',
     },
-    {
-      key: '/alerts',
-      icon: <Bell size={18} />,
-      label: alertLabel,
-    },
   ];
 
   const mainMenuItems = [
@@ -137,7 +116,6 @@ export default function Sidebar() {
     if (path.startsWith('/traces/')) return '/traces';
     if (path.startsWith('/errors')) return '/overview';
     if (path.startsWith('/deployments')) return '/infrastructure';
-    if (path.startsWith('/incidents')) return '/alerts';
     if (path.startsWith('/latency')) return '/metrics';
     return path;
   };

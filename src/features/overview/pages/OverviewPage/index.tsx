@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import { Row, Col, Card, Skeleton, Empty, Progress, Tag } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { Activity, AlertCircle, Clock, Zap, Bell } from 'lucide-react';
+import { Activity, AlertCircle, Clock, Zap, Server } from 'lucide-react';
 import { overviewService } from '@services/overviewService';
-import { alertService } from '@services/alertService';
-import { formatNumber, formatDuration, formatRelativeTime } from '@utils/formatters';
+import { formatNumber, formatDuration } from '@utils/formatters';
 import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
 import { useDashboardConfig } from '@hooks/useDashboardConfig';
 import { useAppStore } from '@store/appStore';
@@ -17,7 +16,6 @@ import {
   normalizeEndpointMetric,
 } from '../../../metrics/utils/metricNormalizers';
 import './OverviewPage.css';
-
 
 export default function OverviewPage() {
   const navigate = useNavigate();
@@ -51,12 +49,6 @@ export default function OverviewPage() {
   const { data: endpointMetricsRaw } = useTimeRangeQuery(
     'endpoints-metrics',
     (teamId, startTime, endTime) => overviewService.getEndpointMetrics(teamId, startTime, endTime)
-  );
-
-  // Recent alerts (time-range aware)
-  const { data: alertsData } = useTimeRangeQuery(
-    'alerts-recent',
-    (teamId, startTime, endTime) => alertService.getAlerts({ teamId, startTime, endTime })
   );
 
   // === Normalize data shapes ===
@@ -116,11 +108,6 @@ export default function OverviewPage() {
     });
   }, [services]);
 
-  const alerts = useMemo(() => {
-    const raw = Array.isArray(alertsData) ? alertsData : (alertsData as any)?.content || [];
-    return raw.slice(0, 5);
-  }, [alertsData]);
-
   // Data sources for ConfigurableDashboard
   const dataSources = useMemo(() => ({
     'metrics-summary': summary,
@@ -155,11 +142,6 @@ export default function OverviewPage() {
       </div>
     );
   }
-
-  const severityColor = (sev) => {
-    const colors = { critical: '#F04438', warning: '#F79009', info: '#06AED5' };
-    return colors[sev?.toLowerCase()] || '#98A2B3';
-  };
 
   return (
     <div className="overview-page">
@@ -277,10 +259,10 @@ export default function OverviewPage() {
         </Col>
       </Row>
 
-      {/* Service Health Grid + Recent Alerts */}
+      {/* Service Health Grid */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={12}>
-          <Card title="Service Health" className="chart-card">
+        <Col xs={24} lg={24}>
+          <Card title={<span><Server style={{ marginRight: 8, verticalAlign: 'middle' }} />Services Overview</span>} className="services-overview-card" bodyStyle={{ padding: 0 }}>
             {serviceHealth.length > 0 ? (
               <Row gutter={[16, 16]}>
                 {serviceHealth.map((service) => (
@@ -303,43 +285,6 @@ export default function OverviewPage() {
               </Row>
             ) : (
               <Empty description="No services data available" />
-            )}
-          </Card>
-        </Col>
-
-        <Col xs={24} lg={12}>
-          <Card
-            title={<span><Bell size={16} style={{ marginRight: 8, verticalAlign: 'middle' }} />Recent Alerts</span>}
-            className="chart-card"
-          >
-            {alerts.length > 0 ? (
-              <div className="recent-alerts-list">
-                {alerts.map((alert, index) => (
-                  <div key={alert.id || index} className="recent-alert-item">
-                    <span
-                      className="alert-severity-dot"
-                      style={{ backgroundColor: severityColor(alert.severity) }}
-                    />
-                    <div className="alert-info">
-                      <div className="alert-name">{alert.name}</div>
-                      <div className="alert-meta">
-                        {alert.serviceName && <Tag style={{ fontSize: 11 }}>{alert.serviceName}</Tag>}
-                        <span className="alert-time">
-                          {alert.triggeredAt ? formatRelativeTime(alert.triggeredAt) : ''}
-                        </span>
-                      </div>
-                    </div>
-                    <Tag
-                      color={alert.status === 'ACTIVE' ? 'error' : alert.status === 'ACKNOWLEDGED' ? 'warning' : 'success'}
-                      style={{ fontSize: 11 }}
-                    >
-                      {alert.status}
-                    </Tag>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <Empty description="No recent alerts" />
             )}
           </Card>
         </Col>

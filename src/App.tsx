@@ -14,7 +14,6 @@ const TracesPage = lazy(() => import('@features/traces/pages/TracesPage'));
 const TraceDetailPage = lazy(() => import('@features/traces/pages/TraceDetailPage'));
 const ServicesPage = lazy(() => import('@features/services/pages/ServicesPage'));
 const ServiceDetailPage = lazy(() => import('@features/services/pages/ServiceDetailPage'));
-const AlertsHubPage = lazy(() => import('@features/alerts/pages/AlertsHubPage'));
 const MetricsPage = lazy(() => import('@features/metrics/pages/MetricsPage'));
 const SettingsPage = lazy(() => import('@features/settings/pages/SettingsPage'));
 const ErrorDashboardPage = lazy(() => import('@features/errors/pages/ErrorDashboardPage'));
@@ -118,16 +117,12 @@ function App() {
           <Route path="traces/:traceId" element={<ErrorBoundary><TraceDetailPage /></ErrorBoundary>} />
           <Route path="services" element={<ErrorBoundary><ServicesPage /></ErrorBoundary>} />
           <Route path="services/:serviceName" element={<ErrorBoundary><ServiceDetailPage /></ErrorBoundary>} />
-          <Route path="service-map" element={<Navigate to="/services?tab=topology" replace />} />
-          <Route path="alerts" element={<ErrorBoundary><AlertsHubPage /></ErrorBoundary>} />
           <Route path="metrics" element={<ErrorBoundary><MetricsPage /></ErrorBoundary>} />
-          <Route path="incidents" element={<Navigate to="/alerts?tab=incidents" replace />} />
           <Route path="infrastructure" element={<ErrorBoundary><InfrastructureHubPage /></ErrorBoundary>} />
           <Route path="errors" element={<ErrorBoundary><ErrorDashboardPage /></ErrorBoundary>} />
           <Route path="saturation" element={<ErrorBoundary><SaturationHubPage /></ErrorBoundary>} />
           <Route path="ai-observability" element={<ErrorBoundary><AiObservabilityPage /></ErrorBoundary>} />
           <Route path="settings" element={<ErrorBoundary><SettingsPage /></ErrorBoundary>} />
-          <Route path="deployments" element={<Navigate to="/infrastructure?tab=deployments" replace />} />
           <Route path="latency" element={<Navigate to="/metrics?tab=latency" replace />} />
         </Route>
 

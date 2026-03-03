@@ -1,41 +1,86 @@
-import { useState, useRef, useEffect } from 'react';
-import { Clock, ChevronLeft, ChevronRight, ChevronDown, Calendar } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Clock, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { useAppStore } from '@store/appStore';
 
-/* ── Relative presets ── */
-const RELATIVE_RANGES = [
-  { label: 'Last 5 minutes', value: '5m', minutes: 5 },
-  { label: 'Last 15 minutes', value: '15m', minutes: 15 },
-  { label: 'Last 30 minutes', value: '30m', minutes: 30 },
-  { label: 'Last 1 hour', value: '1h', minutes: 60 },
-  { label: 'Last 3 hours', value: '3h', minutes: 180 },
-  { label: 'Last 6 hours', value: '6h', minutes: 360 },
-  { label: 'Last 12 hours', value: '12h', minutes: 720 },
-  { label: 'Last 24 hours', value: '24h', minutes: 1440 },
-  { label: 'Last 2 days', value: '2d', minutes: 2880 },
-  { label: 'Last 7 days', value: '7d', minutes: 10080 },
-  { label: 'Last 30 days', value: '30d', minutes: 43200 },
-  { label: 'Last 90 days', value: '90d', minutes: 129600 },
+/* ── Categorised presets ── */
+const RANGE_GROUPS = [
+  {
+    title: 'Minutes',
+    items: [
+      { label: '5m', value: '5m', minutes: 5 },
+      { label: '15m', value: '15m', minutes: 15 },
+      { label: '30m', value: '30m', minutes: 30 },
+    ],
+  },
+  {
+    title: 'Hours',
+    items: [
+      { label: '1h', value: '1h', minutes: 60 },
+      { label: '3h', value: '3h', minutes: 180 },
+      { label: '6h', value: '6h', minutes: 360 },
+      { label: '12h', value: '12h', minutes: 720 },
+      { label: '24h', value: '24h', minutes: 1440 },
+    ],
+  },
+  {
+    title: 'Days',
+    items: [
+      { label: '2d', value: '2d', minutes: 2880 },
+      { label: '7d', value: '7d', minutes: 10080 },
+      { label: '30d', value: '30d', minutes: 43200 },
+      { label: '90d', value: '90d', minutes: 129600 },
+    ],
+  },
 ];
 
 /* ── Helpers ── */
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const pad = (n) => String(n).padStart(2, '0');
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+const pad = (n: number) => String(n).padStart(2, '0');
 
-function fmtDatetime(d) {
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
-function fmtShort(d) {
+function fmtDatetime(d: Date) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
-function parseDatetime(str) {
+
+function parseDatetime(str: string): Date | null {
   const d = new Date(str.replace(' ', 'T'));
   return isNaN(d.getTime()) ? null : d;
 }
 
-/* ── Mini Calendar ── */
-function MiniCalendar({ selectedDate, onSelectDate, calMonth, calYear, setCalMonth, setCalYear }) {
+function dayInRange(day: Date, from: Date | null, to: Date | null) {
+  if (!from || !to) return false;
+  const t = new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime();
+  const a = new Date(from.getFullYear(), from.getMonth(), from.getDate()).getTime();
+  const b = new Date(to.getFullYear(), to.getMonth(), to.getDate()).getTime();
+  return t > Math.min(a, b) && t < Math.max(a, b);
+}
+
+/* human-readable display label */
+const DISPLAY_MAP: Record<string, string> = {
+  '5m': 'Last 5 min', '15m': 'Last 15 min', '30m': 'Last 30 min',
+  '1h': 'Last 1 hour', '3h': 'Last 3 hours', '6h': 'Last 6 hours',
+  '12h': 'Last 12 hours', '24h': 'Last 24 hours',
+  '2d': 'Last 2 days', '7d': 'Last 7 days', '30d': 'Last 30 days', '90d': 'Last 90 days',
+};
+
+/* ── Mini Calendar with range highlighting ── */
+function MiniCalendar({
+  fromDate,
+  toDate,
+  onSelectDate,
+  calMonth,
+  calYear,
+  setCalMonth,
+  setCalYear,
+}: {
+  fromDate: Date | null;
+  toDate: Date | null;
+  onSelectDate: (d: Date) => void;
+  calMonth: number;
+  calYear: number;
+  setCalMonth: (m: number) => void;
+  setCalYear: (y: number) => void;
+}) {
   const prevMonth = () => {
     if (calMonth === 0) { setCalMonth(11); setCalYear(calYear - 1); }
     else setCalMonth(calMonth - 1);
@@ -50,39 +95,58 @@ function MiniCalendar({ selectedDate, onSelectDate, calMonth, calYear, setCalMon
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   const prevMonthDays = new Date(calYear, calMonth, 0).getDate();
 
-  const cells = [];
+  const cells: { day: number; current: boolean }[] = [];
   for (let i = startDow - 1; i >= 0; i--) cells.push({ day: prevMonthDays - i, current: false });
   for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, current: true });
   const remaining = 42 - cells.length;
   for (let d = 1; d <= remaining; d++) cells.push({ day: d, current: false });
 
   const today = new Date();
-  const isToday = (d) => d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
-  const isSelected = (d) => selectedDate && d === selectedDate.getDate() && calMonth === selectedDate.getMonth() && calYear === selectedDate.getFullYear();
+  const isToday = (d: number) => d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+  const isFrom = (d: number) => fromDate && d === fromDate.getDate() && calMonth === fromDate.getMonth() && calYear === fromDate.getFullYear();
+  const isTo = (d: number) => toDate && d === toDate.getDate() && calMonth === toDate.getMonth() && calYear === toDate.getFullYear();
+  const isInRange = (d: number) => {
+    if (!fromDate || !toDate) return false;
+    const cellDate = new Date(calYear, calMonth, d);
+    return dayInRange(cellDate, fromDate, toDate);
+  };
 
   return (
-    <div className="gf-cal">
-      <div className="gf-cal__nav">
-        <button className="gf-cal__nav-btn" onClick={prevMonth}><ChevronLeft size={14} /></button>
-        <span className="gf-cal__month">{MONTHS[calMonth]} {calYear}</span>
-        <button className="gf-cal__nav-btn" onClick={nextMonth}><ChevronRight size={14} /></button>
+    <div className="trp-cal" style={{ marginBottom: 4 }}>
+      <div className="trp-cal__nav" style={{ marginBottom: 2 }}>
+        <button className="trp-cal__nav-btn" onClick={prevMonth} aria-label="Previous month" style={{ padding: 2 }}>
+          <ChevronLeft size={13} />
+        </button>
+        <span className="trp-cal__month" style={{ fontSize: 11, fontWeight: 600 }}>{MONTHS[calMonth]} {calYear}</span>
+        <button className="trp-cal__nav-btn" onClick={nextMonth} aria-label="Next month" style={{ padding: 2 }}>
+          <ChevronRight size={13} />
+        </button>
       </div>
-      <div className="gf-cal__grid">
-        {DAYS.map((d) => <div key={d} className="gf-cal__dow">{d}</div>)}
-        {cells.map((c, i) => (
-          <button
-            key={i}
-            className={[
-              'gf-cal__day',
-              !c.current && 'gf-cal__day--other',
-              c.current && isToday(c.day) && 'gf-cal__day--today',
-              c.current && isSelected(c.day) && 'gf-cal__day--selected',
-            ].filter(Boolean).join(' ')}
-            onClick={() => { if (c.current) onSelectDate(new Date(calYear, calMonth, c.day)); }}
-          >
-            {c.day}
-          </button>
-        ))}
+      <div className="trp-cal__grid" style={{ gap: 0 }}>
+        {DAYS.map((d) => <div key={d} className="trp-cal__dow" style={{ fontSize: 9, padding: '1px 0', opacity: 0.7 }}>{d}</div>)}
+        {cells.map((c, i) => {
+          const isRangeStart = c.current && isFrom(c.day);
+          const isRangeEnd = c.current && isTo(c.day);
+          const inRange = c.current && isInRange(c.day);
+          return (
+            <button
+              key={i}
+              className={[
+                'trp-cal__day',
+                !c.current && 'trp-cal__day--other',
+                c.current && isToday(c.day) && !isRangeStart && !isRangeEnd && 'trp-cal__day--today',
+                isRangeStart && 'trp-cal__day--range-start',
+                isRangeEnd && 'trp-cal__day--range-end',
+                inRange && 'trp-cal__day--in-range',
+              ].filter(Boolean).join(' ')}
+              onClick={() => { if (c.current) onSelectDate(new Date(calYear, calMonth, c.day)); }}
+              tabIndex={c.current ? 0 : -1}
+              style={{ fontSize: 10, padding: '2px 0', lineHeight: 1.25 }}
+            >
+              {c.day}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -92,59 +156,62 @@ function MiniCalendar({ selectedDate, onSelectDate, calMonth, calYear, setCalMon
 export default function TimeRangePicker() {
   const { timeRange, setTimeRange, setCustomTimeRange } = useAppStore();
   const [open, setOpen] = useState(false);
-  const [showCustom, setShowCustom] = useState(false);
-  const wrapperRef = useRef(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const now = new Date();
   const [fromStr, setFromStr] = useState(fmtDatetime(new Date(now.getTime() - 3600000)));
   const [toStr, setToStr] = useState(fmtDatetime(now));
-  const [editingField, setEditingField] = useState('from');
+  const [editingField, setEditingField] = useState<'from' | 'to'>('from');
   const [calMonth, setCalMonth] = useState(now.getMonth());
   const [calYear, setCalYear] = useState(now.getFullYear());
-  const [recentRanges, setRecentRanges] = useState([]);
 
+  /* Outside click */
   useEffect(() => {
-    const handler = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setOpen(false);
-        setShowCustom(false);
-      }
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleOpen = () => {
-    setOpen(!open);
-    setShowCustom(false);
-  };
+  /* Escape key */
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [open]);
 
-  const selectRelative = (range) => {
+  const handleToggle = useCallback(() => {
+    if (!open) {
+      const n = new Date();
+      setFromStr(fmtDatetime(new Date(n.getTime() - (timeRange.minutes || 60) * 60000)));
+      setToStr(fmtDatetime(n));
+      setCalMonth(n.getMonth());
+      setCalYear(n.getFullYear());
+      setEditingField('from');
+    }
+    setOpen((v) => !v);
+  }, [open, timeRange.minutes]);
+
+  const selectRelative = (range: { label: string; value: string; minutes: number }) => {
     setTimeRange(range);
     setOpen(false);
-    setShowCustom(false);
   };
 
-  const openCustom = () => {
-    const n = new Date();
-    setFromStr(fmtDatetime(new Date(n.getTime() - (timeRange.minutes || 60) * 60000)));
-    setToStr(fmtDatetime(n));
-    setCalMonth(n.getMonth());
-    setCalYear(n.getFullYear());
-    setEditingField('from');
-    setShowCustom(true);
-  };
-
-  const handleCalSelect = (date) => {
-    const current = editingField === 'from' ? fromStr : toStr;
-    const parsed = parseDatetime(current);
-    const h = parsed ? parsed.getHours() : 0;
-    const m = parsed ? parsed.getMinutes() : 0;
-    const s = parsed ? parsed.getSeconds() : 0;
-    date.setHours(h, m, s);
-    const newStr = fmtDatetime(date);
-    if (editingField === 'from') setFromStr(newStr);
-    else setToStr(newStr);
+  /* Calendar date pick — auto-advance from → to */
+  const handleCalSelect = (date: Date) => {
+    if (editingField === 'from') {
+      const parsed = parseDatetime(fromStr);
+      date.setHours(parsed ? parsed.getHours() : 0, parsed ? parsed.getMinutes() : 0, 0);
+      setFromStr(fmtDatetime(date));
+      // Auto-advance to "To" field
+      setEditingField('to');
+    } else {
+      const parsed = parseDatetime(toStr);
+      date.setHours(parsed ? parsed.getHours() : 23, parsed ? parsed.getMinutes() : 59, 0);
+      setToStr(fmtDatetime(date));
+    }
   };
 
   const applyAbsolute = () => {
@@ -152,103 +219,88 @@ export default function TimeRangePicker() {
     const end = parseDatetime(toStr);
     if (!start || !end || start >= end) return;
     const diffMin = Math.round((end.getTime() - start.getTime()) / 60000);
-    const label = `${fmtShort(start)} to ${fmtShort(end)}`;
+    const label = `${fmtDatetime(start)} → ${fmtDatetime(end)}`;
     setCustomTimeRange({ label, value: 'custom', minutes: diffMin, startTime: start.getTime(), endTime: end.getTime() });
-    setRecentRanges((prev) => {
-      const next = [{ label, from: fromStr, to: toStr }, ...prev.filter((r) => r.label !== label)];
-      return next.slice(0, 4);
-    });
     setOpen(false);
-    setShowCustom(false);
   };
 
-  const applyRecent = (r) => {
-    setFromStr(r.from);
-    setToStr(r.to);
-    const start = parseDatetime(r.from);
-    const end = parseDatetime(r.to);
-    if (!start || !end) return;
-    const diffMin = Math.round((end.getTime() - start.getTime()) / 60000);
-    setCustomTimeRange({ label: r.label, value: 'custom', minutes: diffMin, startTime: start.getTime(), endTime: end.getTime() });
-    setOpen(false);
-    setShowCustom(false);
-  };
-
-  const displayLabel = timeRange.label || 'Last 12 hours';
+  const displayLabel = timeRange.value === 'custom'
+    ? timeRange.label
+    : (DISPLAY_MAP[timeRange.value] || timeRange.label || 'Last 1 hour');
 
   return (
-    <div className="gf-tp" ref={wrapperRef}>
-      <button className="gf-tp__trigger" onClick={handleOpen}>
-        <Clock size={14} className="gf-tp__trigger-icon" />
-        <span className="gf-tp__trigger-label">{displayLabel}</span>
-        <ChevronDown size={12} style={{ opacity: 0.4 }} />
+    <div className="trp" ref={wrapperRef}>
+      <button
+        className={`trp__trigger ${open ? 'trp__trigger--open' : ''}`}
+        onClick={handleToggle}
+        data-testid="time-range-trigger"
+      >
+        <Clock size={14} className="trp__trigger-icon" />
+        <span className="trp__trigger-label">{displayLabel}</span>
+        <ChevronDown size={12} className={`trp__trigger-chevron ${open ? 'trp__trigger-chevron--open' : ''}`} />
       </button>
 
       {open && (
-        <div className={`gf-tp__dropdown ${showCustom ? 'gf-tp__dropdown--expanded' : ''}`}>
-
-          {/* Relative Ranges — always visible */}
-          <div className="gf-tp__col gf-tp__col-relative">
-            <div className="gf-tp__section-title">Relative time ranges</div>
-            <div className="gf-tp__relative-list">
-              {RELATIVE_RANGES.map((r) => (
-                <button
-                  key={r.value}
-                  className={`gf-tp__relative-item ${timeRange.value === r.value ? 'gf-tp__relative-item--active' : ''}`}
-                  onClick={() => selectRelative(r)}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
-            {/* Custom trigger */}
-            <button className="gf-tp__custom-trigger" onClick={openCustom}>
-              <Calendar size={13} />
-              Custom time range
-            </button>
+        <div className="trp__dropdown" data-testid="time-range-dropdown">
+          {/* Left — Quick Ranges */}
+          <div className="trp__panel trp__panel--quick" style={{ padding: '6px 8px' }}>
+            <span className="trp__panel-title" style={{ display: 'none' }}>Quick Ranges</span>
+            {RANGE_GROUPS.map((group) => (
+              <div key={group.title} className="trp__group" style={{ marginBottom: 2 }}>
+                <span className="trp__group-label" style={{ display: 'block', fontSize: 9, fontWeight: 500, color: '#666', marginBottom: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{group.title}</span>
+                <div className="trp__pills" style={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  {group.items.map((item) => (
+                    <button
+                      key={item.value}
+                      className={`trp__pill ${timeRange.value === item.value ? 'trp__pill--active' : ''}`}
+                      onClick={() => selectRelative(item)}
+                      style={{ padding: '2px 8px', fontSize: 11 }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Calendar + Absolute — only after clicking "Custom time range" */}
-          {showCustom && (
-            <>
-              <div className="gf-tp__col gf-tp__col-calendar">
-                <MiniCalendar
-                  selectedDate={parseDatetime(editingField === 'from' ? fromStr : toStr)}
-                  onSelectDate={handleCalSelect}
-                  calMonth={calMonth} calYear={calYear}
-                  setCalMonth={setCalMonth} setCalYear={setCalYear}
-                />
-              </div>
+          <div className="trp__divider" />
 
-              <div className="gf-tp__col gf-tp__col-absolute">
-                <div className="gf-tp__section-title">Absolute time range</div>
-                <label className="gf-tp__input-label">From</label>
+          {/* Right — Custom Range */}
+          <div className="trp__panel trp__panel--custom" style={{ padding: '6px 8px' }}>
+            <span className="trp__panel-title" style={{ display: 'none' }}>Custom Range</span>
+
+            <MiniCalendar
+              fromDate={parseDatetime(fromStr)}
+              toDate={parseDatetime(toStr)}
+              onSelectDate={handleCalSelect}
+              calMonth={calMonth} calYear={calYear}
+              setCalMonth={setCalMonth} setCalYear={setCalYear}
+            />
+
+            <div className="trp__inputs" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div className="trp__field" style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <label className="trp__field-label" style={{ fontSize: 9, fontWeight: 600, color: '#555', textTransform: 'uppercase' }}>From</label>
                 <input
-                  className={`gf-tp__input ${editingField === 'from' ? 'gf-tp__input--active' : ''}`}
-                  value={fromStr}
-                  onChange={(e) => setFromStr(e.target.value)}
+                  className={`trp__input ${editingField === 'from' ? 'trp__input--active' : ''}`}
+                  value={fromStr} onChange={(e) => setFromStr(e.target.value)}
                   onFocus={() => setEditingField('from')}
+                  style={{ padding: '2px 6px', fontSize: 11, width: '100%', boxSizing: 'border-box' }}
                 />
-                <label className="gf-tp__input-label">To</label>
-                <input
-                  className={`gf-tp__input ${editingField === 'to' ? 'gf-tp__input--active' : ''}`}
-                  value={toStr}
-                  onChange={(e) => setToStr(e.target.value)}
-                  onFocus={() => setEditingField('to')}
-                />
-                <button className="gf-tp__apply-btn" onClick={applyAbsolute}>Apply time range</button>
-
-                {recentRanges.length > 0 && (
-                  <>
-                    <div className="gf-tp__recent-title">Recently used</div>
-                    {recentRanges.map((r, i) => (
-                      <button key={i} className="gf-tp__recent-item" onClick={() => applyRecent(r)}>{r.label}</button>
-                    ))}
-                  </>
-                )}
               </div>
-            </>
-          )}
+              <div className="trp__field" style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <label className="trp__field-label" style={{ fontSize: 9, fontWeight: 600, color: '#555', textTransform: 'uppercase' }}>To</label>
+                <input
+                  className={`trp__input ${editingField === 'to' ? 'trp__input--active' : ''}`}
+                  value={toStr} onChange={(e) => setToStr(e.target.value)}
+                  onFocus={() => setEditingField('to')}
+                  style={{ padding: '2px 6px', fontSize: 11, width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
+            <button className="trp__apply" onClick={applyAbsolute} style={{ display: 'block', width: '100%', padding: '4px 0', marginTop: 8, fontSize: 11, fontWeight: 600, borderRadius: 6, border: 'none', background: '#5E60CE', color: '#fff', cursor: 'pointer' }}>Apply Range</button>
+          </div>
         </div>
       )}
     </div>

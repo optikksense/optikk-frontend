@@ -78,10 +78,7 @@ export default function Header() {
   return (
     <AntHeader className="app-header">
       <Space size="middle" className="header-left">
-        <div className="header-range-wrap">
-          <span className="header-range-label">Time Window</span>
-          <TimeRangePicker />
-        </div>
+        <TimeRangePicker />
       </Space>
 
       <Space size="middle" className="header-right">
