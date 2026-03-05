@@ -4,17 +4,63 @@ import { Line } from 'react-chartjs-2';
 import { createChartOptions, createLineDataset, getChartColor } from '@utils/chartHelpers';
 import { useChartTimeBuckets } from '@hooks/useChartTimeBuckets';
 
-function tsKey(ts: any) {
+interface EndpointData {
+  key?: string;
+  service_name?: string;
+  serviceName?: string;
+  service?: string;
+  endpoint?: string;
+  operation_name?: string;
+  operationName?: string;
+  endpoint_name?: string;
+  endpointName?: string;
+  http_method?: string;
+  httpMethod?: string;
+}
+
+interface LatencyDataPoint {
+  timestamp?: string;
+  time_bucket?: string;
+  timeBucket?: string;
+  value?: number;
+  avg_latency?: number;
+  avgLatency?: number;
+  avg_latency_ms?: number;
+  avgLatencyMs?: number;
+  p50?: number;
+  p50_latency?: number;
+  p50Latency?: number;
+  p95?: number;
+  p95_latency?: number;
+  p95Latency?: number;
+  p99?: number;
+  p99_latency?: number;
+  p99Latency?: number;
+  [key: string]: unknown;
+}
+
+interface LatencyChartProps {
+  data?: LatencyDataPoint[];
+  endpoints?: EndpointData[];
+  selectedEndpoints?: string[];
+  serviceTimeseriesMap?: Record<string, LatencyDataPoint[]>;
+  targetThreshold?: number | null;
+  datasetLabel?: string;
+  color?: string;
+  valueKey?: string;
+}
+
+function tsKey(ts: string | number | null | undefined): string {
   if (!ts) return '';
   return String(ts).replace('T', ' ').replace('Z', '').substring(0, 16);
 }
 
-function firstValue(row: any, keys: string[], fallback: any = 0) {
+function firstValue<T>(row: unknown, keys: string[], fallback: T): T {
   if (!row || typeof row !== 'object') return fallback;
   for (const key of keys) {
-    const value = row[key];
+    const value = (row as Record<string, unknown>)[key];
     if (value !== undefined && value !== null && value !== '') {
-      return value;
+      return value as T;
     }
   }
   return fallback;
@@ -29,12 +75,12 @@ export default function LatencyChart({
   datasetLabel = 'Avg Latency (ms)',
   color = '#5E60CE',
   valueKey = 'avg_latency'
-}: any) {
+}: LatencyChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets, labels } = useChartTimeBuckets();
 
-  const buildServiceDatasets = (endpointList: any[]) => {
-    const targetMap: Record<string, any> = {};
+  const buildServiceDatasets = (endpointList: EndpointData[]) => {
+    const targetMap: Record<string, { label: string }> = {};
     for (const ep of endpointList) {
       const key = ep.key || firstValue(ep, ['service_name', 'serviceName', 'service'], '');
       const label = ep.endpoint || firstValue(ep, ['service_name', 'serviceName', 'service'], '') || key;
@@ -42,8 +88,8 @@ export default function LatencyChart({
     }
     const stepMs = timeBuckets.length >= 2 ? new Date(timeBuckets[1]).getTime() - new Date(timeBuckets[0]).getTime() : 60000;
 
-    return Object.entries(targetMap).map(([key, info]: [string, any], idx) => {
-      const tsData = (serviceTimeseriesMap as any)[key] || [];
+    return Object.entries(targetMap).map(([key, info], idx) => {
+      const tsData = serviceTimeseriesMap[key] || [];
       const tsMap: Record<string, number> = {};
       for (const row of tsData) {
         const rowTimestamp = firstValue(row, ['timestamp', 'time_bucket', 'timeBucket'], '');

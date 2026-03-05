@@ -1,17 +1,37 @@
-import { Space, Select, Input, Button } from 'antd';
-import { Search, Download } from 'lucide-react';
+import { ReactNode } from 'react';
+import { Space, Select, Input } from 'antd';
+import { Search } from 'lucide-react';
 import './FilterBar.css';
 
-/**
- * Reusable filter toolbar with search, dropdowns, and action buttons.
- * Replaces the duplicated Space/Select/Search patterns across pages.
- *
- * @param {Array} filters - Array of filter configs:
- *   { type: 'search', key, placeholder, onSearch, width }
- *   { type: 'select', key, placeholder, options, value, onChange, width, allowClear }
- * @param {ReactNode} actions - Optional action buttons (e.g. Export, Create)
- */
-export default function FilterBar({ filters = [], actions }: { filters?: any[], actions?: any }) {
+interface FilterSearchConfig {
+  type: 'search';
+  key: string;
+  placeholder?: string;
+  onSearch?: (value: string) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
+  width?: number;
+}
+
+interface FilterSelectConfig {
+  type: 'select';
+  key: string;
+  placeholder?: string;
+  options?: { label: string; value: string | number }[];
+  value?: string | number;
+  onChange?: (value: string | number | null) => void;
+  width?: number;
+  allowClear?: boolean;
+}
+
+type FilterConfig = FilterSearchConfig | FilterSelectConfig;
+
+interface FilterBarProps {
+  filters?: FilterConfig[];
+  actions?: ReactNode;
+}
+
+export default function FilterBar({ filters = [], actions }: FilterBarProps) {
   return (
     <div className="filter-bar">
       <Space wrap>

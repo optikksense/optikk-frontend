@@ -1,12 +1,14 @@
+export interface ApiError {
+    message: string;
+    code?: string;
+    [key: string]: unknown;
+}
+
 export interface ApiResponse<T> {
     success: boolean;
     data: T;
     message?: string;
-    error?: {
-        message: string;
-        code?: string;
-        [key: string]: any;
-    };
+    error?: ApiError;
 }
 
 export interface User {
@@ -14,13 +16,13 @@ export interface User {
     email: string;
     name?: string;
     teams: Team[];
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export interface Team {
     id: number;
     name: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export interface TimeRange {
@@ -29,14 +31,14 @@ export interface TimeRange {
     minutes?: number;
     start?: number;
     end?: number;
-    startTime?: any;
-    endTime?: any;
+    startTime?: string;
+    endTime?: string;
 }
 
 export interface MetricData {
     timestamp: string;
     value: number;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export interface LogEntry {
@@ -45,7 +47,7 @@ export interface LogEntry {
     level: string;
     message: string;
     service: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export interface TraceSpan {
@@ -57,5 +59,5 @@ export interface TraceSpan {
     timestamp: number;
     duration: number;
     status: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
