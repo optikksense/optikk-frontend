@@ -1,9 +1,11 @@
 import { Col, Progress, Row, Segmented, Tag } from 'antd';
 import { Activity, AlertCircle, Layers, LayoutGrid, List, ShieldAlert } from 'lucide-react';
+
+import SparklineChart from '@components/charts/micro/SparklineChart';
 import { FilterBar, HealthIndicator, StatCardsGrid } from '@components/common';
 import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
-import SparklineChart from '@components/charts/micro/SparklineChart';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
+
 import { formatNumber, formatDuration } from '@utils/formatters';
 
 const SERVICE_COLUMNS = [
@@ -16,6 +18,23 @@ const SERVICE_COLUMNS = [
     { key: 'p99Latency', label: 'P99 Latency', defaultWidth: 120, flex: true },
 ];
 
+/**
+ *
+ * @param root0
+ * @param root0.totalServices
+ * @param root0.healthyServices
+ * @param root0.degradedServices
+ * @param root0.unhealthyServices
+ * @param root0.isLoading
+ * @param root0.dashboardConfig
+ * @param root0.chartDataSources
+ * @param root0.searchQuery
+ * @param root0.setSearchQuery
+ * @param root0.viewMode
+ * @param root0.setViewMode
+ * @param root0.tableData
+ * @param root0.onNodeClick
+ */
 export function ServiceOverviewTab({
     totalServices,
     healthyServices,
@@ -37,10 +56,10 @@ export function ServiceOverviewTab({
                 style={{ marginBottom: 24 }}
                 defaultColProps={{ xs: 24, sm: 12, lg: 6 }}
                 stats={[
-                    { title: "Total Services", value: totalServices, icon: <Layers size={20} />, iconColor: "#6366F1", loading: isLoading },
-                    { title: "Healthy", value: healthyServices, icon: <Activity size={20} />, iconColor: "#73C991", loading: isLoading, description: `${totalServices > 0 ? Number(((healthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
-                    { title: "Degraded", value: degradedServices, icon: <AlertCircle size={20} />, iconColor: "#F79009", loading: isLoading, description: `${totalServices > 0 ? Number(((degradedServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
-                    { title: "Unhealthy", value: unhealthyServices, icon: <ShieldAlert size={20} />, iconColor: "#F04438", loading: isLoading, description: `${totalServices > 0 ? Number(((unhealthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+                    { title: 'Total Services', value: totalServices, icon: <Layers size={20} />, iconColor: '#6366F1', loading: isLoading },
+                    { title: 'Healthy', value: healthyServices, icon: <Activity size={20} />, iconColor: '#73C991', loading: isLoading, description: `${totalServices > 0 ? Number(((healthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+                    { title: 'Degraded', value: degradedServices, icon: <AlertCircle size={20} />, iconColor: '#F79009', loading: isLoading, description: `${totalServices > 0 ? Number(((degradedServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+                    { title: 'Unhealthy', value: unhealthyServices, icon: <ShieldAlert size={20} />, iconColor: '#F04438', loading: isLoading, description: `${totalServices > 0 ? Number(((unhealthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
                 ]}
             />
 
@@ -62,7 +81,7 @@ export function ServiceOverviewTab({
                         value: searchQuery,
                         onChange: (e) => setSearchQuery(e.target.value),
                         width: 460,
-                    }
+                    },
                 ]}
                 actions={
                     <Segmented

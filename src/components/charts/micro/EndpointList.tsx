@@ -1,35 +1,70 @@
-import React from 'react';
 import { formatNumber, formatDuration } from '@utils/formatters';
+
+const DEFAULT_MAX_HEIGHT = '200px';
+
+type EndpointListType = 'requests' | 'errorRate' | 'latency';
+
+interface EndpointListItem {
+  key?: string;
+  http_method?: string;
+  operation_name?: string;
+  endpoint_name?: string;
+  service_name?: string;
+  service?: string;
+  request_count?: number;
+  error_count?: number;
+  avg_latency?: number;
+  p95_latency?: number;
+}
+
+interface EndpointListProps {
+  endpoints?: EndpointListItem[];
+  selectedEndpoints?: string[];
+  onToggle?: (endpointKey: string) => void;
+  type?: EndpointListType;
+  maxHeight?: string;
+}
+
+interface EndpointValue {
+  value: number;
+  formatted: string;
+}
 
 /**
  * Reusable component for displaying endpoint lists below charts
  * Reduces code duplication across RequestChart, ErrorRateChart, and LatencyChart
+ * @param props Component props.
+ * @returns Rendered endpoint list for the selected metric type.
  */
-export default function EndpointList({ 
-  endpoints, 
-  selectedEndpoints, 
-  onToggle, 
+export default function EndpointList({
+  endpoints = [],
+  selectedEndpoints = [],
+  onToggle,
   type = 'requests', // 'requests', 'errorRate', 'latency'
-  maxHeight = '200px' 
-}) {
-  if (!endpoints || endpoints.length === 0) return null;
+  maxHeight = DEFAULT_MAX_HEIGHT,
+}: EndpointListProps): JSX.Element | null {
+  if (endpoints.length === 0) return null;
 
-  const getEndpointValue = (endpoint) => {
+  const getEndpointValue = (endpoint: EndpointListItem): EndpointValue => {
     switch (type) {
-      case 'errorRate':
-        const errorRate = endpoint.request_count > 0 
-          ? (endpoint.error_count / endpoint.request_count) * 100 
+      case 'errorRate': {
+        const requestCount = endpoint.request_count || 0;
+        const errorCount = endpoint.error_count || 0;
+        const errorRate = requestCount > 0 
+          ? (errorCount / requestCount) * 100 
           : 0;
         return { value: errorRate, formatted: `${Number(errorRate).toFixed(2)}%` };
-      case 'latency':
+      }
+      case 'latency': {
         const latency = endpoint.avg_latency || endpoint.p95_latency || 0;
         return { value: latency, formatted: formatDuration(latency) };
+      }
       default: // requests
         return { value: endpoint.request_count || 0, formatted: formatNumber(endpoint.request_count || 0) };
     }
   };
 
-  const getValueColor = (value) => {
+  const getValueColor = (value: number): string => {
     switch (type) {
       case 'errorRate':
         if (value > 5) return 'var(--color-error)';
@@ -44,7 +79,7 @@ export default function EndpointList({
     }
   };
 
-  const getBackgroundColor = (endpointKey, isSelected) => {
+  const getBackgroundColor = (isSelected: boolean): string => {
     if (isSelected) {
       switch (type) {
         case 'errorRate':
@@ -58,7 +93,7 @@ export default function EndpointList({
     return 'var(--bg-secondary)';
   };
 
-  const getBorderColor = (endpointKey, isSelected) => {
+  const getBorderColor = (isSelected: boolean): string => {
     if (isSelected) {
       switch (type) {
         case 'errorRate':
@@ -76,7 +111,7 @@ export default function EndpointList({
     <div style={{ 
       marginTop: 16, 
       paddingTop: 16, 
-      borderTop: '1px solid var(--border-color)' 
+      borderTop: '1px solid var(--border-color)', 
     }}>
       <div style={{ 
         fontSize: 12, 
@@ -84,7 +119,7 @@ export default function EndpointList({
         color: 'var(--text-muted)', 
         marginBottom: 12, 
         textTransform: 'uppercase', 
-        letterSpacing: '0.5px' 
+        letterSpacing: '0.5px', 
       }}>
         Top Endpoints by {type === 'errorRate' ? 'Error Rate' : type === 'latency' ? 'Latency' : 'Requests'}
       </div>
@@ -96,9 +131,9 @@ export default function EndpointList({
         overflowY: 'auto', 
         paddingRight: 4,
         scrollbarWidth: 'thin',
-        scrollbarColor: 'var(--border-color) var(--bg-secondary)'
+        scrollbarColor: 'var(--border-color) var(--bg-secondary)',
       }}>
-        {endpoints.map((ep, idx) => {
+        {endpoints.map((ep) => {
           const endpointKey = ep.key || `${ep.http_method || 'N/A'}_${ep.operation_name || ep.endpoint_name || 'Unknown'}_${ep.service_name || ''}`;
           const isSelected = selectedEndpoints.includes(endpointKey);
           const isFaded = selectedEndpoints.length > 0 && !isSelected;
@@ -107,28 +142,28 @@ export default function EndpointList({
           return (
             <div
               key={endpointKey}
-              onClick={() => onToggle(endpointKey)}
+              onClick={() => onToggle?.(endpointKey)}
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '8px 12px',
-                background: getBackgroundColor(endpointKey, isSelected),
+                background: getBackgroundColor(isSelected),
                 borderRadius: 4,
                 cursor: 'pointer',
                 transition: 'all 0.2s',
                 opacity: isFaded ? 0.3 : 1,
-                border: `1px solid ${getBorderColor(endpointKey, isSelected)}`,
+                border: `1px solid ${getBorderColor(isSelected)}`,
               }}
               onMouseEnter={(e) => {
                 if (!isFaded) {
                   e.currentTarget.style.background = isSelected 
-                    ? getBackgroundColor(endpointKey, true).replace('0.2', '0.3')
+                    ? getBackgroundColor(true).replace('0.2', '0.3')
                     : 'var(--bg-tertiary)';
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = getBackgroundColor(endpointKey, isSelected);
+                e.currentTarget.style.background = getBackgroundColor(isSelected);
               }}
             >
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -138,7 +173,7 @@ export default function EndpointList({
                   color: 'var(--text-primary)', 
                   overflow: 'hidden', 
                   textOverflow: 'ellipsis', 
-                  whiteSpace: 'nowrap' 
+                  whiteSpace: 'nowrap', 
                 }}>
                   {ep.http_method || 'N/A'} {ep.operation_name || ep.endpoint_name || 'Unknown'}
                 </div>
@@ -152,7 +187,7 @@ export default function EndpointList({
                 fontSize: 12, 
                 fontWeight: 600, 
                 color: getValueColor(value), 
-                marginLeft: 12 
+                marginLeft: 12, 
               }}>
                 {formatted}
               </div>

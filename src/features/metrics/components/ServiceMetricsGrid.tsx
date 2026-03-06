@@ -1,6 +1,13 @@
 import { Row, Col, Card, Progress } from 'antd';
+
 import { formatNumber, formatDuration } from '@utils/formatters';
 
+/**
+ *
+ * @param root0
+ * @param root0.serviceMetrics
+ * @param root0.onServiceSelect
+ */
 export function ServiceMetricsGrid({ serviceMetrics, onServiceSelect }) {
     if (!serviceMetrics || serviceMetrics.length === 0) return null;
 

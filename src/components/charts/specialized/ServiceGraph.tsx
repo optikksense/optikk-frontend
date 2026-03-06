@@ -153,6 +153,13 @@ function buildLayout(nodes: any[], edges: any[]) {
   };
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.nodes
+ * @param root0.edges
+ * @param root0.onNodeClick
+ */
 export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -168,12 +175,12 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
 
   const { stageColumns, positions, contentWidth, contentHeight, incidentCount, edges: graphEdges } = useMemo(
     () => buildLayout(nodes, edges),
-    [nodes, edges]
+    [nodes, edges],
   );
 
   const maxCalls = useMemo(
     () => Math.max(...graphEdges.map((edge) => Number(edge.callCount || 0)), 1),
-    [graphEdges]
+    [graphEdges],
   );
 
   useEffect(() => {

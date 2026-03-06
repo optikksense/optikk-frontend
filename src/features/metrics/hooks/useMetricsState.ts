@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { useURLFilters } from '@hooks/useURLFilters';
+import { useUrlSyncedTab } from '@hooks/useUrlSyncedTab';
 
 const METRICS_URL_FILTER_CONFIG = {
     params: [
@@ -9,9 +8,10 @@ const METRICS_URL_FILTER_CONFIG = {
     ],
 };
 
+/**
+ *
+ */
 export function useMetricsState() {
-    const [searchParams, setSearchParams] = useSearchParams();
-
     /* ── URL-synced filter state for service & errorsOnly ── */
     const {
         values: urlValues,
@@ -23,26 +23,10 @@ export function useMetricsState() {
     const showErrorsOnly = urlValues.errorsOnly;
     const setShowErrorsOnly = urlSetters.errorsOnly;
 
-    /* ── Tab state (kept separate — immediate URL sync, no debounce needed) ── */
-    const queryTab = searchParams.get('tab') === 'latency' ? 'latency' : 'overview';
-    const [activeTab, setActiveTab] = useState(queryTab);
-
-    useEffect(() => {
-        if (queryTab !== activeTab) {
-            setActiveTab(queryTab);
-        }
-    }, [queryTab, activeTab]);
-
-    const onTabChange = (tabKey) => {
-        setActiveTab(tabKey);
-        const next = new URLSearchParams(searchParams);
-        if (tabKey === 'latency') {
-            next.set('tab', 'latency');
-        } else {
-            next.delete('tab');
-        }
-        setSearchParams(next, { replace: true });
-    };
+    const { activeTab, setActiveTab, onTabChange } = useUrlSyncedTab({
+        allowedTabs: ['overview', 'latency'] as const,
+        defaultTab: 'overview',
+    });
 
     return {
         selectedService,
@@ -51,6 +35,6 @@ export function useMetricsState() {
         setShowErrorsOnly,
         activeTab,
         setActiveTab,
-        onTabChange
+        onTabChange,
     };
 }

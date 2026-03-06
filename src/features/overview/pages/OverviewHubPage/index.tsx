@@ -1,32 +1,20 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { Tabs } from 'antd';
 import { Activity, Target, AlertCircle } from 'lucide-react';
+import { ErrorsTabPanel } from '@components/ui';
+
+import { useUrlSyncedTab } from '@hooks/useUrlSyncedTab';
+
 import OverviewPage from '../OverviewPage';
 import SloSliDashboardPage from '../SloSliDashboardPage';
-import ErrorDashboardPage from '@features/errors/pages/ErrorDashboardPage';
 
+/**
+ *
+ */
 export default function OverviewHubPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
-
-  useEffect(() => {
-    const queryTab = searchParams.get('tab') || 'overview';
-    if (queryTab !== activeTab) {
-      setActiveTab(queryTab);
-    }
-  }, [searchParams, activeTab]);
-
-  const onTabChange = (key) => {
-    setActiveTab(key);
-    const next = new URLSearchParams(searchParams);
-    if (key === 'overview') {
-      next.delete('tab');
-    } else {
-      next.set('tab', key);
-    }
-    setSearchParams(next, { replace: true });
-  };
+  const { activeTab, onTabChange } = useUrlSyncedTab({
+    allowedTabs: ['overview', 'slo', 'errors'] as const,
+    defaultTab: 'overview',
+  });
 
   const items = [
     {
@@ -42,7 +30,7 @@ export default function OverviewHubPage() {
     {
       key: 'errors',
       label: <span><AlertCircle size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Errors</span>,
-      children: <ErrorDashboardPage />,
+      children: <ErrorsTabPanel />,
     },
   ];
 
@@ -55,7 +43,7 @@ export default function OverviewHubPage() {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           fontSize: '28px',
-          fontWeight: 700
+          fontWeight: 700,
         }}>
           Overview Hub
         </h1>
@@ -71,7 +59,7 @@ export default function OverviewHubPage() {
         borderRadius: '16px',
         border: '1px solid var(--glass-border)',
         padding: '24px',
-        boxShadow: 'var(--shadow-lg)'
+        boxShadow: 'var(--shadow-lg)',
       }}>
         <Tabs
           activeKey={activeTab}

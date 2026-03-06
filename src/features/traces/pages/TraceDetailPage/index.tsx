@@ -1,15 +1,19 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Row, Col, Card, Spin, Empty, Tag, Table } from 'antd';
 import { GitBranch, Layers, Clock, AlertCircle, ArrowLeft, FileText, X, ChevronDown, ChevronRight } from 'lucide-react';
-import { v1Service } from '@services/v1Service';
-import { useAppStore } from '@store/appStore';
-import { formatDuration, formatTimestamp, formatNumber } from '@utils/formatters';
-import PageHeader from '@components/common/layout/PageHeader';
-import StatCard from '@components/common/cards/StatCard';
-import { ObservabilityDetailPanel } from '@components/common';
+import React, { useMemo, useState, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+
 import WaterfallChart from '@components/charts/specialized/WaterfallChart';
+import { ObservabilityDetailPanel } from '@components/common';
+import StatCard from '@components/common/cards/StatCard';
+import PageHeader from '@components/common/layout/PageHeader';
+
+import { v1Service } from '@services/v1Service';
+
+import { useAppStore } from '@store/appStore';
+
+import { formatDuration, formatTimestamp, formatNumber } from '@utils/formatters';
 import './TraceDetailPage.css';
 
 const parseAttributes = (attributes) => {
@@ -51,9 +55,12 @@ const normalizeTraceLog = (log: any = {}) => ({
   service_name: log.service_name ?? log.serviceName ?? '',
   message: log.message ?? '',
   trace_id: log.trace_id ?? log.traceId ?? '',
-  span_id: (log as any).span_id ?? (log as any).spanId ?? '',
+  span_id: (log).span_id ?? (log).spanId ?? '',
 });
 
+/**
+ *
+ */
 export default function TraceDetailPage() {
   const { traceId } = useParams();
   const navigate = useNavigate();
@@ -83,7 +90,7 @@ export default function TraceDetailPage() {
 
   const spans = useMemo(
     () => (Array.isArray(spansData) ? spansData : []).map(normalizeSpan),
-    [spansData]
+    [spansData],
   );
 
   // Resolve the actual trace_id from loaded spans (URL param may be a root span_id).
@@ -97,9 +104,9 @@ export default function TraceDetailPage() {
   });
   const traceLogs = useMemo(
     () => (Array.isArray(logsData) ? logsData : []).map(normalizeTraceLog),
-    [logsData]
+    [logsData],
   );
-  const selectedSpan = spans.find(s => s.span_id === selectedSpanId);
+  const selectedSpan = spans.find((s) => s.span_id === selectedSpanId);
 
   // Calculate trace statistics
   const stats = {
@@ -110,17 +117,17 @@ export default function TraceDetailPage() {
   };
 
   if (spans.length > 0) {
-    const startTimes = spans.map(s => new Date(s.start_time).getTime());
-    const endTimes = spans.map(s => new Date(s.end_time).getTime());
+    const startTimes = spans.map((s) => new Date(s.start_time).getTime());
+    const endTimes = spans.map((s) => new Date(s.end_time).getTime());
     const spanEnvelopeDuration = Math.max(...endTimes) - Math.min(...startTimes);
     const rootSpan = [...spans]
       .filter((s) => !s.parent_span_id)
       .sort((a, b) => Number(b.duration_ms || 0) - Number(a.duration_ms || 0))[0];
-    const rootDuration = Number((rootSpan as any)?.duration_ms || 0);
+    const rootDuration = Number((rootSpan)?.duration_ms || 0);
     // Keep detail duration aligned with trace-list duration (root span) when available.
     stats.duration = rootDuration > 0 ? rootDuration : spanEnvelopeDuration;
 
-    spans.forEach(span => {
+    spans.forEach((span) => {
       stats.services.add(span.service_name);
       if (span.status === 'ERROR') {
         stats.errors++;
@@ -148,7 +155,7 @@ export default function TraceDetailPage() {
       width: 190,
       render: (value) => {
         try {
-          return formatTimestamp(value as any);
+          return formatTimestamp(value);
         } catch (e) {
           return '-';
         }
@@ -213,8 +220,8 @@ export default function TraceDetailPage() {
       { key: 'http_url', label: 'HTTP URL', value: selectedSpan.http_url },
       { key: 'http_status_code', label: 'HTTP Status', value: String(selectedSpan.http_status_code) },
     ] : []),
-    ...((selectedSpan as any).host ? [{ key: 'host', label: 'Host', value: (selectedSpan as any).host }] : []),
-    ...((selectedSpan as any).pod ? [{ key: 'pod', label: 'Pod', value: (selectedSpan as any).pod }] : []),
+    ...((selectedSpan).host ? [{ key: 'host', label: 'Host', value: (selectedSpan).host }] : []),
+    ...((selectedSpan).pod ? [{ key: 'pod', label: 'Pod', value: (selectedSpan).pod }] : []),
   ].filter((f) => f.value && f.value !== '0') : [];
 
   return (
@@ -246,7 +253,7 @@ export default function TraceDetailPage() {
             </Tag>
           }
           metaLine={selectedSpan.operation_name}
-          metaRight={formatDuration((selectedSpan as any).duration_ms)}
+          metaRight={formatDuration((selectedSpan).duration_ms)}
           fields={spanDetailFields}
           rawData={selectedSpan}
           onClose={handleCloseDrawer}
@@ -265,42 +272,42 @@ export default function TraceDetailPage() {
           <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
             <Col xs={24} sm={12} lg={6}>
               {React.createElement(StatCard as any, {
-                title: "Total Spans",
+                title: 'Total Spans',
                 value: stats.totalSpans,
                 formatter: formatNumber,
                 trend: 0,
                 icon: <Layers size={20} />,
-                iconColor: "#5E60CE"
+                iconColor: '#5E60CE',
               })}
             </Col>
             <Col xs={24} sm={12} lg={6}>
               {React.createElement(StatCard as any, {
-                title: "Duration",
+                title: 'Duration',
                 value: (stats as any).duration,
                 formatter: formatDuration,
                 trend: 0,
                 icon: <Clock size={20} />,
-                iconColor: "#73C991"
+                iconColor: '#73C991',
               })}
             </Col>
             <Col xs={24} sm={12} lg={6}>
               {React.createElement(StatCard as any, {
-                title: "Services",
+                title: 'Services',
                 value: stats.services.size,
                 formatter: formatNumber,
                 trend: 0,
                 icon: <GitBranch size={20} />,
-                iconColor: "#06AED5"
+                iconColor: '#06AED5',
               })}
             </Col>
             <Col xs={24} sm={12} lg={6}>
               {React.createElement(StatCard as any, {
-                title: "Errors",
+                title: 'Errors',
                 value: stats.errors,
                 formatter: formatNumber,
                 trend: 0,
                 icon: <AlertCircle size={20} />,
-                iconColor: stats.errors > 0 ? '#F04438' : '#73C991'
+                iconColor: stats.errors > 0 ? '#F04438' : '#73C991',
               })}
             </Col>
           </Row>
@@ -316,7 +323,7 @@ export default function TraceDetailPage() {
               border: '1px solid var(--glass-border)',
               padding: waterfallCollapsed ? '12px 24px' : '24px',
               boxShadow: 'var(--shadow-lg)',
-              marginBottom: '24px'
+              marginBottom: '24px',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: waterfallCollapsed ? 0 : '16px' }}>
@@ -366,7 +373,7 @@ export default function TraceDetailPage() {
               boxShadow: 'var(--shadow-md)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '16px'
+              gap: '16px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600, fontSize: '15px' }}>

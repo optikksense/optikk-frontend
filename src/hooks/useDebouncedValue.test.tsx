@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+
 import { useDebouncedValue } from './useDebouncedValue';
 
 describe('useDebouncedValue', () => {
@@ -8,7 +9,7 @@ describe('useDebouncedValue', () => {
 
     const { result, rerender } = renderHook(
       ({ value, delay }) => useDebouncedValue(value, delay),
-      { initialProps: { value: 'initial', delay: 200 } }
+      { initialProps: { value: 'initial', delay: 200 } },
     );
 
     expect(result.current).toBe('initial');
@@ -32,7 +33,7 @@ describe('useDebouncedValue', () => {
 
     const { result, rerender } = renderHook(
       ({ value }) => useDebouncedValue(value, 100),
-      { initialProps: { value: 'a' } }
+      { initialProps: { value: 'a' } },
     );
 
     rerender({ value: 'b' });

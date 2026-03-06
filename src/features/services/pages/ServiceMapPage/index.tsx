@@ -1,16 +1,23 @@
-import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Row, Col, Card, Skeleton, Empty, List, Tag } from 'antd';
 import { Network, Activity, AlertCircle, ArrowRight } from 'lucide-react';
-import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import PageHeader from '@components/common/layout/PageHeader';
-import StatCard from '@components/common/cards/StatCard';
-import HealthIndicator from '@components/common/cards/HealthIndicator';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import ServiceGraph from '@components/charts/specialized/ServiceGraph';
+import HealthIndicator from '@components/common/cards/HealthIndicator';
+import StatCard from '@components/common/cards/StatCard';
+import PageHeader from '@components/common/layout/PageHeader';
+
 import { serviceMapService } from '@services/serviceMapService';
+
+import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
+
 import { formatNumber } from '@utils/formatters';
 import './ServiceMapPage.css';
 
+/**
+ *
+ */
 export default function ServiceMapPage() {
   const navigate = useNavigate();
   const [healthFilter, setHealthFilter] = useState('all');
@@ -22,7 +29,7 @@ export default function ServiceMapPage() {
   } = useTimeRangeQuery(
     'service-topology',
     (teamId, startTime, endTime) =>
-      serviceMapService.getTopology(teamId, startTime, endTime)
+      serviceMapService.getTopology(teamId, startTime, endTime),
   );
 
   const allNodes: any[] = (topologyData as any)?.nodes || [];
@@ -69,32 +76,32 @@ export default function ServiceMapPage() {
       <Row gutter={[16, 16]} className="stats-row">
         <Col xs={24} sm={8}>
           {React.createElement(StatCard as any, {
-            title: "Total Services",
+            title: 'Total Services',
             value: stats.totalServices,
             formatter: formatNumber,
             trend: 0,
             icon: <Network size={20} />,
-            iconColor: "#5E60CE"
+            iconColor: '#5E60CE',
           })}
         </Col>
         <Col xs={24} sm={8}>
           {React.createElement(StatCard as any, {
-            title: "Healthy Services",
+            title: 'Healthy Services',
             value: stats.healthyServices,
             formatter: formatNumber,
             trend: 0,
             icon: <Activity size={20} />,
-            iconColor: "#73C991"
+            iconColor: '#73C991',
           })}
         </Col>
         <Col xs={24} sm={8}>
           {React.createElement(StatCard as any, {
-            title: "Dependencies",
+            title: 'Dependencies',
             value: stats.totalDependencies,
             formatter: formatNumber,
             trend: 0,
             icon: <ArrowRight size={20} />,
-            iconColor: "#06AED5"
+            iconColor: '#06AED5',
           })}
         </Col>
       </Row>

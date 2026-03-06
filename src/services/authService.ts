@@ -9,9 +9,31 @@
  * so the frontend can render the right UI without a round-trip, but we never
  * store the JWT itself in localStorage any more.
  */
-import api from './api';
-import { API_CONFIG, STORAGE_KEYS } from '@config/constants';
+import type { Team, User } from '@/types';
+
 import { safeSet, safeRemove, safeGetJSON } from '@utils/storage';
+
+import { API_CONFIG, STORAGE_KEYS } from '@config/constants';
+
+import api from './api';
+
+interface AuthPayload {
+  readonly token?: string;
+  readonly user?: User;
+  readonly teams?: Team[];
+  readonly currentTeam?: Team;
+  readonly success?: boolean;
+  readonly data?: unknown;
+  readonly [key: string]: unknown;
+}
+
+function asAuthPayload(value: unknown): AuthPayload | null {
+  if (typeof value !== 'object' || value === null) {
+    return null;
+  }
+  // Backend auth responses can include optional transport wrappers and team metadata.
+  return value as AuthPayload;
+}
 
 /**
  * A non-sensitive cookie-auth-presence flag written to localStorage so the
@@ -20,23 +42,34 @@ import { safeSet, safeRemove, safeGetJSON } from '@utils/storage';
  */
 const AUTH_PRESENT_KEY = 'optic_auth_present';
 
-export const authService = {
+export /**
+        *
+        */
+const authService = {
   /**
    * Axios interceptor unwraps ApiResponse and returns payload directly.
    * Keep a compatibility fallback for any wrapped callers.
+   * @param response
    */
-  normalizeAuthPayload(response: any) {
-    if (!response) return null;
-    if (response.success && response.data) return response.data;
-    return response;
+  normalizeAuthPayload(response: unknown): AuthPayload | null {
+    const payload = asAuthPayload(response);
+    if (!payload) {
+      return null;
+    }
+    if (payload.success === true) {
+      return asAuthPayload(payload.data);
+    }
+    return payload;
   },
 
   /**
    * Login user.
    * On success the backend sets an httpOnly cookie named "token".
    * We store non-sensitive metadata (user data, team ID) in localStorage.
+   * @param email
+   * @param password
    */
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<AuthPayload | unknown> {
     // Avoid carrying stale auth/team context across account switches.
     safeRemove(AUTH_PRESENT_KEY);
     safeRemove(STORAGE_KEYS.AUTH_TOKEN);
@@ -80,10 +113,10 @@ export const authService = {
    * POSTing to /auth/logout tells the backend to clear the httpOnly cookie
    * (Set-Cookie: token=; Max-Age=0) and revoke the JWT in Redis.
    */
-  async logout() {
+  async logout(): Promise<void> {
     try {
       await api.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Logout error:', error);
     } finally {
       // Clear all local non-sensitive session markers.
@@ -103,7 +136,7 @@ export const authService = {
     try {
       await api.get(API_CONFIG.ENDPOINTS.AUTH.ME);
       return true;
-    } catch {
+    } catch (_error: unknown) {
       safeRemove(AUTH_PRESENT_KEY);
       return false;
     }
@@ -121,8 +154,8 @@ export const authService = {
   /**
    * Get the currently stored user data (non-sensitive, from localStorage).
    */
-  getCurrentUser() {
-    return safeGetJSON(STORAGE_KEYS.USER_DATA, null);
+  getCurrentUser(): User | null {
+    return safeGetJSON<User>(STORAGE_KEYS.USER_DATA, null);
   },
 
   /**
@@ -139,7 +172,7 @@ export const authService = {
         return true;
       }
       return false;
-    } catch {
+    } catch (_error: unknown) {
       return false;
     }
   },

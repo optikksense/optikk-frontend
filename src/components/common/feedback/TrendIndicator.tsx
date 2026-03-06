@@ -4,6 +4,10 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
  * Displays a trend arrow with percentage value.
  * Green = positive trend, Red = negative trend.
  * If inverted (e.g. error rate), down = good (green), up = bad (red).
+ * @param root0
+ * @param root0.value
+ * @param root0.inverted
+ * @param root0.showValue
  */
 export default function TrendIndicator({ value, inverted = false, showValue = true }) {
   if (value == null || value === 0) {

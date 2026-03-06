@@ -1,4 +1,7 @@
-export const normalizeServiceMetric = (service: any = {}) => ({
+export /**
+        *
+        */
+const normalizeServiceMetric = (service: any = {}) => ({
     ...service,
     service_name: service.service_name ?? service.serviceName ?? service.name ?? '',
     request_count: Number(service.request_count ?? service.requestCount ?? 0),
@@ -9,7 +12,10 @@ export const normalizeServiceMetric = (service: any = {}) => ({
     p99_latency: Number(service.p99_latency ?? service.p99Latency ?? 0),
 });
 
-export const normalizeTimeSeriesPoint = (point: any = {}) => ({
+export /**
+        *
+        */
+const normalizeTimeSeriesPoint = (point: any = {}) => ({
     ...point,
     timestamp: point.timestamp ?? point.time_bucket ?? point.timeBucket ?? '',
     service_name: point.service_name ?? point.serviceName ?? '',
@@ -23,7 +29,10 @@ export const normalizeTimeSeriesPoint = (point: any = {}) => ({
     p99: Number(point.p99 ?? point.p99_latency ?? point.p99Latency ?? 0),
 });
 
-export const normalizeTopologyNode = (node: any = {}) => ({
+export /**
+        *
+        */
+const normalizeTopologyNode = (node: any = {}) => ({
     ...node,
     name: node.name ?? node.service_name ?? node.serviceName ?? '',
     requestCount: Number(node.requestCount ?? node.request_count ?? 0),
@@ -32,7 +41,10 @@ export const normalizeTopologyNode = (node: any = {}) => ({
     status: node.status ?? '',
 });
 
-export const normalizeTopologyEdge = (edge: any = {}) => ({
+export /**
+        *
+        */
+const normalizeTopologyEdge = (edge: any = {}) => ({
     ...edge,
     source: edge.source ?? edge.source_service ?? edge.sourceService ?? '',
     target: edge.target ?? edge.target_service ?? edge.targetService ?? '',
@@ -41,13 +53,23 @@ export const normalizeTopologyEdge = (edge: any = {}) => ({
     errorRate: Number(edge.errorRate ?? edge.error_rate ?? 0),
 });
 
-
+/**
+ *
+ * @param errorRate
+ */
 export function getServiceStatus(errorRate) {
     if (errorRate > 5) return 'unhealthy';
     if (errorRate > 1) return 'degraded';
     return 'healthy';
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.errorRate
+ * @param root0.avgLatency
+ * @param root0.dependencyCount
+ */
 export function calcRiskScore({ errorRate, avgLatency, dependencyCount }) {
     const errFactor = Math.min(errorRate * 12, 100);
     const latencyFactor = Math.min((avgLatency || 0) / 80, 100);

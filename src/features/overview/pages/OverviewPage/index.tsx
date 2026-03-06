@@ -1,14 +1,20 @@
-import { useMemo } from 'react';
 import { Row, Col, Card, Skeleton, Empty, Progress, Tag } from 'antd';
-import { useNavigate } from 'react-router-dom';
 import { Activity, AlertCircle, Clock, Zap, Server } from 'lucide-react';
-import { overviewService } from '@services/overviewService';
-import { formatNumber, formatDuration } from '@utils/formatters';
-import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import { useDashboardConfig } from '@hooks/useDashboardConfig';
-import { useAppStore } from '@store/appStore';
+import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { PageHeader, StatCard, StatCardsGrid, HealthIndicator } from '@components/common';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
+
+import { overviewService } from '@services/overviewService';
+
+import { useDashboardConfig } from '@hooks/useDashboardConfig';
+import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
+
+import { useAppStore } from '@store/appStore';
+
+import { formatNumber, formatDuration } from '@utils/formatters';
+
 import {
   normalizeMetricSummary,
   normalizeTimeSeriesPoint,
@@ -17,6 +23,9 @@ import {
 } from '../../../metrics/utils/metricNormalizers';
 import './OverviewPage.css';
 
+/**
+ *
+ */
 export default function OverviewPage() {
   const navigate = useNavigate();
   const { config } = useDashboardConfig('overview');
@@ -24,31 +33,31 @@ export default function OverviewPage() {
   // Metrics summary (primary source — spans table via v1 API)
   const { data: summaryRaw, isLoading: summaryLoading, error: summaryError } = useTimeRangeQuery(
     'metrics-summary',
-    (teamId, start, end) => overviewService.getSummary(teamId, start, end)
+    (teamId, start, end) => overviewService.getSummary(teamId, start, end),
   );
 
   // Metrics timeseries for charts
   const { data: timeseriesRaw } = useTimeRangeQuery(
     'metrics-timeseries',
-    (teamId, start, end) => overviewService.getTimeSeries(teamId, start, end, null, '5m')
+    (teamId, start, end) => overviewService.getTimeSeries(teamId, start, end, null, '5m'),
   );
 
   // Per-endpoint timeseries from backend
   const { data: endpointTimeseriesRaw } = useTimeRangeQuery(
     'endpoints-timeseries',
-    (teamId, start, end) => overviewService.getEndpointTimeSeries(teamId, start, end)
+    (teamId, start, end) => overviewService.getEndpointTimeSeries(teamId, start, end),
   );
 
   // Service metrics for health grid
   const { data: servicesRaw } = useTimeRangeQuery(
     'services-metrics',
-    (teamId, startTime, endTime) => overviewService.getServices(teamId, startTime, endTime)
+    (teamId, startTime, endTime) => overviewService.getServices(teamId, startTime, endTime),
   );
 
   // Endpoint metrics for breakdown lists below charts
   const { data: endpointMetricsRaw } = useTimeRangeQuery(
     'endpoints-metrics',
-    (teamId, startTime, endTime) => overviewService.getEndpointMetrics(teamId, startTime, endTime)
+    (teamId, startTime, endTime) => overviewService.getEndpointMetrics(teamId, startTime, endTime),
   );
 
   // === Normalize data shapes ===
@@ -65,7 +74,7 @@ export default function OverviewPage() {
   // Build sparkline data from timeseries
   const requestsSparkline = useMemo(
     () => timeseries.map((d) => Number(d.request_count || 0)),
-    [timeseries]
+    [timeseries],
   );
   const errorsSparkline = useMemo(
     () => timeseries.map((d) => {
@@ -73,11 +82,11 @@ export default function OverviewPage() {
       const errors = Number(d.error_count || 0);
       return total > 0 ? (errors / total * 100) : 0;
     }),
-    [timeseries]
+    [timeseries],
   );
   const latencySparkline = useMemo(
     () => timeseries.map((d) => Number(d.avg_latency || 0)),
-    [timeseries]
+    [timeseries],
   );
 
   // Services
@@ -88,9 +97,9 @@ export default function OverviewPage() {
 
   // Compute SLO metrics
   const sloMetrics = useMemo(() => {
-    const errorRate = (summary as any).error_rate || 0;
+    const errorRate = (summary).error_rate || 0;
     const availability = Math.max(0, 100 - errorRate);
-    const p95 = (summary as any).p95_latency || 0;
+    const p95 = (summary).p95_latency || 0;
     const p95Target = 500;
     const p95Score = p95 > 0 ? Math.min(100, (p95Target / p95) * 100) : 100;
     const errorBudget = Math.max(0, (0.1 - errorRate / 100) / 0.1 * 100);
@@ -157,51 +166,51 @@ export default function OverviewPage() {
         className="overview-stats-grid"
         stats={[
           {
-            title: "Total Requests",
-            value: (summary as any).total_requests || 0,
+            title: 'Total Requests',
+            value: (summary).total_requests || 0,
             formatter: formatNumber,
             trend: 0,
             trendInverted: false,
             icon: <Activity size={20} />,
-            iconColor: "#5E60CE",
+            iconColor: '#5E60CE',
             loading: summaryLoading,
             sparklineData: requestsSparkline,
-            sparklineColor: "#5E60CE"
+            sparklineColor: '#5E60CE',
           },
           {
-            title: "Error Rate",
-            value: Number(Math.max(0, (summary as any).error_rate || 0).toFixed(2)),
+            title: 'Error Rate',
+            value: Number(Math.max(0, (summary).error_rate || 0).toFixed(2)),
             trend: 0,
             trendInverted: true,
             icon: <AlertCircle size={20} />,
-            iconColor: "#F04438",
+            iconColor: '#F04438',
             loading: summaryLoading,
-            suffix: "%",
+            suffix: '%',
             sparklineData: errorsSparkline,
-            sparklineColor: "#F04438"
+            sparklineColor: '#F04438',
           },
           {
-            title: "Avg Latency",
-            value: (summary as any).avg_latency || 0,
+            title: 'Avg Latency',
+            value: (summary).avg_latency || 0,
             formatter: formatDuration,
             trend: 0,
             trendInverted: true,
             icon: <Clock size={20} />,
-            iconColor: "#F79009",
+            iconColor: '#F79009',
             loading: summaryLoading,
             sparklineData: latencySparkline,
-            sparklineColor: "#F79009"
+            sparklineColor: '#F79009',
           },
           {
-            title: "P95 Latency",
-            value: (summary as any).p95_latency || 0,
+            title: 'P95 Latency',
+            value: (summary).p95_latency || 0,
             formatter: formatDuration,
             trend: 0,
             trendInverted: true,
             icon: <Zap size={20} />,
-            iconColor: "#06AED5",
-            loading: summaryLoading
-          }
+            iconColor: '#06AED5',
+            loading: summaryLoading,
+          },
         ]}
       />
 

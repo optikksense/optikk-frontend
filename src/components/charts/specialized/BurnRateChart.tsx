@@ -3,13 +3,16 @@
  * Renders an SLO burn rate gauge + trend sparkline.
  * Shows the 1h and 6h burn rate windows with threshold indicators.
  */
-import React from 'react';
 import { Card, Row, Col, Statistic } from 'antd';
+import React from 'react';
 import {
     LineChart, Line, XAxis, YAxis, ReferenceLine,
-    Tooltip as ChartTooltip, ResponsiveContainer
+    Tooltip as ChartTooltip, ResponsiveContainer,
 } from 'recharts';
 
+/**
+ *
+ */
 export interface BurnRatePoint {
     ts: string;          // display label
     burnRate1h: number;  // current 1h window

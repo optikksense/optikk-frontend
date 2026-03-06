@@ -1,17 +1,27 @@
-import React, { useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Row, Col, Card, Skeleton, Empty, Tag, Tabs, Progress } from 'antd';
-import { Activity, AlertCircle, Clock, Zap, ArrowLeft, FileText, Network, TrendingUp } from 'lucide-react';
-import { useAppStore } from '@store/appStore';
+import { Row, Col, Card, Skeleton, Tag, Tabs, Progress } from 'antd';
+import { ArrowLeft } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+
 import PageHeader from '@components/common/layout/PageHeader';
-import StatCard from '@components/common/cards/StatCard';
-import DataTable from '@components/common/data-display/DataTable';
-import { useDashboardConfig } from '@hooks/useDashboardConfig';
-import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
+
 import { v1Service } from '@services/v1Service';
+
+import { useDashboardConfig } from '@hooks/useDashboardConfig';
+
+import { useAppStore } from '@store/appStore';
+
 import { formatNumber, formatDuration, formatTimestamp } from '@utils/formatters';
+
 import { LOG_LEVELS } from '@config/constants';
+import {
+  ServiceDetailDependenciesTab,
+  ServiceDetailErrorsTab,
+  ServiceDetailLogsTab,
+  ServiceDetailOverviewTab,
+  ServiceDetailStatsRow,
+} from '../../components/detail';
 
 const n = (v: any) => (v == null || Number.isNaN(Number(v)) ? 0 : Number(v));
 
@@ -65,6 +75,9 @@ const normalizeDependency = (row: any = {}) => ({
   call_count: n(row.call_count ?? row.callCount),
 });
 
+/**
+ *
+ */
 export default function ServiceDetailPage() {
   const { serviceName } = useParams();
   const navigate = useNavigate();
@@ -137,7 +150,7 @@ export default function ServiceDetailPage() {
 
   // Filter dependencies for this service
   const serviceDependencies = useMemo(() => {
-    return dependencies.filter(dep => dep.source === serviceName || dep.target === serviceName);
+    return dependencies.filter((dep) => dep.source === serviceName || dep.target === serviceName);
   }, [dependencies, serviceName]);
 
   const stats = useMemo(() => {
@@ -149,7 +162,7 @@ export default function ServiceDetailPage() {
         acc.p95Latencies.push(endpoint.p95_latency || 0);
         return acc;
       },
-      { totalRequests: 0, totalErrors: 0, latencies: [], p95Latencies: [] }
+      { totalRequests: 0, totalErrors: 0, latencies: [], p95Latencies: [] },
     );
   }, [endpoints]);
 
@@ -165,14 +178,10 @@ export default function ServiceDetailPage() {
     ? Math.max(...stats.p95Latencies)
     : 0;
 
-  const p99Latency = stats.p95Latencies.length > 0
-    ? Math.max(...stats.p95Latencies.map(l => l * 1.5))
-    : 0;
-
   // Build sparkline data from timeseries
   const requestsSparkline = useMemo(
     () => (timeSeries || []).map((d) => d.request_count || 0),
-    [timeSeries]
+    [timeSeries],
   );
 
   const errorSparkline = useMemo(() => {
@@ -412,53 +421,14 @@ export default function ServiceDetailPage() {
     <div>
       <PageHeader title={serviceName} breadcrumbs={breadcrumbs} actions={headerActions} />
 
-      {/* Stats Cards */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} lg={6}>
-          {React.createElement(StatCard as any, {
-            title: "Total Requests",
-            value: stats.totalRequests,
-            formatter: formatNumber,
-            trend: 0,
-            icon: <Activity size={20} />,
-            iconColor: "#1890ff",
-            sparklineData: requestsSparkline,
-            sparklineColor: "#1890ff"
-          })}
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          {React.createElement(StatCard as any, {
-            title: "Error Rate",
-            value: errorRate,
-            formatter: (v: any) => `${v.toFixed(2)}%`,
-            trend: 0,
-            icon: <AlertCircle size={20} />,
-            iconColor: errorRate > 5 ? '#F04438' : errorRate > 1 ? '#F79009' : '#12B76A',
-            sparklineData: errorSparkline,
-            sparklineColor: "#F04438"
-          })}
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          {React.createElement(StatCard as any, {
-            title: "Avg Latency",
-            value: avgLatency,
-            formatter: formatDuration,
-            trend: 0,
-            icon: <Clock size={20} />,
-            iconColor: "#722ED1"
-          })}
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          {React.createElement(StatCard as any, {
-            title: "P95 Latency",
-            value: p95Latency,
-            formatter: formatDuration,
-            trend: 0,
-            icon: <Zap size={20} />,
-            iconColor: "#FA8C16"
-          })}
-        </Col>
-      </Row>
+      <ServiceDetailStatsRow
+        stats={{ totalRequests: stats.totalRequests }}
+        errorRate={errorRate}
+        avgLatency={avgLatency}
+        p95Latency={p95Latency}
+        requestsSparkline={requestsSparkline}
+        errorSparkline={errorSparkline}
+      />
 
       {/* Tabs for different views */}
       <Card>
@@ -470,154 +440,50 @@ export default function ServiceDetailPage() {
               key: 'overview',
               label: 'Overview',
               children: (
-                <>
-                  {/* Configurable Charts */}
-                  <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-                    <Col xs={24}>
-                      <ConfigurableDashboard
-                        config={config}
-                        dataSources={{
-                          'metrics-timeseries': timeSeries,
-                          'service-timeseries': timeSeries,
-                          'services-timeseries': timeSeries,
-                          'endpoint-breakdown': endpoints,
-                          'endpoint-metrics': endpoints,
-                          'endpoints-metrics': endpoints,
-                        }}
-                        isLoading={timeSeriesLoading}
-                      />
-                    </Col>
-                  </Row>
-
-                  {/* Top Endpoints by Latency */}
-                  {endpoints.length > 0 && (
-                    <Card title="Top Endpoints by Latency" style={{ marginBottom: 24 }} className="chart-card" size="small">
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {[...endpoints]
-                          .sort((a, b) => b.avg_latency - a.avg_latency)
-                          .slice(0, 10)
-                          .map((ep) => {
-                            const maxLat = Math.max(...endpoints.map((e) => e.avg_latency || 0), 1);
-                            const pct = (ep.avg_latency / maxLat) * 100;
-                            return (
-                              <div key={`${ep.operation_name}-${ep.http_method}`} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ width: 200, fontSize: 12, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                  {ep.operation_name}
-                                </div>
-                                <div style={{ flex: 1, height: 20, background: 'var(--bg-tertiary, #1A1A1A)', borderRadius: 4, overflow: 'hidden' }}>
-                                  <div
-                                    style={{
-                                      width: `${pct}%`,
-                                      height: '100%',
-                                      background: ep.avg_latency > 500 ? '#F04438' : ep.avg_latency > 200 ? '#F79009' : '#73C991',
-                                      borderRadius: 4,
-                                      transition: 'width 0.3s',
-                                    }}
-                                  />
-                                </div>
-                                <span style={{ fontSize: 12, color: 'var(--text-muted)', minWidth: 60, textAlign: 'right' }}>
-                                  {formatDuration(ep.avg_latency)}
-                                </span>
-                              </div>
-                            );
-                          })}
-                      </div>
-                    </Card>
-                  )}
-
-                  {/* Endpoints Table */}
-                  <Card title="Endpoints Breakdown" className="chart-card" size="small">
-                    <DataTable
-                      columns={endpointColumns}
-                      data={endpoints}
-                      loading={endpointsLoading}
-                      rowKey={(record: any) => `${record.operation_name}-${record.http_method}`}
-                    />
-                  </Card>
-                </>
+                <ServiceDetailOverviewTab
+                  config={config}
+                  timeSeries={timeSeries}
+                  endpoints={endpoints}
+                  timeSeriesLoading={timeSeriesLoading}
+                  endpointsLoading={endpointsLoading}
+                  endpointColumns={endpointColumns}
+                />
               ),
             },
             {
               key: 'errors',
               label: `Errors (${errorGroups.length})`,
               children: (
-                <Card className="chart-card" size="small">
-                  <DataTable
-                    columns={errorColumns}
-                    data={errorGroups}
-                    loading={errorsLoading}
-                    rowKey={(record: any) => `${record.operation_name}-${record.http_status_code}-${record.status_message}`}
-                    expandable={{
-                      expandedRowRender: (record: any) => (
-                        <div style={{ padding: 12, fontFamily: 'monospace', fontSize: 12, whiteSpace: 'pre-wrap', color: '#F04438', background: 'var(--bg-tertiary, #1A1A1A)', borderRadius: 6 }}>
-                          {record.status_message || 'No additional details'}
-                        </div>
-                      ),
-                    }}
-                  />
-                </Card>
+                <ServiceDetailErrorsTab
+                  errorGroups={errorGroups}
+                  errorsLoading={errorsLoading}
+                  errorColumns={errorColumns}
+                />
               ),
             },
             {
               key: 'logs',
               label: `Logs (${logs.length})`,
               children: (
-                <Card className="chart-card" size="small">
-                  <DataTable
-                    columns={logColumns}
-                    data={logs}
-                    loading={logsLoading}
-                    rowKey={(record: any, index: any) => `${record.trace_id}-${record.span_id}-${index}`}
-                    onRow={(record: any) => ({
-                      onClick: () => record.trace_id && navigate(`/traces/${record.trace_id}`),
-                      style: { cursor: record.trace_id ? 'pointer' : 'default' },
-                    })}
-                  />
-                </Card>
+                <ServiceDetailLogsTab
+                  logs={logs}
+                  logsLoading={logsLoading}
+                  logColumns={logColumns}
+                  onTraceNavigate={(traceId) => navigate(`/traces/${traceId}`)}
+                />
               ),
             },
             {
               key: 'dependencies',
               label: `Dependencies (${serviceDependencies.length})`,
               children: (
-                <Card className="chart-card" size="small">
-                  {serviceDependencies.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      {serviceDependencies.map((dep, idx) => {
-                        const isOutgoing = dep.source === serviceName;
-                        const otherService = isOutgoing ? dep.target : dep.source;
-                        return (
-                          <div
-                            key={idx}
-                            style={{
-                              padding: 12,
-                              background: 'var(--bg-secondary, #0D0D0D)',
-                              borderRadius: 6,
-                              border: '1px solid var(--border-color, #2D2D2D)',
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                              <Network size={16} />
-                              <span style={{ fontWeight: 600 }}>{serviceName}</span>
-                              <span style={{ color: 'var(--text-muted)' }}>→</span>
-                              <a
-                                onClick={() => navigate(`/services/${encodeURIComponent(otherService)}`)}
-                                style={{ color: '#1890ff', cursor: 'pointer' }}
-                              >
-                                {otherService}
-                              </a>
-                            </div>
-                            <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--text-muted)' }}>
-                              <span>Calls: {formatNumber(dep.call_count || 0)}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <Empty description="No dependencies found" />
-                  )}
-                </Card>
+                <ServiceDetailDependenciesTab
+                  serviceName={serviceName || ''}
+                  serviceDependencies={serviceDependencies}
+                  onNavigateService={(targetService) =>
+                    navigate(`/services/${encodeURIComponent(targetService)}`)
+                  }
+                />
               ),
             },
           ]}

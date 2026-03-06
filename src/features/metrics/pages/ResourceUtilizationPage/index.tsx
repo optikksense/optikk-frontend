@@ -1,15 +1,21 @@
-import { useMemo } from 'react';
 import { Row, Col, Card } from 'antd';
 import { Cpu, HardDrive, Network, Database } from 'lucide-react';
-import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import { useDashboardConfig } from '@hooks/useDashboardConfig';
+import { useMemo } from 'react';
+
 import { PageHeader, StatCard, DataTable } from '@components/common';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
+
 import { v1Service } from '@services/v1Service';
+
+import { useDashboardConfig } from '@hooks/useDashboardConfig';
+import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
 import './ResourceUtilizationStyle.css';
 
 const pct = (v: any) => (v == null || Number.isNaN(Number(v)) ? 0 : Number(v));
 
+/**
+ *
+ */
 export default function ResourceUtilizationPage() {
   const { config } = useDashboardConfig('resource-utilization');
   const { data, isLoading } = useTimeRangeQuery(
@@ -23,7 +29,7 @@ export default function ResourceUtilizationPage() {
         cpuUsagePercentage,
         memoryUsagePercentage,
         byService,
-        byInstance
+        byInstance,
       ] = await Promise.all([
         (v1Service as any).getAvgCPU(teamId, start, end),
         (v1Service as any).getAvgMemory(teamId, start, end),
@@ -32,7 +38,7 @@ export default function ResourceUtilizationPage() {
         (v1Service as any).getCPUUsagePercentage(teamId, start, end),
         (v1Service as any).getMemoryUsagePercentage(teamId, start, end),
         (v1Service as any).getResourceUsageByService(teamId, start, end),
-        (v1Service as any).getResourceUsageByInstance(teamId, start, end)
+        (v1Service as any).getResourceUsageByInstance(teamId, start, end),
       ]);
 
       const timeseriesMap = new Map();
@@ -44,12 +50,12 @@ export default function ResourceUtilizationPage() {
         return timeseriesMap.get(key);
       };
 
-      ((cpuUsagePercentage as any[]) || []).forEach(b => {
+      ((cpuUsagePercentage as any[]) || []).forEach((b) => {
         const bucket = getOrCreateBucket(b.timestamp, b.pod);
         bucket.avg_cpu_util = b.value;
       });
 
-      ((memoryUsagePercentage as any[]) || []).forEach(b => {
+      ((memoryUsagePercentage as any[]) || []).forEach((b) => {
         const bucket = getOrCreateBucket(b.timestamp, b.pod);
         bucket.avg_memory_util = b.value;
       });
@@ -65,9 +71,9 @@ export default function ResourceUtilizationPage() {
         },
         timeseries,
         byService: byService || [],
-        byInstance: byInstance || []
+        byInstance: byInstance || [],
       };
-    }
+    },
   );
 
   const byService = Array.isArray((data as any)?.byService) ? (data as any).byService : [];

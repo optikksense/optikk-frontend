@@ -3,66 +3,86 @@
  */
 
 /**
- * Format large numbers with K, M, B suffixes
+ * Numeric thresholds used across formatter helpers.
  */
-export function formatNumber(num) {
+const ONE_THOUSAND = 1000;
+const ONE_MILLION = 1_000_000;
+const ONE_BILLION = 1_000_000_000;
+const ONE_MINUTE_MS = 60_000;
+const ONE_DAY_HOURS = 24;
+const THIRTY_DAYS = 30;
+const MICROSECONDS_MULTIPLIER = 1000;
+
+/**
+ * Format large numbers with K, M, B suffixes
+ * @param num
+ */
+export function formatNumber(num: number | string | null | undefined): string {
   let value = Number(num);
   value = value === 0 ? 0 : value;
   if (!Number.isFinite(value)) return '0';
-  if (value >= 1000000000) {
-    return (value / 1000000000).toFixed(1) + 'B';
+  if (value >= ONE_BILLION) {
+    return `${(value / ONE_BILLION).toFixed(1)}B`;
   }
-  if (value >= 1000000) {
-    return (value / 1000000).toFixed(1) + 'M';
+  if (value >= ONE_MILLION) {
+    return `${(value / ONE_MILLION).toFixed(1)}M`;
   }
-  if (value >= 1000) {
-    return (value / 1000).toFixed(1) + 'K';
+  if (value >= ONE_THOUSAND) {
+    return `${(value / ONE_THOUSAND).toFixed(1)}K`;
   }
   return value.toString();
 }
 
 /**
  * Format duration in milliseconds to human-readable format
+ * @param ms
  */
-export function formatDuration(ms) {
+export function formatDuration(ms: number | string | null | undefined): string {
   let value = Number(ms);
   value = value === 0 ? 0 : value;
   if (!Number.isFinite(value)) return '0ms';
   if (value < 1) {
-    return `${(value * 1000).toFixed(0)}μs`;
+    return `${(value * MICROSECONDS_MULTIPLIER).toFixed(0)}μs`;
   }
-  if (value < 1000) {
+  if (value < ONE_THOUSAND) {
     return `${value.toFixed(0)}ms`;
   }
-  if (value < 60000) {
-    return `${(value / 1000).toFixed(2)}s`;
+  if (value < ONE_MINUTE_MS) {
+    return `${(value / ONE_THOUSAND).toFixed(2)}s`;
   }
-  return `${(value / 60000).toFixed(2)}m`;
+  return `${(value / ONE_MINUTE_MS).toFixed(2)}m`;
 }
 
 /**
  * Format timestamp to readable date/time
+ * @param timestamp
  */
-export function formatTimestamp(timestamp) {
+export function formatTimestamp(timestamp: number | string | Date): string {
   const date = new Date(timestamp);
   return date.toLocaleString();
 }
 
 /**
  * Format bytes to human-readable format
+ * @param bytes
  */
-export function formatBytes(bytes) {
+export function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
+  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i] ?? 'B'}`;
 }
 
 /**
  * Format percentage
+ * @param value
+ * @param clamp
  */
-export function normalizePercentage(value, clamp = true) {
+export function normalizePercentage(
+  value: number | string | null | undefined,
+  clamp = true,
+): number {
   let raw = Number(value);
   raw = raw === 0 ? 0 : raw;
   if (!Number.isFinite(raw)) return 0;
@@ -73,58 +93,73 @@ export function normalizePercentage(value, clamp = true) {
   return Math.min(Math.max(percent, 0), 100);
 }
 
-export function formatPercentage(value, decimals = 2, clamp = true) {
+/**
+ *
+ * @param value
+ * @param decimals
+ * @param clamp
+ */
+export function formatPercentage(
+  value: number | string | null | undefined,
+  decimals = 2,
+  clamp = true,
+): string {
   const percent = normalizePercentage(value, clamp);
   return `${percent.toFixed(decimals)}%`;
 }
 
 /**
  * Format a timestamp as relative time (e.g. "3m ago", "2h ago")
+ * @param timestamp
  */
-export function formatRelativeTime(timestamp) {
+export function formatRelativeTime(timestamp: number | string | Date): string {
   const now = Date.now();
   const diff = now - new Date(timestamp).getTime();
 
-  const seconds = Math.floor(diff / 1000);
+  const seconds = Math.floor(diff / ONE_THOUSAND);
   if (seconds < 60) return `${seconds}s ago`;
 
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m ago`;
 
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < ONE_DAY_HOURS) return `${hours}h ago`;
 
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
+  const days = Math.floor(hours / ONE_DAY_HOURS);
+  if (days < THIRTY_DAYS) return `${days}d ago`;
 
   return formatTimestamp(timestamp);
 }
 
 /**
  * Get the color for a service health status.
+ * @param status
  */
-export function getHealthColor(status) {
-  const colors = {
+export function getHealthColor(status: string): string {
+  const colors: Record<string, string> = {
     healthy: '#73C991',
     degraded: '#F79009',
     unhealthy: '#F04438',
     unknown: '#98A2B3',
   };
-  return colors[status] || colors.unknown;
+  return colors[status] ?? colors.unknown;
 }
 
 /**
  * Truncate text to maxLength, appending ellipsis if truncated.
+ * @param text
+ * @param maxLength
  */
-export function truncateText(text, maxLength = 100) {
+export function truncateText(text: string, maxLength = 100): string {
   if (!text || text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return `${text.substring(0, maxLength)}...`;
 }
 
 /**
  * Get error rate color based on threshold.
+ * @param rate
  */
-export function getErrorRateColor(rate) {
+export function getErrorRateColor(rate: number): string {
   if (rate > 5) return '#F04438';
   if (rate > 1) return '#F79009';
   return '#73C991';

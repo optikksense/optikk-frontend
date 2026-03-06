@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Modal, Input } from 'antd';
 import {
   BarChart3, FileText, GitBranch, Layers, Network,
   Server, Settings, Activity, RefreshCw, Sun, Search,
 } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { useAppStore } from '@store/appStore';
 import './CommandPalette.css';
 
@@ -23,6 +24,12 @@ const COMMANDS = [
   { id: 'toggle-theme', label: 'Toggle Theme', icon: Sun, action: 'toggleTheme', group: 'Actions' },
 ];
 
+/**
+ *
+ * @param root0
+ * @param root0.open
+ * @param root0.onClose
+ */
 export default function CommandPalette({ open, onClose }) {
   const [search, setSearch] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -31,7 +38,7 @@ export default function CommandPalette({ open, onClose }) {
   const { triggerRefresh, theme, setTheme } = useAppStore();
 
   const filtered = COMMANDS.filter((cmd) =>
-    cmd.label.toLowerCase().includes(search.toLowerCase())
+    cmd.label.toLowerCase().includes(search.toLowerCase()),
   );
 
   const executeCommand = useCallback((cmd) => {

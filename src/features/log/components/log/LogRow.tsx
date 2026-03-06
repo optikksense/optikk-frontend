@@ -1,36 +1,5 @@
-import { parseTimestampMs, getLogValue } from '@utils/logUtils';
-
-/* ─── Shared time helpers ─────────────────────────────────────────────────── */
-
-/**
- * Formats a log timestamp value into a readable label.
- * Exported for reuse in TracesPage and other consumers.
- */
-export function tsLabel(value) {
-  const ms = parseTimestampMs(value);
-  if (!ms) return '—';
-  const d = new Date(ms);
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
-
-/**
- * Returns a short human-readable relative time (e.g. "3m ago", "2h ago").
- * Exported for reuse in TracesPage and other consumers.
- */
-export function relativeTime(value) {
-  const ms = parseTimestampMs(value);
-  if (!ms) return '';
-  const diffMs = Date.now() - ms;
-  const diffSec = Math.floor(diffMs / 1000);
-  if (diffSec < 60) return `${diffSec}s ago`;
-  const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin}m ago`;
-  const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return `${diffHour}h ago`;
-  const diffDay = Math.floor(diffHour / 24);
-  return `${diffDay}d ago`;
-}
+import { getLogValue } from '@utils/logUtils';
+import { tsLabel } from '@utils/time';
 
 /* ─── Level badge ─────────────────────────────────────────────────────────── */
 
@@ -44,6 +13,11 @@ const LEVEL_STYLES = {
   TRACE: { bg: '#98A2B3', color: '#fff' },
 };
 
+/**
+ *
+ * @param root0
+ * @param root0.level
+ */
 export function LevelBadge({ level }) {
   const l = (level || 'INFO').toUpperCase();
   const style = LEVEL_STYLES[l] || LEVEL_STYLES.INFO;
@@ -70,6 +44,15 @@ export function LevelBadge({ level }) {
 
 /* ─── Log row for the ObservabilityDataBoard ──────────────────────────────── */
 
+/**
+ *
+ * @param root0
+ * @param root0.log
+ * @param root0.colWidths
+ * @param root0.visibleCols
+ * @param root0.columns
+ * @param root0.onOpenDetail
+ */
 export default function LogRow({ log, colWidths, visibleCols, columns, onOpenDetail }) {
   const fixedCols = columns.filter((c) => !c.flex && visibleCols[c.key]);
   const flexCol = columns.find((c) => c.flex && visibleCols[c.key]);
@@ -135,7 +118,7 @@ export default function LogRow({ log, colWidths, visibleCols, columns, onOpenDet
         border: '1px solid var(--glass-border)',
         borderRadius: '8px',
         transition: 'var(--transition-smooth)',
-        cursor: 'pointer'
+        cursor: 'pointer',
       }}
       onClick={() => onOpenDetail(log)}
       onMouseEnter={(e) => {
@@ -166,7 +149,7 @@ export default function LogRow({ log, colWidths, visibleCols, columns, onOpenDet
               flex: '1 0 100ch',
               minWidth: '100ch',
             } : {}),
-            borderBottom: 'none'
+            borderBottom: 'none',
           }}
         >
           {renderCell(flexCol.key)}

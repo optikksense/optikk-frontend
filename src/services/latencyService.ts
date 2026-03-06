@@ -1,17 +1,34 @@
 /**
  * Latency Service — API calls for latency analysis.
  */
-import api from './api';
 import { API_CONFIG } from '@config/constants';
+
+import api from './api';
+
+import type { QueryParams, RequestTime } from './service-types';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
+/**
+ * Service wrapper for latency endpoints.
+ */
 export const latencyService = {
-    async getHistogram(teamId, startTime, endTime, params = {}) {
-        return api.get(`${BASE}/latency/histogram`, { params: { startTime, endTime, ...params } });
-    },
+  async getHistogram(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/latency/histogram`, { params: { startTime, endTime, ...params } });
+  },
 
-    async getHeatmap(teamId, startTime, endTime, serviceName, interval = '5m') {
-        return api.get(`${BASE}/latency/heatmap`, { params: { startTime, endTime, serviceName, interval } });
-    },
+  async getHeatmap(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string,
+    interval = '5m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/latency/heatmap`, { params: { startTime, endTime, serviceName, interval } });
+  },
 };

@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
 import { Space, Select, Input } from 'antd';
 import { Search } from 'lucide-react';
+import { ReactNode } from 'react';
 import './FilterBar.css';
 
 interface FilterSearchConfig {
@@ -17,7 +17,7 @@ interface FilterSelectConfig {
   type: 'select';
   key: string;
   placeholder?: string;
-  options?: { label: string; value: string | number }[];
+  options?: Array<{ label: string; value: string | number }>;
   value?: string | number;
   onChange?: (value: string | number | null) => void;
   width?: number;
@@ -31,6 +31,12 @@ interface FilterBarProps {
   actions?: ReactNode;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.filters
+ * @param root0.actions
+ */
 export default function FilterBar({ filters = [], actions }: FilterBarProps) {
   return (
     <div className="filter-bar">

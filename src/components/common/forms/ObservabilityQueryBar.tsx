@@ -1,357 +1,369 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, X, SlidersHorizontal, ChevronRight, Keyboard } from 'lucide-react';
+import { Keyboard, Search, X } from 'lucide-react';
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  type ChangeEvent,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
+
+import {
+  QueryFieldPicker,
+  QueryKeyboardHints,
+  QueryOperatorPicker,
+} from '@components/ui/query-bar';
+
 import './ObservabilityQueryBar.css';
 
-const DEFAULT_OPERATORS = [
-    { key: 'equals', label: 'equals', symbol: '=' },
-    { key: 'not_equals', label: 'not equals', symbol: '!=' },
-    { key: 'contains', label: 'contains', symbol: '~' },
-    { key: 'gt', label: 'greater than', symbol: '>' },
-    { key: 'lt', label: 'less than', symbol: '<' },
+interface QueryOperator {
+  key: string;
+  label: string;
+  symbol: string;
+}
+
+interface QueryField {
+  key: string;
+  label: string;
+  icon?: ReactNode;
+  group?: string;
+  operators?: QueryOperator[];
+}
+
+interface ActiveFilter {
+  field: string;
+  operator: string;
+  value: string;
+  fieldLabel?: string;
+  fieldGroup?: string;
+  operatorLabel?: string;
+  operatorSymbol?: string;
+}
+
+type QueryBarSearchValue = string | string[] | number | boolean;
+
+type SetFiltersFn = (filters: ActiveFilter[]) => void;
+
+type SetSearchTextFn = (value: string) => void;
+
+type ClearAllFn = () => void;
+
+interface ObservabilityQueryBarProps {
+  fields?: QueryField[];
+  filters?: ActiveFilter[];
+  setFilters: SetFiltersFn;
+  searchText?: QueryBarSearchValue;
+  setSearchText: SetSearchTextFn;
+  onClearAll: ClearAllFn;
+  placeholder?: string;
+  className?: string;
+  rightSlot?: ReactNode;
+}
+
+const DEFAULT_OPERATORS: QueryOperator[] = [
+  { key: 'equals', label: 'equals', symbol: '=' },
+  { key: 'not_equals', label: 'not equals', symbol: '!=' },
+  { key: 'contains', label: 'contains', symbol: '~' },
+  { key: 'gt', label: 'greater than', symbol: '>' },
+  { key: 'lt', label: 'less than', symbol: '<' },
 ];
 
 /**
- * ObservabilityQueryBar
- *
- * Generic structured-filter query bar that works for Logs, Traces, or any
- * observability page.  Pass `fields` to configure which attributes are
- * filterable for a given page.
- *
- * @param {Array<{key, label, icon, group?, operators?, suggestions?}>} fields
- * @param {Array}    filters       - active filter array (controlled)
- * @param {Function} setFilters    - setter
- * @param {string}   searchText    - free-text search value (controlled)
- * @param {Function} setSearchText - setter
- * @param {Function} onClearAll    - callback to wipe all state
- * @param {string}   placeholder   - input placeholder override
- * @param {string}   className     - extra class for outer wrapper
- * @param {ReactNode} rightSlot   - extra content rendered on the right (column picker, export, etc.)
+ * Generic structured filter query bar for logs/traces observability pages.
+ * @param props Component props.
+ * @returns Query bar with field/operator/value filter flow.
  */
 export default function ObservabilityQueryBar({
-    fields = [],
-    filters = [],
-    setFilters,
-    searchText = '',
-    setSearchText,
-    onClearAll,
-    placeholder,
-    className = '',
-    rightSlot,
-}) {
-    // 0=closed, 1=pick field, 2=pick operator, 3=enter value
-    const [step, setStep] = useState(0);
-    const [pendingField, setPendingField] = useState(null);
-    const [pendingOp, setPendingOp] = useState(null);
-    const [valueInput, setValueInput] = useState('');
-    const [fieldSearch, setFieldSearch] = useState('');
-    const [hoveredGroup, setHoveredGroup] = useState(null);
-    const [showHints, setShowHints] = useState(false);
+  fields = [],
+  filters = [],
+  setFilters,
+  searchText = '',
+  setSearchText,
+  onClearAll,
+  placeholder,
+  className = '',
+  rightSlot,
+}: ObservabilityQueryBarProps): JSX.Element {
+  // 0=closed, 1=pick field, 2=pick operator, 3=enter value
+  const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
+  const [pendingField, setPendingField] = useState<QueryField | null>(null);
+  const [pendingOp, setPendingOp] = useState<QueryOperator | null>(null);
+  const [valueInput, setValueInput] = useState('');
+  const [fieldSearch, setFieldSearch] = useState('');
+  const [showHints, setShowHints] = useState(false);
 
-    const inputRef = useRef(null);
-    const wrapperRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-    const hasFilters = filters.length > 0 || searchText;
+  const normalizedSearchText = String(searchText || '');
+  const hasFilters = filters.length > 0 || normalizedSearchText.length > 0;
 
-    /* ── Outside click closes ── */
-    useEffect(() => {
-        const handler = (e) => {
-            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-                closeDropdown();
-            }
-        };
-        document.addEventListener('mousedown', handler);
-        return () => document.removeEventListener('mousedown', handler);
-    }, []);
+  const closeDropdown = useCallback((): void => {
+    setStep(0);
+    setPendingField(null);
+    setPendingOp(null);
+    setValueInput('');
+    setFieldSearch('');
+  }, []);
 
-    const closeDropdown = useCallback(() => {
-        setStep(0);
-        setPendingField(null);
+  useEffect(() => {
+    const handleMouseDown = (event: MouseEvent): void => {
+      if (!wrapperRef.current || !(event.target instanceof Node)) return;
+      if (!wrapperRef.current.contains(event.target)) {
+        closeDropdown();
+      }
+    };
+
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, [closeDropdown]);
+
+  const openDropdown = (): void => {
+    if (step >= 1) return;
+    setStep(1);
+    setFieldSearch('');
+    window.setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
+
+  const pickField = (field: QueryField): void => {
+    setPendingField(field);
+    setStep(2);
+  };
+
+  const pickOperator = (operator: QueryOperator): void => {
+    setPendingOp(operator);
+    setStep(3);
+    setValueInput('');
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const commitFilter = (): void => {
+    if (!pendingField || !pendingOp) return;
+
+    const trimmedValue = valueInput.trim();
+    if (!trimmedValue) return;
+
+    setFilters([
+      ...filters,
+      {
+        field: pendingField.key,
+        fieldLabel: pendingField.label,
+        fieldGroup: pendingField.group || '',
+        operator: pendingOp.key,
+        operatorLabel: pendingOp.label,
+        operatorSymbol: pendingOp.symbol,
+        value: trimmedValue,
+      },
+    ]);
+    closeDropdown();
+  };
+
+  const removeFilter = (index: number): void => {
+    setFilters(filters.filter((_, currentIndex) => currentIndex !== index));
+  };
+
+  const filteredFields = fieldSearch
+    ? fields.filter(
+        (field) =>
+          field.label.toLowerCase().includes(fieldSearch.toLowerCase()) ||
+          field.key.toLowerCase().includes(fieldSearch.toLowerCase()),
+      )
+    : fields;
+
+  const groups = [...new Set(filteredFields.map((field) => field.group || 'Other'))];
+  const operators = pendingField?.operators || DEFAULT_OPERATORS;
+  const showDropdown = step === 1 || step === 2;
+
+  const inputPlaceholder =
+    placeholder ||
+    (step === 3
+      ? `Value for "${pendingField?.label}" — press Enter to apply`
+      : filters.length > 0
+        ? 'Add another filter…'
+        : 'Click to filter, or type to search…');
+
+  const inputValue = step === 3 ? valueInput : step <= 1 ? fieldSearch : '';
+
+  const onInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    const nextValue = event.target.value;
+    if (step === 3) {
+      setValueInput(nextValue);
+      return;
+    }
+
+    setFieldSearch(nextValue);
+    setSearchText(nextValue);
+    if (step === 0) setStep(1);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
+    if (step === 3 && event.key === 'Enter') {
+      event.preventDefault();
+      commitFilter();
+    }
+
+    if (event.key === 'Escape') {
+      closeDropdown();
+      inputRef.current?.blur();
+    }
+
+    if (event.key === 'Backspace') {
+      if (step === 3 && valueInput === '') {
+        event.preventDefault();
         setPendingOp(null);
-        setValueInput('');
-        setFieldSearch('');
-        setHoveredGroup(null);
-    }, []);
-
-    const openDropdown = () => {
-        if (step >= 1) return;
+        setStep(2);
+      } else if (step === 2) {
+        event.preventDefault();
+        setPendingField(null);
         setStep(1);
         setFieldSearch('');
-        setTimeout(() => inputRef.current?.focus(), 0);
-    };
-
-    const pickField = (field) => {
-        setPendingField(field);
-        setStep(2);
-    };
-
-    const pickOperator = (op) => {
-        setPendingOp(op);
-        setStep(3);
-        setValueInput('');
-        requestAnimationFrame(() => inputRef.current?.focus());
-    };
-
-    const commitFilter = () => {
-        if (!pendingField || !pendingOp || !valueInput.trim()) return;
-        setFilters([
-            ...filters,
-            {
-                field: pendingField.key,
-                fieldLabel: pendingField.label,
-                fieldGroup: pendingField.group || '',
-                operator: pendingOp.key,
-                operatorLabel: pendingOp.label,
-                operatorSymbol: pendingOp.symbol,
-                value: valueInput.trim(),
-            },
-        ]);
+      } else if (step === 1 && fieldSearch === '') {
+        event.preventDefault();
         closeDropdown();
-    };
+      } else if (
+        step === 0 &&
+        fieldSearch === '' &&
+        normalizedSearchText === '' &&
+        filters.length > 0
+      ) {
+        event.preventDefault();
+        setFilters(filters.slice(0, -1));
+      }
+    }
 
-    const removeFilter = (index) => setFilters(filters.filter((_, i) => i !== index));
+    if (step === 1 && event.key === 'Tab' && filteredFields.length === 1) {
+      event.preventDefault();
+      pickField(filteredFields[0]);
+    }
+  };
 
-    const handleKeyDown = (e) => {
-        if (step === 3 && e.key === 'Enter') {
-            e.preventDefault();
-            commitFilter();
-        }
-        if (e.key === 'Escape') {
-            closeDropdown();
-            inputRef.current?.blur();
-        }
-        if (e.key === 'Backspace') {
-            if (step === 3 && valueInput === '') {
-                e.preventDefault();
-                setPendingOp(null);
-                setStep(2);
-            } else if (step === 2) {
-                e.preventDefault();
-                setPendingField(null);
-                setStep(1);
-                setFieldSearch('');
-            } else if (step === 1 && fieldSearch === '') {
-                e.preventDefault();
-                closeDropdown();
-            } else if (step === 0 && fieldSearch === '' && searchText === '' && filters.length > 0) {
-                e.preventDefault();
-                setFilters(filters.slice(0, -1));
-            }
-        }
-        if (step === 1 && e.key === 'Tab' && filteredFields.length === 1) {
-            e.preventDefault();
-            pickField(filteredFields[0]);
-        }
-    };
+  return (
+    <div className={`oqb ${className}`} ref={wrapperRef}>
+      <div
+        className={`oqb__inner ${step > 0 ? 'oqb__inner--focused' : ''}`}
+        onClick={() => {
+          if (step === 0) openDropdown();
+        }}
+      >
+        <Search size={14} className="oqb__search-icon" />
 
-    /* ── Field filtering + grouping ── */
-    const filteredFields = fieldSearch
-        ? fields.filter(
-            (f) =>
-                f.label.toLowerCase().includes(fieldSearch.toLowerCase()) ||
-                f.key.toLowerCase().includes(fieldSearch.toLowerCase())
-        )
-        : fields;
+        <div className="oqb__pills">
+          {filters.map((filter, index) => (
+            <span key={index} className="oqb__pill">
+              {filter.fieldGroup && <span className="oqb__pill-group">{filter.fieldGroup} /</span>}
+              <span className="oqb__pill-field">{filter.fieldLabel || filter.field}</span>
+              <span className="oqb__pill-op">{filter.operatorSymbol || filter.operator}</span>
+              <span className="oqb__pill-value">"{filter.value}"</span>
+              <button
+                className="oqb__pill-close"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  removeFilter(index);
+                }}
+                title="Remove filter"
+              >
+                <X size={10} />
+              </button>
+            </span>
+          ))}
 
-    const groups = [...new Set(filteredFields.map((f) => f.group || 'Other'))];
-
-    const operators = pendingField?.operators || DEFAULT_OPERATORS;
-
-    const showDropdown = step === 1 || step === 2;
-
-    /* ── Placeholder text ── */
-    const inputPlaceholder =
-        placeholder ||
-        (step === 3
-            ? `Value for "${pendingField?.label}" — press Enter to apply`
-            : filters.length > 0
-                ? 'Add another filter…'
-                : 'Click to filter, or type to search…');
-
-    /* ── Input value bound ── */
-    const inputValue = step === 3 ? valueInput : step <= 1 ? fieldSearch : '';
-
-    const onInputChange = (e) => {
-        const v = e.target.value;
-        if (step === 3) {
-            setValueInput(v);
-        } else {
-            setFieldSearch(v);
-            setSearchText(v);
-            if (step === 0) setStep(1);
-        }
-    };
-
-    return (
-        <div className={`oqb ${className}`} ref={wrapperRef}>
-            <div
-                className={`oqb__inner ${step > 0 ? 'oqb__inner--focused' : ''}`}
-                onClick={() => { if (step === 0) openDropdown(); }}
-            >
-                {/* Left icon */}
-                <Search size={14} className="oqb__search-icon" />
-
-                {/* Pills row */}
-                <div className="oqb__pills">
-                    {filters.map((f, i) => (
-                        <span key={i} className="oqb__pill">
-                            {f.fieldGroup && <span className="oqb__pill-group">{f.fieldGroup} /</span>}
-                            <span className="oqb__pill-field">{f.fieldLabel}</span>
-                            <span className="oqb__pill-op">{f.operatorSymbol}</span>
-                            <span className="oqb__pill-value">"{f.value}"</span>
-                            <button
-                                className="oqb__pill-close"
-                                onClick={(e) => { e.stopPropagation(); removeFilter(i); }}
-                                title="Remove filter"
-                            >
-                                <X size={10} />
-                            </button>
-                        </span>
-                    ))}
-
-                    {/* Pending filter in progress */}
-                    {step >= 2 && pendingField && (
-                        <span className="oqb__pill oqb__pill--pending">
-                            <span className="oqb__pill-field">{pendingField.label}</span>
-                            {pendingOp && <span className="oqb__pill-op">{pendingOp.symbol}</span>}
-                            <button
-                                className="oqb__pill-close"
-                                onClick={(e) => { e.stopPropagation(); closeDropdown(); }}
-                            >
-                                <X size={10} />
-                            </button>
-                        </span>
-                    )}
-                </div>
-
-                {/* Text input */}
-                <input
-                    ref={inputRef}
-                    type="text"
-                    className="oqb__input"
-                    placeholder={inputPlaceholder}
-                    value={inputValue}
-                    onChange={onInputChange}
-                    onKeyDown={handleKeyDown}
-                    onFocus={() => { if (step === 0) openDropdown(); }}
-                />
-
-                {/* Right controls */}
-                <div className="oqb__right" onClick={(e) => e.stopPropagation()}>
-                    {filters.length > 0 && (
-                        <span className="oqb__filter-count" title={`${filters.length} active filter${filters.length !== 1 ? 's' : ''}`}>
-                            {filters.length}
-                        </span>
-                    )}
-                    {hasFilters && (
-                        <button
-                            className="oqb__clear"
-                            onClick={(e) => { e.stopPropagation(); onClearAll(); closeDropdown(); }}
-                            title="Clear all filters"
-                        >
-                            Clear all
-                        </button>
-                    )}
-                    <button
-                        className={`oqb__hint-btn ${showHints ? 'oqb__hint-btn--active' : ''}`}
-                        title="Keyboard shortcuts"
-                        onClick={() => setShowHints((v) => !v)}
-                    >
-                        <Keyboard size={13} />
-                    </button>
-                    {rightSlot}
-                </div>
-            </div>
-
-            {/* ── Keyboard hints tooltip ── */}
-            {showHints && (
-                <div className="oqb__hints">
-                    {[
-                        ['Click / Focus', 'Open field picker'],
-                        ['Tab', 'Auto-select when 1 match'],
-                        ['Enter', 'Commit value'],
-                        ['Backspace', 'Step back / remove last filter'],
-                        ['Escape', 'Close picker'],
-                    ].map(([key, desc]) => (
-                        <div key={key} className="oqb__hint-row">
-                            <kbd>{key}</kbd>
-                            <span>{desc}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* ── Field / Operator Dropdown ── */}
-            {showDropdown && (
-                <div className="oqb__dropdown" onMouseDown={(e) => e.preventDefault()}>
-                    {/* ── Step 1: pick field ── */}
-                    {step === 1 && (
-                        <>
-                            {fieldSearch === '' && (
-                                <div className="oqb__dropdown-header">
-                                    <SlidersHorizontal size={12} />
-                                    <span>Filter by field</span>
-                                    <span className="oqb__dropdown-header-hint">
-                                        {filters.length > 0 ? `${filters.length} active` : `${fields.length} fields`}
-                                    </span>
-                                </div>
-                            )}
-
-                            {groups.map((group) => {
-                                const groupFields = filteredFields.filter(
-                                    (f) => (f.group || 'Other') === group
-                                );
-                                if (groupFields.length === 0) return null;
-                                return (
-                                    <div key={group}>
-                                        {groups.length > 1 && (
-                                            <div className="oqb__group-label">{group}</div>
-                                        )}
-                                        {groupFields.map((field) => (
-                                            <div
-                                                key={field.key}
-                                                className="oqb__dropdown-item"
-                                                onClick={() => pickField(field)}
-                                                onMouseEnter={() => setHoveredGroup(field.key)}
-                                                onMouseLeave={() => setHoveredGroup(null)}
-                                            >
-                                                <span className="oqb__dropdown-icon">{field.icon}</span>
-                                                <span className="oqb__dropdown-name">{field.label}</span>
-                                                <span className="oqb__dropdown-key">{field.key}</span>
-                                                <ChevronRight size={12} className="oqb__dropdown-arrow" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                );
-                            })}
-
-                            {filteredFields.length === 0 && (
-                                <div className="oqb__dropdown-empty">No fields match "{fieldSearch}"</div>
-                            )}
-                        </>
-                    )}
-
-                    {/* ── Step 2: pick operator ── */}
-                    {step === 2 && pendingField && (
-                        <>
-                            <div className="oqb__dropdown-header">
-                                <span className="oqb__dropdown-icon">{pendingField.icon}</span>
-                                <strong>{pendingField.label}</strong>
-                                <span style={{ color: 'var(--text-muted)', marginLeft: 4 }}>— select operator</span>
-                            </div>
-                            {operators.map((op) => (
-                                <div
-                                    key={op.key}
-                                    className="oqb__dropdown-item"
-                                    onClick={() => pickOperator(op)}
-                                >
-                                    <span className="oqb__op-symbol">{op.symbol}</span>
-                                    <span className="oqb__dropdown-name">{op.label}</span>
-                                </div>
-                            ))}
-                        </>
-                    )}
-                </div>
-            )}
+          {step >= 2 && pendingField && (
+            <span className="oqb__pill oqb__pill--pending">
+              <span className="oqb__pill-field">{pendingField.label}</span>
+              {pendingOp && <span className="oqb__pill-op">{pendingOp.symbol}</span>}
+              <button
+                className="oqb__pill-close"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  closeDropdown();
+                }}
+              >
+                <X size={10} />
+              </button>
+            </span>
+          )}
         </div>
-    );
+
+        <input
+          ref={inputRef}
+          type="text"
+          className="oqb__input"
+          placeholder={inputPlaceholder}
+          value={inputValue}
+          onChange={onInputChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => {
+            if (step === 0) openDropdown();
+          }}
+        />
+
+        <div
+          className="oqb__right"
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          {filters.length > 0 && (
+            <span
+              className="oqb__filter-count"
+              title={`${filters.length} active filter${filters.length !== 1 ? 's' : ''}`}
+            >
+              {filters.length}
+            </span>
+          )}
+          {hasFilters && (
+            <button
+              className="oqb__clear"
+              onClick={(event) => {
+                event.stopPropagation();
+                onClearAll();
+                closeDropdown();
+              }}
+              title="Clear all filters"
+            >
+              Clear all
+            </button>
+          )}
+          <button
+            className={`oqb__hint-btn ${showHints ? 'oqb__hint-btn--active' : ''}`}
+            title="Keyboard shortcuts"
+            onClick={() => setShowHints((currentValue) => !currentValue)}
+          >
+            <Keyboard size={13} />
+          </button>
+          {rightSlot}
+        </div>
+      </div>
+
+      {showHints && (
+        <QueryKeyboardHints />
+      )}
+
+      {showDropdown && (
+        <div className="oqb__dropdown" onMouseDown={(event) => event.preventDefault()}>
+          {step === 1 && (
+            <QueryFieldPicker
+              fieldSearch={fieldSearch}
+              filtersLength={filters.length}
+              fieldsLength={fields.length}
+              groups={groups}
+              filteredFields={filteredFields}
+              onPickField={pickField}
+            />
+          )}
+
+          {step === 2 && pendingField && (
+            <QueryOperatorPicker
+              pendingField={pendingField}
+              operators={operators}
+              onPickOperator={pickOperator}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
 }

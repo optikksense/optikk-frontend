@@ -1,26 +1,41 @@
-import { useMemo } from 'react';
 import { Tooltip } from 'antd';
+import { useMemo } from 'react';
+
 import './LatencyHeatmapChart.css';
 
 const LATENCY_BUCKETS = ['0-50ms', '50-100ms', '100-250ms', '250-500ms', '500ms-1s', '>1s'];
+
+interface LatencyHeatmapDataPoint {
+  time_bucket: string | number;
+  latency_bucket: string;
+  span_count?: number;
+}
+
+interface LatencyHeatmapChartProps {
+  data?: LatencyHeatmapDataPoint[];
+}
 
 /**
  * 2D latency heatmap: time on X axis, latency bucket on Y axis, color intensity = span count.
  * Props:
  *   data: Array<{ time_bucket, latency_bucket, span_count }>
+ * @param props Component props.
+ * @returns Heatmap chart for latency bucket density by time.
  */
-export default function LatencyHeatmapChart({ data = [] }) {
+export default function LatencyHeatmapChart({
+  data = [],
+}: LatencyHeatmapChartProps): JSX.Element {
   const timeBuckets = useMemo(() =>
     [...new Set(data.map((d) => d.time_bucket))].sort(),
-    [data]
+    [data],
   );
 
   const maxCount = useMemo(() =>
     Math.max(...data.map((d) => Number(d.span_count) || 0), 1),
-    [data]
+    [data],
   );
 
-  const getColor = (count) => {
+  const getColor = (count: number): string => {
     const n = Number(count) || 0;
     if (n === 0) return 'var(--bg-secondary, #1a1a2e)';
     const intensity = Math.min(n / maxCount, 1);
@@ -48,12 +63,12 @@ export default function LatencyHeatmapChart({ data = [] }) {
             <div className="heatmap-cells">
               {timeBuckets.map((tb) => {
                 const cell = data.find(
-                  (d) => d.latency_bucket === lb && String(d.time_bucket) === String(tb)
+                  (d) => d.latency_bucket === lb && String(d.time_bucket) === String(tb),
                 );
                 const count = Number(cell?.span_count) || 0;
                 return (
                   <Tooltip
-                    key={tb}
+                    key={String(tb)}
                     title={`${lb} @ ${new Date(tb).toLocaleTimeString()}: ${count.toLocaleString()} spans`}
                   >
                     <div
@@ -73,7 +88,7 @@ export default function LatencyHeatmapChart({ data = [] }) {
           {timeBuckets
             .filter((_, i) => i % Math.max(1, Math.floor(timeBuckets.length / 8)) === 0)
             .map((tb) => (
-              <span key={tb} className="heatmap-x-label">
+              <span key={String(tb)} className="heatmap-x-label">
                 {new Date(tb).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             ))}

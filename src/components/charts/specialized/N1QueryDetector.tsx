@@ -4,10 +4,14 @@
  * DB queries — the classic N+1 pattern.
  * Data comes from the /api/v1/spans/n1 endpoint (aggregated query counts).
  */
-import React from 'react';
 import { Card, Table, Tag, Tooltip } from 'antd';
+import React from 'react';
+
 import type { ColumnsType } from 'antd/es/table';
 
+/**
+ *
+ */
 export interface N1QueryRow {
     service: string;
     operation: string;
@@ -35,21 +39,21 @@ const N1QueryDetector: React.FC<N1QueryDetectorProps> = ({
             dataIndex: 'service',
             key: 'service',
             width: 120,
-            render: v => <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--text-primary)' }}>{v}</span>,
+            render: (v) => <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--text-primary)' }}>{v}</span>,
         },
         {
             title: 'Operation',
             dataIndex: 'operation',
             key: 'operation',
             width: 140,
-            render: v => <code style={{ fontSize: 'var(--text-xs)', color: 'var(--color-info)' }}>{v}</code>,
+            render: (v) => <code style={{ fontSize: 'var(--text-xs)', color: 'var(--color-info)' }}>{v}</code>,
         },
         {
             title: 'Query Pattern',
             dataIndex: 'queryPattern',
             key: 'queryPattern',
             ellipsis: true,
-            render: v => (
+            render: (v) => (
                 <Tooltip title={v}>
                     <code style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>{v}</code>
                 </Tooltip>
@@ -62,7 +66,7 @@ const N1QueryDetector: React.FC<N1QueryDetectorProps> = ({
             width: 80,
             sorter: (a, b) => b.callCount - a.callCount,
             defaultSortOrder: 'ascend',
-            render: v => (
+            render: (v) => (
                 <Tag
                     color={v >= threshold ? 'var(--severity-critical)' : 'var(--severity-medium)'}
                     style={{
@@ -81,21 +85,21 @@ const N1QueryDetector: React.FC<N1QueryDetectorProps> = ({
             dataIndex: 'distinctCallers',
             key: 'distinctCallers',
             width: 80,
-            render: v => <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{v}</span>,
+            render: (v) => <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{v}</span>,
         },
         {
             title: 'Avg (ms)',
             dataIndex: 'avgLatencyMs',
             key: 'avgLatencyMs',
             width: 90,
-            render: v => <span style={{ color: v > 100 ? 'var(--severity-high)' : 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{v.toFixed(1)}</span>,
+            render: (v) => <span style={{ color: v > 100 ? 'var(--severity-high)' : 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{v.toFixed(1)}</span>,
         },
         {
             title: 'p99 (ms)',
             dataIndex: 'p99LatencyMs',
             key: 'p99LatencyMs',
             width: 90,
-            render: v => <span style={{ color: v > 500 ? 'var(--severity-critical)' : 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{v.toFixed(1)}</span>,
+            render: (v) => <span style={{ color: v > 500 ? 'var(--severity-critical)' : 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{v.toFixed(1)}</span>,
         },
     ];
 
@@ -105,7 +109,7 @@ const N1QueryDetector: React.FC<N1QueryDetectorProps> = ({
                 dataSource={data}
                 columns={columns}
                 loading={loading}
-                rowKey={r => `${r.service}::${r.operation}::${r.queryPattern}`}
+                rowKey={(r) => `${r.service}::${r.operation}::${r.queryPattern}`}
                 size="small"
                 pagination={{ pageSize: 10, size: 'small' }}
                 style={{ fontSize: 'var(--text-sm)' }}

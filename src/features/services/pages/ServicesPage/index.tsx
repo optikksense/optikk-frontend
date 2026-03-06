@@ -1,24 +1,32 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Tabs } from 'antd';
 import { Layers, Network } from 'lucide-react';
-import { PageHeader } from '@components/common';
-import { useDashboardConfig } from '@hooks/useDashboardConfig';
-import { HealthIndicator } from '@components/common';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { useServicesData } from '../../hooks/useServicesData';
+import SparklineChart from '@components/charts/micro/SparklineChart';
+import { PageHeader , HealthIndicator } from '@components/common';
+
+import { useDashboardConfig } from '@hooks/useDashboardConfig';
+import { useUrlSyncedTab } from '@hooks/useUrlSyncedTab';
+
+import { formatNumber, formatDuration } from '@utils/formatters';
+
 import { ServiceOverviewTab } from '../../components/services-page/ServiceOverviewTab';
 import { ServiceTopologyTab } from '../../components/services-page/ServiceTopologyTab';
-import { formatNumber, formatDuration } from '@utils/formatters';
-import SparklineChart from '@components/charts/micro/SparklineChart';
+import { useServicesData } from '../../hooks/useServicesData';
 
 import './ServicesPage.css';
 
+/**
+ *
+ */
 export default function ServicesPage() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') === 'topology' ? 'topology' : 'overview');
+  const { activeTab, onTabChange } = useUrlSyncedTab({
+    allowedTabs: ['overview', 'topology'] as const,
+    defaultTab: 'overview',
+  });
   const [viewMode, setViewMode] = useState('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [healthFilter, setHealthFilter] = useState('all');
@@ -44,24 +52,6 @@ export default function ServicesPage() {
     dependencyRows,
     healthOptions,
   } = useServicesData({ searchQuery, sortField, sortOrder, healthFilter });
-
-  useEffect(() => {
-    const queryTab = searchParams.get('tab') === 'topology' ? 'topology' : 'overview';
-    if (queryTab !== activeTab) {
-      setActiveTab(queryTab);
-    }
-  }, [searchParams, activeTab]);
-
-  const onTabChange = (key) => {
-    setActiveTab(key);
-    const next = new URLSearchParams(searchParams);
-    if (key === 'topology') {
-      next.set('tab', 'topology');
-    } else {
-      next.delete('tab');
-    }
-    setSearchParams(next, { replace: true });
-  };
 
   const onNodeClick = (name) => {
     navigate(`/services/${encodeURIComponent(name)}`);
@@ -316,7 +306,7 @@ export default function ServicesPage() {
                 tableData={tableData}
                 onNodeClick={onNodeClick}
               />
-            )
+            ),
           },
           {
             key: 'topology',
@@ -337,8 +327,8 @@ export default function ServicesPage() {
                 dependencyRows={dependencyRows}
                 onNodeClick={onNodeClick}
               />
-            )
-          }
+            ),
+          },
         ]}
       />
     </div>

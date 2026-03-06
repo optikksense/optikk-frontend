@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
 import { Empty } from 'antd';
+import { useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
-import { createChartOptions, createLineDataset, getChartColor } from '@utils/chartHelpers';
+
 import { useChartTimeBuckets } from '@hooks/useChartTimeBuckets';
+
+import { createChartOptions, createLineDataset, getChartColor } from '@utils/chartHelpers';
 
 // Normalize any timestamp string to a canonical key for lookups.
 function tsKey(ts: any) {
@@ -43,6 +45,17 @@ function formatAxisValue(value: any) {
   return '0';
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.data
+ * @param root0.endpoints
+ * @param root0.selectedEndpoints
+ * @param root0.serviceTimeseriesMap
+ * @param root0.datasetLabel
+ * @param root0.color
+ * @param root0.valueKey
+ */
 export default function RequestChart({
   data = [],
   endpoints = [],
@@ -50,14 +63,14 @@ export default function RequestChart({
   serviceTimeseriesMap = {},
   datasetLabel = 'Requests/min',
   color = '#5E60CE',
-  valueKey = 'request_count'
+  valueKey = 'request_count',
 }: any) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets, labels } = useChartTimeBuckets();
 
   const getSeriesRows = (seriesKey: string) => {
-    if ((serviceTimeseriesMap as any)[seriesKey]) {
-      return (serviceTimeseriesMap as any)[seriesKey];
+    if ((serviceTimeseriesMap)[seriesKey]) {
+      return (serviceTimeseriesMap)[seriesKey];
     }
 
     if (!seriesKey.includes('::')) {
@@ -66,8 +79,8 @@ export default function RequestChart({
 
     const [queueName] = seriesKey.split('::');
     return (
-      (serviceTimeseriesMap as any)[`${queueName}::unknown`] ||
-      (serviceTimeseriesMap as any)[queueName] ||
+      (serviceTimeseriesMap)[`${queueName}::unknown`] ||
+      (serviceTimeseriesMap)[queueName] ||
       []
     );
   };
@@ -101,7 +114,7 @@ export default function RequestChart({
         tsMap[bucketKey] = (tsMap[bucketKey] || 0) + (Number.isFinite(value) ? value : 0);
       }
 
-      const values = timeBuckets.map(d => tsMap[tsKey(d)] ?? 0);
+      const values = timeBuckets.map((d) => tsMap[tsKey(d)] ?? 0);
       return createLineDataset(info.label, values, getChartColor(idx), false);
     });
   };
@@ -110,7 +123,7 @@ export default function RequestChart({
     let datasets: any[];
     if (endpoints.length > 0) {
       const list = selectedEndpoints.length > 0
-        ? (endpoints as any[]).filter(ep => {
+        ? (endpoints as any[]).filter((ep) => {
           const key = ep.key || (() => {
             const method = String(firstValue(ep, ['http_method', 'httpMethod'], '')).toUpperCase();
             const op = String(firstValue(ep, ['operation_name', 'operationName', 'endpoint_name', 'endpointName'], 'Unknown'));
@@ -132,7 +145,7 @@ export default function RequestChart({
             `${method} ${operation}`,
             timeBuckets.map(() => 0),
             getChartColor(idx),
-            false
+            false,
           );
         });
       }
@@ -150,7 +163,7 @@ export default function RequestChart({
           const value = Number(firstValue(row, [valueKey, 'request_count', 'requestCount', 'value'], 0));
           tsMap[bucketKey] = (tsMap[bucketKey] || 0) + (Number.isFinite(value) ? value : 0);
         }
-        const values = timeBuckets.map(d => tsMap[tsKey(d)] ?? 0);
+        const values = timeBuckets.map((d) => tsMap[tsKey(d)] ?? 0);
         return createLineDataset(svcName, values, getChartColor(idx), false);
       });
     } else {
@@ -159,7 +172,7 @@ export default function RequestChart({
         const ts = firstValue(d, ['timestamp', 'time_bucket', 'timeBucket'], '');
         dataMap[tsKey(ts)] = Number(firstValue(d, [valueKey, 'request_count', 'requestCount', 'value'], 0));
       }
-      datasets = [createLineDataset(datasetLabel, timeBuckets.map(ts => dataMap[tsKey(ts)] ?? 0), color, true)];
+      datasets = [createLineDataset(datasetLabel, timeBuckets.map((ts) => dataMap[tsKey(ts)] ?? 0), color, true)];
     }
 
     return { labels, datasets };
@@ -167,7 +180,7 @@ export default function RequestChart({
 
   const yAxisMax = useMemo(() => {
     let maxVal = 0;
-    chartData.datasets.forEach(ds => {
+    chartData.datasets.forEach((ds) => {
       const dsMax = Math.max(...ds.data.map((v: any) => Number(v) || 0), 0);
       if (dsMax > maxVal) maxVal = dsMax;
     });

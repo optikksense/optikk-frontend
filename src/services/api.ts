@@ -13,10 +13,99 @@
  *   Authorization header is present).
  */
 import axios from 'axios';
-import { API_CONFIG, STORAGE_KEYS } from '@config/constants';
+
 import { safeGet, safeRemove } from '@utils/storage';
 
+import { API_CONFIG, STORAGE_KEYS } from '@config/constants';
+
 const AUTH_PRESENT_KEY = 'optic_auth_present';
+
+interface ApiErrorShape {
+  readonly status: number;
+  readonly message: string;
+  readonly data?: unknown;
+}
+
+interface ApiEnvelope {
+  readonly success: boolean;
+  readonly data: unknown;
+}
+
+function isApiEnvelope(value: unknown): value is ApiEnvelope {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const record = value as Record<string, unknown>;
+  return typeof record.success === 'boolean' && 'data' in record;
+}
+
+function extractApiMessage(data: unknown): string {
+  if (typeof data !== 'object' || data === null) {
+    return 'An error occurred';
+  }
+
+  const record = data as Record<string, unknown>;
+  const nestedError = record.error;
+  if (typeof nestedError === 'object' && nestedError !== null) {
+    const nestedRecord = nestedError as Record<string, unknown>;
+    if (typeof nestedRecord.message === 'string' && nestedRecord.message.length > 0) {
+      return nestedRecord.message;
+    }
+  }
+
+  if (typeof record.message === 'string' && record.message.length > 0) {
+    return record.message;
+  }
+
+  return 'An error occurred';
+}
+
+function toApiError(error: unknown): ApiErrorShape {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      const status = error.response.status;
+      const data = error.response.data;
+
+      if (status === 401) {
+        safeRemove(AUTH_PRESENT_KEY);
+        safeRemove(STORAGE_KEYS.AUTH_TOKEN);
+        safeRemove(STORAGE_KEYS.USER_DATA);
+        window.dispatchEvent(new CustomEvent('auth:expired'));
+      }
+
+      return {
+        status,
+        message: extractApiMessage(data),
+        data,
+      };
+    }
+
+    if (error.request) {
+      return {
+        status: 0,
+        message: 'Network error - please check your connection',
+      };
+    }
+
+    return {
+      status: 0,
+      message: error.message || 'An unexpected error occurred',
+    };
+  }
+
+  if (error instanceof Error) {
+    return {
+      status: 0,
+      message: error.message,
+    };
+  }
+
+  return {
+    status: 0,
+    message: 'An unexpected error occurred',
+  };
+}
 
 // Create axios instance
 const api = axios.create({
@@ -54,7 +143,7 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Response interceptor — unwrap ApiResponse, handle auth errors
@@ -62,41 +151,13 @@ api.interceptors.response.use(
   (response) => {
     const data = response.data;
     // Unwrap ApiResponse if present (has success and data properties)
-    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+    if (isApiEnvelope(data)) {
       return data.data;
     }
     return data;
   },
-  (error: any) => {
-    if (error.response) {
-      const { status, data } = error.response;
-
-      if (status === 401) {
-        // Unauthorized — the cookie is invalid, expired, or was revoked.
-        // Clear the non-sensitive local markers and signal the React app.
-        safeRemove(AUTH_PRESENT_KEY);
-        safeRemove(STORAGE_KEYS.AUTH_TOKEN); // legacy cleanup
-        safeRemove(STORAGE_KEYS.USER_DATA);
-        window.dispatchEvent(new CustomEvent('auth:expired'));
-      }
-
-      return Promise.reject({
-        status,
-        message: data?.error?.message || data?.message || 'An error occurred',
-        data: data,
-      });
-    } else if (error.request) {
-      return Promise.reject({
-        status: 0,
-        message: 'Network error - please check your connection',
-      });
-    } else {
-      return Promise.reject({
-        status: 0,
-        message: error.message || 'An unexpected error occurred',
-      });
-    }
-  }
+  (error: unknown) => Promise.reject(toApiError(error)),
 );
 
+export { api };
 export default api;

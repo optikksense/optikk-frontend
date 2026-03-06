@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type { User } from '@/types';
+
 const authServiceMock = {
   getCurrentUser: vi.fn(),
   isAuthenticated: vi.fn(),
@@ -15,7 +17,10 @@ const appStoreMock = {
 async function loadStore({
   currentUser = null,
   isAuthenticated = false,
-} = {}) {
+}: {
+  currentUser?: User | null;
+  isAuthenticated?: boolean;
+} = {}): Promise<typeof import('./authStore').useAuthStore> {
   authServiceMock.getCurrentUser.mockReturnValue(currentUser);
   authServiceMock.isAuthenticated.mockReturnValue(isAuthenticated);
 

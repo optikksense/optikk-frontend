@@ -1,29 +1,26 @@
-import React from 'react';
-import {
-  Tabs,
-  Card,
-  Form,
-  Input,
-  Button,
-  Switch,
-  Select,
-  Descriptions,
-  Spin,
-  Avatar,
-  Divider,
-} from 'antd';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Settings, User, Palette, Bell, Users, Key } from 'lucide-react';
-import { PageHeader } from '@components/common';
-import { settingsService } from '@services/settingsService';
-import { useAppStore } from '@store/appStore';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Form, Tabs } from 'antd';
+import { Palette, Settings, User, Users } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+
+import { PageHeader } from '@components/common';
+
+import { settingsService } from '@services/settingsService';
+
+import { useAppStore } from '@store/appStore';
+
+import {
+  SettingsPreferencesTab,
+  SettingsProfileTab,
+  SettingsTeamTab,
+} from '../../components/tabs';
+
 import './SettingsPage.css';
 
-const { TabPane } = Tabs;
-const { Option } = Select;
-
-const SettingsPage = () => {
+/**
+ * Settings page container that coordinates profile/preferences/team tabs.
+ */
+export default function SettingsPage(): JSX.Element {
   const queryClient = useQueryClient();
   const [profileForm] = Form.useForm();
 
@@ -41,295 +38,111 @@ const SettingsPage = () => {
     queryFn: () => settingsService.getProfile(),
   });
 
-  const profile = (profileRaw as any);
+  const profile = (profileRaw as Record<string, any> | null) ?? null;
+  const teams = Array.isArray(profile?.teams) ? profile.teams : [];
 
   const updateProfileMutation = useMutation({
-    mutationFn: (data: any) => settingsService.updateProfile(data),
+    mutationFn: (data: Record<string, any>) => settingsService.updateProfile(data),
     onSuccess: () => {
       toast.success('Profile updated successfully');
       queryClient.invalidateQueries({ queryKey: ['settings-profile'] });
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to update profile');
+      toast.error(error?.message || 'Failed to update profile');
     },
   });
 
-  const handleProfileSubmit = (values: any) => {
+  const handleProfileSubmit = (values: Record<string, any>): void => {
     updateProfileMutation.mutate({
       name: values.name,
       avatarUrl: values.avatarUrl,
     });
   };
 
-  const handleThemeChange = (checked: boolean) => {
+  const handleThemeChange = (checked: boolean): void => {
     setTheme(checked ? 'dark' : 'light');
     toast.success(`Switched to ${checked ? 'dark' : 'light'} theme`);
   };
 
-  const handleNotificationsChange = (checked: boolean) => {
+  const handleNotificationsChange = (checked: boolean): void => {
     setNotificationsEnabled(checked);
     toast.success(`Notifications ${checked ? 'enabled' : 'disabled'}`);
   };
 
-  const handlePreferenceChange = (key: string, value: any) => {
+  const handlePreferenceChange = (key: string, value: any): void => {
     setViewPreference(key, value);
     toast.success('Preference updated');
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string): string => {
     if (!name) return 'U';
     return name
       .split(' ')
-      .map((n) => n[0])
+      .map((part) => part[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
-  };
-
-  const renderProfileTab = () => {
-    if (profileLoading) {
-      return (
-        <div className="settings-loading">
-          <Spin size="large" />
-        </div>
-      );
-    }
-
-    return (
-      <Card className="settings-card">
-        <div className="profile-header">
-          <Avatar size={80} src={profile?.avatarUrl} className="profile-avatar">
-            {getInitials(profile?.name)}
-          </Avatar>
-          <div className="profile-info">
-            <h3>{profile?.name}</h3>
-            <p className="profile-role">{profile?.role}</p>
-          </div>
-        </div>
-
-        <Divider />
-
-        <Form
-          form={profileForm}
-          layout="vertical"
-          onFinish={handleProfileSubmit}
-          initialValues={{
-            name: profile?.name,
-            email: profile?.email,
-            avatarUrl: profile?.avatarUrl,
-          }}
-        >
-          <Form.Item
-            label="Name"
-            name="name"
-            rules={[{ required: true, message: 'Please enter your name' }]}
-          >
-            <Input prefix={<User size={16} />} placeholder="Your name" />
-          </Form.Item>
-
-          <Form.Item label="Email" name="email">
-            <Input prefix={<Bell size={16} />} disabled />
-          </Form.Item>
-
-          <Form.Item label="Avatar URL" name="avatarUrl">
-            <Input placeholder="https://example.com/avatar.jpg" />
-          </Form.Item>
-
-          <Form.Item label="Role">
-            <Input value={profile?.role} disabled />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              data-testid="settings-save-profile"
-              type="primary"
-              htmlType="submit"
-              loading={updateProfileMutation.isPending}
-              block
-            >
-              Save Changes
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-    );
-  };
-
-  const renderPreferencesTab = () => {
-    return (
-      <Card className="settings-card">
-        <div className="preference-item">
-          <div className="preference-label">
-            <Palette size={20} />
-            <div>
-              <h4>Theme</h4>
-              <p>Switch between light and dark mode</p>
-            </div>
-          </div>
-          <Switch
-            data-testid="settings-theme-switch"
-            checked={theme === 'dark'}
-            onChange={handleThemeChange}
-            checkedChildren="Dark"
-            unCheckedChildren="Light"
-          />
-        </div>
-
-        <Divider />
-
-        <div className="preference-item">
-          <div className="preference-label">
-            <Bell size={20} />
-            <div>
-              <h4>Notifications</h4>
-              <p>Enable or disable notifications</p>
-            </div>
-          </div>
-          <Switch
-            data-testid="settings-notifications-switch"
-            checked={notificationsEnabled}
-            onChange={handleNotificationsChange}
-          />
-        </div>
-
-        <Divider />
-
-        <div className="preference-item">
-          <div className="preference-label">
-            <Settings size={20} />
-            <div>
-              <h4>Default Time Range</h4>
-              <p>Select default time range for dashboards</p>
-            </div>
-          </div>
-          <Select
-            value={viewPreferences?.defaultTimeRange || '1h'}
-            onChange={(val) => handlePreferenceChange('defaultTimeRange', val)}
-            style={{ width: 200 }}
-          >
-            <Option value="15m">Last 15 minutes</Option>
-            <Option value="30m">Last 30 minutes</Option>
-            <Option value="1h">Last 1 hour</Option>
-            <Option value="3h">Last 3 hours</Option>
-            <Option value="6h">Last 6 hours</Option>
-            <Option value="12h">Last 12 hours</Option>
-            <Option value="24h">Last 24 hours</Option>
-            <Option value="7d">Last 7 days</Option>
-          </Select>
-        </div>
-
-        <Divider />
-
-        <div className="preference-item">
-          <div className="preference-label">
-            <Settings size={20} />
-            <div>
-              <h4>Default Page Size</h4>
-              <p>Number of items to display per page</p>
-            </div>
-          </div>
-          <Select
-            value={viewPreferences?.defaultPageSize || 20}
-            onChange={(val) => handlePreferenceChange('defaultPageSize', val)}
-            style={{ width: 200 }}
-          >
-            <Option value={10}>10</Option>
-            <Option value={20}>20</Option>
-            <Option value={50}>50</Option>
-            <Option value={100}>100</Option>
-          </Select>
-        </div>
-      </Card>
-    );
-  };
-
-  const renderTeamTab = () => {
-    if (profileLoading) {
-      return (
-        <div className="settings-loading">
-          <Spin size="large" />
-        </div>
-      );
-    }
-
-    return (
-      <Card className="settings-card">
-        <div className="team-header">
-          <Users size={24} />
-          <h3>Team Information</h3>
-        </div>
-
-        <Divider />
-
-        <Descriptions column={1} bordered>
-          {profile?.teams?.map((team: any, index: number) => (
-            <Descriptions.Item key={index} label={`Team ${index + 1}`}>
-              <div className="team-info">
-                <div className="team-main">
-                  <span className="team-name">{team.name}</span>
-                  {team.apiKey && (
-                    <span className="team-api-key">
-                      <Key size={14} />
-                      {team.apiKey}
-                    </span>
-                  )}
-                </div>
-                <span className="team-role">{team.role}</span>
-              </div>
-            </Descriptions.Item>
-          ))}
-        </Descriptions>
-
-        {(!profile?.teams || profile.teams.length === 0) && (
-          <p className="no-teams">You are not a member of any teams yet.</p>
-        )}
-      </Card>
-    );
   };
 
   return (
     <div className="settings-page">
       <PageHeader title="Settings" icon={<Settings size={24} />} />
 
-      <Tabs defaultActiveKey="profile" className="settings-tabs">
-        <TabPane
-          tab={
-            <span className="tab-label">
-              <User size={16} />
-              Profile
-            </span>
-          }
-          key="profile"
-        >
-          {renderProfileTab()}
-        </TabPane>
-
-        <TabPane
-          tab={
-            <span className="tab-label">
-              <Palette size={16} />
-              Preferences
-            </span>
-          }
-          key="preferences"
-        >
-          {renderPreferencesTab()}
-        </TabPane>
-
-        <TabPane
-          tab={
-            <span className="tab-label">
-              <Users size={16} />
-              Team
-            </span>
-          }
-          key="team"
-        >
-          {renderTeamTab()}
-        </TabPane>
-      </Tabs>
+      <Tabs
+        defaultActiveKey="profile"
+        className="settings-tabs"
+        items={[
+          {
+            key: 'profile',
+            label: (
+              <span className="tab-label">
+                <User size={16} />
+                Profile
+              </span>
+            ),
+            children: (
+              <SettingsProfileTab
+                profileLoading={profileLoading}
+                profile={profile}
+                profileForm={profileForm}
+                isSaving={updateProfileMutation.isPending}
+                getInitials={getInitials}
+                onSubmit={handleProfileSubmit}
+              />
+            ),
+          },
+          {
+            key: 'preferences',
+            label: (
+              <span className="tab-label">
+                <Palette size={16} />
+                Preferences
+              </span>
+            ),
+            children: (
+              <SettingsPreferencesTab
+                theme={theme}
+                notificationsEnabled={notificationsEnabled}
+                viewPreferences={(viewPreferences as Record<string, any>) ?? null}
+                onThemeChange={handleThemeChange}
+                onNotificationsChange={handleNotificationsChange}
+                onPreferenceChange={handlePreferenceChange}
+              />
+            ),
+          },
+          {
+            key: 'team',
+            label: (
+              <span className="tab-label">
+                <Users size={16} />
+                Team
+              </span>
+            ),
+            children: <SettingsTeamTab profileLoading={profileLoading} teams={teams} />,
+          },
+        ]}
+      />
     </div>
   );
-};
+}
 
-export default SettingsPage;

@@ -1,14 +1,20 @@
+import { Layout } from 'antd';
 import { useState, useEffect, useCallback } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Layout } from 'antd';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import CommandPalette from '../common/overlay/CommandPalette';
+
 import { useAppStore } from '@store/appStore';
+
+import Header from './Header';
+import Sidebar from './Sidebar';
+import CommandPalette from '../common/overlay/CommandPalette';
+
 import './MainLayout.css';
 
 const { Content } = Layout;
 
+/**
+ *
+ */
 export default function MainLayout() {
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);

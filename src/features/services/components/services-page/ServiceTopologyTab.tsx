@@ -1,8 +1,10 @@
 import { Card, Col, Empty, Row, Skeleton, Tag } from 'antd';
 import { ArrowRight, GitBranch, Network, ShieldAlert } from 'lucide-react';
+
+import ServiceGraph from '@components/charts/specialized/ServiceGraph';
 import { FilterBar, HealthIndicator, StatCardsGrid } from '@components/common';
 import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
-import ServiceGraph from '@components/charts/specialized/ServiceGraph';
+
 import { formatNumber, formatDuration } from '@utils/formatters';
 
 const DEP_COLUMNS = [
@@ -14,6 +16,23 @@ const DEP_COLUMNS = [
     { key: 'risk', label: 'Risk Score', defaultWidth: 120, flex: true },
 ];
 
+/**
+ *
+ * @param root0
+ * @param root0.topologyStats
+ * @param root0.topologyLoading
+ * @param root0.topologyError
+ * @param root0.topologyNodes
+ * @param root0.topologyEdges
+ * @param root0.criticalServices
+ * @param root0.searchQuery
+ * @param root0.setSearchQuery
+ * @param root0.healthFilter
+ * @param root0.setHealthFilter
+ * @param root0.healthOptions
+ * @param root0.dependencyRows
+ * @param root0.onNodeClick
+ */
 export function ServiceTopologyTab({
     topologyStats,
     topologyLoading,
@@ -34,10 +53,10 @@ export function ServiceTopologyTab({
             <StatCardsGrid
                 style={{ marginBottom: 16 }}
                 stats={[
-                    { title: "Services in Graph", value: formatNumber(topologyStats.graphServices), icon: <Network size={20} />, iconColor: "#5E60CE", loading: topologyLoading },
-                    { title: "Dependencies", value: formatNumber(topologyStats.dependencies), icon: <GitBranch size={20} />, iconColor: "#06AED5", loading: topologyLoading },
-                    { title: "Critical Services", value: formatNumber(topologyStats.criticalServices), icon: <ShieldAlert size={20} />, iconColor: "#F79009", loading: topologyLoading },
-                    { title: "High-Risk Edges", value: formatNumber(topologyStats.highRiskEdges), icon: <ArrowRight size={20} />, iconColor: "#F04438", loading: topologyLoading }
+                    { title: 'Services in Graph', value: formatNumber(topologyStats.graphServices), icon: <Network size={20} />, iconColor: '#5E60CE', loading: topologyLoading },
+                    { title: 'Dependencies', value: formatNumber(topologyStats.dependencies), icon: <GitBranch size={20} />, iconColor: '#06AED5', loading: topologyLoading },
+                    { title: 'Critical Services', value: formatNumber(topologyStats.criticalServices), icon: <ShieldAlert size={20} />, iconColor: '#F79009', loading: topologyLoading },
+                    { title: 'High-Risk Edges', value: formatNumber(topologyStats.highRiskEdges), icon: <ArrowRight size={20} />, iconColor: '#F04438', loading: topologyLoading },
                 ]}
             />
 
@@ -50,7 +69,7 @@ export function ServiceTopologyTab({
                         value: searchQuery,
                         onChange: (e) => setSearchQuery(e.target.value),
                         width: 460,
-                    }
+                    },
                 ]}
                 actions={
                     <div className="services-health-tags">

@@ -1,204 +1,236 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-/* ─── Types ──────────────────────────────────────────────────────────────── */
+import type { Dispatch, SetStateAction } from 'react';
 
-/** A structured filter chip from ObservabilityQueryBar */
+/** A structured filter chip from ObservabilityQueryBar. */
 export interface StructuredFilter {
-  field: string;
-  operator: string;
-  value: string;
+  readonly field: string;
+  readonly operator: string;
+  readonly value: string;
 }
 
-/** Configuration for a single URL-synced filter parameter */
+/**
+ *
+ */
+export type URLFilterType = 'string' | 'string[]' | 'number' | 'boolean';
+
+/**
+ *
+ */
+export type URLFilterValue = string | string[] | number | boolean;
+
+type URLFilterValues = Record<string, URLFilterValue>;
+
+type URLFilterSetter = (next: URLFilterValue | ((prev: URLFilterValue) => URLFilterValue)) => void;
+
+type URLFilterSetters = Record<string, URLFilterSetter>;
+
+/** Configuration for a single URL-synced filter parameter. */
 export interface URLFilterParam {
-  /** URL search-param key (e.g. "service", "search") */
-  key: string;
-  /** How to parse / serialise the value */
-  type: 'string' | 'string[]' | 'number' | 'boolean';
-  /** Default value when the param is absent from the URL */
-  defaultValue?: any;
+  readonly key: string;
+  readonly type: URLFilterType;
+  readonly defaultValue?: URLFilterValue;
 }
 
-/** Configuration for syncing the ObservabilityQueryBar structured filters */
+/** Configuration for syncing filter values with the URL query string. */
 export interface URLFilterConfig {
-  /** Simple key-value params to sync */
-  params: URLFilterParam[];
-  /**
-   * If true the hook will also sync the structured `filters` array
-   * (field:operator:value chips) via a `filters` search param.
-   */
-  syncStructuredFilters?: boolean;
+  readonly params: URLFilterParam[];
+  readonly syncStructuredFilters?: boolean;
 }
 
-/* ─── Helpers ────────────────────────────────────────────────────────────── */
+function getTypeDefault(type: URLFilterType): URLFilterValue {
+  switch (type) {
+    case 'string':
+      return '';
+    case 'string[]':
+      return [];
+    case 'number':
+      return 0;
+    case 'boolean':
+      return false;
+  }
+}
 
-function parseParamValue(raw: string | null, type: URLFilterParam['type'], defaultValue: any): any {
-  if (raw === null || raw === undefined) return defaultValue;
+function parseParamValue(
+  raw: string | null,
+  type: URLFilterType,
+  defaultValue: URLFilterValue,
+): URLFilterValue {
+  if (raw === null || raw === undefined) {
+    return defaultValue;
+  }
+
   switch (type) {
     case 'string':
       return raw;
     case 'string[]':
-      return raw ? raw.split(',').filter(Boolean) : defaultValue ?? [];
+      return raw ? raw.split(',').filter(Boolean) : defaultValue;
     case 'number': {
-      const n = Number(raw);
-      return Number.isFinite(n) ? n : defaultValue ?? 0;
+      const parsed = Number(raw);
+      return Number.isFinite(parsed) ? parsed : defaultValue;
     }
     case 'boolean':
       return raw === 'true' || raw === '1';
-    default:
-      return raw;
   }
 }
 
-function serialiseParamValue(value: any, type: URLFilterParam['type']): string | null {
-  if (value === null || value === undefined) return null;
+function serialiseParamValue(value: URLFilterValue, type: URLFilterType): string | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
   switch (type) {
     case 'string':
-      return value || null;
+      return value ? String(value) : null;
     case 'string[]':
       return Array.isArray(value) && value.length > 0 ? value.join(',') : null;
     case 'number':
       return value !== 0 ? String(value) : null;
     case 'boolean':
       return value ? 'true' : null;
-    default:
-      return value ? String(value) : null;
   }
 }
 
-/**
- * Encode an array of StructuredFilter objects into a compact URL string.
- * Format: field:operator:value separated by semicolons.
- * Values are URI-encoded so colons / semicolons inside values are safe.
- */
 function encodeStructuredFilters(filters: StructuredFilter[]): string | null {
-  if (!filters || filters.length === 0) return null;
+  if (filters.length === 0) {
+    return null;
+  }
   return filters
-    .map((f) => `${f.field}:${f.operator}:${encodeURIComponent(f.value)}`)
+    .map((filter) => `${filter.field}:${filter.operator}:${encodeURIComponent(filter.value)}`)
     .join(';');
 }
 
 function decodeStructuredFilters(raw: string | null): StructuredFilter[] {
-  if (!raw) return [];
-  return raw.split(';').map((chunk) => {
-    const [field, operator, ...rest] = chunk.split(':');
-    return { field, operator, value: decodeURIComponent(rest.join(':')) };
-  }).filter((f) => f.field && f.operator);
-}
+  if (!raw) {
+    return [];
+  }
 
-/* ─── Hook ───────────────────────────────────────────────────────────────── */
+  const filters: StructuredFilter[] = [];
+  for (const chunk of raw.split(';')) {
+    const [field, operator, ...rest] = chunk.split(':');
+    if (!field || !operator) {
+      continue;
+    }
+    filters.push({ field, operator, value: decodeURIComponent(rest.join(':')) });
+  }
+  return filters;
+}
 
 /**
  * useURLFilters — syncs filter state to/from URL search params.
- *
- * Returns a `[values, setters]` style API:
- *  - `values`  — an object keyed by each param's `key`, with the current value
- *  - `setters` — an object keyed by `set<Key>` (camelCase), each a setState-style setter
- *  - `structuredFilters` / `setStructuredFilters` — for the ObservabilityQueryBar chips
- *  - `clearAll` — resets every param to its default and clears the URL
- *
- * URL updates are debounced by 300 ms so rapid typing does not spam the
- * browser history.
+ * @param config
  */
-export function useURLFilters(config: URLFilterConfig) {
+export function useURLFilters(config: URLFilterConfig): {
+  values: URLFilterValues;
+  setters: URLFilterSetters;
+  structuredFilters: StructuredFilter[];
+  setStructuredFilters: Dispatch<SetStateAction<StructuredFilter[]>>;
+  clearAll: () => void;
+} {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  /* ── Parse initial values from URL ── */
-  const initialValues = useMemo(() => {
-    const vals: Record<string, any> = {};
-    for (const p of config.params) {
-      vals[p.key] = parseParamValue(searchParams.get(p.key), p.type, p.defaultValue ?? getTypeDefault(p.type));
+  const initialValues = useMemo((): URLFilterValues => {
+    const values: URLFilterValues = {};
+    for (const param of config.params) {
+      const fallback = param.defaultValue ?? getTypeDefault(param.type);
+      values[param.key] = parseParamValue(searchParams.get(param.key), param.type, fallback);
     }
-    return vals;
-  // Only run on mount — subsequent URL changes are handled by the effect below
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return values;
+    // Initial parse should run once; subsequent URL changes are managed via state updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [values, setValues] = useState<Record<string, any>>(initialValues);
+  const [values, setValues] = useState<URLFilterValues>(initialValues);
 
-  /* ── Parse structured filters from URL ── */
-  const initialStructured = useMemo(() => {
-    if (!config.syncStructuredFilters) return [];
+  const initialStructuredFilters = useMemo((): StructuredFilter[] => {
+    if (!config.syncStructuredFilters) {
+      return [];
+    }
     return decodeStructuredFilters(searchParams.get('filters'));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Initial parse should run once; subsequent URL changes are managed via state updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [structuredFilters, setStructuredFilters] = useState<StructuredFilter[]>(initialStructured);
+  const [structuredFilters, setStructuredFilters] = useState<StructuredFilter[]>(
+    initialStructuredFilters,
+  );
 
-  /* ── Debounced URL write-back ── */
-  const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFirstRenderRef = useRef(true);
 
   const flushToURL = useCallback(
-    (nextValues: Record<string, any>, nextFilters: StructuredFilter[]) => {
-      if (pendingRef.current) clearTimeout(pendingRef.current);
+    (nextValues: URLFilterValues, nextFilters: StructuredFilter[]): void => {
+      if (pendingTimerRef.current) {
+        clearTimeout(pendingTimerRef.current);
+      }
 
-      pendingRef.current = setTimeout(() => {
-        const next = new URLSearchParams();
+      pendingTimerRef.current = setTimeout(() => {
+        const nextSearchParams = new URLSearchParams();
 
-        // Preserve any params we do NOT manage (e.g. `tab` from metrics)
-        searchParams.forEach((v, k) => {
-          const managed = config.params.some((p) => p.key === k) || k === 'filters';
-          if (!managed) next.set(k, v);
-        });
-
-        // Set managed params
-        for (const p of config.params) {
-          const serialised = serialiseParamValue(nextValues[p.key], p.type);
-          if (serialised !== null) {
-            next.set(p.key, serialised);
+        for (const [key, value] of searchParams.entries()) {
+          const isManagedKey = config.params.some((param) => param.key === key) || key === 'filters';
+          if (!isManagedKey) {
+            nextSearchParams.set(key, value);
           }
         }
 
-        // Set structured filters
-        if (config.syncStructuredFilters) {
-          const encoded = encodeStructuredFilters(nextFilters);
-          if (encoded) next.set('filters', encoded);
+        for (const param of config.params) {
+          const serialised = serialiseParamValue(nextValues[param.key], param.type);
+          if (serialised !== null) {
+            nextSearchParams.set(param.key, serialised);
+          }
         }
 
-        setSearchParams(next, { replace: true });
+        if (config.syncStructuredFilters) {
+          const encodedFilters = encodeStructuredFilters(nextFilters);
+          if (encodedFilters) {
+            nextSearchParams.set('filters', encodedFilters);
+          }
+        }
+
+        setSearchParams(nextSearchParams, { replace: true });
       }, 300);
     },
-    // searchParams is intentionally read fresh inside the timeout
+    // searchParams is intentionally read lazily within the debounced callback.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [config.params, config.syncStructuredFilters, setSearchParams]
+    [config.params, config.syncStructuredFilters, setSearchParams],
   );
 
-  /* ── Sync state -> URL whenever values or structured filters change ── */
-  const isFirstRender = useRef(true);
-
   useEffect(() => {
-    // Skip the first render — values already came from the URL
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
       return;
     }
     flushToURL(values, structuredFilters);
   }, [values, structuredFilters, flushToURL]);
 
-  /* ── Cleanup pending timeout on unmount ── */
   useEffect(() => {
-    return () => {
-      if (pendingRef.current) clearTimeout(pendingRef.current);
+    return (): void => {
+      if (pendingTimerRef.current) {
+        clearTimeout(pendingTimerRef.current);
+      }
     };
   }, []);
 
-  /* ── Individual setters (set<Key>) ── */
-  const setters = useMemo(() => {
-    const s: Record<string, (v: any) => void> = {};
-    for (const p of config.params) {
-      s[p.key] = (v: any) => {
-        setValues((prev) => ({ ...prev, [p.key]: typeof v === 'function' ? v(prev[p.key]) : v }));
+  const setters = useMemo((): URLFilterSetters => {
+    const generatedSetters: URLFilterSetters = {};
+    for (const param of config.params) {
+      generatedSetters[param.key] = (next): void => {
+        setValues((previousValues) => {
+          const previousValue = previousValues[param.key];
+          const resolvedValue = typeof next === 'function' ? next(previousValue) : next;
+          return { ...previousValues, [param.key]: resolvedValue };
+        });
       };
     }
-    return s;
+    return generatedSetters;
   }, [config.params]);
 
-  /* ── clearAll ── */
-  const clearAll = useCallback(() => {
-    const defaults: Record<string, any> = {};
-    for (const p of config.params) {
-      defaults[p.key] = p.defaultValue ?? getTypeDefault(p.type);
+  const clearAll = useCallback((): void => {
+    const defaults: URLFilterValues = {};
+    for (const param of config.params) {
+      defaults[param.key] = param.defaultValue ?? getTypeDefault(param.type);
     }
     setValues(defaults);
     setStructuredFilters([]);
@@ -211,15 +243,4 @@ export function useURLFilters(config: URLFilterConfig) {
     setStructuredFilters,
     clearAll,
   };
-}
-
-/* ── Sensible default per type ── */
-function getTypeDefault(type: URLFilterParam['type']): any {
-  switch (type) {
-    case 'string': return '';
-    case 'string[]': return [];
-    case 'number': return 0;
-    case 'boolean': return false;
-    default: return '';
-  }
 }

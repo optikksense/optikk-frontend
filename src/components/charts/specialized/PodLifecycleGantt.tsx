@@ -3,9 +3,12 @@
  * Renders a Gantt-style timeline of pod lifecycle events:
  * pending → running → terminated, with restart markers.
  */
-import React, { useMemo } from 'react';
 import { Card, Tooltip } from 'antd';
+import React, { useMemo } from 'react';
 
+/**
+ *
+ */
 export interface PodEvent {
     podName: string;
     phase: 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown';
@@ -37,7 +40,7 @@ const PodLifecycleGantt: React.FC<PodLifecycleGanttProps> = ({
 }) => {
     const windowMs = windowEndMs - windowStartMs;
 
-    const rows = useMemo(() => pods.map(pod => {
+    const rows = useMemo(() => pods.map((pod) => {
         const leftPct = Math.max(0, (pod.startTs - windowStartMs) / windowMs) * 100;
         const widthPct = Math.min(100 - leftPct, (pod.endTs - pod.startTs) / windowMs * 100);
         return { ...pod, leftPct, widthPct };
@@ -53,7 +56,7 @@ const PodLifecycleGantt: React.FC<PodLifecycleGanttProps> = ({
                             display: 'flex',
                             alignItems: 'center',
                             height: ROW_HEIGHT,
-                            borderBottom: i < rows.length - 1 ? `1px solid var(--glass-border)` : 'none',
+                            borderBottom: i < rows.length - 1 ? '1px solid var(--glass-border)' : 'none',
                         }}
                     >
                         {/* Pod label */}

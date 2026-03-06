@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   normalizeEndpointMetric,
   normalizeMetricSummary,
@@ -16,7 +17,7 @@ describe('metric normalizers', () => {
         avgLatency: '22.5',
         p95_latency: '90',
         p99Latency: '120',
-      })
+      }),
     ).toMatchObject({
       total_requests: 120,
       error_count: 7,
@@ -38,7 +39,7 @@ describe('metric normalizers', () => {
         p95Latency: '35',
         p99: '55',
         raw: 'keep-me',
-      })
+      }),
     ).toEqual({
       timeBucket: '2026-03-01T12:00:00.000Z',
       requestCount: '25',
@@ -66,7 +67,7 @@ describe('metric normalizers', () => {
         p50Latency: '5',
         p95Latency: '20',
         p99Latency: '30',
-      })
+      }),
     ).toMatchObject({
       service_name: 'payments',
       request_count: 100,
@@ -85,7 +86,7 @@ describe('metric normalizers', () => {
         requestCount: '100',
         errorCount: '2',
         avgLatency: '18',
-      })
+      }),
     ).toMatchObject({
       service_name: 'payments',
       operation_name: 'CreateCharge',

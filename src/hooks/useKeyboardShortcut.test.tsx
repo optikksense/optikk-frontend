@@ -1,5 +1,6 @@
 import { act, fireEvent, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+
 import { useKeyboardShortcut } from './useKeyboardShortcut';
 
 describe('useKeyboardShortcut', () => {
@@ -28,7 +29,7 @@ describe('useKeyboardShortcut', () => {
 
     const { rerender } = renderHook(
       ({ enabled }) => useKeyboardShortcut('Escape', handler, { enabled }),
-      { initialProps: { enabled: true } }
+      { initialProps: { enabled: true } },
     );
 
     act(() => {

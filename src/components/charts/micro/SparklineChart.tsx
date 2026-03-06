@@ -17,6 +17,15 @@ const sparklineOptions = {
   },
 };
 
+/**
+ *
+ * @param root0
+ * @param root0.data
+ * @param root0.color
+ * @param root0.fill
+ * @param root0.width
+ * @param root0.height
+ */
 export default function SparklineChart({
   data = [],
   color = '#5E60CE',

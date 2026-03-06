@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
 import { Spin } from 'antd';
+import { useMemo } from 'react';
+
 import { formatNumber } from '@utils/formatters';
 
 /* ─── Level colours ───────────────────────────────────────────────────────── */
@@ -60,10 +61,16 @@ function shortTimeLabel(raw) {
 }
 
 /* ─── LogVolumeChart ──────────────────────────────────────────────────────── */
+/**
+ *
+ * @param root0
+ * @param root0.buckets
+ * @param root0.isLoading
+ */
 export default function LogVolumeChart({ buckets, isLoading }) {
     const maxTotal = useMemo(
         () => Math.max(...(buckets || []).map((b) => b.total || 0), 1),
-        [buckets]
+        [buckets],
     );
 
     if (isLoading) return <div className="logs-chart-empty"><Spin size="small" /></div>;
@@ -97,6 +104,11 @@ export default function LogVolumeChart({ buckets, isLoading }) {
 }
 
 /* ─── VolumeLegend ────────────────────────────────────────────────────────── */
+/**
+ *
+ * @param root0
+ * @param root0.buckets
+ */
 export function VolumeLegend({ buckets }) {
     if (!buckets || !buckets.length) return null;
     const totals = buckets.reduce(
@@ -107,7 +119,7 @@ export function VolumeLegend({ buckets }) {
             infos: acc.infos + (b.infos || 0),
             debugs: acc.debugs + (b.debugs || 0),
         }),
-        { fatals: 0, errors: 0, warnings: 0, infos: 0, debugs: 0 }
+        { fatals: 0, errors: 0, warnings: 0, infos: 0, debugs: 0 },
     );
 
     const items = [

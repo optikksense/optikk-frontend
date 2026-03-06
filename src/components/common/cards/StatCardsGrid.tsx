@@ -1,12 +1,12 @@
 import { Row, Col } from 'antd';
+
 import { StatCard } from '@components/common';
 
 /**
  * Reusable grid layout for rendering a list of StatCards
- *
  * @param {Array} stats - Array of stat objects to pass to StatCard. Custom colProps can be provided.
- * @param {Array|Number} gutter - Gutter for the Row. Defaults to [16, 16]
- * @param {Object} defaultColProps - Default span for Cols. Defaults to { xs: 24, sm: 12, lg: 6 }
+ * @param {Array | number} gutter - Gutter for the Row. Defaults to [16, 16]
+ * @param {object} defaultColProps - Default span for Cols. Defaults to { xs: 24, sm: 12, lg: 6 }
  */
 interface StatCardsGridProps {
     stats?: any[];
@@ -16,12 +16,21 @@ interface StatCardsGridProps {
     className?: string;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.stats
+ * @param root0.gutter
+ * @param root0.defaultColProps
+ * @param root0.style
+ * @param root0.className
+ */
 export default function StatCardsGrid({
     stats = [],
     gutter = [16, 16],
     defaultColProps = { xs: 24, sm: 12, lg: 6 },
     style,
-    className
+    className,
 }: StatCardsGridProps) {
     if (!stats || stats.length === 0) return null;
 

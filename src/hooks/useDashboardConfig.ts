@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import yaml from 'js-yaml';
+
 import { dashboardConfigService } from '@services/dashboardConfigService';
+
 import { useAppStore } from '@store/appStore';
 
 /**
  * Fetches and parses the YAML dashboard config for a page.
  * Returns { config, isLoading, error }.
+ * @param pageId
  */
 export function useDashboardConfig(pageId) {
   const { selectedTeamId } = useAppStore();

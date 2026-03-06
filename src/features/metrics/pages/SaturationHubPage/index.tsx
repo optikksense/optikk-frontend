@@ -1,8 +1,12 @@
 import { Tabs } from 'antd';
 import { Database, Network } from 'lucide-react';
+
 import DatabaseCachePerformancePage from '../DatabaseCachePerformancePage';
 import MessagingQueueMonitoringPage from '../MessagingQueueMonitoringPage';
 
+/**
+ *
+ */
 export default function SaturationHubPage() {
   const items = [
     {

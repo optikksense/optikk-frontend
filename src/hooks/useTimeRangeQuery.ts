@@ -1,71 +1,89 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  type QueryKey,
+  type UseQueryOptions,
+  type UseQueryResult,
+} from '@tanstack/react-query';
+
+import type { TimeRange } from '@/types';
+
 import { useAppStore } from '@store/appStore';
 
-/**
- * Custom hook that wraps useQuery with automatic time range and team ID from appStore.
- *
- * Every time the time range picker changes (or manual refresh), appStore.setTimeRange()
- * bumps refreshKey, which changes the query key and forces React Query to discard any
- * cached result and re-fetch from the backend with fresh timestamps.
- *
- * @param {string} key - The base query key (e.g. 'overview', 'logs')
- * @param {Function} queryFn - (teamId, startTime, endTime) => Promise
- * @param {Object} options - Additional react-query options + extraKeys
- * @returns {Object} react-query result
- */
-export function useTimeRangeQuery(key: string, queryFn: any, options: any = {}) {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+type QueryTime = string | number;
 
+interface TimeRangeBounds {
+  startTime: QueryTime;
+  endTime: QueryTime;
+}
+
+type TimeRangeQueryFunction<TData> = (
+  teamId: number | null,
+  startTime: QueryTime,
+  endTime: QueryTime
+) => Promise<TData>;
+
+type TimeRangeQueryOptions<TData> = Omit<
+  UseQueryOptions<TData, Error, TData, QueryKey>,
+  'queryKey' | 'queryFn'
+> & {
+  extraKeys?: QueryKey;
+};
+
+function getBounds(timeRange: TimeRange): TimeRangeBounds {
+  if (timeRange.value === 'custom' && timeRange.startTime != null && timeRange.endTime != null) {
+    return { startTime: timeRange.startTime, endTime: timeRange.endTime };
+  }
+
+  const endTime = Date.now();
+  const startTime = endTime - (timeRange.minutes || 0) * 60 * 1000;
+  return { startTime, endTime };
+}
+
+/**
+ * Wraps React Query with team/time-range state from appStore.
+ * @param key
+ * @param queryFn
+ * @param options
+ */
+export function useTimeRangeQuery<TData = unknown>(
+  key: string,
+  queryFn: TimeRangeQueryFunction<TData>,
+  options: TimeRangeQueryOptions<TData> = {},
+): UseQueryResult<TData, Error> {
+  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
   const { extraKeys = [], enabled, ...queryOptions } = options;
 
-  return useQuery({
-    // refreshKey is bumped on every time-range change and manual refresh → unique key → forced fetch
+  return useQuery<TData, Error>({
     queryKey: [key, selectedTeamId, timeRange.value, refreshKey, ...extraKeys],
-    queryFn: () => {
-      // For custom ranges use the absolute timestamps; otherwise compute relative
-      let startTime, endTime;
-      if (timeRange.value === 'custom' && timeRange.startTime && timeRange.endTime) {
-        startTime = timeRange.startTime;
-        endTime = timeRange.endTime;
-      } else {
-        endTime = Date.now();
-        startTime = endTime - (timeRange.minutes || 0) * 60 * 1000;
-      }
+    queryFn: async (): Promise<TData> => {
+      const { startTime, endTime } = getBounds(timeRange);
       return queryFn(selectedTeamId, startTime, endTime);
     },
-    enabled: !!selectedTeamId && (enabled !== false),
-    // Always refetch from the backend, but keep previous data visible during refetch
+    enabled: Boolean(selectedTeamId) && enabled !== false,
     staleTime: 0,
-    gcTime: 30_000, // keep cache 30s so switching back quickly doesn't flash empty
+    gcTime: 30_000,
     refetchOnMount: 'always',
-    placeholderData: keepPreviousData, // show old data while new query is in-flight
+    placeholderData: keepPreviousData,
     ...queryOptions,
   });
 }
 
 /**
- * Returns the time range configuration from appStore.
- * Useful when you need to build custom queries with time ranges.
- *
- * @returns {Object} { selectedTeamId, timeRange, refreshKey, getTimeRange }
+ * Exposes time range state and a helper to compute current bounds.
  */
-export function useTimeRange() {
+export function useTimeRange(): {
+  selectedTeamId: number | null;
+  timeRange: TimeRange;
+  refreshKey: number;
+  getTimeRange: () => TimeRangeBounds;
+} {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();
-
-  // Helper function to get fresh timestamps when needed
-  const getTimeRange = () => {
-    if (timeRange.value === 'custom' && timeRange.startTime && timeRange.endTime) {
-      return { startTime: timeRange.startTime, endTime: timeRange.endTime };
-    }
-    const endTime = Date.now();
-    const startTime = endTime - (timeRange.minutes || 0) * 60 * 1000;
-    return { startTime, endTime };
-  };
 
   return {
     selectedTeamId,
     timeRange,
     refreshKey,
-    getTimeRange,
+    getTimeRange: (): TimeRangeBounds => getBounds(timeRange),
   };
 }

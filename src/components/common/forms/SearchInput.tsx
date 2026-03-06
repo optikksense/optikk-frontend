@@ -1,9 +1,14 @@
-import { useState, useCallback, useRef } from 'react';
 import { Input } from 'antd';
 import { Search } from 'lucide-react';
+import { useState, useCallback, useRef } from 'react';
 
 /**
  * Debounced search input. Triggers onSearch after the user stops typing.
+ * @param root0
+ * @param root0.placeholder
+ * @param root0.onSearch
+ * @param root0.debounceMs
+ * @param root0.style
  */
 export default function SearchInput({
   placeholder = 'Search...',
@@ -24,7 +29,7 @@ export default function SearchInput({
         onSearch?.(newValue);
       }, debounceMs);
     },
-    [onSearch, debounceMs]
+    [onSearch, debounceMs],
   );
 
   return (

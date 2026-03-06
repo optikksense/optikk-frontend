@@ -1,7 +1,17 @@
 import { Switch } from 'antd';
 import { AlertTriangle } from 'lucide-react';
+
 import { FilterBar } from '@components/common';
 
+/**
+ *
+ * @param root0
+ * @param root0.services
+ * @param root0.selectedService
+ * @param root0.setSelectedService
+ * @param root0.showErrorsOnly
+ * @param root0.setShowErrorsOnly
+ */
 export function MetricsFilterBar({ services, selectedService, setSelectedService, showErrorsOnly, setShowErrorsOnly }) {
     const serviceOptions = [
         { label: 'All Services', value: null },

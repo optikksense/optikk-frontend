@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { calculateTrends } from './trendCalculators';
 
 function point(requestCount, errorCount) {

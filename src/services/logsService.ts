@@ -1,37 +1,81 @@
 /**
  * Logs Service — API calls for log ingestion and retrieval.
  */
-import api from './api';
 import { API_CONFIG } from '@config/constants';
+
+import api from './api';
+
+import type { QueryParams, RequestTime } from './service-types';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
+/**
+ * Service wrapper for log endpoints.
+ */
 export const logsService = {
-    async getLogs(teamId: any, startTime: any, endTime: any, params = {}): Promise<any> {
-        return api.get(`${BASE}/logs`, { params: { startTime, endTime, ...params } });
-    },
+  async getLogs(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/logs`, { params: { startTime, endTime, ...params } });
+  },
 
-    async getLogHistogram(teamId: any, startTime: any, endTime: any, interval = '1m'): Promise<any> {
-        return api.get(`${BASE}/logs/histogram`, { params: { startTime, endTime, step: interval } });
-    },
+  async getLogHistogram(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    interval = '1m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/logs/histogram`, { params: { startTime, endTime, step: interval } });
+  },
 
-    async getLogDetail(teamId: any, traceId: any, spanId: any, timestamp: any, contextWindow = 30): Promise<any> {
-        return api.get(`${BASE}/logs/detail`, { params: { traceId, spanId, timestamp, contextWindow } });
-    },
+  async getLogDetail(
+    _teamId: number | null,
+    traceId: string,
+    spanId: string,
+    timestamp: RequestTime,
+    contextWindow = 30,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/logs/detail`, { params: { traceId, spanId, timestamp, contextWindow } });
+  },
 
-    async getLogStats(teamId: any, startTime: any, endTime: any, params = {}): Promise<any> {
-        return api.get(`${BASE}/logs/stats`, { params: { startTime, endTime, ...params } });
-    },
+  async getLogStats(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/logs/stats`, { params: { startTime, endTime, ...params } });
+  },
 
-    async getLogVolume(teamId: any, startTime: any, endTime: any, step?: string, params = {}): Promise<any> {
-        return api.get(`${BASE}/logs/volume`, { params: { startTime, endTime, step, ...params } });
-    },
+  async getLogVolume(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    step?: string,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/logs/volume`, { params: { startTime, endTime, step, ...params } });
+  },
 
-    async getLogFields(teamId: any, startTime: any, endTime: any, field: string, params = {}): Promise<any> {
-        return api.get(`${BASE}/logs/fields`, { params: { startTime, endTime, field, ...params } });
-    },
+  async getLogFields(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    field: string,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/logs/fields`, { params: { startTime, endTime, field, ...params } });
+  },
 
-    async getLogSurrounding(teamId: any, logId: any, before = 10, after = 10): Promise<any> {
-        return api.get(`${BASE}/logs/surrounding`, { params: { id: logId, before, after } });
-    },
+  async getLogSurrounding(
+    _teamId: number | null,
+    logId: string | number | bigint,
+    before = 10,
+    after = 10,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/logs/surrounding`, { params: { id: logId, before, after } });
+  },
 };

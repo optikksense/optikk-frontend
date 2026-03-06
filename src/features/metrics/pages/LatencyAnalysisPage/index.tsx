@@ -1,17 +1,20 @@
-import { useState, useMemo } from 'react';
-import { Card, Row, Col, Tabs, Tag } from 'antd';
 import { useQuery } from '@tanstack/react-query';
+import { Card, Row, Col, Tabs, Tag } from 'antd';
 import { Timer } from 'lucide-react';
-import { useTimeRange } from '@hooks/useTimeRangeQuery';
-import { useDashboardConfig } from '@hooks/useDashboardConfig';
-import { v1Service } from '@services/v1Service';
-import { formatNumber } from '@utils/formatters';
-import PageHeader from '@components/common/layout/PageHeader';
-import FilterBar from '@components/common/forms/FilterBar';
+import { useState, useMemo } from 'react';
+
 import StatCard from '@components/common/cards/StatCard';
 import DataTable from '@components/common/data-display/DataTable';
+import FilterBar from '@components/common/forms/FilterBar';
+import PageHeader from '@components/common/layout/PageHeader';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
 
+import { v1Service } from '@services/v1Service';
+
+import { useDashboardConfig } from '@hooks/useDashboardConfig';
+import { useTimeRange } from '@hooks/useTimeRangeQuery';
+
+import { formatNumber } from '@utils/formatters';
 
 const HISTOGRAM_BUCKETS = [
   { label: '0-10ms', key: '0_10ms' },
@@ -34,6 +37,11 @@ function bucketColor(label: string) {
   return '#F04438';
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.embedded
+ */
 export default function LatencyAnalysisPage({ embedded = false }) {
   const { selectedTeamId, timeRange, refreshKey } = (useTimeRange() as any) || {};
   const { startTime, endTime } = timeRange || {};
@@ -60,8 +68,8 @@ export default function LatencyAnalysisPage({ embedded = false }) {
     enabled: !!selectedTeamId && activeTab === 'charts',
   });
 
-  const histogram = (Array.isArray(histogramData) ? histogramData : []) as any[];
-  const heatmap = (Array.isArray(heatmapData) ? heatmapData : []) as any[];
+  const histogram = (Array.isArray(histogramData) ? histogramData : []);
+  const heatmap = (Array.isArray(heatmapData) ? heatmapData : []);
 
   // Build dataSources map for ConfigurableDashboard
   const dataSources = useMemo(() => ({
@@ -74,7 +82,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
     const total = histogram.reduce((s: number, b: any) => s + (Number(b.span_count) || 0), 0);
     if (total === 0) return { p50: 'N/A', p95: 'N/A', p99: 'N/A', avg: 'N/A' };
 
-    let p50 = 'N/A', p95 = 'N/A', p99 = 'N/A';
+    let p50 = 'N/A'; let p95 = 'N/A'; let p99 = 'N/A';
     if (histogram[0]?.p50_ms != null) {
       p50 = `${Number(histogram[0].p50_ms).toFixed(1)}ms`;
       p95 = `${Number(histogram[0].p95_ms).toFixed(1)}ms`;
@@ -95,7 +103,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
         const found = HISTOGRAM_BUCKETS.find((hb) => hb.key === b);
         const label = found?.label || b;
         return <Tag color={bucketColor(label)}>{label}</Tag>;
-      }
+      },
     },
     { title: 'Span Count', dataIndex: 'span_count', key: 'span_count', render: (v: any) => formatNumber(Number(v) || 0) },
     { title: 'P50', dataIndex: 'p50_ms', key: 'p50_ms', render: (v: any) => v != null ? `${Number(v).toFixed(1)}ms` : '-' },

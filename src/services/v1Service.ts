@@ -8,16 +8,19 @@
  * This barrel exists solely so existing call-sites (`v1Service.getXxx(…)`)
  * continue to work without a mass rename.
  */
-import { logsService } from './logsService';
-import { tracesService } from './tracesService';
-import { metricsService } from './metricsService';
 import { aiService } from './aiService';
+import { dashboardConfigService } from './dashboardConfigService';
 import { deploymentsService } from './deploymentsService';
 import { latencyService } from './latencyService';
+import { logsService } from './logsService';
+import { metricsService } from './metricsService';
 import { saturationService } from './saturationService';
-import { dashboardConfigService } from './dashboardConfigService';
+import { tracesService } from './tracesService';
 
-export const v1Service = {
+export /**
+        *
+        */
+const v1Service = {
   // ── Metrics / Services / Errors / Incidents / Infrastructure ──────────
   ...metricsService,
 

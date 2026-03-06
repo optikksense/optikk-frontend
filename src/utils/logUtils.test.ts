@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   compareIdsDesc,
   extractServerTotal,
@@ -26,8 +27,8 @@ describe('logUtils', () => {
       getHasMoreFromPage(
         { total_count: 10, logs: [{ id: 1 }, { id: 2 }] },
         [{ logs: [{ id: 1 }, { id: 2 }] }, { logs: [{ id: 3 }] }],
-        50
-      )
+        50,
+      ),
     ).toBe(true);
     expect(getHasMoreFromPage({ logs: new Array(50).fill({}) }, [], 50)).toBe(true);
     expect(getHasMoreFromPage({ logs: new Array(20).fill({}) }, [], 50)).toBe(false);
@@ -45,7 +46,7 @@ describe('logUtils', () => {
     expect(parseTimestampMs('1700000000123456789')).toBe(1_700_000_000_123);
     expect(parseTimestampMs('2026-03-01 12:34:56')).toBe(new Date('2026-03-01T12:34:56').getTime());
     expect(parseTimestampMs(new Date('2026-03-01T12:34:56.000Z'))).toBe(
-      new Date('2026-03-01T12:34:56.000Z').getTime()
+      new Date('2026-03-01T12:34:56.000Z').getTime(),
     );
     expect(parseTimestampMs('')).toBe(0);
     expect(getTimestampMs({ timestamp: '2026-03-01T00:00:00.000Z' })).toBe(1_772_323_200_000);

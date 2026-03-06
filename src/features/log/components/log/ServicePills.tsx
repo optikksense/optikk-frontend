@@ -1,5 +1,12 @@
 import { formatNumber } from '@utils/formatters';
 
+/**
+ *
+ * @param root0
+ * @param root0.facets
+ * @param root0.selectedService
+ * @param root0.onSelect
+ */
 export default function ServicePills({ facets, selectedService, onSelect }) {
     if (!facets || !facets.length) return null;
     const total = facets.reduce((sum, f) => sum + (f.count || 0), 0);

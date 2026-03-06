@@ -1,4 +1,6 @@
+import type { TooltipItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+
 import { createChartOptions } from '@utils/chartHelpers';
 
 const BUCKETS = [
@@ -11,9 +13,19 @@ const BUCKETS = [
   { label: '5s+', max: Infinity, color: '#F04438' },
 ];
 
-function bucketize(traces) {
+interface LatencyHistogramTrace {
+  durationMs?: number;
+  duration_ms?: number;
+}
+
+interface LatencyHistogramProps {
+  traces?: LatencyHistogramTrace[];
+  height?: number;
+}
+
+function bucketize(traces: LatencyHistogramTrace[]): number[] {
   const counts = BUCKETS.map(() => 0);
-  (traces || []).forEach((trace) => {
+  for (const trace of traces) {
     const duration = trace.durationMs || trace.duration_ms || 0;
     for (let i = 0; i < BUCKETS.length; i++) {
       if (duration <= BUCKETS[i].max) {
@@ -21,11 +33,19 @@ function bucketize(traces) {
         break;
       }
     }
-  });
+  }
   return counts;
 }
 
-export default function LatencyHistogram({ traces = [], height = 120 }) {
+/**
+ *
+ * @param props Component props.
+ * @returns Histogram chart for trace latency buckets.
+ */
+export default function LatencyHistogram({
+  traces = [],
+  height = 120,
+}: LatencyHistogramProps): JSX.Element | null {
   const counts = bucketize(traces);
 
   if (counts.every((c) => c === 0)) return null;
@@ -49,7 +69,7 @@ export default function LatencyHistogram({ traces = [], height = 120 }) {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: (context) => `${context.parsed.y} traces`,
+          label: (context: TooltipItem<'bar'>) => `${context.parsed.y} traces`,
         },
       },
     },

@@ -9,10 +9,9 @@ interface KeyboardShortcutOptions {
 /**
  * Registers a global keyboard shortcut. Automatically cleans up on unmount.
  * Skips when focus is inside an input/textarea/select.
- *
- * @param {string} key - The KeyboardEvent.key value (e.g., 'Escape', 'k')
- * @param {Function} callback - Handler invoked when key is pressed
- * @param {Object} [options]
+ * @param key - The KeyboardEvent.key value (e.g., 'Escape', 'k')
+ * @param callback - Handler invoked when key is pressed
+ * @param [options]
  */
 export function useKeyboardShortcut(key: string, callback: (e: KeyboardEvent) => void, options: KeyboardShortcutOptions = {}) {
   const { enabled = true, ctrlKey = false, shiftKey = false } = options;

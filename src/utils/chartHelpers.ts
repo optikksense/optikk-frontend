@@ -39,13 +39,13 @@ export const BASE_CHART_OPTIONS: any = {
   },
   elements: {
     point: { radius: 0, hoverRadius: 0 },
-    line: { borderWidth: 1.5, tension: 0.1 }
-  }
+    line: { borderWidth: 1.5, tension: 0.1 },
+  },
 };
 
 /**
  * Create chart options with custom y-axis formatting.
- * @param {Object} overrides - Options to merge with base options
+ * @param overrides - Options to merge with base options
  */
 export function createChartOptions(overrides: any = {}) {
   return {
@@ -64,10 +64,10 @@ export function createChartOptions(overrides: any = {}) {
 
 /**
  * Create a line dataset configuration.
- * @param {string} label - Dataset label
- * @param {Array} data - Data points
- * @param {string} color - Line color (hex)
- * @param {boolean} fill - Whether to fill under the line
+ * @param label - Dataset label
+ * @param data - Data points
+ * @param color - Line color (hex)
+ * @param fill - Whether to fill under the line
  */
 export function createLineDataset(label: string, data: any[], color: string, fill: boolean = false) {
   return {
@@ -85,9 +85,9 @@ export function createLineDataset(label: string, data: any[], color: string, fil
 
 /**
  * Create a bar dataset configuration.
- * @param {string} label - Dataset label
- * @param {Array} data - Data points
- * @param {string} color - Bar color (hex)
+ * @param label - Dataset label
+ * @param data - Data points
+ * @param color - Bar color (hex)
  */
 export function createBarDataset(label: string, data: any[], color: string) {
   return {
@@ -103,17 +103,16 @@ export function createBarDataset(label: string, data: any[], color: string) {
 /**
  * Format timestamps array for chart x-axis labels.
  * Adapts format to the data's time span:
- *   - ≤24h  → "HH:mm"
- *   - ≤7d   → "Mon HH:mm"
- *   - >7d   → "Jan 01"
- *
- * @param {Array} data - Array of data objects
- * @param {string} timestampKey - Key name for the timestamp field
+ * - ≤24h  → "HH:mm"
+ * - ≤7d   → "Mon HH:mm"
+ * - >7d   → "Jan 01"
+ * @param data - Array of data objects
+ * @param timestampKey - Key name for the timestamp field
  */
 export function formatChartLabels(data: any[], timestampKey: string = 'timestamp') {
   if (!data || data.length === 0) return [];
 
-  const timestamps = data.map(d => new Date(d[timestampKey]).getTime());
+  const timestamps = data.map((d) => new Date(d[timestampKey]).getTime());
   const spanMs = Math.max(...timestamps) - Math.min(...timestamps);
   const DAY = 24 * 60 * 60 * 1000;
 
@@ -133,6 +132,7 @@ export function formatChartLabels(data: any[], timestampKey: string = 'timestamp
 /**
  * Get a color from the CHART_COLORS palette by index.
  * Wraps around if index exceeds palette length.
+ * @param index
  */
 export function getChartColor(index: number) {
   return CHART_COLORS[index % CHART_COLORS.length];
@@ -143,13 +143,12 @@ export function getChartColor(index: number) {
  * spanning the full [startMs, endMs] range.
  *
  * Bucket size mirrors the backend's adaptive logic:
- *   ≤ 3 h  →  1-minute buckets
- *   ≤ 24 h →  5-minute buckets
- *   > 24 h →  1-hour buckets
- *
- * @param {number} startMs - Start of the range in epoch millis
- * @param {number} endMs   - End of the range in epoch millis
- * @returns {string[]} Array of timestamp strings
+ * ≤ 3 h  →  1-minute buckets
+ * ≤ 24 h →  5-minute buckets
+ * > 24 h →  1-hour buckets
+ * @param startMs - Start of the range in epoch millis
+ * @param endMs   - End of the range in epoch millis
+ * @returns Array of timestamp strings
  */
 export function generateTimeBuckets(startMs: number, endMs: number) {
   const rangeMs = endMs - startMs;

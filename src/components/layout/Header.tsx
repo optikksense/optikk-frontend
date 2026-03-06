@@ -1,70 +1,50 @@
 import { Layout, Space, Select, Button, Tooltip } from 'antd';
 import { RefreshCw, ChevronDown } from 'lucide-react';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuthStore } from '@store/authStore';
-import { useAppStore } from '@store/appStore';
-import TimeRangePicker from '@components/common/forms/TimeRangePicker';
-import { AUTO_REFRESH_INTERVALS } from '@config/constants';
+import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
+
+import TimeRangePicker from '@components/common/forms/TimeRangePicker';
+
+import { useAppStore } from '@store/appStore';
+import { useAuthStore } from '@store/authStore';
+
+import { useAutoRefresh } from '@hooks/useAutoRefresh';
+
+import { AUTO_REFRESH_INTERVALS } from '@config/constants';
+
 import './Header.css';
 
 const { Header: AntHeader } = Layout;
 
+/**
+ *
+ */
 export default function Header() {
   const { user } = useAuthStore();
   const { selectedTeamId, setSelectedTeamId, triggerRefresh, autoRefreshInterval, setAutoRefreshInterval } = useAppStore();
-  const [lastRefreshAt, setLastRefreshAt] = useState(Date.now());
   const [intervalPickerOpen, setIntervalPickerOpen] = useState(false);
-  const pickerRef = useRef(null);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
+  const { refreshLabel, triggerRefresh: triggerHeaderRefresh } = useAutoRefresh({
+    autoRefreshInterval,
+    onRefresh: triggerRefresh,
+  });
 
   const handleRefresh = () => {
-    triggerRefresh();
-    setLastRefreshAt(Date.now());
+    triggerHeaderRefresh();
     toast.success('Data refreshed');
   };
-
-  // Tick every second for the "Xs ago" label
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  // Stable callback ref to avoid resetting the interval when triggerRefresh
-  // changes identity (it's a new function on every render from Zustand).
-  const triggerRefreshRef = useRef(triggerRefresh);
-  triggerRefreshRef.current = triggerRefresh;
-
-  // Auto-refresh timer — fires triggerRefresh on the configured interval
-  useEffect(() => {
-    if (!autoRefreshInterval) return;
-    const id = setInterval(() => {
-      triggerRefreshRef.current();
-      setLastRefreshAt(Date.now());
-    }, autoRefreshInterval);
-    return () => clearInterval(id);
-  }, [autoRefreshInterval]);
 
   // Close interval picker on outside click
   useEffect(() => {
     if (!intervalPickerOpen) return;
-    const handler = (e) => {
-      if (pickerRef.current && !pickerRef.current.contains(e.target)) {
+    const handler = (event: MouseEvent): void => {
+      if (pickerRef.current && event.target instanceof Node && !pickerRef.current.contains(event.target)) {
         setIntervalPickerOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [intervalPickerOpen]);
-
-  const refreshLabel = (() => {
-    const diffSeconds = Math.max(0, Math.floor((now - lastRefreshAt) / 1000));
-    if (diffSeconds < 60) return `${diffSeconds}s ago`;
-    const mins = Math.floor(diffSeconds / 60);
-    if (mins < 60) return `${mins}m ago`;
-    const hours = Math.floor(mins / 60);
-    return `${hours}h ago`;
-  })();
 
   const activeInterval = AUTO_REFRESH_INTERVALS.find((o) => o.value === autoRefreshInterval) || AUTO_REFRESH_INTERVALS[0];
 

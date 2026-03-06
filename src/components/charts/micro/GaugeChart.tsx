@@ -1,12 +1,27 @@
 import { Doughnut } from 'react-chartjs-2';
 
-function getGaugeColor(value) {
+interface GaugeChartProps {
+  value?: number;
+  label?: string;
+  size?: number;
+}
+
+function getGaugeColor(value: number): string {
   if (value >= 80) return '#F04438';
   if (value >= 60) return '#F79009';
   return '#73C991';
 }
 
-export default function GaugeChart({ value = 0, label = '', size = 120 }) {
+/**
+ *
+ * @param props Component props.
+ * @returns Semi-circle gauge for 0-100 values.
+ */
+export default function GaugeChart({
+  value = 0,
+  label = '',
+  size = 120,
+}: GaugeChartProps): JSX.Element {
   const clamped = Math.min(Math.max(value, 0), 100);
   const color = getGaugeColor(clamped);
 

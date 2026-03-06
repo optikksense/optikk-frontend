@@ -1,8 +1,10 @@
+import { Empty } from 'antd';
 import { useMemo, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
+
 import { createChartOptions } from '@utils/chartHelpers';
+
 import { LOG_LEVELS } from '@config/constants';
-import { Empty } from 'antd';
 
 const LEVEL_ORDER = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
 
@@ -66,6 +68,13 @@ function generateAllBuckets(startTime: number, endTime: number, interval: string
   return buckets;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.chartConfig
+ * @param root0.dataSources
+ * @param root0.extraContext
+ */
 export function LogHistogramPanel({ chartConfig, dataSources, extraContext = {} }: any) {
   const [collapsed, setCollapsed] = useState(false);
   const rawData = dataSources?.[chartConfig.dataSource];
@@ -98,6 +107,15 @@ export function LogHistogramPanel({ chartConfig, dataSources, extraContext = {} 
   );
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.data
+ * @param root0.height
+ * @param root0.startTime
+ * @param root0.endTime
+ * @param root0.interval
+ */
 export default function LogHistogram({ data = [], height = 80, startTime, endTime, interval = '1m' }: any) {
   const { labels, datasets, activeLevels, hasData } = useMemo(() => {
     if (!data || data.length === 0) {
@@ -120,7 +138,7 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
 
     const hasLevels = data.some((d: any) => d.level);
 
-    let tStart = startTime, tEnd = endTime;
+    let tStart = startTime; let tEnd = endTime;
     if (!tStart || !tEnd) {
       const allTs = (data as any[])
         .map((d) => parseBucketMs(getBucketTimeValue(d)))
@@ -148,7 +166,7 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
       });
 
       const activeLevels = LEVEL_ORDER.filter(
-        (lvl) => Object.values(countMap).some((cm) => (cm[lvl] || 0) > 0)
+        (lvl) => Object.values(countMap).some((cm) => (cm[lvl] || 0) > 0),
       );
       const labels = allBuckets.map(fmtTime);
       const datasets = (activeLevels.length > 0 ? activeLevels : ['INFO']).map((lvl) => ({

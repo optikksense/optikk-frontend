@@ -1,6 +1,8 @@
 import { Tag } from 'antd';
-import { STATUS_COLORS } from '@config/constants';
+
 import { getHealthColor } from '@utils/formatters';
+
+import { STATUS_COLORS } from '@config/constants';
 
 const STATUS_MAPS = {
   service: (status: string) => ({
@@ -15,8 +17,10 @@ const STATUS_MAPS = {
 
 /**
  * Consistent status tag/badge used across all pages.
- * @param {string} status - The status value
- * @param {string} type - 'service' | 'trace'
+ * @param status.status
+ * @param status - The status value
+ * @param type - 'service' | 'trace'
+ * @param status.type
  */
 export default function StatusBadge({ status, type = 'service' }) {
   const resolver = STATUS_MAPS[type] || STATUS_MAPS.service;

@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
-import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
+
 import { servicesPageService } from '@services/servicesPageService';
+
+import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
+
 import {
     normalizeServiceMetric,
     normalizeTimeSeriesPoint,
@@ -10,35 +13,43 @@ import {
     calcRiskScore,
 } from '../utils/servicesUtils';
 
+/**
+ *
+ * @param root0
+ * @param root0.searchQuery
+ * @param root0.sortField
+ * @param root0.sortOrder
+ * @param root0.healthFilter
+ */
 export function useServicesData({ searchQuery, sortField, sortOrder, healthFilter }: any) {
     const { data: totalServicesRaw, isLoading: totalLoading } = useTimeRangeQuery(
         'services-summary-total',
-        (teamId, startTime, endTime) => servicesPageService.getTotalServices(teamId, startTime, endTime)
+        (teamId, startTime, endTime) => servicesPageService.getTotalServices(teamId, startTime, endTime),
     );
 
     const { data: healthyServicesRaw, isLoading: healthyLoading } = useTimeRangeQuery(
         'services-summary-healthy',
-        (teamId, startTime, endTime) => servicesPageService.getHealthyServices(teamId, startTime, endTime)
+        (teamId, startTime, endTime) => servicesPageService.getHealthyServices(teamId, startTime, endTime),
     );
 
     const { data: degradedServicesRaw, isLoading: degradedLoading } = useTimeRangeQuery(
         'services-summary-degraded',
-        (teamId, startTime, endTime) => servicesPageService.getDegradedServices(teamId, startTime, endTime)
+        (teamId, startTime, endTime) => servicesPageService.getDegradedServices(teamId, startTime, endTime),
     );
 
     const { data: unhealthyServicesRaw, isLoading: unhealthyLoading } = useTimeRangeQuery(
         'services-summary-unhealthy',
-        (teamId, startTime, endTime) => servicesPageService.getUnhealthyServices(teamId, startTime, endTime)
+        (teamId, startTime, endTime) => servicesPageService.getUnhealthyServices(teamId, startTime, endTime),
     );
 
     const { data: metricsRaw, isLoading: metricsLoading } = useTimeRangeQuery(
         'services-metrics',
-        (teamId, startTime, endTime) => servicesPageService.getServiceMetrics(teamId, startTime, endTime)
+        (teamId, startTime, endTime) => servicesPageService.getServiceMetrics(teamId, startTime, endTime),
     );
 
     const { data: serviceTimeseriesRaw, isLoading: timeseriesLoading } = useTimeRangeQuery(
         'service-timeseries-svc',
-        (teamId, start, end) => servicesPageService.getServiceTimeSeries(teamId, start, end, '5m')
+        (teamId, start, end) => servicesPageService.getServiceTimeSeries(teamId, start, end, '5m'),
     );
 
     const {
@@ -47,17 +58,17 @@ export function useServicesData({ searchQuery, sortField, sortOrder, healthFilte
         error: topologyError,
     } = useTimeRangeQuery(
         'service-topology',
-        (teamId, startTime, endTime) => servicesPageService.getTopology(teamId, startTime, endTime)
+        (teamId, startTime, endTime) => servicesPageService.getTopology(teamId, startTime, endTime),
     );
 
     const services = useMemo(
         () => (Array.isArray(metricsRaw) ? metricsRaw : []).map(normalizeServiceMetric),
-        [metricsRaw]
+        [metricsRaw],
     );
 
     const normalizedServiceTimeseries = useMemo(
         () => (Array.isArray(serviceTimeseriesRaw) ? serviceTimeseriesRaw : []).map(normalizeTimeSeriesPoint),
-        [serviceTimeseriesRaw]
+        [serviceTimeseriesRaw],
     );
 
     const chartDataSources = useMemo(() => ({
@@ -121,12 +132,12 @@ export function useServicesData({ searchQuery, sortField, sortOrder, healthFilte
 
     const allTopologyNodes = useMemo(
         () => (Array.isArray((topologyDataRaw as any)?.nodes) ? (topologyDataRaw as any).nodes : []).map(normalizeTopologyNode),
-        [topologyDataRaw]
+        [topologyDataRaw],
     );
 
     const allTopologyEdges = useMemo(
         () => (Array.isArray((topologyDataRaw as any)?.edges) ? (topologyDataRaw as any).edges : []).map(normalizeTopologyEdge),
-        [topologyDataRaw]
+        [topologyDataRaw],
     );
 
     const adjacency = useMemo(() => {
@@ -178,7 +189,7 @@ export function useServicesData({ searchQuery, sortField, sortOrder, healthFilte
 
     const topologyEdges = useMemo(
         () => allTopologyEdges.filter((edge) => topologyNodeNames.has(edge.source) && topologyNodeNames.has(edge.target)),
-        [allTopologyEdges, topologyNodeNames]
+        [allTopologyEdges, topologyNodeNames],
     );
 
     const topologyStats = useMemo(() => {
@@ -202,7 +213,7 @@ export function useServicesData({ searchQuery, sortField, sortOrder, healthFilte
 
     const topologyNodesByName = useMemo(
         () => new Map(normalizedTopologyNodes.map((node) => [node.name, node])),
-        [normalizedTopologyNodes]
+        [normalizedTopologyNodes],
     );
 
     const dependencyRows = useMemo(() => {

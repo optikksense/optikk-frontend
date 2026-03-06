@@ -1,30 +1,32 @@
 import '@testing-library/jest-dom/vitest';
-import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import { afterEach, vi } from 'vitest';
 
-function createMemoryStorage() {
-  const store = new Map();
+interface MemoryStorage extends Storage {}
+
+function createMemoryStorage(): MemoryStorage {
+  const store = new Map<string, string>();
 
   return {
-    getItem(key) {
-      return store.has(String(key)) ? store.get(String(key)) : null;
+    getItem(key: string): string | null {
+      return store.get(String(key)) ?? null;
     },
-    setItem(key, value) {
+    setItem(key: string, value: string): void {
       store.set(String(key), String(value));
     },
-    removeItem(key) {
+    removeItem(key: string): void {
       store.delete(String(key));
     },
-    clear() {
+    clear(): void {
       store.clear();
     },
-    key(index) {
+    key(index: number): string | null {
       return Array.from(store.keys())[index] ?? null;
     },
     get length() {
       return store.size;
     },
-  };
+  } as MemoryStorage;
 }
 
 const localStorageShim = createMemoryStorage();
@@ -60,7 +62,7 @@ afterEach(() => {
 if (!window.matchMedia) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation((query) => ({
+    value: vi.fn().mockImplementation((query: string): MediaQueryList => ({
       matches: false,
       media: query,
       onchange: null,

@@ -1,9 +1,21 @@
 import { getHealthColor } from '@utils/formatters';
 
+interface HealthIndicatorProps {
+  status: string;
+  showLabel?: boolean;
+  size?: number;
+}
+
 /**
  * Simple colored dot indicator for service health status.
+ * @param props Component props.
+ * @returns Health status dot with optional label.
  */
-export default function HealthIndicator({ status, showLabel = false, size = 8 }) {
+export default function HealthIndicator({
+  status,
+  showLabel = false,
+  size = 8,
+}: HealthIndicatorProps): JSX.Element {
   const color = getHealthColor(status);
 
   return (

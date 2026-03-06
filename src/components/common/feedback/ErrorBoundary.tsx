@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
 import { Result, Button } from 'antd';
 import { AlertCircle } from 'lucide-react';
+import React, { ReactNode } from 'react';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -20,6 +20,10 @@ interface ErrorBoundaryState {
  * Catches JavaScript errors anywhere in the child component tree
  */
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  /**
+   *
+   * @param props
+   */
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
@@ -29,11 +33,20 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     };
   }
 
+  /**
+   *
+   * @param _error
+   */
   static getDerivedStateFromError(_error: Error): ErrorBoundaryState {
     // Update state so the next render will show the fallback UI
     return { hasError: true, error: _error, errorInfo: null };
   }
 
+  /**
+   *
+   * @param error
+   * @param errorInfo
+   */
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error details
     console.error('Error Boundary caught an error:', error, errorInfo);
@@ -57,6 +70,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     }
   };
 
+  /**
+   *
+   */
   render() {
     if (this.state.hasError) {
       // Custom fallback UI

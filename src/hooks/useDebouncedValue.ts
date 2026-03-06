@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 /**
  * Returns a debounced copy of `value` that only updates after `delay` ms of inactivity.
  * Reusable across any page that needs input debouncing.
+ * @param value
+ * @param delay
  */
 export function useDebouncedValue(value, delay = 300) {
   const [debounced, setDebounced] = useState(value);

@@ -1,8 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { useAppStore } from '@store/appStore';
-import { v1Service } from '@services/v1Service';
-import { overviewService } from '@services/overviewService';
 
+import { overviewService } from '@services/overviewService';
+import { v1Service } from '@services/v1Service';
+
+import { useAppStore } from '@store/appStore';
+
+/**
+ *
+ * @param root0
+ * @param root0.selectedService
+ * @param root0.showErrorsOnly
+ * @param root0.activeTab
+ */
 export function useMetricsQueries({ selectedService, showErrorsOnly, activeTab }) {
     const { selectedTeamId, timeRange, refreshKey } = useAppStore();
 
@@ -74,6 +83,6 @@ export function useMetricsQueries({ selectedService, showErrorsOnly, activeTab }
         metricsLoading,
         serviceMetricsData,
         endpointMetricsData,
-        endpointTimeSeriesData
+        endpointTimeSeriesData,
     };
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   calcRiskScore,
   getServiceStatus,
@@ -19,7 +20,7 @@ describe('services utils', () => {
         p50Latency: '12',
         p95Latency: '50',
         p99Latency: '75',
-      })
+      }),
     ).toMatchObject({
       service_name: 'checkout',
       request_count: 500,
@@ -42,7 +43,7 @@ describe('services utils', () => {
         p50Latency: '11',
         p95_latency: '42',
         p99_latency: '60',
-      })
+      }),
     ).toMatchObject({
       timestamp: '2026-03-01T10:00:00.000Z',
       service_name: 'checkout',
@@ -64,7 +65,7 @@ describe('services utils', () => {
         request_count: '120',
         error_rate: '0.8',
         avg_latency: '15',
-      })
+      }),
     ).toMatchObject({
       name: 'orders',
       requestCount: 120,
@@ -80,7 +81,7 @@ describe('services utils', () => {
         call_count: '44',
         avg_latency: '18',
         errorRate: '1.4',
-      })
+      }),
     ).toMatchObject({
       source: 'frontend',
       target: 'orders',

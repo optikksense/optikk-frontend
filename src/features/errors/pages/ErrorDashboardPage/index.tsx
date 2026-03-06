@@ -1,12 +1,16 @@
-import { useMemo, useState } from 'react';
 import { Row, Col, Card, Select, Tag, Table, Skeleton, Empty, Tooltip } from 'antd';
 import { AlertCircle, ExternalLink, Clock } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import { useDashboardConfig } from '@hooks/useDashboardConfig';
-import { overviewService } from '@services/overviewService';
+
 import PageHeader from '@components/common/layout/PageHeader';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
+
+import { overviewService } from '@services/overviewService';
+
+import { useDashboardConfig } from '@hooks/useDashboardConfig';
+import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
+
 import { formatNumber, formatRelativeTime } from '@utils/formatters';
 import './ErrorDashboardPage.css';
 
@@ -42,6 +46,9 @@ const normalizeTimeSeriesPoint = (row: any = {}) => ({
   avg_latency: n(row.avg_latency ?? row.avgLatency),
 });
 
+/**
+ *
+ */
 export default function ErrorDashboardPage() {
   const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState<string | null>(null);
@@ -65,34 +72,34 @@ export default function ErrorDashboardPage() {
     'overview-service-error-rate',
     (teamId, start, end) =>
       overviewService.getServiceErrorRate(teamId, start, end, selectedService, '5m'),
-    { extraKeys: [selectedService] }
+    { extraKeys: [selectedService] },
   );
 
   const { data: errorVolumeRaw, isLoading: errorVolumeLoading } = useTimeRangeQuery(
     'overview-error-volume',
     (teamId, start, end) =>
       overviewService.getErrorVolume(teamId, start, end, selectedService, '5m'),
-    { extraKeys: [selectedService] }
+    { extraKeys: [selectedService] },
   );
 
   const { data: latencyWindowsRaw, isLoading: latencyLoading } = useTimeRangeQuery(
     'overview-error-latency-windows',
     (teamId, start, end) =>
       overviewService.getLatencyDuringErrorWindows(teamId, start, end, selectedService, '5m'),
-    { extraKeys: [selectedService] }
+    { extraKeys: [selectedService] },
   );
 
   const { data: errorGroupsRaw, isLoading: groupsLoading } = useTimeRangeQuery(
     'error-groups-global',
     (teamId, start, end) =>
       overviewService.getErrorGroups(teamId, start, end, { serviceName: selectedService as string, limit: 100 }),
-    { extraKeys: [selectedService] }
+    { extraKeys: [selectedService] },
   );
 
   // Service metrics for the filter dropdown and breakdown list
   const { data: serviceMetricsRaw } = useTimeRangeQuery(
     'overview-services-errors',
-    (teamId, start, end) => overviewService.getServices(teamId, start, end)
+    (teamId, start, end) => overviewService.getServices(teamId, start, end),
   );
 
   const errorGroups = useMemo(() => {
@@ -102,19 +109,19 @@ export default function ErrorDashboardPage() {
 
   const normalizedServiceMetrics = useMemo(
     () => (Array.isArray(serviceMetricsRaw) ? serviceMetricsRaw.map(normalizeServiceMetric) : []),
-    [serviceMetricsRaw]
+    [serviceMetricsRaw],
   );
   const normalizedServiceErrorRate = useMemo(
     () => (Array.isArray(serviceErrorRateRaw) ? serviceErrorRateRaw.map(normalizeTimeSeriesPoint) : []),
-    [serviceErrorRateRaw]
+    [serviceErrorRateRaw],
   );
   const normalizedErrorVolume = useMemo(
     () => (Array.isArray(errorVolumeRaw) ? errorVolumeRaw.map(normalizeTimeSeriesPoint) : []),
-    [errorVolumeRaw]
+    [errorVolumeRaw],
   );
   const normalizedLatencyWindows = useMemo(
     () => (Array.isArray(latencyWindowsRaw) ? latencyWindowsRaw.map(normalizeTimeSeriesPoint) : []),
-    [latencyWindowsRaw]
+    [latencyWindowsRaw],
   );
 
   const services = useMemo(() => {

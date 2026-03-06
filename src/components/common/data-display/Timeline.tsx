@@ -1,9 +1,32 @@
 import { Timeline as AntTimeline } from 'antd';
+
 import { formatRelativeTime } from '@utils/formatters';
 import './Timeline.css';
 
-export default function Timeline({ items = [] }) {
-  if (!items || items.length === 0) return null;
+interface TimelineTag {
+  color: string;
+  label: string;
+}
+
+interface TimelineItemData {
+  color?: string;
+  title?: string;
+  timestamp?: string | number;
+  description?: string;
+  tags?: TimelineTag[];
+}
+
+interface TimelineProps {
+  items?: TimelineItemData[];
+}
+
+/**
+ * Renders timeline entries with optional tags and relative timestamps.
+ * @param props Component props.
+ * @returns Timeline component or null when empty.
+ */
+export default function Timeline({ items = [] }: TimelineProps): JSX.Element | null {
+  if (items.length === 0) return null;
 
   const timelineItems = items.map((item, index) => ({
     key: index,
@@ -21,8 +44,12 @@ export default function Timeline({ items = [] }) {
         )}
         {item.tags && (
           <div className="timeline-item-tags">
-            {item.tags.map((tag, i) => (
-              <span key={i} className="timeline-tag" style={{ borderColor: tag.color, color: tag.color }}>
+            {item.tags.map((tag, tagIndex) => (
+              <span
+                key={tagIndex}
+                className="timeline-tag"
+                style={{ borderColor: tag.color, color: tag.color }}
+              >
                 {tag.label}
               </span>
             ))}

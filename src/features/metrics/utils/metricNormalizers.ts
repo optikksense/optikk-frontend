@@ -1,4 +1,7 @@
-export const normalizeMetricSummary = (summary: any = {}) => ({
+export /**
+        *
+        */
+const normalizeMetricSummary = (summary: any = {}) => ({
     ...summary,
     total_requests: Number(summary.total_requests ?? summary.totalRequests ?? 0),
     error_count: Number(summary.error_count ?? summary.errorCount ?? 0),
@@ -8,7 +11,10 @@ export const normalizeMetricSummary = (summary: any = {}) => ({
     p99_latency: Number(summary.p99_latency ?? summary.p99Latency ?? 0),
 });
 
-export const normalizeTimeSeriesPoint = (point: any = {}) => ({
+export /**
+        *
+        */
+const normalizeTimeSeriesPoint = (point: any = {}) => ({
     ...point,
     timestamp: point.timestamp ?? point.time_bucket ?? point.timeBucket ?? '',
     request_count: Number(point.request_count ?? point.requestCount ?? 0),
@@ -19,7 +25,10 @@ export const normalizeTimeSeriesPoint = (point: any = {}) => ({
     p99: Number(point.p99 ?? point.p99_latency ?? point.p99Latency ?? 0),
 });
 
-export const normalizeServiceMetric = (metric: any = {}) => ({
+export /**
+        *
+        */
+const normalizeServiceMetric = (metric: any = {}) => ({
     ...metric,
     service_name: metric.service_name ?? metric.serviceName ?? metric.name ?? '',
     request_count: Number(metric.request_count ?? metric.requestCount ?? 0),
@@ -30,7 +39,10 @@ export const normalizeServiceMetric = (metric: any = {}) => ({
     p99_latency: Number(metric.p99_latency ?? metric.p99Latency ?? 0),
 });
 
-export const normalizeEndpointMetric = (metric: any = {}) => ({
+export /**
+        *
+        */
+const normalizeEndpointMetric = (metric: any = {}) => ({
     ...metric,
     service_name: metric.service_name ?? metric.serviceName ?? '',
     operation_name: metric.operation_name ?? metric.operationName ?? '',

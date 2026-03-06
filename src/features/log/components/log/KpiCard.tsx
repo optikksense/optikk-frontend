@@ -10,6 +10,17 @@ interface KpiCardProps {
     subtitle?: string;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.title
+ * @param root0.value
+ * @param root0.icon
+ * @param root0.accentColor
+ * @param root0.accentBg
+ * @param root0.trend
+ * @param root0.subtitle
+ */
 export default function KpiCard({ title, value, icon: Icon, accentColor, accentBg, trend, subtitle }: KpiCardProps) {
     return (
         <div className="logs-kpi-card" style={{ '--kpi-accent': accentColor, '--kpi-accent-bg': accentBg } as React.CSSProperties}>

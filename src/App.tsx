@@ -1,30 +1,39 @@
-import { useEffect, lazy, Suspense } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Skeleton } from 'antd';
-import { useAuthStore } from '@store/authStore';
-import { useAppStore } from '@store/appStore';
+import { useEffect, lazy, Suspense, type ReactNode } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+
 import ErrorBoundary from '@components/common/feedback/ErrorBoundary';
 import MainLayout from '@components/layout/MainLayout';
+
 import { useRealtimeRefresh } from '@hooks/useRealtimeRefresh';
+
+import { useAppStore } from '@store/appStore';
+import { useAuthStore } from '@store/authStore';
 
 // ── Lazy-loaded pages ─────────────────────────────────────────────────────
 // Each page is loaded on-demand, producing separate JS chunks.
-const LoginPage = lazy(() => import('@features/auth/pages/LoginPage'));
-const TracesPage = lazy(() => import('@features/traces/pages/TracesPage'));
-const TraceDetailPage = lazy(() => import('@features/traces/pages/TraceDetailPage'));
-const ServicesPage = lazy(() => import('@features/services/pages/ServicesPage'));
-const ServiceDetailPage = lazy(() => import('@features/services/pages/ServiceDetailPage'));
-const MetricsPage = lazy(() => import('@features/metrics/pages/MetricsPage'));
-const SettingsPage = lazy(() => import('@features/settings/pages/SettingsPage'));
-const ErrorDashboardPage = lazy(() => import('@features/errors/pages/ErrorDashboardPage'));
-const AiObservabilityPage = lazy(() => import('@features/ai/pages/AiObservabilityPage'));
-const OverviewHubPage = lazy(() => import('@features/overview/pages/OverviewHubPage'));
-const LogsHubPage = lazy(() => import('@features/log/pages/LogsHubPage'));
-const InfrastructureHubPage = lazy(() => import('@features/infrastructure/pages/InfrastructureHubPage'));
-const SaturationHubPage = lazy(() => import('@features/metrics/pages/SaturationHubPage'));
+const LoginPage = lazy(() => import('@features/auth'));
+const TracesPage = lazy(() => import('@features/traces'));
+const TraceDetailPage = lazy(() =>
+  import('@features/traces').then((module) => ({ default: module.TraceDetailPage })),
+);
+const ServicesPage = lazy(() => import('@features/services'));
+const ServiceDetailPage = lazy(() =>
+  import('@features/services').then((module) => ({ default: module.ServiceDetailPage })),
+);
+const MetricsPage = lazy(() => import('@features/metrics'));
+const SettingsPage = lazy(() => import('@features/settings'));
+const ErrorDashboardPage = lazy(() => import('@features/errors'));
+const AiObservabilityPage = lazy(() => import('@features/ai'));
+const OverviewHubPage = lazy(() => import('@features/overview'));
+const LogsHubPage = lazy(() => import('@features/log'));
+const InfrastructureHubPage = lazy(() => import('@features/infrastructure'));
+const SaturationHubPage = lazy(() =>
+  import('@features/metrics').then((module) => ({ default: module.SaturationHubPage })),
+);
 
 // ── Page loading fallback ─────────────────────────────────────────────────
-function PageLoader() {
+function PageLoader(): JSX.Element {
   return (
     <div style={{
       display: 'flex',
@@ -38,7 +47,11 @@ function PageLoader() {
   );
 }
 
-function ProtectedRoute({ children }) {
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps): JSX.Element {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
 
@@ -60,10 +73,13 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  return children;
+  return <>{children}</>;
 }
 
-function App() {
+/**
+ *
+ */
+function App(): JSX.Element {
   useRealtimeRefresh();
   const theme = useAppStore((state) => state.theme);
   const navigate = useNavigate();
@@ -96,7 +112,7 @@ function App() {
             radial-gradient(circle at 15% 50%, rgba(94, 96, 206, 0.08), transparent 25%),
             radial-gradient(circle at 85% 30%, rgba(78, 168, 222, 0.08), transparent 25%)
           `,
-          pointerEvents: 'none'
+          pointerEvents: 'none',
         }}
       />
       <Routes>

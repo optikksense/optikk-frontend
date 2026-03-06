@@ -1,15 +1,20 @@
-import { useMemo, useState } from 'react';
 import { Row, Col, Card, Select, Tag, Table, Skeleton, Empty, Progress, Tooltip } from 'antd';
 import {
   Gauge, Database, Radio, Cpu, GitPullRequest,
 } from 'lucide-react';
-import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
-import { useDashboardConfig } from '@hooks/useDashboardConfig';
-import { v1Service } from '@services/v1Service';
-import { useAppStore } from '@store/appStore';
-import PageHeader from '@components/common/layout/PageHeader';
+import { useMemo, useState } from 'react';
+
 import StatCard from '@components/common/cards/StatCard';
+import PageHeader from '@components/common/layout/PageHeader';
 import ConfigurableDashboard from '@components/dashboard/ConfigurableDashboard';
+
+import { v1Service } from '@services/v1Service';
+
+import { useDashboardConfig } from '@hooks/useDashboardConfig';
+import { useTimeRangeQuery } from '@hooks/useTimeRangeQuery';
+
+import { useAppStore } from '@store/appStore';
+
 import { formatNumber, formatDuration, normalizePercentage } from '@utils/formatters';
 import './SaturationPage.css';
 
@@ -41,6 +46,9 @@ function normalizeDatabaseMetric(row: any = {}) {
   };
 }
 
+/**
+ *
+ */
 export default function SaturationPage() {
   const { selectedTeamId, refreshKey } = useAppStore();
   const [selectedService, setSelectedService] = useState<string | null>(null);
@@ -50,18 +58,18 @@ export default function SaturationPage() {
   const { data: metricsData, isLoading: metricsLoading } = useTimeRangeQuery(
     'saturation-metrics-summary',
     (teamId, start, end) => (v1Service as any).getSaturationMetrics(teamId, start, end, selectedService),
-    { extraKeys: [selectedService, refreshKey] }
+    { extraKeys: [selectedService, refreshKey] },
   );
 
   const { data: tsData, isLoading: tsLoading } = useTimeRangeQuery(
     'saturation-timeseries',
     (teamId, start, end) => (v1Service as any).getSaturationTimeSeries(teamId, start, end, selectedService, '5m'),
-    { extraKeys: [selectedService, refreshKey] }
+    { extraKeys: [selectedService, refreshKey] },
   );
 
   const { data: servicesRaw } = useTimeRangeQuery(
     'saturation-services',
-    (teamId, start, end) => (v1Service as any).getServices(teamId, start, end)
+    (teamId, start, end) => (v1Service as any).getServices(teamId, start, end),
   );
 
   const services = useMemo(() => {
@@ -72,15 +80,15 @@ export default function SaturationPage() {
   // Request isolated dataset paths
   const { data: kafkaLagRaw, isLoading: lagLoading } = useTimeRangeQuery(
     'saturation-kafka-lag',
-    (teamId, start, end) => v1Service.getKafkaQueueLag(teamId, start, end)
+    (teamId, start, end) => v1Service.getKafkaQueueLag(teamId, start, end),
   );
   const { data: dbLatencyRaw, isLoading: dbLatencyLoading } = useTimeRangeQuery(
     'saturation-db-latency',
-    (teamId, start, end) => v1Service.getDatabaseAvgLatency(teamId, start, end)
+    (teamId, start, end) => v1Service.getDatabaseAvgLatency(teamId, start, end),
   );
   const { data: dbQueryRaw, isLoading: dbQueryLoading } = useTimeRangeQuery(
     'saturation-db-queries',
-    (teamId, start, end) => v1Service.getDatabaseQueryByTable(teamId, start, end)
+    (teamId, start, end) => v1Service.getDatabaseQueryByTable(teamId, start, end),
   );
 
   const kafkaLag = useMemo(() => {
@@ -137,7 +145,7 @@ export default function SaturationPage() {
       render: (v: any) => formatNumber(v),
       sorter: (a: any, b: any) => Number(a.avg_queue_depth) - Number(b.avg_queue_depth),
       align: 'right' as any,
-    }
+    },
   ];
 
   const dbTableColumns = [
@@ -166,7 +174,7 @@ export default function SaturationPage() {
       render: (v: any) => formatDuration(Number(v)),
       sorter: (a: any, b: any) => Number(a.avg_latency_ms) - Number(b.avg_latency_ms),
       align: 'right' as any,
-    }
+    },
   ];
 
   return (

@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
 import { Empty } from 'antd';
+import { useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
-import { createChartOptions, createLineDataset, getChartColor } from '@utils/chartHelpers';
+
 import { useChartTimeBuckets } from '@hooks/useChartTimeBuckets';
+
+import { createChartOptions, createLineDataset, getChartColor } from '@utils/chartHelpers';
 
 // Normalize timestamps to "YYYY-MM-DD HH:mm" for reliable cross-source matching.
 function tsKey(ts: any) {
@@ -31,6 +33,17 @@ function firstValue(row: any, keys: string[], fallback: any = 0) {
   return fallback;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.data
+ * @param root0.endpoints
+ * @param root0.selectedEndpoints
+ * @param root0.serviceTimeseriesMap
+ * @param root0.targetThreshold
+ * @param root0.datasetLabel
+ * @param root0.color
+ */
 export default function ErrorRateChart({
   data = [],
   endpoints = [],
@@ -38,7 +51,7 @@ export default function ErrorRateChart({
   serviceTimeseriesMap = {},
   targetThreshold = null,
   datasetLabel = 'Error Rate %',
-  color = '#F04438'
+  color = '#F04438',
 }: any) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets, labels } = useChartTimeBuckets();
@@ -53,7 +66,7 @@ export default function ErrorRateChart({
     const stepMs = timeBuckets.length >= 2 ? new Date(timeBuckets[1]).getTime() - new Date(timeBuckets[0]).getTime() : 60000;
 
     return Object.entries(targetMap).map(([key, info]: [string, any], idx) => {
-      const tsData = (serviceTimeseriesMap as any)[key] || [];
+      const tsData = (serviceTimeseriesMap)[key] || [];
       const tsMap: Record<string, { total: number, errors: number }> = {};
       for (const row of tsData) {
         const rowTimestamp = firstValue(row, ['timestamp', 'time_bucket', 'timeBucket'], '');
@@ -73,7 +86,7 @@ export default function ErrorRateChart({
         tsMap[bucketKey].errors += errors;
       }
 
-      const values = timeBuckets.map(d => {
+      const values = timeBuckets.map((d) => {
         const bucket = tsMap[tsKey(d)];
         if (!bucket || bucket.total === 0) return 0;
         return (bucket.errors / bucket.total) * 100;
@@ -86,7 +99,7 @@ export default function ErrorRateChart({
     let datasets: any[];
     if (endpoints.length > 0) {
       const list = selectedEndpoints.length > 0
-        ? (endpoints as any[]).filter(ep => {
+        ? (endpoints as any[]).filter((ep) => {
           const key = ep.key || (() => {
             const method = String(firstValue(ep, ['http_method', 'httpMethod'], '')).toUpperCase();
             const op = String(firstValue(ep, ['operation_name', 'operationName', 'endpoint_name', 'endpointName'], 'Unknown'));
@@ -108,7 +121,7 @@ export default function ErrorRateChart({
             `${method} ${operation}`,
             timeBuckets.map(() => 0),
             getChartColor(idx),
-            false
+            false,
           );
         });
       }
@@ -134,7 +147,7 @@ export default function ErrorRateChart({
           tsMap[bucketKey].errors += errors;
         }
 
-        const values = timeBuckets.map(d => {
+        const values = timeBuckets.map((d) => {
           const bucket = tsMap[tsKey(d)];
           if (!bucket || bucket.total === 0) return 0;
           return (bucket.errors / bucket.total) * 100;
@@ -147,7 +160,7 @@ export default function ErrorRateChart({
         const ts = firstValue(d, ['timestamp', 'time_bucket', 'timeBucket'], '');
         dataMap[tsKey(ts)] = Number(firstValue(d, ['value', 'error_rate', 'errorRate'], 0));
       }
-      datasets = [createLineDataset(datasetLabel, timeBuckets.map(ts => dataMap[tsKey(ts)] ?? 0), color, true)];
+      datasets = [createLineDataset(datasetLabel, timeBuckets.map((ts) => dataMap[tsKey(ts)] ?? 0), color, true)];
     }
 
     if (targetThreshold !== null) {
@@ -168,7 +181,7 @@ export default function ErrorRateChart({
   }, [data, endpoints, selectedEndpoints, serviceTimeseriesMap, hasServiceData, targetThreshold, timeBuckets, labels]);
 
   const allDataValues = useMemo(() => {
-    const vals: number[] = (data as any[]).map(d => Number(firstValue(d, ['value', 'error_rate', 'errorRate'], 0)));
+    const vals: number[] = (data as any[]).map((d) => Number(firstValue(d, ['value', 'error_rate', 'errorRate'], 0)));
     if (Object.keys(serviceTimeseriesMap).length > 0) {
       Object.values(serviceTimeseriesMap).forEach((rows: any) => {
         rows.forEach((r: any) => {
@@ -178,7 +191,7 @@ export default function ErrorRateChart({
         });
       });
     }
-    (endpoints as any[]).forEach(ep => {
+    (endpoints as any[]).forEach((ep) => {
       const requestCount = Number(firstValue(ep, ['request_count', 'requestCount'], 0));
       const errorCount = Number(firstValue(ep, ['error_count', 'errorCount'], 0));
       const explicitRate = firstValue(ep, ['error_rate', 'errorRate'], null);
@@ -211,7 +224,7 @@ export default function ErrorRateChart({
           callback: (v: any) => {
             const num = Number(v);
             return Number.isInteger(num) ? `${num}%` : `${num.toFixed(1)}%`;
-          }
+          },
         },
         grid: { color: '#2D2D2D' },
         beginAtZero: true,

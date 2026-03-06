@@ -1,6 +1,5 @@
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Badge, Button, Tooltip } from 'antd';
 import { useQuery } from '@tanstack/react-query';
+import { Layout, Menu, Badge, Button, Tooltip } from 'antd';
 import {
   LayoutDashboard,
   FileText,
@@ -17,13 +16,19 @@ import {
   Moon,
   LogOut,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 import { useAppStore } from '@store/appStore';
 import { useAuthStore } from '@store/authStore';
-import toast from 'react-hot-toast';
+
 import './Sidebar.css';
 
 const { Sider } = Layout;
 
+/**
+ *
+ */
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,7 +37,6 @@ export default function Sidebar() {
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
   const currentTeam = (user?.teams || []).find((t) => t.id === selectedTeamId);
-
 
   const observeItems = [
     {

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
+
 import { useMetricsState } from './useMetricsState';
 
 function Harness() {
@@ -36,7 +37,7 @@ describe('useMetricsState', () => {
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
         <Harness />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByTestId('active-tab')).toHaveTextContent('latency');
@@ -50,7 +51,7 @@ describe('useMetricsState', () => {
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
         <Harness />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'latency' }));

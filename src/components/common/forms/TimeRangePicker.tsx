@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
 import { Clock, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+
 import { useAppStore } from '@store/appStore';
 
 /* ── Categorised presets ── */
@@ -95,7 +96,7 @@ function MiniCalendar({
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   const prevMonthDays = new Date(calYear, calMonth, 0).getDate();
 
-  const cells: { day: number; current: boolean }[] = [];
+  const cells: Array<{ day: number; current: boolean }> = [];
   for (let i = startDow - 1; i >= 0; i--) cells.push({ day: prevMonthDays - i, current: false });
   for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, current: true });
   const remaining = 42 - cells.length;
@@ -153,6 +154,9 @@ function MiniCalendar({
 }
 
 /* ── Main Component ── */
+/**
+ *
+ */
 export default function TimeRangePicker() {
   const { timeRange, setTimeRange, setCustomTimeRange } = useAppStore();
   const [open, setOpen] = useState(false);

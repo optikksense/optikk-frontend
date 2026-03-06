@@ -1,46 +1,107 @@
-import api from './api';
 import { API_CONFIG } from '@config/constants';
+
+import api from './api';
+
+import type { QueryParams, RequestTime } from './service-types';
 
 const BASE = `${API_CONFIG.ENDPOINTS.V1_BASE}/overview`;
 
+/**
+ * Service wrapper for overview dashboard endpoints.
+ */
 export const overviewService = {
-  async getSummary(teamId: any, startTime: any, endTime: any): Promise<any> {
+  async getSummary(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
     return api.get(`${BASE}/summary`, { params: { startTime, endTime } });
   },
 
-  async getTimeSeries(teamId: any, startTime: any, endTime: any, serviceName?: string, interval = '5m'): Promise<any> {
+  async getTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
     return api.get(`${BASE}/timeseries`, { params: { startTime, endTime, serviceName, interval } });
   },
 
-  async getServices(teamId: any, startTime: any, endTime: any): Promise<any> {
+  async getServices(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
     return api.get(`${BASE}/services`, { params: { startTime, endTime } });
   },
 
-  async getEndpointMetrics(teamId: any, startTime: any, endTime: any, serviceName?: string): Promise<any> {
+  async getEndpointMetrics(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+  ): Promise<unknown> {
     return api.get(`${BASE}/endpoints/metrics`, { params: { startTime, endTime, serviceName } });
   },
 
-  async getEndpointTimeSeries(teamId: any, startTime: any, endTime: any, serviceName?: string): Promise<any> {
+  async getEndpointTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+  ): Promise<unknown> {
     return api.get(`${BASE}/endpoints/timeseries`, { params: { startTime, endTime, serviceName } });
   },
 
-  async getSloSli(teamId: any, startTime: any, endTime: any, serviceName?: string, interval = '5m'): Promise<any> {
+  async getSloSli(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
     return api.get(`${BASE}/slo`, { params: { startTime, endTime, serviceName, interval } });
   },
 
-  async getErrorGroups(teamId: any, startTime: any, endTime: any, params = {}): Promise<any> {
+  async getErrorGroups(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: QueryParams = {},
+  ): Promise<unknown> {
     return api.get(`${BASE}/errors/groups`, { params: { startTime, endTime, ...params } });
   },
 
-  async getServiceErrorRate(teamId: any, startTime: any, endTime: any, serviceName?: string, interval = '5m'): Promise<any> {
+  async getServiceErrorRate(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
     return api.get(`${BASE}/errors/service-error-rate`, { params: { startTime, endTime, serviceName, interval } });
   },
 
-  async getErrorVolume(teamId: any, startTime: any, endTime: any, serviceName?: string, interval = '5m'): Promise<any> {
+  async getErrorVolume(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
     return api.get(`${BASE}/errors/error-volume`, { params: { startTime, endTime, serviceName, interval } });
   },
 
-  async getLatencyDuringErrorWindows(teamId: any, startTime: any, endTime: any, serviceName?: string, interval = '5m'): Promise<any> {
-    return api.get(`${BASE}/errors/latency-during-error-windows`, { params: { startTime, endTime, serviceName, interval } });
+  async getLatencyDuringErrorWindows(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/errors/latency-during-error-windows`, {
+      params: { startTime, endTime, serviceName, interval },
+    });
   },
 };

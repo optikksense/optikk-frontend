@@ -1,4 +1,7 @@
-export const calculateTrends = (metricsPoints) => {
+export /**
+        *
+        */
+const calculateTrends = (metricsPoints) => {
     if (!metricsPoints || metricsPoints.length < 2) return { requestTrend: 0, errorTrend: 0 };
 
     const recent = metricsPoints.slice(-10);

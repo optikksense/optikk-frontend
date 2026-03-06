@@ -3,8 +3,8 @@
  * Renders a colour-coded matrix of error rates bucketed by service × time.
  * Colours map to severity tokens from the design system (Fix 13).
  */
-import React, { useMemo } from 'react';
 import { Card, Tooltip, Typography } from 'antd';
+import React, { useMemo } from 'react';
 
 interface HeatCell {
     service: string;
@@ -33,7 +33,7 @@ const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
     // Build lookup: service+time → errorRate
     const lookup = useMemo(() => {
         const m = new Map<string, number>();
-        data.forEach(d => m.set(`${d.service}::${d.time}`, d.errorRate));
+        data.forEach((d) => m.set(`${d.service}::${d.time}`, d.errorRate));
         return m;
     }, [data]);
 
@@ -51,7 +51,7 @@ const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
                             <th style={{ padding: '4px 8px', textAlign: 'left', color: 'var(--text-secondary)', minWidth: 120 }}>
                                 Service
                             </th>
-                            {timeBuckets.map(t => (
+                            {timeBuckets.map((t) => (
                                 <th key={t} style={{ padding: '4px 6px', color: 'var(--text-muted)', fontWeight: 400, whiteSpace: 'nowrap' }}>
                                     {t}
                                 </th>
@@ -59,12 +59,12 @@ const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {services.map(svc => (
+                        {services.map((svc) => (
                             <tr key={svc}>
                                 <td style={{ padding: '3px 8px', color: 'var(--text-primary)', fontWeight: 500 }}>
                                     {svc}
                                 </td>
-                                {timeBuckets.map(t => {
+                                {timeBuckets.map((t) => {
                                     const rate = lookup.get(`${svc}::${t}`) ?? 0;
                                     return (
                                         <td key={t} style={{ padding: 2 }}>

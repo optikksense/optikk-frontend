@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { STORAGE_KEYS } from '@config/constants';
 
-async function loadStore(seed = {}) {
+async function loadStore(seed: Record<string, string> = {}): Promise<typeof import('./appStore').useAppStore> {
   localStorage.clear();
   for (const [key, value] of Object.entries(seed)) {
-    localStorage.setItem(key, value as any);
+    localStorage.setItem(key, value);
   }
 
   vi.resetModules();
@@ -91,7 +92,9 @@ describe('appStore', () => {
     expect(localStorage.getItem(STORAGE_KEYS.AUTO_REFRESH)).toBe('60000');
     expect(localStorage.getItem(STORAGE_KEYS.THEME)).toBe('light');
     expect(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS)).toBe('false');
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.VIEW_PREFS))).toEqual({
+    const rawViewPrefs = localStorage.getItem(STORAGE_KEYS.VIEW_PREFS);
+    expect(rawViewPrefs).not.toBeNull();
+    expect(JSON.parse(rawViewPrefs ?? '{}')).toEqual({
       chartDensity: 'compact',
     });
   });

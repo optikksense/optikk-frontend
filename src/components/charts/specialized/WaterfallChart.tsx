@@ -1,14 +1,18 @@
 import { useState, useMemo } from 'react';
-import { CHART_COLORS, STATUS_COLORS } from '@config/constants';
+
 import { formatDuration } from '@utils/formatters';
+
+import { CHART_COLORS, STATUS_COLORS } from '@config/constants';
 import './WaterfallChart.css';
 
 /**
  * WaterfallChart - Displays trace spans in a waterfall/timeline view
- *
- * @param {Array} spans - Array of span objects with span_id, parent_span_id, operation_name, etc.
- * @param {Function} onSpanClick - Callback when a span bar is clicked
- * @param {string} selectedSpanId - Currently selected span ID
+ * @param spans.spans
+ * @param spans - Array of span objects with span_id, parent_span_id, operation_name, etc.
+ * @param onSpanClick - Callback when a span bar is clicked
+ * @param selectedSpanId - Currently selected span ID
+ * @param spans.onSpanClick
+ * @param spans.selectedSpanId
  */
 export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId }: any) {
   const [hoveredSpanId, setHoveredSpanId] = useState<string | null>(null);
@@ -20,8 +24,8 @@ export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId
     }
 
     // Calculate trace time boundaries
-    const startTimes = (spans as any[]).map(s => new Date(s.start_time).getTime());
-    const endTimes = (spans as any[]).map(s => new Date(s.end_time).getTime());
+    const startTimes = (spans as any[]).map((s) => new Date(s.start_time).getTime());
+    const endTimes = (spans as any[]).map((s) => new Date(s.end_time).getTime());
     const traceStart = Math.min(...startTimes);
     const traceEnd = Math.max(...endTimes);
     const traceDuration = traceEnd - traceStart;
@@ -30,14 +34,14 @@ export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId
     const childrenMap: Record<string, string[]> = {};
     const spanMap: Record<string, any> = {};
 
-    (spans as any[]).forEach(span => {
+    (spans as any[]).forEach((span) => {
       spanMap[span.span_id] = span;
       if (!childrenMap[span.span_id]) {
         childrenMap[span.span_id] = [];
       }
     });
 
-    (spans as any[]).forEach(span => {
+    (spans as any[]).forEach((span) => {
       if (span.parent_span_id) {
         if (!childrenMap[span.parent_span_id]) {
           childrenMap[span.parent_span_id] = [];
@@ -47,7 +51,7 @@ export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId
     });
 
     // Find root spans (no parent or parent not in this trace)
-    const roots = (spans as any[]).filter(s => !s.parent_span_id || !spanMap[s.parent_span_id]);
+    const roots = (spans as any[]).filter((s) => !s.parent_span_id || !spanMap[s.parent_span_id]);
 
     // Build tree with depths using DFS
     const tree: any[] = [];
@@ -65,16 +69,16 @@ export default function WaterfallChart({ spans = [], onSpanClick, selectedSpanId
       // Visit children sorted by start time
       const children = childrenMap[spanId] || [];
       children
-        .map(id => spanMap[id])
+        .map((id) => spanMap[id])
         .filter(Boolean)
         .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
-        .forEach(child => dfs(child.span_id, depth + 1));
+        .forEach((child) => dfs(child.span_id, depth + 1));
     };
 
     // Process all root spans
     roots
       .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
-      .forEach(root => dfs(root.span_id, 0));
+      .forEach((root) => dfs(root.span_id, 0));
 
     return { spanTree: tree, traceStart, traceEnd, traceDuration };
   }, [spans]);

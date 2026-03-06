@@ -1,5 +1,6 @@
-import { useEffect, useRef, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef, useCallback } from 'react';
+
 import { useSSE } from './useSSE';
 
 /**
@@ -42,6 +43,7 @@ interface UseRealtimeRefreshOptions {
  *   return <RouterOutlet />;
  * }
  * ```
+ * @param options
  */
 export function useRealtimeRefresh(options: UseRealtimeRefreshOptions = {}) {
   const { enabled = true } = options;

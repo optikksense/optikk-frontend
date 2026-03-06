@@ -1,7 +1,10 @@
-import { useMemo } from 'react';
 import { useInfiniteQuery, InfiniteData } from '@tanstack/react-query';
+import { useMemo } from 'react';
+
 import { v1Service } from '@services/v1Service';
+
 import { useAppStore } from '@store/appStore';
+
 import {
   getLogsFromPage,
   getHasMoreFromPage,
@@ -19,6 +22,10 @@ interface UseInfiniteLogsOptions {
 
 /**
  * Encapsulates infinite-scroll log fetching
+ * @param root0
+ * @param root0.backendParams
+ * @param root0.liveTail
+ * @param root0.pageSize
  */
 export function useInfiniteLogs({ backendParams, liveTail = false, pageSize = 100 }: UseInfiniteLogsOptions) {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();

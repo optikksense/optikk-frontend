@@ -2,6 +2,11 @@ import { Empty } from 'antd';
 
 /**
  * Consistent empty data placeholder used across all pages and DataTable.
+ * @param root0
+ * @param root0.icon
+ * @param root0.title
+ * @param root0.description
+ * @param root0.action
  */
 export default function EmptyState({
   icon,

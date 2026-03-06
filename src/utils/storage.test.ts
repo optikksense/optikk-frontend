@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { safeGet, safeGetJSON, safeRemove, safeSet, safeSetJSON } from './storage';
 
 describe('storage utils', () => {

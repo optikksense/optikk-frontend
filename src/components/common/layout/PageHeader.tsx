@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
 import { Breadcrumb, Badge } from 'antd';
+import React, { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PageHeader.css';
 
@@ -19,6 +19,13 @@ interface PageHeaderProps {
 
 /**
  * Consistent page header with title, subtitle, optional breadcrumbs and action buttons.
+ * @param root0
+ * @param root0.title
+ * @param root0.subtitle
+ * @param root0.icon
+ * @param root0.actions
+ * @param root0.badge
+ * @param root0.breadcrumbs
  */
 export default function PageHeader({
   title,

@@ -5,21 +5,29 @@
  * defines which charts to render, their layout, data sources, and display options.
  * Teams can override the built-in defaults via saveDashboardConfig().
  */
-import api from './api';
 import { API_CONFIG } from '@config/constants';
+
+import api from './api';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
+/**
+ * Service wrapper for dashboard configuration endpoints.
+ */
 export const dashboardConfigService = {
-    async getDashboardConfig(teamId: number | null, pageId: string): Promise<any> {
-        return api.get(`${BASE}/dashboard-config/${pageId}`);
-    },
+  async getDashboardConfig(_teamId: number | null, pageId: string): Promise<unknown> {
+    return api.get(`${BASE}/dashboard-config/${pageId}`);
+  },
 
-    async saveDashboardConfig(teamId: number | null, pageId: string, configYaml: string): Promise<any> {
-        return api.put(`${BASE}/dashboard-config/${pageId}`, { configYaml });
-    },
+  async saveDashboardConfig(
+    _teamId: number | null,
+    pageId: string,
+    configYaml: string,
+  ): Promise<unknown> {
+    return api.put(`${BASE}/dashboard-config/${pageId}`, { configYaml });
+  },
 
-    async listDashboardPages(teamId: number | null): Promise<any> {
-        return api.get(`${BASE}/dashboard-config/pages`);
-    },
+  async listDashboardPages(_teamId: number | null): Promise<unknown> {
+    return api.get(`${BASE}/dashboard-config/pages`);
+  },
 };

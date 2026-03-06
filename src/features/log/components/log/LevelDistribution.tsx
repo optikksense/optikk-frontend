@@ -1,4 +1,5 @@
 import { formatNumber } from '@utils/formatters';
+
 import { LevelBadge } from './LogRow';
 
 const LEVEL_COLORS = {
@@ -10,6 +11,11 @@ const LEVEL_COLORS = {
     traces: '#98A2B3',
 };
 
+/**
+ *
+ * @param root0
+ * @param root0.facets
+ */
 export default function LevelDistribution({ facets }) {
     if (!facets || !facets.length) return <div className="logs-chart-empty">No data</div>;
     const total = facets.reduce((sum, f) => sum + (f.count || 0), 0) || 1;

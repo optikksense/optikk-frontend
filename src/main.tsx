@@ -1,11 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConfigProvider, theme as antdTheme } from 'antd';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { Toaster } from 'react-hot-toast';
+import { BrowserRouter } from 'react-router-dom';
+
 import ErrorBoundary from '@components/common/feedback/ErrorBoundary';
+
 import { useAppStore } from '@store/appStore';
+
 import App from './App';
 import './utils/chartSetup';
 import './index.css';
@@ -93,5 +96,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <AppProviders />
       </QueryClientProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

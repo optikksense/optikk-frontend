@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
 import { Drawer, Descriptions, Typography } from 'antd';
+import { ReactNode } from 'react';
 import './DetailDrawer.css';
 
 const { Text } = Typography;
@@ -27,6 +27,14 @@ interface DetailDrawerProps {
 
 /**
  * Generic slide-out drawer for viewing details of any record.
+ * @param root0
+ * @param root0.open
+ * @param root0.onClose
+ * @param root0.title
+ * @param root0.width
+ * @param root0.sections
+ * @param root0.data
+ * @param root0.extra
  */
 export default function DetailDrawer({
   open,

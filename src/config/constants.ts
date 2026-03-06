@@ -3,7 +3,10 @@
  * Centralized configuration for the entire React application
  */
 
-export const API_CONFIG = {
+export /**
+        *
+        */
+const API_CONFIG = {
   BASE_URL: '/api',
   TIMEOUT: 30000,
   RETRY_ATTEMPTS: 3,
@@ -26,7 +29,10 @@ export const API_CONFIG = {
   },
 };
 
-export const UI_CONFIG = {
+export /**
+        *
+        */
+const UI_CONFIG = {
   THEME: {
     PRIMARY_COLOR: '#5E60CE',
     SUCCESS_COLOR: '#73C991',
@@ -41,7 +47,10 @@ export const UI_CONFIG = {
   DEFAULT_PAGE_SIZE: 20,
 };
 
-export const TIME_RANGES = [
+export /**
+        *
+        */
+const TIME_RANGES = [
   { label: 'Last 5 minutes', value: '5m', minutes: 5 },
   { label: 'Last 15 minutes', value: '15m', minutes: 15 },
   { label: 'Last 30 minutes', value: '30m', minutes: 30 },
@@ -54,7 +63,10 @@ export const TIME_RANGES = [
   { label: 'Last 30 days', value: '30d', minutes: 43200 },
 ];
 
-export const STATUS_COLORS = {
+export /**
+        *
+        */
+const STATUS_COLORS = {
   OK: '#73C991',
   ERROR: '#F04438',
   WARNING: '#F79009',
@@ -62,7 +74,10 @@ export const STATUS_COLORS = {
   UNKNOWN: '#98A2B3',
 };
 
-export const LOG_LEVELS = {
+export /**
+        *
+        */
+const LOG_LEVELS = {
   TRACE: { label: 'Trace', color: '#98A2B3' },
   DEBUG: { label: 'Debug', color: '#06AED5' },
   INFO: { label: 'Info', color: '#73C991' },
@@ -71,7 +86,10 @@ export const LOG_LEVELS = {
   FATAL: { label: 'Fatal', color: '#D92D20' },
 };
 
-export const CHART_COLORS = [
+export /**
+        *
+        */
+const CHART_COLORS = [
   '#5E60CE',
   '#73C991',
   '#F79009',
@@ -84,26 +102,38 @@ export const CHART_COLORS = [
   '#16B364',
 ];
 
-export const SERVICE_HEALTH = {
+export /**
+        *
+        */
+const SERVICE_HEALTH = {
   healthy: { label: 'Healthy', color: '#73C991' },
   degraded: { label: 'Degraded', color: '#F79009' },
   unhealthy: { label: 'Unhealthy', color: '#F04438' },
   unknown: { label: 'Unknown', color: '#98A2B3' },
 };
 
-export const INFRASTRUCTURE_TYPES = [
+export /**
+        *
+        */
+const INFRASTRUCTURE_TYPES = [
   { label: 'Host', value: 'host', icon: 'Server' },
   { label: 'Pod', value: 'pod', icon: 'Box' },
   { label: 'Container', value: 'container', icon: 'Container' },
 ];
 
-export const TRACE_STATUSES = [
+export /**
+        *
+        */
+const TRACE_STATUSES = [
   { label: 'OK', value: 'OK', color: '#73C991' },
   { label: 'Error', value: 'ERROR', color: '#F04438' },
   { label: 'Unset', value: 'UNSET', color: '#98A2B3' },
 ];
 
-export const STORAGE_KEYS = {
+export /**
+        *
+        */
+const STORAGE_KEYS = {
   AUTH_TOKEN: 'optikk_auth_token',
   USER_DATA: 'optikk_user_data',
   TEAM_ID: 'optikk_team_id',
@@ -116,7 +146,10 @@ export const STORAGE_KEYS = {
 };
 
 // Auto-refresh interval options (value = milliseconds, 0 = off)
-export const AUTO_REFRESH_INTERVALS = [
+export /**
+        *
+        */
+const AUTO_REFRESH_INTERVALS = [
   { label: 'Off', value: 0 },
   { label: '10s', value: 10_000 },
   { label: '30s', value: 30_000 },

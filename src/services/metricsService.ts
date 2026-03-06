@@ -1,198 +1,364 @@
 /**
  * Metrics Service — API calls for core metrics (services, endpoints, timeseries).
  */
-import api from './api';
 import { API_CONFIG } from '@config/constants';
+
+import api from './api';
+
+import type { QueryParams, RequestTime } from './service-types';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
+interface MetricRow extends Record<string, unknown> {}
+
+/**
+ * Service metric shape consumed across dashboard pages.
+ */
 export interface ServiceMetric {
-    serviceName: string;
-    requestCount: number;
-    errorCount: number;
-    errorRate: number;
-    avgLatency: number;
-    p50Latency: number;
-    p95Latency: number;
-    p99Latency: number;
-    [key: string]: any;
+  readonly serviceName: string;
+  readonly requestCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly avgLatency: number;
+  readonly p50Latency: number;
+  readonly p95Latency: number;
+  readonly p99Latency: number;
+  readonly [key: string]: unknown;
 }
 
+/**
+ * Endpoint metric shape.
+ */
 export interface EndpointMetric extends ServiceMetric {
-    operationName: string;
-    httpMethod: string;
+  readonly operationName: string;
+  readonly httpMethod: string;
 }
 
+/**
+ * Timeseries point shape.
+ */
 export interface TimeSeriesPoint {
-    timestamp: string;
-    serviceName: string;
-    operationName?: string;
-    httpMethod?: string;
-    requestCount: number;
-    errorCount: number;
-    avgLatency: number;
-    [key: string]: any;
+  readonly timestamp: string;
+  readonly serviceName: string;
+  readonly operationName?: string;
+  readonly httpMethod?: string;
+  readonly requestCount: number;
+  readonly errorCount: number;
+  readonly avgLatency: number;
+  readonly [key: string]: unknown;
 }
 
+/**
+ * Aggregate metrics summary payload.
+ */
 export interface MetricsSummary {
-    totalRequests: number;
-    errorCount: number;
-    errorRate: number;
-    avgLatency: number;
-    p95Latency: number;
-    p99Latency: number;
+  readonly totalRequests: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly avgLatency: number;
+  readonly p95Latency: number;
+  readonly p99Latency: number;
 }
 
-// Normalizes a service metric row from snake_case (new modules) preserving
-// camelCase aliases so existing metric page consumers keep working.
-function normalizeServiceMetric(s: any): ServiceMetric {
-    return {
-        ...s,
-        serviceName: s.service_name ?? s.serviceName ?? '',
-        requestCount: s.request_count ?? s.requestCount ?? 0,
-        errorCount: s.error_count ?? s.errorCount ?? 0,
-        errorRate: s.error_rate ?? s.errorRate ?? 0,
-        avgLatency: s.avg_latency ?? s.avgLatency ?? 0,
-        p50Latency: s.p50_latency ?? s.p50Latency ?? 0,
-        p95Latency: s.p95_latency ?? s.p95Latency ?? 0,
-        p99Latency: s.p99_latency ?? s.p99Latency ?? 0,
-    };
+function asMetricRow(value: unknown): MetricRow {
+  if (typeof value !== 'object' || value === null) {
+    return {};
+  }
+  // Backend payloads include dynamic fields that vary by endpoint.
+  return value as MetricRow;
 }
 
-function normalizeEndpointMetric(e: any): EndpointMetric {
-    return {
-        ...e,
-        serviceName: e.service_name ?? e.serviceName ?? '',
-        operationName: e.operation_name ?? e.operationName ?? '',
-        httpMethod: e.http_method ?? e.httpMethod ?? '',
-        requestCount: e.request_count ?? e.requestCount ?? 0,
-        errorCount: e.error_count ?? e.errorCount ?? 0,
-        avgLatency: e.avg_latency ?? e.avgLatency ?? 0,
-        p50Latency: e.p50_latency ?? e.p50Latency ?? 0,
-        p95Latency: e.p95_latency ?? e.p95Latency ?? 0,
-        p99Latency: e.p99_latency ?? e.p99Latency ?? 0,
-    };
+function getNumber(row: MetricRow, keys: string[]): number {
+  for (const key of keys) {
+    const raw = row[key];
+    const parsed = Number(raw);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return 0;
 }
 
-function normalizeTimeSeriesPoint(p: any): TimeSeriesPoint {
-    return {
-        ...p,
-        serviceName: p.service_name ?? p.serviceName ?? '',
-        operationName: p.operation_name ?? p.operationName ?? '',
-        httpMethod: p.http_method ?? p.httpMethod ?? '',
-        requestCount: p.request_count ?? p.requestCount ?? 0,
-        errorCount: p.error_count ?? p.errorCount ?? 0,
-        avgLatency: p.avg_latency ?? p.avgLatency ?? 0,
-    };
+function getString(row: MetricRow, keys: string[]): string {
+  for (const key of keys) {
+    const raw = row[key];
+    if (typeof raw === 'string' && raw.length > 0) {
+      return raw;
+    }
+  }
+  return '';
 }
 
+function normalizeServiceMetric(input: unknown): ServiceMetric {
+  const row = asMetricRow(input);
+  return {
+    ...row,
+    serviceName: getString(row, ['service_name', 'serviceName']),
+    requestCount: getNumber(row, ['request_count', 'requestCount']),
+    errorCount: getNumber(row, ['error_count', 'errorCount']),
+    errorRate: getNumber(row, ['error_rate', 'errorRate']),
+    avgLatency: getNumber(row, ['avg_latency', 'avgLatency']),
+    p50Latency: getNumber(row, ['p50_latency', 'p50Latency']),
+    p95Latency: getNumber(row, ['p95_latency', 'p95Latency']),
+    p99Latency: getNumber(row, ['p99_latency', 'p99Latency']),
+  };
+}
+
+function normalizeEndpointMetric(input: unknown): EndpointMetric {
+  const row = asMetricRow(input);
+  return {
+    ...normalizeServiceMetric(row),
+    operationName: getString(row, ['operation_name', 'operationName']),
+    httpMethod: getString(row, ['http_method', 'httpMethod']),
+  };
+}
+
+function normalizeTimeSeriesPoint(input: unknown): TimeSeriesPoint {
+  const row = asMetricRow(input);
+  return {
+    ...row,
+    timestamp: getString(row, ['timestamp']),
+    serviceName: getString(row, ['service_name', 'serviceName']),
+    operationName: getString(row, ['operation_name', 'operationName']),
+    httpMethod: getString(row, ['http_method', 'httpMethod']),
+    requestCount: getNumber(row, ['request_count', 'requestCount']),
+    errorCount: getNumber(row, ['error_count', 'errorCount']),
+    avgLatency: getNumber(row, ['avg_latency', 'avgLatency']),
+  };
+}
+
+function asRows(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+/**
+ * Service wrapper for metrics endpoints.
+ */
 export const metricsService = {
-    async getServiceMetrics(teamId: number | null, startTime: string | number, endTime: string | number): Promise<ServiceMetric[]> {
-        const rows = await api.get(`${BASE}/services/metrics`, { params: { startTime, endTime } });
-        return Array.isArray(rows) ? rows.map(normalizeServiceMetric) : [];
-    },
+  async getServiceMetrics(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<ServiceMetric[]> {
+    const rows = await api.get(`${BASE}/services/metrics`, { params: { startTime, endTime } });
+    return asRows(rows).map((row: unknown) => normalizeServiceMetric(row));
+  },
 
-    async getEndpointMetrics(teamId: number | null, startTime: string | number, endTime: string | number, serviceName: string): Promise<EndpointMetric[]> {
-        const rows = await api.get(`${BASE}/endpoints/metrics`, { params: { startTime, endTime, serviceName } });
-        return Array.isArray(rows) ? rows.map(normalizeEndpointMetric) : [];
-    },
+  async getEndpointMetrics(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string,
+  ): Promise<EndpointMetric[]> {
+    const rows = await api.get(`${BASE}/endpoints/metrics`, {
+      params: { startTime, endTime, serviceName },
+    });
+    return asRows(rows).map((row: unknown) => normalizeEndpointMetric(row));
+  },
 
-    async getEndpointTimeSeries(teamId: number | null, startTime: string | number, endTime: string | number, serviceName: string): Promise<TimeSeriesPoint[]> {
-        const rows = await api.get(`${BASE}/endpoints/timeseries`, { params: { startTime, endTime, serviceName } });
-        return Array.isArray(rows) ? rows.map(normalizeTimeSeriesPoint) : [];
-    },
+  async getEndpointTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string,
+  ): Promise<TimeSeriesPoint[]> {
+    const rows = await api.get(`${BASE}/endpoints/timeseries`, {
+      params: { startTime, endTime, serviceName },
+    });
+    return asRows(rows).map((row: unknown) => normalizeTimeSeriesPoint(row));
+  },
 
-    async getMetricsTimeSeries(teamId: number | null, startTime: string | number, endTime: string | number, serviceName?: string, interval?: string): Promise<TimeSeriesPoint[]> {
-        const rows = await api.get(`${BASE}/metrics/timeseries`, { params: { startTime, endTime, serviceName, interval } });
-        return Array.isArray(rows) ? rows.map(normalizeTimeSeriesPoint) : [];
-    },
+  async getMetricsTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval?: string,
+  ): Promise<TimeSeriesPoint[]> {
+    const rows = await api.get(`${BASE}/metrics/timeseries`, {
+      params: { startTime, endTime, serviceName, interval },
+    });
+    return asRows(rows).map((row: unknown) => normalizeTimeSeriesPoint(row));
+  },
 
-    async getMetricsSummary(teamId: number | null, startTime: string | number, endTime: string | number): Promise<MetricsSummary> {
-        const res: any = await api.get(`${BASE}/metrics/summary`, { params: { startTime, endTime } });
-        // Map snake_case (new overview module) to camelCase for existing consumers.
-        return {
-            totalRequests: res?.total_requests ?? res?.totalRequests ?? 0,
-            errorCount: res?.error_count ?? res?.errorCount ?? 0,
-            errorRate: res?.error_rate ?? res?.errorRate ?? 0,
-            avgLatency: res?.avg_latency ?? res?.avgLatency ?? 0,
-            p95Latency: res?.p95_latency ?? res?.p95Latency ?? 0,
-            p99Latency: res?.p99_latency ?? res?.p99Latency ?? 0,
-        };
-    },
+  async getMetricsSummary(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<MetricsSummary> {
+    const response = await api.get(`${BASE}/metrics/summary`, { params: { startTime, endTime } });
+    const row = asMetricRow(response);
+    return {
+      totalRequests: getNumber(row, ['total_requests', 'totalRequests']),
+      errorCount: getNumber(row, ['error_count', 'errorCount']),
+      errorRate: getNumber(row, ['error_rate', 'errorRate']),
+      avgLatency: getNumber(row, ['avg_latency', 'avgLatency']),
+      p95Latency: getNumber(row, ['p95_latency', 'p95Latency']),
+      p99Latency: getNumber(row, ['p99_latency', 'p99Latency']),
+    };
+  },
 
-    async getServiceTimeSeries(teamId: number | null, startTime: string | number, endTime: string | number, interval = '5m'): Promise<any> {
-        return api.get(`${BASE}/services/timeseries`, { params: { startTime, endTime, interval } });
-    },
+  async getServiceTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    interval = '5m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/services/timeseries`, { params: { startTime, endTime, interval } });
+  },
 
-    // ── Services ────────────────────────────────────────────────────────────
-    async getServiceDependencies(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/services/dependencies`, { params: { startTime, endTime } });
-    },
+  async getServiceDependencies(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/services/dependencies`, { params: { startTime, endTime } });
+  },
 
-    async getEndpointBreakdown(teamId: number | null, startTime: string | number, endTime: string | number, serviceName: string): Promise<any> {
-        return api.get(`${BASE}/services/${serviceName}/endpoints`, { params: { startTime, endTime } });
-    },
+  async getEndpointBreakdown(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/services/${serviceName}/endpoints`, { params: { startTime, endTime } });
+  },
 
-    async getErrorGroups(teamId: number | null, startTime: string | number, endTime: string | number, serviceName: string): Promise<any> {
-        return api.get(`${BASE}/services/${serviceName}/errors`, { params: { startTime, endTime } });
-    },
+  async getErrorGroups(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/services/${serviceName}/errors`, { params: { startTime, endTime } });
+  },
 
-    // ── Error Dashboard ─────────────────────────────────────────────────────
-    async getGlobalErrorGroups(teamId: number | null, startTime: string | number, endTime: string | number, params = {}): Promise<any> {
-        return api.get(`${BASE}/errors/groups`, { params: { startTime, endTime, ...params } });
-    },
+  async getGlobalErrorGroups(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/errors/groups`, { params: { startTime, endTime, ...params } });
+  },
 
-    async getErrorTimeSeries(teamId: number | null, startTime: string | number, endTime: string | number, interval = '5m', serviceName?: string): Promise<any> {
-        return api.get(`${BASE}/errors/timeseries`, { params: { startTime, endTime, interval, serviceName } });
-    },
+  async getErrorTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    interval = '5m',
+    serviceName?: string,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/errors/timeseries`, {
+      params: { startTime, endTime, interval, serviceName },
+    });
+  },
 
-    // ── Incidents ───────────────────────────────────────────────────────────
-    async getIncidents(teamId: number | null, startTime: string | number, endTime: string | number, params = {}): Promise<any> {
-        return api.get(`${BASE}/incidents`, { params: { startTime, endTime, ...params } });
-    },
+  async getIncidents(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/incidents`, { params: { startTime, endTime, ...params } });
+  },
 
-    // ── Infrastructure / Resource Utilization ───────────────────────────────
-    async getAvgCPU(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/resource-utilisation/avg-cpu`, { params: { startTime, endTime } });
-    },
+  async getAvgCPU(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-cpu`, {
+      params: { startTime, endTime },
+    });
+  },
 
-    async getAvgMemory(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/resource-utilisation/avg-memory`, { params: { startTime, endTime } });
-    },
+  async getAvgMemory(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-memory`, {
+      params: { startTime, endTime },
+    });
+  },
 
-    async getAvgNetwork(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/resource-utilisation/avg-network`, { params: { startTime, endTime } });
-    },
+  async getAvgNetwork(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-network`, {
+      params: { startTime, endTime },
+    });
+  },
 
-    async getAvgConnPool(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/resource-utilisation/avg-conn-pool`, { params: { startTime, endTime } });
-    },
+  async getAvgConnPool(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-conn-pool`, {
+      params: { startTime, endTime },
+    });
+  },
 
-    async getCPUUsagePercentage(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/resource-utilisation/cpu-usage-percentage`, { params: { startTime, endTime } });
-    },
+  async getCPUUsagePercentage(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/cpu-usage-percentage`, {
+      params: { startTime, endTime },
+    });
+  },
 
-    async getMemoryUsagePercentage(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/resource-utilisation/memory-usage-percentage`, { params: { startTime, endTime } });
-    },
+  async getMemoryUsagePercentage(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/memory-usage-percentage`, {
+      params: { startTime, endTime },
+    });
+  },
 
-    async getResourceUsageByService(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/resource-utilisation/by-service`, { params: { startTime, endTime } });
-    },
+  async getResourceUsageByService(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/by-service`, {
+      params: { startTime, endTime },
+    });
+  },
 
-    async getResourceUsageByInstance(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/resource-utilisation/by-instance`, { params: { startTime, endTime } });
-    },
+  async getResourceUsageByInstance(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/resource-utilisation/by-instance`, {
+      params: { startTime, endTime },
+    });
+  },
 
-    // ── Infrastructure Nodes ────────────────────────────────────────────────
-    async getNodeHealth(teamId: number | null, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/nodes`, { params: { startTime, endTime } });
-    },
+  async getNodeHealth(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/nodes`, { params: { startTime, endTime } });
+  },
 
-    async getNodeServices(teamId: number | null, host: string, startTime: string | number, endTime: string | number): Promise<any> {
-        return api.get(`${BASE}/infrastructure/nodes/${encodeURIComponent(host)}/services`, {
-            params: { startTime, endTime },
-        });
-    },
-
+  async getNodeServices(
+    _teamId: number | null,
+    host: string,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/infrastructure/nodes/${encodeURIComponent(host)}/services`, {
+      params: { startTime, endTime },
+    });
+  },
 };

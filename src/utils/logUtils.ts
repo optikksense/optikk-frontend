@@ -3,22 +3,91 @@
  * Reusable across LogsPage, LogRow, LogsRawView, and future pages.
  */
 
+interface LogLike {
+  id?: string | number | bigint | null;
+  timestamp?: string | number | Date;
+  traceId?: string;
+  trace_id?: string;
+  spanId?: string;
+  span_id?: string;
+  serviceName?: string;
+  service_name?: string;
+  [key: string]: unknown;
+}
+
+interface PageLike {
+  logs?: unknown[];
+  items?: unknown[];
+  rows?: unknown[];
+  hasMore?: boolean;
+  has_more?: boolean;
+  nextCursor?: unknown;
+  next_cursor?: unknown;
+  total?: unknown;
+  totalCount?: unknown;
+  total_count?: unknown;
+  pagination?: {
+    hasMore?: boolean;
+    has_more?: boolean;
+    nextCursor?: unknown;
+    next_cursor?: unknown;
+    total?: unknown;
+    totalCount?: unknown;
+    total_count?: unknown;
+  };
+  [key: string]: unknown;
+}
+
+type CursorValue = string | number | bigint;
+
+function asPageLike(value: unknown): PageLike | null {
+  if (typeof value !== 'object' || value === null) {
+    return null;
+  }
+  // The backend returns multiple pagination schemas; normalize to a broad object map.
+  return value as PageLike;
+}
+
+function asLogLike(value: unknown): LogLike {
+  if (typeof value !== 'object' || value === null) {
+    return {};
+  }
+  // Logs are heterogeneous maps from multiple ingest pipelines.
+  return value as LogLike;
+}
+
 // ── Response page parsing ──────────────────────────────────────────────────
 
-export function getLogsFromPage(page) {
-  if (!page || typeof page !== 'object') return [];
-  if (Array.isArray(page.logs)) return page.logs;
-  if (Array.isArray(page.items)) return page.items;
-  if (Array.isArray(page.rows)) return page.rows;
+/**
+ * Returns a normalized logs array from a backend page shape.
+ * @param page
+ */
+export function getLogsFromPage(page: unknown): unknown[] {
+  const pageLike = asPageLike(page);
+  if (!pageLike) return [];
+  if (Array.isArray(pageLike.logs)) return pageLike.logs;
+  if (Array.isArray(pageLike.items)) return pageLike.items;
+  if (Array.isArray(pageLike.rows)) return pageLike.rows;
   return [];
 }
 
-export function getHasMoreFromPage(page, allPages, pageSize) {
+/**
+ * Resolves whether more log pages are expected from mixed backend pagination schemas.
+ * @param page
+ * @param allPages
+ * @param pageSize
+ */
+export function getHasMoreFromPage(
+  page: unknown,
+  allPages: unknown[],
+  pageSize: number,
+): boolean {
+  const pageLike = asPageLike(page);
   const explicitFlags = [
-    page?.hasMore,
-    page?.has_more,
-    page?.pagination?.hasMore,
-    page?.pagination?.has_more,
+    pageLike?.hasMore,
+    pageLike?.has_more,
+    pageLike?.pagination?.hasMore,
+    pageLike?.pagination?.has_more,
   ];
 
   const explicitFlag = explicitFlags.find((value) => typeof value === 'boolean');
@@ -26,43 +95,55 @@ export function getHasMoreFromPage(page, allPages, pageSize) {
 
   const pageLogs = getLogsFromPage(page);
   const totalCandidates = [
-    page?.total,
-    page?.totalCount,
-    page?.total_count,
-    page?.pagination?.total,
-    page?.pagination?.totalCount,
-    page?.pagination?.total_count,
+    pageLike?.total,
+    pageLike?.totalCount,
+    pageLike?.total_count,
+    pageLike?.pagination?.total,
+    pageLike?.pagination?.totalCount,
+    pageLike?.pagination?.total_count,
   ];
 
   for (const candidate of totalCandidates) {
     const total = Number(candidate);
     if (Number.isFinite(total) && total >= 0) {
-      const loadedCount = (allPages || []).reduce((acc, currentPage) => {
+      const loadedCount = (allPages || []).reduce((acc: number, currentPage: unknown) => {
         return acc + getLogsFromPage(currentPage).length;
       }, 0);
       return loadedCount < total;
     }
   }
 
-  return pageLogs.length >= pageSize;
+  return pageLogs.length >= Number(pageSize || 0);
 }
 
-export function getNextCursorFromPage(page) {
+/**
+ * Resolves the next pagination cursor from a page response.
+ * @param page
+ */
+export function getNextCursorFromPage(page: unknown): CursorValue | undefined {
+  const pageLike = asPageLike(page);
   const pageLogs = getLogsFromPage(page);
   const candidates = [
-    page?.nextCursor,
-    page?.next_cursor,
-    page?.pagination?.nextCursor,
-    page?.pagination?.next_cursor,
+    pageLike?.nextCursor,
+    pageLike?.next_cursor,
+    pageLike?.pagination?.nextCursor,
+    pageLike?.pagination?.next_cursor,
   ];
 
   for (const candidate of candidates) {
     if (candidate != null && candidate !== '' && candidate !== 0 && candidate !== '0') {
-      return candidate;
+      if (
+        typeof candidate === 'string' ||
+        typeof candidate === 'number' ||
+        typeof candidate === 'bigint'
+      ) {
+        return candidate;
+      }
     }
   }
 
-  const tailId = pageLogs[pageLogs.length - 1]?.id;
+  const tailLog = asLogLike(pageLogs[pageLogs.length - 1]);
+  const tailId = tailLog.id;
   if (tailId != null && tailId !== 0 && tailId !== '0') {
     return tailId;
   }
@@ -72,7 +153,11 @@ export function getNextCursorFromPage(page) {
 
 // ── Timestamp parsing ──────────────────────────────────────────────────────
 
-export function parseTimestampMs(value) {
+/**
+ * Parses an unknown timestamp value to epoch milliseconds.
+ * @param value
+ */
+export function parseTimestampMs(value: unknown): number {
   if (value == null || value === '') return 0;
 
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -101,7 +186,7 @@ export function parseTimestampMs(value) {
     if (Number.isFinite(parsed)) return parsed;
 
     const m = trimmed.match(
-      /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,9}))?(Z)?$/
+      /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,9}))?(Z)?$/,
     );
     if (m) {
       const [, y, mo, d, h, mi, s, frac = '', z] = m;
@@ -121,27 +206,41 @@ export function parseTimestampMs(value) {
   return 0;
 }
 
-export function getTimestampMs(log) {
-  return parseTimestampMs(log?.timestamp);
+/**
+ * Returns timestamp in milliseconds from a log record.
+ * @param log
+ */
+export function getTimestampMs(log: unknown): number {
+  const logLike = asLogLike(log);
+  return parseTimestampMs(logLike.timestamp);
 }
 
 // ── BigInt ID comparison ───────────────────────────────────────────────────
 
-export function toBigIntId(id) {
+/**
+ * Normalizes an id-like value into BigInt when possible.
+ * @param id
+ */
+export function toBigIntId(id: unknown): bigint | null {
   if (id == null || id === '') return null;
   if (typeof id === 'bigint') return id;
   if (typeof id === 'number' && Number.isFinite(id)) return BigInt(Math.trunc(id));
   if (typeof id === 'string' && /^-?\d+$/.test(id)) {
     try {
       return BigInt(id);
-    } catch {
+    } catch (_error: unknown) {
       return null;
     }
   }
   return null;
 }
 
-export function compareIdsDesc(aId, bId) {
+/**
+ * Sort comparator for descending log ids.
+ * @param aId
+ * @param bId
+ */
+export function compareIdsDesc(aId: unknown, bId: unknown): number {
   const aBig = toBigIntId(aId);
   const bBig = toBigIntId(bId);
 
@@ -158,37 +257,61 @@ export function compareIdsDesc(aId, bId) {
 
 // ── Log field accessor (shared across LogRow, LogsRawView) ─────────────────
 
-export function getLogValue(log, key) {
-  if (!log) return '';
-  if (key === 'service_name' || key === 'service') return log.serviceName || log.service_name || '';
-  if (key === 'trace_id') return log.traceId || log.trace_id || '';
-  if (key === 'span_id') return log.spanId || log.span_id || '';
-  return log[key] ?? '';
+/**
+ * Reads a display value from a log row using legacy and normalized key aliases.
+ * @param log
+ * @param key
+ */
+export function getLogValue(log: unknown, key: string): unknown {
+  const logLike = asLogLike(log);
+  if (key === 'service_name' || key === 'service') {
+    return logLike.serviceName || logLike.service_name || '';
+  }
+  if (key === 'trace_id') {
+    return logLike.traceId || logLike.trace_id || '';
+  }
+  if (key === 'span_id') {
+    return logLike.spanId || logLike.span_id || '';
+  }
+  return logLike[key] ?? '';
 }
 
 // ── Row key generation ─────────────────────────────────────────────────────
 
-export function rowKey(log, i) {
-  const id = String(log?.id ?? '').trim();
+/**
+ * Builds a stable React row key for log rows.
+ * @param log
+ * @param i
+ */
+export function rowKey(log: unknown, i: number): string {
+  const logLike = asLogLike(log);
+  const id = String(logLike.id ?? '').trim();
   if (id && id !== '0') return `log-${id}`;
 
-  const traceId = log?.traceId || log?.trace_id || '';
-  const spanId = log?.spanId || log?.span_id || '';
-  if (traceId && spanId) return `${traceId}-${spanId}-${log.timestamp}`;
+  const traceId = logLike.traceId || logLike.trace_id || '';
+  const spanId = logLike.spanId || logLike.span_id || '';
+  if (traceId && spanId) return `${traceId}-${spanId}-${String(logLike.timestamp ?? '')}`;
 
-  return `log-${i}-${log.timestamp}`;
+  return `log-${i}-${String(logLike.timestamp ?? '')}`;
 }
 
 // ── Server total extraction ────────────────────────────────────────────────
 
-export function extractServerTotal(pages) {
+/**
+ * Reads a total-count value from the first paginated backend response.
+ * @param pages
+ */
+export function extractServerTotal(pages: unknown): number {
+  const pageList = Array.isArray(pages) ? pages : [];
+  const firstPage = asPageLike(pageList[0]);
+
   return Number(
-    pages?.[0]?.total
-    ?? pages?.[0]?.totalCount
-    ?? pages?.[0]?.total_count
-    ?? pages?.[0]?.pagination?.total
-    ?? pages?.[0]?.pagination?.totalCount
-    ?? pages?.[0]?.pagination?.total_count
-    ?? 0
+    firstPage?.total
+    ?? firstPage?.totalCount
+    ?? firstPage?.total_count
+    ?? firstPage?.pagination?.total
+    ?? firstPage?.pagination?.totalCount
+    ?? firstPage?.pagination?.total_count
+    ?? 0,
   );
 }

@@ -1,6 +1,8 @@
-import React from 'react';
 import { Card, Skeleton } from 'antd';
+import React from 'react';
+
 import { TrendIndicator } from '@components/common';
+
 import SparklineChart from '../../charts/micro/SparklineChart';
 import './StatCard.css';
 
@@ -23,6 +25,22 @@ interface StatCardProps {
   sparklineColor?: string;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.title
+ * @param root0.value
+ * @param root0.formatter
+ * @param root0.trend
+ * @param root0.trendInverted
+ * @param root0.icon
+ * @param root0.iconColor
+ * @param root0.loading
+ * @param root0.suffix
+ * @param root0.description
+ * @param root0.sparklineData
+ * @param root0.sparklineColor
+ */
 export default function StatCard({
   title,
   value,
