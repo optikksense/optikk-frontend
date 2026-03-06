@@ -1,0 +1,369 @@
+/* Theme color tokens for dark (default) and light modes. */
+:root {
+
+  /* Auto-generated literal color tokens (shared) */
+  --literal-hex-00758f: #00758F;
+  --literal-hex-00bfb3: #00BFB3;
+  --literal-hex-06aed5: #06AED5;
+  --literal-hex-06d6a0: #06D6A0;
+  --literal-hex-073b4c: #073B4C;
+  --literal-hex-0a0a0a: #0a0a0a;
+  --literal-hex-0a0a0a-2: #0A0A0A;
+  --literal-hex-0d0d0d: #0D0D0D;
+  --literal-hex-0f0f0f: #0f0f0f;
+  --literal-hex-0f80cc: #0F80CC;
+  --literal-hex-10b981: #10B981;
+  --literal-hex-111: #111;
+  --literal-hex-111827: #111827;
+  --literal-hex-118ab2: #118AB2;
+  --literal-hex-12131a: #12131A;
+  --literal-hex-1287b1: #1287B1;
+  --literal-hex-12b76a: #12B76A;
+  --literal-hex-13aa52: #13AA52;
+  --literal-hex-141414: #141414;
+  --literal-hex-141419: #141419;
+  --literal-hex-188fff: #188FFF;
+  --literal-hex-1890ff: #1890ff;
+  --literal-hex-1a1a1a: #1a1a1a;
+  --literal-hex-1a1a1a-2: #1A1A1A;
+  --literal-hex-1a1a22: #1A1A22;
+  --literal-hex-1a1a2e: #1a1a2e;
+  --literal-hex-1a3a52: #1a3a52;
+  --literal-hex-1e1e28: #1E1E28;
+  --literal-hex-1f1f1f: #1f1f1f;
+  --literal-hex-231f20: #231F20;
+  --literal-hex-252525: #252525;
+  --literal-hex-262626: #262626;
+  --literal-hex-262633: #262633;
+  --literal-hex-27aae1: #27AAE1;
+  --literal-hex-2a2a2a: #2a2a2a;
+  --literal-hex-2a2a35: #2A2A35;
+  --literal-hex-2d2d2d: #2D2D2D;
+  --literal-hex-2d2d3a: #2D2D3A;
+  --literal-hex-333: #333;
+  --literal-hex-336791: #336791;
+  --literal-hex-35d68f: #35d68f;
+  --literal-hex-3a3a48: #3A3A48;
+  --literal-hex-3b82f6: #3B82F6;
+  --literal-hex-40a9ff: #40a9ff;
+  --literal-hex-434343: #434343;
+  --literal-hex-444: #444;
+  --literal-hex-48cae4: #48CAE4;
+  --literal-hex-4ade80: #4ADE80;
+  --literal-hex-4e9fdd: #4e9fdd;
+  --literal-hex-555: #555;
+  --literal-hex-595959: #595959;
+  --literal-hex-5a6275: #5a6275;
+  --literal-hex-5a6275-2: #5A6275;
+  --literal-hex-5e35b1: #5E35B1;
+  --literal-hex-5e60ce: #5E60CE;
+  --literal-hex-5e60ce22: #5E60CE22;
+  --literal-hex-5e60ce55: #5E60CE55;
+  --literal-hex-5e9ed6: #5E9ED6;
+  --literal-hex-5eb8ff: #5EB8FF;
+  --literal-hex-6366f1: #6366F1;
+  --literal-hex-666: #666;
+  --literal-hex-66c7e0: #66C7E0;
+  --literal-hex-6b7280: #6b7280;
+  --literal-hex-6b7280-2: #6B7280;
+  --literal-hex-6db33f: #6DB33F;
+  --literal-hex-6e70de: #6E70DE;
+  --literal-hex-6edb8f: #6EDB8F;
+  --literal-hex-722ed1: #722ED1;
+  --literal-hex-73bf69: #73bf69;
+  --literal-hex-73c991: #73C991;
+  --literal-hex-7477d9: #7477D9;
+  --literal-hex-777: #777;
+  --literal-hex-7e8595: #7e8595;
+  --literal-hex-7e8ea0: #7e8ea0;
+  --literal-hex-83d483: #83D483;
+  --literal-hex-8a8a8a: #8A8A8A;
+  --literal-hex-8b8eff: #8B8EFF;
+  --literal-hex-8c8c8c: #8c8c8c;
+  --literal-hex-8d95aa: #8d95aa;
+  --literal-hex-8dd8f8: #8DD8F8;
+  --literal-hex-8e8e8e: #8e8e8e;
+  --literal-hex-92cbff: #92CBFF;
+  --literal-hex-96a2ff: #96A2FF;
+  --literal-hex-98a2b3: #98A2B3;
+  --literal-hex-98a2b8: #98a2b8;
+  --literal-hex-98d660: #98D660;
+  --literal-hex-9ca3af: #9CA3AF;
+  --literal-hex-9e77ed: #9E77ED;
+  --literal-hex-9ea0e5: #9EA0E5;
+  --literal-hex-9ea8bf: #9ea8bf;
+  --literal-hex-a8a9ff: #a8a9ff;
+  --literal-hex-a8b0c4: #a8b0c4;
+  --literal-hex-aaa: #aaa;
+  --literal-hex-aab1c7: #aab1c7;
+  --literal-hex-b0b0b0: #b0b0b0;
+  --literal-hex-b5b8f5: #b5b8f5;
+  --literal-hex-c00021: #c00021;
+  --literal-hex-c8d43d: #c8d43d;
+  --literal-hex-c8d43d-2: #C8D43D;
+  --literal-hex-cc2927: #CC2927;
+  --literal-hex-ccc: #ccc;
+  --literal-hex-cdd3e4: #cdd3e4;
+  --literal-hex-d1d5db: #D1D5DB;
+  --literal-hex-d32f2f: #D32F2F;
+  --literal-hex-d8dce8: #d8dce8;
+  --literal-hex-d92d20: #D92D20;
+  --literal-hex-dc382d: #DC382D;
+  --literal-hex-e0b400: #e0b400;
+  --literal-hex-e0e0e0: #e0e0e0;
+  --literal-hex-e478fa: #E478FA;
+  --literal-hex-e5e7eb: #e5e7eb;
+  --literal-hex-e5e7eb-2: #E5E7EB;
+  --literal-hex-e8494d: #e8494d;
+  --literal-hex-e86b69: #E86B69;
+  --literal-hex-e8e8e8: #e8e8e8;
+  --literal-hex-e8ecf8: #e8ecf8;
+  --literal-hex-e9ecf5: #e9ecf5;
+  --literal-hex-ef476f: #EF476F;
+  --literal-hex-ef9a9a: #EF9A9A;
+  --literal-hex-eff2fa: #eff2fa;
+  --literal-hex-f04438: #F04438;
+  --literal-hex-f0adb3: #f0adb3;
+  --literal-hex-f29111: #F29111;
+  --literal-hex-f59e0b: #F59E0B;
+  --literal-hex-f78c6b: #F78C6B;
+  --literal-hex-f79009: #F79009;
+  --literal-hex-f7b63a: #f7b63a;
+  --literal-hex-f7b63a-2: #F7B63A;
+  --literal-hex-f80000: #F80000;
+  --literal-hex-fa8c16: #FA8C16;
+  --literal-hex-fdb022: #FDB022;
+  --literal-hex-fec514: #FEC514;
+  --literal-hex-ff4d5a: #ff4d5a;
+  --literal-hex-ff4d5a-2: #FF4D5A;
+  --literal-hex-ff6600: #FF6600;
+  --literal-hex-ff6b35: #FF6B35;
+  --literal-hex-ff6b6b: #FF6B6B;
+  --literal-hex-ff9900: #FF9900;
+  --literal-hex-ffb088: #FFB088;
+  --literal-hex-ffd166: #FFD166;
+  --literal-hex-ffd599: #FFD599;
+  --literal-hex-fff: #fff;
+  --literal-rgb-130-50-90: rgb(130, 50, 90);
+  --literal-rgb-217-0-0: rgb(217, 0, 0);
+  --literal-rgb-30-100-180: rgb(30, 100, 180);
+  --literal-rgba-0-0-0-0p1: rgba(0, 0, 0, 0.1);
+  --literal-rgba-0-0-0-0p15: rgba(0, 0, 0, 0.15);
+  --literal-rgba-0-0-0-0p2: rgba(0, 0, 0, 0.2);
+  --literal-rgba-0-0-0-0p25: rgba(0, 0, 0, 0.25);
+  --literal-rgba-0-0-0-0p3: rgba(0, 0, 0, 0.3);
+  --literal-rgba-0-0-0-0p35: rgba(0, 0, 0, 0.35);
+  --literal-rgba-0-0-0-0p4: rgba(0, 0, 0, 0.4);
+  --literal-rgba-0-0-0-0p45: rgba(0, 0, 0, 0.45);
+  --literal-rgba-0-0-0-0p5: rgba(0, 0, 0, 0.5);
+  --literal-rgba-0-0-0-0p55: rgba(0, 0, 0, 0.55);
+  --literal-rgba-0-0-0-0p65: rgba(0, 0, 0, 0.65);
+  --literal-rgba-0-0-0-0p8: rgba(0, 0, 0, 0.8);
+  --literal-rgba-10-14-24-0p88: rgba(10, 14, 24, 0.88);
+  --literal-rgba-115-201-145-0p12: rgba(115, 201, 145, 0.12);
+  --literal-rgba-115-201-145-0p12-2: rgba(115,201,145,0.12);
+  --literal-rgba-115-201-145-0p3: rgba(115, 201, 145, 0.3);
+  --literal-rgba-116-124-145-0p2: rgba(116, 124, 145, 0.2);
+  --literal-rgba-120-145-213-0p95: rgba(120, 145, 213, 0.95);
+  --literal-rgba-127-145-194-0p72: rgba(127, 145, 194, 0.72);
+  --literal-rgba-13-13-13-0p7: rgba(13, 13, 13, 0.7);
+  --literal-rgba-132-141-166-0p2: rgba(132, 141, 166, 0.2);
+  --literal-rgba-14-25-48-0p95: rgba(14, 25, 48, 0.95);
+  --literal-rgba-142-51-67-0p95: rgba(142, 51, 67, 0.95);
+  --literal-rgba-15-18-25-0p82: rgba(15, 18, 25, 0.82);
+  --literal-rgba-16-185-129-0p12: rgba(16,185,129,0.12);
+  --literal-rgba-18-183-106-0p12: rgba(18,183,106,0.12);
+  --literal-rgba-18-183-106-0p3: rgba(18,183,106,0.3);
+  --literal-rgba-20-23-31-0p88: rgba(20, 23, 31, 0.88);
+  --literal-rgba-21-24-32-0p96: rgba(21, 24, 32, 0.96);
+  --literal-rgba-240-68-56-0p05: rgba(240, 68, 56, 0.05);
+  --literal-rgba-240-68-56-0p08: rgba(240, 68, 56, 0.08);
+  --literal-rgba-240-68-56-0p1: rgba(240, 68, 56, 0.1);
+  --literal-rgba-240-68-56-0p12: rgba(240, 68, 56, 0.12);
+  --literal-rgba-240-68-56-0p12-2: rgba(240,68,56,0.12);
+  --literal-rgba-240-68-56-0p16: rgba(240, 68, 56, 0.16);
+  --literal-rgba-240-68-56-0p2: rgba(240, 68, 56, 0.2);
+  --literal-rgba-240-68-56-0p3: rgba(240, 68, 56, 0.3);
+  --literal-rgba-240-68-56-0p3-2: rgba(240,68,56,0.3);
+  --literal-rgba-240-68-56-0p35: rgba(240, 68, 56, 0.35);
+  --literal-rgba-240-68-56-0p5: rgba(240, 68, 56, 0.5);
+  --literal-rgba-245-158-11-0p12: rgba(245,158,11,0.12);
+  --literal-rgba-247-144-9-0p12: rgba(247, 144, 9, 0.12);
+  --literal-rgba-247-144-9-0p12-2: rgba(247,144,9,0.12);
+  --literal-rgba-247-144-9-0p15: rgba(247,144,9,0.15);
+  --literal-rgba-247-144-9-0p2: rgba(247, 144, 9, 0.2);
+  --literal-rgba-247-144-9-0p3: rgba(247, 144, 9, 0.3);
+  --literal-rgba-247-144-9-0p3-2: rgba(247,144,9,0.3);
+  --literal-rgba-250-173-20-0p2: rgba(250, 173, 20, 0.2);
+  --literal-rgba-255-255-255-0p015: rgba(255, 255, 255, 0.015);
+  --literal-rgba-255-255-255-0p02: rgba(255, 255, 255, 0.02);
+  --literal-rgba-255-255-255-0p03: rgba(255, 255, 255, 0.03);
+  --literal-rgba-255-255-255-0p04: rgba(255, 255, 255, 0.04);
+  --literal-rgba-255-255-255-0p04-2: rgba(255,255,255,0.04);
+  --literal-rgba-255-255-255-0p05: rgba(255, 255, 255, 0.05);
+  --literal-rgba-255-255-255-0p06: rgba(255, 255, 255, 0.06);
+  --literal-rgba-255-255-255-0p06-2: rgba(255,255,255,0.06);
+  --literal-rgba-255-255-255-0p08: rgba(255, 255, 255, 0.08);
+  --literal-rgba-255-255-255-0p1: rgba(255, 255, 255, 0.1);
+  --literal-rgba-255-255-255-0p12: rgba(255, 255, 255, 0.12);
+  --literal-rgba-255-255-255-0p15: rgba(255, 255, 255, 0.15);
+  --literal-rgba-255-255-255-0p2: rgba(255, 255, 255, 0.2);
+  --literal-rgba-255-255-255-0p45: rgba(255, 255, 255, 0.45);
+  --literal-rgba-255-255-255-0p55: rgba(255, 255, 255, 0.55);
+  --literal-rgba-255-255-255-0p6: rgba(255, 255, 255, 0.6);
+  --literal-rgba-255-255-255-0p7: rgba(255,255,255,0.7);
+  --literal-rgba-255-255-255-0p8: rgba(255,255,255,0.8);
+  --literal-rgba-255-255-255-0p85: rgba(255, 255, 255, 0.85);
+  --literal-rgba-255-255-255-0p87: rgba(255, 255, 255, 0.87);
+  --literal-rgba-255-255-255-0p9: rgba(255, 255, 255, 0.9);
+  --literal-rgba-255-77-79-0p2: rgba(255, 77, 79, 0.2);
+  --literal-rgba-27-31-42-0p9: rgba(27, 31, 42, 0.9);
+  --literal-rgba-34-39-53-0p97: rgba(34, 39, 53, 0.97);
+  --literal-rgba-36-41-53-0p95: rgba(36, 41, 53, 0.95);
+  --literal-rgba-42-34-18-0p9: rgba(42, 34, 18, 0.9);
+  --literal-rgba-56-18-27-0p92: rgba(56, 18, 27, 0.92);
+  --literal-rgba-6-174-213-0p12: rgba(6, 174, 213, 0.12);
+  --literal-rgba-6-174-213-0p12-2: rgba(6,174,213,0.12);
+  --literal-rgba-6-174-213-0p15: rgba(6, 174, 213, 0.15);
+  --literal-rgba-6-174-213-0p3: rgba(6, 174, 213, 0.3);
+  --literal-rgba-6-174-213-0p35: rgba(6, 174, 213, 0.35);
+  --literal-rgba-6-214-160-0p2: rgba(6, 214, 160, 0.2);
+  --literal-rgba-61-68-88-0p9: rgba(61, 68, 88, 0.9);
+  --literal-rgba-63-89-140-0p35: rgba(63, 89, 140, 0.35);
+  --literal-rgba-65-88-145-0p45: rgba(65, 88, 145, 0.45);
+  --literal-rgba-72-87-121-0p65: rgba(72, 87, 121, 0.65);
+  --literal-rgba-78-168-222-0p08: rgba(78, 168, 222, 0.08);
+  --literal-rgba-8-10-16-0p98: rgba(8, 10, 16, 0.98);
+  --literal-rgba-83-93-117-0p72: rgba(83, 93, 117, 0.72);
+  --literal-rgba-94-96-206-0p07: rgba(94, 96, 206, 0.07);
+  --literal-rgba-94-96-206-0p08: rgba(94, 96, 206, 0.08);
+  --literal-rgba-94-96-206-0p1: rgba(94, 96, 206, 0.1);
+  --literal-rgba-94-96-206-0p12: rgba(94, 96, 206, 0.12);
+  --literal-rgba-94-96-206-0p12-2: rgba(94,96,206,0.12);
+  --literal-rgba-94-96-206-0p14: rgba(94, 96, 206, 0.14);
+  --literal-rgba-94-96-206-0p15: rgba(94, 96, 206, 0.15);
+  --literal-rgba-94-96-206-0p15-2: rgba(94,96,206,0.15);
+  --literal-rgba-94-96-206-0p16: rgba(94, 96, 206, 0.16);
+  --literal-rgba-94-96-206-0p18: rgba(94, 96, 206, 0.18);
+  --literal-rgba-94-96-206-0p2: rgba(94, 96, 206, 0.2);
+  --literal-rgba-94-96-206-0p22: rgba(94, 96, 206, 0.22);
+  --literal-rgba-94-96-206-0p25: rgba(94, 96, 206, 0.25);
+  --literal-rgba-94-96-206-0p28: rgba(94, 96, 206, 0.28);
+  --literal-rgba-94-96-206-0p3: rgba(94, 96, 206, 0.3);
+  --literal-rgba-94-96-206-0p3-2: rgba(94,96,206,0.3);
+  --literal-rgba-94-96-206-0p35: rgba(94, 96, 206, 0.35);
+  --literal-rgba-94-96-206-0p4: rgba(94, 96, 206, 0.4);
+  --literal-rgba-94-96-206-0p5: rgba(94, 96, 206, 0.5);
+  --literal-rgba-95-106-133-0p45: rgba(95, 106, 133, 0.45);
+
+  /* Background tokens */
+  --bg-primary: #0D0E14;
+  /* Fix 11: subtle blue-tinted near-black (was #0A0A0A) */
+  --bg-secondary: #0D0D0D;
+  --bg-tertiary: #1A1A1A;
+  --bg-hover: #1A1A1A;
+  --border-color: #2D2D2D;
+  --border-light: #1A1A1A;
+
+  /* Text tokens */
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted: #8A8A8A;
+  /* Fix 11: was #666 — now 4.6:1 contrast on #0D0E14 */
+
+  /* Brand / semantic tokens */
+  --color-primary: #5E60CE;
+  --color-primary-hover: #7477D9;
+  --color-success: #73C991;
+  --color-warning: #F79009;
+  --color-error: #F04438;
+  --color-info: #06AED5;
+
+  /* Severity tokens (Fix 13) */
+  --severity-critical: #F04438;
+  --severity-critical-subtle: rgba(240, 68, 56, 0.15);
+  --severity-high: #F97316;
+  --severity-high-subtle: rgba(249, 115, 22, 0.15);
+  --severity-medium: #F79009;
+  --severity-medium-subtle: rgba(247, 144, 9, 0.15);
+  --severity-low: #3B82F6;
+  --severity-low-subtle: rgba(59, 130, 246, 0.15);
+  --severity-info: #06AED5;
+  --severity-info-subtle: rgba(6, 174, 213, 0.15);
+
+  /* Colorblind-safe chart palette (Fix 14, IBM palette) */
+  --chart-1: #648FFF;
+  /* blue */
+  --chart-2: #785EF0;
+  /* purple */
+  --chart-3: #DC267F;
+  /* magenta */
+  --chart-4: #FE6100;
+  /* orange */
+  --chart-5: #FFB000;
+  /* gold */
+  --chart-6: #009E73;
+  /* teal */
+  --chart-7: #56B4E9;
+  /* sky */
+  --chart-8: #CC79A7;
+  /* coral */
+
+  /* Scrollbar */
+  --scrollbar-track: #0D0D0D;
+  --scrollbar-thumb: #2D2D2D;
+  --scrollbar-thumb-hover: #3D3D3D;
+
+  /* Glass / elevation tokens */
+  --glass-bg: rgba(26, 26, 26, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --glass-blur: blur(12px);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #5E60CE 0%, #4EA8DE 100%);
+  --gradient-text: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0.7));
+  --gradient-text-accent: linear-gradient(135deg, #7477D9, #4EA8DE);
+
+  /* Theme-driven toast tokens */
+  --toast-bg: #1A1A1A;
+  --toast-text: #FFFFFF;
+  --toast-border: #2D2D2D;
+
+  color-scheme: dark;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* Light Theme (Fix 16: glassmorphism + Fix 11 contrast) */
+[data-theme="light"] {
+
+
+  --bg-primary: #F8F9FA;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F0F1F3;
+  --bg-hover: #F0F1F3;
+  --border-color: #E5E7EB;
+  --border-light: #F0F1F3;
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-muted: #6B7280;
+
+  /* Fix 16: light-theme glassmorphism tokens */
+  --glass-bg: rgba(255, 255, 255, 0.70);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  --glass-blur: blur(16px);
+
+  --scrollbar-track: #F0F1F3;
+  --scrollbar-thumb: #D1D5DB;
+  --scrollbar-thumb-hover: #9CA3AF;
+
+  --toast-bg: #FFFFFF;
+  --toast-text: #1A1A2E;
+  --toast-border: #E5E7EB;
+
+  color-scheme: light;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}

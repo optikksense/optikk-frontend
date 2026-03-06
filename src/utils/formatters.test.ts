@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -51,11 +52,11 @@ describe('formatters', () => {
   });
 
   it('returns display helpers for colors and truncation', () => {
-    expect(getHealthColor('healthy')).toBe('#73C991');
-    expect(getHealthColor('missing')).toBe('#98A2B3');
-    expect(getErrorRateColor(0.4)).toBe('#73C991');
-    expect(getErrorRateColor(3)).toBe('#F79009');
-    expect(getErrorRateColor(7)).toBe('#F04438');
+    expect(getHealthColor('healthy')).toBe(APP_COLORS.hex_73c991);
+    expect(getHealthColor('missing')).toBe(APP_COLORS.hex_98a2b3);
+    expect(getErrorRateColor(0.4)).toBe(APP_COLORS.hex_73c991);
+    expect(getErrorRateColor(3)).toBe(APP_COLORS.hex_f79009);
+    expect(getErrorRateColor(7)).toBe(APP_COLORS.hex_f04438);
     expect(truncateText('short', 10)).toBe('short');
     expect(truncateText('1234567890', 5)).toBe('12345...');
   });

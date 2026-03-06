@@ -1,7 +1,7 @@
 .login-container {
   min-height: 100vh;
   display: flex;
-  background: #0A0A0A;
+  background: var(--literal-hex-0a0a0a-2);
 }
 
 .login-branding {
@@ -10,8 +10,8 @@
   flex-direction: column;
   justify-content: center;
   padding: 48px;
-  background: linear-gradient(135deg, #0D0D0D 0%, #1A1A1A 100%);
-  border-right: 1px solid #2D2D2D;
+  background: linear-gradient(135deg, var(--literal-hex-0d0d0d) 0%, var(--literal-hex-1a1a1a-2) 100%);
+  border-right: 1px solid var(--literal-hex-2d2d2d);
 }
 
 .login-branding-content {
@@ -28,12 +28,12 @@
 .branding-logo-icon {
   width: 48px;
   height: 48px;
-  background: #5E60CE;
+  background: var(--literal-hex-5e60ce);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--literal-hex-fff);
 }
 
 .branding-features {
@@ -56,20 +56,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(94, 96, 206, 0.1);
+  background: var(--literal-rgba-94-96-206-0p1);
   border-radius: 8px;
 }
 
 .feature-title {
   font-size: 16px;
   font-weight: 600;
-  color: #fff;
+  color: var(--literal-hex-fff);
   margin-bottom: 4px;
 }
 
 .feature-desc {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--literal-rgba-255-255-255-0p6);
 }
 
 .login-form-section {
@@ -83,15 +83,15 @@
 .login-card {
   width: 100%;
   max-width: 420px;
-  background: #0D0D0D !important;
-  border: 1px solid #2D2D2D !important;
+  background: var(--literal-hex-0d0d0d) !important;
+  border: 1px solid var(--literal-hex-2d2d2d) !important;
   border-radius: 12px !important;
   padding: 24px;
 }
 
 .login-demo-info {
   padding: 12px;
-  background: rgba(94, 96, 206, 0.1);
+  background: var(--literal-rgba-94-96-206-0p1);
   border-radius: 8px;
   text-align: center;
 }
@@ -104,7 +104,7 @@
   .login-branding {
     padding: 32px;
     border-right: none;
-    border-bottom: 1px solid #2D2D2D;
+    border-bottom: 1px solid var(--literal-hex-2d2d2d);
   }
 
   .login-form-section {

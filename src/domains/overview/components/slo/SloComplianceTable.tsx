@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Card, Table, Tag } from 'antd';
 
 interface SloComplianceTableProps {
@@ -51,7 +52,7 @@ export default function SloComplianceTable({
       key: 'error_count',
       align: 'right' as const,
       render: (value: any) => (
-        <span style={{ color: Number(value) > 0 ? '#F04438' : 'var(--text-muted)', fontWeight: 600 }}>
+        <span style={{ color: Number(value) > 0 ? APP_COLORS.hex_f04438 : 'var(--text-muted)', fontWeight: 600 }}>
           {Number(value || 0).toLocaleString()}
         </span>
       ),
@@ -65,7 +66,7 @@ export default function SloComplianceTable({
       render: (value: any) => {
         const normalized = n(value);
         return (
-          <span style={{ color: normalized >= availabilityTarget ? '#12B76A' : '#F04438', fontWeight: 700 }}>
+          <span style={{ color: normalized >= availabilityTarget ? APP_COLORS.hex_12b76a : APP_COLORS.hex_f04438, fontWeight: 700 }}>
             {normalized.toFixed(3)}%
           </span>
         );
@@ -80,7 +81,7 @@ export default function SloComplianceTable({
       render: (value: any) => {
         const normalized = n(value);
         return (
-          <span style={{ color: normalized > p95TargetMs ? '#F04438' : normalized > 100 ? '#F79009' : '#12B76A', fontWeight: 600 }}>
+          <span style={{ color: normalized > p95TargetMs ? APP_COLORS.hex_f04438 : normalized > 100 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_12b76a, fontWeight: 600 }}>
             {normalized.toFixed(1)}ms
           </span>
         );
@@ -95,9 +96,9 @@ export default function SloComplianceTable({
         return (
           <Tag
             style={{
-              background: compliant ? 'rgba(18,183,106,0.12)' : 'rgba(240,68,56,0.12)',
-              color: compliant ? '#12B76A' : '#F04438',
-              border: `1px solid ${compliant ? 'rgba(18,183,106,0.3)' : 'rgba(240,68,56,0.3)'}`,
+              background: compliant ? APP_COLORS.rgba_18_183_106_0p12 : APP_COLORS.rgba_240_68_56_0p12_2,
+              color: compliant ? APP_COLORS.hex_12b76a : APP_COLORS.hex_f04438,
+              border: `1px solid ${compliant ? APP_COLORS.rgba_18_183_106_0p3 : APP_COLORS.rgba_240_68_56_0p3_2}`,
               borderRadius: 12,
               fontSize: 11,
             }}

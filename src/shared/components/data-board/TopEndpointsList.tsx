@@ -1,16 +1,17 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { formatNumber, formatDuration } from '@utils/formatters';
 
 const CHART_COLORS = [
-  '#5E60CE',
-  '#48CAE4',
-  '#06D6A0',
-  '#FFD166',
-  '#EF476F',
-  '#118AB2',
-  '#073B4C',
-  '#F78C6B',
-  '#83D483',
-  '#5E35B1',
+  APP_COLORS.hex_5e60ce,
+  APP_COLORS.hex_48cae4,
+  APP_COLORS.hex_06d6a0,
+  APP_COLORS.hex_ffd166,
+  APP_COLORS.hex_ef476f,
+  APP_COLORS.hex_118ab2,
+  APP_COLORS.hex_073b4c,
+  APP_COLORS.hex_f78c6b,
+  APP_COLORS.hex_83d483,
+  APP_COLORS.hex_5e35b1,
 ];
 
 type TopEndpointsListType = 'requests' | 'errorRate' | 'latency';
@@ -47,9 +48,9 @@ function getRowDisplayConfig(
   if (type === 'errorRate') {
     const rate = endpoint.errorRate ?? endpoint.value ?? 0;
     return {
-      selectedBg: 'rgba(240, 68, 56, 0.2)',
-      hoverBg: 'rgba(255, 255, 255, 0.05)',
-      valueColor: rate > 5 ? '#F04438' : '#e0e0e0',
+      selectedBg: APP_COLORS.rgba_240_68_56_0p2,
+      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
+      valueColor: rate > 5 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_e0e0e0,
       displayValue: `${Number(rate).toFixed(2)}%`,
     };
   }
@@ -57,17 +58,17 @@ function getRowDisplayConfig(
   if (type === 'latency') {
     const latency = endpoint.latency ?? 0;
     return {
-      selectedBg: 'rgba(247, 144, 9, 0.2)',
-      hoverBg: 'rgba(255, 255, 255, 0.05)',
-      valueColor: latency > 500 ? '#F04438' : latency > 200 ? '#F79009' : '#e0e0e0',
+      selectedBg: APP_COLORS.rgba_247_144_9_0p2,
+      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
+      valueColor: latency > 500 ? APP_COLORS.hex_f04438 : latency > 200 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_e0e0e0,
       displayValue: formatDuration(latency),
     };
   }
 
   return {
-    selectedBg: 'rgba(94, 96, 206, 0.2)',
-    hoverBg: 'rgba(255, 255, 255, 0.05)',
-    valueColor: '#e0e0e0',
+    selectedBg: APP_COLORS.rgba_94_96_206_0p2,
+    hoverBg: APP_COLORS.rgba_255_255_255_0p05,
+    valueColor: APP_COLORS.hex_e0e0e0,
     displayValue: formatNumber(endpoint.request_count ?? 0),
   };
 }
@@ -87,13 +88,13 @@ export default function TopEndpointsList({
   if (endpoints.length === 0) return null;
 
   return (
-    <div style={{ marginTop: 0, borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+    <div style={{ marginTop: 0, borderTop: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}` }}>
       <div
         style={{
           maxHeight: '180px',
           overflowY: 'auto',
           scrollbarWidth: 'thin',
-          scrollbarColor: 'var(--border-color, #2D2D2D) transparent',
+          scrollbarColor: `var(--border-color, ${APP_COLORS.hex_2d2d2d}) transparent`,
         }}
       >
         <table
@@ -107,8 +108,8 @@ export default function TopEndpointsList({
           <thead>
             <tr
               style={{
-                color: '#8e8e8e',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                color: APP_COLORS.hex_8e8e8e,
+                borderBottom: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}`,
               }}
             >
               <th style={{ padding: '4px 8px', fontWeight: 500 }}>Name</th>
@@ -167,11 +168,11 @@ export default function TopEndpointsList({
                       }}
                     />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: '#e0e0e0', fontWeight: 500 }}>
+                      <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
                         {endpoint.endpoint}
                       </span>
                       {endpoint.service && endpoint.service !== 'unknown' && (
-                        <span style={{ color: '#8e8e8e', fontSize: '11px' }}>
+                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '11px' }}>
                           {endpoint.service}
                         </span>
                       )}

@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Button, Result } from 'antd';
 import { AlertCircle } from 'lucide-react';
 import React from 'react';
@@ -59,7 +60,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       >
         <Result
           status="error"
-          icon={<AlertCircle size={64} color="#F04438" />}
+          icon={<AlertCircle size={64} color={APP_COLORS.hex_f04438} />}
           title="Something went wrong"
           subTitle={
             this.props.showDetails && this.state.error

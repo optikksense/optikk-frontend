@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { useQuery } from '@tanstack/react-query';
 import { Row, Col, Card, Skeleton, Tag, Tabs, Progress } from 'antd';
 import { ArrowLeft } from 'lucide-react';
@@ -268,7 +269,7 @@ export default function ServiceDetailPage() {
         const requests = n(record.request_count);
         const errors = n(record.error_count);
         const rate = requests > 0 ? (errors / requests) * 100 : 0;
-        const color = rate > 5 ? '#F04438' : rate > 1 ? '#F79009' : '#12B76A';
+        const color = rate > 5 ? APP_COLORS.hex_f04438 : rate > 1 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_12b76a;
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Progress
@@ -321,7 +322,7 @@ export default function ServiceDetailPage() {
       key: 'status_message',
       width: 300,
       render: (text: any) => (
-        <span style={{ fontFamily: 'monospace', color: '#F04438', fontSize: 12 }}>
+        <span style={{ fontFamily: 'monospace', color: APP_COLORS.hex_f04438, fontSize: 12 }}>
           {text || 'Unknown error'}
         </span>
       ),
@@ -372,7 +373,7 @@ export default function ServiceDetailPage() {
         return (
           <a
             onClick={() => navigate(`/traces/${traceId}`)}
-            style={{ color: '#1890ff', cursor: 'pointer', fontSize: 12 }}
+            style={{ color: APP_COLORS.hex_1890ff, cursor: 'pointer', fontSize: 12 }}
           >
             View Trace
           </a>
@@ -419,7 +420,7 @@ export default function ServiceDetailPage() {
         return (
           <a
             onClick={() => navigate(`/traces/${traceId}`)}
-            style={{ color: '#1890ff', cursor: 'pointer', fontSize: 11 }}
+            style={{ color: APP_COLORS.hex_1890ff, cursor: 'pointer', fontSize: 11 }}
           >
             {String(traceId).substring(0, 16)}...
           </a>
@@ -438,8 +439,8 @@ export default function ServiceDetailPage() {
       onClick={() => navigate('/services')}
       style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px',
-        background: 'var(--bg-secondary, #0D0D0D)', border: '1px solid var(--border-color, #2D2D2D)',
-        borderRadius: 6, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary, #fff)',
+        background: `var(--bg-secondary, ${APP_COLORS.hex_0d0d0d})`, border: `1px solid var(--border-color, ${APP_COLORS.hex_2d2d2d})`,
+        borderRadius: 6, cursor: 'pointer', fontSize: 14, color: `var(--text-primary, ${APP_COLORS.hex_fff})`,
       }}
     >
       <ArrowLeft size={16} /> Back to Services

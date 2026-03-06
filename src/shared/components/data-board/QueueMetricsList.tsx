@@ -1,16 +1,17 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { formatNumber } from '@utils/formatters';
 
 const CHART_COLORS = [
-  '#5E60CE',
-  '#48CAE4',
-  '#06D6A0',
-  '#FFD166',
-  '#EF476F',
-  '#118AB2',
-  '#073B4C',
-  '#F78C6B',
-  '#83D483',
-  '#5E35B1',
+  APP_COLORS.hex_5e60ce,
+  APP_COLORS.hex_48cae4,
+  APP_COLORS.hex_06d6a0,
+  APP_COLORS.hex_ffd166,
+  APP_COLORS.hex_ef476f,
+  APP_COLORS.hex_118ab2,
+  APP_COLORS.hex_073b4c,
+  APP_COLORS.hex_f78c6b,
+  APP_COLORS.hex_83d483,
+  APP_COLORS.hex_5e35b1,
 ];
 
 type QueueMetricsListType =
@@ -65,35 +66,35 @@ function getQueueDisplayConfig(
   if (type === 'consumerLag') {
     const lag = queue.max_consumer_lag ?? 0;
     return {
-      selectedBg: 'rgba(240, 68, 56, 0.2)',
-      hoverBg: 'rgba(255, 255, 255, 0.05)',
-      valueColor: lag > 100 ? '#F04438' : '#e0e0e0',
+      selectedBg: APP_COLORS.rgba_240_68_56_0p2,
+      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
+      valueColor: lag > 100 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_e0e0e0,
       displayValue: formatNumber(lag),
     };
   }
 
   if (type === 'productionRate') {
     return {
-      selectedBg: 'rgba(247, 144, 9, 0.2)',
-      hoverBg: 'rgba(255, 255, 255, 0.05)',
-      valueColor: '#e0e0e0',
+      selectedBg: APP_COLORS.rgba_247_144_9_0p2,
+      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
+      valueColor: APP_COLORS.hex_e0e0e0,
       displayValue: `${formatRate(queue.avg_publish_rate ?? 0)}/s`,
     };
   }
 
   if (type === 'consumptionRate') {
     return {
-      selectedBg: 'rgba(6, 214, 160, 0.2)',
-      hoverBg: 'rgba(255, 255, 255, 0.05)',
-      valueColor: '#e0e0e0',
+      selectedBg: APP_COLORS.rgba_6_214_160_0p2,
+      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
+      valueColor: APP_COLORS.hex_e0e0e0,
       displayValue: `${formatRate(queue.avg_receive_rate ?? 0)}/s`,
     };
   }
 
   return {
-    selectedBg: 'rgba(94, 96, 206, 0.2)',
-    hoverBg: 'rgba(255, 255, 255, 0.05)',
-    valueColor: '#e0e0e0',
+    selectedBg: APP_COLORS.rgba_94_96_206_0p2,
+    hoverBg: APP_COLORS.rgba_255_255_255_0p05,
+    valueColor: APP_COLORS.hex_e0e0e0,
     displayValue: formatDepth(queue.avg_queue_depth ?? 0),
   };
 }
@@ -113,13 +114,13 @@ export default function QueueMetricsList({
   if (queues.length === 0) return null;
 
   return (
-    <div style={{ marginTop: 0, borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+    <div style={{ marginTop: 0, borderTop: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}` }}>
       <div
         style={{
           maxHeight: '180px',
           overflowY: 'auto',
           scrollbarWidth: 'thin',
-          scrollbarColor: 'var(--border-color, #2D2D2D) transparent',
+          scrollbarColor: `var(--border-color, ${APP_COLORS.hex_2d2d2d}) transparent`,
         }}
       >
         <table
@@ -133,8 +134,8 @@ export default function QueueMetricsList({
           <thead>
             <tr
               style={{
-                color: '#8e8e8e',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                color: APP_COLORS.hex_8e8e8e,
+                borderBottom: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}`,
               }}
             >
               <th style={{ padding: '4px 8px', fontWeight: 500 }}>Topic Name</th>
@@ -195,11 +196,11 @@ export default function QueueMetricsList({
                       }}
                     />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: '#e0e0e0', fontWeight: 500 }}>
+                      <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
                         {queue.queue_name}
                       </span>
                       {queue.service_name && queue.service_name !== 'unknown' && (
-                        <span style={{ color: '#8e8e8e', fontSize: '11px' }}>
+                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '11px' }}>
                           {queue.service_name}
                         </span>
                       )}

@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Empty } from 'antd';
 import { useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
@@ -62,7 +63,7 @@ export default function RequestChart({
   selectedEndpoints = [],
   serviceTimeseriesMap = {},
   datasetLabel = 'Requests/min',
-  color = '#5E60CE',
+  color = APP_COLORS.hex_5e60ce,
   valueKey = 'request_count',
 }: any) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
@@ -206,11 +207,11 @@ export default function RequestChart({
     scales: {
       y: {
         ticks: {
-          color: '#666',
+          color: APP_COLORS.hex_666,
           font: { size: 11 },
           callback: (value: any) => formatAxisValue(value),
         },
-        grid: { color: '#2D2D2D' },
+        grid: { color: APP_COLORS.hex_2d2d2d },
         beginAtZero: true,
         max: yAxisMax,
       },

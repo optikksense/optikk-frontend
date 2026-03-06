@@ -16,18 +16,18 @@
 .timeline-item-title {
   font-weight: 600;
   font-size: 13px;
-  color: var(--text-primary, rgba(255, 255, 255, 0.87));
+  color: var(--text-primary, var(--literal-rgba-255-255-255-0p87));
 }
 
 .timeline-item-time {
   font-size: 12px;
-  color: var(--text-muted, #666);
+  color: var(--text-muted, var(--literal-hex-666));
   white-space: nowrap;
 }
 
 .timeline-item-description {
   font-size: 12px;
-  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+  color: var(--text-secondary, var(--literal-rgba-255-255-255-0p6));
   margin-top: 4px;
   line-height: 1.5;
 }

@@ -1,6 +1,6 @@
 .main-layout {
   min-height: 100vh;
-  background: var(--bg-primary, #0A0A0A);
+  background: var(--bg-primary, var(--literal-hex-0a0a0a-2));
 }
 
 .main-content-layout {
@@ -15,7 +15,7 @@
 .main-content {
   padding: 24px;
   min-height: calc(100vh - 64px);
-  background: var(--bg-primary, #0A0A0A);
+  background: var(--bg-primary, var(--literal-hex-0a0a0a-2));
   position: relative;
   z-index: 1;
 }

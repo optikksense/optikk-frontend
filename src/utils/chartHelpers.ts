@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { CHART_COLORS } from '@config/constants';
 
 /**
@@ -14,11 +15,11 @@ export const BASE_CHART_OPTIONS: any = {
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: '#1A1A1A',
-      borderColor: '#2D2D2D',
+      backgroundColor: APP_COLORS.hex_1a1a1a_2,
+      borderColor: APP_COLORS.hex_2d2d2d,
       borderWidth: 1,
-      titleColor: '#fff',
-      bodyColor: 'rgba(255,255,255,0.8)',
+      titleColor: APP_COLORS.hex_fff,
+      bodyColor: APP_COLORS.rgba_255_255_255_0p8,
       padding: 10,
       titleFont: { size: 12 },
       bodyFont: { size: 12 },
@@ -26,13 +27,13 @@ export const BASE_CHART_OPTIONS: any = {
   },
   scales: {
     x: {
-      grid: { color: 'rgba(255, 255, 255, 0.05)', tickLength: 0 },
-      ticks: { color: '#8e8e8e', maxRotation: 0, maxTicksLimit: 6, autoSkip: true, font: { size: 11 } },
+      grid: { color: APP_COLORS.rgba_255_255_255_0p05, tickLength: 0 },
+      ticks: { color: APP_COLORS.hex_8e8e8e, maxRotation: 0, maxTicksLimit: 6, autoSkip: true, font: { size: 11 } },
       border: { display: false },
     },
     y: {
-      grid: { color: 'rgba(255, 255, 255, 0.05)', tickLength: 0 },
-      ticks: { color: '#8e8e8e', font: { size: 11 } },
+      grid: { color: APP_COLORS.rgba_255_255_255_0p05, tickLength: 0 },
+      ticks: { color: APP_COLORS.hex_8e8e8e, font: { size: 11 } },
       beginAtZero: true,
       border: { display: false },
     },

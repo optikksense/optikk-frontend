@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Tooltip } from 'antd';
 import { useMemo } from 'react';
 
@@ -37,7 +38,7 @@ export default function LatencyHeatmapChart({
 
   const getColor = (count: number): string => {
     const n = Number(count) || 0;
-    if (n === 0) return 'var(--bg-secondary, #1a1a2e)';
+    if (n === 0) return `var(--bg-secondary, ${APP_COLORS.hex_1a1a2e})`;
     const intensity = Math.min(n / maxCount, 1);
     // Interpolate from blue-teal (low) to deep red (high) via orange
     const r = Math.round(30 + intensity * 187);

@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Col, Progress, Row, Segmented, Tag } from 'antd';
 import { Activity, AlertCircle, Layers, LayoutGrid, List, ShieldAlert } from 'lucide-react';
 
@@ -82,10 +83,10 @@ export function ServiceOverviewTab({
         style={{ marginBottom: 24 }}
         defaultColProps={{ xs: 24, sm: 12, lg: 6 }}
         stats={[
-          { title: 'Total Services', value: totalServices, icon: <Layers size={20} />, iconColor: '#6366F1', loading: isLoading },
-          { title: 'Healthy', value: healthyServices, icon: <Activity size={20} />, iconColor: '#73C991', loading: isLoading, description: `${totalServices > 0 ? Number(((healthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
-          { title: 'Degraded', value: degradedServices, icon: <AlertCircle size={20} />, iconColor: '#F79009', loading: isLoading, description: `${totalServices > 0 ? Number(((degradedServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
-          { title: 'Unhealthy', value: unhealthyServices, icon: <ShieldAlert size={20} />, iconColor: '#F04438', loading: isLoading, description: `${totalServices > 0 ? Number(((unhealthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+          { title: 'Total Services', value: totalServices, icon: <Layers size={20} />, iconColor: APP_COLORS.hex_6366f1, loading: isLoading },
+          { title: 'Healthy', value: healthyServices, icon: <Activity size={20} />, iconColor: APP_COLORS.hex_73c991, loading: isLoading, description: `${totalServices > 0 ? Number(((healthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+          { title: 'Degraded', value: degradedServices, icon: <AlertCircle size={20} />, iconColor: APP_COLORS.hex_f79009, loading: isLoading, description: `${totalServices > 0 ? Number(((degradedServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
+          { title: 'Unhealthy', value: unhealthyServices, icon: <ShieldAlert size={20} />, iconColor: APP_COLORS.hex_f04438, loading: isLoading, description: `${totalServices > 0 ? Number(((unhealthyServices / totalServices) * 100)).toFixed(2) : 0}% of total` },
         ]}
       />
 
@@ -140,7 +141,7 @@ export function ServiceOverviewTab({
               <>
                 {visibleCols.serviceName && (
                   <div
-                    style={{ width: colWidths.serviceName, flexShrink: 0, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--color-primary, #5E60CE)' }}
+                    style={{ width: colWidths.serviceName, flexShrink: 0, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: `var(--color-primary, ${APP_COLORS.hex_5e60ce})` }}
                     onClick={() => onNodeClick(row.serviceName)}
                   >
                     {row.serviceName}
@@ -155,12 +156,12 @@ export function ServiceOverviewTab({
                   <div style={{ width: colWidths.requestCount, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span>{formatNumber(row.requestCount)}</span>
                     {row.requestTrend && (
-                      <SparklineChart data={row.requestTrend} color="#1890ff" width={50} height={18} />
+                      <SparklineChart data={row.requestTrend} color={APP_COLORS.hex_1890ff} width={50} height={18} />
                     )}
                   </div>
                 )}
                 {visibleCols.errorRate && (
-                  <div style={{ width: colWidths.errorRate, flexShrink: 0, color: row.errorRate > 5 ? '#F04438' : row.errorRate > 1 ? '#F79009' : '#73C991', fontWeight: 600 }}>
+                  <div style={{ width: colWidths.errorRate, flexShrink: 0, color: row.errorRate > 5 ? APP_COLORS.hex_f04438 : row.errorRate > 1 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991, fontWeight: 600 }}>
                     {Number(row.errorRate).toFixed(2)}%
                   </div>
                 )}
@@ -198,7 +199,7 @@ export function ServiceOverviewTab({
                   className="services-grid-card"
                   onClick={() => onNodeClick(service.serviceName)}
                   style={{
-                    borderLeft: `3px solid ${status === 'healthy' ? '#73C991' : status === 'degraded' ? '#F79009' : '#F04438'}`,
+                    borderLeft: `3px solid ${status === 'healthy' ? APP_COLORS.hex_73c991 : status === 'degraded' ? APP_COLORS.hex_f79009 : APP_COLORS.hex_f04438}`,
                     height: '100%',
                     background: 'var(--bg-secondary)',
                     border: '1px solid var(--border-color)',
@@ -208,7 +209,7 @@ export function ServiceOverviewTab({
                     transition: 'background 0.08s ease',
                   }}
                   onMouseEnter={(event) => {
-                    event.currentTarget.style.background = 'var(--bg-tertiary, #1A1A1A)';
+                    event.currentTarget.style.background = `var(--bg-tertiary, ${APP_COLORS.hex_1a1a1a_2})`;
                   }}
                   onMouseLeave={(event) => {
                     event.currentTarget.style.background = 'var(--bg-secondary)';
@@ -234,7 +235,7 @@ export function ServiceOverviewTab({
                     <div style={{ marginBottom: 12 }}>
                       <SparklineChart
                         data={service.requestTrend}
-                        color={status === 'healthy' ? '#73C991' : status === 'degraded' ? '#F79009' : '#F04438'}
+                        color={status === 'healthy' ? APP_COLORS.hex_73c991 : status === 'degraded' ? APP_COLORS.hex_f79009 : APP_COLORS.hex_f04438}
                         width={200}
                         height={40}
                       />
@@ -253,7 +254,7 @@ export function ServiceOverviewTab({
                     <span>{formatNumber(service.requestCount)} req</span>
                     <span
                       style={{
-                        color: service.errorRate > 1 ? '#F04438' : 'var(--text-muted)',
+                        color: service.errorRate > 1 ? APP_COLORS.hex_f04438 : 'var(--text-muted)',
                         fontWeight: service.errorRate > 5 ? 600 : 400,
                       }}
                     >
@@ -265,7 +266,7 @@ export function ServiceOverviewTab({
                     percent={Math.min(service.errorRate, 100)}
                     size="small"
                     showInfo={false}
-                    strokeColor={service.errorRate > 5 ? '#F04438' : service.errorRate > 1 ? '#F79009' : '#73C991'}
+                    strokeColor={service.errorRate > 5 ? APP_COLORS.hex_f04438 : service.errorRate > 1 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991}
                     style={{ marginBottom: 8 }}
                   />
 

@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Empty } from 'antd';
 
 import { formatNumber } from '@utils/formatters';
@@ -24,12 +25,12 @@ export default function TopQueuesTable({ queues }: TopQueuesTableProps) {
         maxHeight: '320px',
         overflowY: 'auto',
         scrollbarWidth: 'thin',
-        scrollbarColor: 'var(--border-color, #2D2D2D) transparent',
+        scrollbarColor: `var(--border-color, ${APP_COLORS.hex_2d2d2d}) transparent`,
       }}
     >
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', textAlign: 'left' }}>
         <thead>
-          <tr style={{ color: '#8e8e8e', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+          <tr style={{ color: APP_COLORS.hex_8e8e8e, borderBottom: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}` }}>
             <th style={{ padding: '8px 10px', fontWeight: 500 }}>Queue / Topic</th>
             <th style={{ padding: '8px 10px', fontWeight: 500 }}>System</th>
             <th style={{ padding: '8px 10px', fontWeight: 500, textAlign: 'right' }}>Avg Depth</th>
@@ -41,7 +42,7 @@ export default function TopQueuesTable({ queues }: TopQueuesTableProps) {
         <tbody>
           {queues.map((queue, index) => {
             const mqMeta = getMqMeta(queue.messaging_system);
-            const colors = ['#5E60CE', '#48CAE4', '#06D6A0', '#FFD166', '#EF476F', '#118AB2', '#073B4C', '#F78C6B'];
+            const colors = [APP_COLORS.hex_5e60ce, APP_COLORS.hex_48cae4, APP_COLORS.hex_06d6a0, APP_COLORS.hex_ffd166, APP_COLORS.hex_ef476f, APP_COLORS.hex_118ab2, APP_COLORS.hex_073b4c, APP_COLORS.hex_f78c6b];
             const dotColor = colors[index % colors.length];
 
             return (
@@ -51,16 +52,16 @@ export default function TopQueuesTable({ queues }: TopQueuesTableProps) {
                   transition: 'background 0.2s',
                   cursor: 'default',
                 }}
-                onMouseEnter={(event) => { event.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
+                onMouseEnter={(event) => { event.currentTarget.style.background = APP_COLORS.rgba_255_255_255_0p04; }}
                 onMouseLeave={(event) => { event.currentTarget.style.background = 'transparent'; }}
               >
                 <td style={{ padding: '6px 10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
                     <div>
-                      <span style={{ color: '#e0e0e0', fontWeight: 500 }}>{queue.queue_name || 'unknown'}</span>
+                      <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>{queue.queue_name || 'unknown'}</span>
                       {queue.service_name && queue.service_name !== 'unknown' && (
-                        <div style={{ color: '#8e8e8e', fontSize: '10px' }}>{queue.service_name}</div>
+                        <div style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '10px' }}>{queue.service_name}</div>
                       )}
                     </div>
                   </div>
@@ -85,7 +86,7 @@ export default function TopQueuesTable({ queues }: TopQueuesTableProps) {
                     </span>
                   )}
                 </td>
-                <td style={{ padding: '6px 10px', textAlign: 'right', color: '#e0e0e0', fontFamily: 'monospace' }}>
+                <td style={{ padding: '6px 10px', textAlign: 'right', color: APP_COLORS.hex_e0e0e0, fontFamily: 'monospace' }}>
                   {n(queue.avg_queue_depth).toFixed(0)}
                 </td>
                 <td
@@ -93,15 +94,15 @@ export default function TopQueuesTable({ queues }: TopQueuesTableProps) {
                     padding: '6px 10px',
                     textAlign: 'right',
                     fontFamily: 'monospace',
-                    color: n(queue.max_consumer_lag) > 1000 ? '#F04438' : n(queue.max_consumer_lag) > 100 ? '#F79009' : '#e0e0e0',
+                    color: n(queue.max_consumer_lag) > 1000 ? APP_COLORS.hex_f04438 : n(queue.max_consumer_lag) > 100 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_e0e0e0,
                   }}
                 >
                   {formatNumber(n(queue.max_consumer_lag))}
                 </td>
-                <td style={{ padding: '6px 10px', textAlign: 'right', color: '#48CAE4', fontFamily: 'monospace' }}>
+                <td style={{ padding: '6px 10px', textAlign: 'right', color: APP_COLORS.hex_48cae4, fontFamily: 'monospace' }}>
                   {n(queue.avg_publish_rate).toFixed(1)}/s
                 </td>
-                <td style={{ padding: '6px 10px', textAlign: 'right', color: '#06D6A0', fontFamily: 'monospace' }}>
+                <td style={{ padding: '6px 10px', textAlign: 'right', color: APP_COLORS.hex_06d6a0, fontFamily: 'monospace' }}>
                   {n(queue.avg_receive_rate).toFixed(1)}/s
                 </td>
               </tr>

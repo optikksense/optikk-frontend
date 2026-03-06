@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { ConfigProvider, theme as antdTheme } from 'antd';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
@@ -22,11 +23,11 @@ export default function ThemeProvider({ children }: ThemeProviderProps): JSX.Ele
         ? antdTheme.defaultAlgorithm
         : antdTheme.darkAlgorithm,
     token: {
-      colorPrimary: '#5E60CE',
-      colorSuccess: '#73C991',
-      colorWarning: '#F79009',
-      colorError: '#F04438',
-      colorInfo: '#06AED5',
+      colorPrimary: APP_COLORS.hex_5e60ce,
+      colorSuccess: APP_COLORS.hex_73c991,
+      colorWarning: APP_COLORS.hex_f79009,
+      colorError: APP_COLORS.hex_f04438,
+      colorInfo: APP_COLORS.hex_06aed5,
       borderRadius: 6,
       fontFamily:
         "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -52,23 +53,20 @@ export default function ThemeProvider({ children }: ThemeProviderProps): JSX.Ele
         toastOptions={{
           duration: 4000,
           style: {
-            background: appTheme === 'light' ? '#FFFFFF' : '#1A1A1A',
-            color: appTheme === 'light' ? '#1A1A2E' : '#FFFFFF',
-            border:
-              appTheme === 'light'
-                ? '1px solid #E5E7EB'
-                : '1px solid #2D2D2D',
+            background: 'var(--toast-bg)',
+            color: 'var(--toast-text)',
+            border: '1px solid var(--toast-border)',
           },
           success: {
             iconTheme: {
-              primary: '#73C991',
-              secondary: '#fff',
+              primary: APP_COLORS.hex_73c991,
+              secondary: APP_COLORS.hex_fff,
             },
           },
           error: {
             iconTheme: {
-              primary: '#F04438',
-              secondary: '#fff',
+              primary: APP_COLORS.hex_f04438,
+              secondary: APP_COLORS.hex_fff,
             },
           },
         }}

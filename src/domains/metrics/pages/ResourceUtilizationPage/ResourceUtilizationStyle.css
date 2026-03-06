@@ -40,14 +40,14 @@
 
 .ru-legend-table td {
     padding: 4px 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--literal-rgba-255-255-255-0p05);
 }
 
 .ru-legend-color-box {
     display: inline-block;
     width: 12px;
     height: 4px;
-    background-color: #5E60CE;
+    background-color: var(--literal-hex-5e60ce);
     /* Fallback, ideally we'd pass the actual color from RequestChart or generate it */
     margin-right: 8px;
     border-radius: 2px;

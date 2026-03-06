@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Line } from 'react-chartjs-2';
 
 const sparklineOptions = {
@@ -36,7 +37,7 @@ interface SparklineChartProps {
  */
 export default function SparklineChart({
   data = [],
-  color = '#5E60CE',
+  color = APP_COLORS.hex_5e60ce,
   fill = true,
   width = 60,
   height = 24,

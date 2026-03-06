@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Clock, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 
@@ -251,7 +252,7 @@ export default function TimeRangePicker() {
             <span className="trp__panel-title" style={{ display: 'none' }}>Quick Ranges</span>
             {RANGE_GROUPS.map((group) => (
               <div key={group.title} className="trp__group" style={{ marginBottom: 2 }}>
-                <span className="trp__group-label" style={{ display: 'block', fontSize: 9, fontWeight: 500, color: '#666', marginBottom: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{group.title}</span>
+                <span className="trp__group-label" style={{ display: 'block', fontSize: 9, fontWeight: 500, color: APP_COLORS.hex_666, marginBottom: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{group.title}</span>
                 <div className="trp__pills" style={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                   {group.items.map((item) => (
                     <button
@@ -284,7 +285,7 @@ export default function TimeRangePicker() {
 
             <div className="trp__inputs" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <div className="trp__field" style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <label className="trp__field-label" style={{ fontSize: 9, fontWeight: 600, color: '#555', textTransform: 'uppercase' }}>From</label>
+                <label className="trp__field-label" style={{ fontSize: 9, fontWeight: 600, color: APP_COLORS.hex_555, textTransform: 'uppercase' }}>From</label>
                 <input
                   className={`trp__input ${editingField === 'from' ? 'trp__input--active' : ''}`}
                   value={fromStr} onChange={(e) => setFromStr(e.target.value)}
@@ -293,7 +294,7 @@ export default function TimeRangePicker() {
                 />
               </div>
               <div className="trp__field" style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <label className="trp__field-label" style={{ fontSize: 9, fontWeight: 600, color: '#555', textTransform: 'uppercase' }}>To</label>
+                <label className="trp__field-label" style={{ fontSize: 9, fontWeight: 600, color: APP_COLORS.hex_555, textTransform: 'uppercase' }}>To</label>
                 <input
                   className={`trp__input ${editingField === 'to' ? 'trp__input--active' : ''}`}
                   value={toStr} onChange={(e) => setToStr(e.target.value)}
@@ -303,7 +304,7 @@ export default function TimeRangePicker() {
               </div>
             </div>
 
-            <button className="trp__apply" onClick={applyAbsolute} style={{ display: 'block', width: '100%', padding: '4px 0', marginTop: 8, fontSize: 11, fontWeight: 600, borderRadius: 6, border: 'none', background: '#5E60CE', color: '#fff', cursor: 'pointer' }}>Apply Range</button>
+            <button className="trp__apply" onClick={applyAbsolute} style={{ display: 'block', width: '100%', padding: '4px 0', marginTop: 8, fontSize: 11, fontWeight: 600, borderRadius: 6, border: 'none', background: APP_COLORS.hex_5e60ce, color: APP_COLORS.hex_fff, cursor: 'pointer' }}>Apply Range</button>
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 .service-map-page {
   padding: 24px;
   min-height: 100vh;
-  background: #0f0f0f;
+  background: var(--literal-hex-0f0f0f);
 }
 
 /* Statistics Row */
@@ -16,30 +16,30 @@
 
 /* Service Graph Card */
 .service-graph-card {
-  background: #1a1a1a;
+  background: var(--literal-hex-1a1a1a);
   border-radius: 8px;
   min-height: 650px;
 }
 
 .service-graph-card .ant-card-head {
-  background: #1a1a1a;
-  border-bottom: 1px solid #2a2a2a;
-  color: #E5E7EB;
+  background: var(--literal-hex-1a1a1a);
+  border-bottom: 1px solid var(--literal-hex-2a2a2a);
+  color: var(--literal-hex-e5e7eb-2);
 }
 
 .service-graph-card .ant-card-head-title {
-  color: #E5E7EB;
+  color: var(--literal-hex-e5e7eb-2);
   font-weight: 600;
 }
 
 .service-graph-card .ant-card-body {
   padding: 0;
-  background: #1a1a1a;
+  background: var(--literal-hex-1a1a1a);
 }
 
 /* Service List Card */
 .service-list-card {
-  background: #1a1a1a;
+  background: var(--literal-hex-1a1a1a);
   border-radius: 8px;
   max-height: 650px;
   display: flex;
@@ -47,20 +47,20 @@
 }
 
 .service-list-card .ant-card-head {
-  background: #1a1a1a;
-  border-bottom: 1px solid #2a2a2a;
-  color: #E5E7EB;
+  background: var(--literal-hex-1a1a1a);
+  border-bottom: 1px solid var(--literal-hex-2a2a2a);
+  color: var(--literal-hex-e5e7eb-2);
   flex-shrink: 0;
 }
 
 .service-list-card .ant-card-head-title {
-  color: #E5E7EB;
+  color: var(--literal-hex-e5e7eb-2);
   font-weight: 600;
 }
 
 .service-list-card .ant-card-body {
   padding: 0;
-  background: #1a1a1a;
+  background: var(--literal-hex-1a1a1a);
   overflow-y: auto;
   flex: 1;
 }
@@ -71,14 +71,14 @@
 }
 
 .service-list .ant-list-item {
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--literal-hex-2a2a2a);
   padding: 0;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .service-list .ant-list-item:hover {
-  background-color: #252525;
+  background-color: var(--literal-hex-252525);
 }
 
 .service-list .ant-list-item:last-child {
@@ -102,7 +102,7 @@
 .service-name {
   font-size: 15px;
   font-weight: 500;
-  color: #E5E7EB;
+  color: var(--literal-hex-e5e7eb-2);
 }
 
 .service-metrics {
@@ -120,16 +120,16 @@
 }
 
 .metric-label {
-  color: #9CA3AF;
+  color: var(--literal-hex-9ca3af);
 }
 
 .metric-value {
-  color: #E5E7EB;
+  color: var(--literal-hex-e5e7eb-2);
   font-weight: 500;
 }
 
 .metric-value.error-high {
-  color: #F04438;
+  color: var(--literal-hex-f04438);
 }
 
 .arrow-icon {
@@ -137,7 +137,7 @@
   right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6B7280;
+  color: var(--literal-hex-6b7280-2);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -152,7 +152,7 @@
   justify-content: center;
   align-items: center;
   min-height: 600px;
-  background: #1a1a1a;
+  background: var(--literal-hex-1a1a1a);
 }
 
 .loading-container-small {
@@ -168,7 +168,7 @@
   justify-content: center;
   align-items: center;
   min-height: 600px;
-  background: #1a1a1a;
+  background: var(--literal-hex-1a1a1a);
 }
 
 .error-message {
@@ -176,17 +176,17 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  color: #F04438;
+  color: var(--literal-hex-f04438);
 }
 
 .error-message p {
   margin: 0;
-  color: #E5E7EB;
+  color: var(--literal-hex-e5e7eb-2);
 }
 
 .error-details {
   font-size: 14px;
-  color: #9CA3AF !important;
+  color: var(--literal-hex-9ca3af) !important;
 }
 
 /* Empty States */
@@ -200,21 +200,21 @@
 
 .empty-state .ant-empty-description,
 .empty-state-small .ant-empty-description {
-  color: #6B7280;
+  color: var(--literal-hex-6b7280-2);
 }
 
 /* Ant Design Overrides */
 .service-map-page .ant-card {
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  background: var(--literal-hex-1a1a1a);
+  border: 1px solid var(--literal-hex-2a2a2a);
 }
 
 .service-map-page .ant-spin-dot-item {
-  background-color: #3B82F6;
+  background-color: var(--literal-hex-3b82f6);
 }
 
 .service-map-page .ant-spin-text {
-  color: #9CA3AF;
+  color: var(--literal-hex-9ca3af);
 }
 
 /* Responsive Design */

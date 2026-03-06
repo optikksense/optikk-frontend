@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Card, Col, Empty, Row, Skeleton, Tag } from 'antd';
 import { ArrowRight, GitBranch, Network, ShieldAlert } from 'lucide-react';
 
@@ -77,10 +78,10 @@ export function ServiceTopologyTab({
       <StatCardsGrid
         style={{ marginBottom: 16 }}
         stats={[
-          { title: 'Services in Graph', value: formatNumber(topologyStats.graphServices), icon: <Network size={20} />, iconColor: '#5E60CE', loading: topologyLoading },
-          { title: 'Dependencies', value: formatNumber(topologyStats.dependencies), icon: <GitBranch size={20} />, iconColor: '#06AED5', loading: topologyLoading },
-          { title: 'Critical Services', value: formatNumber(topologyStats.criticalServices), icon: <ShieldAlert size={20} />, iconColor: '#F79009', loading: topologyLoading },
-          { title: 'High-Risk Edges', value: formatNumber(topologyStats.highRiskEdges), icon: <ArrowRight size={20} />, iconColor: '#F04438', loading: topologyLoading },
+          { title: 'Services in Graph', value: formatNumber(topologyStats.graphServices), icon: <Network size={20} />, iconColor: APP_COLORS.hex_5e60ce, loading: topologyLoading },
+          { title: 'Dependencies', value: formatNumber(topologyStats.dependencies), icon: <GitBranch size={20} />, iconColor: APP_COLORS.hex_06aed5, loading: topologyLoading },
+          { title: 'Critical Services', value: formatNumber(topologyStats.criticalServices), icon: <ShieldAlert size={20} />, iconColor: APP_COLORS.hex_f79009, loading: topologyLoading },
+          { title: 'High-Risk Edges', value: formatNumber(topologyStats.highRiskEdges), icon: <ArrowRight size={20} />, iconColor: APP_COLORS.hex_f04438, loading: topologyLoading },
         ]}
       />
 
@@ -208,12 +209,12 @@ export function ServiceTopologyTab({
                   <div style={{ width: colWidths.avgLatency, flexShrink: 0 }}>{formatDuration(row.avgLatency)}</div>
                 )}
                 {visibleCols.errorRate && (
-                  <div style={{ width: colWidths.errorRate, flexShrink: 0, color: row.errorRate > 5 ? '#F04438' : row.errorRate > 1 ? '#F79009' : '#73C991', fontWeight: 600 }}>
+                  <div style={{ width: colWidths.errorRate, flexShrink: 0, color: row.errorRate > 5 ? APP_COLORS.hex_f04438 : row.errorRate > 1 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991, fontWeight: 600 }}>
                     {row.errorRate.toFixed(2)}%
                   </div>
                 )}
                 {visibleCols.risk && (
-                  <div style={{ flex: 1, color: row.risk > 70 ? '#F04438' : row.risk > 45 ? '#F79009' : '#73C991', fontWeight: 600 }}>
+                  <div style={{ flex: 1, color: row.risk > 70 ? APP_COLORS.hex_f04438 : row.risk > 45 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991, fontWeight: 600 }}>
                     {row.risk}
                   </div>
                 )}

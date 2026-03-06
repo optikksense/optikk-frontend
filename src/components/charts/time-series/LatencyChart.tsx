@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Empty } from 'antd';
 import { useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
@@ -87,7 +88,7 @@ export default function LatencyChart({
   serviceTimeseriesMap = {},
   targetThreshold = null,
   datasetLabel = 'Avg Latency (ms)',
-  color = '#5E60CE',
+  color = APP_COLORS.hex_5e60ce,
   valueKey = 'avg_latency',
 }: LatencyChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
@@ -185,9 +186,9 @@ export default function LatencyChart({
           p99Map[key] = Number(firstValue(d, ['p99', 'p99_latency', 'p99Latency'], 0));
         }
         datasets = [
-          createLineDataset('P50', timeBuckets.map((ts) => p50Map[tsKey(ts)] ?? 0), '#73C991', false),
-          createLineDataset('P95', timeBuckets.map((ts) => p95Map[tsKey(ts)] ?? 0), '#F79009', false),
-          createLineDataset('P99', timeBuckets.map((ts) => p99Map[tsKey(ts)] ?? 0), '#F04438', false),
+          createLineDataset('P50', timeBuckets.map((ts) => p50Map[tsKey(ts)] ?? 0), APP_COLORS.hex_73c991, false),
+          createLineDataset('P95', timeBuckets.map((ts) => p95Map[tsKey(ts)] ?? 0), APP_COLORS.hex_f79009, false),
+          createLineDataset('P99', timeBuckets.map((ts) => p99Map[tsKey(ts)] ?? 0), APP_COLORS.hex_f04438, false),
         ];
       }
     }
@@ -196,7 +197,7 @@ export default function LatencyChart({
       datasets.push({
         label: `Target (${targetThreshold}ms)`,
         data: timeBuckets.map(() => targetThreshold),
-        borderColor: '#F79009',
+        borderColor: APP_COLORS.hex_f79009,
         borderDash: [6, 3],
         borderWidth: 1.5,
         pointRadius: 0,
@@ -234,8 +235,8 @@ export default function LatencyChart({
     },
     scales: {
       y: {
-        ticks: { color: '#666', callback: (v: any) => `${v}ms` },
-        grid: { color: '#2D2D2D' },
+        ticks: { color: APP_COLORS.hex_666, callback: (v: any) => `${v}ms` },
+        grid: { color: APP_COLORS.hex_2d2d2d },
         beginAtZero: true,
         max: yAxisMax,
       },

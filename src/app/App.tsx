@@ -1,6 +1,7 @@
 import { Skeleton } from 'antd';
 import { Suspense } from 'react';
 
+import { APP_COLORS } from '@config/colorLiterals';
 import { useRealtimeRefresh } from '@hooks/useRealtimeRefresh';
 
 import AuthExpiryListener from './providers/AuthExpiryListener';
@@ -39,8 +40,8 @@ export default function App(): JSX.Element {
           bottom: 0,
           zIndex: -1,
           background: `
-            radial-gradient(circle at 15% 50%, rgba(94, 96, 206, 0.08), transparent 25%),
-            radial-gradient(circle at 85% 30%, rgba(78, 168, 222, 0.08), transparent 25%)
+            radial-gradient(circle at 15% 50%, ${APP_COLORS.rgba_94_96_206_0p08}, transparent 25%),
+            radial-gradient(circle at 85% 30%, ${APP_COLORS.rgba_78_168_222_0p08}, transparent 25%)
           `,
           pointerEvents: 'none',
         }}

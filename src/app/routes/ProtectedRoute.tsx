@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Skeleton } from 'antd';
 import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
@@ -25,7 +26,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps): JSX.E
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '100vh',
-          background: 'var(--bg-primary, #0A0A0A)',
+          background: `var(--bg-primary, ${APP_COLORS.hex_0a0a0a_2})`,
         }}
       >
         <Skeleton active paragraph={{ rows: 4 }} />

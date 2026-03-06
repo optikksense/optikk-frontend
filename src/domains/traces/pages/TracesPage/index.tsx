@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { useQuery } from '@tanstack/react-query';
 import { Switch, Tooltip, Select, Spin } from 'antd';
 import {
@@ -549,32 +550,32 @@ export default function TracesPage(): JSX.Element {
           title="Total Traces"
           value={formatNumber(totalTraces || 0)}
           icon={Activity}
-          accentColor="#5E60CE"
-          accentBg="rgba(94,96,206,0.12)"
+          accentColor={APP_COLORS.hex_5e60ce}
+          accentBg={APP_COLORS.rgba_94_96_206_0p12_2}
           trend={0}
         />
         <TracesKpiCard
           title="Error Rate"
           value={`${(errorRate || 0).toFixed(2)}%`}
           icon={AlertCircle}
-          accentColor={errorRate > 5 ? '#F04438' : '#73C991'}
-          accentBg={errorRate > 5 ? 'rgba(240,68,56,0.12)' : 'rgba(115,201,145,0.12)'}
+          accentColor={errorRate > 5 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_73c991}
+          accentBg={errorRate > 5 ? APP_COLORS.rgba_240_68_56_0p12_2 : APP_COLORS.rgba_115_201_145_0p12_2}
           trend={0}
         />
         <TracesKpiCard
           title="P95 Latency"
           value={formatDuration(p95 || 0)}
           icon={Zap}
-          accentColor="#10B981"
-          accentBg="rgba(16,185,129,0.12)"
+          accentColor={APP_COLORS.hex_10b981}
+          accentBg={APP_COLORS.rgba_16_185_129_0p12}
           trend={0}
         />
         <TracesKpiCard
           title="P99 Latency"
           value={formatDuration(p99 || 0)}
           icon={Clock}
-          accentColor="#F59E0B"
-          accentBg="rgba(245,158,11,0.12)"
+          accentColor={APP_COLORS.hex_f59e0b}
+          accentBg={APP_COLORS.rgba_245_158_11_0p12}
           trend={0}
         />
       </div>

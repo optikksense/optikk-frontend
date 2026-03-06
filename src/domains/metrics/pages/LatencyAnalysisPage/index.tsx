@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { useQuery } from '@tanstack/react-query';
 import { Card, Row, Col, Tabs, Tag } from 'antd';
 import { Timer } from 'lucide-react';
@@ -31,11 +32,11 @@ const HISTOGRAM_BUCKETS = [
 ];
 
 function bucketColor(label: string) {
-  if (typeof label !== 'string') return '#F04438';
-  if (label.startsWith('0-') || label.startsWith('10-') || label.startsWith('25-')) return '#73C991';
-  if (label.startsWith('50-') || label.startsWith('100-')) return '#06AED5';
-  if (label.startsWith('250-') || label.startsWith('500')) return '#F79009';
-  return '#F04438';
+  if (typeof label !== 'string') return APP_COLORS.hex_f04438;
+  if (label.startsWith('0-') || label.startsWith('10-') || label.startsWith('25-')) return APP_COLORS.hex_73c991;
+  if (label.startsWith('50-') || label.startsWith('100-')) return APP_COLORS.hex_06aed5;
+  if (label.startsWith('250-') || label.startsWith('500')) return APP_COLORS.hex_f79009;
+  return APP_COLORS.hex_f04438;
 }
 
 /**
@@ -176,7 +177,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
             title="P50 Latency"
             value={stats.p50}
             icon={<Timer size={20} />}
-            iconColor="#73C991"
+            iconColor={APP_COLORS.hex_73c991}
             description="Median latency"
           />
         </Col>
@@ -185,7 +186,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
             title="P95 Latency"
             value={stats.p95}
             icon={<Timer size={20} />}
-            iconColor="#F79009"
+            iconColor={APP_COLORS.hex_f79009}
             description="95th percentile"
           />
         </Col>
@@ -194,7 +195,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
             title="P99 Latency"
             value={stats.p99}
             icon={<Timer size={20} />}
-            iconColor="#F04438"
+            iconColor={APP_COLORS.hex_f04438}
             description="99th percentile"
           />
         </Col>
@@ -203,7 +204,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
             title="Avg Latency"
             value={stats.avg}
             icon={<Timer size={20} />}
-            iconColor="#5E60CE"
+            iconColor={APP_COLORS.hex_5e60ce}
             description="Mean latency"
           />
         </Col>

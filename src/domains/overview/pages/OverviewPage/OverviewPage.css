@@ -11,18 +11,18 @@
 }
 
 .chart-card {
-  background: var(--bg-secondary, #0D0D0D) !important;
-  border: 1px solid var(--border-color, #2D2D2D) !important;
+  background: var(--bg-secondary, var(--literal-hex-0d0d0d)) !important;
+  border: 1px solid var(--border-color, var(--literal-hex-2d2d2d)) !important;
   border-radius: 8px !important;
   height: 100%;
 }
 
 .chart-card .ant-card-head {
-  border-bottom: 1px solid var(--border-color, #2D2D2D);
+  border-bottom: 1px solid var(--border-color, var(--literal-hex-2d2d2d));
 }
 
 .chart-card .ant-card-head-title {
-  color: var(--text-primary, #fff);
+  color: var(--text-primary, var(--literal-hex-fff));
   font-weight: 600;
 }
 
@@ -48,19 +48,19 @@
 .slo-label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-primary, #fff);
+  color: var(--text-primary, var(--literal-hex-fff));
   margin-top: 4px;
 }
 
 .slo-target {
   font-size: 11px;
-  color: var(--text-muted, #666);
+  color: var(--text-muted, var(--literal-hex-666));
 }
 
 /* Service Health Grid */
 .service-health-card {
-  background: var(--bg-tertiary, #1A1A1A);
-  border: 1px solid var(--border-color, #2D2D2D);
+  background: var(--bg-tertiary, var(--literal-hex-1a1a1a-2));
+  border: 1px solid var(--border-color, var(--literal-hex-2d2d2d));
   border-radius: 8px;
   padding: 12px;
   cursor: pointer;
@@ -69,14 +69,14 @@
 }
 
 .service-health-card:hover {
-  border-color: var(--color-primary, #5E60CE);
+  border-color: var(--color-primary, var(--literal-hex-5e60ce));
   transform: translateY(-1px);
 }
 
 .service-health-name {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-primary, #fff);
+  color: var(--text-primary, var(--literal-hex-fff));
   margin-top: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -85,6 +85,6 @@
 
 .service-health-metric {
   font-size: 11px;
-  color: var(--text-muted, #666);
+  color: var(--text-muted, var(--literal-hex-666));
   margin-top: 2px;
 }

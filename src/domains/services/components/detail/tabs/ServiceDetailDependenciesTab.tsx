@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Card, Empty } from 'antd';
 import { Network } from 'lucide-react';
 
@@ -36,9 +37,9 @@ export default function ServiceDetailDependenciesTab({
                 key={index}
                 style={{
                   padding: 12,
-                  background: 'var(--bg-secondary, #0D0D0D)',
+                  background: `var(--bg-secondary, ${APP_COLORS.hex_0d0d0d})`,
                   borderRadius: 6,
-                  border: '1px solid var(--border-color, #2D2D2D)',
+                  border: `1px solid var(--border-color, ${APP_COLORS.hex_2d2d2d})`,
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -47,7 +48,7 @@ export default function ServiceDetailDependenciesTab({
                   <span style={{ color: 'var(--text-muted)' }}>→</span>
                   <a
                     onClick={() => onNavigateService(otherService)}
-                    style={{ color: '#1890ff', cursor: 'pointer' }}
+                    style={{ color: APP_COLORS.hex_1890ff, cursor: 'pointer' }}
                   >
                     {otherService}
                   </a>

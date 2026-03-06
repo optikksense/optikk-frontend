@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Card, Empty, Progress, Skeleton, Table, Tag } from 'antd';
 import { useMemo } from 'react';
 
@@ -40,11 +41,11 @@ export default function AiCostTab({
     { title: 'Model', dataIndex: 'model_name', key: 'model_name', render: (value: any) => <Tag className="ai-model-tag">{value || 'unknown'}</Tag> },
     { title: 'Provider', dataIndex: 'model_provider', key: 'model_provider', render: (value: any) => value ? <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{value}</span> : naSpan() },
     { title: 'Requests', dataIndex: 'total_requests', key: 'total_requests', render: (value: any) => formatNumber(Number(value)), sorter: (a: any, b: any) => Number(a.total_requests) - Number(b.total_requests), align: 'right' as const },
-    { title: 'Total Cost', dataIndex: 'total_cost_usd', key: 'total_cost_usd', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : <span style={{ color: '#F79009', fontWeight: 700 }}>{dollar(normalized)}</span>; }, sorter: (a: any, b: any) => (n(a.total_cost_usd) ?? -1) - (n(b.total_cost_usd) ?? -1), align: 'right' as const },
-    { title: 'Cost / Query', dataIndex: 'avg_cost_per_query', key: 'avg_cost_per_query', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : <span style={{ color: '#FDB022', fontWeight: 600 }}>{dollar(normalized, 5)}</span>; }, sorter: (a: any, b: any) => (n(a.avg_cost_per_query) ?? -1) - (n(b.avg_cost_per_query) ?? -1), align: 'right' as const },
+    { title: 'Total Cost', dataIndex: 'total_cost_usd', key: 'total_cost_usd', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : <span style={{ color: APP_COLORS.hex_f79009, fontWeight: 700 }}>{dollar(normalized)}</span>; }, sorter: (a: any, b: any) => (n(a.total_cost_usd) ?? -1) - (n(b.total_cost_usd) ?? -1), align: 'right' as const },
+    { title: 'Cost / Query', dataIndex: 'avg_cost_per_query', key: 'avg_cost_per_query', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : <span style={{ color: APP_COLORS.hex_fdb022, fontWeight: 600 }}>{dollar(normalized, 5)}</span>; }, sorter: (a: any, b: any) => (n(a.avg_cost_per_query) ?? -1) - (n(b.avg_cost_per_query) ?? -1), align: 'right' as const },
     { title: 'Prompt Tokens', dataIndex: 'total_prompt_tokens', key: 'total_prompt_tokens', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : formatNumber(normalized); }, sorter: (a: any, b: any) => (n(a.total_prompt_tokens) ?? -1) - (n(b.total_prompt_tokens) ?? -1), align: 'right' as const },
     { title: 'Completion Tokens', dataIndex: 'total_completion_tokens', key: 'total_completion_tokens', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : formatNumber(normalized); }, sorter: (a: any, b: any) => (n(a.total_completion_tokens) ?? -1) - (n(b.total_completion_tokens) ?? -1), align: 'right' as const },
-    { title: 'Total Tokens', dataIndex: 'total_tokens', key: 'total_tokens', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : <span style={{ fontWeight: 600, color: '#9E77ED' }}>{formatNumber(normalized)}</span>; }, sorter: (a: any, b: any) => (n(a.total_tokens) ?? -1) - (n(b.total_tokens) ?? -1), align: 'right' as const },
+    { title: 'Total Tokens', dataIndex: 'total_tokens', key: 'total_tokens', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : <span style={{ fontWeight: 600, color: APP_COLORS.hex_9e77ed }}>{formatNumber(normalized)}</span>; }, sorter: (a: any, b: any) => (n(a.total_tokens) ?? -1) - (n(b.total_tokens) ?? -1), align: 'right' as const },
     {
       title: 'Cache Hit %',
       dataIndex: 'cache_hit_rate',
@@ -52,7 +53,7 @@ export default function AiCostTab({
       render: (value: any) => {
         const normalized = n(value);
         if (normalized == null) return naSpan();
-        const color = normalized > 70 ? '#73C991' : normalized > 30 ? '#F79009' : '#F04438';
+        const color = normalized > 70 ? APP_COLORS.hex_73c991 : normalized > 30 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_f04438;
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <Progress percent={Math.min(normalized, 100)} size="small" showInfo={false} strokeColor={color} style={{ width: 60 }} />

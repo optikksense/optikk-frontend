@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Card, Col, Progress, Row, Skeleton, Tag } from 'antd';
 import { ShieldCheck } from 'lucide-react';
 
@@ -50,7 +51,7 @@ function SloGauge({
     ? Math.min(100, (target / Math.max(value, 0.001)) * 100)
     : Math.min(100, value);
   const good = unit === 'ms' ? value <= target : value >= target;
-  const strokeColor = good ? '#12B76A' : percent >= 80 ? '#F79009' : '#F04438';
+  const strokeColor = good ? APP_COLORS.hex_12b76a : percent >= 80 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_f04438;
 
   return (
     <div
@@ -60,9 +61,9 @@ function SloGauge({
         alignItems: 'center',
         gap: 8,
         padding: '20px 24px',
-        background: 'var(--bg-tertiary, #1A1A1A)',
+        background: `var(--bg-tertiary, ${APP_COLORS.hex_1a1a1a_2})`,
         borderRadius: 8,
-        border: '1px solid var(--border-color, #2D2D2D)',
+        border: `1px solid var(--border-color, ${APP_COLORS.hex_2d2d2d})`,
         minWidth: 160,
         flex: 1,
       }}
@@ -72,7 +73,7 @@ function SloGauge({
         percent={Number(percent.toFixed(1))}
         size={100}
         strokeColor={strokeColor}
-        trailColor="#2D2D2D"
+        trailColor={APP_COLORS.hex_2d2d2d}
         format={() => (
           <div style={{ textAlign: 'center', lineHeight: 1.2 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: strokeColor }}>
@@ -91,9 +92,9 @@ function SloGauge({
         style={{
           fontSize: 11,
           borderRadius: 12,
-          background: good ? 'rgba(18,183,106,0.12)' : 'rgba(240,68,56,0.12)',
-          color: good ? '#12B76A' : '#F04438',
-          border: `1px solid ${good ? 'rgba(18,183,106,0.3)' : 'rgba(240,68,56,0.3)'}`,
+          background: good ? APP_COLORS.rgba_18_183_106_0p12 : APP_COLORS.rgba_240_68_56_0p12_2,
+          color: good ? APP_COLORS.hex_12b76a : APP_COLORS.hex_f04438,
+          border: `1px solid ${good ? APP_COLORS.rgba_18_183_106_0p3 : APP_COLORS.rgba_240_68_56_0p3_2}`,
         }}
       >
         {good ? '✓ Meeting SLO' : '✗ Breaching SLO'}
@@ -171,15 +172,15 @@ export default function SloHealthGauges({
                   alignItems: 'center',
                   gap: 8,
                   padding: '20px 24px',
-                  background: 'var(--bg-tertiary, #1A1A1A)',
+                  background: `var(--bg-tertiary, ${APP_COLORS.hex_1a1a1a_2})`,
                   borderRadius: 8,
-                  border: '1px solid var(--border-color, #2D2D2D)',
+                  border: `1px solid var(--border-color, ${APP_COLORS.hex_2d2d2d})`,
                   minWidth: 160,
                   flex: 1,
                   justifyContent: 'center',
                 }}
               >
-                <div style={{ fontSize: 32, fontWeight: 700, color: isCompliant ? '#12B76A' : '#F04438' }}>
+                <div style={{ fontSize: 32, fontWeight: 700, color: isCompliant ? APP_COLORS.hex_12b76a : APP_COLORS.hex_f04438 }}>
                   {compliancePct}%
                 </div>
                 <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>Window Compliance</div>

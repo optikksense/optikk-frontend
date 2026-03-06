@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
 
 import type { TrendIndicatorProps } from './types';
@@ -9,7 +10,7 @@ export default function TrendIndicator({
 }: TrendIndicatorProps): JSX.Element {
   if (value == null || value === 0) {
     return (
-      <span className="trend-indicator" style={{ color: '#98A2B3' }}>
+      <span className="trend-indicator" style={{ color: APP_COLORS.hex_98a2b3 }}>
         <Minus size={14} />
         {showValue && <span>0%</span>}
       </span>
@@ -18,7 +19,7 @@ export default function TrendIndicator({
 
   const isPositive = value > 0;
   const isGood = inverted ? !isPositive : isPositive;
-  const color = isGood ? '#73C991' : '#F04438';
+  const color = isGood ? APP_COLORS.hex_73c991 : APP_COLORS.hex_f04438;
   const Icon = isPositive ? TrendingUp : TrendingDown;
 
   return (

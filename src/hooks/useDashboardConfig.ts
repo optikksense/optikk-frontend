@@ -6,6 +6,9 @@ import type {
   DashboardComponentSpec,
   DashboardConfigApiResponse,
   DashboardRenderConfig,
+  DataSourceSpec,
+  StatCardSpec,
+  TabSpec,
 } from '@/types/dashboardConfig';
 
 import { useAppStore } from '@store/appStore';
@@ -95,6 +98,38 @@ function parseYamlConfig(configYaml: unknown): Record<string, unknown> | null {
   }
 }
 
+function normalizeDataSources(raw: unknown): DataSourceSpec[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(isRecord).map((ds) => ({
+    id: String(ds.id ?? ''),
+    endpoint: String(ds.endpoint ?? ''),
+    params: isRecord(ds.params) ? (ds.params as Record<string, string | number>) : undefined,
+  })).filter((ds) => ds.id && ds.endpoint);
+}
+
+function normalizeStatCards(raw: unknown): StatCardSpec[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(isRecord).map((card) => ({
+    title: String(card.title ?? ''),
+    dataSource: String(card.dataSource ?? ''),
+    valueField: String(card.valueField ?? ''),
+    formatter: card.formatter as StatCardSpec['formatter'],
+    icon: card.icon ? String(card.icon) : undefined,
+  })).filter((card) => card.title && card.dataSource && card.valueField);
+}
+
+function normalizeTabs(raw: unknown): TabSpec[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+  const tabs = raw.filter(isRecord).map((tab) => ({
+    id: String(tab.id ?? ''),
+    label: String(tab.label ?? ''),
+    dataSources: normalizeDataSources(tab.dataSources),
+    statCards: normalizeStatCards(tab.statCards),
+    charts: normalizeComponents(tab.charts ?? tab.components),
+  })).filter((tab) => tab.id && tab.label);
+  return tabs.length > 0 ? tabs : undefined;
+}
+
 function buildRenderConfig(data: unknown): DashboardRenderConfig | null {
   if (!isRecord(data)) {
     return null;
@@ -109,9 +144,16 @@ function buildRenderConfig(data: unknown): DashboardRenderConfig | null {
   const rawComponents = rawConfig.components ?? rawConfig.charts;
   const components = normalizeComponents(rawComponents);
 
+  const tabs = normalizeTabs(rawConfig.tabs);
+  const dataSources = normalizeDataSources(rawConfig.dataSources);
+  const statCards = normalizeStatCards(rawConfig.statCards);
+
   return {
     ...rawConfig,
     components,
+    tabs,
+    dataSources,
+    statCards,
   };
 }
 

@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Empty } from 'antd';
 import { useMemo, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
@@ -9,12 +10,12 @@ import { LOG_LEVELS } from '@config/constants';
 const LEVEL_ORDER = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
 
 const LEVEL_COLORS: Record<string, string> = {
-  TRACE: '#7e8ea0',
-  DEBUG: '#4e9fdd',
-  INFO: '#73bf69',
-  WARN: '#e0b400',
-  ERROR: '#e8494d',
-  FATAL: '#c00021',
+  TRACE: APP_COLORS.hex_7e8ea0,
+  DEBUG: APP_COLORS.hex_4e9fdd,
+  INFO: APP_COLORS.hex_73bf69,
+  WARN: APP_COLORS.hex_e0b400,
+  ERROR: APP_COLORS.hex_e8494d,
+  FATAL: APP_COLORS.hex_c00021,
 };
 
 const LEGEND_ORDER = ['ERROR', 'INFO', 'WARN', 'DEBUG', 'FATAL', 'TRACE'];
@@ -173,7 +174,7 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
         label: (LOG_LEVELS as any)[lvl]?.label || lvl,
         _level: lvl,
         data: allBuckets.map((b) => countMap[b]?.[lvl] || 0),
-        backgroundColor: LEVEL_COLORS[lvl] || '#98A2B3',
+        backgroundColor: LEVEL_COLORS[lvl] || APP_COLORS.hex_98a2b3,
         borderColor: 'transparent',
         borderWidth: 0,
         borderRadius: 0,
@@ -220,11 +221,11 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
       tooltip: {
         mode: 'index',
         intersect: false,
-        backgroundColor: '#12131A',
-        borderColor: '#2D2D2D',
+        backgroundColor: APP_COLORS.hex_12131a,
+        borderColor: APP_COLORS.hex_2d2d2d,
         borderWidth: 1,
-        titleColor: '#D1D5DB',
-        bodyColor: '#9CA3AF',
+        titleColor: APP_COLORS.hex_d1d5db,
+        bodyColor: APP_COLORS.hex_9ca3af,
         padding: 8,
         callbacks: {
           title: (items: any) => items[0]?.label || '',
@@ -240,9 +241,9 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
       x: {
         stacked: true,
         grid: { display: false },
-        border: { color: '#2D2D2D' },
+        border: { color: APP_COLORS.hex_2d2d2d },
         ticks: {
-          color: '#6B7280',
+          color: APP_COLORS.hex_6b7280_2,
           maxTicksLimit: 18,
           maxRotation: 0,
           font: { size: 10 },
@@ -250,10 +251,10 @@ export default function LogHistogram({ data = [], height = 80, startTime, endTim
       },
       y: {
         stacked: true,
-        grid: { color: 'rgba(255,255,255,0.04)', lineWidth: 1 },
+        grid: { color: APP_COLORS.rgba_255_255_255_0p04_2, lineWidth: 1 },
         border: { display: false },
         ticks: {
-          color: '#6B7280',
+          color: APP_COLORS.hex_6b7280_2,
           maxTicksLimit: 4,
           font: { size: 10 },
           callback: fmtCount,

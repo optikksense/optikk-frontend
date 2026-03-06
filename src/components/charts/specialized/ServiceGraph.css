@@ -4,12 +4,12 @@
   height: 100%;
   min-height: 320px;
   background:
-    radial-gradient(circle at 8px 8px, rgba(63, 89, 140, 0.35) 1px, transparent 1px),
-    radial-gradient(circle at 8px 8px, rgba(14, 25, 48, 0.95) 0, rgba(8, 10, 16, 0.98) 80%);
+    radial-gradient(circle at 8px 8px, var(--literal-rgba-63-89-140-0p35) 1px, transparent 1px),
+    radial-gradient(circle at 8px 8px, var(--literal-rgba-14-25-48-0p95) 0, var(--literal-rgba-8-10-16-0p98) 80%);
   background-size: 16px 16px, 100% 100%;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(65, 88, 145, 0.45);
+  border: 1px solid var(--literal-rgba-65-88-145-0p45);
 }
 
 .service-graph-container.expanded {
@@ -27,7 +27,7 @@
   align-items: center;
   justify-content: center;
   min-height: 240px;
-  color: #7e8595;
+  color: var(--literal-hex-7e8595);
   font-size: 16px;
 }
 
@@ -53,9 +53,9 @@
 .graph-toolbar-btn {
   min-width: 34px;
   height: 32px;
-  border: 1px solid rgba(95, 106, 133, 0.45);
-  background: rgba(20, 23, 31, 0.88);
-  color: #d8dce8;
+  border: 1px solid var(--literal-rgba-95-106-133-0p45);
+  background: var(--literal-rgba-20-23-31-0p88);
+  color: var(--literal-hex-d8dce8);
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
@@ -68,21 +68,21 @@
 }
 
 .graph-toolbar-btn:hover {
-  border-color: rgba(127, 145, 194, 0.72);
-  background: rgba(36, 41, 53, 0.95);
+  border-color: var(--literal-rgba-127-145-194-0p72);
+  background: var(--literal-rgba-36-41-53-0p95);
 }
 
 .graph-toolbar-btn.ghost {
-  background: rgba(15, 18, 25, 0.82);
+  background: var(--literal-rgba-15-18-25-0p82);
 }
 
 .graph-toolbar-zoom {
   min-width: 56px;
   height: 32px;
   border-radius: 8px;
-  border: 1px solid rgba(95, 106, 133, 0.45);
-  background: rgba(20, 23, 31, 0.88);
-  color: #aab1c7;
+  border: 1px solid var(--literal-rgba-95-106-133-0p45);
+  background: var(--literal-rgba-20-23-31-0p88);
+  color: var(--literal-hex-aab1c7);
   font-size: 12px;
   font-weight: 700;
   display: flex;
@@ -92,13 +92,13 @@
 
 /* Stage labels */
 .stage-pill {
-  fill: rgba(10, 14, 24, 0.88);
-  stroke: rgba(72, 87, 121, 0.65);
+  fill: var(--literal-rgba-10-14-24-0p88);
+  stroke: var(--literal-rgba-72-87-121-0p65);
   stroke-width: 1;
 }
 
 .stage-pill-text {
-  fill: #8d95aa;
+  fill: var(--literal-hex-8d95aa);
   font-size: 11px;
   letter-spacing: 1.2px;
   font-weight: 700;
@@ -109,44 +109,44 @@
 
 /* Nodes */
 .service-flow-node .node-card {
-  fill: rgba(27, 31, 42, 0.9);
-  stroke: rgba(61, 68, 88, 0.9);
+  fill: var(--literal-rgba-27-31-42-0p9);
+  stroke: var(--literal-rgba-61-68-88-0p9);
   stroke-width: 1.15;
   transition: all 0.2s ease;
 }
 
 .service-flow-node .node-accent {
-  fill: #35d68f;
+  fill: var(--literal-hex-35d68f);
 }
 
 .service-flow-node.high .node-accent {
-  fill: #f7b63a;
+  fill: var(--literal-hex-f7b63a);
 }
 
 .service-flow-node.medium .node-accent {
-  fill: #c8d43d;
+  fill: var(--literal-hex-c8d43d);
 }
 
 .service-flow-node.critical .node-accent {
-  fill: #ff4d5a;
+  fill: var(--literal-hex-ff4d5a);
 }
 
 .service-flow-node:hover .node-card {
-  stroke: rgba(120, 145, 213, 0.95);
-  fill: rgba(34, 39, 53, 0.97);
+  stroke: var(--literal-rgba-120-145-213-0p95);
+  fill: var(--literal-rgba-34-39-53-0p97);
 }
 
 .service-flow-node.critical .node-card {
-  fill: rgba(56, 18, 27, 0.92);
-  stroke: rgba(142, 51, 67, 0.95);
+  fill: var(--literal-rgba-56-18-27-0p92);
+  stroke: var(--literal-rgba-142-51-67-0p95);
 }
 
 .service-flow-node.high .node-card {
-  fill: rgba(42, 34, 18, 0.9);
+  fill: var(--literal-rgba-42-34-18-0p9);
 }
 
 .node-title {
-  fill: #e9ecf5;
+  fill: var(--literal-hex-e9ecf5);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.2px;
@@ -163,13 +163,13 @@
 }
 
 .node-domain-badge {
-  fill: rgba(116, 124, 145, 0.2);
-  stroke: rgba(132, 141, 166, 0.2);
+  fill: var(--literal-rgba-116-124-145-0p2);
+  stroke: var(--literal-rgba-132-141-166-0p2);
   stroke-width: 1;
 }
 
 .node-domain-text {
-  fill: #a8b0c4;
+  fill: var(--literal-hex-a8b0c4);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.15px;
@@ -178,7 +178,7 @@
 }
 
 .node-alert-text {
-  fill: #f0adb3;
+  fill: var(--literal-hex-f0adb3);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.2px;
@@ -187,27 +187,27 @@
 }
 
 .node-metric-text {
-  fill: #cdd3e4;
+  fill: var(--literal-hex-cdd3e4);
   font-size: 10px;
   font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   pointer-events: none;
 }
 
 .node-metric-text.muted {
-  fill: #98a2b8;
+  fill: var(--literal-hex-98a2b8);
 }
 
 /* Edges */
 .service-flow-edge {
   fill: none;
-  stroke: #5a6275;
+  stroke: var(--literal-hex-5a6275);
   stroke-linecap: round;
   opacity: 0.56;
   transition: opacity 0.2s ease, stroke 0.2s ease;
 }
 
 .service-flow-edge.critical {
-  stroke: #ff4d5a;
+  stroke: var(--literal-hex-ff4d5a);
   opacity: 0.95;
 }
 
@@ -218,23 +218,23 @@
 /* Tooltip */
 .service-graph-tooltip {
   position: absolute;
-  background: rgba(21, 24, 32, 0.96);
-  border: 1px solid rgba(83, 93, 117, 0.72);
+  background: var(--literal-rgba-21-24-32-0p96);
+  border: 1px solid var(--literal-rgba-83-93-117-0p72);
   border-radius: 8px;
   padding: 10px 11px;
   pointer-events: none;
   z-index: 1000;
   min-width: 210px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 30px var(--literal-rgba-0-0-0-0p35);
 }
 
 .tooltip-header {
   font-size: 12px;
   font-weight: 700;
-  color: #eff2fa;
+  color: var(--literal-hex-eff2fa);
   margin-bottom: 8px;
   padding-bottom: 7px;
-  border-bottom: 1px solid rgba(95, 106, 133, 0.45);
+  border-bottom: 1px solid var(--literal-rgba-95-106-133-0p45);
   font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
@@ -251,12 +251,12 @@
 }
 
 .tooltip-label {
-  color: #9ea8bf;
+  color: var(--literal-hex-9ea8bf);
   margin-right: 12px;
 }
 
 .tooltip-value {
-  color: #e8ecf8;
+  color: var(--literal-hex-e8ecf8);
   font-weight: 600;
 }
 

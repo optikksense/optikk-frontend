@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Form, Input, Button, Card, Typography, Space } from 'antd';
 import { Mail, Lock, Layers } from 'lucide-react';
 import { useEffect } from 'react';
@@ -56,16 +57,16 @@ export default function LoginPage() {
             <div className="branding-logo-icon">
               <Layers size={24} />
             </div>
-            <Title level={2} style={{ margin: 0, color: '#fff' }}>
+            <Title level={2} style={{ margin: 0, color: APP_COLORS.hex_fff }}>
               Optikk
             </Title>
           </div>
 
-          <Title level={3} style={{ color: '#fff', marginBottom: 16 }}>
+          <Title level={3} style={{ color: APP_COLORS.hex_fff, marginBottom: 16 }}>
             Modern Observability Platform
           </Title>
 
-          <Text style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)' }}>
+          <Text style={{ fontSize: 16, color: APP_COLORS.rgba_255_255_255_0p7 }}>
             Monitor, analyze, and optimize your distributed systems with real-time insights.
           </Text>
 
@@ -122,7 +123,7 @@ export default function LoginPage() {
               >
                 <Input
                   data-testid="login-email"
-                  prefix={<Mail size={16} style={{ color: '#666' }} />}
+                  prefix={<Mail size={16} style={{ color: APP_COLORS.hex_666 }} />}
                   placeholder="frontend.demo@observability.local"
                   size="large"
                 />
@@ -135,7 +136,7 @@ export default function LoginPage() {
               >
                 <Input.Password
                   data-testid="login-password"
-                  prefix={<Lock size={16} style={{ color: '#666' }} />}
+                  prefix={<Lock size={16} style={{ color: APP_COLORS.hex_666 }} />}
                   placeholder="Enter your password"
                   size="large"
                 />

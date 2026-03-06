@@ -1,10 +1,11 @@
+import { APP_COLORS } from '@config/colorLiterals';
 export const MQ_SYSTEM_META: Record<string, { label: string; color: string; badgeColor: string; gradient: string }> = {
-  kafka: { label: 'Apache Kafka', color: '#231F20', badgeColor: '#e0e0e0', gradient: 'linear-gradient(135deg, #231F20 0%, #666 100%)' },
-  rabbitmq: { label: 'RabbitMQ', color: '#FF6600', badgeColor: '#FF6600', gradient: 'linear-gradient(135deg, #FF6600 0%, #FFB088 100%)' },
-  activemq: { label: 'ActiveMQ', color: '#D32F2F', badgeColor: '#D32F2F', gradient: 'linear-gradient(135deg, #D32F2F 0%, #EF9A9A 100%)' },
-  sqs: { label: 'Amazon SQS', color: '#FF9900', badgeColor: '#FF9900', gradient: 'linear-gradient(135deg, #FF9900 0%, #FFD599 100%)' },
-  nats: { label: 'NATS', color: '#27AAE1', badgeColor: '#27AAE1', gradient: 'linear-gradient(135deg, #27AAE1 0%, #8DD8F8 100%)' },
-  pulsar: { label: 'Apache Pulsar', color: '#188FFF', badgeColor: '#188FFF', gradient: 'linear-gradient(135deg, #188FFF 0%, #92CBFF 100%)' },
+  kafka: { label: 'Apache Kafka', color: APP_COLORS.hex_231f20, badgeColor: APP_COLORS.hex_e0e0e0, gradient: `linear-gradient(135deg, ${APP_COLORS.hex_231f20} 0%, ${APP_COLORS.hex_666} 100%)` },
+  rabbitmq: { label: 'RabbitMQ', color: APP_COLORS.hex_ff6600, badgeColor: APP_COLORS.hex_ff6600, gradient: `linear-gradient(135deg, ${APP_COLORS.hex_ff6600} 0%, ${APP_COLORS.hex_ffb088} 100%)` },
+  activemq: { label: 'ActiveMQ', color: APP_COLORS.hex_d32f2f, badgeColor: APP_COLORS.hex_d32f2f, gradient: `linear-gradient(135deg, ${APP_COLORS.hex_d32f2f} 0%, ${APP_COLORS.hex_ef9a9a} 100%)` },
+  sqs: { label: 'Amazon SQS', color: APP_COLORS.hex_ff9900, badgeColor: APP_COLORS.hex_ff9900, gradient: `linear-gradient(135deg, ${APP_COLORS.hex_ff9900} 0%, ${APP_COLORS.hex_ffd599} 100%)` },
+  nats: { label: 'NATS', color: APP_COLORS.hex_27aae1, badgeColor: APP_COLORS.hex_27aae1, gradient: `linear-gradient(135deg, ${APP_COLORS.hex_27aae1} 0%, ${APP_COLORS.hex_8dd8f8} 100%)` },
+  pulsar: { label: 'Apache Pulsar', color: APP_COLORS.hex_188fff, badgeColor: APP_COLORS.hex_188fff, gradient: `linear-gradient(135deg, ${APP_COLORS.hex_188fff} 0%, ${APP_COLORS.hex_92cbff} 100%)` },
 };
 
 /**
@@ -21,8 +22,8 @@ export function getMqMeta(system: string) {
   const key = (system || '').toLowerCase();
   return MQ_SYSTEM_META[key] || {
     label: system || 'Queue',
-    color: '#5E60CE',
-    badgeColor: '#5E60CE',
-    gradient: 'linear-gradient(135deg, #5E60CE 0%, #48CAE4 100%)',
+    color: APP_COLORS.hex_5e60ce,
+    badgeColor: APP_COLORS.hex_5e60ce,
+    gradient: `linear-gradient(135deg, ${APP_COLORS.hex_5e60ce} 0%, ${APP_COLORS.hex_48cae4} 100%)`,
   };
 }

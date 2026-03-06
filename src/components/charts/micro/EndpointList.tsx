@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { formatNumber, formatDuration } from '@utils/formatters';
 
 const DEFAULT_MAX_HEIGHT = '200px';
@@ -83,11 +84,11 @@ export default function EndpointList({
     if (isSelected) {
       switch (type) {
         case 'errorRate':
-          return 'rgba(255, 77, 79, 0.2)';
+          return APP_COLORS.rgba_255_77_79_0p2;
         case 'latency':
-          return 'rgba(250, 173, 20, 0.2)';
+          return APP_COLORS.rgba_250_173_20_0p2;
         default:
-          return 'rgba(94, 96, 206, 0.2)';
+          return APP_COLORS.rgba_94_96_206_0p2;
       }
     }
     return 'var(--bg-secondary)';
@@ -97,11 +98,11 @@ export default function EndpointList({
     if (isSelected) {
       switch (type) {
         case 'errorRate':
-          return '#F04438';
+          return APP_COLORS.hex_f04438;
         case 'latency':
-          return '#F79009';
+          return APP_COLORS.hex_f79009;
         default:
-          return '#5E60CE';
+          return APP_COLORS.hex_5e60ce;
       }
     }
     return 'transparent';

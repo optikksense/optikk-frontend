@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { useMemo } from 'react';
 
 import { servicesPageService } from '@services/servicesPageService';
@@ -319,19 +320,19 @@ export function useServicesData({
         key: 'healthy',
         label: 'Healthy',
         count: normalizedTopologyNodes.filter((node: ServiceTopologyNode) => node.status === 'healthy').length,
-        color: '#73C991',
+        color: APP_COLORS.hex_73c991,
       },
       {
         key: 'degraded',
         label: 'Degraded',
         count: normalizedTopologyNodes.filter((node: ServiceTopologyNode) => node.status === 'degraded').length,
-        color: '#F79009',
+        color: APP_COLORS.hex_f79009,
       },
       {
         key: 'unhealthy',
         label: 'Unhealthy',
         count: normalizedTopologyNodes.filter((node: ServiceTopologyNode) => node.status === 'unhealthy').length,
-        color: '#F04438',
+        color: APP_COLORS.hex_f04438,
       },
     ],
     [normalizedTopologyNodes],

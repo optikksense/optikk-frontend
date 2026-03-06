@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Col, Row } from 'antd';
 import { AlertTriangle, Box, CheckCircle2, Server, XCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -68,7 +69,7 @@ export default function NodesPage() {
             title="Healthy Nodes"
             value={stats.healthy}
             icon={<CheckCircle2 size={20} />}
-            iconColor="#73C991"
+            iconColor={APP_COLORS.hex_73c991}
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -76,7 +77,7 @@ export default function NodesPage() {
             title="Degraded Nodes"
             value={stats.degraded}
             icon={<AlertTriangle size={20} />}
-            iconColor="#F79009"
+            iconColor={APP_COLORS.hex_f79009}
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -84,7 +85,7 @@ export default function NodesPage() {
             title="Unhealthy Nodes"
             value={stats.unhealthy}
             icon={<XCircle size={20} />}
-            iconColor="#F04438"
+            iconColor={APP_COLORS.hex_f04438}
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -92,7 +93,7 @@ export default function NodesPage() {
             title="Total Pods"
             value={formatNumber(stats.totalPods)}
             icon={<Box size={20} />}
-            iconColor="#5E60CE"
+            iconColor={APP_COLORS.hex_5e60ce}
           />
         </Col>
       </Row>

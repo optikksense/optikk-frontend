@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Row, Col, Card, Progress } from 'antd';
 
 import { formatNumber, formatDuration } from '@utils/formatters';
@@ -39,14 +40,14 @@ export function ServiceMetricsGrid({ serviceMetrics, onServiceSelect }: ServiceM
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>
                   <span>Error Rate</span>
-                  <span style={{ color: errorRate > 5 ? '#F04438' : errorRate > 1 ? '#F79009' : '#73C991' }}>
+                  <span style={{ color: errorRate > 5 ? APP_COLORS.hex_f04438 : errorRate > 1 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991 }}>
                     {errorRate.toFixed(2)}%
                   </span>
                 </div>
                 <Progress
                   percent={Math.min(errorRate, 100)}
                   size="small"
-                  strokeColor={errorRate > 5 ? '#F04438' : errorRate > 1 ? '#F79009' : '#73C991'}
+                  strokeColor={errorRate > 5 ? APP_COLORS.hex_f04438 : errorRate > 1 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991}
                   showInfo={false}
                 />
               </div>

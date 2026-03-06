@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Col, Row } from 'antd';
 import { Activity, AlertCircle, Clock, Zap } from 'lucide-react';
 import React from 'react';
@@ -39,9 +40,9 @@ export default function ServiceDetailStatsRow({
           formatter: formatNumber,
           trend: 0,
           icon: <Activity size={20} />,
-          iconColor: '#1890ff',
+          iconColor: APP_COLORS.hex_1890ff,
           sparklineData: requestsSparkline,
-          sparklineColor: '#1890ff',
+          sparklineColor: APP_COLORS.hex_1890ff,
         })}
       </Col>
       <Col xs={24} sm={12} lg={6}>
@@ -51,9 +52,9 @@ export default function ServiceDetailStatsRow({
           formatter: (value: number) => `${value.toFixed(2)}%`,
           trend: 0,
           icon: <AlertCircle size={20} />,
-          iconColor: errorRate > 5 ? '#F04438' : errorRate > 1 ? '#F79009' : '#12B76A',
+          iconColor: errorRate > 5 ? APP_COLORS.hex_f04438 : errorRate > 1 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_12b76a,
           sparklineData: errorSparkline,
-          sparklineColor: '#F04438',
+          sparklineColor: APP_COLORS.hex_f04438,
         })}
       </Col>
       <Col xs={24} sm={12} lg={6}>
@@ -63,7 +64,7 @@ export default function ServiceDetailStatsRow({
           formatter: formatDuration,
           trend: 0,
           icon: <Clock size={20} />,
-          iconColor: '#722ED1',
+          iconColor: APP_COLORS.hex_722ed1,
         })}
       </Col>
       <Col xs={24} sm={12} lg={6}>
@@ -73,7 +74,7 @@ export default function ServiceDetailStatsRow({
           formatter: formatDuration,
           trend: 0,
           icon: <Zap size={20} />,
-          iconColor: '#FA8C16',
+          iconColor: APP_COLORS.hex_fa8c16,
         })}
       </Col>
     </Row>

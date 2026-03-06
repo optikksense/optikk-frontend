@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
 
 /**
@@ -12,9 +13,9 @@ export function deriveNodeStatus(errorRate: any): 'healthy' | 'degraded' | 'unhe
 }
 
 export const STATUS_CONFIG: Record<string, { label: string; color: string; icon: JSX.Element }> = {
-  healthy: { label: 'Healthy', color: '#73C991', icon: <CheckCircle2 size={14} /> },
-  degraded: { label: 'Degraded', color: '#F79009', icon: <AlertTriangle size={14} /> },
-  unhealthy: { label: 'Unhealthy', color: '#F04438', icon: <XCircle size={14} /> },
+  healthy: { label: 'Healthy', color: APP_COLORS.hex_73c991, icon: <CheckCircle2 size={14} /> },
+  degraded: { label: 'Degraded', color: APP_COLORS.hex_f79009, icon: <AlertTriangle size={14} /> },
+  unhealthy: { label: 'Unhealthy', color: APP_COLORS.hex_f04438, icon: <XCircle size={14} /> },
 };
 
 export const NODE_COLUMNS = [

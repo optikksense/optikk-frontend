@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Card, Col, Row } from 'antd';
 
 import DataTable from '@components/common/data-display/DataTable';
@@ -59,12 +60,12 @@ export default function ServiceDetailOverviewTab({
                     <div style={{ width: 200, fontSize: 12, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {endpoint.operation_name}
                     </div>
-                    <div style={{ flex: 1, height: 20, background: 'var(--bg-tertiary, #1A1A1A)', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ flex: 1, height: 20, background: `var(--bg-tertiary, ${APP_COLORS.hex_1a1a1a_2})`, borderRadius: 4, overflow: 'hidden' }}>
                       <div
                         style={{
                           width: `${percentage}%`,
                           height: '100%',
-                          background: endpoint.avg_latency > 500 ? '#F04438' : endpoint.avg_latency > 200 ? '#F79009' : '#73C991',
+                          background: endpoint.avg_latency > 500 ? APP_COLORS.hex_f04438 : endpoint.avg_latency > 200 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991,
                           borderRadius: 4,
                           transition: 'width 0.3s',
                         }}

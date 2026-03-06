@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 /**
  * Utility functions for formatting data
  */
@@ -137,10 +138,10 @@ export function formatRelativeTime(timestamp: number | string | Date): string {
  */
 export function getHealthColor(status: string): string {
   const colors: Record<string, string> = {
-    healthy: '#73C991',
-    degraded: '#F79009',
-    unhealthy: '#F04438',
-    unknown: '#98A2B3',
+    healthy: APP_COLORS.hex_73c991,
+    degraded: APP_COLORS.hex_f79009,
+    unhealthy: APP_COLORS.hex_f04438,
+    unknown: APP_COLORS.hex_98a2b3,
   };
   return colors[status] ?? colors.unknown;
 }
@@ -160,7 +161,7 @@ export function truncateText(text: string, maxLength = 100): string {
  * @param rate
  */
 export function getErrorRateColor(rate: number): string {
-  if (rate > 5) return '#F04438';
-  if (rate > 1) return '#F79009';
-  return '#73C991';
+  if (rate > 5) return APP_COLORS.hex_f04438;
+  if (rate > 1) return APP_COLORS.hex_f79009;
+  return APP_COLORS.hex_73c991;
 }

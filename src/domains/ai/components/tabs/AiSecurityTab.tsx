@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Badge, Card, Empty, Progress, Skeleton, Table, Tag, Tooltip } from 'antd';
 import { useMemo } from 'react';
 
@@ -47,7 +48,7 @@ export default function AiSecurityTab({
         const normalized = n(value) ?? 0;
         return (
           <Tooltip title={`${normalized} requests with PII`}>
-            <span style={{ color: normalized > 0 ? '#F04438' : '#73C991', fontWeight: 600 }}>{formatNumber(normalized)}</span>
+            <span style={{ color: normalized > 0 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_73c991, fontWeight: 600 }}>{formatNumber(normalized)}</span>
           </Tooltip>
         );
       },
@@ -69,7 +70,7 @@ export default function AiSecurityTab({
         );
       },
     },
-    { title: 'Guardrail Blocks', dataIndex: 'guardrail_blocked_count', key: 'guardrail_blocked_count', render: (value: any) => { const normalized = n(value) ?? 0; return <span style={{ color: normalized > 0 ? '#F79009' : '#73C991', fontWeight: 600 }}>{formatNumber(normalized)}</span>; }, align: 'right' as const },
+    { title: 'Guardrail Blocks', dataIndex: 'guardrail_blocked_count', key: 'guardrail_blocked_count', render: (value: any) => { const normalized = n(value) ?? 0; return <span style={{ color: normalized > 0 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991, fontWeight: 600 }}>{formatNumber(normalized)}</span>; }, align: 'right' as const },
     { title: 'Block Rate', dataIndex: 'guardrail_block_rate', key: 'guardrail_block_rate', render: (value: any) => { const normalized = n(value); return normalized == null ? naSpan() : <span style={{ color: rateColor(normalized), fontWeight: 600 }}>{normalized.toFixed(2)}%</span>; }, align: 'right' as const },
     {
       title: 'Overall Safety',

@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Row, Col, Card, Select, Tag, Table, Skeleton, Empty, Tooltip } from 'antd';
 import { AlertCircle, ExternalLink, Clock } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -116,9 +117,9 @@ export default function ErrorDashboardPage() {
 
   const statusColor = (code: any) => {
     const n = Number(code);
-    if (n >= 500) return '#F04438';
-    if (n >= 400) return '#F79009';
-    return '#98A2B3';
+    if (n >= 500) return APP_COLORS.hex_f04438;
+    if (n >= 400) return APP_COLORS.hex_f79009;
+    return APP_COLORS.hex_98a2b3;
   };
 
   const columns: any[] = [
@@ -127,7 +128,7 @@ export default function ErrorDashboardPage() {
       dataIndex: 'service_name',
       key: 'service_name',
       render: (v: string) => (
-        <Tag style={{ background: 'rgba(94,96,206,0.15)', color: '#5E60CE', border: '1px solid rgba(94,96,206,0.3)' }}>
+        <Tag style={{ background: APP_COLORS.rgba_94_96_206_0p15_2, color: APP_COLORS.hex_5e60ce, border: `1px solid ${APP_COLORS.rgba_94_96_206_0p3_2}` }}>
           {v}
         </Tag>
       ),
@@ -175,7 +176,7 @@ export default function ErrorDashboardPage() {
       sorter: (a: any, b: any) => Number(a.error_count) - Number(b.error_count),
       defaultSortOrder: 'descend' as const,
       render: (v: any) => (
-        <span style={{ fontWeight: 700, color: '#F04438', fontSize: 13 }}>
+        <span style={{ fontWeight: 700, color: APP_COLORS.hex_f04438, fontSize: 13 }}>
           {formatNumber(Number(v))}
         </span>
       ),
@@ -199,7 +200,7 @@ export default function ErrorDashboardPage() {
       width: 120,
       render: (v: string) => v ? (
         <span
-          style={{ color: '#5E60CE', cursor: 'pointer', fontSize: 12 }}
+          style={{ color: APP_COLORS.hex_5e60ce, cursor: 'pointer', fontSize: 12 }}
           onClick={() => navigate(`/traces/${v}`)}
         >
           <ExternalLink size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />

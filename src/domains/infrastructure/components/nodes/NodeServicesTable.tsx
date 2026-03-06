@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
 
 import { formatNumber } from '@utils/formatters';
@@ -26,7 +27,7 @@ export default function NodeServicesTable({ rows, isLoading }: NodeServicesTable
         isLoading={isLoading}
         renderRow={(row: any, { colWidths, visibleCols }: any) => {
           const rate = Number(row.error_rate) || 0;
-          const errorColor = rate > 10 ? '#F04438' : rate > 2 ? '#F79009' : '#73C991';
+          const errorColor = rate > 10 ? APP_COLORS.hex_f04438 : rate > 2 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991;
           return (
             <>
               {visibleCols.service_name && (

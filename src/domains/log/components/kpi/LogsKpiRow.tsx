@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { AlertCircle, Server } from 'lucide-react';
 
 import KpiCard from '../log/KpiCard';
@@ -31,8 +32,8 @@ export default function LogsKpiRow({
         title="Errors & Fatals"
         value={formatNumber(errorCount)}
         icon={AlertCircle}
-        accentColor={errorCount > 0 ? '#F04438' : '#73C991'}
-        accentBg={errorCount > 0 ? 'rgba(240,68,56,0.12)' : 'rgba(115,201,145,0.12)'}
+        accentColor={errorCount > 0 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_73c991}
+        accentBg={errorCount > 0 ? APP_COLORS.rgba_240_68_56_0p12_2 : APP_COLORS.rgba_115_201_145_0p12_2}
         subtitle={errorCount > 0 ? 'Needs attention' : 'All clear'}
         trend={0}
       />
@@ -40,16 +41,16 @@ export default function LogsKpiRow({
         title="Warnings"
         value={formatNumber(warnCount)}
         icon={AlertCircle}
-        accentColor={warnCount > 0 ? '#F79009' : '#73C991'}
-        accentBg={warnCount > 0 ? 'rgba(247,144,9,0.12)' : 'rgba(115,201,145,0.12)'}
+        accentColor={warnCount > 0 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991}
+        accentBg={warnCount > 0 ? APP_COLORS.rgba_247_144_9_0p12_2 : APP_COLORS.rgba_115_201_145_0p12_2}
         trend={0}
       />
       <KpiCard
         title="Services"
         value={formatNumber(serviceCount)}
         icon={Server}
-        accentColor="#06AED5"
-        accentBg="rgba(6,174,213,0.12)"
+        accentColor={APP_COLORS.hex_06aed5}
+        accentBg={APP_COLORS.rgba_6_174_213_0p12_2}
         subtitle={totalCount > 0 ? `${formatNumber(totalCount)} total logs` : undefined}
         trend={0}
       />

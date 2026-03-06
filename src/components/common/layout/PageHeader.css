@@ -7,11 +7,11 @@
 }
 
 .page-header-breadcrumbs .ant-breadcrumb-link a {
-  color: var(--text-secondary, #6b7280);
+  color: var(--text-secondary, var(--literal-hex-6b7280));
 }
 
 .page-header-breadcrumbs .ant-breadcrumb-link a:hover {
-  color: #5E60CE;
+  color: var(--literal-hex-5e60ce);
 }
 
 .page-header-row {
@@ -31,18 +31,18 @@
 .page-header-icon {
   display: flex;
   align-items: center;
-  color: var(--text-secondary, #6b7280);
+  color: var(--text-secondary, var(--literal-hex-6b7280));
 }
 
 .page-header-title {
   font-size: 24px;
   font-weight: 700;
-  color: var(--text-primary, #111827);
+  color: var(--text-primary, var(--literal-hex-111827));
   margin: 0;
 }
 
 .page-header-subtitle {
-  color: var(--text-secondary, #6b7280);
+  color: var(--text-secondary, var(--literal-hex-6b7280));
   font-size: 14px;
   margin: 4px 0 0 0;
 }

@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Spin } from 'antd';
 import { useMemo } from 'react';
 
@@ -6,12 +7,12 @@ import type { LogVolumeBucket } from '../../types';
 
 /* ─── Level colours ───────────────────────────────────────────────────────── */
 const LEVEL_COLORS: Record<'errors' | 'warnings' | 'infos' | 'debugs' | 'fatals' | 'traces', string> = {
-  errors: '#F04438',
-  warnings: '#F79009',
-  infos: '#06AED5',
-  debugs: '#5E60CE',
-  fatals: '#D92D20',
-  traces: '#98A2B3',
+  errors: APP_COLORS.hex_f04438,
+  warnings: APP_COLORS.hex_f79009,
+  infos: APP_COLORS.hex_06aed5,
+  debugs: APP_COLORS.hex_5e60ce,
+  fatals: APP_COLORS.hex_d92d20,
+  traces: APP_COLORS.hex_98a2b3,
 };
 
 export { LEVEL_COLORS };
@@ -84,7 +85,7 @@ function VolumeBar({ bucket, maxTotal }: VolumeBarProps) {
           {warnings > 0 && <div style={{ flex: warnings, background: LEVEL_COLORS.warnings }} />}
           {infos > 0 && <div style={{ flex: infos, background: LEVEL_COLORS.infos }} />}
           {debugs > 0 && <div style={{ flex: debugs, background: LEVEL_COLORS.debugs }} />}
-          {!hasLevels && <div style={{ flex: 1, background: '#98A2B3' }} />}
+          {!hasLevels && <div style={{ flex: 1, background: APP_COLORS.hex_98a2b3 }} />}
         </div>
       )}
     </div>

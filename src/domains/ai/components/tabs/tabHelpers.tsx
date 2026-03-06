@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 /**
  *
  * @param value
@@ -39,7 +40,7 @@ export function naSpan() {
  * @param ms
  */
 export function latColor(ms: any): string {
-  return ms > 5000 ? '#F04438' : ms > 2000 ? '#F79009' : '#73C991';
+  return ms > 5000 ? APP_COLORS.hex_f04438 : ms > 2000 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991;
 }
 
 /**
@@ -47,5 +48,5 @@ export function latColor(ms: any): string {
  * @param rate
  */
 export function rateColor(rate: any): string {
-  return rate > 5 ? '#F04438' : rate > 1 ? '#F79009' : '#73C991';
+  return rate > 5 ? APP_COLORS.hex_f04438 : rate > 1 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991;
 }

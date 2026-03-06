@@ -1,16 +1,17 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import type { TooltipItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
 import { createChartOptions } from '@utils/chartHelpers';
 
 const BUCKETS = [
-  { label: '0-50ms', max: 50, color: '#73C991' },
-  { label: '50-100ms', max: 100, color: '#73C991' },
-  { label: '100-250ms', max: 250, color: '#06AED5' },
-  { label: '250-500ms', max: 500, color: '#F79009' },
-  { label: '500ms-1s', max: 1000, color: '#F79009' },
-  { label: '1s-5s', max: 5000, color: '#F04438' },
-  { label: '5s+', max: Infinity, color: '#F04438' },
+  { label: '0-50ms', max: 50, color: APP_COLORS.hex_73c991 },
+  { label: '50-100ms', max: 100, color: APP_COLORS.hex_73c991 },
+  { label: '100-250ms', max: 250, color: APP_COLORS.hex_06aed5 },
+  { label: '250-500ms', max: 500, color: APP_COLORS.hex_f79009 },
+  { label: '500ms-1s', max: 1000, color: APP_COLORS.hex_f79009 },
+  { label: '1s-5s', max: 5000, color: APP_COLORS.hex_f04438 },
+  { label: '5s+', max: Infinity, color: APP_COLORS.hex_f04438 },
 ];
 
 interface LatencyHistogramTrace {
@@ -76,11 +77,11 @@ export default function LatencyHistogram({
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: '#666', maxRotation: 0, font: { size: 10 } },
+        ticks: { color: APP_COLORS.hex_666, maxRotation: 0, font: { size: 10 } },
       },
       y: {
-        grid: { color: '#2D2D2D' },
-        ticks: { color: '#666', maxTicksLimit: 3 },
+        grid: { color: APP_COLORS.hex_2d2d2d },
+        ticks: { color: APP_COLORS.hex_666, maxTicksLimit: 3 },
         beginAtZero: true,
       },
     },

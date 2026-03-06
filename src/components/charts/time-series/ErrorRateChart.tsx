@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Empty } from 'antd';
 import { useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
@@ -51,7 +52,7 @@ export default function ErrorRateChart({
   serviceTimeseriesMap = {},
   targetThreshold = null,
   datasetLabel = 'Error Rate %',
-  color = '#F04438',
+  color = APP_COLORS.hex_f04438,
 }: any) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets, labels } = useChartTimeBuckets();
@@ -168,7 +169,7 @@ export default function ErrorRateChart({
       datasets.push({
         label: `Limit (${formattedLimit}%)`,
         data: timeBuckets.map(() => targetThreshold),
-        borderColor: '#F79009',
+        borderColor: APP_COLORS.hex_f79009,
         borderDash: [6, 3],
         borderWidth: 1.5,
         pointRadius: 0,
@@ -220,13 +221,13 @@ export default function ErrorRateChart({
     scales: {
       y: {
         ticks: {
-          color: '#666',
+          color: APP_COLORS.hex_666,
           callback: (v: any) => {
             const num = Number(v);
             return Number.isInteger(num) ? `${num}%` : `${num.toFixed(1)}%`;
           },
         },
-        grid: { color: '#2D2D2D' },
+        grid: { color: APP_COLORS.hex_2d2d2d },
         beginAtZero: true,
         max: Math.max(yAxisMax, targetThreshold ? targetThreshold * 1.5 : 0),
       },

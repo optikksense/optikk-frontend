@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Tag } from 'antd';
 
 import ObservabilityDataBoard, { boardHeight } from '@components/common/data-display/ObservabilityDataBoard';
@@ -33,13 +34,13 @@ export default function NodesTable({ rows, isLoading, onOpenNodeDetail }: NodesT
           const status = deriveNodeStatus(row.error_rate);
           const cfg = STATUS_CONFIG[status];
           const errorRate = Number(row.error_rate) || 0;
-          const errorColor = errorRate > 10 ? '#F04438' : errorRate > 2 ? '#F79009' : '#73C991';
+          const errorColor = errorRate > 10 ? APP_COLORS.hex_f04438 : errorRate > 2 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991;
           const services = Array.isArray(row.services) ? row.services : [];
           return (
             <>
               {visibleCols.host && (
                 <div
-                  style={{ width: colWidths.host, flexShrink: 0, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--color-primary, #5E60CE)' }}
+                  style={{ width: colWidths.host, flexShrink: 0, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: `var(--color-primary, ${APP_COLORS.hex_5e60ce})` }}
                   onClick={() => onOpenNodeDetail(row)}
                 >
                   {row.host}
@@ -47,7 +48,7 @@ export default function NodesTable({ rows, isLoading, onOpenNodeDetail }: NodesT
               )}
               {visibleCols.status && (
                 <div style={{ width: colWidths.status, flexShrink: 0 }}>
-                  <Tag color={cfg.color} icon={cfg.icon} style={{ color: '#fff' }}>{cfg.label}</Tag>
+                  <Tag color={cfg.color} icon={cfg.icon} style={{ color: APP_COLORS.hex_fff }}>{cfg.label}</Tag>
                 </div>
               )}
               {visibleCols.pod_count && (

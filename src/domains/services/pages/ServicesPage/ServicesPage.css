@@ -7,40 +7,40 @@
 }
 
 .services-tabs .ant-tabs-tab {
-  color: var(--text-muted, #666) !important;
+  color: var(--text-muted, var(--literal-hex-666)) !important;
   font-size: 13px;
 }
 
 .services-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #5E60CE !important;
+  color: var(--literal-hex-5e60ce) !important;
 }
 
 .services-tabs .ant-tabs-ink-bar {
-  background: #5E60CE !important;
+  background: var(--literal-hex-5e60ce) !important;
 }
 
 .services-tabs .ant-tabs-nav::before {
-  border-bottom: 1px solid var(--border-color, #2D2D2D) !important;
+  border-bottom: 1px solid var(--border-color, var(--literal-hex-2d2d2d)) !important;
 }
 
 .services-panel-card,
 .services-filter-card,
 .services-grid-card {
-  background: var(--bg-secondary, #0D0D0D) !important;
-  border: 1px solid var(--border-color, #2D2D2D) !important;
+  background: var(--bg-secondary, var(--literal-hex-0d0d0d)) !important;
+  border: 1px solid var(--border-color, var(--literal-hex-2d2d2d)) !important;
   border-radius: 8px !important;
 }
 
 .services-panel-card .ant-card-head,
 .services-risk-card .ant-card-head,
 .services-graph-card .ant-card-head {
-  border-bottom: 1px solid var(--border-color, #2D2D2D);
+  border-bottom: 1px solid var(--border-color, var(--literal-hex-2d2d2d));
 }
 
 .services-panel-card .ant-card-head-title,
 .services-risk-card .ant-card-head-title,
 .services-graph-card .ant-card-head-title {
-  color: var(--text-primary, #fff);
+  color: var(--text-primary, var(--literal-hex-fff));
   font-size: 13px;
   font-weight: 600;
 }
@@ -91,19 +91,19 @@
 }
 
 .services-risk-item {
-  border: 1px solid var(--border-color, #2D2D2D);
+  border: 1px solid var(--border-color, var(--literal-hex-2d2d2d));
   background: transparent;
   border-radius: 8px;
   padding: 10px;
-  color: var(--text-primary, #fff);
+  color: var(--text-primary, var(--literal-hex-fff));
   cursor: pointer;
   text-align: left;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .services-risk-item:hover {
-  background: var(--bg-tertiary, #1A1A1A);
-  border-color: #5E60CE;
+  background: var(--bg-tertiary, var(--literal-hex-1a1a1a-2));
+  border-color: var(--literal-hex-5e60ce);
 }
 
 .services-risk-item-top {
@@ -132,7 +132,7 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  color: var(--text-muted, #98A2B3);
+  color: var(--text-muted, var(--literal-hex-98a2b3));
   font-size: 12px;
 }
 
@@ -154,7 +154,7 @@
 }
 
 .services-card-extra {
-  color: var(--text-muted, #98A2B3);
+  color: var(--text-muted, var(--literal-hex-98a2b3));
   font-size: 12px;
 }
 

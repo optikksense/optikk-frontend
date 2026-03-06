@@ -6,26 +6,25 @@ export const DEV_FRONTEND_PORT = 3000;
 export const DEV_BACKEND_HOST = 'localhost';
 export const DEV_BACKEND_PORT = 9090;
 export const DEV_BACKEND_URL = `http://${DEV_BACKEND_HOST}:${DEV_BACKEND_PORT}`;
-export const API_V1_BASE = '/v1';
 
 export const API_ENDPOINTS = {
-  V1_BASE: API_V1_BASE,
   AUTH: {
-    LOGIN: `${API_V1_BASE}/auth/login`,
-    LOGOUT: `${API_V1_BASE}/auth/logout`,
-    VALIDATE: `${API_V1_BASE}/auth/validate`,
-    ME: `${API_V1_BASE}/auth/me`,
+    LOGIN: '/auth/v1/login',
+    LOGOUT: '/auth/logout',
+    VALIDATE: '/auth/validate',
+    ME: '/auth/me',
   },
   TEAMS: {
-    LIST: `${API_V1_BASE}/teams`,
-    SWITCH: `${API_V1_BASE}/teams/switch`,
+    LIST: '/teams',
+    SWITCH: '/teams/switch',
   },
+  V1_BASE: '/v1',
   SETTINGS: {
-    PROFILE: `${API_V1_BASE}/settings/profile`,
-    PREFERENCES: `${API_V1_BASE}/settings/preferences`,
+    PROFILE: '/settings/profile',
+    PREFERENCES: '/settings/preferences',
   },
   EVENTS: {
-    STREAM: `${API_V1_BASE}/events/stream`,
+    STREAM: '/v1/events/stream',
   },
 } as const;
 

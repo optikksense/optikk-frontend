@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Switch } from 'antd';
 import { AlertTriangle } from 'lucide-react';
 
@@ -43,8 +44,8 @@ export function MetricsFilterBar({
       ]}
       actions={
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <AlertTriangle size={14} style={{ color: showErrorsOnly ? '#F04438' : 'var(--text-muted)' }} />
-          <span style={{ fontSize: 13, color: showErrorsOnly ? '#F04438' : 'var(--text-muted)' }}>Errors Only</span>
+          <AlertTriangle size={14} style={{ color: showErrorsOnly ? APP_COLORS.hex_f04438 : 'var(--text-muted)' }} />
+          <span style={{ fontSize: 13, color: showErrorsOnly ? APP_COLORS.hex_f04438 : 'var(--text-muted)' }}>Errors Only</span>
           <Switch size="small" checked={showErrorsOnly} onChange={setShowErrorsOnly} />
         </div>
       }

@@ -1,29 +1,30 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { formatNumber, formatDuration } from '@utils/formatters';
 
 const CHART_COLORS = [
-  '#5E60CE',
-  '#48CAE4',
-  '#06D6A0',
-  '#FFD166',
-  '#EF476F',
-  '#118AB2',
-  '#073B4C',
-  '#F78C6B',
-  '#83D483',
-  '#5E35B1',
+  APP_COLORS.hex_5e60ce,
+  APP_COLORS.hex_48cae4,
+  APP_COLORS.hex_06d6a0,
+  APP_COLORS.hex_ffd166,
+  APP_COLORS.hex_ef476f,
+  APP_COLORS.hex_118ab2,
+  APP_COLORS.hex_073b4c,
+  APP_COLORS.hex_f78c6b,
+  APP_COLORS.hex_83d483,
+  APP_COLORS.hex_5e35b1,
 ];
 
 const DB_BADGE_COLORS = {
-  postgresql: '#336791',
-  mysql: '#00758F',
-  redis: '#DC382D',
-  mongodb: '#13AA52',
-  elasticsearch: '#FEC514',
-  memcached: '#6DB33F',
-  cassandra: '#1287B1',
-  mssql: '#CC2927',
-  oracle: '#F80000',
-  sqlite: '#0F80CC',
+  postgresql: APP_COLORS.hex_336791,
+  mysql: APP_COLORS.hex_00758f,
+  redis: APP_COLORS.hex_dc382d,
+  mongodb: APP_COLORS.hex_13aa52,
+  elasticsearch: APP_COLORS.hex_fec514,
+  memcached: APP_COLORS.hex_6db33f,
+  cassandra: APP_COLORS.hex_1287b1,
+  mssql: APP_COLORS.hex_cc2927,
+  oracle: APP_COLORS.hex_f80000,
+  sqlite: APP_COLORS.hex_0f80cc,
 } as const;
 
 type DatabaseSystem = keyof typeof DB_BADGE_COLORS;
@@ -49,7 +50,7 @@ function isDatabaseSystem(system: string): system is DatabaseSystem {
 
 function getBadgeColor(system: string | undefined): string {
   const normalizedSystem = (system ?? '').toLowerCase();
-  if (!isDatabaseSystem(normalizedSystem)) return '#5E60CE';
+  if (!isDatabaseSystem(normalizedSystem)) return APP_COLORS.hex_5e60ce;
   return DB_BADGE_COLORS[normalizedSystem];
 }
 
@@ -66,13 +67,13 @@ export default function DatabaseTopTablesList({
   if (tables.length === 0) return null;
 
   return (
-    <div style={{ marginTop: 0, borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+    <div style={{ marginTop: 0, borderTop: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}` }}>
       <div
         style={{
           maxHeight: '280px',
           overflowY: 'auto',
           scrollbarWidth: 'thin',
-          scrollbarColor: 'var(--border-color, #2D2D2D) transparent',
+          scrollbarColor: `var(--border-color, ${APP_COLORS.hex_2d2d2d}) transparent`,
         }}
       >
         <table
@@ -86,8 +87,8 @@ export default function DatabaseTopTablesList({
           <thead>
             <tr
               style={{
-                color: '#8e8e8e',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                color: APP_COLORS.hex_8e8e8e,
+                borderBottom: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}`,
               }}
             >
               <th style={{ padding: '6px 8px', fontWeight: 500 }}>Table / Collection</th>
@@ -105,10 +106,10 @@ export default function DatabaseTopTablesList({
               const tableKey = table.key ?? `${table.table_name ?? 'unknown'}-${index}`;
               const isSelected = selectedTables.includes(tableKey);
               const isFaded = selectedTables.length > 0 && !isSelected;
-              const selectedBg = 'rgba(94, 96, 206, 0.2)';
-              const hoverBg = 'rgba(255, 255, 255, 0.05)';
+              const selectedBg = APP_COLORS.rgba_94_96_206_0p2;
+              const hoverBg = APP_COLORS.rgba_255_255_255_0p05;
               const latency = table.avg_query_latency_ms ?? 0;
-              const latencyColor = latency > 100 ? '#F04438' : latency > 50 ? '#F79009' : '#e0e0e0';
+              const latencyColor = latency > 100 ? APP_COLORS.hex_f04438 : latency > 50 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_e0e0e0;
               const seriesColor = CHART_COLORS[index % CHART_COLORS.length];
               const badgeColor = getBadgeColor(table.db_system);
 
@@ -152,11 +153,11 @@ export default function DatabaseTopTablesList({
                       }}
                     />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: '#e0e0e0', fontWeight: 500 }}>
+                      <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
                         {table.table_name || 'unknown'}
                       </span>
                       {table.service_name && table.service_name !== 'unknown' && (
-                        <span style={{ color: '#8e8e8e', fontSize: '11px' }}>
+                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '11px' }}>
                           {table.service_name}
                         </span>
                       )}
@@ -186,7 +187,7 @@ export default function DatabaseTopTablesList({
                     style={{
                       padding: '5px 8px',
                       textAlign: 'right',
-                      color: '#e0e0e0',
+                      color: APP_COLORS.hex_e0e0e0,
                       fontFamily: 'monospace',
                     }}
                   >

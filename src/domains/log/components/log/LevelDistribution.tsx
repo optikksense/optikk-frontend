@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { formatNumber } from '@utils/formatters';
 
 import type { LogFacet } from '../../types';
@@ -5,12 +6,12 @@ import type { LogFacet } from '../../types';
 import { LevelBadge } from './LogRow';
 
 const LEVEL_COLORS: Record<string, string> = {
-  errors: '#F04438',
-  warnings: '#F79009',
-  infos: '#06AED5',
-  debugs: '#5E60CE',
-  fatals: '#D92D20',
-  traces: '#98A2B3',
+  errors: APP_COLORS.hex_f04438,
+  warnings: APP_COLORS.hex_f79009,
+  infos: APP_COLORS.hex_06aed5,
+  debugs: APP_COLORS.hex_5e60ce,
+  fatals: APP_COLORS.hex_d92d20,
+  traces: APP_COLORS.hex_98a2b3,
 };
 
 interface LevelDistributionProps {
@@ -31,7 +32,7 @@ export default function LevelDistribution({ facets }: LevelDistributionProps) {
     <div className="logs-level-dist">
       {facets.map((facet: LogFacet) => {
         const level = (facet.value || 'INFO').toUpperCase();
-        const color = LEVEL_COLORS[`${level.toLowerCase()}s`] || '#98A2B3';
+        const color = LEVEL_COLORS[`${level.toLowerCase()}s`] || APP_COLORS.hex_98a2b3;
         const pct = ((facet.count / total) * 100).toFixed(1);
 
         return (

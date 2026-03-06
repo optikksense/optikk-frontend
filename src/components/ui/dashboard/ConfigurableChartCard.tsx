@@ -16,9 +16,17 @@ import type {
 import {
   AiBarRenderer,
   AiLineRenderer,
+  AreaRenderer,
+  BarRenderer,
+  GaugeRenderer,
+  HeatmapRenderer,
   LatencyHeatmapRenderer,
   LatencyHistogramRenderer,
   LogHistogramRenderer,
+  ScorecardRenderer,
+  ServiceMapRenderer,
+  TableRenderer,
+  TraceWaterfallRenderer,
   getDashboardIcon,
 } from './SpecializedRendererRegistry';
 
@@ -42,6 +50,14 @@ const DASHBOARD_COMPONENT_MAP: Record<string, ComponentType<any>> = {
   'latency-heatmap': LatencyHeatmapRenderer,
   'ai-line': AiLineRenderer,
   'ai-bar': AiBarRenderer,
+  table: TableRenderer,
+  bar: BarRenderer,
+  area: AreaRenderer,
+  gauge: GaugeRenderer,
+  scorecard: ScorecardRenderer,
+  heatmap: HeatmapRenderer,
+  'service-map': ServiceMapRenderer,
+  'trace-waterfall': TraceWaterfallRenderer,
 };
 
 const SPECIALIZED_COMPONENT_KEYS = new Set([
@@ -50,6 +66,14 @@ const SPECIALIZED_COMPONENT_KEYS = new Set([
   'latency-heatmap',
   'ai-line',
   'ai-bar',
+  'table',
+  'bar',
+  'area',
+  'gauge',
+  'scorecard',
+  'heatmap',
+  'service-map',
+  'trace-waterfall',
 ]);
 
 function firstValue(row: any, keys: string[], fallback: any = '') {

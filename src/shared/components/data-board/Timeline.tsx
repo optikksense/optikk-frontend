@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Timeline as AntTimeline } from 'antd';
 
 import { formatRelativeTime } from '@utils/formatters';
@@ -30,7 +31,7 @@ export default function Timeline({ items = [] }: TimelineProps): JSX.Element | n
 
   const timelineItems = items.map((item, index) => ({
     key: index,
-    color: item.color || 'var(--color-primary, #5E60CE)',
+    color: item.color || `var(--color-primary, ${APP_COLORS.hex_5e60ce})`,
     children: (
       <div className="timeline-item-content">
         <div className="timeline-item-header">

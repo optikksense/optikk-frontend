@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { ArrowUpRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 
@@ -61,7 +62,7 @@ export default function TracesTableRow({
         const percentage =
           maxDuration > 0 ? Math.min((trace.duration_ms / maxDuration) * 100, 100) : 0;
         const color =
-          trace.duration_ms > 1000 ? '#F04438' : trace.duration_ms > 500 ? '#F79009' : '#73C991';
+          trace.duration_ms > 1000 ? APP_COLORS.hex_f04438 : trace.duration_ms > 500 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991;
 
         return (
           <div className="traces-duration-cell">
@@ -84,10 +85,10 @@ export default function TracesTableRow({
 
         const color =
           trace.http_status_code >= 500
-            ? '#F04438'
+            ? APP_COLORS.hex_f04438
             : trace.http_status_code >= 400
-              ? '#F79009'
-              : '#73C991';
+              ? APP_COLORS.hex_f79009
+              : APP_COLORS.hex_73c991;
 
         return (
           <span style={{ fontFamily: 'monospace', fontWeight: 600, color }}>

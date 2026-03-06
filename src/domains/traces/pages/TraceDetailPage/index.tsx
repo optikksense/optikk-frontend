@@ -4,6 +4,7 @@ import { GitBranch, Layers, Clock, AlertCircle, ArrowLeft, FileText, X, ChevronD
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { APP_COLORS } from '@config/colorLiterals';
 import WaterfallChart from '@components/charts/specialized/WaterfallChart';
 import { ObservabilityDetailPanel } from '@components/common';
 import StatCard from '@components/common/cards/StatCard';
@@ -175,7 +176,7 @@ export default function TraceDetailPage() {
       key: 'level',
       width: 90,
       render: (level: unknown) => (
-        <Tag color={level === 'ERROR' ? 'red' : level === 'WARN' ? 'orange' : '#73C991'}>
+        <Tag color={level === 'ERROR' ? 'red' : level === 'WARN' ? 'orange' : APP_COLORS.hex_73c991}>
           {typeof level === 'string' && level.length > 0 ? level : 'INFO'}
         </Tag>
       ),
@@ -285,7 +286,7 @@ export default function TraceDetailPage() {
                 formatter: formatNumber,
                 trend: 0,
                 icon: <Layers size={20} />,
-                iconColor: '#5E60CE',
+                iconColor: APP_COLORS.hex_5e60ce,
               })}
             </Col>
             <Col xs={24} sm={12} lg={6}>
@@ -295,7 +296,7 @@ export default function TraceDetailPage() {
                 formatter: formatDuration,
                 trend: 0,
                 icon: <Clock size={20} />,
-                iconColor: '#73C991',
+                iconColor: APP_COLORS.hex_73c991,
               })}
             </Col>
             <Col xs={24} sm={12} lg={6}>
@@ -305,7 +306,7 @@ export default function TraceDetailPage() {
                 formatter: formatNumber,
                 trend: 0,
                 icon: <GitBranch size={20} />,
-                iconColor: '#06AED5',
+                iconColor: APP_COLORS.hex_06aed5,
               })}
             </Col>
             <Col xs={24} sm={12} lg={6}>
@@ -315,7 +316,7 @@ export default function TraceDetailPage() {
                 formatter: formatNumber,
                 trend: 0,
                 icon: <AlertCircle size={20} />,
-                iconColor: stats.errors > 0 ? '#F04438' : '#73C991',
+                iconColor: stats.errors > 0 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_73c991,
               })}
             </Col>
           </Row>
@@ -388,7 +389,7 @@ export default function TraceDetailPage() {
               <FileText size={18} />
               <span>Associated Logs</span>
               {traceLogs.length > 0 && (
-                <Tag color="default" style={{ marginLeft: 8, background: 'rgba(255,255,255,0.06)', border: 'none', color: 'var(--text-secondary)' }}>
+                <Tag color="default" style={{ marginLeft: 8, background: APP_COLORS.rgba_255_255_255_0p06_2, border: 'none', color: 'var(--text-secondary)' }}>
                   {traceLogs.length} events
                 </Tag>
               )}

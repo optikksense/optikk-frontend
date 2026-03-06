@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { getLogValue } from '@utils/logUtils';
 import { tsLabel } from '@utils/time';
 import type { ReactNode } from 'react';
@@ -7,13 +8,13 @@ import type { LogColumn, LogRecord } from '../../types';
 /* ─── Level badge ─────────────────────────────────────────────────────────── */
 
 const LEVEL_STYLES: Record<string, { bg: string; color: string }> = {
-  FATAL: { bg: '#D92D20', color: '#fff' },
-  ERROR: { bg: '#F04438', color: '#fff' },
-  WARN: { bg: '#F79009', color: '#fff' },
-  WARNING: { bg: '#F79009', color: '#fff' },
-  INFO: { bg: '#06AED5', color: '#fff' },
-  DEBUG: { bg: '#5E60CE', color: '#fff' },
-  TRACE: { bg: '#98A2B3', color: '#fff' },
+  FATAL: { bg: APP_COLORS.hex_d92d20, color: APP_COLORS.hex_fff },
+  ERROR: { bg: APP_COLORS.hex_f04438, color: APP_COLORS.hex_fff },
+  WARN: { bg: APP_COLORS.hex_f79009, color: APP_COLORS.hex_fff },
+  WARNING: { bg: APP_COLORS.hex_f79009, color: APP_COLORS.hex_fff },
+  INFO: { bg: APP_COLORS.hex_06aed5, color: APP_COLORS.hex_fff },
+  DEBUG: { bg: APP_COLORS.hex_5e60ce, color: APP_COLORS.hex_fff },
+  TRACE: { bg: APP_COLORS.hex_98a2b3, color: APP_COLORS.hex_fff },
 };
 
 function toDisplayText(value: unknown): string {
@@ -108,7 +109,7 @@ export default function LogRow({
       case 'service_name':
         return (
           <span style={{ fontSize: 12 }}>
-            <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#5E60CE', marginRight: 5, verticalAlign: 'middle' }} />
+            <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: APP_COLORS.hex_5e60ce, marginRight: 5, verticalAlign: 'middle' }} />
             {toDisplayText(getLogValue(log, 'service_name'))}
           </span>
         );
@@ -164,7 +165,7 @@ export default function LogRow({
       }}
       onClick={() => onOpenDetail(log)}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+        e.currentTarget.style.background = APP_COLORS.rgba_255_255_255_0p05;
         e.currentTarget.style.borderColor = 'var(--color-primary)';
       }}
       onMouseLeave={(e) => {

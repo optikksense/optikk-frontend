@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
 import './ServiceGraph.css';
 
@@ -30,15 +31,15 @@ function nodeSeverity(node: any = {}) {
   const status = String(node.status || '').toLowerCase();
 
   if (status === 'unhealthy' || risk >= 75) {
-    return { key: 'critical', label: 'CRITICAL', color: '#FF4D5A' };
+    return { key: 'critical', label: 'CRITICAL', color: APP_COLORS.hex_ff4d5a_2 };
   }
   if (status === 'degraded' || risk >= 55) {
-    return { key: 'high', label: 'HIGH', color: '#F7B63A' };
+    return { key: 'high', label: 'HIGH', color: APP_COLORS.hex_f7b63a_2 };
   }
   if (risk >= 30) {
-    return { key: 'medium', label: 'MEDIUM', color: '#C8D43D' };
+    return { key: 'medium', label: 'MEDIUM', color: APP_COLORS.hex_c8d43d_2 };
   }
-  return { key: 'low', label: 'LOW', color: '#4ADE80' };
+  return { key: 'low', label: 'LOW', color: APP_COLORS.hex_4ade80 };
 }
 
 function buildPath(fromX: number, fromY: number, toX: number, toY: number) {
@@ -276,13 +277,13 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
       >
         <defs>
           <marker id="service-flow-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-            <path d="M0,0 L8,4 L0,8 Z" fill="#5A6275" />
+            <path d="M0,0 L8,4 L0,8 Z" fill={APP_COLORS.hex_5a6275_2} />
           </marker>
           <marker id="service-flow-arrow-critical" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-            <path d="M0,0 L8,4 L0,8 Z" fill="#FF4D5A" />
+            <path d="M0,0 L8,4 L0,8 Z" fill={APP_COLORS.hex_ff4d5a_2} />
           </marker>
           <filter id="critical-glow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="0" stdDeviation="2.8" floodColor="#FF4D5A" floodOpacity="0.55" />
+            <feDropShadow dx="0" dy="0" stdDeviation="2.8" floodColor={APP_COLORS.hex_ff4d5a_2} floodOpacity="0.55" />
           </filter>
         </defs>
 

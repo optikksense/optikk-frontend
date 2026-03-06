@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Breadcrumb, Badge } from 'antd';
 import React, { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -56,7 +57,7 @@ export default function PageHeader({
           {icon && <span className="page-header-icon">{React.isValidElement(icon) ? icon : React.createElement(icon, { size: 24 })}</span>}
           <h1 className="page-header-title">{title}</h1>
           {badge != null && badge > 0 && (
-            <Badge count={badge} style={{ backgroundColor: '#F04438', marginLeft: 12 }} />
+            <Badge count={badge} style={{ backgroundColor: APP_COLORS.hex_f04438, marginLeft: 12 }} />
           )}
         </div>
         {subtitle && <p className="page-header-subtitle">{subtitle}</p>}

@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Descriptions, Drawer, Tag } from 'antd';
 
 import { formatNumber, formatTimestamp } from '@utils/formatters';
@@ -44,7 +45,7 @@ export default function NodeDetailDrawer({
           <Descriptions column={2} size="small" bordered style={{ marginBottom: 24 }}>
             <Descriptions.Item label="Host" span={2}>{selectedNode.host}</Descriptions.Item>
             <Descriptions.Item label="Status">
-              <Tag color={nodeStatusCfg.color} style={{ color: '#fff' }}>
+              <Tag color={nodeStatusCfg.color} style={{ color: APP_COLORS.hex_fff }}>
                 {nodeStatusCfg.label}
               </Tag>
             </Descriptions.Item>
@@ -52,7 +53,7 @@ export default function NodeDetailDrawer({
             <Descriptions.Item label="Containers">{formatNumber(Number(selectedNode.container_count) || 0)}</Descriptions.Item>
             <Descriptions.Item label="Requests">{formatNumber(Number(selectedNode.request_count) || 0)}</Descriptions.Item>
             <Descriptions.Item label="Error Rate">
-              <span style={{ color: Number(selectedNode.error_rate) > 2 ? '#F04438' : '#73C991', fontWeight: 600 }}>
+              <span style={{ color: Number(selectedNode.error_rate) > 2 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_73c991, fontWeight: 600 }}>
                 {Number(selectedNode.error_rate || 0).toFixed(2)}%
               </span>
             </Descriptions.Item>

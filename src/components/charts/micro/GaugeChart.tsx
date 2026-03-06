@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Doughnut } from 'react-chartjs-2';
 
 interface GaugeChartProps {
@@ -7,9 +8,9 @@ interface GaugeChartProps {
 }
 
 function getGaugeColor(value: number): string {
-  if (value >= 80) return '#F04438';
-  if (value >= 60) return '#F79009';
-  return '#73C991';
+  if (value >= 80) return APP_COLORS.hex_f04438;
+  if (value >= 60) return APP_COLORS.hex_f79009;
+  return APP_COLORS.hex_73c991;
 }
 
 /**
@@ -29,7 +30,7 @@ export default function GaugeChart({
     datasets: [
       {
         data: [clamped, 100 - clamped],
-        backgroundColor: [`${color}CC`, '#2D2D2D'],
+        backgroundColor: [`${color}CC`, APP_COLORS.hex_2d2d2d],
         borderWidth: 0,
         circumference: 180,
         rotation: -90,
@@ -61,7 +62,7 @@ export default function GaugeChart({
       >
         <div style={{ fontSize: 18, fontWeight: 700, color }}>{clamped.toFixed(0)}%</div>
         {label && (
-          <div style={{ fontSize: 10, color: 'var(--text-muted, #666)', marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: `var(--text-muted, ${APP_COLORS.hex_666})`, marginTop: 2 }}>
             {label}
           </div>
         )}

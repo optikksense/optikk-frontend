@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Activity, Radio } from 'lucide-react';
 
 import { getMqMeta } from './messagingMeta';
@@ -26,8 +27,8 @@ export default function MessagingSystemsPills({ systems }: MessagingSystemsPills
         flexWrap: 'wrap',
       }}
     >
-      <Activity size={14} color="#8e8e8e" />
-      <span style={{ color: '#8e8e8e', fontSize: '12px', fontWeight: 500 }}>Systems:</span>
+      <Activity size={14} color={APP_COLORS.hex_8e8e8e} />
+      <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '12px', fontWeight: 500 }}>Systems:</span>
       {systems.map((system) => {
         const meta = getMqMeta(system);
         return (

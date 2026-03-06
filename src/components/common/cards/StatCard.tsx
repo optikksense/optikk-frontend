@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Card, Skeleton } from 'antd';
 import React from 'react';
 
@@ -84,7 +85,7 @@ export default function StatCard({
             <div className="stat-card-sparkline">
               <SparklineChart
                 data={sparklineData}
-                color={sparklineColor || iconColor || '#5E60CE'}
+                color={sparklineColor || iconColor || APP_COLORS.hex_5e60ce}
                 width={120}
                 height={28}
               />

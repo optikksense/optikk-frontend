@@ -1,3 +1,4 @@
+import { APP_COLORS } from '@config/colorLiterals';
 import { Row, Col, Card, Skeleton, Empty, Progress } from 'antd';
 import { Activity, AlertCircle, Clock, Zap, Server } from 'lucide-react';
 import { useMemo } from 'react';
@@ -169,10 +170,10 @@ export default function OverviewPage() {
             trend: 0,
             trendInverted: false,
             icon: <Activity size={20} />,
-            iconColor: '#5E60CE',
+            iconColor: APP_COLORS.hex_5e60ce,
             loading: summaryLoading,
             sparklineData: requestsSparkline,
-            sparklineColor: '#5E60CE',
+            sparklineColor: APP_COLORS.hex_5e60ce,
           },
           {
             title: 'Error Rate',
@@ -180,11 +181,11 @@ export default function OverviewPage() {
             trend: 0,
             trendInverted: true,
             icon: <AlertCircle size={20} />,
-            iconColor: '#F04438',
+            iconColor: APP_COLORS.hex_f04438,
             loading: summaryLoading,
             suffix: '%',
             sparklineData: errorsSparkline,
-            sparklineColor: '#F04438',
+            sparklineColor: APP_COLORS.hex_f04438,
           },
           {
             title: 'Avg Latency',
@@ -193,10 +194,10 @@ export default function OverviewPage() {
             trend: 0,
             trendInverted: true,
             icon: <Clock size={20} />,
-            iconColor: '#F79009',
+            iconColor: APP_COLORS.hex_f79009,
             loading: summaryLoading,
             sparklineData: latencySparkline,
-            sparklineColor: '#F79009',
+            sparklineColor: APP_COLORS.hex_f79009,
           },
           {
             title: 'P95 Latency',
@@ -205,7 +206,7 @@ export default function OverviewPage() {
             trend: 0,
             trendInverted: true,
             icon: <Zap size={20} />,
-            iconColor: '#06AED5',
+            iconColor: APP_COLORS.hex_06aed5,
             loading: summaryLoading,
           },
         ]}
@@ -221,7 +222,7 @@ export default function OverviewPage() {
                   type="circle"
                   percent={Number(sloMetrics.availability.toFixed(2))}
                   size={80}
-                  strokeColor={sloMetrics.availability >= 99.9 ? '#73C991' : sloMetrics.availability >= 99 ? '#F79009' : '#F04438'}
+                  strokeColor={sloMetrics.availability >= 99.9 ? APP_COLORS.hex_73c991 : sloMetrics.availability >= 99 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_f04438}
                   format={(p) => `${p}%`}
                 />
                 <div className="slo-label">Availability</div>
@@ -232,7 +233,7 @@ export default function OverviewPage() {
                   type="circle"
                   percent={Number(sloMetrics.p95Score.toFixed(0))}
                   size={80}
-                  strokeColor={sloMetrics.p95Score >= 90 ? '#73C991' : sloMetrics.p95Score >= 70 ? '#F79009' : '#F04438'}
+                  strokeColor={sloMetrics.p95Score >= 90 ? APP_COLORS.hex_73c991 : sloMetrics.p95Score >= 70 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_f04438}
                   format={(p) => `${p}%`}
                 />
                 <div className="slo-label">P95 Latency</div>
@@ -243,7 +244,7 @@ export default function OverviewPage() {
                   type="circle"
                   percent={Number(Math.max(0, sloMetrics.errorBudget).toFixed(0))}
                   size={80}
-                  strokeColor={sloMetrics.errorBudget >= 50 ? '#73C991' : sloMetrics.errorBudget >= 20 ? '#F79009' : '#F04438'}
+                  strokeColor={sloMetrics.errorBudget >= 50 ? APP_COLORS.hex_73c991 : sloMetrics.errorBudget >= 20 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_f04438}
                   format={(p) => `${p}%`}
                 />
                 <div className="slo-label">Error Budget</div>
@@ -282,7 +283,7 @@ export default function OverviewPage() {
                       <div className="service-health-metric">
                         {formatNumber(service.requestCount)} req
                       </div>
-                      <div className="service-health-metric" style={{ color: service.errorRate > 1 ? '#F04438' : 'var(--text-muted)' }}>
+                      <div className="service-health-metric" style={{ color: service.errorRate > 1 ? APP_COLORS.hex_f04438 : 'var(--text-muted)' }}>
                         {Math.max(0, Number(service.errorRate)).toFixed(2)}% err
                       </div>
                     </div>
