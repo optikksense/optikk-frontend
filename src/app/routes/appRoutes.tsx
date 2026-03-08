@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { ErrorBoundary, Loading } from '@/shared/components/ui/feedback';
 import { ROUTES } from '@/shared/constants/routes';
@@ -27,35 +28,56 @@ function toNestedRoutePath(path: string): string {
   return path.startsWith('/') ? path.slice(1) : path;
 }
 
-export default function AppRoutes(): JSX.Element {
+function PageTransition({ children }: { children: React.ReactNode }) {
   return (
-    <Routes>
-      <Route
-        path={ROUTES.login}
-        element={(
-          <Suspense fallback={<Loading fullscreen />}>
-            <LoginPage />
-          </Suspense>
-        )}
-      />
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -15 }}
+      transition={{ duration: 0.3 }}
+      style={{ width: '100%', height: '100%' }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
-      <Route
-        path={ROUTES.product}
-        element={(
-          <Suspense fallback={<Loading fullscreen />}>
-            <ProductPage />
-          </Suspense>
-        )}
-      />
+export default function AppRoutes(): JSX.Element {
+  const location = useLocation();
 
-      <Route
-        path="/oauth/success"
-        element={(
-          <Suspense fallback={<Loading fullscreen />}>
-            <OAuthCallbackSuccess />
-          </Suspense>
-        )}
-      />
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route
+          path={ROUTES.login}
+          element={(
+            <Suspense fallback={<Loading fullscreen />}>
+              <PageTransition><LoginPage /></PageTransition>
+            </Suspense>
+          )}
+        />
+
+        {/* Marketing pages */}
+        {[ROUTES.home, ROUTES.product, ROUTES.pricing, ROUTES.opentelemetry, ROUTES.selfHost].map(path => (
+          <Route
+            key={path}
+            path={path}
+            element={(
+              <Suspense fallback={<Loading fullscreen />}>
+                <PageTransition><ProductPage /></PageTransition>
+              </Suspense>
+            )}
+          />
+        ))}
+
+        <Route
+          path="/oauth/success"
+          element={(
+            <Suspense fallback={<Loading fullscreen />}>
+              <PageTransition><OAuthCallbackSuccess /></PageTransition>
+            </Suspense>
+          )}
+        />
 
       <Route
         path="/oauth/signup"
@@ -129,7 +151,8 @@ export default function AppRoutes(): JSX.Element {
         />
       </Route>
 
-      <Route path="*" element={<Navigate to={ROUTES.product} replace />} />
+      <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
     </Routes>
+    </AnimatePresence>
   );
 }
