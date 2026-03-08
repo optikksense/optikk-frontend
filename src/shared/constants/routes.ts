@@ -3,6 +3,7 @@ export /**
  */
 const ROUTES = {
   login: '/login',
+  product: '/product',
   home: '/',
   overview: '/overview',
   logs: '/logs',
@@ -17,7 +18,6 @@ const ROUTES = {
   aiObservability: '/ai-observability',
   settings: '/settings',
   latencyAlias: '/latency',
-  pricing: '/pricing',
 } as const;
 
 /**

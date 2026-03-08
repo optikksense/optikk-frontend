@@ -8,7 +8,7 @@ import ProtectedRoute from './ProtectedRoute';
 import MainLayout from '../layout/MainLayout';
 
 const LoginPage = lazy(() => import('@/app/auth'));
-const PricingPage = lazy(() => import('@/app/auth/pages/Pricing'));
+const ProductPage = lazy(() => import('@/app/auth/pages/Pricing'));
 const OAuthCallbackSuccess = lazy(() =>
   import('@/app/auth/pages/OAuthCallback').then((m) => ({ default: m.OAuthCallbackSuccess }))
 );
@@ -40,10 +40,10 @@ export default function AppRoutes(): JSX.Element {
       />
 
       <Route
-        path={ROUTES.pricing}
+        path={ROUTES.product}
         element={(
           <Suspense fallback={<Loading fullscreen />}>
-            <PricingPage />
+            <ProductPage />
           </Suspense>
         )}
       />
@@ -129,7 +129,7 @@ export default function AppRoutes(): JSX.Element {
         />
       </Route>
 
-      <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
+      <Route path="*" element={<Navigate to={ROUTES.product} replace />} />
     </Routes>
   );
 }

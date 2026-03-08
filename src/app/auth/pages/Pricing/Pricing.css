@@ -120,6 +120,31 @@
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
 }
 
+.nav-login-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #94A3B8;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-login-btn:hover {
+  color: #F8FAFC;
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 /* ===== MAIN CONTENT ===== */
 .pricing-main {
   position: relative;
@@ -186,13 +211,26 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.2s;
+  position: relative;
 }
 
-.toggle-btn.active {
-  background: rgba(99, 102, 241, 0.15);
+.toggle-btn:has(.toggle-pill) {
   color: #F8FAFC;
+}
+
+.toggle-label {
+  position: relative;
+  z-index: 1;
+}
+
+.toggle-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  background: rgba(99, 102, 241, 0.15);
   box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.4);
+  z-index: 0;
 }
 
 /* ===== PLAN CARDS ===== */
@@ -348,11 +386,10 @@
   color: #22D3EE;
 }
 
-/* Cloud price display */
 .cloud-price-display {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 12px;
   margin-bottom: 8px;
 }
 
@@ -363,6 +400,15 @@
   line-height: 1;
   color: #FFFFFF;
   letter-spacing: -3px;
+  flex-shrink: 0;
+}
+
+.cloud-price-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  padding-top: 16px;
 }
 
 .cloud-price-unit {
@@ -371,11 +417,11 @@
   font-weight: 500;
 }
 
-.cloud-price-note {
+.cloud-price-minimum {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: #64748B;
-  margin-bottom: 32px;
+  font-size: 11px;
+  color: #6366F1;
+  opacity: 0.9;
 }
 
 /* CTA buttons */
@@ -583,6 +629,65 @@
   font-style: italic;
 }
 
+.calc-minimum-note {
+  font-size: 11px;
+  color: #6366F1;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0.8;
+}
+
+.calc-save {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+
+.calc-save-label {
+  font-size: 12px;
+  color: #64748B;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.calc-save-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  color: #10B981;
+  line-height: 1;
+}
+
+.calc-save-note {
+  font-size: 11px;
+  color: #10B981;
+  opacity: 0.7;
+}
+
+/* ===== FOOTER CTA ===== */
+.footer-cta-section {
+  margin-top: 80px;
+  padding: 48px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  text-align: center;
+}
+
+.footer-cta-text {
+  font-family: 'DM Serif Display', serif;
+  font-size: 32px;
+  color: #F8FAFC;
+  margin-bottom: 24px;
+}
+
+.footer-cta-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 /* ===== ENTERPRISE ADD-ONS ===== */
 .enterprise-section {
   margin-bottom: 64px;
@@ -738,15 +843,20 @@
   .pricing-noise { display: none; }
   .pricing-nav { padding: 0 20px; }
   .nav-links { display: none; }
+  .nav-login-btn { display: none; }
   .pricing-main { padding: 48px 20px 80px; }
   .pricing-title { font-size: 40px; }
   .pricing-subtitle { font-size: 16px; }
   .plan-card { padding: 28px 24px; }
   .cloud-price-amount { font-size: 64px; }
+  .cloud-price-display { flex-direction: column; gap: 8px; }
   .gb-calculator { padding: 24px 20px; }
   .calc-output { flex-direction: column; align-items: flex-start; }
   .calc-datadog { text-align: left; }
+  .calc-save { text-align: left; }
   .enterprise-grid { grid-template-columns: 1fr; }
   .compare-table { font-size: 12px; }
   .compare-table th, .compare-table td { padding: 10px 12px; }
+  .footer-cta-section { padding: 32px 20px; }
+  .footer-cta-btns { flex-direction: column; align-items: stretch; }
 }

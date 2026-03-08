@@ -1,5 +1,7 @@
 import { Check, Cloud, Copy, ChevronRight, Minus, Server, Shield, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useCallback, type FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import './Pricing.css';
 
@@ -34,16 +36,16 @@ const SELF_HOSTED_FEATURES = [
 ];
 
 const CLOUD_FEATURES = [
-  'Unlimited users',
+  'Unlimited users & seats',
   '30-day hot retention included',
-  'Cloud-hosted, managed, auto-scaled',
+  'Fully managed, auto-scaled',
   'SSO / SAML',
   '99.9% uptime SLA',
-  'Priority support',
-  'No base fee — $0 if you ingest $0',
+  'Priority Slack support',
+  'No base fee beyond minimum',
 ];
 
-const DOCKER_CMD = 'docker run optikk/optikk';
+const DOCKER_CMD = 'docker run -p 3000:3000 ghcr.io/optikk-org/optikk:latest';
 
 function TableCell({ value }: { value: TableValue }) {
   if (value === 'check') {
@@ -69,13 +71,23 @@ function BrandIcon() {
   );
 }
 
-const PricingPage: FC = () => {
+const cardVariants = {
+  hidden: { opacity: 0, y: 16, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: 'easeOut' as const } },
+  exit: { opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.25, ease: 'easeIn' as const } },
+};
+
+const ProductPage: FC = () => {
   const [plan, setPlan] = useState<Plan>('self-hosted');
   const [gb, setGb] = useState(500);
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
 
-  const optikkCost = (gb * 0.2).toFixed(2);
-  const datadogCost = (gb * 0.2 * 3.5).toFixed(2);
+  // $0.18/GB, minimum $200/month
+  const optikkCost = Math.max(200, gb * 0.18);
+  // Datadog: $0.85/GB realistic
+  const datadogCost = gb * 0.85;
+  const savings = datadogCost - optikkCost;
 
   const handleCopy = useCallback(() => {
     void navigator.clipboard.writeText(DOCKER_CMD).then(() => {
@@ -100,11 +112,28 @@ const PricingPage: FC = () => {
         <ul className="nav-links">
           <li><a href="#">Features</a></li>
           <li><a href="#">Docs</a></li>
-          <li><a href="https://github.com/optikk" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li>
+            <a href="https://github.com/optikk-org" target="_blank" rel="noopener noreferrer">
+              GitHub
+            </a>
+          </li>
         </ul>
-        <a href="/login" className="nav-cta">
-          Get Started <ChevronRight size={14} />
-        </a>
+        <div className="nav-right">
+          <button
+            type="button"
+            className="nav-login-btn"
+            onClick={() => navigate('/login')}
+          >
+            Log in
+          </button>
+          <button
+            type="button"
+            className="nav-cta"
+            onClick={() => navigate('/login')}
+          >
+            Get Started <ChevronRight size={14} />
+          </button>
+        </div>
       </nav>
 
       {/* MAIN */}
@@ -121,107 +150,132 @@ const PricingPage: FC = () => {
         {/* TOGGLE */}
         <div className="toggle-bar">
           <div className="toggle-track">
-            <button
-              type="button"
-              className={`toggle-btn${plan === 'self-hosted' ? ' active' : ''}`}
-              onClick={() => setPlan('self-hosted')}
-            >
-              Self-Hosted
-            </button>
-            <button
-              type="button"
-              className={`toggle-btn${plan === 'cloud' ? ' active' : ''}`}
-              onClick={() => setPlan('cloud')}
-            >
-              Cloud
-            </button>
+            {(['self-hosted', 'cloud'] as Plan[]).map((p) => (
+              <button
+                key={p}
+                type="button"
+                className="toggle-btn"
+                onClick={() => setPlan(p)}
+              >
+                {plan === p && (
+                  <motion.div
+                    className="toggle-pill"
+                    layoutId="toggle-pill"
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <span className="toggle-label">
+                  {p === 'self-hosted' ? 'Self-Hosted' : 'Cloud'}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
 
         {/* PLAN CARD */}
         <div className="plan-card-wrapper">
-          {plan === 'self-hosted' ? (
-            <div className="plan-card plan-card--glow">
-              <div className="plan-badge">FREE · Forever · No credit card</div>
-              <h2 className="plan-headline">Everything. Unlimited. Yours.</h2>
-              <p className="plan-tagline">One binary. Your infra. Zero lock-in.</p>
+          <AnimatePresence mode="wait">
+            {plan === 'self-hosted' ? (
+              <motion.div
+                key="self-hosted"
+                className="plan-card plan-card--glow"
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <div className="plan-badge">FREE · Forever · No credit card</div>
+                <h2 className="plan-headline">Everything. Unlimited. Yours.</h2>
+                <p className="plan-tagline">One binary. Your infra. Zero lock-in.</p>
 
-              <ul className="feature-list">
-                {SELF_HOSTED_FEATURES.map((f) => (
-                  <li key={f}>
-                    <Check size={16} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
+                <ul className="feature-list">
+                  {SELF_HOSTED_FEATURES.map((f) => (
+                    <li key={f}>
+                      <Check size={16} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
 
-              <div className="plan-cta-group">
-                <a href="#" className="btn-primary">
-                  Deploy in 5 minutes <ChevronRight size={16} />
-                </a>
-              </div>
+                <div className="plan-cta-group">
+                  <a href="#" className="btn-primary">
+                    Deploy in 5 minutes <ChevronRight size={16} />
+                  </a>
+                </div>
 
-              <div className="code-block-wrapper" style={{ marginTop: 24 }}>
-                <div className="code-block">
-                  <code>{DOCKER_CMD}</code>
+                <div className="code-block-wrapper" style={{ marginTop: 24 }}>
+                  <div className="code-block">
+                    <code>{DOCKER_CMD}</code>
+                    <button
+                      type="button"
+                      className={`copy-btn${copied ? ' copied' : ''}`}
+                      onClick={handleCopy}
+                      title="Copy to clipboard"
+                    >
+                      {copied ? <Check size={14} /> : <Copy size={14} />}
+                    </button>
+                  </div>
+                </div>
+
+                <p style={{ marginTop: 16, fontSize: 12, color: '#475569', textAlign: 'center' }}>
+                  Need help with large-scale self-hosted deployments?{' '}
+                  <a href="#" style={{ color: '#6366F1', textDecoration: 'none' }}>
+                    Enterprise support plans available.
+                  </a>
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="cloud"
+                className="plan-card"
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <div className="plan-badge" style={{ borderColor: 'rgba(34, 211, 238, 0.3)', color: '#22D3EE', background: 'rgba(34, 211, 238, 0.08)' }}>
+                  7-DAY FREE TRIAL · NO CREDIT CARD
+                </div>
+                <h2 className="plan-headline">One rate. No tiers. No surprises.</h2>
+
+                <div className="cloud-price-display">
+                  <span className="cloud-price-amount">$0.18</span>
+                  <div className="cloud-price-meta">
+                    <span className="cloud-price-unit">/GB ingested</span>
+                    <span className="cloud-price-minimum">Minimum $200/month · ~1.1TB included</span>
+                  </div>
+                </div>
+
+                <ul className="feature-list">
+                  {CLOUD_FEATURES.map((f) => (
+                    <li key={f}>
+                      <Check size={16} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="plan-cta-group">
                   <button
                     type="button"
-                    className={`copy-btn${copied ? ' copied' : ''}`}
-                    onClick={handleCopy}
-                    title="Copy to clipboard"
+                    className="btn-primary"
+                    onClick={() => navigate('/login')}
                   >
-                    {copied ? <Check size={14} /> : <Copy size={14} />}
+                    Start 7-Day Free Trial
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={() => {
+                      document.getElementById('gb-calculator')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    Estimate your bill →
                   </button>
                 </div>
-              </div>
-
-              <p style={{ marginTop: 16, fontSize: 12, color: '#475569', textAlign: 'center' }}>
-                Need help with large-scale self-hosted deployments?{' '}
-                <a href="#" style={{ color: '#6366F1', textDecoration: 'none' }}>
-                  Enterprise support plans available.
-                </a>
-              </p>
-            </div>
-          ) : (
-            <div className="plan-card">
-              <div className="plan-badge" style={{ borderColor: 'rgba(34, 211, 238, 0.3)', color: '#22D3EE', background: 'rgba(34, 211, 238, 0.08)' }}>
-                Usage-based · Honest pricing
-              </div>
-              <h2 className="plan-headline">One rate. No tiers. No surprises.</h2>
-
-              <div className="cloud-price-display">
-                <span className="cloud-price-amount">$0.20</span>
-                <span className="cloud-price-unit">/GB ingested</span>
-              </div>
-              <p className="cloud-price-note">
-                metrics + traces + logs combined, measured at ingest
-              </p>
-
-              <ul className="feature-list">
-                {CLOUD_FEATURES.map((f) => (
-                  <li key={f}>
-                    <Check size={16} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="plan-cta-group">
-                <a href="#" className="btn-primary">
-                  Start Free — No Credit Card
-                </a>
-                <button
-                  type="button"
-                  className="btn-ghost"
-                  onClick={() => {
-                    document.getElementById('gb-calculator')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  Estimate your bill →
-                </button>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* GB CALCULATOR — cloud only */}
@@ -241,13 +295,23 @@ const PricingPage: FC = () => {
             <div className="calc-output">
               <div className="calc-optikk">
                 <span className="calc-optikk-label">Optikk / month</span>
-                <span className="calc-optikk-value">~${optikkCost}</span>
+                <span className="calc-optikk-value">~${optikkCost.toFixed(2)}</span>
+                {gb * 0.18 < 200 && (
+                  <span className="calc-minimum-note">$200 minimum applies</span>
+                )}
               </div>
               <div className="calc-datadog">
                 <span className="calc-datadog-label">Datadog equivalent</span>
-                <span className="calc-datadog-value">~${datadogCost}</span>
-                <span className="calc-datadog-note">~3.5× more expensive</span>
+                <span className="calc-datadog-value">~${datadogCost.toFixed(2)}</span>
+                <span className="calc-datadog-note">~{(datadogCost / Math.max(optikkCost, 0.01)).toFixed(1)}× more expensive</span>
               </div>
+              {savings > 0 && (
+                <div className="calc-save">
+                  <span className="calc-save-label">You save</span>
+                  <span className="calc-save-value">~${savings.toFixed(2)}</span>
+                  <span className="calc-save-note">per month</span>
+                </div>
+              )}
             </div>
             <p className="calc-volume-note">
               Volume discounts available above 5 TB/month — <a href="#" style={{ color: '#6366F1', textDecoration: 'none' }}>talk to us.</a>
@@ -323,9 +387,33 @@ const PricingPage: FC = () => {
           </table>
         </section>
 
+        {/* FOOTER CTA */}
+        <section className="footer-cta-section">
+          <p className="footer-cta-text">Ready to get started?</p>
+          <div className="footer-cta-btns">
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ width: 'auto', padding: '14px 32px' }}
+              onClick={() => navigate('/login')}
+            >
+              Log in to Optikk
+            </button>
+            <a
+              href="https://github.com/optikk-org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost"
+              style={{ width: 'auto', padding: '14px 32px' }}
+            >
+              View on GitHub →
+            </a>
+          </div>
+        </section>
+
       </main>
     </div>
   );
 };
 
-export default PricingPage;
+export default ProductPage;
