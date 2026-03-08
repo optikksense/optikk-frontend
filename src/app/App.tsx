@@ -1,8 +1,6 @@
 import { Skeleton } from 'antd';
 import { Suspense } from 'react';
 
-import { useRealtimeRefresh } from '@shared/hooks/useRealtimeRefresh';
-
 import { APP_COLORS } from '@config/colorLiterals';
 
 import AuthExpiryListener from './providers/AuthExpiryListener';
@@ -28,7 +26,6 @@ function PageLoader(): JSX.Element {
 }
 
 export default function App(): JSX.Element {
-  useRealtimeRefresh();
 
   return (
     <ErrorBoundary>

@@ -40,13 +40,12 @@ export function ServiceMapRenderer({
   const { rawData } = useDashboardData(chartConfig, dataSources);
   const nodes = useMemo(() => (rawData as any)?.nodes ?? [], [rawData]);
   const edges = useMemo(() => (rawData as any)?.edges ?? [], [rawData]);
-  const height = Number(chartConfig.height || 560);
 
   if (nodes.length === 0) {
     return <Empty description="No topology data" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ padding: 20 }} />;
   }
   return (
-    <div style={{ height }}>
+    <div style={{ height: '100%' }}>
       <ServiceGraph nodes={nodes} edges={edges} />
     </div>
   );

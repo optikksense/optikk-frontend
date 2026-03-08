@@ -47,9 +47,6 @@ const API_ENDPOINTS = {
     PROFILE: '/v1/settings/profile',
     PREFERENCES: '/v1/settings/preferences',
   },
-  EVENTS: {
-    STREAM: '/v1/events/stream',
-  },
 } as const;
 
 export /**

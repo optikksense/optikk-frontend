@@ -51,7 +51,5 @@ export function LatencyHistogramRenderer({
       return Array(count).fill({ duration_ms: bucketMidpoint(bucket.bucket) });
     });
   }, [rawData]);
-
-  const height = chartConfig.height || 160;
-  return <LatencyHistogram traces={traces} height={height} />;
+  return <LatencyHistogram traces={traces} height={240} />;
 }

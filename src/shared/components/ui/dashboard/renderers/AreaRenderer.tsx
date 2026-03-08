@@ -72,8 +72,6 @@ export function AreaRenderer({
     }));
     return { labels, datasets, hasData: datasets.length > 0 };
   }, [rows, groupKey, valueKey]);
-
-  const height = Number(chartConfig.height || 260);
   if (!chartData.hasData) {
     return <Empty description="No data" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ padding: 20 }} />;
   }
@@ -84,5 +82,5 @@ export function AreaRenderer({
       y: { ticks: { color: APP_COLORS.hex_666 }, grid: { color: APP_COLORS.hex_2d2d2d }, beginAtZero: true },
     },
   });
-  return <div style={{ height }}><Line data={chartData} options={options} /></div>;
+  return <div style={{ height: '100%' }}><Line data={chartData} options={options} /></div>;
 }

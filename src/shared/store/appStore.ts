@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 import type { TimeRange } from '@/types';
 
+import { getStoredTeamIds, setStoredTeamIds } from '@shared/api/auth/authStorage';
+
 import { safeGet, safeGetJSON, safeSet, safeSetJSON } from '@shared/utils/storage';
 
 import { STORAGE_KEYS, TIME_RANGES } from '@config/constants';
@@ -21,6 +23,7 @@ interface QueryClientLike {
 
 interface AppState {
   readonly selectedTeamId: number | null;
+  readonly selectedTeamIds: number[];
   readonly timeRange: TimeRange;
   readonly sidebarCollapsed: boolean;
   readonly refreshKey: number;
@@ -29,6 +32,7 @@ interface AppState {
   readonly notificationsEnabled: boolean;
   readonly viewPreferences: ViewPreferences;
   readonly setSelectedTeamId: (teamId: number | null) => void;
+  readonly setSelectedTeamIds: (teamIds: number[]) => void;
   readonly setTimeRange: (valueOrRange: string | TimeRange) => void;
   readonly setCustomTimeRange: (customRange: TimeRange) => void;
   readonly toggleSidebar: () => void;
@@ -84,6 +88,7 @@ async function invalidateQueryClientCache(): Promise<void> {
 }
 
 const savedTeamId = safeGet(STORAGE_KEYS.TEAM_ID);
+const savedTeamIds = getStoredTeamIds();
 const savedTimeRange = safeGet(STORAGE_KEYS.TIME_RANGE);
 const savedCollapsed = safeGet(STORAGE_KEYS.SIDEBAR_COLLAPSED);
 const savedAutoRefresh = safeGet(STORAGE_KEYS.AUTO_REFRESH);
@@ -93,6 +98,7 @@ const savedAutoRefresh = safeGet(STORAGE_KEYS.AUTO_REFRESH);
  */
 export const useAppStore = create<AppState>((set) => ({
   selectedTeamId: savedTeamId ? Number(savedTeamId) : null,
+  selectedTeamIds: savedTeamIds.length > 0 ? savedTeamIds : (savedTeamId ? [Number(savedTeamId)] : []),
   timeRange: getInitialTimeRange(savedTimeRange),
   sidebarCollapsed: savedCollapsed === 'true',
   refreshKey: 0,
@@ -108,6 +114,20 @@ export const useAppStore = create<AppState>((set) => ({
       safeSet(STORAGE_KEYS.TEAM_ID, '');
     }
     set({ selectedTeamId: teamId });
+
+    // Intentionally fire-and-forget cache invalidation after team switch.
+    void invalidateQueryClientCache();
+  },
+
+  setSelectedTeamIds: (teamIds: number[]): void => {
+    const primary = teamIds[0] ?? null;
+    if (primary !== null) {
+      safeSet(STORAGE_KEYS.TEAM_ID, String(primary));
+    } else {
+      safeSet(STORAGE_KEYS.TEAM_ID, '');
+    }
+    setStoredTeamIds(teamIds);
+    set({ selectedTeamIds: teamIds, selectedTeamId: primary });
 
     // Intentionally fire-and-forget cache invalidation after team switch.
     void invalidateQueryClientCache();

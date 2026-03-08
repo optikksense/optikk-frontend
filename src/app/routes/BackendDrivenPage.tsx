@@ -6,6 +6,7 @@ import InfrastructureHubPage from '@/pages/infrastructure';
 import LogsHubPage from '@/pages/logs';
 import ServicesPage from '@/pages/services';
 import TracesPage from '@/pages/traces';
+import MetricsPage from '@/features/metrics/pages/MetricsPage';
 import { ROUTES } from '@/shared/constants/routes';
 
 import { DashboardPage } from '@shared/components/ui';
@@ -16,6 +17,7 @@ const CUSTOM_SHELLS = {
   'ai-observability': AiObservabilityPage,
   infrastructure: InfrastructureHubPage,
   logs: LogsHubPage,
+  metrics: MetricsPage,
   services: ServicesPage,
   traces: TracesPage,
 } as const;

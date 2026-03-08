@@ -113,6 +113,7 @@ const STORAGE_KEYS = {
   AUTH_TOKEN: 'optikk_auth_token',
   USER_DATA: 'optikk_user_data',
   TEAM_ID: 'optikk_team_id',
+  TEAM_IDS: 'optikk_team_ids',
   TIME_RANGE: 'optikk_time_range',
   SIDEBAR_COLLAPSED: 'optikk_sidebar_collapsed',
   AUTO_REFRESH: 'optikk_auto_refresh',

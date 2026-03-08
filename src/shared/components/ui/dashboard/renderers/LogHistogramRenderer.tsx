@@ -46,9 +46,7 @@ export function LogHistogramRenderer({
     const arr = key ? rawData?.[key] : rawData;
     return Array.isArray(arr) ? arr : [];
   }, [rawData, chartConfig.dataKey]);
-
-  const height = chartConfig.height || 120;
   return data.length > 0
-    ? <LogHistogram data={data} height={height} startTime={startTime} endTime={endTime} />
+    ? <LogHistogram data={data} height={240} startTime={startTime} endTime={endTime} />
     : <Empty description="No log data" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ padding: 20 }} />;
 }

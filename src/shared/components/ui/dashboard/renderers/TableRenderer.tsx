@@ -53,13 +53,11 @@ export function TableRenderer({
       },
     }));
   }, [rows]);
-
-  const height = Number(chartConfig.height || 320);
   if (rows.length === 0) {
     return <Empty description="No data" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ padding: 20 }} />;
   }
   return (
-    <div style={{ maxHeight: height, overflow: 'auto' }}>
+    <div style={{ height: '100%', overflow: 'auto' }}>
       <Table
         dataSource={rows.map((r: any, i: number) => ({ ...r, _rowKey: r.id ?? r.key ?? i }))}
         columns={columns}

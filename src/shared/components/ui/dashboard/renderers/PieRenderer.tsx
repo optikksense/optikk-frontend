@@ -68,8 +68,6 @@ export function PieRenderer({
       }],
     };
   }, [labelKey, rows, valueKey]);
-
-  const height = Number(chartConfig.height || 260);
   if (!chartData) {
     return <Empty description="No data" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ padding: 20 }} />;
   }
@@ -86,5 +84,5 @@ export function PieRenderer({
     },
   });
 
-  return <div style={{ height }}><Doughnut data={chartData} options={options} /></div>;
+  return <div style={{ height: '100%' }}><Doughnut data={chartData} options={options} /></div>;
 }

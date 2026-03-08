@@ -19,9 +19,9 @@ function buildRequestKey(
   endMs: number,
 ) {
   return JSON.stringify({
-    method: component.query.method || 'GET',
+    method: component.query!.method || 'GET',
     endpoint: resolvedEndpoint,
-    params: component.query.params || {},
+    params: component.query!.params || {},
     startMs,
     endMs,
   });
@@ -64,6 +64,7 @@ export function useComponentDataFetcher(
     }>();
 
     components.forEach((component) => {
+      if (!component.query) return;
       const resolvedEndpoint = pathParams
         ? component.query.endpoint.replace(/\{(\w+)\}/g, (_, key) => pathParams[key] ?? `{${key}}`)
         : component.query.endpoint;

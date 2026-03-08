@@ -91,8 +91,6 @@ export function AiBarRenderer({
   if (!chartData || !chartData.hasData) {
     return <Empty description="No data" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ padding: 20 }} />;
   }
-
-  const height = chartConfig.height || 220;
   const tickCallback = chartConfig.yPrefix
     ? (value: any) => `${chartConfig.yPrefix}${Number(value).toFixed(chartConfig.yDecimals ?? 4)}`
     : undefined;
@@ -110,5 +108,5 @@ export function AiBarRenderer({
     },
   });
 
-  return <div style={{ height }}><Bar data={{ labels: chartData.labels, datasets: chartData.datasets }} options={options} /></div>;
+  return <div style={{ height: '100%' }}><Bar data={{ labels: chartData.labels, datasets: chartData.datasets }} options={options} /></div>;
 }

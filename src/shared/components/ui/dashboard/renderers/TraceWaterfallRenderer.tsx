@@ -38,13 +38,12 @@ export function TraceWaterfallRenderer({
   dataSources: DashboardDataSources;
 }) {
   const { rawData, data: spans } = useDashboardData(chartConfig, dataSources);
-  const height = Number(chartConfig.height || 600);
 
   if (spans.length === 0) {
     return <Empty description="No span data" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ padding: 20 }} />;
   }
   return (
-    <div style={{ height, overflow: 'auto' }}>
+    <div style={{ height: '100%', overflow: 'auto' }}>
       <WaterfallChart spans={spans} />
     </div>
   );

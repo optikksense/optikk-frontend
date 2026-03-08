@@ -4,6 +4,7 @@ import {
   HardDrive, Cpu, Radio, Gauge, GitPullRequest, Target,
   BarChart3, Server, ShieldCheck, TrendingDown, Box,
   CheckCircle2, Circle, FolderOpen, RefreshCw, XCircle,
+  Brain, FileText, LayoutDashboard, GitBranch,
 } from 'lucide-react';
 
 import type { DashboardComponentSpec } from '@/types/dashboardConfig';
@@ -18,6 +19,7 @@ const ICONS: Record<string, any> = {
   HardDrive, Cpu, Radio, Gauge, GitPullRequest, Target,
   BarChart3, Server, ShieldCheck, TrendingDown, Box,
   CheckCircle2, Circle, FolderOpen, RefreshCw, XCircle,
+  Brain, FileText, LayoutDashboard, GitBranch,
 };
 
 /**

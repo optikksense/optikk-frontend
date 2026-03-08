@@ -1,5 +1,5 @@
 import { Layout, Space, Select, Button, Tooltip } from 'antd';
-import { RefreshCw, ChevronDown, Moon, Sun } from 'lucide-react';
+import { RefreshCw, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 
@@ -21,7 +21,7 @@ const { Header: AntHeader } = Layout;
  */
 export default function Header() {
   const { user } = useAuthStore();
-  const { selectedTeamId, setSelectedTeamId, triggerRefresh, autoRefreshInterval, setAutoRefreshInterval, theme, setTheme } = useAppStore();
+  const { selectedTeamIds, setSelectedTeamIds, triggerRefresh, autoRefreshInterval, setAutoRefreshInterval } = useAppStore();
   const [intervalPickerOpen, setIntervalPickerOpen] = useState(false);
   const pickerRef = useRef<HTMLDivElement | null>(null);
   const { refreshLabel, triggerRefresh: triggerHeaderRefresh } = useAutoRefresh({
@@ -32,10 +32,6 @@ export default function Header() {
   const handleRefresh = () => {
     triggerHeaderRefresh();
     toast.success('Data refreshed');
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   // Close interval picker on outside click
@@ -59,6 +55,15 @@ export default function Header() {
     value: team.id,
   }));
 
+  const teamSelectLabel = (() => {
+    if (selectedTeamIds.length === 0) return 'Select team';
+    if (selectedTeamIds.length === 1) {
+      const team = teams.find((t) => t.id === selectedTeamIds[0]);
+      return team ? (team.orgName ? `${team.orgName} / ${team.name}` : team.name) : 'Select team';
+    }
+    return `${selectedTeamIds.length} teams`;
+  })();
+
   return (
     <AntHeader className="app-header">
       <Space size="middle" className="header-left">
@@ -71,25 +76,17 @@ export default function Header() {
             <span className="header-team-label">Workspace</span>
             <Select
               data-testid="workspace-select"
-              value={selectedTeamId}
-              onChange={setSelectedTeamId}
+              mode="multiple"
+              value={selectedTeamIds}
+              onChange={setSelectedTeamIds}
               options={teamOptions}
               style={{ width: 220 }}
               placeholder="Select team"
+              maxTagCount={0}
+              maxTagPlaceholder={() => teamSelectLabel}
             />
           </div>
         )}
-
-        {/* Theme toggle */}
-        <Tooltip title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
-          <Button
-            data-testid="header-theme-toggle"
-            type="text"
-            className="header-theme-btn"
-            icon={theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            onClick={toggleTheme}
-          />
-        </Tooltip>
 
         {/* Refresh button + interval picker */}
         <div className="header-refresh-wrap" ref={pickerRef}>

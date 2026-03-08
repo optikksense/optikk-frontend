@@ -50,8 +50,6 @@ export function AiLineRenderer({
     ),
     [rows, chartConfig.valueKey, chartConfig.groupByKey, extraContext?.selectedModel],
   );
-
-  const height = chartConfig.height || 220;
   const tickCallback = chartConfig.yPrefix
     ? (value: any) => `${chartConfig.yPrefix}${Number(value).toFixed(chartConfig.yDecimals ?? 2)}`
     : undefined;
@@ -70,5 +68,5 @@ export function AiLineRenderer({
   if (!chartData.hasData) {
     return <Empty description="No data" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ padding: 20 }} />;
   }
-  return <div style={{ height }}><Line data={chartData} options={options} /></div>;
+  return <div style={{ height: '100%' }}><Line data={chartData} options={options} /></div>;
 }

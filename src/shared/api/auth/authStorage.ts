@@ -95,6 +95,27 @@ export function setStoredTeamId(teamId: number): void {
 /**
  *
  */
+export function getStoredTeamIds(): number[] {
+  const rawValue = safeGet(STORAGE_KEYS.TEAM_IDS);
+  if (!rawValue) {
+    return [];
+  }
+  return rawValue
+    .split(',')
+    .map(Number)
+    .filter((n) => Number.isFinite(n) && n > 0);
+}
+
+/**
+ *
+ */
+export function setStoredTeamIds(teamIds: number[]): void {
+  safeSet(STORAGE_KEYS.TEAM_IDS, teamIds.join(','));
+}
+
+/**
+ *
+ */
 export function resolveTeamId(payload: {
   readonly currentTeam?: Team;
   readonly teams?: Team[];

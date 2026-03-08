@@ -57,10 +57,8 @@ export function HeatmapRenderer({
     lookup[y][x] = Number(row[valueKey]) || 0;
   }
   const maxVal = Math.max(...rows.map((r: any) => Number(r[valueKey]) || 0), 1);
-
-  const height = Number(chartConfig.height || 360);
   return (
-    <div style={{ maxHeight: height, overflowY: 'auto' }}>
+    <div style={{ height: '100%', overflowY: 'auto' }}>
       <table style={{ borderCollapse: 'collapse', fontSize: 11, width: '100%' }}>
         <thead>
           <tr>

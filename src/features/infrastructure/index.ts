@@ -27,6 +27,4 @@ const infrastructureConfig: DomainConfig = {
 };
 
 export { default as InfrastructureHubPageView } from './pages/InfrastructureHubPage';
-export { default as NodesPageView } from './pages/NodesPage';
-export * from './components';
 export * from './types';

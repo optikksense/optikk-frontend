@@ -12,8 +12,7 @@ describe('apiConfig', () => {
     expect(API_ENDPOINTS.SETTINGS.PROFILE).toBe('/v1/settings/profile');
   });
 
-  it('exposes SSE stream route under /v1', () => {
-    expect(API_ENDPOINTS.EVENTS.STREAM).toBe('/v1/events/stream');
+  it('exposes BASE_URL correctly', () => {
     expect(API_CONFIG.BASE_URL).toBe('/api');
   });
 });

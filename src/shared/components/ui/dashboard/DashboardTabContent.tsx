@@ -1,5 +1,3 @@
-import { Spin } from 'antd';
-
 import type { DashboardComponentSpec } from '@/types/dashboardConfig';
 
 import { useComponentDataFetcher } from '@shared/hooks/useComponentDataFetcher';
@@ -18,15 +16,14 @@ export default function DashboardTabContent({
   components,
   pathParams,
 }: DashboardTabContentProps) {
-  const { data, isLoading } = useComponentDataFetcher(components, pathParams);
+  const { data } = useComponentDataFetcher(components, pathParams);
 
   return (
-    <Spin spinning={isLoading}>
+    <div className="dashboard-tab-content page-section">
       <ConfigurableDashboard
         config={{ components }}
         dataSources={data}
-        isLoading={isLoading}
       />
-    </Spin>
+    </div>
   );
 }

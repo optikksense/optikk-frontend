@@ -174,7 +174,7 @@ export default function ConfigurableChartCard({
 
   if (componentKey === 'stat') {
     return (
-      <Card title={titleContent} className="chart-card" styles={{ body: { padding: '12px 16px' } }}>
+      <Card title={titleContent} className="chart-card" style={{ height: '100%' }} styles={{ body: { padding: '12px 16px' } }}>
         {renderStatSummary(rawData)}
       </Card>
     );
@@ -183,7 +183,7 @@ export default function ConfigurableChartCard({
   if (!componentRenderer) {
     console.warn(`Unknown dashboard component key received from backend: ${componentKey || '<empty>'}`);
     return (
-      <Card title={chartConfig.title as string} className="chart-card">
+      <Card title={chartConfig.title as string} className="chart-card" style={{ height: '100%' }}>
         <div style={{ padding: 20, color: 'var(--text-muted)' }}>
           Unknown dashboard component key: {componentKey || '<empty>'}
         </div>
@@ -194,7 +194,7 @@ export default function ConfigurableChartCard({
   if (SPECIALIZED_COMPONENT_KEYS.has(componentKey)) {
     const SpecializedRenderer = componentRenderer;
     return (
-      <Card title={titleContent} className="chart-card" styles={{ body: { padding: '8px' } }}>
+      <Card title={titleContent} className="chart-card" style={{ height: '100%' }} styles={{ body: { padding: '8px', display: 'flex', flexDirection: 'column' } }}>
         <SpecializedRenderer
           chartConfig={chartConfig}
           dataSources={dataSources}
@@ -308,15 +308,14 @@ export default function ConfigurableChartCard({
     }));
   }
 
-  const chartHeight = Number(chartConfig.height || 280);
   const isQueueChart = chartConfig.groupByKey === 'queue';
   const endpointListType = !isQueueChart ? defaultListTypeForChart(chartConfig) : null;
   const showEndpointList = !isQueueChart && endpoints.length > 0 && !!endpointListType;
   const showQueueList = isQueueChart && endpoints.length > 0;
 
   return (
-    <Card title={titleContent} className="chart-card" styles={{ body: { padding: '8px' } }}>
-      <div style={{ height: chartHeight }}>
+    <Card title={titleContent} className="chart-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }} styles={{ body: { padding: '8px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 260 } }}>
+      <div style={{ flex: 1, width: '100%' }}>
         <ChartComponent {...chartProps} />
       </div>
       {showEndpointList && (

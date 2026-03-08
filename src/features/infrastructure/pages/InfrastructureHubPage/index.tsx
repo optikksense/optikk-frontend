@@ -7,8 +7,6 @@ import ConfiguredTabPanel from '@shared/components/ui/dashboard/ConfiguredTabPan
 import { usePageTabs } from '@shared/hooks/usePageTabs';
 import { useUrlSyncedTab } from '@shared/hooks/useUrlSyncedTab';
 
-import NodesPage from '../NodesPage';
-
 const TAB_ICONS = {
   'resource-utilization': Cpu,
   jvm: Activity,
@@ -45,9 +43,7 @@ export default function InfrastructureHubPage() {
             {tab.label}
           </span>
         ),
-        children: tab.id === 'nodes'
-          ? <NodesPage />
-          : <ConfiguredTabPanel pageId="infrastructure" tabId={tab.id} />,
+        children: <ConfiguredTabPanel pageId="infrastructure" tabId={tab.id} />,
       };
     }),
     [tabs],

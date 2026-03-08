@@ -38,7 +38,7 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
 
   if ((tabsLoading || componentsLoading) && tabs.length === 0) {
     return (
-      <div style={{ padding: 24 }}>
+      <div className="page-section">
         <Skeleton active paragraph={{ rows: 6 }} />
       </div>
     );

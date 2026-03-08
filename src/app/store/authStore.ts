@@ -92,7 +92,7 @@ export const useAuthStore = create<AuthState>((set) => ({
           null;
 
         if (teamId != null) {
-          useAppStore.getState().setSelectedTeamId(teamId);
+          useAppStore.getState().setSelectedTeamIds([teamId]);
         }
 
         set({
@@ -116,7 +116,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: async (): Promise<void> => {
     await authService.logout();
-    useAppStore.setState({ selectedTeamId: null });
+    useAppStore.setState({ selectedTeamId: null, selectedTeamIds: [] });
     // Intentionally fire-and-forget cache clearing after local auth state reset.
     void clearQueryClientCache();
     set({

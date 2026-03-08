@@ -1,4 +1,4 @@
-import { getStoredTeamId, getStoredToken } from '@shared/api/auth/authStorage';
+import { getStoredTeamId, getStoredTeamIds, getStoredToken } from '@shared/api/auth/authStorage';
 
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
@@ -13,9 +13,13 @@ export function attachAuthInterceptor(instance: AxiosInstance): number {
     headers.Pragma = 'no-cache';
     headers.Expires = '0';
 
-    const teamId = getStoredTeamId();
+    const teamIds = getStoredTeamIds();
+    const teamId = teamIds.length > 0 ? teamIds[0] : getStoredTeamId();
     if (teamId != null) {
       headers['X-Team-Id'] = String(teamId);
+    }
+    if (teamIds.length > 1) {
+      headers['X-Team-Ids'] = teamIds.join(',');
     }
 
     const token = getStoredToken();

@@ -32,7 +32,7 @@ export interface DashboardComponentSpec extends Record<string, any> {
   id: string;
   componentKey: string;
   order: number;
-  query: DashboardQuerySpec;
+  query?: DashboardQuerySpec;
   layout?: DashboardLayout;
   title?: string;
   titleIcon?: string;
