@@ -1,11 +1,11 @@
 import { Skeleton } from 'antd';
 import { Navigate, useLocation } from 'react-router-dom';
 
-import AiObservabilityPage from '@/pages/ai';
-import InfrastructureHubPage from '@/pages/infrastructure';
-import LogsHubPage from '@/pages/logs';
-import ServicesPage from '@/pages/services';
-import TracesPage from '@/pages/traces';
+import { AiObservabilityPageView } from '@/features/ai';
+import { InfrastructureHubPageView } from '@/features/infrastructure';
+import { LogsHubPageView } from '@/features/log';
+import { ServicesPageView } from '@/features/services';
+import { TracesPageView } from '@/features/traces';
 import MetricsPage from '@/features/metrics/pages/MetricsPage';
 import { ROUTES } from '@/shared/constants/routes';
 
@@ -14,12 +14,12 @@ import { DashboardPage } from '@shared/components/ui';
 import { usePagesConfig } from '@shared/hooks/usePagesConfig';
 
 const CUSTOM_SHELLS = {
-  'ai-observability': AiObservabilityPage,
-  infrastructure: InfrastructureHubPage,
-  logs: LogsHubPage,
+  'ai-observability': AiObservabilityPageView,
+  infrastructure: InfrastructureHubPageView,
+  logs: LogsHubPageView,
   metrics: MetricsPage,
-  services: ServicesPage,
-  traces: TracesPage,
+  services: ServicesPageView,
+  traces: TracesPageView,
 } as const;
 
 export default function BackendDrivenPage(): JSX.Element {

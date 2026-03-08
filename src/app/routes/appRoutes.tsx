@@ -8,9 +8,9 @@ import ProtectedRoute from './ProtectedRoute';
 import MainLayout from '../layout/MainLayout';
 
 const LoginPage = lazy(() => import('@/app/auth'));
-const ServiceDetailPage = lazy(() => import('@/pages/services/ServiceDetailPage'));
-const SettingsPage = lazy(() => import('@/pages/settings'));
-const TraceDetailPage = lazy(() => import('@/pages/traces/TraceDetailPage'));
+const ServiceDetailPage = lazy(() => import('@/features/services').then((m) => ({ default: m.ServiceDetailPageView })));
+const SettingsPage = lazy(() => import('@/features/settings').then((m) => ({ default: m.SettingsPageView })));
+const TraceDetailPage = lazy(() => import('@/features/traces').then((m) => ({ default: m.TraceDetailPageView })));
 const BackendDrivenPage = lazy(() => import('./BackendDrivenPage'));
 
 function toNestedRoutePath(path: string): string {

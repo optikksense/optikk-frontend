@@ -45,3 +45,20 @@ export const DISPLAY_MAP: Record<string, string> = {
   '30d': 'Last 30 days',
   '90d': 'Last 90 days',
 };
+
+export const TIME_PICKER_TOKENS = {
+  colors: {
+    muted: '#6B7280',
+    cyan: '#22D3EE',
+    cyanMid: '#06AED5',
+    cyanDim: 'rgba(34, 211, 238, 0.15)',
+    cyanGlow: 'rgba(34, 211, 238, 0.4)',
+    text: '#F9FAFB',
+    panel2: 'rgba(255, 255, 255, 0.05)',
+    border: 'rgba(255, 255, 255, 0.1)',
+    blackBtn: '#000000',
+  },
+  typography: {
+    fontFamily: '"Inter", sans-serif',
+  },
+};

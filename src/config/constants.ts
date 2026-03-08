@@ -3,7 +3,7 @@
  * Centralized configuration for the entire React application
  */
 
-export { API_CONFIG } from './apiConfig';
+
 
 export /**
         *
@@ -78,33 +78,11 @@ const CHART_COLORS = [
   '#52876B',
 ];
 
-export /**
-        *
-        */
-const SERVICE_HEALTH = {
-  healthy: { label: 'Healthy', color: '#52876B' },
-  degraded: { label: 'Degraded', color: '#D97706' },
-  unhealthy: { label: 'Unhealthy', color: '#DC2626' },
-  unknown: { label: 'Unknown', color: '#6B7280' },
-};
 
-export /**
-        *
-        */
-const INFRASTRUCTURE_TYPES = [
-  { label: 'Host', value: 'host', icon: 'Server' },
-  { label: 'Pod', value: 'pod', icon: 'Box' },
-  { label: 'Container', value: 'container', icon: 'Container' },
-];
 
-export /**
-        *
-        */
-const TRACE_STATUSES = [
-  { label: 'OK', value: 'OK', color: '#52876B' },
-  { label: 'Error', value: 'ERROR', color: '#DC2626' },
-  { label: 'Unset', value: 'UNSET', color: '#6B7280' },
-];
+
+
+
 
 export /**
         *

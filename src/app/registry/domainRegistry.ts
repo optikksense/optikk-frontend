@@ -14,9 +14,10 @@ import type { ComponentType, LazyExoticComponent } from 'react';
 /**
  *
  */
-export type DomainPage =
+type DomainPage =
   | ComponentType<any>
   | LazyExoticComponent<ComponentType<any>>;
+
 
 /**
  *

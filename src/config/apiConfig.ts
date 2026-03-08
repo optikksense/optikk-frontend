@@ -2,26 +2,14 @@ export /**
  *
  */
 const API_PROXY_BASE = '/api';
-export /**
- *
- */
 const API_TIMEOUT_MS = 30000;
-export /**
- *
- */
 const API_RETRY_ATTEMPTS = 3;
 
 export /**
  *
  */
 const DEV_FRONTEND_PORT = 3000;
-export /**
- *
- */
 const DEV_BACKEND_HOST = 'localhost';
-export /**
- *
- */
 const DEV_BACKEND_PORT = 9090;
 export /**
  *
