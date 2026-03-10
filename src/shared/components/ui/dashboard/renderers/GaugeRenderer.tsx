@@ -48,12 +48,12 @@ export function GaugeRenderer({
   if (groupKey) {
     // Render multiple small gauges
     return (
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, padding: 8 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px 8px', padding: 8, overflowY: 'auto', maxHeight: '100%' }}>
         {rows.slice(0, 8).map((row: any, i: number) => {
           const val = Number(row[valueKey] ?? 0);
           const label = row[groupKey] || `Item ${i + 1}`;
           return (
-            <div key={label} style={{ textAlign: 'center', minWidth: 80 }}>
+            <div key={label} style={{ textAlign: 'center', minWidth: 80, flex: '1 1 calc(25% - 8px)', overflow: 'hidden' }}>
               <GaugeChart value={Math.round(val * 100)} label={label} size={80} />
             </div>
           );

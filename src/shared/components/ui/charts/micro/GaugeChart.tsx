@@ -9,15 +9,15 @@ interface GaugeChartProps {
 }
 
 function getGaugeColor(value: number): string {
-  if (value >= 80) return APP_COLORS.hex_f04438;
-  if (value >= 60) return APP_COLORS.hex_f79009;
-  return APP_COLORS.hex_73c991;
+  // For Apdex: higher is better (green), lower is worse (red)
+  if (value >= 90) return APP_COLORS.hex_73c991;
+  if (value >= 70) return APP_COLORS.hex_f79009;
+  return APP_COLORS.hex_f04438;
 }
 
 /**
- *
  * @param props Component props.
- * @returns Semi-circle gauge for 0-100 values.
+ * @returns Premium semi-circle gauge for 0-100 values.
  */
 export default function GaugeChart({
   value = 0,
@@ -31,7 +31,7 @@ export default function GaugeChart({
     datasets: [
       {
         data: [clamped, 100 - clamped],
-        backgroundColor: [`${color}CC`, APP_COLORS.hex_2d2d2d],
+        backgroundColor: [color, `${APP_COLORS.hex_2d2d2d}99`],
         borderWidth: 0,
         circumference: 180,
         rotation: -90,
@@ -42,7 +42,7 @@ export default function GaugeChart({
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: '75%',
+    cutout: '72%',
     plugins: {
       legend: { display: false },
       tooltip: { enabled: false },
@@ -50,20 +50,43 @@ export default function GaugeChart({
   };
 
   return (
-    <div style={{ width: size, height: size / 2 + 20, position: 'relative' }}>
-      <Doughnut data={chartData} options={options} />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 4,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ fontSize: 18, fontWeight: 700, color }}>{clamped.toFixed(0)}%</div>
+    <div style={{
+      width: size,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      margin: '0 auto',
+    }}>
+      {/* The arc canvas — exactly half the height */}
+      <div style={{ width: size, height: size / 2, flexShrink: 0 }}>
+        <Doughnut data={chartData} options={options} />
+      </div>
+
+      {/* Score + label sit clearly BELOW the arc */}
+      <div style={{ marginTop: 10, textAlign: 'center', width: '100%' }}>
+        <div style={{
+          fontSize: Math.round(size * 0.24),
+          fontWeight: 700,
+          color,
+          lineHeight: 1,
+          letterSpacing: '-0.5px',
+        }}>
+          {clamped.toFixed(0)}
+          <span style={{ fontSize: Math.round(size * 0.14), fontWeight: 500 }}>%</span>
+        </div>
         {label && (
-          <div style={{ fontSize: 10, color: `var(--text-muted, ${APP_COLORS.hex_666})`, marginTop: 2 }}>
+          <div style={{
+            fontSize: Math.round(size * 0.1),
+            color: 'var(--text-muted, #8e8e8e)',
+            marginTop: 5,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            padding: '0 4px',
+            maxWidth: size,
+            fontWeight: 400,
+            letterSpacing: '0.01em',
+          }}>
             {label}
           </div>
         )}
