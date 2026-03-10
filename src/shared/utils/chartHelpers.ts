@@ -40,8 +40,8 @@ export const BASE_CHART_OPTIONS: any = {
     } as ScaleOptionsByType<'linear'>,
   },
   elements: {
-    point: { radius: 0, hoverRadius: 0 },
-    line: { borderWidth: 1.5, tension: 0.1 },
+    point: { radius: 0, hoverRadius: 4 },
+    line: { borderWidth: 1.5, tension: 0.4, cubicInterpolationMode: 'monotone' },
   },
 };
 
@@ -89,9 +89,10 @@ export function createLineDataset(
     borderColor: color,
     backgroundColor: fill ? `${color}1A` : 'transparent',
     fill,
-    tension: 0.1,
-    pointRadius: isSparseSeries ? 3 : 0,
-    pointHoverRadius: isSparseSeries ? 4 : 0,
+    tension: 0.4,
+    cubicInterpolationMode: 'monotone',
+    pointRadius: 0,
+    pointHoverRadius: 4,
     pointBackgroundColor: color,
     pointBorderColor: color,
     borderWidth: 1.5,

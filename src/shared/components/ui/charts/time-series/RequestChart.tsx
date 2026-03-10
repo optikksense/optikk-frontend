@@ -1,5 +1,5 @@
 import { Empty } from 'antd';
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Line } from 'react-chartjs-2';
 
 import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
@@ -58,7 +58,7 @@ function formatAxisValue(value: any) {
  * @param root0.color
  * @param root0.valueKey
  */
-export default function RequestChart({
+export default memo(function RequestChart({
   data = [],
   endpoints = [],
   selectedEndpoints = [],
@@ -192,16 +192,84 @@ export default function RequestChart({
     return Math.max(Math.ceil(maxVal * 1.5), 1);
   }, [chartData]);
 
-  const options = createChartOptions({
+  const options = useMemo(() => createChartOptions({
     plugins: {
       legend: { display: false },
       tooltip: {
-        callbacks: {
-          label: (ctx: any) => {
-            const v = ctx.parsed.y;
-            if (v == null) return null;
-            return `${ctx.dataset.label}: ${formatAxisValue(v)}`;
-          },
+        enabled: false,
+        external: (context: any) => {
+          const { chart, tooltip } = context;
+          let tooltipEl = chart.canvas.parentNode.querySelector('div.custom-tooltip');
+
+          if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.className = 'custom-tooltip';
+            tooltipEl.style.background = 'rgba(26, 26, 26, 0.7)';
+            tooltipEl.style.backdropFilter = 'blur(8px)';
+            tooltipEl.style.border = `1px solid ${APP_COLORS.hex_2d2d2d}`;
+            tooltipEl.style.borderRadius = '8px';
+            tooltipEl.style.color = 'white';
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.pointerEvents = 'none';
+            tooltipEl.style.position = 'absolute';
+            tooltipEl.style.transform = 'translate(-50%, 0)';
+            tooltipEl.style.transition = 'all .1s ease';
+            tooltipEl.style.zIndex = 100;
+            tooltipEl.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+            tooltipEl.style.padding = '12px';
+            tooltipEl.style.minWidth = '160px';
+            chart.canvas.parentNode.appendChild(tooltipEl);
+          }
+
+          if (tooltip.opacity === 0) {
+            tooltipEl.style.opacity = 0;
+            return;
+          }
+
+          if (tooltip.body) {
+            const titleLines = tooltip.title || [];
+            const bodyLines = tooltip.body.map((b: any) => b.lines);
+
+            let innerHtml = '<div style="margin-bottom: 8px; font-size: 13px; color: #aaa; font-weight: 500;">';
+            titleLines.forEach((title: string) => {
+              innerHtml += `<div>${title}</div>`;
+            });
+            innerHtml += '</div><div style="display: flex; flex-direction: column; gap: 6px;">';
+
+            bodyLines.forEach((body: string, i: number) => {
+              const colors = tooltip.labelColors[i];
+              const val = tooltip.dataPoints[i].raw;
+              const formattedVal = formatAxisValue(val);
+              const label = tooltip.dataPoints[i].dataset.label;
+              
+              // Sparkline representation based on value magnitude vs max
+              const maxVal = yAxisMax;
+              const pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
+              const barWidth = Math.max(Math.min(pct, 100), 2);
+
+              innerHtml += `
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${colors.backgroundColor}; border: 1px solid ${colors.borderColor}"></span>
+                    <span style="color: #eee; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px;">${label}</span>
+                  </div>
+                  <span style="font-weight: 600; font-family: monospace;">${formattedVal}</span>
+                </div>
+                <div style="width: 100%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 2px; margin-bottom: 4px; overflow: hidden;">
+                  <div style="width: ${barWidth}%; height: 100%; background: ${colors.backgroundColor}; border-radius: 2px;"></div>
+                </div>
+              `;
+            });
+            innerHtml += '</div>';
+
+            tooltipEl.innerHTML = innerHtml;
+          }
+
+          const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
+          
+          tooltipEl.style.opacity = 1;
+          tooltipEl.style.left = positionX + tooltip.caretX + 'px';
+          tooltipEl.style.top = positionY + tooltip.caretY + 'px';
         },
       },
     },
@@ -210,14 +278,16 @@ export default function RequestChart({
         ticks: {
           color: APP_COLORS.hex_666,
           font: { size: 11 },
+          count: 6,
           callback: (value: any) => formatAxisValue(value),
         },
         grid: { color: APP_COLORS.hex_2d2d2d },
         beginAtZero: true,
         max: yAxisMax,
+        min: 0,
       },
     },
-  });
+  }), [yAxisMax]);
 
   if (data.length === 0 && timeBuckets.length === 0) {
     return (
@@ -233,3 +303,4 @@ export default function RequestChart({
     </div>
   );
 }
+);

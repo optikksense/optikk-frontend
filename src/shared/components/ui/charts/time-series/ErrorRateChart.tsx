@@ -1,5 +1,5 @@
 import { Empty } from 'antd';
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Line } from 'react-chartjs-2';
 
 import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
@@ -46,7 +46,7 @@ function firstValue(row: any, keys: string[], fallback: any = 0) {
  * @param root0.datasetLabel
  * @param root0.color
  */
-export default function ErrorRateChart({
+export default memo(function ErrorRateChart({
   data = [],
   endpoints = [],
   selectedEndpoints = [],
@@ -179,6 +179,17 @@ export default function ErrorRateChart({
       });
     }
 
+    datasets.push({
+      label: '100% Error',
+      data: timeBuckets.map(() => 100),
+      borderColor: APP_COLORS.rgba_240_68_56_0p5,
+      borderDash: [4, 4],
+      borderWidth: 1,
+      pointRadius: 0,
+      fill: false,
+      tension: 0,
+    });
+
     return { labels, datasets };
   }, [data, endpoints, selectedEndpoints, serviceTimeseriesMap, hasServiceData, targetThreshold, timeBuckets, labels]);
 
@@ -205,9 +216,9 @@ export default function ErrorRateChart({
   }, [data, serviceTimeseriesMap, endpoints]);
 
   const maxDataVal = Math.max(...allDataValues, targetThreshold || 0, 0);
-  const yAxisMax = Math.max(Math.ceil(maxDataVal * 2.0), 1);
+  const yAxisMax = Math.min(Math.max(Math.ceil(maxDataVal * 1.2), 1), 100);
 
-  const options = createChartOptions({
+  const options = useMemo(() => createChartOptions({
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -221,19 +232,21 @@ export default function ErrorRateChart({
     },
     scales: {
       y: {
+        grid: { color: APP_COLORS.hex_2d2d2d },
+        beginAtZero: true,
+        max: targetThreshold && targetThreshold > yAxisMax ? Math.min(targetThreshold * 1.2, 100) : yAxisMax,
+        min: 0,
         ticks: {
           color: APP_COLORS.hex_666,
+          count: 6,
           callback: (v: any) => {
             const num = Number(v);
             return Number.isInteger(num) ? `${num}%` : `${num.toFixed(1)}%`;
           },
         },
-        grid: { color: APP_COLORS.hex_2d2d2d },
-        beginAtZero: true,
-        max: Math.max(yAxisMax, targetThreshold ? targetThreshold * 1.5 : 0),
       },
     },
-  });
+  }), [yAxisMax, targetThreshold]);
 
   if (data.length === 0 && timeBuckets.length === 0) {
     return (
@@ -249,3 +262,4 @@ export default function ErrorRateChart({
     </div>
   );
 }
+);

@@ -197,7 +197,7 @@ export default function ConfigurableChartCard({
   if (SPECIALIZED_COMPONENT_KEYS.has(componentKey)) {
     const SpecializedRenderer = componentRenderer;
     return (
-      <Card title={titleContent} className="chart-card" style={{ height: '100%' }} styles={{ body: { padding: '8px', display: 'flex', flexDirection: 'column' } }}>
+      <Card title={titleContent} className="chart-card" style={{ height: '100%' }} styles={{ body: { padding: '8px', display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}>
         <SpecializedRenderer
           chartConfig={chartConfig}
           dataSources={dataSources}
@@ -318,7 +318,7 @@ export default function ConfigurableChartCard({
 
   return (
     <Card title={titleContent} className="chart-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }} styles={{ body: { padding: '8px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 260 } }}>
-      <div style={{ flex: 1, width: '100%' }}>
+      <div style={{ height: 260, flexShrink: 0, width: '100%', position: 'relative' }}>
         <ChartComponent {...chartProps} />
       </div>
       {showEndpointList && (

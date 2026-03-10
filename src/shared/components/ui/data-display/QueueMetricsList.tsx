@@ -156,7 +156,27 @@ export default function QueueMetricsList({
                 type,
                 queue,
               );
-              const seriesColor = CHART_COLORS[index % CHART_COLORS.length];
+              
+              // Find max value in list for proportional bar calculation
+              const getVal = (q: QueueMetricsItem) => {
+                if (type === 'consumerLag') return q.max_consumer_lag ?? 0;
+                if (type === 'productionRate') return q.avg_publish_rate ?? 0;
+                if (type === 'consumptionRate') return q.avg_receive_rate ?? 0;
+                return q.avg_queue_depth ?? 0;
+              };
+              const maxValInList = Math.max(...queues.map(getVal), 1);
+              const currentVal = getVal(queue);
+              const pct = (currentVal / maxValInList) * 100;
+              const barWidth = Math.max(Math.min(pct, 100), 2);
+              
+              // Gradient based on type
+              const barBg = type === 'consumerLag' 
+                ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
+                : type === 'productionRate'
+                  ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
+                  : type === 'consumptionRate'
+                    ? `linear-gradient(90deg, ${APP_COLORS.hex_06d6a0} 0%, ${APP_COLORS.hex_73c991} 100%)`
+                    : `linear-gradient(90deg, ${APP_COLORS.hex_48cae4} 0%, ${APP_COLORS.hex_5e60ce} 100%)`;
 
               return (
                 <tr
@@ -184,18 +204,10 @@ export default function QueueMetricsList({
                     style={{
                       padding: '4px 8px',
                       display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
+                      flexDirection: 'column',
+                      gap: '4px',
                     }}
                   >
-                    <div
-                      style={{
-                        width: '12px',
-                        height: '2px',
-                        backgroundColor: seriesColor,
-                        flexShrink: 0,
-                      }}
-                    />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
                         {queue.queue_name}
@@ -205,6 +217,10 @@ export default function QueueMetricsList({
                           {queue.service_name}
                         </span>
                       )}
+                    </div>
+                    {/* Proportional Gradient Intensity Bar */}
+                    <div style={{ width: '100%', height: '3px', background: APP_COLORS.rgba_255_255_255_0p05, borderRadius: '2px', overflow: 'hidden', marginTop: '2px' }}>
+                      <div style={{ width: `${barWidth}%`, height: '100%', background: barBg, borderRadius: '2px' }} />
                     </div>
                   </td>
                   <td

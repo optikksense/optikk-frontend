@@ -128,7 +128,20 @@ export default function TopEndpointsList({
                 type,
                 endpoint,
               );
-              const seriesColor = CHART_COLORS[index % CHART_COLORS.length];
+              
+              // Find max value in list for proportional bar calculation
+              const getVal = (ep: TopEndpointListItem) => (type === 'errorRate' ? (ep.errorRate ?? ep.value ?? 0) : type === 'latency' ? (ep.latency ?? 0) : (ep.request_count ?? 0));
+              const maxValInList = Math.max(...endpoints.map(getVal), 1);
+              const currentVal = getVal(endpoint);
+              const pct = (currentVal / maxValInList) * 100;
+              const barWidth = Math.max(Math.min(pct, 100), 2);
+              
+              // Gradient based on type (Error rate/Hotspot uses orange->red)
+              const barBg = type === 'errorRate' 
+                ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
+                : type === 'latency'
+                  ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
+                  : `linear-gradient(90deg, ${APP_COLORS.hex_48cae4} 0%, ${APP_COLORS.hex_5e60ce} 100%)`;
 
               return (
                 <tr
@@ -156,18 +169,10 @@ export default function TopEndpointsList({
                     style={{
                       padding: '4px 8px',
                       display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
+                      flexDirection: 'column',
+                      gap: '4px',
                     }}
                   >
-                    <div
-                      style={{
-                        width: '12px',
-                        height: '2px',
-                        backgroundColor: seriesColor,
-                        flexShrink: 0,
-                      }}
-                    />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
                         {endpoint.endpoint}
@@ -177,6 +182,10 @@ export default function TopEndpointsList({
                           {endpoint.service}
                         </span>
                       )}
+                    </div>
+                    {/* Proportional Gradient Intensity Bar */}
+                    <div style={{ width: '100%', height: '3px', background: APP_COLORS.rgba_255_255_255_0p05, borderRadius: '2px', overflow: 'hidden', marginTop: '2px' }}>
+                      <div style={{ width: `${barWidth}%`, height: '100%', background: barBg, borderRadius: '2px' }} />
                     </div>
                   </td>
                   <td

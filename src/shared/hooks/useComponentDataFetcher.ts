@@ -1,4 +1,4 @@
-import { useQueries } from '@tanstack/react-query';
+import { useQueries, keepPreviousData } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import type { DashboardComponentSpec } from '@/types/dashboardConfig';
@@ -103,6 +103,7 @@ export function useComponentDataFetcher(
       enabled: !!selectedTeamId,
       staleTime: 0,
       gcTime: 30_000,
+      placeholderData: keepPreviousData,
     })),
   });
 

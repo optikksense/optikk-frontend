@@ -50,7 +50,7 @@ export function useTracesExplorer() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const backendParams = useMemo((): TracesBackendParams => {
+  const backendParams: TracesBackendParams = useMemo(() => {
     const params: TracesBackendParams = {
       limit: pageSize,
       offset: (page - 1) * pageSize,
@@ -62,14 +62,26 @@ export function useTracesExplorer() {
     return params;
   }, [selectedService, errorsOnly, pageSize, page]);
 
-  const { data, isLoading } = useQuery(
-    traceQueries.list(
+  const { startMs, endMs } = useMemo(() => {
+    const resolvedEndMs =
+      timeRange.value === 'custom' && timeRange.endTime != null ? Number(timeRange.endTime) : Date.now();
+    const resolvedStartMs =
+      timeRange.value === 'custom' && timeRange.startTime != null
+        ? Number(timeRange.startTime)
+        : resolvedEndMs - (timeRange.minutes ?? 60) * 60 * 1000;
+
+    return { startMs: resolvedStartMs, endMs: resolvedEndMs };
+  }, [refreshKey, timeRange]);
+
+  const { data, isLoading } = useQuery({
+    ...traceQueries.list(
       selectedTeamId,
-      Date.now() - (timeRange.minutes ?? 60) * 60 * 1000,
-      Date.now(),
+      startMs,
+      endMs,
       { ...backendParams, refreshKey } as any
-    )
-  );
+    ),
+    placeholderData: (prev) => prev,
+  });
 
   const traces = data?.traces ?? [];
   const totalTraces = data?.total ?? 0;

@@ -296,7 +296,10 @@ export default function OverviewPage() {
                       <div className="service-health-metric">
                         {formatNumber(service.requestCount)} req
                       </div>
-                      <div className="service-health-metric" style={{ color: service.errorRate > 1 ? APP_COLORS.hex_f04438 : 'var(--text-muted)' }}>
+                      <div
+                        className={service.errorRate >= 99.5 ? 'error-badge' : 'service-health-metric'}
+                        style={service.errorRate < 99.5 ? { color: service.errorRate > 1 ? APP_COLORS.hex_f04438 : 'var(--text-muted)' } : undefined}
+                      >
                         {Math.max(0, Number(service.errorRate)).toFixed(2)}% err
                       </div>
                     </div>

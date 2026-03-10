@@ -1,5 +1,5 @@
 import { Empty } from 'antd';
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Line } from 'react-chartjs-2';
 
 import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
@@ -82,7 +82,7 @@ function firstValue<T>(row: unknown, keys: string[], fallback: T): T {
  * @param root0.color
  * @param root0.valueKey
  */
-export default function LatencyChart({
+export default memo(function LatencyChart({
   data = [],
   endpoints = [],
   selectedEndpoints = [],
@@ -222,7 +222,7 @@ export default function LatencyChart({
     return Math.max(Math.ceil(maxVal * 1.25), 10);
   }, [chartData]);
 
-  const options = createChartOptions({
+  const options = useMemo(() => createChartOptions({
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -242,7 +242,7 @@ export default function LatencyChart({
         max: yAxisMax,
       },
     },
-  });
+  }), [yAxisMax]);
 
   if (data.length === 0 && timeBuckets.length === 0) {
     return (
@@ -258,3 +258,4 @@ export default function LatencyChart({
     </div>
   );
 }
+);

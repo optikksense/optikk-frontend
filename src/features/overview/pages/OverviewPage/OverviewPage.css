@@ -88,3 +88,33 @@
   color: var(--text-muted, var(--literal-hex-666));
   margin-top: 2px;
 }
+
+/* Pulsing Red Pill Badge for 100% Errors */
+.error-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--color-error, var(--literal-hex-f04438));
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 11px;
+  box-shadow: 0 0 0 0 rgba(240, 68, 56, 0.7);
+  animation: error-pulse 1.5s infinite;
+}
+
+@keyframes error-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(240, 68, 56, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(240, 68, 56, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(240, 68, 56, 0);
+  }
+}
