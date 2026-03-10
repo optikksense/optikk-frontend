@@ -12,10 +12,14 @@ export type DomainRecord = Record<string, unknown>;
  */
 export interface LogRecord extends DomainRecord {
   id: any; // Temporary any to avoid branding conflicts during migration
-  timestamp: string;
-  level: string;
-  message: string;
-  service: string;
+  timestamp: string | number; // nanosecond int from OTLP or ISO string
+  // Normalized fields (set by logsApi.normalizeLog)
+  level?: string;
+  message?: string;
+  service?: string;
+  // Raw OTLP / API field names
+  severityText?: string;
+  body?: string;
   service_name?: string;
   serviceName?: string;
   host?: string;
@@ -102,8 +106,8 @@ export type LogsBackendParams = QueryParams & {
   limit?: number;
   offset?: number;
   search?: string;
-  levels?: string[];
-  excludeLevels?: string[];
+  severities?: string[];
+  excludeSeverities?: string[];
   services?: string[];
   excludeServices?: string[];
   hosts?: string[];

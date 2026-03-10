@@ -67,7 +67,7 @@ export function LevelBadge({ level }: LevelBadgeProps) {
     >
       {l}
     </span>
- );
+  );
 }
 
 /* ─── Log row for the ObservabilityDataBoard ──────────────────────────────── */

@@ -79,16 +79,16 @@ export default function LogsTableSection({
 }: LogsTableSectionProps) {
   const { logs, isLoading, serviceFacets } = data;
   const { page, pageSize, total, setPage, setPageSize } = pagination;
-  const { 
-    filters: structuredFilters, 
-    searchText, 
-    selectedService, 
-    errorsOnly, 
-    setFilters, 
-    setSearchText, 
-    setSelectedService, 
-    setErrorsOnly, 
-    clearAll, 
+  const {
+    filters: structuredFilters,
+    searchText,
+    selectedService,
+    errorsOnly,
+    setFilters,
+    setSearchText,
+    setSelectedService,
+    setErrorsOnly,
+    clearAll,
   } = filters;
   const { columns, filterFields, renderRow } = config;
 

@@ -120,7 +120,7 @@ export default function LogsHubPage() {
   );
 
   const traceId = selectedLog ? selectedLog.traceId || selectedLog.trace_id : '';
-  const selectedLogMessage = selectedLog ? toDisplayText(String(selectedLog.message)) : '—';
+  const selectedLogMessage = selectedLog ? toDisplayText(String(selectedLog.body)) : '—';
 
   return (
     <EntityExplorerLayout
@@ -189,7 +189,7 @@ export default function LogsHubPage() {
         selectedLog && (
           <ObservabilityDetailPanel
             title="Log Detail"
-            titleBadge={<LevelBadge level={selectedLog.level} />}
+            titleBadge={<LevelBadge level={selectedLog.severityText} />}
             metaLine={tsLabel(selectedLog.timestamp)}
             metaRight={relativeTime(selectedLog.timestamp)}
             summaryNode={

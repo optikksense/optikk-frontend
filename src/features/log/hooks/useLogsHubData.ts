@@ -28,25 +28,31 @@ export function useLogsHubData({
   const backendParams = useMemo((): LogsBackendParams => {
     const params: LogsBackendParams = { limit: pageSize, offset: (page - 1) * pageSize };
     if (searchText.trim()) params.search = searchText.trim();
-    if (errorsOnly) params.levels = ['ERROR', 'FATAL'];
+    if (errorsOnly) params.severities = ['ERROR', 'FATAL'];
     if (selectedService) params.services = [selectedService];
     
     // ... filtering logic simplified for this phase ...
     for (const filter of filters) {
-      if (filter.field === 'level' && filter.operator === 'equals') params.levels = [filter.value.toUpperCase()];
+      if (filter.field === 'level' && filter.operator === 'equals') params.severities = [filter.value.toUpperCase()];
       if (filter.field === 'service_name' && filter.operator === 'equals') params.services = [filter.value];
       if (filter.field === 'host' && filter.operator === 'equals') params.hosts = [filter.value];
     }
     return params;
   }, [filters, selectedService, errorsOnly, searchText, pageSize, page]);
 
-  const commonParams = {
-    teamId: selectedTeamId,
-    // Note: useTimeRangeQuery logic folded into queryOptions for consistency
-    startTime: Date.now() - (timeRange.minutes ?? 0) * 60 * 1000,
-    endTime: Date.now(),
-    backendParams,
-  };
+  const commonParams = useMemo(() => {
+    // Stabilize time range to nearest minute to prevent infinite re-fetch loops
+    const now = Date.now();
+    const stabilizedNow = Math.floor(now / 60000) * 60000;
+    const startTime = stabilizedNow - (timeRange.minutes ?? 0) * 60 * 1000;
+
+    return {
+      teamId: selectedTeamId,
+      startTime,
+      endTime: stabilizedNow,
+      backendParams,
+    };
+  }, [selectedTeamId, timeRange.minutes, backendParams, refreshKey]);
 
   const { data: logsData, isLoading: logsLoading } = useQuery({
     ...logQueries.list(commonParams),

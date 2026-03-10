@@ -265,13 +265,19 @@ export function compareIdsDesc(aId: unknown, bId: unknown): number {
 export function getLogValue(log: unknown, key: string): unknown {
   const logLike = asLogLike(log);
   if (key === 'service_name' || key === 'service') {
-    return logLike.serviceName || logLike.service_name || '';
+    return logLike.serviceName || logLike.service_name || logLike.service || '';
   }
   if (key === 'trace_id') {
     return logLike.traceId || logLike.trace_id || '';
   }
   if (key === 'span_id') {
     return logLike.spanId || logLike.span_id || '';
+  }
+  if (key === 'message') {
+    return logLike.message || logLike.body || '';
+  }
+  if (key === 'level') {
+    return logLike.level || logLike.severityText || '';
   }
   return logLike[key] ?? '';
 }

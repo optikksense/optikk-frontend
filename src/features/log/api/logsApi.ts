@@ -11,8 +11,8 @@ export interface LogsBackendParams extends QueryParams {
   limit?: number;
   offset?: number;
   search?: string;
-  levels?: string[];
-  excludeLevels?: string[];
+  severities?: string[];
+  excludeSeverities?: string[];
   services?: string[];
   excludeServices?: string[];
   hosts?: string[];
@@ -27,14 +27,12 @@ export interface LogsBackendParams extends QueryParams {
 export const logsStatsSchema = z.object({
   total: z.number(),
   fields: z.object({
-    level: z.array(z.object({
-      value: z.string(),
-      count: z.number(),
-    })),
-    service_name: z.array(z.object({
-      value: z.string(),
-      count: z.number(),
-    })),
+    // Backend returns severity_text and service
+    severity_text: z.array(z.object({ value: z.string(), count: z.number() })).optional(),
+    service: z.array(z.object({ value: z.string(), count: z.number() })).optional(),
+    // Legacy / Frontend aliases
+    level: z.array(z.object({ value: z.string(), count: z.number() })).optional(),
+    service_name: z.array(z.object({ value: z.string(), count: z.number() })).optional(),
   }),
 }).passthrough();
 
@@ -43,7 +41,8 @@ export type LogsStats = z.infer<typeof logsStatsSchema>;
 export const logsVolumeSchema = z.object({
   step: z.string(),
   buckets: z.array(z.object({
-    time_bucket: z.string(),
+    time_bucket: z.string().optional(),
+    timeBucket: z.string().optional(),
     total: z.number(),
     errors: z.number(),
     warnings: z.number(),
@@ -54,6 +53,20 @@ export const logsVolumeSchema = z.object({
 }).passthrough();
 
 export type LogsVolume = z.infer<typeof logsVolumeSchema>;
+
+/**
+ * Normalizes a parsed log entry, ensuring legacy frontend fields
+ * (level, message, service) are populated from OTLP fields if missing.
+ */
+function normalizeLog(raw: z.infer<typeof logEntrySchema>): LogEntry {
+  return {
+    ...raw,
+    // Normalize to the field names LogRow and getLogValue expect
+    level: raw.level ?? raw.severityText ?? '',
+    message: raw.message ?? raw.body ?? '',
+    service: raw.service ?? raw.serviceName ?? raw.service_name ?? '',
+  };
+}
 
 /**
  * Log Feature API wrapper.
@@ -72,9 +85,11 @@ export const logsApi = {
       params.endTime,
       params.backendParams
     ) as any;
-    
+
+    const parsedLogs = z.array(logEntrySchema).parse(response.logs || []);
+
     return {
-      logs: z.array(logEntrySchema).parse(response.logs || []),
+      logs: parsedLogs.map(normalizeLog),
       total: Number(response.total || 0),
     };
   },
@@ -90,8 +105,18 @@ export const logsApi = {
       params.startTime,
       params.endTime,
       params.backendParams
-    );
-    return logsStatsSchema.parse(response);
+    ) as any;
+
+    const parsed = logsStatsSchema.parse(response);
+    
+    // Normalize backend fields to frontend names
+    return {
+      total: parsed.total,
+      fields: {
+        level: parsed.fields.level ?? parsed.fields.severity_text ?? [],
+        service_name: parsed.fields.service_name ?? parsed.fields.service ?? [],
+      }
+    } as LogsStats;
   },
 
   getLogVolume: async (params: {
@@ -107,7 +132,17 @@ export const logsApi = {
       params.endTime,
       params.step,
       params.backendParams
-    );
-    return logsVolumeSchema.parse(response);
+    ) as any;
+
+    const parsed = logsVolumeSchema.parse(response);
+
+    // Normalize buckets
+    return {
+      step: parsed.step,
+      buckets: (parsed.buckets || []).map(b => ({
+        ...b,
+        time_bucket: b.time_bucket ?? b.timeBucket ?? '',
+      })),
+    };
   },
 };
