@@ -194,7 +194,15 @@ export function parseTimestampMs(value: unknown): number {
       if (z === 'Z') {
         return Date.UTC(Number(y), Number(mo) - 1, Number(d), Number(h), Number(mi), Number(s), ms);
       }
-      return new Date(Number(y), Number(mo) - 1, Number(d), Number(h), Number(mi), Number(s), ms).getTime();
+        return new Date(
+          Number(y),
+          Number(mo) - 1,
+          Number(d),
+          Number(h),
+          Number(mi),
+          Number(s),
+          ms,
+        ).getTime();
     }
   }
 
@@ -324,6 +332,7 @@ export function extractServerTotal(pages: unknown): number {
 
 // ── Volume Bucket Gap Filling ──────────────────────────────────────────────
 
+/** Maps supported volume step labels to their millisecond duration. */
 export const STEP_MS_BY_LABEL: Record<string, number> = {
   '1m': 60_000,
   '2m': 120_000,
@@ -337,6 +346,7 @@ export const STEP_MS_BY_LABEL: Record<string, number> = {
   '12h': 43_200_000,
 };
 
+/** Formats a UTC timestamp to the bucket key shape returned by logs volume APIs. */
 export function formatUtcBucketKey(date: Date): string {
   const pad = (value: number): string => String(value).padStart(2, '0');
   const dateLabel = `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
@@ -344,17 +354,16 @@ export function formatUtcBucketKey(date: Date): string {
   return `${dateLabel} ${timeLabel}`;
 }
 
+/** Fills missing volume buckets across the exact queried time bounds. */
 export function fillVolumeBucketGaps<T extends Record<string, unknown>>(
   rawBuckets: T[],
   step: string,
-  timeRangeMinutes: number
+  startMs: number,
+  endMs: number,
 ): T[] {
   if (!rawBuckets.length || !step) return rawBuckets;
 
   const stepMs = STEP_MS_BY_LABEL[step] || 60_000;
-
-  const endMs = Date.now();
-  const startMs = endMs - timeRangeMinutes * 60 * 1000;
 
   const byKey: Record<string, T> = {};
   for (const bucket of rawBuckets) {
@@ -366,7 +375,8 @@ export function fillVolumeBucketGaps<T extends Record<string, unknown>>(
 
   const result: T[] = [];
   const slotStart = Math.floor(startMs / stepMs) * stepMs;
-  for (let timestamp = slotStart; timestamp <= endMs; timestamp += stepMs) {
+  const slotEnd = Math.floor(endMs / stepMs) * stepMs;
+  for (let timestamp = slotStart; timestamp <= slotEnd; timestamp += stepMs) {
     const key = formatUtcBucketKey(new Date(timestamp));
     result.push(
       byKey[key] || {

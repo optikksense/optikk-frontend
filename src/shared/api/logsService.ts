@@ -78,4 +78,19 @@ export const logsService = {
   ): Promise<unknown> {
     return api.get(`${BASE}/logs/surrounding`, { params: { id: logId, before, after } });
   },
+
+  async getLogAggregate(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    groupBy?: string,
+    step?: string,
+    topN?: number,
+    metric?: string,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/logs/aggregate`, {
+      params: { startTime, endTime, group_by: groupBy, step, top_n: topN, metric, ...params },
+    });
+  },
 };

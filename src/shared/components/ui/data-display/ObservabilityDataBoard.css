@@ -152,6 +152,8 @@
 .oboard__thead {
     display: flex;
     padding: 0;
+    width: max-content;
+    min-width: 100%;
     border-bottom: 1px solid var(--glass-border);
     font-size: 11px;
     font-weight: 600;
@@ -161,7 +163,7 @@
     position: sticky;
     top: 0;
     background: var(--literal-rgba-255-255-255-0p02);
-    z-index: 5;
+    z-index: 20;
     user-select: none;
 }
 
@@ -204,13 +206,33 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.oboard__table-viewport {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+.oboard__table-inner {
     min-width: 100%;
+    width: max-content;
+}
+
+.oboard__body-scroll {
+    height: 100%;
+    min-width: 0;
+    overflow: auto !important;
 }
 
 /* ── Individual row ── */
 .oboard__row {
     display: flex;
     align-items: baseline;
+    width: max-content;
+    min-width: 100%;
     cursor: pointer;
     border-bottom: 1px solid var(--glass-border);
     transition: background 0.08s ease;

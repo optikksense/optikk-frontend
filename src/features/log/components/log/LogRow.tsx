@@ -9,13 +9,13 @@ import type { ReactNode } from 'react';
 /* ─── Level badge ─────────────────────────────────────────────────────────── */
 
 const LEVEL_STYLES: Record<string, { bg: string; color: string }> = {
-  FATAL: { bg: APP_COLORS.hex_d92d20, color: APP_COLORS.hex_fff },
-  ERROR: { bg: APP_COLORS.hex_f04438, color: APP_COLORS.hex_fff },
-  WARN: { bg: APP_COLORS.hex_f79009, color: APP_COLORS.hex_fff },
-  WARNING: { bg: APP_COLORS.hex_f79009, color: APP_COLORS.hex_fff },
-  INFO: { bg: APP_COLORS.hex_06aed5, color: APP_COLORS.hex_fff },
-  DEBUG: { bg: APP_COLORS.hex_5e60ce, color: APP_COLORS.hex_fff },
-  TRACE: { bg: APP_COLORS.hex_98a2b3, color: APP_COLORS.hex_fff },
+  FATAL: { bg: '#6F1B1B', color: APP_COLORS.hex_fff },
+  ERROR: { bg: '#FF5C5C', color: APP_COLORS.hex_fff },
+  WARN: { bg: '#FFB300', color: '#1a1a1a' },
+  WARNING: { bg: '#FFB300', color: '#1a1a1a' },
+  INFO: { bg: '#2871E6', color: APP_COLORS.hex_fff },
+  DEBUG: { bg: '#6C737A', color: APP_COLORS.hex_fff },
+  TRACE: { bg: '#B0B8C4', color: '#1a1a1a' },
 };
 
 function toDisplayText(value: unknown): string {
@@ -190,8 +190,8 @@ export default function LogRow({
             ...((flexCol.key === 'message') ? {
               alignItems: 'flex-start',
               whiteSpace: 'normal',
-              flex: '1 0 100ch',
-              minWidth: '100ch',
+              flex: `1 0 ${colWidths[flexCol.key] ?? 720}px`,
+              minWidth: colWidths[flexCol.key] ?? 720,
             } : {}),
             borderBottom: 'none',
           }}

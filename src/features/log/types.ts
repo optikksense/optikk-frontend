@@ -45,14 +45,20 @@ export interface LogFacet extends DomainRecord {
  *
  */
 export interface LogVolumeBucket extends DomainRecord {
-  timeBucket?: string;
-  time_bucket?: string;
+  time_bucket: string;
   total?: number;
   errors?: number;
   warnings?: number;
   infos?: number;
   debugs?: number;
   fatals?: number;
+}
+
+export interface LogAggregateRow extends DomainRecord {
+  time_bucket: string;
+  group_value: string;
+  count: number;
+  error_rate?: number;
 }
 
 /**

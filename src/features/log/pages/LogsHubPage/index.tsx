@@ -2,24 +2,29 @@ import {
   FileText,
   GitBranch,
 } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { PageHeader, ObservabilityDetailPanel } from '@shared/components/ui';
-import { ConfiguredTabPanel } from '@shared/components/ui';
-
 import { useURLFilters } from '@shared/hooks/useURLFilters';
-
 import { relativeTime, tsLabel } from '@shared/utils/time';
+
+import { EntityExplorerLayout } from '@/shared/components/layout/EntityExplorerLayout';
 
 import LogsLevelDistributionCard from '../../components/charts/LogsLevelDistributionCard';
 import LogsVolumeSection from '../../components/charts/LogsVolumeSection';
 import LogsKpiRow from '../../components/kpi/LogsKpiRow';
 import LogRow, { LevelBadge } from '../../components/log/LogRow';
 import LogsTableSection from '../../components/table/LogsTableSection';
-
-import { useLogsHubData } from '../../hooks/useLogsHubData';
+import LogSurroundingPanel from '../../components/log/LogSurroundingPanel';
 import { useLogDetailFields } from '../../hooks/useLogDetailFields';
+import { useLogsHubData } from '../../hooks/useLogsHubData';
+import {
+  LOG_COLUMNS,
+  LOG_FILTER_FIELDS,
+  LOGS_URL_FILTER_CONFIG,
+  toDisplayText,
+} from '../../utils/logUtils';
 
 import type {
   LogRecord,
@@ -28,19 +33,6 @@ import type {
 } from '../../types';
 
 import './LogsHubPage.css';
-
-import {
-  toDisplayText,
-  LOG_FILTER_FIELDS,
-  LOG_COLUMNS,
-  LOGS_URL_FILTER_CONFIG
-} from '../../utils/logUtils';
-
-/* ─── Main page ───────────────────────────────────────────────────────────── */
-/**
- *
- */
-import { EntityExplorerLayout } from '@/shared/components/layout/EntityExplorerLayout';
 
 export default function LogsHubPage() {
   const navigate = useNavigate();
@@ -81,6 +73,7 @@ export default function LogsHubPage() {
     logsLoading,
     total,
     volumeBuckets,
+    volumeStep,
     volumeLoading,
     errorCount,
     warnCount,
@@ -95,7 +88,7 @@ export default function LogsHubPage() {
     filters: filters as LogStructuredFilter[],
     page,
     pageSize,
-  }) as any; // Temporary cast to bridge branding gap
+  }) as ReturnType<typeof useLogsHubData>;
 
   const clearAll = useCallback((): void => {
     clearURLFilters();
@@ -119,7 +112,7 @@ export default function LogsHubPage() {
     [],
   );
 
-  const traceId = selectedLog ? selectedLog.traceId || selectedLog.trace_id : '';
+  const traceId = selectedLog ? selectedLog.trace_id || selectedLog.traceId : '';
   const selectedLogMessage = selectedLog ? toDisplayText(String(selectedLog.body)) : '—';
 
   return (
@@ -136,11 +129,14 @@ export default function LogsHubPage() {
       }
       chartsRow={
         <div className="logs-charts-row">
-          <LogsVolumeSection volumeBuckets={volumeBuckets} isLoading={volumeLoading} />
+          <LogsVolumeSection
+            volumeBuckets={volumeBuckets}
+            volumeStep={volumeStep}
+            isLoading={volumeLoading}
+          />
           <LogsLevelDistributionCard isLoading={statsLoading} levelFacets={levelFacets} />
         </div>
       }
-      tabPanel={<ConfiguredTabPanel pageId="logs" tabId="default" />}
       tableSection={
         <LogsTableSection
           config={{
@@ -187,9 +183,10 @@ export default function LogsHubPage() {
       }
       detailSidebar={
         selectedLog && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <ObservabilityDetailPanel
             title="Log Detail"
-            titleBadge={<LevelBadge level={selectedLog.severityText} />}
+            titleBadge={<LevelBadge level={selectedLog.level ?? selectedLog.severity_text ?? selectedLog.severityText} />}
             metaLine={tsLabel(selectedLog.timestamp)}
             metaRight={relativeTime(selectedLog.timestamp)}
             summaryNode={
@@ -220,6 +217,11 @@ export default function LogsHubPage() {
             rawData={selectedLog}
             onClose={() => setSelectedLog(null)}
           />
+          <div className="glass-panel" style={{ padding: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Context</div>
+            <LogSurroundingPanel log={selectedLog} />
+          </div>
+          </div>
         )
       }
     />

@@ -1,5 +1,5 @@
 /**
- * Saturation Service — API calls for Kafka, database, and queue saturation monitoring.
+ * Saturation Service — API calls for Kafka and database saturation monitoring.
  */
 import { API_CONFIG } from '@config/apiConfig';
 
@@ -9,33 +9,158 @@ import type { RequestTime } from './service-types';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-/**
- * Service wrapper for saturation endpoints.
- */
 export const saturationService = {
-  // ── Kafka ───────────────────────────────────────────────────────────────
-  async getKafkaQueueLag(
+  // ── Kafka: summary ────────────────────────────────────────────────────────
+  async getKafkaSummaryStats(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
   ): Promise<unknown> {
-    return api.get(`${BASE}/saturation/kafka/queue-lag`, { params: { startTime, endTime } });
+    return api.get(`${BASE}/saturation/kafka/summary-stats`, { params: { startTime, endTime } });
   },
 
-  async getKafkaProductionRate(
+  // ── Kafka: production rate (Dashboard 1) ──────────────────────────────────
+  async getProduceRateByTopic(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
   ): Promise<unknown> {
-    return api.get(`${BASE}/saturation/kafka/production-rate`, { params: { startTime, endTime } });
+    return api.get(`${BASE}/saturation/kafka/produce-rate-by-topic`, { params: { startTime, endTime } });
   },
 
-  async getKafkaConsumptionRate(
+  async getPublishLatencyByTopic(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
   ): Promise<unknown> {
-    return api.get(`${BASE}/saturation/kafka/consumption-rate`, { params: { startTime, endTime } });
+    return api.get(`${BASE}/saturation/kafka/publish-latency-by-topic`, { params: { startTime, endTime } });
+  },
+
+  // ── Kafka: consumption rate by topic (Dashboard 2) ────────────────────────
+  async getConsumeRateByTopic(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/consume-rate-by-topic`, { params: { startTime, endTime } });
+  },
+
+  async getReceiveLatencyByTopic(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/receive-latency-by-topic`, { params: { startTime, endTime } });
+  },
+
+  // ── Kafka: consumption rate by consumer group (Dashboard 3) ──────────────
+  async getConsumeRateByGroup(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/consume-rate-by-group`, { params: { startTime, endTime } });
+  },
+
+  async getProcessRateByGroup(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/process-rate-by-group`, { params: { startTime, endTime } });
+  },
+
+  async getProcessLatencyByGroup(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/process-latency-by-group`, { params: { startTime, endTime } });
+  },
+
+  // ── Kafka: consumer lag (Dashboard 4) ─────────────────────────────────────
+  async getConsumerLagByGroup(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/lag-by-group`, { params: { startTime, endTime } });
+  },
+
+  async getConsumerLagPerPartition(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/lag-per-partition`, { params: { startTime, endTime } });
+  },
+
+  // ── Kafka: rebalancing (Dashboard 5) ──────────────────────────────────────
+  async getRebalanceSignals(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/rebalance-signals`, { params: { startTime, endTime } });
+  },
+
+  // ── Kafka: end-to-end latency (Dashboard 6) ───────────────────────────────
+  async getE2ELatency(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/e2e-latency`, { params: { startTime, endTime } });
+  },
+
+  // ── Kafka: error rates (Dashboard 7) ──────────────────────────────────────
+  async getPublishErrors(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/publish-errors`, { params: { startTime, endTime } });
+  },
+
+  async getConsumeErrors(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/consume-errors`, { params: { startTime, endTime } });
+  },
+
+  async getProcessErrors(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/process-errors`, { params: { startTime, endTime } });
+  },
+
+  async getClientOpErrors(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/client-op-errors`, { params: { startTime, endTime } });
+  },
+
+  // ── Kafka: broker connectivity (Dashboard 8) ──────────────────────────────
+  async getBrokerConnections(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/broker-connections`, { params: { startTime, endTime } });
+  },
+
+  async getClientOperationDuration(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/saturation/kafka/client-op-duration`, { params: { startTime, endTime } });
   },
 
   // ── Database ────────────────────────────────────────────────────────────
@@ -77,30 +202,5 @@ export const saturationService = {
     endTime: RequestTime,
   ): Promise<unknown> {
     return api.get(`${BASE}/saturation/database/top-tables`, { params: { startTime, endTime } });
-  },
-
-  // ── Queue ───────────────────────────────────────────────────────────────
-  async getQueueConsumerLag(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/saturation/queue/consumer-lag`, { params: { startTime, endTime } });
-  },
-
-  async getQueueTopicLag(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/saturation/queue/topic-lag`, { params: { startTime, endTime } });
-  },
-
-  async getQueueTopQueuesStats(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/saturation/queue/top-queues`, { params: { startTime, endTime } });
   },
 };

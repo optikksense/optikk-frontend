@@ -19,7 +19,6 @@ import { formatNumber } from '@shared/utils/formatters';
 
 import { APP_COLORS } from '@config/colorLiterals';
 import { KafkaSaturationTable } from '../../components/KafkaSaturationTable';
-import { DatabaseSaturationTable } from '../../components/DatabaseSaturationTable';
 import './SaturationPage.css';
 
 function normalizeKafkaMetric(row: any = {}) {
@@ -78,20 +77,14 @@ export default function SaturationPage() {
     'saturation-kafka-lag',
     (teamId, start, end) => v1Service.getKafkaQueueLag(teamId, start, end),
   );
-  const { data: dbQueryRaw, isLoading: dbQueryLoading } = useTimeRangeQuery(
-    'saturation-db-queries',
-    (teamId, start, end) => v1Service.getDatabaseQueryByTable(teamId, start, end),
-  );
+
 
   const kafkaLag = useMemo(() => {
     const raw = Array.isArray(kafkaLagRaw) ? kafkaLagRaw : [];
     return raw.map(normalizeKafkaMetric);
   }, [kafkaLagRaw]);
 
-  const dbQueries = useMemo(() => {
-    const raw = Array.isArray(dbQueryRaw) ? dbQueryRaw : [];
-    return raw.map(normalizeDatabaseMetric);
-  }, [dbQueryRaw]);
+
 
   const summary = useMemo(() => {
     const metrics: any = metricsData || {};
@@ -193,24 +186,7 @@ export default function SaturationPage() {
         />
       </div>
 
-      {/* Database saturation table */}
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24}>
-          <Card
-            title={
-              <span>
-                Database Utilization by Table
-                <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 12 }}>
-                  Derived from db.sql.table
-                </span>
-              </span>
-            }
-            className="sat-chart-card"
-          >
-            <DatabaseSaturationTable data={dbQueries} loading={dbQueryLoading} />
-          </Card>
-        </Col>
-      </Row>
+
 
       {/* Kafka saturation table */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>

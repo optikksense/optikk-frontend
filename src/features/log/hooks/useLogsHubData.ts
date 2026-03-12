@@ -1,11 +1,55 @@
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { logQueries } from '../api/queryOptions';
+import { useMemo } from 'react';
+
 import { useAppStore } from '@shared/store/appStore';
 import { fillVolumeBucketGaps } from '@shared/utils/logUtils';
-import type { LogStructuredFilter, LogVolumeBucket, LogFacet } from '../types';
-import type { LogsBackendParams } from '../api/logsApi';
 
+import { logQueries } from '../api/queryOptions';
+
+import type { LogsBackendParams } from '../api/logsApi';
+import type { LogAggregateRow, LogStructuredFilter, LogVolumeBucket } from '../types';
+
+/**
+ * Resolves the active logs range into concrete millisecond bounds.
+ */
+function resolveTimeBounds(timeRange: {
+  value?: string;
+  minutes?: number;
+  startTime?: number | string | null;
+  endTime?: number | string | null;
+}) {
+  const now = Date.now();
+  const stabilizedNow = Math.floor(now / 60000) * 60000;
+  const isCustom = timeRange.value === 'custom';
+  const customStart = Number(timeRange.startTime);
+  const customEnd = Number(timeRange.endTime);
+
+  const endTime = isCustom && Number.isFinite(customEnd)
+    ? customEnd
+    : stabilizedNow;
+  const startTime = isCustom && Number.isFinite(customStart)
+    ? customStart
+    : endTime - (timeRange.minutes ?? 0) * 60 * 1000;
+
+  return { startTime, endTime };
+}
+
+/**
+ * Picks a bucket size that keeps long-range log volume charts legible.
+ */
+function getAdaptiveVolumeStep(rangeMs: number): '1m' | '5m' | '1h' | '1d' {
+  const hourMs = 60 * 60 * 1000;
+  const dayMs = 24 * hourMs;
+
+  if (rangeMs <= 3 * hourMs) return '1m';
+  if (rangeMs <= dayMs) return '5m';
+  if (rangeMs <= 7 * dayMs) return '1h';
+  return '1d';
+}
+
+/**
+ * Input parameters for the logs hub data hook.
+ */
 export interface UseLogsHubDataProps {
   searchText: string;
   selectedService: string | null;
@@ -15,6 +59,9 @@ export interface UseLogsHubDataProps {
   pageSize: number;
 }
 
+/**
+ * Aggregates the logs page list, stats, and volume queries behind one hook.
+ */
 export function useLogsHubData({
   searchText,
   selectedService,
@@ -41,18 +88,27 @@ export function useLogsHubData({
   }, [filters, selectedService, errorsOnly, searchText, pageSize, page]);
 
   const commonParams = useMemo(() => {
-    // Stabilize time range to nearest minute to prevent infinite re-fetch loops
-    const now = Date.now();
-    const stabilizedNow = Math.floor(now / 60000) * 60000;
-    const startTime = stabilizedNow - (timeRange.minutes ?? 0) * 60 * 1000;
+    void refreshKey;
+
+    const { startTime, endTime } = resolveTimeBounds(timeRange);
 
     return {
       teamId: selectedTeamId,
       startTime,
-      endTime: stabilizedNow,
+      endTime,
       backendParams,
     };
-  }, [selectedTeamId, timeRange.minutes, backendParams, refreshKey]);
+  }, [
+    selectedTeamId,
+    timeRange,
+    backendParams,
+    refreshKey,
+  ]);
+
+  const volumeStep = useMemo(
+    () => getAdaptiveVolumeStep(Math.max(commonParams.endTime - commonParams.startTime, 0)),
+    [commonParams.endTime, commonParams.startTime],
+  );
 
   const { data: logsData, isLoading: logsLoading } = useQuery({
     ...logQueries.list(commonParams),
@@ -65,40 +121,63 @@ export function useLogsHubData({
   });
 
   const { data: volumeData, isLoading: volumeLoading } = useQuery({
-    ...logQueries.volume({ ...commonParams, step: '1m' }),
+    ...logQueries.volume({ ...commonParams, step: volumeStep }),
+    enabled: !!selectedTeamId,
+  });
+
+  const { data: aggregateData, isLoading: aggregateLoading } = useQuery({
+    ...logQueries.aggregate({
+      teamId: selectedTeamId,
+      startTime: commonParams.startTime,
+      endTime: commonParams.endTime,
+      groupBy: 'service',
+      step: volumeStep,
+      topN: 10,
+      metric: 'error_rate',
+    }),
     enabled: !!selectedTeamId,
   });
 
   const logs = logsData?.logs ?? [];
   const total = logsData?.total ?? 0;
-  const levelFacets = statsData?.fields.level ?? [];
-  const serviceFacets = statsData?.fields.service_name ?? [];
+  const levelFacets = useMemo(
+    () => statsData?.fields.level ?? [],
+    [statsData?.fields.level],
+  );
+  const serviceFacets = useMemo(
+    () => statsData?.fields.service_name ?? [],
+    [statsData?.fields.service_name],
+  );
 
   const volumeBuckets = useMemo(() => {
     return fillVolumeBucketGaps<LogVolumeBucket>(
       volumeData?.buckets ?? [],
       volumeData?.step ?? '',
-      timeRange.minutes ?? 0
+      commonParams.startTime,
+      commonParams.endTime,
     );
-  }, [volumeData?.buckets, volumeData?.step, timeRange.minutes]);
+  }, [volumeData?.buckets, volumeData?.step, commonParams.endTime, commonParams.startTime]);
 
   const errorCount = useMemo(() => {
     return levelFacets
-      .filter(f => ['ERROR', 'FATAL'].includes(f.value.toUpperCase()))
+      .filter((f) => ['ERROR', 'FATAL'].includes(f.value.toUpperCase()))
       .reduce((sum, f) => sum + f.count, 0);
   }, [levelFacets]);
 
   const warnCount = useMemo(() => {
     return levelFacets
-      .filter(f => ['WARN', 'WARNING'].includes(f.value.toUpperCase()))
+      .filter((f) => ['WARN', 'WARNING'].includes(f.value.toUpperCase()))
       .reduce((sum, f) => sum + f.count, 0);
   }, [levelFacets]);
+
+  const aggregateRows: LogAggregateRow[] = (aggregateData?.rows ?? []) as LogAggregateRow[];
 
   return {
     logs,
     logsLoading,
     total,
     volumeBuckets,
+    volumeStep: volumeData?.step ?? volumeStep,
     volumeLoading,
     errorCount,
     warnCount,
@@ -106,5 +185,7 @@ export function useLogsHubData({
     serviceFacets,
     levelFacets,
     statsLoading,
+    aggregateRows,
+    aggregateLoading,
   };
 }

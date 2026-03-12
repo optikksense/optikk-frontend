@@ -1,1 +1,2 @@
-export { default as DatabaseSystemBreakdown } from './DatabaseSystemBreakdown';
+// Database observability components have moved to src/features/database.
+export {};

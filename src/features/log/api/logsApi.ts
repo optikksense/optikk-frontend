@@ -41,8 +41,7 @@ export type LogsStats = z.infer<typeof logsStatsSchema>;
 export const logsVolumeSchema = z.object({
   step: z.string(),
   buckets: z.array(z.object({
-    time_bucket: z.string().optional(),
-    timeBucket: z.string().optional(),
+    time_bucket: z.string(),
     total: z.number(),
     errors: z.number(),
     warnings: z.number(),
@@ -51,6 +50,23 @@ export const logsVolumeSchema = z.object({
     fatals: z.number(),
   })),
 }).passthrough();
+
+export const logsAggregateRowSchema = z.object({
+  time_bucket: z.string(),
+  group_value: z.string(),
+  count: z.number(),
+  error_rate: z.number().optional(),
+});
+
+export const logsAggregateSchema = z.object({
+  group_by: z.string(),
+  step: z.string(),
+  metric: z.string(),
+  rows: z.array(logsAggregateRowSchema),
+}).passthrough();
+
+export type LogsAggregate = z.infer<typeof logsAggregateSchema>;
+export type LogsAggregateRow = z.infer<typeof logsAggregateRowSchema>;
 
 export type LogsVolume = z.infer<typeof logsVolumeSchema>;
 
@@ -61,10 +77,13 @@ export type LogsVolume = z.infer<typeof logsVolumeSchema>;
 function normalizeLog(raw: z.infer<typeof logEntrySchema>): LogEntry {
   return {
     ...raw,
-    // Normalize to the field names LogRow and getLogValue expect
-    level: raw.level ?? raw.severityText ?? '',
-    message: raw.message ?? raw.body ?? '',
-    service: raw.service ?? raw.serviceName ?? raw.service_name ?? '',
+    // Prefer snake_case primary fields, fall back to legacy camelCase aliases
+    level: raw.severity_text ?? raw.level ?? raw.severityText ?? '',
+    message: raw.body ?? raw.message ?? '',
+    service: raw.service_name ?? raw.service ?? raw.serviceName ?? '',
+    service_name: raw.service_name ?? raw.service ?? raw.serviceName ?? '',
+    trace_id: raw.trace_id ?? raw.traceId ?? '',
+    span_id: raw.span_id ?? raw.spanId ?? '',
   };
 }
 
@@ -136,13 +155,29 @@ export const logsApi = {
 
     const parsed = logsVolumeSchema.parse(response);
 
-    // Normalize buckets
-    return {
-      step: parsed.step,
-      buckets: (parsed.buckets || []).map(b => ({
-        ...b,
-        time_bucket: b.time_bucket ?? b.timeBucket ?? '',
-      })),
-    };
+    return parsed;
+  },
+
+  getLogAggregate: async (params: {
+    teamId: TeamId | null;
+    startTime: RequestTime;
+    endTime: RequestTime;
+    groupBy?: string;
+    step?: string;
+    topN?: number;
+    metric?: string;
+    backendParams?: LogsBackendParams;
+  }): Promise<LogsAggregate> => {
+    const response = await logsService.getLogAggregate(
+      params.teamId,
+      params.startTime,
+      params.endTime,
+      params.groupBy,
+      params.step,
+      params.topN,
+      params.metric,
+      params.backendParams,
+    ) as any;
+    return logsAggregateSchema.parse(response);
   },
 };

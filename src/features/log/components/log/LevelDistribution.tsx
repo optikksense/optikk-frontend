@@ -7,12 +7,12 @@ import { LevelBadge } from './LogRow';
 import type { LogFacet } from '../../types';
 
 const LEVEL_COLORS: Record<string, string> = {
-  errors: APP_COLORS.hex_f04438,
-  warnings: APP_COLORS.hex_f79009,
-  infos: APP_COLORS.hex_06aed5,
-  debugs: APP_COLORS.hex_5e60ce,
-  fatals: APP_COLORS.hex_d92d20,
-  traces: APP_COLORS.hex_98a2b3,
+  fatals: '#6F1B1B',
+  errors: '#FF5C5C',
+  warnings: '#FFB300',
+  infos: '#2871E6',
+  debugs: '#6C737A',
+  traces: '#B0B8C4',
 };
 
 interface LevelDistributionProps {

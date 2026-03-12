@@ -74,7 +74,7 @@ export const LOG_COLUMNS: LogColumn[] = [
   { key: 'trace_id', label: 'Trace ID', defaultWidth: 220, defaultVisible: false },
   { key: 'thread', label: 'Thread', defaultWidth: 120, defaultVisible: false },
   { key: 'container', label: 'Container', defaultWidth: 140, defaultVisible: false },
-  { key: 'message', label: 'Message', defaultVisible: true, flex: true },
+  { key: 'message', label: 'Message', defaultWidth: 720, defaultVisible: true, flex: true },
 ];
 
 /**

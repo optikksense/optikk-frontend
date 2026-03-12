@@ -1,106 +1,33 @@
-import { Card, Col, Row } from 'antd';
-import { Radio } from 'lucide-react';
 import { useMemo } from 'react';
+
+import { Radio } from 'lucide-react';
 
 import { PageHeader } from '@shared/components/ui';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
 
-import { v1Service } from '@shared/api/v1Service';
+import { useTabComponents } from '@shared/hooks/useTabComponents';
 
-import { useDashboardConfig } from '@shared/hooks/useDashboardConfig';
-import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
+import type { DashboardRenderConfig } from '@/types/dashboardConfig';
 
-import { MessagingSystemsPills, TopQueuesTable } from '../../components';
-
-/**
- *
- */
 export default function MessagingQueueMonitoringPage() {
-  const { config } = useDashboardConfig('messaging-queue');
+  const { components, groups, isLoading } = useTabComponents('saturation', 'queue');
 
-  const { data: consumerLagData, isLoading: isLoadingConsumer } = useTimeRangeQuery(
-    'queue-consumer-lag',
-    (teamId, start, end) => v1Service.getQueueConsumerLag(teamId, start, end),
-  );
-
-  const { data: topicLagData, isLoading: isLoadingTopic } = useTimeRangeQuery(
-    'queue-topic-lag',
-    (teamId, start, end) => v1Service.getQueueTopicLag(teamId, start, end),
-  );
-
-  const { data: productionRateData, isLoading: isLoadingProd } = useTimeRangeQuery(
-    'kafka-production-rate',
-    (teamId, start, end) => v1Service.getKafkaProductionRate(teamId, start, end),
-  );
-
-  const { data: consumptionRateData, isLoading: isLoadingConsump } = useTimeRangeQuery(
-    'kafka-consumption-rate',
-    (teamId, start, end) => v1Service.getKafkaConsumptionRate(teamId, start, end),
-  );
-
-  const { data: topQueuesData, isLoading: isLoadingTopQueues } = useTimeRangeQuery(
-    'queue-top-queues',
-    (teamId, start, end) => v1Service.getQueueTopQueuesStats(teamId, start, end),
-  );
-
-  const isLoading = isLoadingConsumer || isLoadingTopic || isLoadingTopQueues || isLoadingProd || isLoadingConsump;
-
-  const topQueues = Array.isArray(topQueuesData) ? topQueuesData : [];
-
-  const dataSources = useMemo(() => {
-    // Append `topQueues` feature wrapper so that ConfigurableDashboard can build legends
-    const withTop = (arr: any) => Object.assign(Array.isArray(arr) ? [...arr] : [], { topQueues });
+  const config = useMemo<DashboardRenderConfig | null>(() => {
+    if (!components.length && !isLoading) return null;
     return {
-      'queue-consumer-lag': withTop(consumerLagData),
-      'queue-topic-lag': withTop(topicLagData),
-      'kafka-production-rate': withTop(productionRateData),
-      'kafka-consumption-rate': withTop(consumptionRateData),
+      components: components.map((c) => ({ ...c, dataSource: c.dataSource || c.id })),
+      groups,
     };
-  }, [consumerLagData, topicLagData, productionRateData, consumptionRateData, topQueues]);
-
-  // Detect unique messaging systems
-  const messagingSystems = useMemo(() => {
-    const systemSet = new Set<string>();
-    topQueues.forEach((queue: any) => {
-      if (queue.messaging_system) {
-        systemSet.add(queue.messaging_system);
-      }
-    });
-    return [...systemSet];
-  }, [topQueues]);
+  }, [components, groups, isLoading]);
 
   return (
     <div>
-      <PageHeader title="Messaging Queue Monitoring" icon={<Radio size={24} />} subtitle="Queue depth, consumer lag, publish and receive rates across messaging systems" />
-
-      <MessagingSystemsPills systems={messagingSystems} />
-
-      {/* Configurable dashboard charts */}
-      <div style={{ marginBottom: 24 }}>
-        <ConfigurableDashboard
-          config={config}
-          dataSources={dataSources}
-          isLoading={isLoading}
-        />
-      </div>
-
-      {/* Top queues table */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24}>
-          <Card
-            title={
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Radio size={16} />
-                Top Queues / Topics
-              </span>
-            }
-            style={{ height: '100%' }}
-            styles={{ body: { padding: '8px' } }}
-          >
-            <TopQueuesTable queues={topQueues} />
-          </Card>
-        </Col>
-      </Row>
+      <PageHeader
+        title="Messaging Queue Monitoring"
+        icon={<Radio size={24} />}
+        subtitle="Produce/consume rates, consumer lag, rebalancing, latency, and error rates across Kafka topics and consumer groups"
+      />
+      <ConfigurableDashboard config={config} isLoading={isLoading} />
     </div>
   );
 }

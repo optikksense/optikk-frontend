@@ -39,40 +39,66 @@ export default function BoardSkeleton({
   skeletonFlexBaseWidth,
   skeletonFlexWidthRange,
 }: BoardSkeletonProps) {
+  const fixedWidth = fixedColumns.reduce(
+    (total, column) => total + (colWidths[column.key] ?? 0),
+    0,
+  );
+  const flexColumnWidth = flexColumn
+    ? (colWidths[flexColumn.key] ?? flexColumn.defaultWidth ?? 480)
+    : 0;
+  const tableMinWidth = fixedWidth + flexColumnWidth;
+
   return (
-    <div>
-      <div className="oboard__thead">
-        {fixedColumns.map((column) => (
-          <div key={column.key} className="oboard__th" style={{ width: colWidths[column.key] }}>
-            {column.label}
+    <div className="oboard__tbody">
+      <div className="oboard__body-scroll">
+        <div className="oboard__table-inner" style={{ minWidth: tableMinWidth }}>
+          <div className="oboard__thead">
+            {fixedColumns.map((column) => (
+              <div key={column.key} className="oboard__th" style={{ width: colWidths[column.key] }}>
+                {column.label}
+              </div>
+            ))}
+            {flexColumn && (
+              <div
+                className="oboard__th oboard__th--flex"
+                style={{ flex: `1 0 ${flexColumnWidth}px`, minWidth: flexColumnWidth }}
+              >
+                {flexColumn.label}
+              </div>
+            )}
           </div>
-        ))}
-        {flexColumn && <div className="oboard__th oboard__th--flex">{flexColumn.label}</div>}
-      </div>
-      {Array.from({ length: rowCount }).map((_, index) => (
-        <div key={index} className="oboard__row" style={{ padding: '10px 12px', gap: 16 }}>
-          {fixedColumns.map((column) => (
-            <div key={column.key} style={{ width: colWidths[column.key], flexShrink: 0 }}>
+          <div className="oboard__table-viewport">
+            {Array.from({ length: rowCount }).map((_, index) => (
               <div
-                className="oboard__skeleton"
-                style={{
-                  width: randomWidth(skeletonBaseWidth, skeletonWidthRange),
-                }}
-              />
-            </div>
-          ))}
-          {flexColumn && (
-            <div style={{ flex: 1 }}>
-              <div
-                className="oboard__skeleton"
-                style={{
-                  width: randomWidth(skeletonFlexBaseWidth, skeletonFlexWidthRange),
-                }}
-              />
-            </div>
-          )}
+                key={index}
+                className="oboard__row"
+                style={{ minWidth: tableMinWidth, padding: '10px 12px', gap: 16 }}
+              >
+                {fixedColumns.map((column) => (
+                  <div key={column.key} style={{ width: colWidths[column.key], flexShrink: 0 }}>
+                    <div
+                      className="oboard__skeleton"
+                      style={{
+                        width: randomWidth(skeletonBaseWidth, skeletonWidthRange),
+                      }}
+                    />
+                  </div>
+                ))}
+                {flexColumn && (
+                  <div style={{ flex: `1 0 ${flexColumnWidth}px`, minWidth: flexColumnWidth }}>
+                    <div
+                      className="oboard__skeleton"
+                      style={{
+                        width: randomWidth(skeletonFlexBaseWidth, skeletonFlexWidthRange),
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
+      </div>
     </div>
   );
 }

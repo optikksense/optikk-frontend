@@ -1,4 +1,4 @@
-import { Spin } from 'antd';
+import { Spin, Tooltip } from 'antd';
 import { useMemo } from 'react';
 
 import { formatNumber } from '@shared/utils/formatters';
@@ -9,12 +9,12 @@ import type { LogVolumeBucket } from '../../types';
 
 /* ─── Level colours ───────────────────────────────────────────────────────── */
 const LEVEL_COLORS: Record<'errors' | 'warnings' | 'infos' | 'debugs' | 'fatals' | 'traces', string> = {
-  errors: APP_COLORS.hex_f04438,
-  warnings: APP_COLORS.hex_f79009,
-  infos: APP_COLORS.hex_06aed5,
-  debugs: APP_COLORS.hex_5e60ce,
-  fatals: APP_COLORS.hex_d92d20,
-  traces: APP_COLORS.hex_98a2b3,
+  fatals: '#6F1B1B',
+  errors: '#FF5C5C',
+  warnings: '#FFB300',
+  infos: '#2871E6',
+  debugs: '#6C737A',
+  traces: '#B0B8C4',
 };
 
 export { LEVEL_COLORS };
@@ -55,18 +55,58 @@ function getBucketTotal(bucket: LogVolumeBucket): number {
   return toCount(bucket.total);
 }
 
+function parseBucketDate(raw: string): Date | null {
+  if (!raw) return null;
+
+  const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw)
+    ? raw.replace(' ', 'T') + 'Z'
+    : raw;
+  const parsed = new Date(normalized);
+
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function formatBucketLabel(raw: string, step: string, variant: 'axis' | 'tooltip' = 'axis'): string {
+  const parsed = parseBucketDate(raw);
+  if (!parsed) return raw;
+
+  if (step === '1d') {
+    return parsed.toLocaleDateString([], {
+      month: 'short',
+      day: 'numeric',
+      year: variant === 'tooltip' ? 'numeric' : undefined,
+    });
+  }
+
+  if (step === '1h') {
+    return parsed.toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: variant === 'tooltip' ? '2-digit' : undefined,
+    });
+  }
+
+  return parsed.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 /* ─── VolumeBar ───────────────────────────────────────────────────────────── */
 interface VolumeBarProps {
   bucket: LogVolumeBucket;
   maxTotal: number;
+  step: string;
 }
 
-function VolumeBar({ bucket, maxTotal }: VolumeBarProps) {
+function VolumeBar({ bucket, maxTotal, step }: VolumeBarProps) {
   if (!maxTotal) return null;
 
   const totalCount = getBucketTotal(bucket);
   const heightPct = totalCount > 0 ? Math.max((totalCount / maxTotal) * 100, 4) : 0;
-  const label = getBucketTimeLabel(bucket).replace(/:00$/, '');
+  const rawLabel = getBucketTimeLabel(bucket);
+  const label = formatBucketLabel(rawLabel, step, 'tooltip');
 
   const fatals = getBucketLevelCount(bucket, 'fatals');
   const errors = getBucketLevelCount(bucket, 'errors');
@@ -74,23 +114,35 @@ function VolumeBar({ bucket, maxTotal }: VolumeBarProps) {
   const infos = getBucketLevelCount(bucket, 'infos');
   const debugs = getBucketLevelCount(bucket, 'debugs');
   const hasLevels = fatals > 0 || errors > 0 || warnings > 0 || infos > 0 || debugs > 0;
+  const tooltip = (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <strong>{label}</strong>
+      <span>{formatNumber(totalCount)} logs</span>
+      {fatals > 0 && <span>Fatal: {formatNumber(fatals)}</span>}
+      {errors > 0 && <span>Error: {formatNumber(errors)}</span>}
+      {warnings > 0 && <span>Warn: {formatNumber(warnings)}</span>}
+      {infos > 0 && <span>Info: {formatNumber(infos)}</span>}
+      {debugs > 0 && <span>Debug: {formatNumber(debugs)}</span>}
+    </div>
+  );
 
   return (
-    <div
-      className={`logs-volume-bar-wrapper${totalCount === 0 ? ' logs-volume-bar-wrapper--empty' : ''}`}
-      title={totalCount > 0 ? `${label}  •  ${totalCount.toLocaleString()} logs` : label}
-    >
-      {totalCount > 0 && (
-        <div className="logs-volume-bar-stack" style={{ height: `${heightPct}%` }}>
-          {fatals > 0 && <div style={{ flex: fatals, background: LEVEL_COLORS.fatals }} />}
-          {errors > 0 && <div style={{ flex: errors, background: LEVEL_COLORS.errors }} />}
-          {warnings > 0 && <div style={{ flex: warnings, background: LEVEL_COLORS.warnings }} />}
-          {infos > 0 && <div style={{ flex: infos, background: LEVEL_COLORS.infos }} />}
-          {debugs > 0 && <div style={{ flex: debugs, background: LEVEL_COLORS.debugs }} />}
-          {!hasLevels && <div style={{ flex: 1, background: APP_COLORS.hex_98a2b3 }} />}
-        </div>
-      )}
-    </div>
+    <Tooltip title={tooltip} placement="top">
+      <div
+        className={`logs-volume-bar-wrapper${totalCount === 0 ? ' logs-volume-bar-wrapper--empty' : ''}`}
+      >
+        {totalCount > 0 && (
+          <div className="logs-volume-bar-stack" style={{ height: `${heightPct}%` }}>
+            {fatals > 0 && <div style={{ flex: fatals, background: LEVEL_COLORS.fatals }} />}
+            {errors > 0 && <div style={{ flex: errors, background: LEVEL_COLORS.errors }} />}
+            {warnings > 0 && <div style={{ flex: warnings, background: LEVEL_COLORS.warnings }} />}
+            {infos > 0 && <div style={{ flex: infos, background: LEVEL_COLORS.infos }} />}
+            {debugs > 0 && <div style={{ flex: debugs, background: LEVEL_COLORS.debugs }} />}
+            {!hasLevels && <div style={{ flex: 1, background: APP_COLORS.hex_98a2b3 }} />}
+          </div>
+        )}
+      </div>
+    </Tooltip>
   );
 }
 
@@ -106,13 +158,9 @@ function pickTickIndices(count: number, desired = 5): number[] {
   return [...new Set(indices)];
 }
 
-function shortTimeLabel(raw: string): string {
-  if (!raw) return '';
-
-  const parts = raw.split(' ');
-  if (parts.length < 2) return raw;
-
-  return parts[1].slice(0, 5);
+function getTickPosition(index: number, count: number): string {
+  if (count <= 1) return '0%';
+  return `${(index / (count - 1)) * 100}%`;
 }
 
 /* ─── LogVolumeChart ──────────────────────────────────────────────────────── */
@@ -124,37 +172,53 @@ function shortTimeLabel(raw: string): string {
  */
 interface LogVolumeChartProps {
   buckets: LogVolumeBucket[];
+  step: string;
   isLoading: boolean;
 }
 
-export default function LogVolumeChart({ buckets, isLoading }: LogVolumeChartProps) {
+export default function LogVolumeChart({ buckets, step, isLoading }: LogVolumeChartProps) {
   const maxTotal = useMemo(
     () => Math.max(...buckets.map((bucket: LogVolumeBucket) => getBucketTotal(bucket)), 1),
     [buckets],
+  );
+  const tickIndices = useMemo(() => pickTickIndices(buckets.length, 6), [buckets.length]);
+  const tickLabels = useMemo(
+    () => tickIndices.map((index) => ({
+      index,
+      label: formatBucketLabel(getBucketTimeLabel(buckets[index]), step),
+      position: getTickPosition(index, buckets.length),
+      edge: index === 0 ? 'start' : index === buckets.length - 1 ? 'end' : 'middle',
+    })),
+    [buckets, step, tickIndices],
   );
 
   if (isLoading) return <div className="logs-chart-empty"><Spin size="small" /></div>;
   if (buckets.length === 0) return <div className="logs-chart-empty">No volume data</div>;
 
-  const tickIndices = new Set(pickTickIndices(buckets.length, 6));
-
   return (
     <div className="logs-volume-chart-wrap">
       <div className="logs-volume-chart">
         {buckets.map((bucket: LogVolumeBucket, index: number) => (
-          <VolumeBar key={getBucketTimeLabel(bucket) || index} bucket={bucket} maxTotal={maxTotal} />
+          <VolumeBar
+            key={getBucketTimeLabel(bucket) || index}
+            bucket={bucket}
+            maxTotal={maxTotal}
+            step={step}
+          />
         ))}
       </div>
       <div className="logs-volume-axis">
-        {buckets.map((bucket: LogVolumeBucket, index: number) => {
-          const label = getBucketTimeLabel(bucket);
+        {tickLabels.map(({ index, label, position, edge }) => {
+          const justifyContent =
+            edge === 'start' ? 'flex-start' : edge === 'end' ? 'flex-end' : 'center';
+
           return (
             <div
               key={index}
               className="logs-volume-axis-tick"
-              style={{ visibility: tickIndices.has(index) ? 'visible' : 'hidden' }}
+              style={{ left: position, justifyContent }}
             >
-              {shortTimeLabel(label)}
+              <span>{label}</span>
             </div>
           );
         })}

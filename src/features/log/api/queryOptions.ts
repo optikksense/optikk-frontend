@@ -46,4 +46,19 @@ export const logQueries = {
     queryFn: () => logsApi.getLogVolume(params),
     staleTime: 60000,
   }),
+
+  aggregate: (params: {
+    teamId: TeamId | null;
+    startTime: RequestTime;
+    endTime: RequestTime;
+    groupBy?: string;
+    step?: string;
+    topN?: number;
+    metric?: string;
+    backendParams?: LogsBackendParams;
+  }) => queryOptions({
+    queryKey: ['logs', 'aggregate', params.teamId, String(params.startTime), params.groupBy, params.step, params.metric, JSON.stringify(params.backendParams)],
+    queryFn: () => logsApi.getLogAggregate(params),
+    staleTime: 60000,
+  }),
 };

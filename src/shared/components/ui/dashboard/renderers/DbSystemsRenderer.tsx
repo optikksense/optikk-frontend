@@ -39,12 +39,12 @@ function n(value: any): number {
 
 function DbSystemCard({ system }: { system: any }) {
   const meta = getDbMeta(system.db_system);
-  const avgLatency = n(system.avg_latency ?? system.avg_query_latency_ms);
-  const p95Latency = n(system.p95_query_latency ?? system.p95_latency_ms);
-  const queryCount = n(system.query_count);
-  const spanCount = n(system.span_count);
+  const avgLatency = n(system.avg_latency_ms ?? system.avg_latency ?? system.avg_query_latency_ms);
+  const p95Latency = n(system.p95_latency_ms ?? system.p95_query_latency ?? system.p95_latency);
+  const spanCount  = n(system.span_count ?? system.query_count);
   const errorCount = n(system.error_count);
-  const errorRate = spanCount > 0 ? normalizePercentage((errorCount / spanCount) * 100) : 0;
+  const errorRate  = spanCount > 0 ? normalizePercentage((errorCount / spanCount) * 100) : 0;
+  const serverAddr = system.server_address ?? system.last_seen ?? '';
 
   return (
     <div
@@ -93,9 +93,9 @@ function DbSystemCard({ system }: { system: any }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
         <div>
-          <div style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '11px', marginBottom: '2px' }}>Queries</div>
+          <div style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '11px', marginBottom: '2px' }}>Spans</div>
           <div style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 600, fontSize: '16px', fontFamily: 'monospace' }}>
-            {formatNumber(queryCount)}
+            {formatNumber(spanCount)}
           </div>
         </div>
         <div>

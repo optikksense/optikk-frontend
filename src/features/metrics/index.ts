@@ -43,7 +43,8 @@ export { default as SaturationHubPageView } from './pages/SaturationHubPage';
 export { default as SaturationPageView } from './pages/SaturationPage';
 export { default as LatencyAnalysisPageView } from './pages/LatencyAnalysisPage';
 export { default as ResourceUtilizationPageView } from './pages/ResourceUtilizationPage';
-export { default as DatabaseCachePerformancePageView } from './pages/DatabaseCachePerformancePage';
+
+
 export { default as MessagingQueueMonitoringPageView } from './pages/MessagingQueueMonitoringPage';
 export * from './components';
 export * from './utils';
