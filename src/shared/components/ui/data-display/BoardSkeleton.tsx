@@ -1,6 +1,7 @@
 interface BoardColumn {
   key: string;
   label: string;
+  defaultWidth?: number;
 }
 
 interface BoardSkeletonProps {

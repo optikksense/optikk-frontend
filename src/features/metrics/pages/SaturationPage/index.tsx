@@ -9,6 +9,7 @@ import PageHeader from '@shared/components/ui/layout/PageHeader';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
 
 import { v1Service } from '@shared/api/v1Service';
+import { saturationService } from '@shared/api/saturationService';
 
 import { useDashboardConfig } from '@shared/hooks/useDashboardConfig';
 import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
@@ -75,7 +76,7 @@ export default function SaturationPage() {
   // Request isolated dataset paths
   const { data: kafkaLagRaw, isLoading: lagLoading } = useTimeRangeQuery(
     'saturation-kafka-lag',
-    (teamId, start, end) => v1Service.getKafkaQueueLag(teamId, start, end),
+    (teamId, start, end) => saturationService.getKafkaLagByGroup(teamId, start, end),
   );
 
 
