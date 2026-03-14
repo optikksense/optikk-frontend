@@ -93,4 +93,52 @@ export const logsService = {
       params: { startTime, endTime, group_by: groupBy, step, top_n: topN, metric, ...params },
     });
   },
+
+  /**
+   * SSE Stream for Live Tail
+   */
+  streamLogs(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: QueryParams = {},
+    onLog: (log: any) => void,
+    onError: (err: any) => void
+  ): () => void {
+    // Construct URL with query params
+    const url = new URL(`${window.location.origin}${BASE}/logs/stream`);
+    url.searchParams.append('startTime', String(startTime));
+    url.searchParams.append('endTime', String(endTime));
+    
+    // Copy all OptiQL params (e.g. search, services, severities) into the URL
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((v) => url.searchParams.append(key, String(v)));
+        } else if (value !== undefined && value !== null) {
+          url.searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const source = new EventSource(url.toString(), { withCredentials: true });
+
+    source.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        onLog(data);
+      } catch (err) {
+        console.error('Failed to parse stream log', err);
+      }
+    };
+
+    source.onerror = (err) => {
+      onError(err);
+      source.close();
+    };
+
+    return () => {
+      source.close();
+    };
+  },
 };

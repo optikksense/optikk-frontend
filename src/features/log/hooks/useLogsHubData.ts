@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import { useAppStore } from '@shared/store/appStore';
 import { fillVolumeBucketGaps } from '@shared/utils/logUtils';
@@ -47,14 +47,13 @@ function getAdaptiveVolumeStep(rangeMs: number): '1m' | '5m' | '1h' | '1d' {
   return '1d';
 }
 
+import { parseOptiQL } from '../utils/optiQLParser';
+
 /**
  * Input parameters for the logs hub data hook.
  */
 export interface UseLogsHubDataProps {
-  searchText: string;
-  selectedService: string | null;
-  errorsOnly: boolean;
-  filters: LogStructuredFilter[];
+  optiQLQuery: string;
   page: number;
   pageSize: number;
 }
@@ -62,30 +61,27 @@ export interface UseLogsHubDataProps {
 /**
  * Aggregates the logs page list, stats, and volume queries behind one hook.
  */
+import { logsService } from '@shared/api/logsService';
+import type { LogEntry } from '@entities/log/model';
+
 export function useLogsHubData({
-  searchText,
-  selectedService,
-  errorsOnly,
-  filters,
+  optiQLQuery,
   page,
   pageSize,
 }: UseLogsHubDataProps) {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  
+  const [liveTailEnabled, setLiveTailEnabled] = useState(false);
+  const [streamedLogs, setStreamedLogs] = useState<LogEntry[]>([]);
 
   const backendParams = useMemo((): LogsBackendParams => {
-    const params: LogsBackendParams = { limit: pageSize, offset: (page - 1) * pageSize };
-    if (searchText.trim()) params.search = searchText.trim();
-    if (errorsOnly) params.severities = ['ERROR', 'FATAL'];
-    if (selectedService) params.services = [selectedService];
+    const { backendParams: parsedParams } = parseOptiQL(optiQLQuery);
     
-    // ... filtering logic simplified for this phase ...
-    for (const filter of filters) {
-      if (filter.field === 'level' && filter.operator === 'equals') params.severities = [filter.value.toUpperCase()];
-      if (filter.field === 'service_name' && filter.operator === 'equals') params.services = [filter.value];
-      if (filter.field === 'host' && filter.operator === 'equals') params.hosts = [filter.value];
-    }
-    return params;
-  }, [filters, selectedService, errorsOnly, searchText, pageSize, page]);
+    parsedParams.limit = pageSize;
+    parsedParams.offset = (page - 1) * pageSize;
+    
+    return parsedParams;
+  }, [optiQLQuery, pageSize, page]);
 
   const commonParams = useMemo(() => {
     void refreshKey;
@@ -112,8 +108,32 @@ export function useLogsHubData({
 
   const { data: logsData, isLoading: logsLoading } = useQuery({
     ...logQueries.list(commonParams),
-    enabled: !!selectedTeamId,
+    enabled: !!selectedTeamId && !liveTailEnabled,
   });
+
+  // Live Tail Effect
+  useEffect(() => {
+    if (!liveTailEnabled || !selectedTeamId) {
+      setStreamedLogs([]);
+      return;
+    }
+    
+    // When Live Tail starts, we use the current end time as the start for the stream.
+    // Or just use the original bounds. streamLogs expects bounds.
+    const now = Date.now();
+    const unsub = logsService.streamLogs(
+      selectedTeamId,
+      now - 60000, // Look back a tiny bit to catch recent
+      now + 86400000, // Far into the future
+      commonParams.backendParams,
+      (log) => {
+        setStreamedLogs(prev => [...prev, log].slice(-2000)); // Keep max 2000 logs in live tail buffer
+      },
+      (err) => console.error('Stream error', err)
+    );
+    
+    return () => unsub();
+  }, [liveTailEnabled, selectedTeamId, commonParams.backendParams]);
 
   const { data: statsData, isLoading: statsLoading } = useQuery({
     ...logQueries.stats(commonParams),
@@ -138,8 +158,8 @@ export function useLogsHubData({
     enabled: !!selectedTeamId,
   });
 
-  const logs = logsData?.logs ?? [];
-  const total = logsData?.total ?? 0;
+  const logs = liveTailEnabled ? streamedLogs : (logsData?.logs ?? []);
+  const total = liveTailEnabled ? streamedLogs.length : (logsData?.total ?? 0);
   const levelFacets = useMemo(
     () => statsData?.fields.level ?? [],
     [statsData?.fields.level],
@@ -187,5 +207,7 @@ export function useLogsHubData({
     statsLoading,
     aggregateRows,
     aggregateLoading,
+    liveTailEnabled,
+    setLiveTailEnabled,
   };
 }

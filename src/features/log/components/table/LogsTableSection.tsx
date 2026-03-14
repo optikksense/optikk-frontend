@@ -2,7 +2,9 @@ import { Select, Switch, Tooltip } from 'antd';
 import { AlertCircle, FileText, Download } from 'lucide-react';
 import { ReactNode, useCallback, useState } from 'react';
 
-import { ObservabilityDataBoard, ObservabilityQueryBar, boardHeight } from '@shared/components/ui';
+import { boardHeight } from '@shared/components/ui';
+import OptiQLSearchBar from '../search/OptiQLSearchBar';
+import VirtualizedLogsTable from './VirtualizedLogsTable';
 
 import { formatNumber } from '@shared/utils/formatters';
 
@@ -23,14 +25,8 @@ import type {
  *
  */
 export interface LogsFiltersState {
-  filters: LogStructuredFilter[];
-  searchText: string;
-  selectedService: string | null;
-  errorsOnly: boolean;
-  setFilters: (filters: LogStructuredFilter[]) => void;
-  setSearchText: (value: string) => void;
-  setSelectedService: (value: string | null) => void;
-  setErrorsOnly: (value: boolean) => void;
+  optiQLQuery: string;
+  setOptiQLQuery: (value: string) => void;
   clearAll: () => void;
 }
 
@@ -52,6 +48,8 @@ export interface LogsDataState {
   logs: LogRecord[];
   isLoading: boolean;
   serviceFacets: LogFacet[];
+  liveTailEnabled?: boolean;
+  setLiveTailEnabled?: (enabled: boolean) => void;
 }
 
 /**
@@ -61,6 +59,7 @@ export interface LogsTableConfig {
   columns: LogColumn[];
   filterFields: LogFilterField[];
   renderRow: (row: LogRecord, args: LogsBoardRenderContext) => ReactNode;
+  onOpenDetail?: (log: LogRecord) => void;
 }
 
 /**
@@ -82,24 +81,27 @@ export default function LogsTableSection({
   config,
   onExport,
 }: LogsTableSectionProps) {
-  const { logs, isLoading, serviceFacets } = data;
+  const { logs, isLoading, serviceFacets, liveTailEnabled, setLiveTailEnabled } = data;
   const { page, pageSize, total, setPage, setPageSize } = pagination;
   const {
-    filters: structuredFilters,
-    searchText,
-    selectedService,
-    errorsOnly,
-    setFilters,
-    setSearchText,
-    setSelectedService,
-    setErrorsOnly,
+    optiQLQuery,
+    setOptiQLQuery,
     clearAll,
   } = filters;
-  const { columns, filterFields, renderRow } = config;
+  const { columns, filterFields, renderRow, onOpenDetail } = config;
 
+  // If Live Tail is enabled, UI hides pagination and counts can be infinite.
   const resolvedTotal = total || logs.length;
-  const offset = (page - 1) * pageSize;
-  const pageCount = Math.max(1, Math.ceil(resolvedTotal / pageSize));
+  const offset = liveTailEnabled ? 0 : (page - 1) * pageSize;
+  const pageCount = liveTailEnabled ? 1 : Math.max(1, Math.ceil(resolvedTotal / pageSize));
+
+  // Initialize column visibility and widths to pass down to Virtualized Table
+  const defaultVisible: Record<string, boolean> = {};
+  const defaultWidths: Record<string, number> = {};
+  columns.forEach(c => {
+    defaultVisible[c.key] = c.defaultVisible !== false;
+    defaultWidths[c.key] = c.defaultWidth ?? 160;
+  });
 
   // Export dropdown state
   const [exportOpen, setExportOpen] = useState(false);
@@ -113,11 +115,12 @@ export default function LogsTableSection({
 
   const handleApplySavedSearch = useCallback(
     (savedSearchText: string, savedFilters: LogStructuredFilter[]) => {
-      setSearchText(savedSearchText);
-      setFilters(savedFilters);
+      // Legacy saved searches map, ideally they should be converted to OptiQL
+      // For now, just overriding if they try to use an old saved search.
+      setOptiQLQuery(savedSearchText);
       setPage(1);
     },
-    [setSearchText, setFilters, setPage],
+    [setOptiQLQuery, setPage],
   );
 
   return (
@@ -143,13 +146,49 @@ export default function LogsTableSection({
           </span>
         </span>
 
-        {/* Toolbar buttons: column presets, saved searches, export */}
+        {/* Toolbar buttons: live tail, column presets, saved searches, export */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          {setLiveTailEnabled && (
+            <button
+              onClick={() => setLiveTailEnabled(!liveTailEnabled)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                padding: '4px 10px',
+                borderRadius: 6,
+                border: '1px solid',
+                borderColor: liveTailEnabled ? 'var(--literal-rgba-99-102-241-0p4)' : 'var(--glass-border)',
+                background: liveTailEnabled
+                  ? 'var(--literal-rgba-99-102-241-0p12)'
+                  : 'transparent',
+                color: liveTailEnabled ? 'var(--primary-color, #6366f1)' : 'var(--text-secondary)',
+                fontSize: 12,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                whiteSpace: 'nowrap',
+                fontWeight: liveTailEnabled ? 600 : 400,
+              }}
+            >
+              <div 
+                style={{
+                  width: 6, 
+                  height: 6, 
+                  borderRadius: '50%', 
+                  background: liveTailEnabled ? 'var(--primary-color, #6366f1)' : 'var(--text-muted)',
+                  boxShadow: liveTailEnabled ? '0 0 6px var(--primary-color, #6366f1)' : 'none',
+                  animation: liveTailEnabled ? 'pulse 1.5s infinite' : 'none'
+                }} 
+              />
+              Live Tail
+            </button>
+          )}
+
           <ColumnPresets onPresetApplied={handlePresetApplied} />
 
           <SavedSearches
-            currentSearchText={searchText}
-            currentFilters={structuredFilters}
+            currentSearchText={optiQLQuery}
+            currentFilters={[]}
             onApply={handleApplySavedSearch}
           />
 
@@ -247,71 +286,43 @@ export default function LogsTableSection({
         <div className="logs-service-pills-row">
           <ServicePills
             facets={serviceFacets}
-            selectedService={selectedService}
-            onSelect={setSelectedService}
+            selectedService={null}
+            onSelect={(svc) => {
+              if (svc) {
+                const prefix = optiQLQuery.trim() === '' ? '' : ' ';
+                setOptiQLQuery(`${optiQLQuery}${prefix}service="${svc}"`);
+              }
+            }}
           />
         </div>
       )}
 
-      <div className="logs-querybar-row">
-        <ObservabilityQueryBar
-          fields={filterFields}
-          filters={structuredFilters}
-          setFilters={setFilters}
-          searchText={searchText}
-          setSearchText={setSearchText}
-          onClearAll={clearAll}
-          valueHints={{
-            'service_name': serviceFacets.map((f) => f.value),
-            'level': ['INFO', 'ERROR', 'WARN', 'DEBUG', 'FATAL'],
-          }}
-          placeholder="Search log messages, filter by service, level, host…"
-          rightSlot={(
-            <Tooltip title="Show only error and fatal logs">
-              <div
-                className={`logs-errors-toggle ${errorsOnly ? 'active' : ''}`}
-                onClick={() => setErrorsOnly(!errorsOnly)}
-              >
-                <AlertCircle size={13} />
-                Errors only
-                <Switch
-                  size="small"
-                  checked={errorsOnly}
-                  onChange={setErrorsOnly}
-                  onClick={(_, e) => e.stopPropagation()}
-                />
-              </div>
-            </Tooltip>
-          )}
+      <div className="logs-querybar-row" style={{ marginBottom: 16 }}>
+        <OptiQLSearchBar 
+          value={optiQLQuery} 
+          onChange={setOptiQLQuery} 
+          placeholder="Search logs with OptiQL (e.g. service=&#34;api&#34; level:error &#34;timeout&#34;)" 
         />
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <button className="clear-filter-btn" onClick={clearAll} style={{ fontSize: 11, background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+            Clear all
+          </button>
+        </div>
       </div>
 
       <div style={{ height: boardHeight(pageSize), display: 'flex', flexDirection: 'column' }}>
-        <ObservabilityDataBoard<LogRecord>
-          key={boardKey}
-          data={{ rows: logs, isLoading, serverTotal: resolvedTotal }}
-          config={{
-            columns,
-            rowKey: (log, index) => {
-              const id = log.id;
-              if (id !== null && id !== undefined && String(id) !== '') {
-                return `log-${String(id)}`;
-              }
-              return `log-${index}-${String(log.timestamp ?? '')}`;
-            },
-            renderRow,
-            entityName: 'log',
-            storageKey: 'logs_visible_cols_v2',
-            emptyTips: [
-              { num: 1, text: <>Widen the <strong>time range</strong> in the top bar</> },
-              { num: 2, text: <>Remove active <strong>filters</strong> or clear the search</> },
-              { num: 3, text: <>Ensure your services emit logs via <strong>OTLP</strong></> },
-            ],
-          }}
+        <VirtualizedLogsTable
+          logs={logs}
+          isLoading={isLoading}
+          columns={columns}
+          visibleCols={defaultVisible}
+          colWidths={defaultWidths}
+          onOpenDetail={onOpenDetail || (() => {})}
+          followOutput={liveTailEnabled ? 'smooth' : false}
         />
       </div>
 
-      {!isLoading && (resolvedTotal > 0 || logs.length > 0) && (
+      {!isLoading && !liveTailEnabled && (resolvedTotal > 0 || logs.length > 0) && (
         <div className="logs-pagination">
           <span className="logs-pagination-info">
             Showing {offset + 1}–{Math.min(offset + pageSize, resolvedTotal)} of{' '}

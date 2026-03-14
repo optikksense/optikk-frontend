@@ -18,6 +18,7 @@ import LogRow, { LevelBadge } from '../../components/log/LogRow';
 import LogAttributesTree from '../../components/log/LogAttributesTree';
 import LogsTableSection from '../../components/table/LogsTableSection';
 import LogSurroundingPanel from '../../components/log/LogSurroundingPanel';
+import DynamicFieldExplorer from '../../components/log/DynamicFieldExplorer';
 import { useLogDetailFields } from '../../hooks/useLogDetailFields';
 import { useLogsHubData } from '../../hooks/useLogsHubData';
 import {
@@ -42,28 +43,13 @@ export default function LogsHubPage() {
   const {
     values: urlValues,
     setters: urlSetters,
-    structuredFilters: filters,
-    setStructuredFilters: setFilters,
     clearAll: clearURLFilters,
   } = useURLFilters(LOGS_URL_FILTER_CONFIG);
 
-  const searchText = typeof urlValues['search'] === 'string' ? urlValues['search'] : '';
-  const selectedService =
-    typeof urlValues['service'] === 'string' && urlValues['service'].length > 0
-      ? urlValues['service']
-      : null;
-  const errorsOnly = urlValues['errorsOnly'] === true;
+  const optiQLQuery = typeof urlValues['q'] === 'string' ? urlValues['q'] : '';
 
-  const setSearchText = (value: string): void => {
-    urlSetters['search']?.(value);
-  };
-
-  const setSelectedService = (value: string | null): void => {
-    urlSetters['service']?.(value || '');
-  };
-
-  const setErrorsOnly = (value: boolean): void => {
-    urlSetters['errorsOnly']?.(value);
+  const setOptiQLQuery = (value: string): void => {
+    urlSetters['q']?.(value);
   };
 
   /* ── Local-only state (not worth putting in URL) ── */
@@ -85,11 +71,10 @@ export default function LogsHubPage() {
     serviceFacets,
     levelFacets,
     statsLoading,
+    liveTailEnabled,
+    setLiveTailEnabled,
   } = useLogsHubData({
-    searchText,
-    selectedService,
-    errorsOnly,
-    filters: filters as LogStructuredFilter[],
+    optiQLQuery,
     page,
     pageSize,
   }) as ReturnType<typeof useLogsHubData>;
@@ -239,50 +224,50 @@ export default function LogsHubPage() {
         </div>
       }
       tableSection={
-        <LogsTableSection
-          config={{
-            columns: LOG_COLUMNS,
-            filterFields: LOG_FILTER_FIELDS,
-            renderRow,
-          }}
-          data={{
-            logs,
-            isLoading: logsLoading,
-            serviceFacets,
-          }}
-          pagination={{
-            page,
-            pageSize,
-            total,
-            setPage,
-            setPageSize,
-          }}
-          filters={{
-            filters,
-            searchText,
-            selectedService,
-            errorsOnly,
-            setFilters: (nextFilters) => {
-              setFilters(nextFilters);
-              setPage(1);
-            },
-            setSearchText: (value) => {
-              setSearchText(value);
-              setPage(1);
-            },
-            setSelectedService: (value) => {
-              setSelectedService(value);
-              setPage(1);
-            },
-            setErrorsOnly: (value) => {
-              setErrorsOnly(value);
-              setPage(1);
-            },
-            clearAll,
-          }}
-          onExport={handleExport}
-          focusedLogIndex={focusedLogIndex}
-        />
+        <div style={{ display: 'flex', gap: 16, height: '100%' }}>
+          <DynamicFieldExplorer 
+            logs={logs}
+            isLoading={logsLoading}
+            onSelectField={(key, value) => {
+              const prefix = optiQLQuery.trim() === '' ? '' : ' ';
+              setOptiQLQuery(`${optiQLQuery}${prefix}attr.${key}="${value}"`);
+            }}
+          />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <LogsTableSection
+              config={{
+                columns: LOG_COLUMNS,
+                filterFields: LOG_FILTER_FIELDS,
+                renderRow,
+                onOpenDetail: setSelectedLog,
+              }}
+              data={{
+                logs,
+                isLoading: logsLoading,
+                serviceFacets,
+                liveTailEnabled,
+                setLiveTailEnabled,
+              }}
+              pagination={{
+                page,
+                pageSize,
+                total,
+                setPage,
+                setPageSize,
+              }}
+              filters={{
+                optiQLQuery,
+                setOptiQLQuery: (value: string) => {
+                  setOptiQLQuery(value);
+                  setPage(1);
+                },
+                clearAll,
+              }}
+              onExport={handleExport}
+              focusedLogIndex={focusedLogIndex}
+            />
+          </div>
+        </div>
       }
       detailSidebar={
         selectedLog && (

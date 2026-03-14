@@ -77,14 +77,9 @@ export const LOG_COLUMNS: LogColumn[] = [
   { key: 'message', label: 'Message', defaultWidth: 720, defaultVisible: true, flex: true },
 ];
 
-/**
- *
- */
 export const LOGS_URL_FILTER_CONFIG = {
   params: [
-    { key: 'search', type: 'string' as const, defaultValue: '' },
-    { key: 'service', type: 'string' as const, defaultValue: '' },
-    { key: 'errorsOnly', type: 'boolean' as const, defaultValue: false },
+    { key: 'q', type: 'string' as const, defaultValue: '' },
   ],
-  syncStructuredFilters: true,
+  syncStructuredFilters: false,
 };
