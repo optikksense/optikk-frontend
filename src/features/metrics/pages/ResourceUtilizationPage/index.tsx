@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { PageHeader, StatCard, DataTable } from '@shared/components/ui';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
 
-import { v1Service } from '@shared/api/v1Service';
+import { metricsService } from '@shared/api/metricsService';
 
 import { useDashboardConfig } from '@shared/hooks/useDashboardConfig';
 import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
@@ -31,14 +31,14 @@ export default function ResourceUtilizationPage() {
         byService,
         byInstance,
       ] = await Promise.all([
-        (v1Service as any).getAvgCPU(teamId, start, end),
-        (v1Service as any).getAvgMemory(teamId, start, end),
-        (v1Service as any).getAvgNetwork(teamId, start, end),
-        (v1Service as any).getAvgConnPool(teamId, start, end),
-        (v1Service as any).getCPUUsagePercentage(teamId, start, end),
-        (v1Service as any).getMemoryUsagePercentage(teamId, start, end),
-        (v1Service as any).getResourceUsageByService(teamId, start, end),
-        (v1Service as any).getResourceUsageByInstance(teamId, start, end),
+        metricsService.getAvgCPU(teamId, start, end) as Promise<{ value: number }>,
+        metricsService.getAvgMemory(teamId, start, end) as Promise<{ value: number }>,
+        metricsService.getAvgNetwork(teamId, start, end) as Promise<{ value: number }>,
+        metricsService.getAvgConnPool(teamId, start, end) as Promise<{ value: number }>,
+        metricsService.getCPUUsagePercentage(teamId, start, end),
+        metricsService.getMemoryUsagePercentage(teamId, start, end),
+        metricsService.getResourceUsageByService(teamId, start, end),
+        metricsService.getResourceUsageByInstance(teamId, start, end),
       ]);
 
       const timeseriesMap = new Map();

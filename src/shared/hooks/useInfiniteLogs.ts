@@ -1,7 +1,7 @@
 import { useInfiniteQuery, InfiniteData } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { v1Service } from '@shared/api/v1Service';
+import { logsService } from '@shared/api/logsService';
 
 import { useAppStore } from '@store/appStore';
 
@@ -80,7 +80,7 @@ export function useInfiniteLogs({ backendParams, liveTail = false, pageSize = 10
             ? pageParam
             : undefined;
 
-      return v1Service.getLogs(selectedTeamId, stableStart, stableEnd, {
+      return logsService.getLogs(selectedTeamId, stableStart, stableEnd, {
         ...backendParams,
         limit: pageSize,
         direction: 'desc',

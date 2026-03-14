@@ -380,4 +380,104 @@ export const metricsService = {
       params: { startTime, endTime },
     });
   },
+
+  // Overview endpoints (formerly overviewService)
+  async getOverviewSummary(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/summary`, { params: { startTime, endTime } });
+  },
+
+  async getOverviewTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/timeseries`, { params: { startTime, endTime, serviceName, interval } });
+  },
+
+  async getOverviewServices(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/services`, { params: { startTime, endTime } });
+  },
+
+  async getOverviewEndpointMetrics(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/endpoints/metrics`, { params: { startTime, endTime, serviceName } });
+  },
+
+  async getOverviewEndpointTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/endpoints/timeseries`, { params: { startTime, endTime, serviceName } });
+  },
+
+  async getSloSli(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/slo`, { params: { startTime, endTime, serviceName, interval } });
+  },
+
+  async getOverviewErrorGroups(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: QueryParams = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/errors/groups`, { params: { startTime, endTime, ...params } });
+  },
+
+  async getServiceErrorRate(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/errors/service-error-rate`, {
+      params: { startTime, endTime, serviceName, interval },
+    });
+  },
+
+  async getErrorVolume(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/errors/error-volume`, {
+      params: { startTime, endTime, serviceName, interval },
+    });
+  },
+
+  async getLatencyDuringErrorWindows(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName?: string,
+    interval = '5m',
+  ): Promise<unknown> {
+    return api.get(`${BASE}/overview/errors/latency-during-error-windows`, {
+      params: { startTime, endTime, serviceName, interval },
+    });
+  },
 };

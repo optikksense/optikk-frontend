@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import PageHeader from '@shared/components/ui/layout/PageHeader';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
 
-import { overviewService } from '@shared/api/overviewService';
+import { metricsService } from '@shared/api/metricsService';
 
 import { useDashboardConfig } from '@shared/hooks/useDashboardConfig';
 import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
@@ -59,35 +59,35 @@ export default function ErrorDashboardPage() {
   const { data: serviceErrorRateRaw, isLoading: errorRateLoading } = useTimeRangeQuery(
     'overview-service-error-rate',
     (teamId, start, end) =>
-      overviewService.getServiceErrorRate(teamId, start, end, selectedService || undefined, '5m'),
+      metricsService.getServiceErrorRate(teamId, start, end, selectedService || undefined, '5m'),
     { extraKeys: [selectedService] },
   );
 
   const { data: errorVolumeRaw, isLoading: errorVolumeLoading } = useTimeRangeQuery(
     'overview-error-volume',
     (teamId, start, end) =>
-      overviewService.getErrorVolume(teamId, start, end, selectedService || undefined, '5m'),
+      metricsService.getErrorVolume(teamId, start, end, selectedService || undefined, '5m'),
     { extraKeys: [selectedService] },
   );
 
   const { data: latencyWindowsRaw, isLoading: latencyLoading } = useTimeRangeQuery(
     'overview-error-latency-windows',
     (teamId, start, end) =>
-      overviewService.getLatencyDuringErrorWindows(teamId, start, end, selectedService || undefined, '5m'),
+      metricsService.getLatencyDuringErrorWindows(teamId, start, end, selectedService || undefined, '5m'),
     { extraKeys: [selectedService] },
   );
 
   const { data: errorGroupsRaw, isLoading: groupsLoading } = useTimeRangeQuery(
     'error-groups-global',
     (teamId, start, end) =>
-      overviewService.getErrorGroups(teamId, start, end, { serviceName: selectedService as string, limit: 100 }),
+      metricsService.getOverviewErrorGroups(teamId, start, end, { serviceName: selectedService as string, limit: 100 }),
     { extraKeys: [selectedService] },
   );
 
   // Service metrics for the filter dropdown and breakdown list
   const { data: serviceMetricsRaw } = useTimeRangeQuery(
     'overview-services-errors',
-    (teamId, start, end) => overviewService.getServices(teamId, start, end),
+    (teamId, start, end) => metricsService.getOverviewServices(teamId, start, end),
   );
 
   const errorGroups = useMemo(() => {

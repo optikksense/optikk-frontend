@@ -13,7 +13,7 @@ import {
 import { PageHeader, StatCardsGrid, HealthIndicator } from '@shared/components/ui';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
 
-import { overviewService } from '@shared/api/overviewService';
+import { metricsService } from '@shared/api/metricsService';
 
 import { useDashboardConfig } from '@shared/hooks/useDashboardConfig';
 import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
@@ -33,31 +33,31 @@ export default function OverviewPage() {
   // Metrics summary (primary source — spans table via v1 API)
   const { data: summaryRaw, isLoading: summaryLoading, error: summaryError } = useTimeRangeQuery(
     'metrics-summary',
-    (teamId, start, end) => overviewService.getSummary(teamId, start, end),
+    (teamId, start, end) => metricsService.getOverviewSummary(teamId, start, end),
   );
 
   // Metrics timeseries for charts
   const { data: timeseriesRaw } = useTimeRangeQuery(
     'metrics-timeseries',
-    (teamId, start, end) => overviewService.getTimeSeries(teamId, start, end, undefined, '5m'),
+    (teamId, start, end) => metricsService.getOverviewTimeSeries(teamId, start, end, undefined, '5m'),
   );
 
   // Per-endpoint timeseries from backend
   const { data: endpointTimeseriesRaw } = useTimeRangeQuery(
     'endpoints-timeseries',
-    (teamId, start, end) => overviewService.getEndpointTimeSeries(teamId, start, end),
+    (teamId, start, end) => metricsService.getOverviewEndpointTimeSeries(teamId, start, end),
   );
 
   // Service metrics for health grid
   const { data: servicesRaw } = useTimeRangeQuery(
     'services-metrics',
-    (teamId, startTime, endTime) => overviewService.getServices(teamId, startTime, endTime),
+    (teamId, startTime, endTime) => metricsService.getOverviewServices(teamId, startTime, endTime),
   );
 
   // Endpoint metrics for breakdown lists below charts
   const { data: endpointMetricsRaw } = useTimeRangeQuery(
     'endpoints-metrics',
-    (teamId, startTime, endTime) => overviewService.getEndpointMetrics(teamId, startTime, endTime),
+    (teamId, startTime, endTime) => metricsService.getOverviewEndpointMetrics(teamId, startTime, endTime),
   );
 
   // === Normalize data shapes ===

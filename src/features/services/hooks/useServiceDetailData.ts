@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { v1Service } from '@shared/api/v1Service';
+import { metricsService } from '@shared/api/metricsService';
+import { logsService } from '@shared/api/logsService';
 
 import { useAppStore } from '@store/appStore';
 
@@ -83,7 +84,7 @@ export function useServiceDetailData({ serviceName, activeTab }: UseServiceDetai
       const endTime = Date.now();
       const timeRangeMinutes = timeRange.minutes ?? 0;
       const startTime = endTime - timeRangeMinutes * 60 * 1000;
-      return v1Service.getEndpointBreakdown(selectedTeamId, startTime, endTime, serviceName);
+      return metricsService.getEndpointBreakdown(selectedTeamId, startTime, endTime, serviceName);
     },
     enabled: !!selectedTeamId && serviceName.length > 0,
   });
@@ -94,7 +95,7 @@ export function useServiceDetailData({ serviceName, activeTab }: UseServiceDetai
       const endTime = Date.now();
       const timeRangeMinutes = timeRange.minutes ?? 0;
       const startTime = endTime - timeRangeMinutes * 60 * 1000;
-      return v1Service.getErrorGroups(selectedTeamId, startTime, endTime, serviceName);
+      return metricsService.getErrorGroups(selectedTeamId, startTime, endTime, serviceName);
     },
     enabled: !!selectedTeamId && serviceName.length > 0,
   });
@@ -105,7 +106,7 @@ export function useServiceDetailData({ serviceName, activeTab }: UseServiceDetai
       const endTime = Date.now();
       const timeRangeMinutes = timeRange.minutes ?? 0;
       const startTime = endTime - timeRangeMinutes * 60 * 1000;
-      return v1Service.getMetricsTimeSeries(selectedTeamId, startTime, endTime, serviceName, '5m');
+      return metricsService.getMetricsTimeSeries(selectedTeamId, startTime, endTime, serviceName, '5m');
     },
     enabled: !!selectedTeamId && serviceName.length > 0,
   });
@@ -117,7 +118,7 @@ export function useServiceDetailData({ serviceName, activeTab }: UseServiceDetai
       const endTime = Date.now();
       const timeRangeMinutes = timeRange.minutes ?? 0;
       const startTime = endTime - timeRangeMinutes * 60 * 1000;
-      return v1Service.getLogs(selectedTeamId, startTime, endTime, {
+      return logsService.getLogs(selectedTeamId, startTime, endTime, {
         services: [serviceName],
         limit: 50,
         offset: 0,
@@ -133,7 +134,7 @@ export function useServiceDetailData({ serviceName, activeTab }: UseServiceDetai
       const endTime = Date.now();
       const timeRangeMinutes = timeRange.minutes ?? 0;
       const startTime = endTime - timeRangeMinutes * 60 * 1000;
-      return v1Service.getServiceDependencies(selectedTeamId, startTime, endTime);
+      return metricsService.getServiceDependencies(selectedTeamId, startTime, endTime);
     },
     enabled: !!selectedTeamId && serviceName.length > 0 && activeTab === 'dependencies',
   });

@@ -9,7 +9,7 @@ import FilterBar from '@shared/components/ui/forms/FilterBar';
 import PageHeader from '@shared/components/ui/layout/PageHeader';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
 
-import { v1Service } from '@shared/api/v1Service';
+import { latencyService } from '@shared/api/latencyService';
 
 import { useDashboardConfig } from '@shared/hooks/useDashboardConfig';
 import { useTimeRange } from '@shared/hooks/useTimeRangeQuery';
@@ -58,7 +58,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
   const { data: histogramData, isLoading: histLoading } = useQuery({
     queryKey: ['latency-histogram', selectedTeamId, startTime, endTime, serviceName, operationName, refreshKey],
     queryFn: () =>
-      v1Service.getLatencyHistogram(selectedTeamId, startTime, endTime, {
+      latencyService.getHistogram(selectedTeamId, startTime, endTime, {
         serviceName: serviceName || undefined,
         operationName: operationName || undefined,
       }),
@@ -68,7 +68,7 @@ export default function LatencyAnalysisPage({ embedded = false }) {
   const { data: heatmapData, isLoading: heatLoading } = useQuery({
     queryKey: ['latency-heatmap', selectedTeamId, startTime, endTime, serviceName, refreshKey],
     queryFn: () =>
-      v1Service.getLatencyHeatmap(selectedTeamId, startTime, endTime, (serviceName || undefined) as any, '5m'),
+      latencyService.getHeatmap(selectedTeamId, startTime, endTime, (serviceName || undefined) as any, '5m'),
     enabled: !!selectedTeamId && activeTab === 'charts',
   });
 

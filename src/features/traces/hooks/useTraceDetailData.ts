@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { v1Service } from '@shared/api/v1Service';
+import { tracesService } from '@shared/api/tracesService';
 import { normalizeSpan, normalizeTraceLog, calculateTraceStats } from '../utils/traceCalculations';
 
 export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: string) {
@@ -18,9 +18,9 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
   const { data: spansData, isLoading: spansLoading } = useQuery({
     queryKey: ['span-tree', selectedTeamId, traceIdParam],
     queryFn: async () => {
-      const bySpan = await v1Service.getSpanTree(selectedTeamId, traceIdParam);
+      const bySpan = await tracesService.getSpanTree(selectedTeamId, traceIdParam);
       if (Array.isArray(bySpan) && bySpan.length > 0) return bySpan;
-      return v1Service.getTraceSpans(selectedTeamId, traceIdParam);
+      return tracesService.getTraceSpans(selectedTeamId, traceIdParam);
     },
     enabled: !!selectedTeamId && !!traceIdParam,
   });
@@ -36,7 +36,7 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
   // Fetch logs
   const { data: logsData, isLoading: logsLoading } = useQuery({
     queryKey: ['trace-logs', selectedTeamId, resolvedTraceId],
-    queryFn: () => v1Service.getTraceLogs(selectedTeamId, resolvedTraceId),
+    queryFn: () => tracesService.getTraceLogs(selectedTeamId, resolvedTraceId),
     enabled: !!selectedTeamId && !!resolvedTraceId,
   });
 

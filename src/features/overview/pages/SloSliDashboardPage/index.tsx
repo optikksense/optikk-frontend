@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { FilterBar, PageHeader } from '@shared/components/ui';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
 
-import { overviewService } from '@shared/api/overviewService';
+import { metricsService } from '@shared/api/metricsService';
 
 import { useDashboardConfig } from '@shared/hooks/useDashboardConfig';
 import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
@@ -26,7 +26,7 @@ export default function SloSliDashboardPage() {
 
   const { data: servicesData } = useTimeRangeQuery(
     'overview-services-slo',
-    (teamId, start, end) => overviewService.getServices(teamId, start, end),
+    (teamId, start, end) => metricsService.getOverviewServices(teamId, start, end),
   );
 
   const services = servicesData || [];
@@ -40,7 +40,7 @@ export default function SloSliDashboardPage() {
 
   const { data, isLoading } = useTimeRangeQuery(
     'overview-slo-sli',
-    (teamId, start, end) => overviewService.getSloSli(teamId, start, end, selectedService || undefined, '5m'),
+    (teamId, start, end) => metricsService.getSloSli(teamId, start, end, selectedService || undefined, '5m'),
     { extraKeys: [selectedService] },
   );
 
