@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { tracesService } from '@shared/api/tracesService';
 import { tracesResponseSchema } from '@/entities/trace/model';
 import type { QueryParams, RequestTime } from '@shared/api/service-types';
+import { normalizeTracesResponse } from '../utils/tracesUtils';
 
 export interface TracesBackendParams extends QueryParams {
   limit?: number;
@@ -27,7 +28,7 @@ export const tracesApi = {
     params: TracesBackendParams = {}
   ) {
     const response = await tracesService.getTraces(teamId, startTime, endTime, params);
-    return tracesResponseSchema.parse(response);
+    return tracesResponseSchema.parse(normalizeTracesResponse(response));
   },
 
   async getTraceSpans(teamId: number | null, traceId: string) {

@@ -19,6 +19,8 @@ const ROUTES = {
   errors: '/errors',
   saturation: '/saturation',
   aiObservability: '/ai-observability',
+  aiRuns: '/ai-runs',
+  aiRunDetail: '/ai-runs/:spanId',
   settings: '/settings',
   latencyAlias: '/latency',
 } as const;

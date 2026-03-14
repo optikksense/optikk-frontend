@@ -84,13 +84,13 @@ export function useTracesExplorer() {
   });
 
   const traces = data?.traces ?? [];
-  const totalTraces = data?.total ?? 0;
+  const totalTraces = Number(data?.total ?? data?.summary?.['totalTraces'] ?? data?.summary?.['total_traces'] ?? 0);
   const summary = data?.summary || {};
   
-  const errorTraces = Number(summary['error_traces'] ?? 0);
+  const errorTraces = Number(summary['error_traces'] ?? summary['errorTraces'] ?? 0);
   const errorRate = totalTraces > 0 ? (errorTraces * 100) / totalTraces : 0;
-  const p95 = Number(summary['p95_duration'] ?? 0);
-  const p99 = Number(summary['p99_duration'] ?? 0);
+  const p95 = Number(summary['p95_duration'] ?? summary['p95Duration'] ?? 0);
+  const p99 = Number(summary['p99_duration'] ?? summary['p99Duration'] ?? 0);
 
   const maxDuration = useMemo(
     () => Math.max(...traces.map((trace) => trace.duration_ms), 1),

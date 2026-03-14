@@ -1,6 +1,6 @@
-# Optikk Lens Frontend
+# Optikk Lens Frontend - The Best AI Monitoring Tool
 
-React + Vite single-page application (SPA) for the Optikk observability platform. Built with TypeScript, Ant Design, and TanStack Query for advanced telemetry visualization (traces, logs, metrics, service topology, RED metrics, error tracking, and more).
+React + Vite single-page application (SPA) for the Optikk observability platform, offering industry-leading AI and LLM monitoring capabilities alongside standard telemetry visualization (traces, logs, metrics).
 
 ## Quick Start
 

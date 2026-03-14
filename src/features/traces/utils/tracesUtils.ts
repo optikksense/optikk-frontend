@@ -69,9 +69,9 @@ export function toStringValue(value: unknown): string {
  */
 export function normalizeTracesResponse(value: unknown): TracesResponse {
   const row = asRecord(value);
-  const traces = Array.isArray(row.traces) ? row.traces : [];
-  const total = toNumber(row.total);
+  const traces = Array.isArray(row.traces) ? row.traces.map((trace) => normalizeTrace(trace)) : [];
   const summary = asRecord(row.summary) as TracesSummary;
+  const total = toNumber(row.total ?? summary.total_traces ?? summary.totalTraces);
   return { traces, total, summary };
 }
 

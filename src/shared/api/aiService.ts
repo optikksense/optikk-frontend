@@ -106,4 +106,54 @@ export const aiService = {
   ): Promise<unknown> {
     return api.get(`${BASE}/ai/security/pii-categories`, { params: { startTime, endTime } });
   },
+
+  // --- Runs Explorer ---
+
+  async getRuns(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: Record<string, unknown> = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/ai/runs`, { params: { startTime, endTime, ...params } });
+  },
+
+  async getRunsSummary(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    params: Record<string, unknown> = {},
+  ): Promise<unknown> {
+    return api.get(`${BASE}/ai/runs/summary`, { params: { startTime, endTime, ...params } });
+  },
+
+  async getRunsModels(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/ai/runs/models`, { params: { startTime, endTime } });
+  },
+
+  async getRunsOperations(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+  ): Promise<unknown> {
+    return api.get(`${BASE}/ai/runs/operations`, { params: { startTime, endTime } });
+  },
+
+  // --- Run Detail ---
+
+  async getRunDetail(_teamId: number | null, spanId: string): Promise<unknown> {
+    return api.get(`${BASE}/ai/runs/${spanId}`);
+  },
+
+  async getRunMessages(_teamId: number | null, spanId: string): Promise<unknown> {
+    return api.get(`${BASE}/ai/runs/${spanId}/messages`);
+  },
+
+  async getRunContext(_teamId: number | null, spanId: string, traceId: string): Promise<unknown> {
+    return api.get(`${BASE}/ai/runs/${spanId}/context`, { params: { traceId } });
+  },
 };

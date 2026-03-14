@@ -1,0 +1,46 @@
+.ai-runs-model-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-link);
+  cursor: pointer;
+}
+.ai-runs-model-name:hover {
+  text-decoration: underline;
+}
+
+.ai-runs-operation-badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  text-transform: capitalize;
+}
+
+.ai-runs-status-badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ai-runs-status-badge.ok {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+.ai-runs-status-badge.error {
+  background: rgba(240, 68, 56, 0.12);
+  color: #f04438;
+}
+
+.ai-runs-filter-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
