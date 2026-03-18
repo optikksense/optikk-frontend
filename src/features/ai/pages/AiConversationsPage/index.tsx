@@ -1,16 +1,27 @@
+import { Alert } from 'antd';
 import { MessageSquare } from 'lucide-react';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
+import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
 import { PageHeader } from '@shared/components/ui';
 import { useAppStore } from '@shared/store/appStore';
 import { formatNumber, formatTimestamp } from '@shared/utils/formatters';
 import { relativeTime } from '@shared/utils/time';
 
 import { aiConversationQueries } from '../../api/queryOptions';
+import type { Conversation } from '../../types';
 
 import './AiConversationsPage.css';
+
+function getErrorMessage(error: { message?: string } | null | undefined, fallback: string): string {
+  if (error?.message) {
+    return error.message;
+  }
+
+  return fallback;
+}
 
 export default function AiConversationsPage(): JSX.Element {
   const navigate = useNavigate();
@@ -26,9 +37,10 @@ export default function AiConversationsPage(): JSX.Element {
     return { startMs: resolvedStartMs, endMs: resolvedEndMs };
   }, [refreshKey, timeRange]);
 
-  const { data: conversations = [], isLoading } = useQuery(
-    aiConversationQueries.list(selectedTeamId, startMs, endMs),
-  );
+  const conversationsQuery = useQuery(aiConversationQueries.list(selectedTeamId, startMs, endMs));
+  const conversations = (conversationsQuery.data ?? []) as Conversation[];
+  const isLoading = conversationsQuery.isLoading;
+  const error = (conversationsQuery.error ?? null) as ApiErrorShape | null;
 
   return (
     <div className="ai-conversations-page">
@@ -56,13 +68,24 @@ export default function AiConversationsPage(): JSX.Element {
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</div>
         )}
 
-        {!isLoading && conversations.length === 0 && (
-          <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontSize: 12.5 }}>
-            No conversations found. Ensure your LLM instrumentation sets the <code>gen_ai.conversation.id</code> attribute.
+        {!isLoading && error && (
+          <div style={{ padding: 24 }}>
+            <Alert
+              type="error"
+              showIcon
+              message="Conversations could not be loaded"
+              description={getErrorMessage(error, 'The backend request for conversations failed.')}
+            />
           </div>
         )}
 
-        {conversations.map((convo) => (
+        {!isLoading && !error && conversations.length === 0 && (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontSize: 12.5 }}>
+            No conversations found. Ensure your instrumentation sets a conversation id attribute such as <code>ai.conversation.id</code> or <code>gen_ai.conversation.id</code>.
+          </div>
+        )}
+
+        {!error && conversations.map((convo) => (
           <div
             key={convo.conversationId}
             className="ai-convo-row"

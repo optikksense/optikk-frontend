@@ -4,12 +4,48 @@ import { useMemo } from 'react';
 import type { DashboardComponentSpec } from '@/types/dashboardConfig';
 
 import { api } from '@shared/api/api/client';
+import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
 
 import { useAppStore } from '@store/appStore';
+
+interface ComponentFailedRequest {
+  componentIds: string[];
+  endpoint: string;
+  method: string;
+  error: ApiErrorShape;
+}
 
 interface UseComponentDataFetcherResult {
   data: Record<string, any>;
   isLoading: boolean;
+  errors: Record<string, ApiErrorShape | null>;
+  hasError: boolean;
+  failedRequests: ComponentFailedRequest[];
+}
+
+function toApiErrorShape(error: unknown): ApiErrorShape {
+  if (typeof error === 'object' && error !== null) {
+    const record = error as Record<string, unknown>;
+    return {
+      status: typeof record.status === 'number' ? record.status : 0,
+      message: typeof record.message === 'string' && record.message.length > 0
+        ? record.message
+        : 'An unexpected error occurred',
+      data: record.data,
+    };
+  }
+
+  if (error instanceof Error) {
+    return {
+      status: 0,
+      message: error.message || 'An unexpected error occurred',
+    };
+  }
+
+  return {
+    status: 0,
+    message: 'An unexpected error occurred',
+  };
 }
 
 function buildRequestKey(
@@ -108,22 +144,39 @@ export function useComponentDataFetcher(
   });
 
   const data: Record<string, any> = {};
+  const errors: Record<string, ApiErrorShape | null> = {};
   let isLoading = false;
+  let hasError = false;
+  const failedRequests: ComponentFailedRequest[] = [];
 
   requestEntries.forEach((entry, index) => {
     const result = results[index] as {
       data?: unknown;
       isLoading?: boolean;
+      isError?: boolean;
+      error?: unknown;
     } | undefined;
 
     if (result?.isLoading) {
       isLoading = true;
     }
 
+    const normalizedError = result?.isError ? toApiErrorShape(result.error) : null;
+    if (normalizedError) {
+      hasError = true;
+      failedRequests.push({
+        componentIds: entry.componentIds,
+        endpoint: entry.endpoint,
+        method: entry.method,
+        error: normalizedError,
+      });
+    }
+
     entry.componentIds.forEach((componentId) => {
       data[componentId] = result?.data;
+      errors[componentId] = normalizedError;
     });
   });
 
-  return { data, isLoading };
+  return { data, isLoading, errors, hasError, failedRequests };
 }

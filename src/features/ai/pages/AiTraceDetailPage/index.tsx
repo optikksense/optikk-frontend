@@ -1,3 +1,4 @@
+import { Alert } from 'antd';
 import { Brain } from 'lucide-react';
 import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -8,22 +9,32 @@ import { useAppStore } from '@shared/store/appStore';
 import { formatDuration, formatNumber } from '@shared/utils/formatters';
 
 import { aiTraceQueries } from '../../api/queryOptions';
-import type { LLMTraceSpan } from '../../types';
+import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
+import type { LLMTraceSpan, LLMTraceSummary } from '../../types';
 
 import './AiTraceDetailPage.css';
+
+function getErrorMessage(error: { message?: string } | null | undefined, fallback: string): string {
+  if (error?.message) {
+    return error.message;
+  }
+
+  return fallback;
+}
 
 export default function AiTraceDetailPage(): JSX.Element {
   const { traceId = '' } = useParams<{ traceId: string }>();
   const navigate = useNavigate();
   const { selectedTeamId } = useAppStore();
 
-  const { data: spans = [], isLoading } = useQuery(
-    aiTraceQueries.trace(selectedTeamId, traceId),
-  );
+  const spansQuery = useQuery(aiTraceQueries.trace(selectedTeamId, traceId));
+  const spans = (spansQuery.data ?? []) as LLMTraceSpan[];
+  const isLoading = spansQuery.isLoading;
+  const spansError = (spansQuery.error ?? null) as ApiErrorShape | null;
 
-  const { data: summary } = useQuery(
-    aiTraceQueries.summary(selectedTeamId, traceId),
-  );
+  const summaryQuery = useQuery(aiTraceQueries.summary(selectedTeamId, traceId));
+  const summary = summaryQuery.data as LLMTraceSummary | undefined;
+  const summaryError = (summaryQuery.error ?? null) as ApiErrorShape | null;
 
   // Build depth map for indentation
   const { depthMap, traceStartMs, traceDurationMs } = useMemo(() => {
@@ -67,6 +78,28 @@ export default function AiTraceDetailPage(): JSX.Element {
         ]}
       />
 
+      {spansError && (
+        <div style={{ marginBottom: 16 }}>
+          <Alert
+            type="error"
+            showIcon
+            message="The LLM trace could not be loaded."
+            description={getErrorMessage(spansError, 'The backend request for trace spans failed.')}
+          />
+        </div>
+      )}
+
+      {summaryError && (
+        <div style={{ marginBottom: 16 }}>
+          <Alert
+            type="error"
+            showIcon
+            message="Trace summary is unavailable"
+            description={getErrorMessage(summaryError, 'The backend request for trace summary failed.')}
+          />
+        </div>
+      )}
+
       {summary && (
         <div className="ai-trace-summary-row">
           <SummaryCard label="Spans" value={formatNumber(summary.totalSpans)} />
@@ -83,10 +116,10 @@ export default function AiTraceDetailPage(): JSX.Element {
         {isLoading && (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</div>
         )}
-        {!isLoading && spans.length === 0 && (
+        {!isLoading && !spansError && spans.length === 0 && (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>No spans found</div>
         )}
-        {spans.map((span) => (
+        {!spansError && spans.map((span) => (
           <SpanRow
             key={span.spanId}
             span={span}

@@ -52,19 +52,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps): JSX.E
   }
 
   if (!selectedTeamId) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          background: `var(--bg-primary, ${APP_COLORS.hex_0a0a0a_2})`,
-        }}
-      >
-        <Skeleton active paragraph={{ rows: 4 }} />
-      </div>
-    );
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;

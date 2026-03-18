@@ -1,3 +1,4 @@
+import { Alert } from 'antd';
 import { Brain } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
@@ -9,12 +10,30 @@ import type { LLMMessage, ChainSpan } from '../../types';
 
 import './AiRunDetailPage.css';
 
+function getErrorMessage(error: { message?: string } | null | undefined, fallback: string): string {
+  if (error?.message) {
+    return error.message;
+  }
+
+  return fallback;
+}
+
 export default function AiRunDetailPage(): JSX.Element {
   const { spanId = '' } = useParams<{ spanId: string }>();
-  const { detail, messages, context, isLoading, isMessagesLoading, isContextLoading } =
+  const {
+    detail,
+    messages,
+    context,
+    isLoading,
+    isMessagesLoading,
+    isContextLoading,
+    detailError,
+    messagesError,
+    contextError,
+  } =
     useAiRunDetail(spanId);
 
-  if (isLoading || !detail) {
+  if (isLoading || detailError || !detail) {
     return (
       <div className="ai-run-detail-page">
         <PageHeader
@@ -25,9 +44,24 @@ export default function AiRunDetailPage(): JSX.Element {
             { label: spanId.slice(0, 12) + '…' },
           ]}
         />
-        <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
-          {isLoading ? 'Loading...' : 'Run not found'}
-        </div>
+        {isLoading ? (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+            Loading...
+          </div>
+        ) : detailError ? (
+          <div style={{ padding: 24 }}>
+            <Alert
+              type="error"
+              showIcon
+              message="The LLM run detail could not be loaded."
+              description={getErrorMessage(detailError, 'The backend request failed for this run.')}
+            />
+          </div>
+        ) : (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+            Run not found
+          </div>
+        )}
       </div>
     );
   }
@@ -126,6 +160,16 @@ export default function AiRunDetailPage(): JSX.Element {
       {/* Messages */}
       <div className="ai-run-messages-panel">
         <h3>Messages {isMessagesLoading && '(loading...)'}</h3>
+        {messagesError && (
+          <div style={{ padding: '16px 18px 0 18px' }}>
+            <Alert
+              type="error"
+              showIcon
+              message="Messages could not be loaded"
+              description={getErrorMessage(messagesError, 'The backend request for run messages failed.')}
+            />
+          </div>
+        )}
         {messages.length === 0 && !isMessagesLoading && (
           <div style={{ padding: '20px 18px', color: 'var(--text-muted)', fontSize: 12.5 }}>
             No prompt/completion messages found. Ensure your instrumentation sends gen_ai.content events.
@@ -152,6 +196,19 @@ export default function AiRunDetailPage(): JSX.Element {
           {context.children.map((span: ChainSpan) => (
             <ContextSpanRow key={span.spanId} span={span} isCurrent={false} />
           ))}
+        </div>
+      )}
+      {!context && contextError && (
+        <div className="ai-run-context-panel">
+          <h3>Execution Context</h3>
+          <div style={{ padding: '16px 18px' }}>
+            <Alert
+              type="error"
+              showIcon
+              message="Execution context could not be loaded"
+              description={getErrorMessage(contextError, 'The backend request for execution context failed.')}
+            />
+          </div>
         </div>
       )}
     </div>

@@ -1,10 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
+import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
 import { useURLFilters } from '@shared/hooks/useURLFilters';
 import { useAppStore } from '@shared/store/appStore';
 import { aiRunsQueries } from '../api/queryOptions';
-import type { LLMRunFilters } from '../types';
+import type { LLMRunFilters, LLMRun, LLMRunModel, LLMRunOperation, LLMRunSummary } from '../types';
 
 const AI_RUNS_URL_FILTER_CONFIG = {
   params: [
@@ -61,37 +62,54 @@ export function useAiRunsExplorer() {
     return f;
   }, [selectedModel, selectedOperation, selectedStatus, selectedService, traceIdFilter, pageSize]);
 
-  const { data: runs = [], isLoading } = useQuery({
+  const runsQuery = useQuery({
     ...aiRunsQueries.list(selectedTeamId, startMs, endMs, { ...backendFilters, refreshKey } as any),
     placeholderData: (prev) => prev,
   });
+  const runs = (runsQuery.data ?? []) as LLMRun[];
+  const isRunsLoading = runsQuery.isLoading;
+  const runsError = (runsQuery.error ?? null) as ApiErrorShape | null;
 
-  const { data: summary } = useQuery({
+  const summaryQuery = useQuery({
     ...aiRunsQueries.summary(selectedTeamId, startMs, endMs, { ...backendFilters, refreshKey } as any),
     placeholderData: (prev) => prev,
   });
+  const summary = summaryQuery.data as LLMRunSummary | undefined;
+  const isSummaryLoading = summaryQuery.isLoading;
+  const summaryError = (summaryQuery.error ?? null) as ApiErrorShape | null;
 
-  const { data: models = [] } = useQuery(
-    aiRunsQueries.models(selectedTeamId, startMs, endMs),
-  );
+  const modelsQuery = useQuery(aiRunsQueries.models(selectedTeamId, startMs, endMs));
+  const models = (modelsQuery.data ?? []) as LLMRunModel[];
+  const isModelsLoading = modelsQuery.isLoading;
+  const modelsError = (modelsQuery.error ?? null) as ApiErrorShape | null;
 
-  const { data: operations = [] } = useQuery(
-    aiRunsQueries.operations(selectedTeamId, startMs, endMs),
-  );
+  const operationsQuery = useQuery(aiRunsQueries.operations(selectedTeamId, startMs, endMs));
+  const operations = (operationsQuery.data ?? []) as LLMRunOperation[];
+  const isOperationsLoading = operationsQuery.isLoading;
+  const operationsError = (operationsQuery.error ?? null) as ApiErrorShape | null;
 
   const clearAll = useCallback(() => {
     clearURLFilters();
   }, [clearURLFilters]);
 
+  const isLoading = isRunsLoading || isSummaryLoading || isModelsLoading || isOperationsLoading;
+  const hasError = Boolean(runsError || summaryError || modelsError || operationsError);
+  const primaryError = runsError ?? summaryError ?? modelsError ?? operationsError ?? null;
+
   return {
     isLoading,
+    isRunsLoading,
+    isSummaryLoading,
     runs,
-    summary: summary ?? {
-      totalRuns: 0, errorRuns: 0, errorRate: 0,
-      avgLatencyMs: 0, p95LatencyMs: 0, totalTokens: 0, uniqueModels: 0,
-    },
+    summary,
     models,
     operations,
+    runsError,
+    summaryError,
+    modelsError,
+    operationsError,
+    hasError,
+    primaryError,
     selectedModel,
     selectedOperation,
     selectedStatus,
