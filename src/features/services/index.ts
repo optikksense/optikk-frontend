@@ -5,13 +5,15 @@ import type { DomainConfig } from '@/app/registry/domainRegistry';
 import { ROUTES } from '@/shared/constants/routes';
 
 const ServicesPage = lazy(() =>
-  import('./pages/ServicesPage').then((module) => ({ default: module.default })),
+  import('./pages/ServicesPage').then((module) => ({ default: module.default }))
 );
 const ServiceDetailPage = lazy(() =>
-  import('./pages/ServiceDetailPage').then((module) => ({ default: module.default })),
+  import('./pages/ServiceDetailPage').then((module) => ({ default: module.default }))
 );
 const ServiceMapRenderer = lazy(() =>
-  import('./dashboard/renderers/ServiceMapRenderer').then((module) => ({ default: module.ServiceMapRenderer })),
+  import('./dashboard/renderers/ServiceMapRenderer').then((module) => ({
+    default: module.ServiceMapRenderer,
+  }))
 );
 
 export /**
@@ -39,4 +41,3 @@ const servicesConfig: DomainConfig = {
   ],
 };
 export * from './components/detail';
-export * from './utils/servicesUtils';

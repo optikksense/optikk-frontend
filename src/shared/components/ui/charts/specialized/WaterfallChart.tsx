@@ -25,7 +25,7 @@ interface WaterfallChartProps {
   errorPathSpanIds?: Set<string>;
 }
 
-interface WaterfallSpan {
+export interface WaterfallSpan {
   readonly span_id: string;
   readonly parent_span_id?: string | null;
   readonly start_time: string;
@@ -226,15 +226,17 @@ export default function WaterfallChart({
             Span
           </span>
         </div>
-        <div
-          className="w-[60px] min-w-[60px] border-r border-[var(--glass-border)] p-3 flex items-center justify-end"
-        >
-          <span className="text-[11px] font-semibold text-[color:var(--text-muted)] uppercase">%</span>
+        <div className="w-[60px] min-w-[60px] border-r border-[var(--glass-border)] p-3 flex items-center justify-end">
+          <span className="text-[11px] font-semibold text-[color:var(--text-muted)] uppercase">
+            %
+          </span>
         </div>
         <div className="flex-1 relative p-3">
           <div className="flex justify-between items-center h-full">
             {timeLabels.map((label, idx) => (
-              <span key={idx} className="text-[color:var(--text-muted)] text-[11px] font-medium">{label}</span>
+              <span key={idx} className="text-[color:var(--text-muted)] text-[11px] font-medium">
+                {label}
+              </span>
             ))}
           </div>
         </div>
@@ -246,7 +248,8 @@ export default function WaterfallChart({
           const isCritical = criticalPathSpanIds?.has(span.span_id);
           const isError = errorPathSpanIds?.has(span.span_id);
           const isSelected = selectedSpanId === span.span_id;
-          const durationPct = traceDuration > 0 ? ((span.duration_ms ?? 0) / traceDuration * 100).toFixed(1) : '—';
+          const durationPct =
+            traceDuration > 0 ? (((span.duration_ms ?? 0) / traceDuration) * 100).toFixed(1) : '—';
           const kind = ((span.kind_string || span.span_kind) ?? '').toUpperCase();
 
           let borderLeft = 'none';

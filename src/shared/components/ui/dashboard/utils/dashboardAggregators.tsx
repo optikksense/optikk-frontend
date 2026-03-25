@@ -1,14 +1,25 @@
-import type { DashboardComponentSpec, DashboardDataSources } from '@/types/dashboardConfig';
+import type {
+  DashboardPanelSpec,
+  DashboardDataSources,
+  DashboardPanelType,
+  DashboardRecord,
+} from '@/types/dashboardConfig';
 
 import { formatBytes, formatDuration, formatNumber } from '@shared/utils/formatters';
+import {
+  asDashboardRecord,
+  asDashboardRecordArray,
+  getDashboardRecordArrayField,
+  getDashboardValue,
+} from './runtimeValue';
 
 /**
  *
  */
-export function formatStatValue(formatter: string | undefined, value: any): string | number {
+export function formatStatValue(formatter: string | undefined, value: unknown): string | number {
   switch (formatter) {
     case 'ms':
-      return formatDuration(value);
+      return formatDuration(typeof value === 'string' || typeof value === 'number' ? value : 0);
     case 'bytes':
       return formatBytes(Number(value) || 0);
     case 'percent1':
@@ -26,54 +37,41 @@ export function formatStatValue(formatter: string | undefined, value: any): stri
  *
  */
 export function resolveComponentData(
-  chartConfig: DashboardComponentSpec,
-  dataSources: DashboardDataSources,
+  chartConfig: DashboardPanelSpec,
+  dataSources: DashboardDataSources
 ) {
-  const dataSourceId = (chartConfig.dataSource as string | undefined) || chartConfig.id;
+  const dataSourceId = chartConfig.dataSource || chartConfig.id;
   return dataSourceId ? dataSources?.[dataSourceId] : undefined;
 }
 
 /**
  *
  */
-export function normalizeDashboardRows(
-  rawData: unknown,
-  dataKey?: string,
-) {
+export function normalizeDashboardRows(rawData: unknown, dataKey?: string): DashboardRecord[] {
   if (dataKey) {
-    if (rawData && typeof rawData === 'object' && Array.isArray((rawData as Record<string, unknown>)[dataKey])) {
-      return (rawData as Record<string, unknown>)[dataKey] as any[];
-    }
-    return [];
+    return getDashboardRecordArrayField(rawData, dataKey);
   }
 
   if (Array.isArray(rawData)) {
-    return rawData;
+    return asDashboardRecordArray(rawData);
   }
 
-  if (rawData && typeof rawData === 'object' && Array.isArray((rawData as Record<string, unknown>).data)) {
-    return (rawData as Record<string, unknown>).data as any[];
-  }
-
-  return [];
+  return getDashboardRecordArrayField(rawData, 'data');
 }
 
 /**
  *
  */
-export function resolveFieldValue(raw: any, field: string | undefined) {
+export function resolveFieldValue(raw: unknown, field: string | undefined): unknown {
   if (!field) return 0;
   if (field === '_count') {
     return Array.isArray(raw) ? raw.length : 0;
   }
   if (Array.isArray(raw)) {
-    const first = raw[0];
-    return first && typeof first === 'object' ? (first as Record<string, unknown>)[field] ?? 0 : 0;
+    const first = asDashboardRecordArray(raw)[0];
+    return first?.[field] ?? 0;
   }
-  if (raw && typeof raw === 'object') {
-    return (raw as Record<string, unknown>)[field] ?? 0;
-  }
-  return 0;
+  return getDashboardValue(raw, field) ?? 0;
 }
 
 /**
@@ -85,16 +83,40 @@ interface StatSummaryField {
   keys?: string[];
 }
 
+export type EndpointListType = 'requests' | 'errorRate' | 'latency' | 'count';
+
+interface GroupedEndpointListRow {
+  endpoint: string;
+  service: string;
+  key: string;
+  request_count: number;
+  error_count: number;
+  errorRate: number;
+  latency: number;
+  value: number;
+  [key: string]: string | number;
+}
+
+function isEndpointListType(value: string): value is EndpointListType {
+  return value === 'requests' || value === 'errorRate' || value === 'latency' || value === 'count';
+}
+
 export function renderStatSummary(
-  rawData: any,
+  rawData: unknown,
   options?: {
     formatter?: string;
     fields?: StatSummaryField[];
-  },
+  }
 ) {
-  const summary = Array.isArray(rawData) ? rawData[0] : rawData;
-  if (!summary || typeof summary !== 'object') {
-    return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
+  const summary = Array.isArray(rawData)
+    ? asDashboardRecordArray(rawData)[0]
+    : asDashboardRecord(rawData);
+  if (!summary) {
+    return (
+      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+        No data
+      </div>
+    );
   }
 
   const defaultFields: StatSummaryField[] = [
@@ -115,7 +137,11 @@ export function renderStatSummary(
     .filter((cell) => cell.value !== null && cell.value !== undefined);
 
   if (cells.length === 0) {
-    return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
+    return (
+      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+        No data
+      </div>
+    );
   }
 
   const formatter = options?.formatter ?? (fields === defaultFields ? 'ms' : undefined);
@@ -137,10 +163,11 @@ export function renderStatSummary(
 /**
  *
  */
-export function firstValue(row: any, keys: string[], fallback: any = '') {
-  if (!row || typeof row !== 'object') return fallback;
+export function firstValue(row: unknown, keys: string[], fallback: unknown = ''): unknown {
+  const record = asDashboardRecord(row);
+  if (!record) return fallback;
   for (const key of keys) {
-    const value = row[key];
+    const value = record[key];
     if (value !== undefined && value !== null && value !== '') {
       return value;
     }
@@ -151,7 +178,7 @@ export function firstValue(row: any, keys: string[], fallback: any = '') {
 /**
  *
  */
-export function strValue(row: any, keys: string[], fallback: string = '') {
+export function strValue(row: unknown, keys: string[], fallback: string = '') {
   const value = firstValue(row, keys, fallback);
   return value == null ? fallback : String(value);
 }
@@ -159,7 +186,7 @@ export function strValue(row: any, keys: string[], fallback: string = '') {
 /**
  *
  */
-export function numValue(row: any, keys: string[], fallback: number = 0) {
+export function numValue(row: unknown, keys: string[], fallback: number = 0) {
   const value = firstValue(row, keys, fallback);
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -168,19 +195,20 @@ export function numValue(row: any, keys: string[], fallback: number = 0) {
 /**
  *
  */
-export function resolveComponentKey(chartConfig: DashboardComponentSpec): string {
-  if (typeof chartConfig.panelType === 'string' && chartConfig.panelType.length > 0) {
-    return chartConfig.panelType;
-  }
-  return '';
+export function resolveComponentKey(chartConfig: DashboardPanelSpec): DashboardPanelType {
+  return chartConfig.panelType;
 }
 
 /**
  *
  */
-export function buildEndpointKey(row: any) {
+export function buildEndpointKey(row: DashboardRecord) {
   const method = strValue(row, ['http_method', 'httpMethod']).toUpperCase();
-  const op = strValue(row, ['operation_name', 'operationName', 'endpoint_name', 'endpointName'], 'Unknown');
+  const op = strValue(
+    row,
+    ['operation_name', 'operationName', 'endpoint_name', 'endpointName'],
+    'Unknown'
+  );
   const cleanOp = op.startsWith(`${method} `) ? op.substring(method.length + 1) : op;
   const serviceName = strValue(row, ['service_name', 'serviceName']);
   return `${method} ${cleanOp}_${serviceName}`;
@@ -189,8 +217,11 @@ export function buildEndpointKey(row: any) {
 /**
  *
  */
-export function groupTimeseries(rows: any[], groupByKey: string) {
-  const map: Record<string, any[]> = {};
+export function groupTimeseries(
+  rows: DashboardRecord[],
+  groupByKey: string
+): Record<string, DashboardRecord[]> {
+  const map: Record<string, DashboardRecord[]> = {};
   for (const row of rows) {
     const serviceName = strValue(row, ['service_name', 'serviceName']);
     const queueName = strValue(row, ['queue_name', 'queueName', 'queue'], 'unknown');
@@ -224,11 +255,16 @@ export function groupTimeseries(rows: any[], groupByKey: string) {
 /**
  *
  */
-export function buildQueueEndpoints(topQueues: any[], sortField: string, scope: string) {
+export function buildQueueEndpoints(
+  topQueues: DashboardRecord[],
+  sortField: string,
+  scope: string
+) {
   if (!Array.isArray(topQueues)) return [];
-  const queueSeriesKey = (queue: any) => `${strValue(queue, ['queue_name', 'queueName'], 'unknown')}::${strValue(queue, ['service_name', 'serviceName'], 'unknown')}`;
+  const queueSeriesKey = (queue: any) =>
+    `${strValue(queue, ['queue_name', 'queueName'], 'unknown')}::${strValue(queue, ['service_name', 'serviceName'], 'unknown')}`;
   return [...topQueues]
-    .sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0))
+    .sort((a, b) => Number(b[sortField] || 0) - Number(a[sortField] || 0))
     .map((queue) => ({
       ...queue,
       endpoint: strValue(queue, ['queue_name', 'queueName'], 'unknown'),
@@ -245,7 +281,11 @@ export function buildEndpointList(endpointMetrics: any[], listType: string) {
 
   const mapped = endpointMetrics.map((endpoint) => {
     const method = strValue(endpoint, ['http_method', 'httpMethod']).toUpperCase();
-    const op = strValue(endpoint, ['operation_name', 'operationName', 'endpoint_name', 'endpointName'], 'Unknown');
+    const op = strValue(
+      endpoint,
+      ['operation_name', 'operationName', 'endpoint_name', 'endpointName'],
+      'Unknown'
+    );
     const cleanOp = op.startsWith(`${method} `) ? op.substring(method.length + 1) : op;
     const serviceName = strValue(endpoint, ['service_name', 'serviceName']);
     const requestCount = numValue(endpoint, ['request_count', 'requestCount']);
@@ -266,7 +306,10 @@ export function buildEndpointList(endpointMetrics: any[], listType: string) {
   });
 
   if (listType === 'errorRate') {
-    return mapped.filter((endpoint) => endpoint.errorRate > 0).sort((a, b) => b.errorRate - a.errorRate).slice(0, 10);
+    return mapped
+      .filter((endpoint) => endpoint.errorRate > 0)
+      .sort((a, b) => b.errorRate - a.errorRate)
+      .slice(0, 10);
   }
   if (listType === 'latency') {
     return mapped.sort((a, b) => (b.avg_latency || 0) - (a.avg_latency || 0)).slice(0, 10);
@@ -303,19 +346,26 @@ export function buildServiceListFromMetrics(serviceMetrics: any[], listType: str
     .filter(Boolean);
 
   if (listType === 'errorRate') {
-    return mapped.filter((service: any) => service.errorRate > 0).sort((a: any, b: any) => b.errorRate - a.errorRate).slice(0, 10);
+    return mapped
+      .filter((service: any) => service.errorRate > 0)
+      .sort((a: any, b: any) => b.errorRate - a.errorRate)
+      .slice(0, 10);
   }
   if (listType === 'latency') {
     return mapped.sort((a: any, b: any) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);
   }
-  return mapped.sort((a: any, b: any) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);
+  return mapped
+    .sort((a: any, b: any) => (b.request_count || 0) - (a.request_count || 0))
+    .slice(0, 10);
 }
 
 /**
  *
  */
-export function defaultListTypeForChart(chartConfig: DashboardComponentSpec) {
-  if (chartConfig.endpointListType) return chartConfig.endpointListType;
+export function defaultListTypeForChart(chartConfig: DashboardPanelSpec): EndpointListType {
+  if (chartConfig.endpointListType && isEndpointListType(chartConfig.endpointListType)) {
+    return chartConfig.endpointListType;
+  }
 
   const componentKey = resolveComponentKey(chartConfig);
   if (componentKey === 'error-rate') return 'errorRate';
@@ -327,7 +377,7 @@ export function defaultListTypeForChart(chartConfig: DashboardComponentSpec) {
 /**
  *
  */
-export function defaultListTitleForChart(chartConfig: DashboardComponentSpec) {
+export function defaultListTitleForChart(chartConfig: DashboardPanelSpec) {
   if (chartConfig.listTitle) return chartConfig.listTitle;
   const listType = defaultListTypeForChart(chartConfig);
   if (listType === 'errorRate') return 'Average Error Rate';
@@ -340,13 +390,16 @@ export function defaultListTitleForChart(chartConfig: DashboardComponentSpec) {
 /**
  *
  */
-export function buildGroupedListFromTimeseries(serviceTimeseriesMap: Record<string, any[]>, chartConfig: DashboardComponentSpec) {
+export function buildGroupedListFromTimeseries(
+  serviceTimeseriesMap: Record<string, DashboardRecord[]>,
+  chartConfig: DashboardPanelSpec
+) {
   const listType = defaultListTypeForChart(chartConfig);
   const valueKey = chartConfig.valueKey || 'request_count';
   const groupByKey = String(chartConfig.groupByKey || 'group');
 
   const rows = Object.entries(serviceTimeseriesMap || {})
-    .map(([groupName, groupRows]) => {
+    .map<GroupedEndpointListRow | null>(([groupName, groupRows]) => {
       if (!groupName || !Array.isArray(groupRows) || groupRows.length === 0) return null;
 
       let requestCount = 0;
@@ -361,7 +414,11 @@ export function buildGroupedListFromTimeseries(serviceTimeseriesMap: Record<stri
         if (!Number.isNaN(req)) requestCount += req;
         if (!Number.isNaN(err)) errorCount += err;
 
-        const latencyVal = numValue(row, ['avg_latency', 'avgLatency', 'avg_duration_ms', 'avgDurationMs', valueKey], 0);
+        const latencyVal = numValue(
+          row,
+          ['avg_latency', 'avgLatency', 'avg_duration_ms', 'avgDurationMs', valueKey],
+          0
+        );
         if (!Number.isNaN(latencyVal) && latencyVal > 0) {
           latencySum += latencyVal;
           latencyCount += 1;
@@ -386,10 +443,13 @@ export function buildGroupedListFromTimeseries(serviceTimeseriesMap: Record<stri
         value: valueTotal,
       };
     })
-    .filter(Boolean) as any[];
+    .filter((row): row is GroupedEndpointListRow => row !== null);
 
   if (listType === 'errorRate') {
-    return rows.filter((row) => row.errorRate > 0).sort((a, b) => b.errorRate - a.errorRate).slice(0, 10);
+    return rows
+      .filter((row) => row.errorRate > 0)
+      .sort((a, b) => b.errorRate - a.errorRate)
+      .slice(0, 10);
   }
   if (listType === 'latency') {
     return rows.sort((a, b) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);

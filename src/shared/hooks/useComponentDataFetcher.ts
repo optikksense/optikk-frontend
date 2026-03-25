@@ -2,15 +2,14 @@ import { useQueries, keepPreviousData } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import type {
-  DashboardComponentSpec,
+  DashboardPanelSpec,
   DashboardDataSourceValue,
   DashboardDataSources,
 } from '@/types/dashboardConfig';
 
 import { api } from '@shared/api/api/client';
 import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
-import { UNKNOWN_ERROR } from '@/shared/constants/errorCodes';
-import type { ErrorCode } from '@/shared/constants/errorCodes';
+import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
 import { interpolateValue } from '@shared/utils/placeholderInterpolation';
 
 import { resolveTimeRangeBounds } from '@/types';
@@ -32,42 +31,12 @@ interface UseComponentDataFetcherResult {
   failedRequests: ComponentFailedRequest[];
 }
 
-function toApiErrorShape(error: unknown): ApiErrorShape {
-  if (typeof error === 'object' && error !== null) {
-    const record = error as Record<string, unknown>;
-    return {
-      status: typeof record.status === 'number' ? record.status : 0,
-      code: (typeof record.code === 'string' && record.code.length > 0
-        ? record.code
-        : UNKNOWN_ERROR) as ErrorCode,
-      message: typeof record.message === 'string' && record.message.length > 0
-        ? record.message
-        : 'An unexpected error occurred',
-      data: record.data,
-    };
-  }
-
-  if (error instanceof Error) {
-    return {
-      status: 0,
-      code: UNKNOWN_ERROR,
-      message: error.message || 'An unexpected error occurred',
-    };
-  }
-
-  return {
-    status: 0,
-    code: 'UNKNOWN_ERROR',
-    message: 'An unexpected error occurred',
-  };
-}
-
 function buildRequestKey(
-  component: DashboardComponentSpec,
+  component: DashboardPanelSpec,
   resolvedEndpoint: string,
   resolvedParams: Record<string, unknown>,
   startMs: number,
-  endMs: number,
+  endMs: number
 ) {
   return JSON.stringify({
     method: component.query!.method || 'GET',
@@ -82,8 +51,8 @@ function buildRequestKey(
  *
  */
 export function useComponentDataFetcher(
-  components: DashboardComponentSpec[],
-  pathParams?: Record<string, string>,
+  components: DashboardPanelSpec[],
+  pathParams?: Record<string, string>
 ): UseComponentDataFetcherResult {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();
 
@@ -94,23 +63,23 @@ export function useComponentDataFetcher(
   }, [refreshKey, timeRange]);
 
   const requestEntries = useMemo(() => {
-    const entries = new Map<string, {
-      componentIds: string[];
-      endpoint: string;
-      method: string;
-      params: Record<string, unknown>;
-    }>();
+    const entries = new Map<
+      string,
+      {
+        componentIds: string[];
+        endpoint: string;
+        method: string;
+        params: Record<string, unknown>;
+      }
+    >();
 
     components.forEach((component) => {
       if (!component.query) return;
       const interpolationValues = pathParams ?? {};
-      const resolvedEndpoint = interpolateValue(
-        component.query.endpoint,
-        interpolationValues,
-      );
+      const resolvedEndpoint = interpolateValue(component.query.endpoint, interpolationValues);
       const resolvedParams = interpolateValue(
         component.query.params || {},
-        interpolationValues,
+        interpolationValues
       ) as Record<string, unknown>;
       const method = String(component.query.method || 'GET').toUpperCase();
       const requestKey = buildRequestKey(
@@ -118,7 +87,7 @@ export function useComponentDataFetcher(
         resolvedEndpoint,
         resolvedParams,
         startMs,
-        endMs,
+        endMs
       );
 
       const current = entries.get(requestKey);
@@ -140,16 +109,26 @@ export function useComponentDataFetcher(
 
   const results = useQueries({
     queries: requestEntries.map((entry) => ({
-      queryKey: ['component-query', selectedTeamId, entry.method, entry.endpoint, entry.params, startMs, endMs, refreshKey],
-      queryFn: () => api.request({
-        url: entry.endpoint,
-        method: entry.method,
-        params: {
-          start: startMs,
-          end: endMs,
-          ...entry.params,
-        },
-      }),
+      queryKey: [
+        'component-query',
+        selectedTeamId,
+        entry.method,
+        entry.endpoint,
+        entry.params,
+        startMs,
+        endMs,
+        refreshKey,
+      ],
+      queryFn: () =>
+        api.request({
+          url: entry.endpoint,
+          method: entry.method,
+          params: {
+            start: startMs,
+            end: endMs,
+            ...entry.params,
+          },
+        }),
       enabled: !!selectedTeamId,
       staleTime: 0,
       gcTime: 30_000,
@@ -165,12 +144,14 @@ export function useComponentDataFetcher(
   const failedRequests: ComponentFailedRequest[] = [];
 
   requestEntries.forEach((entry, index) => {
-    const result = results[index] as {
-      data?: unknown;
-      isLoading?: boolean;
-      isError?: boolean;
-      error?: unknown;
-    } | undefined;
+    const result = results[index] as
+      | {
+          data?: unknown;
+          isLoading?: boolean;
+          isError?: boolean;
+          error?: unknown;
+        }
+      | undefined;
 
     if (result?.isLoading) {
       isLoading = true;

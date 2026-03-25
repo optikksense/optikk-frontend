@@ -6,11 +6,7 @@ import { CHART_COLORS } from '@config/constants';
 
 import { APP_COLORS } from '@config/colorLiterals';
 
-type QueueMetricsListType =
-  | 'depth'
-  | 'consumerLag'
-  | 'productionRate'
-  | 'consumptionRate';
+export type QueueMetricsListType = 'depth' | 'consumerLag' | 'productionRate' | 'consumptionRate';
 
 interface QueueMetricsItem {
   key?: string;
@@ -56,7 +52,7 @@ function formatDepth(value: number): string {
 
 function getQueueDisplayConfig(
   type: QueueMetricsListType,
-  queue: QueueMetricsItem,
+  queue: QueueMetricsItem
 ): QueueRowDisplayConfig {
   if (type === 'consumerLag') {
     const lag = queue.max_consumer_lag ?? 0;
@@ -137,13 +133,9 @@ export default function QueueMetricsList({
               }}
             >
               <th style={{ padding: '4px 8px', fontWeight: 500 }}>Topic Name</th>
-              <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>
-                {title}
-              </th>
+              <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>{title}</th>
               {drilldownRouteTemplate ? (
-                <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>
-                  Details
-                </th>
+                <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>Details</th>
               ) : null}
             </tr>
           </thead>
@@ -154,15 +146,15 @@ export default function QueueMetricsList({
                 `${queue.queue_name ?? 'unknown'}::${queue.service_name ?? 'unknown'}::${index}`;
               const detailHref = buildInterpolatedPath(
                 drilldownRouteTemplate,
-                queue as Record<string, unknown>,
+                queue as Record<string, unknown>
               );
               const isSelected = selectedQueues.includes(queueKey);
               const isFaded = selectedQueues.length > 0 && !isSelected;
               const { selectedBg, hoverBg, valueColor, displayValue } = getQueueDisplayConfig(
                 type,
-                queue,
+                queue
               );
-              
+
               // Find max value in list for proportional bar calculation
               const getVal = (q: QueueMetricsItem) => {
                 if (type === 'consumerLag') return q.max_consumer_lag ?? 0;
@@ -174,15 +166,16 @@ export default function QueueMetricsList({
               const currentVal = getVal(queue);
               const pct = (currentVal / maxValInList) * 100;
               const barWidth = Math.max(Math.min(pct, 100), 2);
-              
+
               // Gradient based on type
-              const barBg = type === 'consumerLag' 
-                ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
-                : type === 'productionRate'
-                  ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
-                  : type === 'consumptionRate'
-                    ? `linear-gradient(90deg, ${APP_COLORS.hex_06d6a0} 0%, ${APP_COLORS.hex_73c991} 100%)`
-                    : `linear-gradient(90deg, ${CHART_COLORS[1]} 0%, ${CHART_COLORS[0]} 100%)`;
+              const barBg =
+                type === 'consumerLag'
+                  ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
+                  : type === 'productionRate'
+                    ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
+                    : type === 'consumptionRate'
+                      ? `linear-gradient(90deg, ${APP_COLORS.hex_06d6a0} 0%, ${APP_COLORS.hex_73c991} 100%)`
+                      : `linear-gradient(90deg, ${CHART_COLORS[1]} 0%, ${CHART_COLORS[0]} 100%)`;
 
               return (
                 <tr
@@ -225,8 +218,24 @@ export default function QueueMetricsList({
                       )}
                     </div>
                     {/* Proportional Gradient Intensity Bar */}
-                    <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden', marginTop: '2px' }}>
-                      <div style={{ width: `${barWidth}%`, height: '100%', background: barBg, borderRadius: '2px' }} />
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '3px',
+                        background: 'rgba(255,255,255,0.06)',
+                        borderRadius: '999px',
+                        overflow: 'hidden',
+                        marginTop: '2px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${barWidth}%`,
+                          height: '100%',
+                          background: barBg,
+                          borderRadius: '2px',
+                        }}
+                      />
                     </div>
                   </td>
                   <td
@@ -251,7 +260,11 @@ export default function QueueMetricsList({
                         <Link
                           to={detailHref}
                           onClick={(event) => event.stopPropagation()}
-                          style={{ color: 'var(--color-primary)', fontSize: '12px', fontWeight: 500 }}
+                          style={{
+                            color: 'var(--color-primary)',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                          }}
                         >
                           View
                         </Link>

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { DashboardComponentSpec } from '@/types/dashboardConfig';
+import type { DashboardPanelSpec, DashboardPanelType } from '@/types/dashboardConfig';
 import { BUILT_IN_DASHBOARD_PANELS } from '@shared/components/ui/dashboard/builtInDashboardPanels';
 import { DashboardPanelRegistryProvider } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
 
@@ -41,7 +41,7 @@ function renderWithDashboardPanels(element: JSX.Element) {
   return render(
     <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
       {element}
-    </DashboardPanelRegistryProvider>,
+    </DashboardPanelRegistryProvider>
   );
 }
 
@@ -60,32 +60,28 @@ describe('ConfigurableChartCard', () => {
 
   it('handles unknown backend component keys gracefully', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'unknown-key-card',
-      panelType: 'does-not-exist',
+      panelType: 'does-not-exist' as DashboardPanelType,
       title: 'Unknown',
       order: 10,
       query: { method: 'GET', endpoint: '/v1/unknown' },
     };
 
     renderWithDashboardPanels(
-      <ConfigurableChartCard
-        componentConfig={componentConfig}
-        dataSources={{}}
-        extraContext={{}}
-      />,
+      <ConfigurableChartCard componentConfig={componentConfig} dataSources={{}} extraContext={{}} />
     );
 
     expect(screen.getByText(/Unknown dashboard panel type:/)).toBeInTheDocument();
     expect(screen.getByText(/does-not-exist/)).toBeInTheDocument();
     expect(warnSpy).toHaveBeenCalledWith(
-      'Unknown dashboard panel type received from backend: does-not-exist',
+      'Unknown dashboard panel type received from backend: does-not-exist'
     );
   });
 
   it('renders stat-card through the shared renderer registry', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'total-requests',
       panelType: 'stat-card',
       title: 'Total Requests',
@@ -101,7 +97,7 @@ describe('ConfigurableChartCard', () => {
           'total-requests': { request_count: 1234 },
         }}
         extraContext={{}}
-      />,
+      />
     );
 
     expect(screen.getByText('Total Requests')).toBeInTheDocument();
@@ -112,7 +108,7 @@ describe('ConfigurableChartCard', () => {
 
   it('renders stat-summary panels with a visible card title', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'latency-summary',
       panelType: 'stat-summary',
       title: 'JVM Key Metrics',
@@ -139,7 +135,7 @@ describe('ConfigurableChartCard', () => {
           },
         }}
         extraContext={{}}
-      />,
+      />
     );
 
     expect(screen.getByText('JVM Key Metrics')).toBeInTheDocument();
@@ -150,7 +146,7 @@ describe('ConfigurableChartCard', () => {
   });
 
   it('passes rows through when the datasource is already an array', async () => {
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'request-rate',
       panelType: 'request',
       title: 'Requests',
@@ -168,14 +164,14 @@ describe('ConfigurableChartCard', () => {
           ],
         }}
         extraContext={{}}
-      />,
+      />
     );
 
     expect(await screen.findByTestId('request-chart')).toHaveTextContent('2');
   });
 
   it('renders the configured title for generic dashboard charts', async () => {
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'request-rate',
       panelType: 'request',
       title: 'Service Request Rate',
@@ -187,12 +183,10 @@ describe('ConfigurableChartCard', () => {
       <ConfigurableChartCard
         componentConfig={componentConfig}
         dataSources={{
-          'request-rate': [
-            { timestamp: '2026-03-20T20:20:00Z', request_count: 1 },
-          ],
+          'request-rate': [{ timestamp: '2026-03-20T20:20:00Z', request_count: 1 }],
         }}
         extraContext={{}}
-      />,
+      />
     );
 
     expect(screen.getByText('Service Request Rate')).toBeInTheDocument();
@@ -200,7 +194,7 @@ describe('ConfigurableChartCard', () => {
   });
 
   it('passes nested data rows through when the datasource shape is { data: [...] }', async () => {
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'request-rate',
       panelType: 'request',
       title: 'Requests',
@@ -221,7 +215,7 @@ describe('ConfigurableChartCard', () => {
           },
         }}
         extraContext={{}}
-      />,
+      />
     );
 
     expect(await screen.findByTestId('request-chart')).toHaveTextContent('3');
@@ -230,7 +224,7 @@ describe('ConfigurableChartCard', () => {
   it('contains renderer crashes inside the card boundary', () => {
     requestChartShouldThrow.current = true;
 
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'request-rate',
       panelType: 'request',
       title: 'Requests',
@@ -242,12 +236,10 @@ describe('ConfigurableChartCard', () => {
       <ConfigurableChartCard
         componentConfig={componentConfig}
         dataSources={{
-          'request-rate': [
-            { timestamp: '2026-03-20T20:20:00Z', request_count: 1 },
-          ],
+          'request-rate': [{ timestamp: '2026-03-20T20:20:00Z', request_count: 1 }],
         }}
         extraContext={{}}
-      />,
+      />
     );
 
     expect(screen.getByText('Requests')).toBeInTheDocument();
@@ -256,7 +248,7 @@ describe('ConfigurableChartCard', () => {
 
   it('keeps hook order stable when rerendering from data to error and back', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'request-rate',
       panelType: 'request',
       title: 'Requests',
@@ -268,46 +260,48 @@ describe('ConfigurableChartCard', () => {
       <ConfigurableChartCard
         componentConfig={componentConfig}
         dataSources={{
-          'request-rate': [
-            { timestamp: '2026-03-20T20:20:00Z', request_count: 1 },
-          ],
+          'request-rate': [{ timestamp: '2026-03-20T20:20:00Z', request_count: 1 }],
         }}
         extraContext={{}}
-      />,
+      />
     );
 
-    expect(() => rerender(
-      <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
-        <ConfigurableChartCard
-          componentConfig={componentConfig}
-          dataSources={{}}
-          error={{ code: 'REQUEST_FAILED', message: 'Request failed' } as any}
-          extraContext={{}}
-        />
-      </DashboardPanelRegistryProvider>,
-    )).not.toThrow();
+    expect(() =>
+      rerender(
+        <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
+          <ConfigurableChartCard
+            componentConfig={componentConfig}
+            dataSources={{}}
+            error={{ code: 'REQUEST_FAILED', message: 'Request failed' } as any}
+            extraContext={{}}
+          />
+        </DashboardPanelRegistryProvider>
+      )
+    ).not.toThrow();
     expect(screen.getByText('Request failed')).toBeInTheDocument();
 
-    expect(() => rerender(
-      <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
-        <ConfigurableChartCard
-          componentConfig={componentConfig}
-          dataSources={{
-            'request-rate': [
-              { timestamp: '2026-03-20T20:21:00Z', request_count: 2 },
-            ],
-          }}
-          extraContext={{}}
-        />
-      </DashboardPanelRegistryProvider>,
-    )).not.toThrow();
+    expect(() =>
+      rerender(
+        <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
+          <ConfigurableChartCard
+            componentConfig={componentConfig}
+            dataSources={{
+              'request-rate': [{ timestamp: '2026-03-20T20:21:00Z', request_count: 2 }],
+            }}
+            extraContext={{}}
+          />
+        </DashboardPanelRegistryProvider>
+      )
+    ).not.toThrow();
     expect(await screen.findByTestId('request-chart')).toBeInTheDocument();
-    expect(collectConsoleMessages(consoleErrorSpy)).not.toMatch(/Rendered (fewer|more) hooks than expected/);
+    expect(collectConsoleMessages(consoleErrorSpy)).not.toMatch(
+      /Rendered (fewer|more) hooks than expected/
+    );
   });
 
   it('keeps hook order stable when rerendering between no-data and data states', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const componentConfig: DashboardComponentSpec = {
+    const componentConfig: DashboardPanelSpec = {
       id: 'request-rate',
       panelType: 'request',
       title: 'Requests',
@@ -316,88 +310,88 @@ describe('ConfigurableChartCard', () => {
     };
 
     const { rerender } = renderWithDashboardPanels(
-      <ConfigurableChartCard
-        componentConfig={componentConfig}
-        dataSources={{}}
-        extraContext={{}}
-      />,
+      <ConfigurableChartCard componentConfig={componentConfig} dataSources={{}} extraContext={{}} />
     );
 
     expect(screen.getByText('No data available')).toBeInTheDocument();
 
-    expect(() => rerender(
-      <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
-        <ConfigurableChartCard
-          componentConfig={componentConfig}
-          dataSources={{
-            'request-rate': [
-              { timestamp: '2026-03-20T20:20:00Z', request_count: 1 },
-            ],
-          }}
-          extraContext={{}}
-        />
-      </DashboardPanelRegistryProvider>,
-    )).not.toThrow();
+    expect(() =>
+      rerender(
+        <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
+          <ConfigurableChartCard
+            componentConfig={componentConfig}
+            dataSources={{
+              'request-rate': [{ timestamp: '2026-03-20T20:20:00Z', request_count: 1 }],
+            }}
+            extraContext={{}}
+          />
+        </DashboardPanelRegistryProvider>
+      )
+    ).not.toThrow();
     expect(await screen.findByTestId('request-chart')).toBeInTheDocument();
 
-    expect(() => rerender(
-      <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
-        <ConfigurableChartCard
-          componentConfig={componentConfig}
-          dataSources={{}}
-          extraContext={{}}
-        />
-      </DashboardPanelRegistryProvider>,
-    )).not.toThrow();
+    expect(() =>
+      rerender(
+        <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
+          <ConfigurableChartCard
+            componentConfig={componentConfig}
+            dataSources={{}}
+            extraContext={{}}
+          />
+        </DashboardPanelRegistryProvider>
+      )
+    ).not.toThrow();
     expect(screen.getByText('No data available')).toBeInTheDocument();
-    expect(collectConsoleMessages(consoleErrorSpy)).not.toMatch(/Rendered (fewer|more) hooks than expected/);
+    expect(collectConsoleMessages(consoleErrorSpy)).not.toMatch(
+      /Rendered (fewer|more) hooks than expected/
+    );
   });
 
   it('keeps hook order stable when rerendering from a known renderer to an unknown key', () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const knownConfig: DashboardComponentSpec = {
+    const knownConfig: DashboardPanelSpec = {
       id: 'request-rate',
       panelType: 'request',
       title: 'Requests',
       order: 10,
       query: { method: 'GET', endpoint: '/v1/overview/request-rate' },
     };
-    const unknownConfig: DashboardComponentSpec = {
+    const unknownConfig: DashboardPanelSpec = {
       ...knownConfig,
-      panelType: 'does-not-exist',
+      panelType: 'does-not-exist' as DashboardPanelType,
     };
 
     const { rerender } = renderWithDashboardPanels(
       <ConfigurableChartCard
         componentConfig={knownConfig}
         dataSources={{
-          'request-rate': [
-            { timestamp: '2026-03-20T20:20:00Z', request_count: 1 },
-          ],
+          'request-rate': [{ timestamp: '2026-03-20T20:20:00Z', request_count: 1 }],
         }}
         extraContext={{}}
-      />,
+      />
     );
 
-    expect(() => rerender(
-      <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
-        <ConfigurableChartCard
-          componentConfig={unknownConfig}
-          dataSources={{
-            'request-rate': [
-              { timestamp: '2026-03-20T20:20:00Z', request_count: 1 },
-            ],
-          }}
-          extraContext={{}}
-        />
-      </DashboardPanelRegistryProvider>,
-    )).not.toThrow();
+    expect(() =>
+      rerender(
+        <DashboardPanelRegistryProvider registrations={BUILT_IN_DASHBOARD_PANELS}>
+          <ConfigurableChartCard
+            componentConfig={unknownConfig}
+            dataSources={{
+              'request-rate': [{ timestamp: '2026-03-20T20:20:00Z', request_count: 1 }],
+            }}
+            extraContext={{}}
+          />
+        </DashboardPanelRegistryProvider>
+      )
+    ).not.toThrow();
 
     expect(screen.getByText(/Unknown dashboard panel type:/)).toBeInTheDocument();
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      'Unknown dashboard panel type received from backend: does-not-exist',
+      'Unknown dashboard panel type received from backend: does-not-exist'
     );
-    expect(collectConsoleMessages(consoleErrorSpy)).not.toMatch(/Rendered (fewer|more) hooks than expected/);
+    expect(collectConsoleMessages(consoleErrorSpy)).not.toMatch(
+      /Rendered (fewer|more) hooks than expected/
+    );
   });
 });

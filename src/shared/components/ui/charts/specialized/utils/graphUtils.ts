@@ -17,9 +17,22 @@ export function truncate(text: any, max = 30) {
 
 export function inferDomain(name = '') {
   const value = name.toLowerCase();
-  if (value.includes('kafka') || value.includes('rabbit') || value.includes('sqs') || value.includes('pulsar')) return 'kafka';
+  if (
+    value.includes('kafka') ||
+    value.includes('rabbit') ||
+    value.includes('sqs') ||
+    value.includes('pulsar')
+  )
+    return 'kafka';
   if (value.includes('redis') || value.includes('cache')) return 'redis';
-  if (value.includes('postgres') || value.includes('mysql') || value.includes('mongo') || value.includes('sql') || value.includes('db')) return 'postgresql';
+  if (
+    value.includes('postgres') ||
+    value.includes('mysql') ||
+    value.includes('mongo') ||
+    value.includes('sql') ||
+    value.includes('db')
+  )
+    return 'postgresql';
   if (value.includes('k8s') || value.includes('kube') || value.includes('pod')) return 'kubernetes';
   return 'application';
 }
@@ -45,7 +58,7 @@ export function buildPath(fromX: number, fromY: number, toX: number, toY: number
   return `M ${fromX} ${fromY} C ${fromX + curve} ${fromY}, ${toX - curve} ${toY}, ${toX} ${toY}`;
 }
 
-export function buildLayout(nodes: any[], edges: any[]) {
+export function buildLayout(nodes: readonly any[], edges: readonly any[]) {
   const names = nodes.map((n) => n.name).filter(Boolean);
   const nodeSet = new Set(names);
   const nodeMap = new Map(nodes.map((n) => [n.name, n]));
@@ -57,7 +70,9 @@ export function buildLayout(nodes: any[], edges: any[]) {
     incoming.set(name, 0);
   });
 
-  const cleanEdges = edges.filter((edge) => nodeSet.has(edge.source) && nodeSet.has(edge.target) && edge.source !== edge.target);
+  const cleanEdges = edges.filter(
+    (edge) => nodeSet.has(edge.source) && nodeSet.has(edge.target) && edge.source !== edge.target
+  );
   cleanEdges.forEach((edge) => {
     outgoing.get(edge.source)?.push(edge.target);
     incoming.set(edge.target, (incoming.get(edge.target) || 0) + 1);
@@ -109,19 +124,26 @@ export function buildLayout(nodes: any[], edges: any[]) {
     columns[stage].push(nodeMap.get(name));
   });
 
-  const stageColumns = columns.filter(Boolean).map((column) => (
+  const stageColumns = columns.filter(Boolean).map((column) =>
     [...column].sort((a, b) => {
-      const sevDiff = (nodeSeverity(b).key === 'critical' ? 1 : 0) - (nodeSeverity(a).key === 'critical' ? 1 : 0);
+      const sevDiff =
+        (nodeSeverity(b).key === 'critical' ? 1 : 0) - (nodeSeverity(a).key === 'critical' ? 1 : 0);
       if (sevDiff !== 0) return sevDiff;
       return Number(b.riskScore || 0) - Number(a.riskScore || 0);
     })
-  ));
+  );
 
   const maxCount = Math.max(...stageColumns.map((s) => s.length), 1);
-  const contentHeight = Math.max(560, PAD_TOP + maxCount * NODE_HEIGHT + (maxCount - 1) * NODE_GAP_Y + PAD_BOTTOM);
-  const contentWidth = Math.max(980, PAD_LEFT + (stageColumns.length - 1) * STAGE_GAP_X + NODE_WIDTH + PAD_RIGHT);
+  const contentHeight = Math.max(
+    560,
+    PAD_TOP + maxCount * NODE_HEIGHT + (maxCount - 1) * NODE_GAP_Y + PAD_BOTTOM
+  );
+  const contentWidth = Math.max(
+    980,
+    PAD_LEFT + (stageColumns.length - 1) * STAGE_GAP_X + NODE_WIDTH + PAD_RIGHT
+  );
 
-  const positions: Record<string, { x: number, y: number }> = {};
+  const positions: Record<string, { x: number; y: number }> = {};
   stageColumns.forEach((stageNodes, stageIndex) => {
     const x = PAD_LEFT + stageIndex * STAGE_GAP_X;
     const totalHeight = stageNodes.length * NODE_HEIGHT + (stageNodes.length - 1) * NODE_GAP_Y;

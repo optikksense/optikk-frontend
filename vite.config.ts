@@ -2,11 +2,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
-import {
-  API_PROXY_BASE,
-  DEV_BACKEND_URL,
-  DEV_FRONTEND_PORT,
-} from './src/config/apiConfig';
+import { API_PROXY_BASE, DEV_BACKEND_URL, DEV_FRONTEND_PORT } from './src/config/apiConfig';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,8 +16,14 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     resolve: {
       alias: [
-        { find: '@/components/ui', replacement: path.resolve(__dirname, './src/shared/components/primitives/ui') },
-        { find: '@/components', replacement: path.resolve(__dirname, './src/shared/components/primitives') },
+        {
+          find: '@/components/ui',
+          replacement: path.resolve(__dirname, './src/shared/components/primitives/ui'),
+        },
+        {
+          find: '@/components',
+          replacement: path.resolve(__dirname, './src/shared/components/primitives'),
+        },
         { find: '@/lib', replacement: path.resolve(__dirname, './src/shared/lib') },
         { find: '@/types', replacement: path.resolve(__dirname, './src/shared/types') },
         { find: '@/hooks', replacement: path.resolve(__dirname, './src/shared/hooks') },
@@ -57,29 +59,33 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks(id) {
             if (
-              id.includes('/src/app/auth/pages/Pricing/')
-              || id.includes('/node_modules/framer-motion/')
-              || id.includes('/node_modules/motion-dom/')
-              || id.includes('/node_modules/motion-utils/')
+              id.includes('/src/app/auth/pages/Pricing/') ||
+              id.includes('/node_modules/framer-motion/') ||
+              id.includes('/node_modules/motion-dom/') ||
+              id.includes('/node_modules/motion-utils/')
             ) {
               return 'marketing-runtime';
             }
 
             if (
-              id.includes('/node_modules/@radix-ui/')
-              || id.includes('/node_modules/cmdk/')
-              || id.includes('/node_modules/lucide-react/')
-              || id.includes('/node_modules/react-remove-scroll')
-              || id.includes('/node_modules/@floating-ui/')
+              id.includes('/node_modules/@radix-ui/') ||
+              id.includes('/node_modules/cmdk/') ||
+              id.includes('/node_modules/lucide-react/') ||
+              id.includes('/node_modules/react-remove-scroll') ||
+              id.includes('/node_modules/@floating-ui/')
             ) {
               return 'ui-runtime';
             }
 
+            if (id.includes('/node_modules/uplot/')) {
+              return 'chart-runtime';
+            }
+
             if (
-              id.includes('/node_modules/axios/')
-              || id.includes('/node_modules/@tanstack/react-query/')
-              || id.includes('/node_modules/@tanstack/query-core/')
-              || id.includes('/node_modules/zod/')
+              id.includes('/node_modules/axios/') ||
+              id.includes('/node_modules/@tanstack/react-query/') ||
+              id.includes('/node_modules/@tanstack/query-core/') ||
+              id.includes('/node_modules/zod/')
             ) {
               return 'data-runtime';
             }
@@ -87,7 +93,7 @@ export default defineConfig(({ mode }) => {
             return undefined;
           },
         },
-      }
+      },
     },
   };
 });

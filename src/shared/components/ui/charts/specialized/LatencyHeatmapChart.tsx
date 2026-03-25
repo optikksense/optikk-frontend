@@ -5,7 +5,7 @@ import { APP_COLORS } from '@config/colorLiterals';
 
 const LATENCY_BUCKETS = ['0-50ms', '50-100ms', '100-250ms', '250-500ms', '500ms-1s', '>1s'];
 
-interface LatencyHeatmapDataPoint {
+export interface LatencyHeatmapDataPoint {
   time_bucket: string | number;
   latency_bucket: string;
   span_count?: number;
@@ -22,17 +22,12 @@ interface LatencyHeatmapChartProps {
  * @param props Component props.
  * @returns Heatmap chart for latency bucket density by time.
  */
-export default function LatencyHeatmapChart({
-  data = [],
-}: LatencyHeatmapChartProps): JSX.Element {
-  const timeBuckets = useMemo(() =>
-    [...new Set(data.map((d) => d.time_bucket))].sort(),
-    [data],
-  );
+export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartProps): JSX.Element {
+  const timeBuckets = useMemo(() => [...new Set(data.map((d) => d.time_bucket))].sort(), [data]);
 
-  const maxCount = useMemo(() =>
-    Math.max(...data.map((d) => Number(d.span_count) || 0), 1),
-    [data],
+  const maxCount = useMemo(
+    () => Math.max(...data.map((d) => Number(d.span_count) || 0), 1),
+    [data]
   );
 
   const getColor = (count: number): string => {
@@ -68,7 +63,7 @@ export default function LatencyHeatmapChart({
             <div className="flex flex-1 gap-px">
               {timeBuckets.map((tb) => {
                 const cell = data.find(
-                  (d) => d.latency_bucket === lb && String(d.time_bucket) === String(tb),
+                  (d) => d.latency_bucket === lb && String(d.time_bucket) === String(tb)
                 );
                 const count = Number(cell?.span_count) || 0;
                 return (
@@ -95,7 +90,10 @@ export default function LatencyHeatmapChart({
           {timeBuckets
             .filter((_, i) => i % Math.max(1, Math.floor(timeBuckets.length / 8)) === 0)
             .map((tb) => (
-              <span key={String(tb)} className="text-[10px] text-[color:var(--text-muted)] whitespace-nowrap">
+              <span
+                key={String(tb)}
+                className="text-[10px] text-[color:var(--text-muted)] whitespace-nowrap"
+              >
                 {new Date(tb).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             ))}
@@ -108,7 +106,8 @@ export default function LatencyHeatmapChart({
         <div
           className="flex-1 max-w-[160px] h-2 rounded"
           style={{
-            background: 'linear-gradient(to right, var(--literal-rgb-30-100-180), var(--literal-rgb-130-50-90), var(--literal-rgb-217-0-0))',
+            background:
+              'linear-gradient(to right, var(--literal-rgb-30-100-180), var(--literal-rgb-130-50-90), var(--literal-rgb-217-0-0))',
           }}
         />
         <span className="text-[color:var(--text-muted)] text-xs">High</span>

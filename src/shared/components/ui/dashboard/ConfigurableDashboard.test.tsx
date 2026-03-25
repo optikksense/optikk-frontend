@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { DashboardPanelSpec, DashboardRenderConfig } from '@/types/dashboardConfig';
+import type { DashboardPanelSpec, DashboardTabDocument } from '@/types/dashboardConfig';
 
 vi.mock('./ConfigurableChartCard', () => ({
   default: ({ componentConfig }: { componentConfig: DashboardPanelSpec }) => (
@@ -17,7 +17,7 @@ import ConfigurableDashboard from './ConfigurableDashboard';
 
 describe('ConfigurableDashboard', () => {
   it('renders only panels returned by the backend tab document', () => {
-    const config: DashboardRenderConfig = {
+    const config: DashboardTabDocument = {
       id: 'overview',
       pageId: 'overview',
       label: 'Overview',
@@ -64,7 +64,7 @@ describe('ConfigurableDashboard', () => {
   });
 
   it('does not render frontend fallback panels when the backend list is empty', () => {
-    const config: DashboardRenderConfig = {
+    const config: DashboardTabDocument = {
       id: 'overview',
       pageId: 'overview',
       label: 'Overview',
@@ -79,7 +79,7 @@ describe('ConfigurableDashboard', () => {
   });
 
   it('renders kpi-strip sections separately from chart sections', () => {
-    const config: DashboardRenderConfig = {
+    const config: DashboardTabDocument = {
       id: 'overview',
       pageId: 'overview',
       label: 'Overview',
@@ -133,7 +133,7 @@ describe('ConfigurableDashboard', () => {
   });
 
   it('removing one panel only affects that section and keeps other sections stable', () => {
-    const baseConfig: DashboardRenderConfig = {
+    const baseConfig: DashboardTabDocument = {
       id: 'overview',
       pageId: 'overview',
       label: 'Overview',
@@ -198,7 +198,7 @@ describe('ConfigurableDashboard', () => {
           panels: baseConfig.panels.filter((panel) => panel.id !== 'kpi-b'),
         }}
         dataSources={{}}
-      />,
+      />
     );
 
     expect(screen.getAllByTestId('dashboard-component')).toHaveLength(2);

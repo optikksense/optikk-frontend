@@ -15,10 +15,15 @@ export function useAnomalyNarration() {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();
 
   return useQuery<AnomalyEvent | null, Error>({
-    queryKey: ['anomaly-narration', selectedTeamId, timeRange.kind === 'relative' ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`, refreshKey],
+    queryKey: [
+      'anomaly-narration',
+      selectedTeamId,
+      timeRange.kind === 'relative' ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`,
+      refreshKey,
+    ],
     queryFn: async (): Promise<AnomalyEvent | null> => {
       try {
-        const data = await api.get<AnomalyEvent, AnomalyEvent>(`${BASE}/ai/anomaly-narration`);
+        const data = await api.get<AnomalyEvent>(`${BASE}/ai/anomaly-narration`);
         return data ?? null;
       } catch {
         // Endpoint not yet available — degrade gracefully

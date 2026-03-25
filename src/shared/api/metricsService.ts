@@ -68,19 +68,28 @@ export interface MetricsSummary {
   readonly p99Latency: number;
 }
 
-const metricsSummarySchema = z.object({
-  total_requests: z.coerce.number().default(0),
-  error_count: z.coerce.number().default(0),
-  error_rate: z.coerce.number().default(0),
-  avg_latency: z.coerce.number().default(0),
-  p95_latency: z.coerce.number().default(0),
-  p99_latency: z.coerce.number().default(0),
-}).strict();
+const metricsSummarySchema = z
+  .object({
+    total_requests: z.coerce.number().default(0),
+    error_count: z.coerce.number().default(0),
+    error_rate: z.coerce.number().default(0),
+    avg_latency: z.coerce.number().default(0),
+    p95_latency: z.coerce.number().default(0),
+    p99_latency: z.coerce.number().default(0),
+  })
+  .strict();
+
+type MetricsRequestParams = Readonly<
+  QueryParams & {
+    startTime: RequestTime;
+    endTime: RequestTime;
+  }
+>;
 
 async function getArrayResponse<TSchema extends z.ZodTypeAny>(
   endpoint: string,
   schema: TSchema,
-  params: Record<string, unknown>,
+  params: MetricsRequestParams
 ): Promise<Array<z.infer<TSchema>>> {
   const data = await api.get(endpoint, { params });
   return validateResponse(z.array(schema), data);
@@ -89,7 +98,7 @@ async function getArrayResponse<TSchema extends z.ZodTypeAny>(
 async function getObjectResponse<TSchema extends z.ZodTypeAny>(
   endpoint: string,
   schema: TSchema,
-  params: Record<string, unknown>,
+  params: MetricsRequestParams
 ): Promise<z.infer<TSchema>> {
   const data = await api.get(endpoint, { params });
   return validateResponse(schema, data);
@@ -127,9 +136,12 @@ export const metricsService = {
   async getServiceMetrics(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<ServiceMetric[]> {
-    const rows = await getArrayResponse(`${BASE}/services/metrics`, serviceSummarySchema, { startTime, endTime });
+    const rows = await getArrayResponse(`${BASE}/services/metrics`, serviceSummarySchema, {
+      startTime,
+      endTime,
+    });
     return rows.map((row) => normalizeServiceMetric(row));
   },
 
@@ -138,23 +150,30 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-    interval?: string,
+    interval?: string
   ): Promise<TimeSeriesPoint[]> {
-    const rows = await getArrayResponse(`${BASE}/metrics/timeseries`, metricsTimeSeriesPointSchema, {
-      startTime,
-      endTime,
-      serviceName,
-      interval,
-    });
+    const rows = await getArrayResponse(
+      `${BASE}/services/timeseries`,
+      metricsTimeSeriesPointSchema,
+      {
+        startTime,
+        endTime,
+        serviceName,
+        interval,
+      }
+    );
     return rows.map((row) => normalizeTimeSeriesPoint(row));
   },
 
   async getMetricsSummary(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<MetricsSummary> {
-    const row = await getObjectResponse(`${BASE}/metrics/summary`, metricsSummarySchema, { startTime, endTime });
+    const row = await getObjectResponse(`${BASE}/metrics/summary`, metricsSummarySchema, {
+      startTime,
+      endTime,
+    });
     return {
       totalRequests: row.total_requests,
       errorCount: row.error_count,
@@ -169,7 +188,7 @@ export const metricsService = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    interval = '5m',
+    interval = '5m'
   ): Promise<MetricsTimeSeriesPointDto[]> {
     return getArrayResponse(`${BASE}/services/timeseries`, metricsTimeSeriesPointSchema, {
       startTime,
@@ -181,36 +200,49 @@ export const metricsService = {
   async getServiceDependencies(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<ServiceDependencyDto[]> {
-    return getArrayResponse(`${BASE}/services/dependencies`, serviceDependencySchema, { startTime, endTime });
+    return getArrayResponse(`${BASE}/services/dependencies`, serviceDependencySchema, {
+      startTime,
+      endTime,
+    });
   },
 
   async getEndpointBreakdown(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    serviceName: string,
+    serviceName: string
   ): Promise<EndpointMetricDto[]> {
-    return getArrayResponse(`${BASE}/services/${serviceName}/endpoints`, endpointMetricSchema, { startTime, endTime });
+    return getArrayResponse(`${BASE}/services/${serviceName}/endpoints`, endpointMetricSchema, {
+      startTime,
+      endTime,
+    });
   },
 
   async getErrorGroups(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    serviceName: string,
+    serviceName: string
   ): Promise<ErrorGroupDto[]> {
-    return getArrayResponse(`${BASE}/services/${serviceName}/errors`, errorGroupSchema, { startTime, endTime });
+    return getArrayResponse(`${BASE}/services/${serviceName}/errors`, errorGroupSchema, {
+      startTime,
+      endTime,
+    });
   },
 
   async getGlobalErrorGroups(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    params: QueryParams = {},
+    params: QueryParams = {}
   ): Promise<ErrorGroupDto[]> {
-    return getArrayResponse(`${BASE}/errors/groups`, errorGroupSchema, { startTime, endTime, ...params });
+    return getArrayResponse(`${BASE}/errors/groups`, errorGroupSchema, {
+      startTime,
+      endTime,
+      ...params,
+    });
   },
 
   async getErrorTimeSeries(
@@ -218,7 +250,7 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     interval = '5m',
-    serviceName?: string,
+    serviceName?: string
   ): Promise<MetricsTimeSeriesPointDto[]> {
     return getArrayResponse(`${BASE}/errors/timeseries`, metricsTimeSeriesPointSchema, {
       startTime,
@@ -231,71 +263,103 @@ export const metricsService = {
   async getAvgCPU(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<MetricNumericValue> {
-    return getObjectResponse(`${BASE}/infrastructure/resource-utilisation/avg-cpu`, metricNumericValueSchema, { startTime, endTime });
+    return getObjectResponse(
+      `${BASE}/infrastructure/resource-utilisation/avg-cpu`,
+      metricNumericValueSchema,
+      { startTime, endTime }
+    );
   },
 
   async getAvgMemory(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<MetricNumericValue> {
-    return getObjectResponse(`${BASE}/infrastructure/resource-utilisation/avg-memory`, metricNumericValueSchema, { startTime, endTime });
+    return getObjectResponse(
+      `${BASE}/infrastructure/resource-utilisation/avg-memory`,
+      metricNumericValueSchema,
+      { startTime, endTime }
+    );
   },
 
   async getAvgNetwork(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<MetricNumericValue> {
-    return getObjectResponse(`${BASE}/infrastructure/resource-utilisation/avg-network`, metricNumericValueSchema, { startTime, endTime });
+    return getObjectResponse(
+      `${BASE}/infrastructure/resource-utilisation/avg-network`,
+      metricNumericValueSchema,
+      { startTime, endTime }
+    );
   },
 
   async getAvgConnPool(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<MetricNumericValue> {
-    return getObjectResponse(`${BASE}/infrastructure/resource-utilisation/avg-conn-pool`, metricNumericValueSchema, { startTime, endTime });
+    return getObjectResponse(
+      `${BASE}/infrastructure/resource-utilisation/avg-conn-pool`,
+      metricNumericValueSchema,
+      { startTime, endTime }
+    );
   },
 
   async getCPUUsagePercentage(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<ResourceUsageTimeSeriesPointDto[]> {
-    return getArrayResponse(`${BASE}/infrastructure/resource-utilisation/cpu-usage-percentage`, resourceUsageTimeSeriesPointSchema, { startTime, endTime });
+    return getArrayResponse(
+      `${BASE}/infrastructure/resource-utilisation/cpu-usage-percentage`,
+      resourceUsageTimeSeriesPointSchema,
+      { startTime, endTime }
+    );
   },
 
   async getMemoryUsagePercentage(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<ResourceUsageTimeSeriesPointDto[]> {
-    return getArrayResponse(`${BASE}/infrastructure/resource-utilisation/memory-usage-percentage`, resourceUsageTimeSeriesPointSchema, { startTime, endTime });
+    return getArrayResponse(
+      `${BASE}/infrastructure/resource-utilisation/memory-usage-percentage`,
+      resourceUsageTimeSeriesPointSchema,
+      { startTime, endTime }
+    );
   },
 
   async getResourceUsageByService(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<ResourceUsageByServiceRowDto[]> {
-    return getArrayResponse(`${BASE}/infrastructure/resource-utilisation/by-service`, resourceUsageByServiceRowSchema, { startTime, endTime });
+    return getArrayResponse(
+      `${BASE}/infrastructure/resource-utilisation/by-service`,
+      resourceUsageByServiceRowSchema,
+      { startTime, endTime }
+    );
   },
 
   async getResourceUsageByInstance(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<ResourceUsageByInstanceRowDto[]> {
-    return getArrayResponse(`${BASE}/infrastructure/resource-utilisation/by-instance`, resourceUsageByInstanceRowSchema, { startTime, endTime });
+    return getArrayResponse(
+      `${BASE}/infrastructure/resource-utilisation/by-instance`,
+      resourceUsageByInstanceRowSchema,
+      { startTime, endTime }
+    );
   },
 
   async getNodeHealth(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<unknown> {
     return api.get(`${BASE}/infrastructure/nodes`, { params: { startTime, endTime } });
   },
@@ -304,7 +368,7 @@ export const metricsService = {
     _teamId: number | null,
     host: string,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<unknown> {
     return api.get(`${BASE}/infrastructure/nodes/${encodeURIComponent(host)}/services`, {
       params: { startTime, endTime },
@@ -314,36 +378,51 @@ export const metricsService = {
   async getOverviewServices(
     _teamId: number | null,
     startTime: RequestTime,
-    endTime: RequestTime,
+    endTime: RequestTime
   ): Promise<ServiceSummary[]> {
-    return getArrayResponse(`${BASE}/overview/services`, serviceSummarySchema, { startTime, endTime });
+    return getArrayResponse(`${BASE}/overview/services`, serviceSummarySchema, {
+      startTime,
+      endTime,
+    });
   },
 
   async getOverviewEndpointMetrics(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    serviceName?: string,
+    serviceName?: string
   ): Promise<EndpointMetricDto[]> {
-    return getArrayResponse(`${BASE}/overview/endpoints/metrics`, endpointMetricSchema, { startTime, endTime, serviceName });
+    return getArrayResponse(`${BASE}/overview/endpoints/metrics`, endpointMetricSchema, {
+      startTime,
+      endTime,
+      serviceName,
+    });
   },
 
   async getOverviewEndpointTimeSeries(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    serviceName?: string,
+    serviceName?: string
   ): Promise<MetricsTimeSeriesPointDto[]> {
-    return getArrayResponse(`${BASE}/overview/endpoints/timeseries`, metricsTimeSeriesPointSchema, { startTime, endTime, serviceName });
+    return getArrayResponse(`${BASE}/overview/endpoints/timeseries`, metricsTimeSeriesPointSchema, {
+      startTime,
+      endTime,
+      serviceName,
+    });
   },
 
   async getOverviewErrorGroups(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    params: QueryParams = {},
+    params: QueryParams = {}
   ): Promise<ErrorGroupDto[]> {
-    return getArrayResponse(`${BASE}/overview/errors/groups`, errorGroupSchema, { startTime, endTime, ...params });
+    return getArrayResponse(`${BASE}/overview/errors/groups`, errorGroupSchema, {
+      startTime,
+      endTime,
+      ...params,
+    });
   },
 
   async getServiceErrorRate(
@@ -351,14 +430,18 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-    interval = '5m',
+    interval = '5m'
   ): Promise<MetricsTimeSeriesPointDto[]> {
-    return getArrayResponse(`${BASE}/overview/errors/service-error-rate`, metricsTimeSeriesPointSchema, {
-      startTime,
-      endTime,
-      serviceName,
-      interval,
-    });
+    return getArrayResponse(
+      `${BASE}/overview/errors/service-error-rate`,
+      metricsTimeSeriesPointSchema,
+      {
+        startTime,
+        endTime,
+        serviceName,
+        interval,
+      }
+    );
   },
 
   async getErrorVolume(
@@ -366,7 +449,7 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-    interval = '5m',
+    interval = '5m'
   ): Promise<MetricsTimeSeriesPointDto[]> {
     return getArrayResponse(`${BASE}/overview/errors/error-volume`, metricsTimeSeriesPointSchema, {
       startTime,
@@ -381,13 +464,17 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-    interval = '5m',
+    interval = '5m'
   ): Promise<MetricsTimeSeriesPointDto[]> {
-    return getArrayResponse(`${BASE}/overview/errors/latency-during-error-windows`, metricsTimeSeriesPointSchema, {
-      startTime,
-      endTime,
-      serviceName,
-      interval,
-    });
+    return getArrayResponse(
+      `${BASE}/overview/errors/latency-during-error-windows`,
+      metricsTimeSeriesPointSchema,
+      {
+        startTime,
+        endTime,
+        serviceName,
+        interval,
+      }
+    );
   },
 };

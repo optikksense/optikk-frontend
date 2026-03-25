@@ -16,6 +16,7 @@ import {
   PageShell,
   PageSurface,
 } from '@shared/components/ui';
+import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
 import { formatNumber, formatRelativeTime } from '@shared/utils/formatters';
 import { tsLabel } from '@shared/utils/time';
 import type { StructuredFilter } from '@/shared/hooks/useURLFilters';
@@ -44,8 +45,7 @@ export default function LogsHubPage(): JSX.Element {
     clearAll: clearURLFilters,
   } = useURLFilters(LOGS_URL_FILTER_CONFIG);
 
-  const searchText =
-    typeof urlValues['search'] === 'string' ? urlValues['search'] : '';
+  const searchText = typeof urlValues['search'] === 'string' ? urlValues['search'] : '';
 
   const setSearchText = (value: string): void => {
     urlSetters['search']?.(value);
@@ -88,20 +88,21 @@ export default function LogsHubPage(): JSX.Element {
   });
 
   const detailFields = useLogDetailFields(selectedLog);
+  const normalizedLogsError = useMemo(
+    () => (logsErrorDetail ? toApiErrorShape(logsErrorDetail) : null),
+    [logsErrorDetail]
+  );
 
   const activeSelections = useMemo(
     () => ({
       service_name:
-        filters.find(
-          (filter) =>
-            filter.field === 'service_name' && filter.operator === 'equals',
-        )?.value ?? null,
+        filters.find((filter) => filter.field === 'service_name' && filter.operator === 'equals')
+          ?.value ?? null,
       level:
-        filters.find(
-          (filter) => filter.field === 'level' && filter.operator === 'equals',
-        )?.value ?? null,
+        filters.find((filter) => filter.field === 'level' && filter.operator === 'equals')?.value ??
+        null,
     }),
-    [filters],
+    [filters]
   );
 
   const columns = useMemo<SimpleTableColumn<LogRecord>[]>(
@@ -112,19 +113,20 @@ export default function LogsHubPage(): JSX.Element {
         dataIndex: 'timestamp',
         width: 168,
         render: (value, row) => {
-          const timestamp = value instanceof Date || typeof value === 'string' || typeof value === 'number'
-            ? value
-            : row.timestamp;
+          const timestamp =
+            value instanceof Date || typeof value === 'string' || typeof value === 'number'
+              ? value
+              : row.timestamp;
 
           return (
-          <div className="space-y-1">
-            <div className="font-mono text-[12px] text-[var(--text-primary)]">
-              {tsLabel(timestamp)}
+            <div className="space-y-1">
+              <div className="font-mono text-[12px] text-[var(--text-primary)]">
+                {tsLabel(timestamp)}
+              </div>
+              <div className="text-[11px] text-[var(--text-muted)]">
+                {formatRelativeTime(timestamp)}
+              </div>
             </div>
-            <div className="text-[11px] text-[var(--text-muted)]">
-              {formatRelativeTime(timestamp)}
-            </div>
-          </div>
           );
         },
       },
@@ -133,9 +135,7 @@ export default function LogsHubPage(): JSX.Element {
         key: 'level',
         dataIndex: 'level',
         width: 90,
-        render: (value, row) => (
-          <LevelBadge level={String(value ?? row.severity_text ?? 'INFO')} />
-        ),
+        render: (value, row) => <LevelBadge level={String(value ?? row.severity_text ?? 'INFO')} />,
       },
       {
         title: 'Service',
@@ -185,7 +185,7 @@ export default function LogsHubPage(): JSX.Element {
         ),
       },
     ],
-    [],
+    []
   );
 
   const facetGroups = useMemo(
@@ -201,7 +201,7 @@ export default function LogsHubPage(): JSX.Element {
         buckets: levelFacets.slice(0, 8),
       },
     ],
-    [levelFacets, serviceFacets],
+    [levelFacets, serviceFacets]
   );
 
   return (
@@ -296,14 +296,14 @@ export default function LogsHubPage(): JSX.Element {
           }}
         />
 
-        {logsError && logsErrorDetail && (
+        {logsError && normalizedLogsError && (
           <div className="mb-3 flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.3)] bg-[rgba(240,68,56,0.08)] px-4 py-3 text-[var(--color-error)]">
             <AlertCircle size={16} className="shrink-0" />
             <span className="text-sm font-medium">
-              {ERROR_CODE_LABELS[(logsErrorDetail as any).code] ?? 'Error'}
+              {ERROR_CODE_LABELS[normalizedLogsError.code] ?? 'Error'}
             </span>
             <span className="text-sm opacity-80">
-              {(logsErrorDetail as any).message ?? 'Failed to load logs'}
+              {normalizedLogsError.message || 'Failed to load logs'}
             </span>
           </div>
         )}
@@ -330,7 +330,7 @@ export default function LogsHubPage(): JSX.Element {
             cn(
               'cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]',
               selectedLog?.id === row.id &&
-                'bg-[rgba(94,96,206,0.12)] ring-1 ring-inset ring-[rgba(94,96,206,0.3)]',
+                'bg-[rgba(94,96,206,0.12)] ring-1 ring-inset ring-[rgba(94,96,206,0.3)]'
             )
           }
         />

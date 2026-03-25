@@ -9,22 +9,46 @@ import {
   truncate,
   inferDomain,
   nodeSeverity,
-  buildPath
+  buildPath,
 } from './utils/graphUtils';
 import { useServiceGraphLayout } from './hooks/useServiceGraphLayout';
 import './ServiceGraph.css';
+
+export interface ServiceGraphNode {
+  readonly name: string;
+  readonly status: string;
+  readonly requestCount: number;
+  readonly errorRate: number;
+  readonly avgLatency: number;
+  readonly riskScore?: number;
+}
+
+export interface ServiceGraphEdge {
+  readonly source: string;
+  readonly target: string;
+  readonly callCount: number;
+  readonly avgLatency: number;
+  readonly p95LatencyMs: number;
+  readonly errorRate: number;
+}
+
+interface ServiceGraphProps {
+  readonly nodes?: readonly ServiceGraphNode[];
+  readonly edges?: readonly ServiceGraphEdge[];
+  readonly onNodeClick?: (node: ServiceGraphNode) => void;
+}
 
 /**
  * Interactive service dependency graph with force-directed layout and health status.
  * SVG-specific class names (service-flow-node, node-card, stage-pill, etc.) are kept
  * in ServiceGraph.css because Tailwind cannot target SVG fill/stroke properties.
  */
-export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: any) {
+export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: ServiceGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const [hoveredNode, setHoveredNode] = useState<any>(null);
-  const [hoveredEdge, setHoveredEdge] = useState<any>(null);
+  const [hoveredNode, setHoveredNode] = useState<ServiceGraphNode | null>(null);
+  const [hoveredEdge, setHoveredEdge] = useState<ServiceGraphEdge | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
@@ -39,7 +63,7 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
     contentHeight,
     incidentCount,
     edges: graphEdges,
-    maxCalls
+    maxCalls,
   } = useServiceGraphLayout(nodes, edges);
 
   useEffect(() => {
@@ -174,14 +198,34 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
         style={{ cursor: dragging ? 'grabbing' : 'grab' }}
       >
         <defs>
-          <marker id="service-flow-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <marker
+            id="service-flow-arrow"
+            markerWidth="8"
+            markerHeight="8"
+            refX="7"
+            refY="4"
+            orient="auto"
+          >
             <path d="M0,0 L8,4 L0,8 Z" fill={APP_COLORS.hex_5a6275_2} />
           </marker>
-          <marker id="service-flow-arrow-critical" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <marker
+            id="service-flow-arrow-critical"
+            markerWidth="8"
+            markerHeight="8"
+            refX="7"
+            refY="4"
+            orient="auto"
+          >
             <path d="M0,0 L8,4 L0,8 Z" fill={APP_COLORS.hex_ff4d5a_2} />
           </marker>
           <filter id="critical-glow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="0" stdDeviation="2.8" floodColor={APP_COLORS.hex_ff4d5a_2} floodOpacity="0.55" />
+            <feDropShadow
+              dx="0"
+              dy="0"
+              stdDeviation="2.8"
+              floodColor={APP_COLORS.hex_ff4d5a_2}
+              floodOpacity="0.55"
+            />
           </filter>
         </defs>
 
@@ -191,7 +235,14 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
               const xCenter = PAD_LEFT + stageIndex * STAGE_GAP_X + NODE_WIDTH / 2;
               return (
                 <g key={`stage-${stageIndex}`}>
-                  <rect x={xCenter - 46} y={28} width={92} height={24} rx={12} className="stage-pill" />
+                  <rect
+                    x={xCenter - 46}
+                    y={28}
+                    width={92}
+                    height={24}
+                    rx={12}
+                    className="stage-pill"
+                  />
                   <text x={xCenter} y={44} textAnchor="middle" className="stage-pill-text">
                     {`STAGE ${stageIndex + 1}`}
                   </text>
@@ -211,7 +262,8 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
               const endX = target.x;
               const endY = target.y + NODE_HEIGHT / 2;
               const isCritical = Number(edge.errorRate || 0) > 5;
-              const width = 1.4 + (Number(edge.callCount || 0) / maxCalls) * 2 + (isCritical ? 1.1 : 0);
+              const width =
+                1.4 + (Number(edge.callCount || 0) / maxCalls) * 2 + (isCritical ? 1.1 : 0);
 
               return (
                 <path
@@ -251,16 +303,43 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
                   }}
                   style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
                 >
-                  <rect x="0" y="0" width={NODE_WIDTH} height={NODE_HEIGHT} rx="13" className="node-card" />
-                  <rect x="0" y="10" width="4" height={NODE_HEIGHT - 20} rx="2" className="node-accent" />
+                  <rect
+                    x="0"
+                    y="0"
+                    width={NODE_WIDTH}
+                    height={NODE_HEIGHT}
+                    rx="13"
+                    className="node-card"
+                  />
+                  <rect
+                    x="0"
+                    y="10"
+                    width="4"
+                    height={NODE_HEIGHT - 20}
+                    rx="2"
+                    className="node-accent"
+                  />
 
-                  <text x="16" y="27" className="node-title">{truncate(node.name, 30)}</text>
+                  <text x="16" y="27" className="node-title">
+                    {truncate(node.name, 30)}
+                  </text>
 
                   <circle cx="18" cy="48" r="4" fill={severity.color} />
-                  <text x="29" y="52" className="node-severity" fill={severity.color}>{severity.label}</text>
+                  <text x="29" y="52" className="node-severity" fill={severity.color}>
+                    {severity.label}
+                  </text>
 
-                  <rect x="98" y="38" rx="6" width={domainBadgeWidth} height="18" className="node-domain-badge" />
-                  <text x={106} y="51" className="node-domain-text">{domain}</text>
+                  <rect
+                    x="98"
+                    y="38"
+                    rx="6"
+                    width={domainBadgeWidth}
+                    height="18"
+                    className="node-domain-badge"
+                  />
+                  <text x={106} y="51" className="node-domain-text">
+                    {domain}
+                  </text>
 
                   {alerts > 0 && (
                     <text x={NODE_WIDTH - 16} y="52" textAnchor="end" className="node-alert-text">
@@ -271,7 +350,12 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
                   <text x="16" y="76" className="node-metric-text">
                     {`Err ${Number(node.errorRate || 0).toFixed(2)}%`}
                   </text>
-                  <text x={NODE_WIDTH - 16} y="76" textAnchor="end" className="node-metric-text muted">
+                  <text
+                    x={NODE_WIDTH - 16}
+                    y="76"
+                    textAnchor="end"
+                    className="node-metric-text muted"
+                  >
                     {`${Number(node.avgLatency || 0).toFixed(0)}ms`}
                   </text>
                 </g>
@@ -292,19 +376,27 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
           </div>
           <div className="flex justify-between items-center mb-1.5 text-[12px]">
             <span className="text-[color:var(--literal-hex-9ea8bf)] mr-3">Status</span>
-            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">{hoveredNode.status || 'unknown'}</span>
+            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">
+              {hoveredNode.status || 'unknown'}
+            </span>
           </div>
           <div className="flex justify-between items-center mb-1.5 text-[12px]">
             <span className="text-[color:var(--literal-hex-9ea8bf)] mr-3">Requests</span>
-            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">{Number(hoveredNode.requestCount || 0)}</span>
+            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">
+              {Number(hoveredNode.requestCount || 0)}
+            </span>
           </div>
           <div className="flex justify-between items-center mb-1.5 text-[12px]">
             <span className="text-[color:var(--literal-hex-9ea8bf)] mr-3">Error Rate</span>
-            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">{Number(hoveredNode.errorRate || 0).toFixed(2)}%</span>
+            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">
+              {Number(hoveredNode.errorRate || 0).toFixed(2)}%
+            </span>
           </div>
           <div className="flex justify-between items-center text-[12px]">
             <span className="text-[color:var(--literal-hex-9ea8bf)] mr-3">Latency</span>
-            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">{Number(hoveredNode.avgLatency || 0).toFixed(0)}ms</span>
+            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">
+              {Number(hoveredNode.avgLatency || 0).toFixed(0)}ms
+            </span>
           </div>
         </div>
       )}
@@ -320,15 +412,21 @@ export default function ServiceGraph({ nodes = [], edges = [], onNodeClick }: an
           </div>
           <div className="flex justify-between items-center mb-1.5 text-[12px]">
             <span className="text-[color:var(--literal-hex-9ea8bf)] mr-3">Calls</span>
-            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">{Number(hoveredEdge.callCount || 0)}</span>
+            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">
+              {Number(hoveredEdge.callCount || 0)}
+            </span>
           </div>
           <div className="flex justify-between items-center mb-1.5 text-[12px]">
             <span className="text-[color:var(--literal-hex-9ea8bf)] mr-3">Error Rate</span>
-            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">{Number(hoveredEdge.errorRate || 0).toFixed(2)}%</span>
+            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">
+              {Number(hoveredEdge.errorRate || 0).toFixed(2)}%
+            </span>
           </div>
           <div className="flex justify-between items-center text-[12px]">
             <span className="text-[color:var(--literal-hex-9ea8bf)] mr-3">Latency</span>
-            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">{Number(hoveredEdge.avgLatency || 0).toFixed(0)}ms</span>
+            <span className="text-[color:var(--literal-hex-e8ecf8)] font-semibold">
+              {Number(hoveredEdge.avgLatency || 0).toFixed(0)}ms
+            </span>
           </div>
         </div>
       )}

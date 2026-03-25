@@ -10,9 +10,6 @@ interface UseLiveTailStreamOptions<Item> {
   params?: Record<string, unknown>;
   maxItems?: number;
   normalizeItem?: (value: unknown) => Item;
-
-  /** @deprecated Use params instead. Kept for backward compat — ignored when params is provided. */
-  url?: string | null;
 }
 
 interface UseLiveTailStreamResult<Item> {

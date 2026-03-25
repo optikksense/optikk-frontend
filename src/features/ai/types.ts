@@ -1,9 +1,7 @@
 /**
  * AI feature domain types.
  */
-export type DomainRecord = Record<string, unknown>;
-
-export interface LLMRun extends DomainRecord {
+export interface LLMRun {
   spanId: string;
   traceId: string;
   parentSpanId?: string;

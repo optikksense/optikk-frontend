@@ -192,7 +192,7 @@ export async function registerApiMocks(page) {
     }
 
     if (
-      (path === '/api/v1/overview/timeseries' || path === '/api/v1/metrics/timeseries') &&
+      (path === '/api/v1/overview/timeseries' || path === '/api/v1/services/timeseries') &&
       method === 'GET'
     ) {
       return json(route, requestTimeseries);

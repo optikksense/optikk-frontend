@@ -1,16 +1,13 @@
-import {
-  createContext,
-  useContext,
-  useMemo,
-} from 'react';
+import { createContext, useContext, useMemo } from 'react';
 
 import type { ComponentType, PropsWithChildren } from 'react';
 
 import type {
-  DashboardComponentSpec,
+  DashboardPanelSpec,
   DashboardRecord,
   DashboardDataSources,
   DashboardExtraContext,
+  DashboardPanelType,
 } from '@/types/dashboardConfig';
 
 export interface BaseChartComponentProps {
@@ -27,7 +24,7 @@ export interface BaseChartComponentProps {
 }
 
 export interface DashboardPanelRendererProps {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
   extraContext?: DashboardExtraContext;
 }
@@ -35,27 +32,22 @@ export interface DashboardPanelRendererProps {
 export type SpecializedDashboardRenderer = ComponentType<DashboardPanelRendererProps>;
 export type BaseChartDashboardRenderer = ComponentType<BaseChartComponentProps>;
 
-export type DashboardPanelRendererKind =
-  | 'base-chart'
-  | 'specialized'
-  | 'self-contained';
+export type DashboardPanelRendererKind = 'base-chart' | 'specialized' | 'self-contained';
 
-type DashboardRendererComponent =
-  | SpecializedDashboardRenderer
-  | BaseChartDashboardRenderer;
+type DashboardRendererComponent = SpecializedDashboardRenderer | BaseChartDashboardRenderer;
 
 export interface DashboardPanelRegistration {
-  readonly panelType: string;
+  readonly panelType: DashboardPanelType;
   readonly kind: DashboardPanelRendererKind;
   readonly component: DashboardRendererComponent;
 }
 
-export type DashboardPanelRegistry = ReadonlyMap<string, DashboardPanelRegistration>;
+export type DashboardPanelRegistry = ReadonlyMap<DashboardPanelType, DashboardPanelRegistration>;
 
 function buildDashboardPanelRegistry(
-  registrations: readonly DashboardPanelRegistration[],
+  registrations: readonly DashboardPanelRegistration[]
 ): DashboardPanelRegistry {
-  const entries = new Map<string, DashboardPanelRegistration>();
+  const entries = new Map<DashboardPanelType, DashboardPanelRegistration>();
 
   for (const registration of registrations) {
     if (!registration.panelType) {
@@ -64,7 +56,7 @@ function buildDashboardPanelRegistry(
 
     if (import.meta.env.DEV && entries.has(registration.panelType)) {
       console.warn(
-        `Duplicate dashboard panel registration for ${registration.panelType}; latest registration wins.`,
+        `Duplicate dashboard panel registration for ${registration.panelType}; latest registration wins.`
       );
     }
 
@@ -84,10 +76,7 @@ export function DashboardPanelRegistryProvider({
   registrations,
   children,
 }: DashboardPanelRegistryProviderProps) {
-  const registry = useMemo(
-    () => buildDashboardPanelRegistry(registrations),
-    [registrations],
-  );
+  const registry = useMemo(() => buildDashboardPanelRegistry(registrations), [registrations]);
 
   return (
     <DashboardPanelRegistryContext.Provider value={registry}>
@@ -97,7 +86,7 @@ export function DashboardPanelRegistryProvider({
 }
 
 export function useDashboardPanelRegistration(
-  panelType: string | null | undefined,
+  panelType: DashboardPanelType | null | undefined
 ): DashboardPanelRegistration | null {
   const registry = useContext(DashboardPanelRegistryContext);
   if (!panelType) {

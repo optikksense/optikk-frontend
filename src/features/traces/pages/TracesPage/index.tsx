@@ -1,11 +1,4 @@
-import {
-  Activity,
-  AlertCircle,
-  GitBranch,
-  GitCompare,
-  Radio,
-  Share2,
-} from 'lucide-react';
+import { Activity, AlertCircle, GitBranch, GitCompare, Radio, Share2 } from 'lucide-react';
 
 import { ERROR_CODE_LABELS } from '@/shared/constants/errorCodes';
 import { useMemo, useState } from 'react';
@@ -18,6 +11,7 @@ import { ExplorerResultsTable, FacetRail } from '@/features/explorer-core/compon
 import { useLiveTailStream } from '@/features/explorer-core/hooks/useLiveTailStream';
 import { cn } from '@/lib/utils';
 import { tracesService } from '@shared/api/tracesService';
+import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
 import {
   ObservabilityDetailPanel,
   ObservabilityQueryBar,
@@ -41,12 +35,7 @@ import type { TraceRecord } from '../../types';
 
 function renderTraceStatus(status: string): JSX.Element {
   const normalized = (status || 'UNSET').toUpperCase();
-  const variant =
-    normalized === 'ERROR'
-      ? 'error'
-      : normalized === 'OK'
-        ? 'success'
-        : 'default';
+  const variant = normalized === 'ERROR' ? 'error' : normalized === 'OK' ? 'success' : 'default';
   return <Badge variant={variant}>{normalized}</Badge>;
 }
 
@@ -76,7 +65,7 @@ function buildTraceRecordFromLiveItem(value: unknown): TraceRecord {
 function upsertFacetFilter(
   filters: StructuredFilter[],
   nextField: string,
-  nextValue: string | null,
+  nextValue: string | null
 ): StructuredFilter[] {
   const withoutField = filters.filter((filter) => filter.field !== nextField);
   if (!nextValue) {
@@ -125,6 +114,7 @@ export default function TracesPage(): JSX.Element {
   const [selectedTrace, setSelectedTrace] = useState<TraceRecord | null>(null);
   const [selectedTraceIds, setSelectedTraceIds] = useState<string[]>([]);
   const [isLiveTail, setIsLiveTail] = useState(false);
+  const normalizedError = useMemo(() => (error ? toApiErrorShape(error) : null), [error]);
 
   const detailFields = useTraceDetailFields(selectedTrace);
 
@@ -238,7 +228,7 @@ export default function TracesPage(): JSX.Element {
         ),
       },
     ],
-    [selectedTraceIds],
+    [selectedTraceIds]
   );
 
   const facetGroups = useMemo(
@@ -259,17 +249,16 @@ export default function TracesPage(): JSX.Element {
         buckets: (facets.operation_name ?? []).slice(0, 10),
       },
     ],
-    [facets.operation_name, facets.service_name, facets.status],
+    [facets.operation_name, facets.service_name, facets.status]
   );
 
   const selectedFacetState = useMemo(
     () => ({
       service_name: selectedService,
       status: errorsOnly ? 'ERROR' : null,
-      operation_name:
-        filters.find((filter) => filter.field === 'operation_name')?.value ?? null,
+      operation_name: filters.find((filter) => filter.field === 'operation_name')?.value ?? null,
     }),
-    [errorsOnly, filters, selectedService],
+    [errorsOnly, filters, selectedService]
   );
 
   const modeOptions = useMemo<SelectOption[]>(
@@ -277,7 +266,7 @@ export default function TracesPage(): JSX.Element {
       { label: 'Root spans', value: 'root' },
       { label: 'All spans', value: 'all' },
     ],
-    [],
+    []
   );
 
   return (
@@ -324,9 +313,7 @@ export default function TracesPage(): JSX.Element {
                   size="sm"
                   icon={<GitCompare size={14} />}
                   onClick={() =>
-                    navigate(
-                      `/traces/compare?a=${selectedTraceIds[0]}&b=${selectedTraceIds[1]}`,
-                    )
+                    navigate(`/traces/compare?a=${selectedTraceIds[0]}&b=${selectedTraceIds[1]}`)
                   }
                 >
                   Compare selected
@@ -364,7 +351,7 @@ export default function TracesPage(): JSX.Element {
                     'flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-colors',
                     errorsOnly
                       ? 'border-[rgba(240,68,56,0.35)] bg-[rgba(240,68,56,0.08)] text-[var(--color-error)]'
-                      : 'border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)]',
+                      : 'border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
                   )}
                 >
                   <Activity size={13} />
@@ -412,14 +399,14 @@ export default function TracesPage(): JSX.Element {
           }}
         />
 
-        {isError && error && (
+        {isError && normalizedError && (
           <div className="mb-3 flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.3)] bg-[rgba(240,68,56,0.08)] px-4 py-3 text-[var(--color-error)]">
             <AlertCircle size={16} className="shrink-0" />
             <span className="text-sm font-medium">
-              {ERROR_CODE_LABELS[(error as any).code] ?? 'Error'}
+              {ERROR_CODE_LABELS[normalizedError.code] ?? 'Error'}
             </span>
             <span className="text-sm opacity-80">
-              {(error as any).message ?? 'Failed to load traces'}
+              {normalizedError.message || 'Failed to load traces'}
             </span>
           </div>
         )}
@@ -446,7 +433,7 @@ export default function TracesPage(): JSX.Element {
             cn(
               'cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]',
               selectedTrace?.trace_id === row.trace_id &&
-                'bg-[rgba(10,174,214,0.12)] ring-1 ring-inset ring-[rgba(10,174,214,0.28)]',
+                'bg-[rgba(10,174,214,0.12)] ring-1 ring-inset ring-[rgba(10,174,214,0.28)]'
             )
           }
         />

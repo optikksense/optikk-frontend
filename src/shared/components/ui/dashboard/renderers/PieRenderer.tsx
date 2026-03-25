@@ -1,9 +1,6 @@
 import { useMemo } from 'react';
 
-import type {
-  DashboardComponentSpec,
-  DashboardDataSources,
-} from '@/types/dashboardConfig';
+import type { DashboardPanelSpec, DashboardDataSources } from '@/types/dashboardConfig';
 
 import DonutChart from '@shared/components/ui/charts/micro/DonutChart';
 import { getChartColor } from '@shared/utils/charting';
@@ -18,7 +15,7 @@ export function PieRenderer({
   chartConfig,
   dataSources,
 }: {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
 }) {
   const { data: rows } = useDashboardData(chartConfig, dataSources);
@@ -49,7 +46,11 @@ export function PieRenderer({
   }, [labelKey, rows, valueKey]);
 
   if (!chartData) {
-    return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
+    return (
+      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+        No data
+      </div>
+    );
   }
 
   const textPrimary = CHART_THEME_DEFAULTS.textPrimary();

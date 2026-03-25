@@ -6,7 +6,7 @@ import { CHART_COLORS } from '@config/constants';
 
 import { APP_COLORS } from '@config/colorLiterals';
 
-type TopEndpointsListType = 'requests' | 'errorRate' | 'latency' | 'count';
+export type TopEndpointsListType = 'requests' | 'errorRate' | 'latency' | 'count';
 
 interface TopEndpointListItem {
   key?: string;
@@ -38,7 +38,7 @@ interface RowDisplayConfig {
 
 function getRowDisplayConfig(
   type: TopEndpointsListType,
-  endpoint: TopEndpointListItem,
+  endpoint: TopEndpointListItem
 ): RowDisplayConfig {
   if (type === 'errorRate') {
     const rate = endpoint.errorRate ?? endpoint.value ?? 0;
@@ -55,7 +55,12 @@ function getRowDisplayConfig(
     return {
       selectedBg: 'rgba(247, 182, 58, 0.12)',
       hoverBg: 'rgba(255,255,255,0.04)',
-      valueColor: latency > 500 ? 'var(--color-error)' : latency > 200 ? 'var(--color-warning)' : 'var(--text-primary)',
+      valueColor:
+        latency > 500
+          ? 'var(--color-error)'
+          : latency > 200
+            ? 'var(--color-warning)'
+            : 'var(--text-primary)',
       displayValue: formatDuration(latency),
     };
   }
@@ -111,13 +116,9 @@ export default function TopEndpointsList({
               }}
             >
               <th style={{ padding: '4px 8px', fontWeight: 500 }}>Name</th>
-              <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>
-                {title}
-              </th>
+              <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>{title}</th>
               {drilldownRouteTemplate ? (
-                <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>
-                  Details
-                </th>
+                <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>Details</th>
               ) : null}
             </tr>
           </thead>
@@ -126,28 +127,34 @@ export default function TopEndpointsList({
               const endpointKey = endpoint.key ?? `${endpoint.endpoint ?? 'unknown'}-${index}`;
               const detailHref = buildInterpolatedPath(
                 drilldownRouteTemplate,
-                endpoint as Record<string, unknown>,
+                endpoint as Record<string, unknown>
               );
               const isSelected = selectedEndpoints.includes(endpointKey);
               const isFaded = selectedEndpoints.length > 0 && !isSelected;
               const { selectedBg, hoverBg, valueColor, displayValue } = getRowDisplayConfig(
                 type,
-                endpoint,
+                endpoint
               );
-              
+
               // Find max value in list for proportional bar calculation
-              const getVal = (ep: TopEndpointListItem) => (type === 'errorRate' ? (ep.errorRate ?? ep.value ?? 0) : type === 'latency' ? (ep.latency ?? 0) : (ep.request_count ?? 0));
+              const getVal = (ep: TopEndpointListItem) =>
+                type === 'errorRate'
+                  ? (ep.errorRate ?? ep.value ?? 0)
+                  : type === 'latency'
+                    ? (ep.latency ?? 0)
+                    : (ep.request_count ?? 0);
               const maxValInList = Math.max(...visibleEndpoints.map(getVal), 1);
               const currentVal = getVal(endpoint);
               const pct = (currentVal / maxValInList) * 100;
               const barWidth = Math.max(Math.min(pct, 100), 2);
-              
+
               // Gradient based on type (Error rate/Hotspot uses orange->red)
-              const barBg = type === 'errorRate' 
-                ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
-                : type === 'latency'
-                  ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
-                  : `linear-gradient(90deg, ${CHART_COLORS[1]} 0%, ${CHART_COLORS[0]} 100%)`;
+              const barBg =
+                type === 'errorRate'
+                  ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
+                  : type === 'latency'
+                    ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
+                    : `linear-gradient(90deg, ${CHART_COLORS[1]} 0%, ${CHART_COLORS[0]} 100%)`;
 
               return (
                 <tr
@@ -190,8 +197,24 @@ export default function TopEndpointsList({
                       )}
                     </div>
                     {/* Proportional Gradient Intensity Bar */}
-                    <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden', marginTop: '2px' }}>
-                      <div style={{ width: `${barWidth}%`, height: '100%', background: barBg, borderRadius: '2px' }} />
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '3px',
+                        background: 'rgba(255,255,255,0.06)',
+                        borderRadius: '999px',
+                        overflow: 'hidden',
+                        marginTop: '2px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${barWidth}%`,
+                          height: '100%',
+                          background: barBg,
+                          borderRadius: '2px',
+                        }}
+                      />
                     </div>
                   </td>
                   <td
@@ -216,7 +239,11 @@ export default function TopEndpointsList({
                         <Link
                           to={detailHref}
                           onClick={(event) => event.stopPropagation()}
-                          style={{ color: 'var(--color-primary)', fontSize: '12px', fontWeight: 500 }}
+                          style={{
+                            color: 'var(--color-primary)',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                          }}
                         >
                           View
                         </Link>

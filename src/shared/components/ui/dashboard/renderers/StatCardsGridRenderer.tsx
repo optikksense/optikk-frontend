@@ -1,10 +1,7 @@
 import { Activity, AlertCircle, Clock, Zap } from 'lucide-react';
 import { useMemo } from 'react';
 
-import type {
-  DashboardComponentSpec,
-  DashboardDataSources,
-} from '@/types/dashboardConfig';
+import type { DashboardPanelSpec, DashboardDataSources } from '@/types/dashboardConfig';
 
 import { StatCardsGrid } from '@shared/components/ui';
 import { formatDuration, formatNumber } from '@shared/utils/formatters';
@@ -16,7 +13,7 @@ export function StatCardsGridRenderer({
   chartConfig,
   dataSources,
 }: {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
 }) {
   const { data: services } = useDashboardData(chartConfig, dataSources);
@@ -45,12 +42,20 @@ export function StatCardsGridRenderer({
     <StatCardsGrid
       stats={[
         {
-          metric: { title: 'Total Requests', value: summary.totalRequests, formatter: formatNumber },
+          metric: {
+            title: 'Total Requests',
+            value: summary.totalRequests,
+            formatter: formatNumber,
+          },
           trend: { value: 0 },
           visuals: { icon: <Activity size={20} />, iconColor: APP_COLORS.hex_5e60ce },
         },
         {
-          metric: { title: 'Error Rate', value: Number(Math.max(0, summary.errorRate).toFixed(2)), suffix: '%' },
+          metric: {
+            title: 'Error Rate',
+            value: Number(Math.max(0, summary.errorRate).toFixed(2)),
+            suffix: '%',
+          },
           trend: { value: 0, inverted: true },
           visuals: { icon: <AlertCircle size={20} />, iconColor: APP_COLORS.hex_f04438 },
         },

@@ -62,14 +62,21 @@ export const AiRunsTableRow = React.memo(function AiRunsTableRow({
       case 'durationMs': {
         const pct = maxDuration > 0 ? Math.min((run.durationMs / maxDuration) * 100, 100) : 0;
         const color =
-          run.durationMs > 5000 ? APP_COLORS.hex_f04438 : run.durationMs > 2000 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_73c991;
+          run.durationMs > 5000
+            ? APP_COLORS.hex_f04438
+            : run.durationMs > 2000
+              ? APP_COLORS.hex_f79009
+              : APP_COLORS.hex_73c991;
         return (
           <div className="traces-duration-cell">
             <span className="traces-duration-value" style={{ color }}>
               {formatDuration(run.durationMs)}
             </span>
             <div className="traces-duration-bar-wrapper">
-              <div className="traces-duration-bar" style={{ width: `${pct}%`, background: color }} />
+              <div
+                className="traces-duration-bar"
+                style={{ width: `${pct}%`, background: color }}
+              />
             </div>
           </div>
         );
@@ -90,7 +97,7 @@ export const AiRunsTableRow = React.memo(function AiRunsTableRow({
               'inline-flex py-0.5 px-2 rounded text-[11px] font-semibold',
               run.hasError
                 ? 'bg-[rgba(240,68,56,0.12)] text-[#f04438]'
-                : 'bg-[rgba(16,185,129,0.12)] text-[#10b981]',
+                : 'bg-[rgba(16,185,129,0.12)] text-[#10b981]'
             )}
           >
             {run.hasError ? 'Error' : 'OK'}
@@ -105,14 +112,14 @@ export const AiRunsTableRow = React.memo(function AiRunsTableRow({
               {run.operationName || '—'}
             </span>
             {run.provider && (
-              <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>
-                {run.provider}
-              </span>
+              <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>{run.provider}</span>
             )}
           </div>
         );
-      default:
-        return <span>{String((run as any)[columnKey] ?? '—')}</span>;
+      default: {
+        const fallbackValue = run[columnKey as keyof LLMRun];
+        return <span>{String(fallbackValue ?? '—')}</span>;
+      }
     }
   };
 
@@ -129,7 +136,10 @@ export const AiRunsTableRow = React.memo(function AiRunsTableRow({
         </div>
       ))}
       {flexColumn && (
-        <div className="inline-flex items-center whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0 border-r-0 border-[color:var(--glass-border)] px-[10px] py-[6px] box-border min-h-[34px]" onClick={() => onOpenDetail(run)}>
+        <div
+          className="inline-flex items-center whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0 border-r-0 border-[color:var(--glass-border)] px-[10px] py-[6px] box-border min-h-[34px]"
+          onClick={() => onOpenDetail(run)}
+        >
           {renderCell(flexColumn.key)}
         </div>
       )}

@@ -4,10 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Surface } from '@/components/ui';
 
-import type {
-  DashboardComponentSpec,
-  DashboardDataSources,
-} from '@/types/dashboardConfig';
+import type { DashboardPanelSpec, DashboardDataSources } from '@/types/dashboardConfig';
 
 import { HealthIndicator } from '@shared/components/ui';
 import { formatNumber } from '@shared/utils/formatters';
@@ -18,7 +15,7 @@ export function ServiceHealthGridRenderer({
   chartConfig,
   dataSources,
 }: {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
 }) {
   const navigate = useNavigate();
@@ -41,9 +38,18 @@ export function ServiceHealthGridRenderer({
 
   return (
     <Surface elevation={1} padding="md" className="services-overview-card">
-      <h4><Server style={{ marginRight: 8, verticalAlign: 'middle' }} />Services Overview</h4>
+      <h4>
+        <Server style={{ marginRight: 8, verticalAlign: 'middle' }} />
+        Services Overview
+      </h4>
       {serviceHealth.length > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gap: 16,
+          }}
+        >
           {serviceHealth.map((service) => (
             <div key={service.name}>
               <div
@@ -59,7 +65,9 @@ export function ServiceHealthGridRenderer({
                 </div>
                 <div
                   className="text-[11px] mt-0.5"
-                  style={{ color: service.errorRate > 1 ? APP_COLORS.hex_f04438 : 'var(--text-muted)' }}
+                  style={{
+                    color: service.errorRate > 1 ? APP_COLORS.hex_f04438 : 'var(--text-muted)',
+                  }}
                 >
                   {Math.max(0, Number(service.errorRate)).toFixed(2)}% err
                 </div>
@@ -68,7 +76,9 @@ export function ServiceHealthGridRenderer({
           ))}
         </div>
       ) : (
-        <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No services data available</div>
+        <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+          No services data available
+        </div>
       )}
     </Surface>
   );

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import uPlot from 'uplot';
 
 import type {
-  DashboardComponentSpec,
+  DashboardPanelSpec,
   DashboardDataSources,
   DashboardExtraContext,
 } from '@/types/dashboardConfig';
@@ -20,15 +20,14 @@ export function BarRenderer({
   dataSources,
   extraContext,
 }: {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
   extraContext?: DashboardExtraContext;
 }) {
   const { data: rows } = useDashboardData(chartConfig, dataSources);
 
-  const filterValue = typeof extraContext?.selectedModel === 'string'
-    ? extraContext.selectedModel
-    : null;
+  const filterValue =
+    typeof extraContext?.selectedModel === 'string' ? extraContext.selectedModel : null;
   const groupKey = chartConfig.groupByKey || 'model_name';
   const labelKey = chartConfig.labelKey || groupKey;
   const valueKey = chartConfig.valueKey || 'value';
@@ -45,10 +44,11 @@ export function BarRenderer({
         filtered.map((row) => {
           const value = Number(row[seriesValueKey]);
           return Number.isNaN(value) ? 0 : value;
-        }),
+        })
       );
-      const seriesConfigs: uPlot.Series[] = chartConfig.valueKeys.map((seriesValueKey: string, index: number) =>
-        uBars(seriesValueKey.replace(/_/g, ' '), getChartColor(index)),
+      const seriesConfigs: uPlot.Series[] = chartConfig.valueKeys.map(
+        (seriesValueKey: string, index: number) =>
+          uBars(seriesValueKey.replace(/_/g, ' '), getChartColor(index))
       );
       return { xVals, valArrays, series: seriesConfigs, labels, hasData: true };
     }
@@ -62,16 +62,16 @@ export function BarRenderer({
         groups[group][String(row[bucketKey] ?? 'unknown')] = Number(row[valueKey]) || 0;
       }
       const allBuckets = Array.from(
-        new Set(filtered.map((row) => String(row[bucketKey] ?? 'unknown'))),
+        new Set(filtered.map((row) => String(row[bucketKey] ?? 'unknown')))
       ).sort((a, b) => Number(a) - Number(b));
       const labels = allBuckets.map((bucket) => `${bucket}ms`);
       const xVals = allBuckets.map((_: string, i: number) => i);
       const groupNames = Object.keys(groups);
       const valArrays: (number | null)[][] = groupNames.map((group) =>
-        allBuckets.map((bucket) => groups[group][bucket] ?? 0),
+        allBuckets.map((bucket) => groups[group][bucket] ?? 0)
       );
       const seriesConfigs: uPlot.Series[] = groupNames.map((group, index) =>
-        uBars(group, getChartColor(index)),
+        uBars(group, getChartColor(index))
       );
       return { xVals, valArrays, series: seriesConfigs, labels, hasData: seriesConfigs.length > 0 };
     }
@@ -92,7 +92,11 @@ export function BarRenderer({
   }, [rows, filterValue, groupKey, labelKey, stacked, chartConfig, valueKey]);
 
   if (!chartResult || !chartResult.hasData) {
-    return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
+    return (
+      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+        No data
+      </div>
+    );
   }
 
   const { xVals, valArrays, series, labels } = chartResult;
@@ -107,8 +111,7 @@ export function BarRenderer({
   const axes = defaultAxes();
   axes[0] = {
     ...axes[0],
-    values: (_self: uPlot, splits: number[]) =>
-      splits.map((i) => labels[Math.round(i)] ?? ''),
+    values: (_self: uPlot, splits: number[]) => splits.map((i) => labels[Math.round(i)] ?? ''),
   };
 
   if (yAxisFormatter) {

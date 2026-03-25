@@ -45,7 +45,7 @@ interface AppState extends PersistedAppState {
   readonly setNotificationsEnabled: (enabled: boolean) => void;
   readonly setViewPreference: <K extends UserViewPreferenceKey>(
     key: K,
-    value: NonNullable<UserViewPreferences[K]>,
+    value: NonNullable<UserViewPreferences[K]>
   ) => void;
   readonly addRecentPage: (path: string, label: string) => void;
   readonly toggleFavorite: (path: string) => void;
@@ -128,7 +128,8 @@ function migrateTimeRange(value: unknown): TimeRange {
 }
 
 function pushRecentRange(existing: TimeRange[], newRange: TimeRange): TimeRange[] {
-  const key = newRange.kind === 'relative' ? newRange.preset : `${newRange.startMs}-${newRange.endMs}`;
+  const key =
+    newRange.kind === 'relative' ? newRange.preset : `${newRange.startMs}-${newRange.endMs}`;
   const filtered = existing.filter((r) => {
     const rKey = r.kind === 'relative' ? r.preset : `${r.startMs}-${r.endMs}`;
     return rKey !== key;
@@ -244,7 +245,7 @@ export const useAppStore = create<AppState>()(
 
       setViewPreference: <K extends UserViewPreferenceKey>(
         key: K,
-        value: NonNullable<UserViewPreferences[K]>,
+        value: NonNullable<UserViewPreferences[K]>
       ): void => {
         set((state) => ({
           viewPreferences: { ...state.viewPreferences, [key]: value },
@@ -316,3 +317,14 @@ export const useAppStore = create<AppState>()(
     }
   )
 );
+
+// Computed selectors — use these instead of accessing store shape directly.
+// Reduces coupling so store internals can change without updating every consumer.
+export const useTimeRange = () => useAppStore((s) => s.timeRange);
+export const useTeamId = () => useAppStore((s) => s.selectedTeamId);
+export const useTeamIds = () => useAppStore((s) => s.selectedTeamIds);
+export const useRefreshKey = () => useAppStore((s) => s.refreshKey);
+export const useSidebarCollapsed = () => useAppStore((s) => s.sidebarCollapsed);
+export const useTheme = () => useAppStore((s) => s.theme);
+export const useTimezone = () => useAppStore((s) => s.timezone);
+export const useComparisonMode = () => useAppStore((s) => s.comparisonMode);

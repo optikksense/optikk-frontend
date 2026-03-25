@@ -1,10 +1,10 @@
-import type { DashboardRenderConfig } from '@/types/dashboardConfig';
+import type { DashboardTabDocument } from '@/types/dashboardConfig';
 
 import { usePageTabs } from './usePageTabs';
 import { useDashboardTabDocument } from './useDashboardTabDocument';
 
 interface UseDashboardConfigResult {
-  config: DashboardRenderConfig | null;
+  config: DashboardTabDocument | null;
   isLoading: boolean;
   error: Error | null;
 }
@@ -22,7 +22,7 @@ export function useDashboardConfig(pageId: string): UseDashboardConfigResult {
   } = useDashboardTabDocument(pageId, defaultTabId);
 
   return {
-    config: tab as DashboardRenderConfig | null,
+    config: tab as DashboardTabDocument | null,
     isLoading: tabsLoading || tabLoading,
     error: tabsError ?? tabError ?? null,
   };

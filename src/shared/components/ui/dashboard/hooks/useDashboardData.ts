@@ -1,21 +1,29 @@
 import { useMemo } from 'react';
 
-import type { DashboardComponentSpec, DashboardDataSources } from '@/types/dashboardConfig';
+import type { DashboardPanelSpec, DashboardDataSources } from '@/types/dashboardConfig';
 
 import { resolveDataSourceId } from '../utils/dashboardUtils';
+import { asDashboardRecordArray, getDashboardRecordArrayField } from '../utils/runtimeValue';
 
 /**
  *
  */
 export function useDashboardData(
-  chartConfig: DashboardComponentSpec,
-  dataSources: DashboardDataSources,
+  chartConfig: DashboardPanelSpec,
+  dataSources: DashboardDataSources
 ) {
   const rawData = dataSources?.[resolveDataSourceId(chartConfig)];
   const data = useMemo(() => {
     const key = chartConfig.dataKey;
-    const arr = key ? rawData?.[key] : rawData;
-    return Array.isArray(arr) ? arr : [];
+    if (key) {
+      return getDashboardRecordArrayField(rawData, key);
+    }
+
+    if (Array.isArray(rawData)) {
+      return asDashboardRecordArray(rawData);
+    }
+
+    return getDashboardRecordArrayField(rawData, 'data');
   }, [rawData, chartConfig.dataKey]);
 
   return { rawData, data };

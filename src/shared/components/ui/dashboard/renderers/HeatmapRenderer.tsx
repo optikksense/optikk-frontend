@@ -1,7 +1,4 @@
-import type {
-  DashboardComponentSpec,
-  DashboardDataSources,
-} from '@/types/dashboardConfig';
+import type { DashboardPanelSpec, DashboardDataSources } from '@/types/dashboardConfig';
 
 import { useDashboardData } from '../hooks/useDashboardData';
 
@@ -12,13 +9,17 @@ export function HeatmapRenderer({
   chartConfig,
   dataSources,
 }: {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
 }) {
   const { data: rows } = useDashboardData(chartConfig, dataSources);
 
   if (rows.length === 0) {
-    return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
+    return (
+      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+        No data
+      </div>
+    );
   }
 
   const xKey = chartConfig.xKey || 'operation_name';
@@ -42,7 +43,20 @@ export function HeatmapRenderer({
           <tr>
             <th style={{ padding: '4px 8px', textAlign: 'left' }}></th>
             {xValues.map((x) => (
-              <th key={x} style={{ padding: '4px 6px', fontWeight: 400, maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={x}>{x.slice(0, 12)}</th>
+              <th
+                key={x}
+                style={{
+                  padding: '4px 6px',
+                  fontWeight: 400,
+                  maxWidth: 80,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+                title={x}
+              >
+                {x.slice(0, 12)}
+              </th>
             ))}
           </tr>
         </thead>
@@ -55,7 +69,15 @@ export function HeatmapRenderer({
                 const intensity = Math.min(1, val / maxVal);
                 const bg = `rgba(240,68,56,${intensity.toFixed(2)})`;
                 return (
-                  <td key={x} style={{ background: bg, padding: '4px 6px', textAlign: 'center', color: intensity > 0.5 ? '#fff' : 'inherit' }}>
+                  <td
+                    key={x}
+                    style={{
+                      background: bg,
+                      padding: '4px 6px',
+                      textAlign: 'center',
+                      color: intensity > 0.5 ? '#fff' : 'inherit',
+                    }}
+                  >
                     {val > 0 ? (val < 1 ? val.toFixed(2) : val.toFixed(0)) : ''}
                   </td>
                 );

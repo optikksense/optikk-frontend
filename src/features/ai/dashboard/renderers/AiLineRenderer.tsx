@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import uPlot from 'uplot';
 
 import type {
-  DashboardComponentSpec,
+  DashboardPanelSpec,
   DashboardDataSources,
   DashboardExtraContext,
 } from '@/types/dashboardConfig';
@@ -20,7 +20,7 @@ export function AiLineRenderer({
   dataSources,
   extraContext,
 }: {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
   extraContext?: DashboardExtraContext;
 }) {
@@ -30,9 +30,8 @@ export function AiLineRenderer({
     const arr = Array.isArray(rows) ? rows : [];
     const metricKey = chartConfig.valueKey || 'value';
     const groupKey = chartConfig.groupByKey || 'model_name';
-    const filterValue = typeof extraContext?.selectedModel === 'string'
-      ? extraContext.selectedModel
-      : null;
+    const filterValue =
+      typeof extraContext?.selectedModel === 'string' ? extraContext.selectedModel : null;
     const filtered = filterValue ? arr.filter((row) => row[groupKey] === filterValue) : arr;
 
     const tsSet = new Set<string>();
@@ -45,12 +44,16 @@ export function AiLineRenderer({
     }
 
     const timestamps = Array.from(tsSet).sort(
-      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
     );
     const groups = Array.from(groupSet);
 
     if (groups.length === 0 || timestamps.length === 0) {
-      return { alignedData: [[], []] as uPlot.AlignedData, series: [] as uPlot.Series[], hasData: false };
+      return {
+        alignedData: [[], []] as uPlot.AlignedData,
+        series: [] as uPlot.Series[],
+        hasData: false,
+      };
     }
 
     // Build lookup: group -> timestamp -> value
@@ -73,23 +76,24 @@ export function AiLineRenderer({
     }
 
     const valuesArrays: (number | null)[][] = groups.map((group) =>
-      timestamps.map((ts) => lookup[group]?.[ts] ?? null),
+      timestamps.map((ts) => lookup[group]?.[ts] ?? null)
     );
 
-    const alignedData: uPlot.AlignedData = [
-      tsSecs as unknown as number[],
-      ...valuesArrays,
-    ];
+    const alignedData: uPlot.AlignedData = [tsSecs as unknown as number[], ...valuesArrays];
 
     const seriesConfigs: uPlot.Series[] = groups.map((group, index) =>
-      uLine(group, getChartColor(index), { fill: false }),
+      uLine(group, getChartColor(index), { fill: false })
     );
 
     return { alignedData, series: seriesConfigs, hasData: true };
   }, [rows, chartConfig.valueKey, chartConfig.groupByKey, extraContext?.selectedModel]);
 
   if (!hasData) {
-    return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
+    return (
+      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+        No data
+      </div>
+    );
   }
 
   const yAxisFormatter = chartConfig.yPrefix

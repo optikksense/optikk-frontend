@@ -4,9 +4,9 @@ import type {
   DashboardDataSources,
   DashboardExtraContext,
   DashboardPanelSpec,
-  DashboardRenderConfig,
   DashboardSectionLayoutMode,
   DashboardSectionSpec,
+  DashboardTabDocument,
 } from '@/types/dashboardConfig';
 
 import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
@@ -18,7 +18,7 @@ import DashboardSection from './DashboardSection';
 import KpiStrip from './KpiStrip';
 
 interface ConfigurableDashboardProps {
-  config: DashboardRenderConfig | null;
+  config: DashboardTabDocument | null;
   dataSources?: DashboardDataSources;
   errors?: Record<string, ApiErrorShape | null>;
   isLoading?: boolean;
@@ -70,10 +70,7 @@ export default function ConfigurableDashboard({
 }: ConfigurableDashboardProps) {
   const { selectedTeamId } = useAppStore();
 
-  const sortedSections = useMemo(
-    () => sortSections(config?.sections ?? []),
-    [config?.sections],
-  );
+  const sortedSections = useMemo(() => sortSections(config?.sections ?? []), [config?.sections]);
 
   const panelsBySection = useMemo(() => {
     const grouped = new Map<string, DashboardPanelSpec[]>();
@@ -105,8 +102,8 @@ export default function ConfigurableDashboard({
 
         const layoutMode = resolveSectionLayoutMode(section);
 
-        const content = layoutMode === 'kpi-strip'
-          ? (
+        const content =
+          layoutMode === 'kpi-strip' ? (
             <KpiStrip
               panels={sectionPanels}
               dataSources={dataSources}
@@ -114,8 +111,7 @@ export default function ConfigurableDashboard({
               isLoading={isLoading}
               extraContext={extraContext}
             />
-          )
-          : (
+          ) : (
             <DashboardPanelGrid
               panels={sectionPanels}
               layoutMode={layoutMode}

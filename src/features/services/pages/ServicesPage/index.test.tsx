@@ -21,13 +21,6 @@ vi.mock('@shared/components/ui/dashboard/DashboardPage', () => ({
   default: ({ pageId }: { pageId: string }) => <div data-testid="dashboard-page">{pageId}</div>,
 }));
 
-vi.mock('@shared/hooks/useServiceHealthSnapshot', () => ({
-  useServiceHealthSnapshot: () => ({
-    data: [],
-    isLoading: false,
-  }),
-}));
-
 import ServicesPage from './index';
 
 describe('ServicesPage', () => {

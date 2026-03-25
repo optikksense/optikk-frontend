@@ -9,12 +9,10 @@ export type DashboardRuntimeValue =
   | readonly DashboardScalarValue[]
   | { readonly [key: string]: DashboardRuntimeValue }
   | readonly DashboardRuntimeValue[];
-export type DashboardRecord = { readonly [key: string]: DashboardRuntimeValue };
-export type DashboardDataSourceValue =
-  | DashboardRuntimeValue
-  | Record<string, unknown>
-  | readonly Record<string, unknown>[]
-  | undefined;
+export interface DashboardRecord {
+  readonly [key: string]: DashboardRuntimeValue;
+}
+export type DashboardDataSourceValue = DashboardRuntimeValue | undefined;
 export type DashboardDataSources = Record<string, DashboardDataSourceValue>;
 export type DashboardExtraContext = Record<string, DashboardRuntimeValue>;
 export const DASHBOARD_SCHEMA_VERSION = 1 as const;
@@ -47,8 +45,9 @@ export const DASHBOARD_PANEL_TYPES = [
   'stat-cards-grid',
   'stat-summary',
   'table',
+  'trace-waterfall',
 ] as const;
-export type DashboardPanelType = typeof DASHBOARD_PANEL_TYPES[number];
+export type DashboardPanelType = (typeof DASHBOARD_PANEL_TYPES)[number];
 
 export interface DashboardLayout {
   preset: DashboardPanelPreset;
@@ -81,7 +80,7 @@ export interface DashboardStatSummaryField {
 
 export interface DashboardPanelSpec {
   id: string;
-  panelType: string;
+  panelType: DashboardPanelType;
   sectionId?: string;
   order: number;
   query?: DashboardQuerySpec;
@@ -168,7 +167,3 @@ export interface TabSpec {
   statCards?: StatCardSpec[];
   charts: DashboardPanelSpec[];
 }
-
-// Temporary compile-time aliases while the rest of the frontend converges on the new names.
-export type DashboardComponentSpec = DashboardPanelSpec;
-export type DashboardRenderConfig = DashboardTabDocument;

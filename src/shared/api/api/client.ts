@@ -1,4 +1,9 @@
-import axios, { AxiosError } from 'axios';
+import axios, {
+  AxiosError,
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+} from 'axios';
 
 import { API_CONFIG } from '@config/apiConfig';
 
@@ -11,7 +16,7 @@ import {
   normalizeApiPayload,
 } from '../utils/decode';
 
-const api = axios.create({
+const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || API_CONFIG.BASE_URL,
   timeout: API_CONFIG.TIMEOUT,
   headers: {
@@ -20,13 +25,13 @@ const api = axios.create({
   withCredentials: true,
 });
 
-attachAuthInterceptor(api);
-api.interceptors.response.use((response) => {
-  const normalized = normalizeApiPayload(response.data) as any;
+attachAuthInterceptor(axiosClient);
+axiosClient.interceptors.response.use((response) => {
+  const normalized = normalizeApiPayload(response.data);
 
   if (typeof normalized === 'string' && isHtmlLikePayload(normalized)) {
     return Promise.reject(
-      createInvalidApiResponseError(response, 'Invalid API response', normalized),
+      createInvalidApiResponseError(response, 'Invalid API response', normalized)
     );
   }
 
@@ -37,16 +42,55 @@ api.interceptors.response.use((response) => {
         AxiosError.ERR_BAD_RESPONSE,
         response.config,
         response.request,
-        { ...response, data: normalized as unknown as Record<string, unknown> },
+        { ...response, data: normalized }
       );
       return Promise.reject(err);
     }
-    return normalizeApiPayload(normalized.data) as any;
+    return {
+      ...response,
+      data: normalizeApiPayload(normalized.data),
+    };
   }
 
-  return normalized;
+  return {
+    ...response,
+    data: normalized,
+  };
 });
-attachErrorInterceptor(api);
+attachErrorInterceptor(axiosClient);
+
+async function unwrapResponse<T>(request: Promise<AxiosResponse<T>>): Promise<T> {
+  const response = await request;
+  return response.data;
+}
+
+export interface NormalizedApiClient {
+  readonly raw: AxiosInstance;
+  request<T = unknown>(config: AxiosRequestConfig): Promise<T>;
+  get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
+  put<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
+  delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
+}
+
+const api: NormalizedApiClient = {
+  raw: axiosClient,
+  request<T = unknown>(config: AxiosRequestConfig): Promise<T> {
+    return unwrapResponse(axiosClient.request<T>(config));
+  },
+  get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    return unwrapResponse(axiosClient.get<T>(url, config));
+  },
+  post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    return unwrapResponse(axiosClient.post<T>(url, data, config));
+  },
+  put<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    return unwrapResponse(axiosClient.put<T>(url, data, config));
+  },
+  delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    return unwrapResponse(axiosClient.delete<T>(url, config));
+  },
+};
 
 export { api };
 export default api;

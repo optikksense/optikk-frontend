@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import type {
-  DashboardComponentSpec,
+  DashboardPanelSpec,
   DashboardDataSources,
   DashboardExtraContext,
 } from '@/types/dashboardConfig';
@@ -17,7 +17,7 @@ export function LogHistogramRenderer({
   dataSources,
   extraContext,
 }: {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
   extraContext?: DashboardExtraContext;
 }) {
@@ -28,7 +28,11 @@ export function LogHistogramRenderer({
     const arr = key ? rawData?.[key] : rawData;
     return Array.isArray(arr) ? arr : [];
   }, [rawData, chartConfig.dataKey]);
-  return data.length > 0
-    ? <LogHistogram data={data} height={240} startTime={startTime} endTime={endTime} />
-    : <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
+  return data.length > 0 ? (
+    <LogHistogram data={data} height={240} startTime={startTime} endTime={endTime} />
+  ) : (
+    <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+      No data
+    </div>
+  );
 }

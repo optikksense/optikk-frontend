@@ -1,5 +1,5 @@
 import type {
-  DashboardComponentSpec,
+  DashboardPanelSpec,
   DashboardDataSources,
   DashboardExtraContext,
 } from '@/types/dashboardConfig';
@@ -14,15 +14,11 @@ export function AiBarRenderer({
   dataSources,
   extraContext,
 }: {
-  chartConfig: DashboardComponentSpec;
+  chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
   extraContext?: DashboardExtraContext;
 }) {
   return (
-    <BarRenderer
-      chartConfig={chartConfig}
-      dataSources={dataSources}
-      extraContext={extraContext}
-    />
+    <BarRenderer chartConfig={chartConfig} dataSources={dataSources} extraContext={extraContext} />
   );
 }

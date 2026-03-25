@@ -9,11 +9,21 @@ import type { LLMRunFilters } from '../types';
 export const aiRunsKeys = {
   all: ['ai-runs'] as const,
   lists: () => [...aiRunsKeys.all, 'list'] as const,
-  list: (teamId: number | null, startTime: RequestTime, endTime: RequestTime, filters: LLMRunFilters) =>
-    [...aiRunsKeys.lists(), { teamId, startTime, endTime, ...filters }] as const,
+  list: (
+    teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    filters: LLMRunFilters,
+    refreshKey?: number
+  ) => [...aiRunsKeys.lists(), { teamId, startTime, endTime, refreshKey, ...filters }] as const,
   summaries: () => [...aiRunsKeys.all, 'summary'] as const,
-  summary: (teamId: number | null, startTime: RequestTime, endTime: RequestTime, filters: LLMRunFilters) =>
-    [...aiRunsKeys.summaries(), { teamId, startTime, endTime, ...filters }] as const,
+  summary: (
+    teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    filters: LLMRunFilters,
+    refreshKey?: number
+  ) => [...aiRunsKeys.summaries(), { teamId, startTime, endTime, refreshKey, ...filters }] as const,
   models: (teamId: number | null, startTime: RequestTime, endTime: RequestTime) =>
     [...aiRunsKeys.all, 'models', { teamId, startTime, endTime }] as const,
   operations: (teamId: number | null, startTime: RequestTime, endTime: RequestTime) =>
@@ -21,18 +31,30 @@ export const aiRunsKeys = {
 };
 
 export const aiRunsQueries = {
-  list: (teamId: number | null, startTime: RequestTime, endTime: RequestTime, filters: LLMRunFilters) =>
+  list: (
+    teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    filters: LLMRunFilters,
+    refreshKey?: number
+  ) =>
     queryOptions({
-      queryKey: aiRunsKeys.list(teamId, startTime, endTime, filters),
+      queryKey: aiRunsKeys.list(teamId, startTime, endTime, filters, refreshKey),
       queryFn: () => aiRunsApi.getRuns(teamId, startTime, endTime, filters),
       enabled: !!teamId,
       staleTime: 30000,
       retry: false,
     }),
 
-  summary: (teamId: number | null, startTime: RequestTime, endTime: RequestTime, filters: LLMRunFilters) =>
+  summary: (
+    teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    filters: LLMRunFilters,
+    refreshKey?: number
+  ) =>
     queryOptions({
-      queryKey: aiRunsKeys.summary(teamId, startTime, endTime, filters),
+      queryKey: aiRunsKeys.summary(teamId, startTime, endTime, filters, refreshKey),
       queryFn: () => aiRunsApi.getSummary(teamId, startTime, endTime, filters),
       enabled: !!teamId,
       staleTime: 30000,
@@ -129,7 +151,12 @@ export const aiConversationKeys = {
   all: ['ai-conversations'] as const,
   list: (teamId: number | null, startTime: RequestTime, endTime: RequestTime) =>
     [...aiConversationKeys.all, 'list', { teamId, startTime, endTime }] as const,
-  detail: (teamId: number | null, conversationId: string, startTime: RequestTime, endTime: RequestTime) =>
+  detail: (
+    teamId: number | null,
+    conversationId: string,
+    startTime: RequestTime,
+    endTime: RequestTime
+  ) =>
     [...aiConversationKeys.all, 'detail', { teamId, conversationId, startTime, endTime }] as const,
 };
 
@@ -143,7 +170,12 @@ export const aiConversationQueries = {
       retry: false,
     }),
 
-  detail: (teamId: number | null, conversationId: string, startTime: RequestTime, endTime: RequestTime) =>
+  detail: (
+    teamId: number | null,
+    conversationId: string,
+    startTime: RequestTime,
+    endTime: RequestTime
+  ) =>
     queryOptions({
       queryKey: aiConversationKeys.detail(teamId, conversationId, startTime, endTime),
       queryFn: () => aiConversationsApi.get(teamId, conversationId, startTime, endTime),

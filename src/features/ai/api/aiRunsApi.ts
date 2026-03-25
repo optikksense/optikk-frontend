@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { aiService } from '@shared/api/aiService';
+import type { AiRunsQueryParams } from '@shared/api/aiService';
 import type { RequestTime } from '@shared/api/service-types';
 import type { LLMRunFilters } from '../types';
 
@@ -46,19 +47,19 @@ const operationSchema = z.object({
   operationType: z.string(),
 });
 
-function filtersToParams(filters: LLMRunFilters): Record<string, unknown> {
-  const params: Record<string, unknown> = {};
+function filtersToParams(filters: LLMRunFilters): AiRunsQueryParams {
+  const params: AiRunsQueryParams = {};
   if (filters.models?.length) params.models = filters.models.join(',');
   if (filters.providers?.length) params.providers = filters.providers.join(',');
   if (filters.operations?.length) params.operations = filters.operations.join(',');
   if (filters.services?.length) params.services = filters.services.join(',');
   if (filters.status) params.status = filters.status;
-  if (filters.minDurationMs) params.minDurationMs = filters.minDurationMs;
-  if (filters.maxDurationMs) params.maxDurationMs = filters.maxDurationMs;
-  if (filters.minTokens) params.minTokens = filters.minTokens;
-  if (filters.maxTokens) params.maxTokens = filters.maxTokens;
+  if (filters.minDurationMs != null) params.minDurationMs = filters.minDurationMs;
+  if (filters.maxDurationMs != null) params.maxDurationMs = filters.maxDurationMs;
+  if (filters.minTokens != null) params.minTokens = filters.minTokens;
+  if (filters.maxTokens != null) params.maxTokens = filters.maxTokens;
   if (filters.traceId) params.traceId = filters.traceId;
-  if (filters.limit) params.limit = filters.limit;
+  if (filters.limit != null) params.limit = filters.limit;
   if (filters.cursorTimestamp) params.cursorTimestamp = filters.cursorTimestamp;
   if (filters.cursorSpanId) params.cursorSpanId = filters.cursorSpanId;
   return params;
@@ -69,7 +70,7 @@ export const aiRunsApi = {
     teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    filters: LLMRunFilters = {},
+    filters: LLMRunFilters = {}
   ) {
     const response = await aiService.getRuns(teamId, startTime, endTime, filtersToParams(filters));
     return runsResponseSchema.parse(response);
@@ -79,9 +80,14 @@ export const aiRunsApi = {
     teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    filters: LLMRunFilters = {},
+    filters: LLMRunFilters = {}
   ) {
-    const response = await aiService.getRunsSummary(teamId, startTime, endTime, filtersToParams(filters));
+    const response = await aiService.getRunsSummary(
+      teamId,
+      startTime,
+      endTime,
+      filtersToParams(filters)
+    );
     return summarySchema.parse(response);
   },
 
