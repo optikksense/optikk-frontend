@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { logsService } from '@shared/api/logsService';
 import { tsLabel } from '@shared/utils/time';
-import { useAppStore } from '@shared/store/appStore';
+import { useAppStore } from '@app/store/appStore';
 import { LevelBadge } from './LogRow';
 import type { LogRecord } from '../../types';
 

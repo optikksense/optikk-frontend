@@ -1,8 +1,11 @@
 export { default as LatencyHistogram } from './distributions/LatencyHistogram';
 export { default as LogHistogram } from './distributions/LogHistogram';
+export { default as DonutChart } from './micro/DonutChart';
 export { default as EndpointList } from './micro/EndpointList';
 export { default as SparklineChart } from './micro/SparklineChart';
 export { default as GaugeChart } from './micro/GaugeChart';
+export { default as ObservabilityChart } from './ObservabilityChart';
+export { default as GrafanaChart } from './GrafanaChart';
 export { default as ErrorRateChart } from './time-series/ErrorRateChart';
 export { default as ExceptionTypeLineChart } from './time-series/ExceptionTypeLineChart';
 export { default as RequestChart } from './time-series/RequestChart';

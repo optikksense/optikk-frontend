@@ -6,9 +6,9 @@ import { z } from 'zod';
 
 import api from './api';
 import { validateResponse } from './utils/validate';
-import { traceRecordSchema, spanRecordSchema } from './schemas/tracesSchemas';
+import { traceRecordSchema, spanRecordSchema, tracesSummarySchema } from './schemas/tracesSchemas';
 
-import type { TraceRecord, SpanRecord } from './schemas/tracesSchemas';
+import type { TraceRecord, SpanRecord, TracesSummary } from './schemas/tracesSchemas';
 import type { QueryParams, RequestTime } from './service-types';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
@@ -16,33 +16,44 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 const tracesListSchema = z.object({
   traces: z.array(traceRecordSchema),
   total: z.number(),
-  summary: z.record(z.string(), z.unknown()).optional(),
-});
+  summary: tracesSummarySchema.optional(),
+}).strict();
 
 const spanListSchema = z.array(spanRecordSchema);
+const analyticsCellSchema = z.object({
+  key: z.string(),
+  type: z.enum(['string', 'integer', 'number', 'boolean']),
+  stringValue: z.string().optional(),
+  integerValue: z.number().int().optional(),
+  numberValue: z.number().optional(),
+  booleanValue: z.boolean().optional(),
+}).strict();
+
+const analyticsRowSchema = z.object({
+  cells: z.array(analyticsCellSchema),
+}).strict();
+
+const analyticsResultSchema = z.object({
+  columns: z.array(z.string()),
+  rows: z.array(analyticsRowSchema),
+}).strict();
+
+const analyticsDimensionSchema = z.object({
+  name: z.string(),
+  column: z.string(),
+  description: z.string(),
+}).strict();
 
 /**
  * Service wrapper for distributed tracing endpoints.
  */
 export const tracesService = {
-  async queryExplorer(body: {
-    startTime: RequestTime;
-    endTime: RequestTime;
-    limit?: number;
-    offset?: number;
-    cursor?: string;
-    step?: string;
-    params?: QueryParams;
-  }): Promise<unknown> {
-    return api.post(`${BASE}/traces/explorer/query`, body);
-  },
-
   async getTraces(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
     params: QueryParams = {},
-  ): Promise<{ traces: TraceRecord[]; total: number; summary?: Record<string, unknown> }> {
+  ): Promise<{ traces: TraceRecord[]; total: number; summary?: TracesSummary }> {
     const data = await api.get(`${BASE}/traces`, { params: { startTime, endTime, ...params } });
     return validateResponse(tracesListSchema, data);
   },
@@ -96,12 +107,14 @@ export const tracesService = {
     });
   },
 
-  async postAnalytics(query: unknown): Promise<unknown> {
-    return api.post(`${BASE}/spans/analytics`, query);
+  async postAnalytics(query: unknown): Promise<z.infer<typeof analyticsResultSchema>> {
+    const data = await api.post(`${BASE}/spans/analytics`, query);
+    return validateResponse(analyticsResultSchema, data);
   },
 
-  async getDimensions(): Promise<unknown> {
-    return api.get(`${BASE}/spans/analytics/dimensions`);
+  async getDimensions(): Promise<Array<z.infer<typeof analyticsDimensionSchema>>> {
+    const data = await api.get(`${BASE}/spans/analytics/dimensions`);
+    return validateResponse(z.array(analyticsDimensionSchema), data);
   },
 
   async getSpanSearch(startTime: RequestTime, endTime: RequestTime, params: QueryParams = {}): Promise<unknown> {

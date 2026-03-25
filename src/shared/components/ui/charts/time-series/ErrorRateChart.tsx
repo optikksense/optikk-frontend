@@ -1,13 +1,41 @@
 
 import { useMemo, memo } from 'react';
-import uPlot from 'uplot';
 
 import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
 import { tsKey, tsMs, firstValue } from '@shared/utils/chartDataUtils';
 import { CHART_COLORS } from '@config/constants';
 import { APP_COLORS } from '@config/colorLiterals';
 
-import UPlotChart, { defaultAxes, uLine } from '../UPlotChart';
+import ObservabilityChart from '../ObservabilityChart';
+
+type ChartRow = Record<string, unknown>;
+
+interface ErrorRateChartEndpoint {
+  key?: string;
+  endpoint?: string;
+  service_name?: string;
+  http_method?: string;
+  httpMethod?: string;
+  operation_name?: string;
+  endpoint_name?: string;
+  request_count?: number;
+  error_count?: number;
+  error_rate?: number;
+  value?: number;
+  latency?: number;
+}
+
+interface ErrorRateChartProps {
+  data?: ChartRow[];
+  endpoints?: ErrorRateChartEndpoint[];
+  selectedEndpoints?: string[];
+  serviceTimeseriesMap?: Record<string, ChartRow[]>;
+  height?: number;
+  fillHeight?: boolean;
+  targetThreshold?: number | null;
+  datasetLabel?: string;
+  color?: string;
+}
 
 function getChartColor(index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
@@ -29,15 +57,17 @@ export default memo(function ErrorRateChart({
   endpoints = [],
   selectedEndpoints = [],
   serviceTimeseriesMap = {},
+  height = 280,
+  fillHeight = false,
   targetThreshold = null,
   datasetLabel = 'Error Rate %',
   color = APP_COLORS.hex_f04438,
-}: any) {
+}: ErrorRateChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets } = useChartTimeBuckets();
 
-  const buildServiceDatasets = (endpointList: any[]) => {
-    const targetMap: Record<string, any> = {};
+  const buildServiceDatasets = (endpointList: ErrorRateChartEndpoint[]) => {
+    const targetMap: Record<string, { label: string }> = {};
     for (const ep of endpointList) {
       const key = ep.key || firstValue(ep, ['service_name'], '');
       const label = ep.endpoint || firstValue(ep, ['service_name'], '') || key;
@@ -45,7 +75,7 @@ export default memo(function ErrorRateChart({
     }
     const stepMs = timeBuckets.length >= 2 ? new Date(timeBuckets[1]).getTime() - new Date(timeBuckets[0]).getTime() : 60000;
 
-    return Object.entries(targetMap).map(([key, info]: [string, any], idx) => {
+    return Object.entries(targetMap).map(([key, info], idx) => {
       const tsData = (serviceTimeseriesMap)[key] || [];
       const tsMap: Record<string, { total: number, errors: number }> = {};
       for (const row of tsData) {
@@ -81,7 +111,7 @@ export default memo(function ErrorRateChart({
 
     if (endpoints.length > 0) {
       const list = selectedEndpoints.length > 0
-        ? (endpoints as any[]).filter((ep) => {
+        ? endpoints.filter((ep) => {
           const key = ep.key || (() => {
             const method = String(firstValue(ep, ['http_method', 'httpMethod'], '')).toUpperCase();
             const op = String(firstValue(ep, ['operation_name', 'endpoint_name'], 'Unknown'));
@@ -96,7 +126,7 @@ export default memo(function ErrorRateChart({
       if (hasServiceData) {
         seriesList = buildServiceDatasets(list);
       } else {
-        seriesList = (list as any[]).map((ep, idx) => {
+        seriesList = list.map((ep, idx) => {
           const method = firstValue(ep, ['http_method'], 'N/A');
           const operation = firstValue(ep, ['operation_name', 'endpoint_name'], 'Unknown');
           return {
@@ -109,9 +139,9 @@ export default memo(function ErrorRateChart({
       }
     } else if (hasServiceData) {
       const stepMs = timeBuckets.length >= 2 ? new Date(timeBuckets[1]).getTime() - new Date(timeBuckets[0]).getTime() : 60000;
-      seriesList = Object.entries(serviceTimeseriesMap).slice(0, 10).map(([svcName, rows]: [string, any], idx) => {
+      seriesList = Object.entries(serviceTimeseriesMap).slice(0, 10).map(([svcName, rows], idx) => {
         const tsMap: Record<string, { total: number, errors: number }> = {};
-        for (const row of rows as any[]) {
+        for (const row of rows) {
           const rowTimestamp = firstValue(row, ['timestamp', 'time_bucket'], '');
           if (!rowTimestamp) continue;
           const rowTime = tsMs(rowTimestamp);
@@ -138,7 +168,7 @@ export default memo(function ErrorRateChart({
       });
     } else {
       const dataMap: Record<string, number> = {};
-      for (const d of data as any[]) {
+      for (const d of data) {
         const ts = firstValue(d, ['timestamp', 'time_bucket'], '');
         dataMap[tsKey(ts)] = Number(firstValue(d, ['value', 'error_rate'], 0));
       }
@@ -172,13 +202,6 @@ export default memo(function ErrorRateChart({
     [timeBuckets],
   );
 
-  const uplotData = useMemo<uPlot.AlignedData>(() => {
-    return [
-      timestamps,
-      ...chartData.map((s) => s.values),
-    ] as uPlot.AlignedData;
-  }, [timestamps, chartData]);
-
   const allDataValues = useMemo(() => {
     const vals: number[] = (data as any[]).map((d) => Number(firstValue(d, ['value', 'error_rate'], 0)));
     if (Object.keys(serviceTimeseriesMap).length > 0) {
@@ -208,27 +231,6 @@ export default memo(function ErrorRateChart({
     ? Math.min(targetThreshold * 1.2, 100)
     : yAxisMax;
 
-  const opts = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(() => ({
-    axes: [
-      ...defaultAxes().slice(0, 1),
-      {
-        ...defaultAxes()[1],
-        values: (_u: uPlot, vals: number[]) =>
-          vals.map((v) => (Number.isInteger(v) ? `${v}%` : `${v.toFixed(1)}%`)),
-        range: [0, effectiveYMax],
-      },
-    ],
-    scales: {
-      y: { min: 0, max: effectiveYMax },
-    },
-    series: [
-      {},
-      ...chartData.map((s) =>
-        uLine(s.label, s.color, { fill: s.fill, dash: s.dash }),
-      ),
-    ],
-  }), [chartData, effectiveYMax]);
-
   if (data.length === 0 && timeBuckets.length === 0) {
     return (
       <div style={{ height: '100%', minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -238,8 +240,16 @@ export default memo(function ErrorRateChart({
   }
 
   return (
-    <div style={{ position: 'relative', height: '100%', minHeight: '200px' }}>
-      <UPlotChart options={opts} data={uplotData} />
+    <div style={{ position: 'relative', height: '100%', minHeight: fillHeight ? '100%' : '220px' }}>
+      <ObservabilityChart
+        timestamps={timestamps}
+        series={chartData}
+        yMin={0}
+        yMax={effectiveYMax}
+        yFormatter={(value) => (Number.isInteger(value) ? `${value}%` : `${value.toFixed(1)}%`)}
+        height={height}
+        fillHeight={fillHeight}
+      />
     </div>
   );
 });

@@ -1,6 +1,7 @@
 import { Badge, Skeleton, SimpleTable } from '@/components/ui';
 import React from 'react';
 import { APP_COLORS } from '@config/colorLiterals';
+import type { SimpleTableColumn } from '@shared/components/primitives/ui/simple-table';
 import { formatNumber } from '@shared/utils/formatters';
 
 interface KafkaMetric {
@@ -16,18 +17,18 @@ interface KafkaSaturationTableProps {
 }
 
 export const KafkaSaturationTable: React.FC<KafkaSaturationTableProps> = ({ data, loading }) => {
-  const columns = [
+  const columns: SimpleTableColumn<KafkaMetric>[] = [
     {
       title: 'Kafka Queue',
       dataIndex: 'queue',
       key: 'queue',
-      render: (v: string) => (
+      render: (value) => (
         <Badge variant="warning" style={{
           background: APP_COLORS.rgba_247_144_9_0p15,
           color: APP_COLORS.hex_f79009,
           border: `1px solid ${APP_COLORS.rgba_247_144_9_0p3_2}`
         }}>
-          {v || 'unknown'}
+          {String(value ?? 'unknown')}
         </Badge>
       ),
     },
@@ -35,7 +36,7 @@ export const KafkaSaturationTable: React.FC<KafkaSaturationTableProps> = ({ data
       title: 'Consumer Lag (Avg)',
       dataIndex: 'avg_consumer_lag',
       key: 'avg_consumer_lag',
-      render: (v: number) => formatNumber(v),
+      render: (value) => formatNumber(typeof value === 'number' ? value : Number(value ?? 0)),
       sorter: (a: KafkaMetric, b: KafkaMetric) => a.avg_consumer_lag - b.avg_consumer_lag,
       align: 'right' as const,
     },
@@ -43,7 +44,7 @@ export const KafkaSaturationTable: React.FC<KafkaSaturationTableProps> = ({ data
       title: 'Queue Depth (Avg)',
       dataIndex: 'avg_queue_depth',
       key: 'avg_queue_depth',
-      render: (v: number) => formatNumber(v),
+      render: (value) => formatNumber(typeof value === 'number' ? value : Number(value ?? 0)),
       sorter: (a: KafkaMetric, b: KafkaMetric) => a.avg_queue_depth - b.avg_queue_depth,
       align: 'right' as const,
     },

@@ -1,7 +1,8 @@
 /**
  *
  */
-import { type TraceRecord as EntityTraceRecord } from '@/entities/trace/model';
+import { type TraceRecord as EntityTraceRecord } from '@entities/trace/model';
+import type { QueryParams } from '@shared/api/service-types';
 
 export type TraceRecord = EntityTraceRecord;
 
@@ -94,15 +95,15 @@ export interface RelatedTrace {
 // ── Analytics & Comparison Types ──────────────────────────────────────────────
 
 export interface AnalyticsDimension {
-  key: string;
-  type: 'string' | 'number' | 'boolean';
+  name: string;
+  column: string;
   description?: string;
 }
 
 export interface AnalyticsQuery {
   dimensions: string[];
   metrics: string[];
-  filters: Record<string, any>;
+  filters: Record<string, string | number | boolean | string[]>;
   startTime: number;
   endTime: number;
 }
@@ -170,7 +171,7 @@ export interface FlamegraphNode {
   name: string;
   value: number;
   children?: FlamegraphNode[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 export interface REDMetricsSummary {
@@ -178,4 +179,46 @@ export interface REDMetricsSummary {
   errorRate: number;
   p95Latency: number;
   timestamp: string;
+}
+
+export interface TraceSummary {
+  total_traces: number;
+  error_traces: number;
+  avg_duration: number;
+  p50_duration: number;
+  p95_duration: number;
+  p99_duration: number;
+}
+
+export interface TraceFacet {
+  value: string;
+  count: number;
+}
+
+export interface TraceExplorerFacets {
+  service_name: TraceFacet[];
+  status: TraceFacet[];
+  operation_name: TraceFacet[];
+}
+
+export interface TraceExplorerCorrelations {
+  topServices?: TraceFacet[];
+  topOperations?: TraceFacet[];
+}
+
+export interface TraceExplorerParams extends QueryParams {
+  limit?: number;
+  offset?: number;
+  status?: string;
+  services?: string[];
+  minDuration?: number;
+  maxDuration?: number;
+  traceId?: string;
+  operationName?: string;
+  httpMethod?: string;
+  httpStatusCode?: string | number;
+  search?: string;
+  mode?: string;
+  spanKind?: string;
+  spanName?: string;
 }

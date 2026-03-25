@@ -1,32 +1,9 @@
-import { Tabs } from '@/components/ui';
-import { Activity, Brain, DollarSign, Eye, Shield, TrendingUp } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Brain } from 'lucide-react';
 
 import { PageHeader, PageShell } from '@shared/components/ui';
-import ConfiguredTabPanel from '@shared/components/ui/dashboard/ConfiguredTabPanel';
-
-import { usePageTabs } from '@shared/hooks/usePageTabs';
-
-const TAB_ICONS: Record<string, typeof Activity> = {
-  overview: Activity,
-  performance: TrendingUp,
-  cost: DollarSign,
-  security: Shield,
-};
+import DashboardPage from '@shared/components/ui/dashboard/DashboardPage';
 
 export default function AiObservabilityPage() {
-  const { tabs } = usePageTabs('ai-observability');
-  const [activeTab, setActiveTab] = useState(tabs[0]?.id || 'overview');
-
-  const tabItems = useMemo(() => tabs.map((tab) => {
-    const Icon = TAB_ICONS[tab.id] || Eye;
-    return {
-      key: tab.id,
-      label: tab.label,
-      icon: <Icon size={14} />,
-    };
-  }), [tabs]);
-
   return (
     <PageShell>
       <PageHeader
@@ -34,15 +11,7 @@ export default function AiObservabilityPage() {
         subtitle="Performance, cost, and security visibility for LLM / AI model calls"
         icon={<Brain size={24} />}
       />
-
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={tabItems}
-        className="mb-[var(--space-md)]"
-      />
-
-      <ConfiguredTabPanel pageId="ai-observability" tabId={activeTab} />
+      <DashboardPage pageId="ai-observability" />
     </PageShell>
   );
 }

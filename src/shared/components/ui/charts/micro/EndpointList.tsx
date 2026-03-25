@@ -202,7 +202,7 @@ export default function EndpointList({
         case 'latency':
           return APP_COLORS.rgba_250_173_20_0p2;
         default:
-          return APP_COLORS.rgba_94_96_206_0p2;
+          return 'rgba(139,127,255,0.16)';
       }
     }
     return 'var(--bg-secondary)';
@@ -216,7 +216,7 @@ export default function EndpointList({
         case 'latency':
           return APP_COLORS.hex_f79009;
         default:
-          return APP_COLORS.hex_5e60ce;
+          return 'var(--color-primary)';
       }
     }
     return 'transparent';

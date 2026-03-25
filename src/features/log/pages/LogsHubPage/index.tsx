@@ -111,16 +111,22 @@ export default function LogsHubPage(): JSX.Element {
         key: 'timestamp',
         dataIndex: 'timestamp',
         width: 168,
-        render: (value) => (
+        render: (value, row) => {
+          const timestamp = value instanceof Date || typeof value === 'string' || typeof value === 'number'
+            ? value
+            : row.timestamp;
+
+          return (
           <div className="space-y-1">
             <div className="font-mono text-[12px] text-[var(--text-primary)]">
-              {tsLabel(value)}
+              {tsLabel(timestamp)}
             </div>
             <div className="text-[11px] text-[var(--text-muted)]">
-              {formatRelativeTime(value)}
+              {formatRelativeTime(timestamp)}
             </div>
           </div>
-        ),
+          );
+        },
       },
       {
         title: 'Level',

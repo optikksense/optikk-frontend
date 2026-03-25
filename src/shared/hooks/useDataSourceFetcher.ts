@@ -1,7 +1,11 @@
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import type { DataSourceSpec } from '@/types/dashboardConfig';
+import type {
+  DashboardDataSourceValue,
+  DashboardDataSources,
+  DataSourceSpec,
+} from '@/types/dashboardConfig';
 
 import { api } from '@shared/api/api/client';
 import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
@@ -20,7 +24,7 @@ interface DataSourceFailedRequest {
 }
 
 interface UseDataSourceFetcherResult {
-  data: Record<string, any>;
+  data: DashboardDataSources;
   isLoading: boolean;
   errors: Record<string, ApiErrorShape | null>;
   hasError: boolean;
@@ -96,7 +100,7 @@ export function useDataSourceFetcher(
     }),
   });
 
-  const data: Record<string, any> = {};
+  const data: DashboardDataSources = {};
   const errors: Record<string, ApiErrorShape | null> = {};
   let isLoading = false;
   let hasError = false;
@@ -111,7 +115,7 @@ export function useDataSourceFetcher(
     } | undefined;
     if (result) {
       const normalizedError = result.isError ? toApiErrorShape(result.error) : null;
-      data[spec.id] = result.data ?? undefined;
+      data[spec.id] = (result.data ?? undefined) as DashboardDataSourceValue;
       errors[spec.id] = normalizedError;
       if (result.isLoading) isLoading = true;
       if (normalizedError) {

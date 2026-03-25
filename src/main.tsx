@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ErrorBoundary } from '@shared/components/ui/feedback';
 import { queryClient } from '@shared/api/queryClient';
 
-import App from './App';
+import App from './app/App';
 import AppQueryClientProvider from './app/providers/QueryClientProvider';
 import ThemeProvider from './app/providers/ThemeProvider';
 import './index.css';
@@ -22,7 +22,7 @@ ReactDOM.createRoot(rootElement).render(
     <BrowserRouter>
       <AppQueryClientProvider>
         <ThemeProvider>
-          <ErrorBoundary showDetails={import.meta.env.DEV}>
+          <ErrorBoundary showDetails={import.meta.env.DEV} boundaryName="root">
             <App />
           </ErrorBoundary>
         </ThemeProvider>

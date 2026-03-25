@@ -1,12 +1,11 @@
 
 import { useMemo, memo } from 'react';
-import uPlot from 'uplot';
 
 import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
 import { tsKey, tsMs } from '@shared/utils/chartDataUtils';
 import { CHART_COLORS } from '@config/constants';
 
-import UPlotChart, { defaultAxes, uLine } from '../UPlotChart';
+import ObservabilityChart from '../ObservabilityChart';
 
 function getChartColor(index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
@@ -28,6 +27,8 @@ export default memo(function ExceptionTypeLineChart({
   serviceTimeseriesMap = {},
   endpoints = [],
   selectedEndpoints = [],
+  height = 280,
+  fillHeight = false,
 }: any) {
   const { timeBuckets } = useChartTimeBuckets();
 
@@ -79,13 +80,6 @@ export default memo(function ExceptionTypeLineChart({
     [timeBuckets],
   );
 
-  const uplotData = useMemo<uPlot.AlignedData>(() => {
-    return [
-      timestamps,
-      ...chartData.map((s) => s.values),
-    ] as uPlot.AlignedData;
-  }, [timestamps, chartData]);
-
   const maxVal = useMemo(() => {
     let max = 0;
     for (const s of chartData) {
@@ -98,27 +92,6 @@ export default memo(function ExceptionTypeLineChart({
 
   const yMax = Math.max(Math.ceil(maxVal * 1.2), 1);
 
-  const opts = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(() => ({
-    axes: [
-      ...defaultAxes().slice(0, 1),
-      {
-        ...defaultAxes()[1],
-        values: (_u: uPlot, vals: number[]) =>
-          vals.map((v) => (Number.isInteger(v) ? String(v) : v.toFixed(1))),
-        range: [0, yMax],
-      },
-    ],
-    scales: {
-      y: { min: 0, max: yMax },
-    },
-    series: [
-      {},
-      ...chartData.map((s) =>
-        uLine(s.label, s.color),
-      ),
-    ],
-  }), [chartData, yMax]);
-
   const hasData = chartData.length > 0;
 
   if (!hasData && timeBuckets.length === 0) {
@@ -130,8 +103,16 @@ export default memo(function ExceptionTypeLineChart({
   }
 
   return (
-    <div style={{ position: 'relative', height: '100%', minHeight: '200px' }}>
-      <UPlotChart options={opts} data={uplotData} />
+    <div style={{ position: 'relative', height: '100%', minHeight: fillHeight ? '100%' : '220px' }}>
+      <ObservabilityChart
+        timestamps={timestamps}
+        series={chartData}
+        yMin={0}
+        yMax={yMax}
+        yFormatter={(value) => (Number.isInteger(value) ? String(value) : value.toFixed(1))}
+        height={height}
+        fillHeight={fillHeight}
+      />
     </div>
   );
 });

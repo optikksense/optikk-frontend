@@ -19,23 +19,26 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src'),
-        '@app': path.resolve(__dirname, './src/app'),
-        '@pages': path.resolve(__dirname, './src/pages'),
-        '@features': path.resolve(__dirname, './src/features'),
-        '@entities': path.resolve(__dirname, './src/entities'),
-        '@shared': path.resolve(__dirname, './src/shared'),
-        '@config': path.resolve(__dirname, './src/config'),
-        '@components': path.resolve(__dirname, './src/shared/components'),
-        '@hooks': path.resolve(__dirname, './src/shared/hooks'),
-        '@utils': path.resolve(__dirname, './src/shared/utils'),
-        '@services': path.resolve(__dirname, './src/shared/api'),
-        '@store': path.resolve(__dirname, './src/store'),
-        '@/lib': path.resolve(__dirname, './src/lib'),
-        '@/components': path.resolve(__dirname, './src/components'),
-        '@/hooks': path.resolve(__dirname, './src/shared/hooks'),
-      },
+      alias: [
+        { find: '@/components/ui', replacement: path.resolve(__dirname, './src/shared/components/primitives/ui') },
+        { find: '@/components', replacement: path.resolve(__dirname, './src/shared/components/primitives') },
+        { find: '@/lib', replacement: path.resolve(__dirname, './src/shared/lib') },
+        { find: '@/types', replacement: path.resolve(__dirname, './src/shared/types') },
+        { find: '@/hooks', replacement: path.resolve(__dirname, './src/shared/hooks') },
+        { find: '@/services', replacement: path.resolve(__dirname, './src/shared/api') },
+        { find: '@app', replacement: path.resolve(__dirname, './src/app') },
+        { find: '@pages', replacement: path.resolve(__dirname, './src/pages') },
+        { find: '@features', replacement: path.resolve(__dirname, './src/features') },
+        { find: '@entities', replacement: path.resolve(__dirname, './src/shared/entities') },
+        { find: '@shared', replacement: path.resolve(__dirname, './src/shared') },
+        { find: '@config', replacement: path.resolve(__dirname, './src/config') },
+        { find: '@components', replacement: path.resolve(__dirname, './src/shared/components') },
+        { find: '@hooks', replacement: path.resolve(__dirname, './src/shared/hooks') },
+        { find: '@utils', replacement: path.resolve(__dirname, './src/shared/utils') },
+        { find: '@services', replacement: path.resolve(__dirname, './src/shared/api') },
+        { find: '@store', replacement: path.resolve(__dirname, './src/app/store') },
+        { find: '@', replacement: path.resolve(__dirname, './src') },
+      ],
     },
     server: {
       port: DEV_FRONTEND_PORT,
@@ -52,10 +55,36 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'echart-vendor': ['echarts', 'echarts-for-react'],
-            'query-vendor': ['@tanstack/react-query', 'axios'],
+          manualChunks(id) {
+            if (
+              id.includes('/src/app/auth/pages/Pricing/')
+              || id.includes('/node_modules/framer-motion/')
+              || id.includes('/node_modules/motion-dom/')
+              || id.includes('/node_modules/motion-utils/')
+            ) {
+              return 'marketing-runtime';
+            }
+
+            if (
+              id.includes('/node_modules/@radix-ui/')
+              || id.includes('/node_modules/cmdk/')
+              || id.includes('/node_modules/lucide-react/')
+              || id.includes('/node_modules/react-remove-scroll')
+              || id.includes('/node_modules/@floating-ui/')
+            ) {
+              return 'ui-runtime';
+            }
+
+            if (
+              id.includes('/node_modules/axios/')
+              || id.includes('/node_modules/@tanstack/react-query/')
+              || id.includes('/node_modules/@tanstack/query-core/')
+              || id.includes('/node_modules/zod/')
+            ) {
+              return 'data-runtime';
+            }
+
+            return undefined;
           },
         },
       }

@@ -1,14 +1,13 @@
 import { useMemo } from 'react';
-import ReactECharts from 'echarts-for-react';
 
 import type {
   DashboardComponentSpec,
   DashboardDataSources,
 } from '@/types/dashboardConfig';
 
-import { getChartColor } from '@shared/utils/echarts';
-
-import { APP_COLORS } from '@config/colorLiterals';
+import DonutChart from '@shared/components/ui/charts/micro/DonutChart';
+import { getChartColor } from '@shared/utils/charting';
+import { CHART_THEME_DEFAULTS } from '@shared/utils/chartTheme';
 
 import { useDashboardData } from '../hooks/useDashboardData';
 
@@ -27,58 +26,78 @@ export function PieRenderer({
   const labelKey = chartConfig.labelKey || chartConfig.groupByKey || 'label';
   const valueKey = chartConfig.valueKey || 'value';
 
-  const option = useMemo(() => {
+  const chartData = useMemo(() => {
     const filtered = rows.filter((row) => row != null);
     if (filtered.length === 0) return null;
 
-    const seriesData = filtered.map((row, index) => {
+    const segments = filtered.map((row, index) => {
       const value = Number(row[valueKey]);
       return {
         name: String(row[labelKey] ?? `Item ${index + 1}`),
         value: Number.isFinite(value) ? value : 0,
-        itemStyle: {
-          color: `${getChartColor(index)}CC`,
-          borderColor: getChartColor(index),
-          borderWidth: 1,
-        },
+        color: getChartColor(index),
       };
     });
 
-    if (!seriesData.some((d) => d.value > 0)) return null;
+    const total = segments.reduce((sum, segment) => sum + segment.value, 0);
+    if (total <= 0) return null;
 
     return {
-      backgroundColor: 'transparent',
-      tooltip: {
-        trigger: 'item',
-        backgroundColor: APP_COLORS.hex_1a1a1a_2,
-        borderColor: APP_COLORS.hex_2d2d2d,
-        borderWidth: 1,
-        textStyle: { color: APP_COLORS.hex_fff, fontSize: 12 },
-        formatter: '{b}: {c} ({d}%)',
-      },
-      legend: {
-        show: true,
-        orient: 'vertical',
-        right: 8,
-        top: 'center',
-        textStyle: { color: APP_COLORS.hex_666, fontSize: 11 },
-      },
-      series: [{
-        type: 'pie',
-        radius: ['70%', '90%'],
-        center: ['40%', '50%'],
-        data: seriesData,
-        label: { show: false },
-        emphasis: {
-          itemStyle: { shadowBlur: 6, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.4)' },
-        },
-      }],
+      segments,
+      total,
     };
   }, [labelKey, rows, valueKey]);
 
-  if (!option) {
+  if (!chartData) {
     return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
   }
 
-  return <ReactECharts option={option} style={{ height: '100%' }} />;
+  const textPrimary = CHART_THEME_DEFAULTS.textPrimary();
+  const textSecondary = CHART_THEME_DEFAULTS.textSecondary();
+  const borderColor = CHART_THEME_DEFAULTS.borderColor();
+
+  return (
+    <div className="flex h-full items-center gap-5 px-2 py-1">
+      <div className="flex min-w-0 flex-1 items-center justify-center">
+        <DonutChart
+          segments={chartData.segments.map((segment) => ({
+            label: segment.name,
+            value: segment.value,
+            color: segment.color,
+          }))}
+          centerValue={String(chartData.total)}
+          centerLabel={chartConfig.title ?? 'Total'}
+        />
+      </div>
+      <div className="flex min-w-[160px] flex-col gap-2 overflow-y-auto pr-2">
+        {chartData.segments.map((segment) => {
+          const percent = chartData.total > 0 ? (segment.value / chartData.total) * 100 : 0;
+          return (
+            <div
+              key={segment.name}
+              className="flex items-center gap-3 rounded-[var(--card-radius)] border px-3 py-2"
+              style={{ borderColor: `${borderColor}66` }}
+            >
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: segment.color, flexShrink: 0 }}
+              />
+              <div className="min-w-0 flex-1">
+                <div
+                  className="truncate text-[12px] font-medium"
+                  style={{ color: textPrimary }}
+                  title={segment.name}
+                >
+                  {segment.name}
+                </div>
+                <div className="text-[11px]" style={{ color: textSecondary }}>
+                  {segment.value} ({percent.toFixed(1)}%)
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }

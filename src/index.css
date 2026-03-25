@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @import './config/themeColors.css';
 @import './shared/design-system/utilities.css';
+@import './shared/components/ui/charts/uplot.css';
 
 @tailwind base;
 @tailwind components;
@@ -15,14 +17,14 @@
 :root {
   /* ── Typography scale tokens ───────────────────────────────── */
   --text-xs: 11px;
-  --text-sm: 13px;
-  --text-base: 15px;
-  --text-md: 15px;
-  --text-lg: 19px;
-  --text-xl: 24px;
-  --text-2xl: 32px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --text-xl: 16px;
+  --text-2xl: 22px;
   --text-3xl: 28px;
-  --text-display: 36px;
+  --text-display: 32px;
 
   --font-normal: 400;
   --font-medium: 500;
@@ -34,10 +36,10 @@
   --leading-relaxed: 1.75;
 
   /* ── Grid gap ─────────────────────────────────────────────── */
-  --grid-gutter: 20px;
+  --grid-gutter: 12px;
 
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
   line-height: var(--leading-normal);
   font-weight: var(--font-normal);
 
@@ -51,7 +53,10 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text-primary);
-  background: var(--bg-primary);
+  background:
+    radial-gradient(circle at top left, rgba(139, 127, 255, 0.08), transparent 30%),
+    radial-gradient(circle at top right, rgba(243, 139, 107, 0.05), transparent 24%),
+    var(--bg-primary);
 }
 
 #root {
@@ -60,8 +65,8 @@ body {
 
 /* Scrollbar Styles */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -70,7 +75,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -80,10 +85,10 @@ body {
 /* Code blocks */
 code {
   font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-  font-size: 0.9em;
+  font-size: 11px;
   background: var(--bg-tertiary);
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 /* ─── Spacing utilities ─── */
@@ -107,17 +112,17 @@ code {
 /* Stat cards grid — replaces antd Row/Col */
 .stat-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-md, 16px);
   margin-bottom: var(--space-md, 16px);
 }
 
 .chart-card__title {
-  padding: var(--space-xs) var(--space-sm);
-  font-size: var(--text-sm);
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--text-xl);
   font-weight: 600;
   color: var(--text-primary);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -1,6 +1,6 @@
 import { Surface } from '@/components/ui';
 
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
 import ChartErrorOverlay from '@shared/components/ui/feedback/ChartErrorOverlay';
@@ -13,103 +13,20 @@ import type {
   DashboardDataSources,
   DashboardExtraContext,
 } from '@/types/dashboardConfig';
-
-import ErrorRateChart from '@shared/components/ui/charts/time-series/ErrorRateChart';
-import ExceptionTypeLineChart from '@shared/components/ui/charts/time-series/ExceptionTypeLineChart';
-import LatencyChart from '@shared/components/ui/charts/time-series/LatencyChart';
-import RequestChart from '@shared/components/ui/charts/time-series/RequestChart';
-import StatCard from '@shared/components/ui/cards/StatCard';
 import QueueMetricsList from '@shared/components/ui/data-display/QueueMetricsList';
 import TopEndpointsList from '@shared/components/ui/data-display/TopEndpointsList';
 
+import DashboardCardErrorBoundary from './DashboardCardErrorBoundary';
 import {
-  formatBytes,
-  formatDuration,
-  formatNumber,
-} from '@shared/utils/formatters';
-
-import {
-  AiBarRenderer,
-  AiLineRenderer,
-  BarRenderer,
-  DbSystemsRenderer,
-  GaugeRenderer,
-  HeatmapRenderer,
-  LatencyHeatmapRenderer,
-  LatencyHistogramRenderer,
-  LogHistogramRenderer,
-  PieRenderer,
-  ScorecardRenderer,
-  ServiceHealthGridRenderer,
-  ServiceMapRenderer,
-  SloIndicatorsRenderer,
-  StatCardsGridRenderer,
-  TableRenderer,
-  TraceWaterfallRenderer,
-  getDashboardIcon,
-} from './SpecializedRendererRegistry';
-
-interface BaseChartComponentProps {
-  data?: Array<Record<string, unknown>>;
-  serviceTimeseriesMap: Record<string, unknown[]>;
-  endpoints: Array<Record<string, unknown>>;
-  selectedEndpoints: string[];
-  valueKey?: string;
-  datasetLabel?: string;
-  color?: string;
-  targetThreshold?: number;
-}
-
-const DASHBOARD_COMPONENT_MAP: Record<string, ComponentType<any>> = {
-  request: RequestChart,
-  'error-rate': ErrorRateChart,
-  'exception-type-line': ExceptionTypeLineChart,
-  latency: LatencyChart,
-  'log-histogram': LogHistogramRenderer,
-  'latency-histogram': LatencyHistogramRenderer,
-  'latency-heatmap': LatencyHeatmapRenderer,
-  'ai-line': AiLineRenderer,
-  'ai-bar': AiBarRenderer,
-  table: TableRenderer,
-  bar: BarRenderer,
-  gauge: GaugeRenderer,
-  scorecard: ScorecardRenderer,
-  heatmap: HeatmapRenderer,
-  pie: PieRenderer,
-  'service-map': ServiceMapRenderer,
-  'trace-waterfall': TraceWaterfallRenderer,
-  'db-systems-overview': DbSystemsRenderer,
-  'stat-cards-grid': StatCardsGridRenderer,
-  'slo-indicators': SloIndicatorsRenderer,
-  'service-health-grid': ServiceHealthGridRenderer,
-};
-
-const SPECIALIZED_COMPONENT_KEYS = new Set([
-  'log-histogram',
-  'latency-histogram',
-  'latency-heatmap',
-  'ai-line',
-  'ai-bar',
-  'table',
-  'bar',
-  'pie',
-  'gauge',
-  'scorecard',
-  'heatmap',
-  'service-map',
-  'trace-waterfall',
-  'db-systems-overview',
-  'stat-cards-grid',
-  'slo-indicators',
-  'service-health-grid',
-]);
+  type BaseChartComponentProps,
+  type SpecializedDashboardRenderer,
+  useDashboardPanelRegistration,
+} from './dashboardPanelRegistry';
+import { getDashboardIcon } from './utils/dashboardUtils';
 
 import {
-  formatStatValue,
   resolveComponentData,
   normalizeDashboardRows,
-  resolveFieldValue,
-  renderStatSummary,
   firstValue,
   strValue,
   numValue,
@@ -132,6 +49,10 @@ interface ConfigurableChartCardProps {
   extraContext: DashboardExtraContext;
 }
 
+interface ConfigurableChartCardContentProps extends ConfigurableChartCardProps {
+  titleContent: ReactNode;
+}
+
 /**
  *
  * @param root0
@@ -139,25 +60,16 @@ interface ConfigurableChartCardProps {
  * @param root0.dataSources
  * @param root0.extraContext
  */
-export default function ConfigurableChartCard({
+function ConfigurableChartCardContent({
   componentConfig,
   dataSources,
   error,
   isLoading = false,
   extraContext,
-}: ConfigurableChartCardProps) {
+  titleContent,
+}: ConfigurableChartCardContentProps) {
   const chartConfig = componentConfig;
-  const componentKey = resolveComponentKey(chartConfig);
-
-  if (error) {
-    return (
-      <Surface elevation={1} padding="md" className="chart-card" style={{ height: '100%' }}>
-        <div className="chart-card__title">{chartConfig.title as string}</div>
-        <ChartErrorOverlay code={error.code} message={error.message} />
-      </Surface>
-    );
-  }
-
+  const panelType = resolveComponentKey(chartConfig);
   const [selectedEndpoints, setSelectedEndpoints] = useState<string[]>([]);
 
   const toggleEndpoint = (key: string) => {
@@ -168,28 +80,12 @@ export default function ConfigurableChartCard({
     ));
   };
 
-  const titleContent = chartConfig.titleIcon ? (
-    <span>
-      {getDashboardIcon(chartConfig.titleIcon as string, 16)}
-      <span style={{ marginLeft: 8 }}>{chartConfig.title as string}</span>
-    </span>
-  ) : chartConfig.title;
-
-  const componentRenderer = componentKey ? DASHBOARD_COMPONENT_MAP[componentKey] : undefined;
+  const panelRegistration = useDashboardPanelRegistration(panelType);
+  const componentRenderer = panelRegistration?.component;
   const rawData = resolveComponentData(chartConfig, dataSources);
-
+  const hasRenderer = Boolean(panelRegistration && componentRenderer);
   const hasNoData = rawData === undefined || rawData === null
     || (Array.isArray(rawData) && rawData.length === 0);
-
-  if (!isLoading && hasNoData) {
-    return (
-      <Surface elevation={1} padding="md" className="chart-card" style={{ height: '100%' }}>
-        <div className="chart-card__title">{chartConfig.title as string}</div>
-        <ChartNoDataOverlay />
-      </Surface>
-    );
-  }
-
   const timeseriesData = normalizeDashboardRows(rawData, chartConfig.dataKey as string | undefined) as any[];
 
   const serviceTimeseriesMap = useMemo(() => {
@@ -237,53 +133,52 @@ export default function ConfigurableChartCard({
     return [];
   }, [rawData, dataSources, serviceTimeseriesMap, chartConfig]);
 
-  if (componentKey === 'stat-card') {
-    const value = resolveFieldValue(rawData, chartConfig.valueField as string | undefined);
-    const displayValue =
-      typeof value === 'string' || typeof value === 'number'
-        ? value
-        : String(value ?? '');
-    const icon = chartConfig.titleIcon
-      ? getDashboardIcon(String(chartConfig.titleIcon), 20)
-      : undefined;
+  if (error) {
     return (
-      <StatCard
-        metric={{
-          title: String(chartConfig.title || ''),
-          value: displayValue,
-          formatter: (val) => formatStatValue(chartConfig.formatter as string | undefined, val),
-        }}
-        visuals={{
-          icon: icon ?? undefined,
-        }}
-      />
-    );
-  }
-
-  if (componentKey === 'stat') {
-    return (
-      <Surface elevation={1} padding="sm" className="chart-card" style={{ height: '100%' }}>
-        {renderStatSummary(rawData)}
+      <Surface elevation={1} padding="md" className="chart-card" style={{ height: '100%' }}>
+        <div className="chart-card__title">{chartConfig.title as string}</div>
+        <ChartErrorOverlay code={error.code} message={error.message} />
       </Surface>
     );
   }
 
-  if (!componentRenderer) {
-    console.warn(`Unknown dashboard component key received from backend: ${componentKey || '<empty>'}`);
+  if (!hasRenderer) {
+    console.warn(`Unknown dashboard panel type received from backend: ${panelType || '<empty>'}`);
     return (
       <Surface elevation={1} padding="md" className="chart-card" style={{ height: '100%' }}>
         <div className="chart-card__title">{chartConfig.title as string}</div>
         <div className="p-md text-muted">
-          Unknown dashboard component key: {componentKey || '<empty>'}
+          Unknown dashboard panel type: {panelType || '<empty>'}
         </div>
       </Surface>
     );
   }
 
-  if (SPECIALIZED_COMPONENT_KEYS.has(componentKey)) {
-    const SpecializedRenderer = componentRenderer;
+  if (!isLoading && hasNoData) {
     return (
-      <Surface elevation={1} padding="xs" className="chart-card flex-col" style={{ height: '100%', overflow: 'hidden' }}>
+      <Surface elevation={1} padding="md" className="chart-card" style={{ height: '100%' }}>
+        <div className="chart-card__title">{chartConfig.title as string}</div>
+        <ChartNoDataOverlay />
+      </Surface>
+    );
+  }
+
+  if (panelRegistration?.kind === 'self-contained') {
+    const SelfContainedRenderer = componentRenderer as SpecializedDashboardRenderer;
+
+    return (
+      <SelfContainedRenderer
+        chartConfig={chartConfig}
+        dataSources={dataSources}
+        extraContext={extraContext}
+      />
+    );
+  }
+
+  if (panelRegistration?.kind === 'specialized') {
+    const SpecializedRenderer = componentRenderer as SpecializedDashboardRenderer;
+    return (
+      <Surface elevation={1} padding="xs" className="chart-card flex flex-col" style={{ height: '100%', overflow: 'hidden' }}>
         <div className="chart-card__title">{titleContent}</div>
         <SpecializedRenderer
           chartConfig={chartConfig}
@@ -299,6 +194,8 @@ export default function ConfigurableChartCard({
     serviceTimeseriesMap,
     endpoints,
     selectedEndpoints,
+    height: 280,
+    fillHeight: true,
   };
 
   if (chartConfig.valueKey) chartProps.valueKey = chartConfig.valueKey as string;
@@ -325,21 +222,21 @@ export default function ConfigurableChartCard({
           return Number.isFinite(parsed) ? parsed : 0;
         }
 
-        if (componentKey === 'request') {
+        if (panelType === 'request') {
           return numValue(d, ['request_count', 'requestCount'], 0);
         }
-        if (componentKey === 'error-rate') {
+        if (panelType === 'error-rate') {
           const total = numValue(d, ['request_count', 'requestCount'], 0);
           const errors = numValue(d, ['error_count', 'errorCount'], 0);
           if (total > 0) return (errors * 100.0) / total;
           return numValue(d, ['error_rate', 'errorRate'], 0);
         }
-        if (componentKey === 'latency') {
+        if (panelType === 'latency') {
           return numValue(d, ['avg_latency', 'avgLatency', 'avg_latency_ms', 'avgLatencyMs', 'p50_latency', 'p50Latency', 'p50'], 0);
         }
         return 0;
       })(),
-      ...(componentKey === 'latency' ? {
+      ...(panelType === 'latency' ? {
         p50: firstValue(d, ['p50_latency', 'p50Latency', 'p50', 'avg_latency_ms', 'avgLatencyMs'], 0),
         p95: firstValue(d, ['p95_latency', 'p95Latency', 'p95', 'p95_latency_ms'], 0),
         p99: firstValue(d, ['p99_latency', 'p99Latency', 'p99'], 0),
@@ -353,30 +250,58 @@ export default function ConfigurableChartCard({
   const showQueueList = isQueueChart && endpoints.length > 0;
 
   return (
-    <Surface elevation={1} padding="xs" className="chart-card flex-col" style={{ height: '100%' }}>
-      <div style={{ height: 220, flexShrink: 0, width: '100%', position: 'relative' }}>
-        <ChartComponent {...chartProps} />
-      </div>
-      {showEndpointList && (
-      <TopEndpointsList
+    <Surface elevation={1} padding="xs" className="chart-card flex flex-col" style={{ height: '100%', overflow: 'hidden' }}>
+      <div className="chart-card__title">{titleContent}</div>
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, minHeight: 240, width: '100%', position: 'relative' }}>
+          <ChartComponent {...chartProps} />
+        </div>
+        {showEndpointList && (
+          <TopEndpointsList
           title={String(defaultListTitleForChart(chartConfig))}
           type={endpointListType as any}
           endpoints={endpoints}
           selectedEndpoints={selectedEndpoints}
           onToggle={toggleEndpoint}
           drilldownRouteTemplate={chartConfig.drilldownRoute as string | undefined}
-        />
-      )}
-      {showQueueList && (
-        <QueueMetricsList
-          type={chartConfig.listType as any}
-          title={String(chartConfig.listTitle || chartConfig.listType || '')}
-          queues={endpoints}
-          selectedQueues={selectedEndpoints}
-          onToggle={toggleEndpoint}
-          drilldownRouteTemplate={chartConfig.drilldownRoute as string | undefined}
-        />
-      )}
+          maxVisibleRows={4}
+          />
+        )}
+        {showQueueList && (
+          <QueueMetricsList
+            type={chartConfig.listType as any}
+            title={String(chartConfig.listTitle || chartConfig.listType || '')}
+            queues={endpoints}
+            selectedQueues={selectedEndpoints}
+            onToggle={toggleEndpoint}
+            drilldownRouteTemplate={chartConfig.drilldownRoute as string | undefined}
+            maxVisibleRows={4}
+          />
+        )}
+      </div>
     </Surface>
+  );
+}
+
+export default function ConfigurableChartCard(props: ConfigurableChartCardProps) {
+  const titleContent = props.componentConfig.titleIcon ? (
+    <span>
+      {getDashboardIcon(props.componentConfig.titleIcon as string, 16)}
+      <span style={{ marginLeft: 8 }}>{props.componentConfig.title as string}</span>
+    </span>
+  ) : props.componentConfig.title;
+
+  return (
+    <DashboardCardErrorBoundary
+      componentId={props.componentConfig.id}
+      componentKey={resolveComponentKey(props.componentConfig)}
+      title={titleContent}
+      showDetails={import.meta.env.DEV}
+    >
+      <ConfigurableChartCardContent
+        {...props}
+        titleContent={titleContent}
+      />
+    </DashboardCardErrorBoundary>
   );
 }

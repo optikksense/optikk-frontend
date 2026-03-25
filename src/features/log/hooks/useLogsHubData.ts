@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { logsService } from '@shared/api/logsService';
-import { useAppStore } from '@shared/store/appStore';
+import { useAppStore } from '@app/store/appStore';
 
-import type { LogEntry } from '@/entities/log/model';
+import type { LogEntry } from '@entities/log/model';
 import { useLiveTailStream } from '@/features/explorer-core/hooks/useLiveTailStream';
 import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
 

@@ -7,7 +7,8 @@ export interface ApiError {
   readonly message: string;
   readonly code: ErrorCode;
   readonly status?: number;
-  readonly [key: string]: unknown;
+  readonly details?: unknown;
+  readonly data?: unknown;
 }
 
 /**

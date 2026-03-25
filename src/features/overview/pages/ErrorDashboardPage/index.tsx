@@ -7,6 +7,11 @@ import PageHeader from '@shared/components/ui/layout/PageHeader';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
 
 import { metricsService } from '@shared/api/metricsService';
+import type {
+  ErrorGroupDto,
+  MetricsTimeSeriesPointDto,
+} from '@shared/api/schemas/metricsSchemas';
+import type { ServiceSummary } from '@shared/api/schemas/servicesSchemas';
 
 import { useDashboardConfig } from '@shared/hooks/useDashboardConfig';
 import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
@@ -15,36 +20,33 @@ import { formatNumber, formatRelativeTime } from '@shared/utils/formatters';
 
 import { APP_COLORS } from '@config/colorLiterals';
 
-const n = (v: any) => (v == null || Number.isNaN(Number(v)) ? 0 : Number(v));
+const n = (value: unknown) => (value == null || Number.isNaN(Number(value)) ? 0 : Number(value));
 
-const normalizeErrorGroup = (row: any = {}) => ({
-  ...row,
-  service_name: row.service_name ?? '',
-  operation_name: row.operation_name ?? '',
-  status_message: row.status_message ?? '',
-  http_status_code: n(row.http_status_code),
-  error_count: n(row.error_count),
-  last_occurrence: row.last_occurrence ?? '',
-  sample_trace_id: row.sample_trace_id ?? '',
+const normalizeErrorGroup = (row: ErrorGroupDto) => ({
+  service_name: row.service_name,
+  operation_name: row.operation_name,
+  status_message: row.status_message,
+  http_status_code: row.http_status_code,
+  error_count: row.error_count,
+  last_occurrence: row.last_occurrence,
+  sample_trace_id: row.sample_trace_id,
 });
 
-const normalizeServiceMetric = (row: any = {}) => ({
-  ...row,
-  service_name: row.service_name ?? row.service ?? '',
-  request_count: n(row.request_count),
-  error_count: n(row.error_count),
-  avg_latency: n(row.avg_latency),
-  p95_latency: n(row.p95_latency),
-  p99_latency: n(row.p99_latency),
+const normalizeServiceMetric = (row: ServiceSummary) => ({
+  service_name: row.service_name,
+  request_count: row.request_count,
+  error_count: row.error_count,
+  avg_latency: row.avg_latency,
+  p95_latency: row.p95_latency,
+  p99_latency: row.p99_latency,
 });
 
-const normalizeTimeSeriesPoint = (row: any = {}) => ({
-  ...row,
-  timestamp: row.timestamp ?? row.time_bucket ?? '',
-  service_name: row.service_name ?? '',
-  request_count: n(row.request_count),
-  error_count: n(row.error_count),
-  avg_latency: n(row.avg_latency),
+const normalizeTimeSeriesPoint = (row: MetricsTimeSeriesPointDto) => ({
+  timestamp: row.timestamp || row.time_bucket || '',
+  service_name: row.service_name,
+  request_count: row.request_count,
+  error_count: row.error_count,
+  avg_latency: row.avg_latency,
 });
 
 /**

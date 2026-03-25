@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { CHART_COLORS } from '@config/constants';
 
 import UPlotChart, { uLine } from '../UPlotChart';
 
@@ -25,7 +25,7 @@ interface SparklineChartProps {
  */
 export default function SparklineChart({
   data = [],
-  color = APP_COLORS.hex_7c7ff2,
+  color = CHART_COLORS[0],
   fill = true,
   width = 60,
   height = 24,

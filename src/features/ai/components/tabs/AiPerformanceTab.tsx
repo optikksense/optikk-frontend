@@ -2,6 +2,10 @@ import { Badge, Skeleton, Surface, SimpleTable } from '@/components/ui';
 import { useMemo } from 'react';
 
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
+import type {
+  DashboardDataSources,
+  DashboardRenderConfig,
+} from '@shared/types/dashboardConfig';
 
 import { formatDuration, formatNumber } from '@shared/utils/formatters';
 
@@ -9,11 +13,13 @@ import { APP_COLORS } from '@config/colorLiterals';
 
 import { latColor, n, naSpan, rateColor } from './tabHelpers';
 
+type AiPerformanceMetricRow = Record<string, unknown>;
+
 interface AiPerformanceTabProps {
-  perfMetrics: any[];
+  perfMetrics: AiPerformanceMetricRow[];
   metricsLoading: boolean;
-  config: any;
-  dataSources: Record<string, any>;
+  config: DashboardRenderConfig | null;
+  dataSources: DashboardDataSources;
   selectedModel: string | null;
 }
 
@@ -55,7 +61,7 @@ export default function AiPerformanceTab({
 
   return (
     <>
-      <ConfigurableDashboard config={config} dataSources={dataSources} extraContext={{ selectedModel }} />
+      <ConfigurableDashboard config={config ?? null} dataSources={dataSources} extraContext={{ selectedModel }} />
       <Surface elevation={1} padding="md" className="ai-chart-card" style={{ marginTop: 16 }}>
         <h4>Per-Model Performance</h4>
         {metricsLoading ? <Skeleton /> : data.length === 0 ? <div className="text-muted" style={{textAlign:'center',padding:32}}>No data</div> : (

@@ -1,6 +1,5 @@
 export * from './dashboard';
 export * from './metric-lists';
-export * from './charts';
 export * from './feedback';
 export * from './cards';
 export * from './overlay';

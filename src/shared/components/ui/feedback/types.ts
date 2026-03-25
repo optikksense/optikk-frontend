@@ -8,6 +8,7 @@ export interface ErrorBoundaryProps {
   showDetails?: boolean;
   fallback?: ReactNode;
   resetOnError?: boolean;
+  boundaryName?: string;
 }
 
 /**

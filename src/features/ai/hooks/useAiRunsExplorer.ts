@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
 import { useURLFilters } from '@shared/hooks/useURLFilters';
 import { resolveTimeRangeBounds } from '@/types';
-import { useAppStore } from '@shared/store/appStore';
+import { useAppStore } from '@app/store/appStore';
 import { aiRunsQueries } from '../api/queryOptions';
 import type { LLMRunFilters, LLMRun, LLMRunModel, LLMRunOperation, LLMRunSummary } from '../types';
 

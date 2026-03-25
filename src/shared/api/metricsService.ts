@@ -2,24 +2,32 @@
  * Metrics Service — API calls for core metrics (services, endpoints, timeseries).
  */
 import { API_CONFIG } from '@config/apiConfig';
+import { z } from 'zod';
 
 import api from './api';
-
+import {
+  errorGroupSchema,
+  type ErrorGroupDto,
+  endpointMetricSchema,
+  type EndpointMetricDto,
+  metricNumericValueSchema,
+  type MetricNumericValue,
+  metricsTimeSeriesPointSchema,
+  type MetricsTimeSeriesPointDto,
+  resourceUsageByInstanceRowSchema,
+  type ResourceUsageByInstanceRowDto,
+  resourceUsageByServiceRowSchema,
+  type ResourceUsageByServiceRowDto,
+  resourceUsageTimeSeriesPointSchema,
+  type ResourceUsageTimeSeriesPointDto,
+  serviceDependencySchema,
+  type ServiceDependencyDto,
+} from './schemas/metricsSchemas';
+import { serviceSummarySchema, type ServiceSummary } from './schemas/servicesSchemas';
 import type { QueryParams, RequestTime } from './service-types';
+import { validateResponse } from './utils/validate';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
-
-interface MetricRow extends Record<string, unknown> {
-  service_name?: string;
-  operation_name?: string;
-  request_count?: number;
-  error_count?: number;
-  error_rate?: number;
-  avg_latency?: number;
-  p50_latency?: number;
-  p95_latency?: number;
-  p99_latency?: number;
-}
 
 /**
  * Service metric shape consumed across dashboard pages.
@@ -33,7 +41,6 @@ export interface ServiceMetric {
   readonly p50Latency: number;
   readonly p95Latency: number;
   readonly p99Latency: number;
-  readonly [key: string]: unknown;
 }
 
 /**
@@ -47,7 +54,6 @@ export interface TimeSeriesPoint {
   readonly requestCount: number;
   readonly errorCount: number;
   readonly avgLatency: number;
-  readonly [key: string]: unknown;
 }
 
 /**
@@ -62,66 +68,56 @@ export interface MetricsSummary {
   readonly p99Latency: number;
 }
 
-function asMetricRow(value: unknown): MetricRow {
-  if (typeof value !== 'object' || value === null) {
-    return {};
-  }
-  // Backend payloads include dynamic fields that vary by endpoint.
-  return value as MetricRow;
+const metricsSummarySchema = z.object({
+  total_requests: z.coerce.number().default(0),
+  error_count: z.coerce.number().default(0),
+  error_rate: z.coerce.number().default(0),
+  avg_latency: z.coerce.number().default(0),
+  p95_latency: z.coerce.number().default(0),
+  p99_latency: z.coerce.number().default(0),
+}).strict();
+
+async function getArrayResponse<TSchema extends z.ZodTypeAny>(
+  endpoint: string,
+  schema: TSchema,
+  params: Record<string, unknown>,
+): Promise<Array<z.infer<TSchema>>> {
+  const data = await api.get(endpoint, { params });
+  return validateResponse(z.array(schema), data);
 }
 
-function getNumber(row: MetricRow, keys: string[]): number {
-  for (const key of keys) {
-    const raw = row[key];
-    const parsed = Number(raw);
-    if (Number.isFinite(parsed)) {
-      return parsed;
-    }
-  }
-  return 0;
+async function getObjectResponse<TSchema extends z.ZodTypeAny>(
+  endpoint: string,
+  schema: TSchema,
+  params: Record<string, unknown>,
+): Promise<z.infer<TSchema>> {
+  const data = await api.get(endpoint, { params });
+  return validateResponse(schema, data);
 }
 
-function getString(row: MetricRow, keys: string[]): string {
-  for (const key of keys) {
-    const raw = row[key];
-    if (typeof raw === 'string' && raw.length > 0) {
-      return raw;
-    }
-  }
-  return '';
-}
-
-function normalizeServiceMetric(input: unknown): ServiceMetric {
-  const row = asMetricRow(input);
+function normalizeServiceMetric(row: ServiceSummary): ServiceMetric {
   return {
-    ...row,
-    serviceName: getString(row, ['service_name']),
-    requestCount: getNumber(row, ['request_count']),
-    errorCount: getNumber(row, ['error_count']),
-    errorRate: getNumber(row, ['error_rate']),
-    avgLatency: getNumber(row, ['avg_latency']),
-    p50Latency: getNumber(row, ['p50_latency']),
-    p95Latency: getNumber(row, ['p95_latency']),
-    p99Latency: getNumber(row, ['p99_latency']),
+    serviceName: row.service_name,
+    requestCount: row.request_count,
+    errorCount: row.error_count,
+    errorRate: row.error_rate,
+    avgLatency: row.avg_latency,
+    p50Latency: row.p50_latency,
+    p95Latency: row.p95_latency,
+    p99Latency: row.p99_latency,
   };
 }
 
-function normalizeTimeSeriesPoint(input: unknown): TimeSeriesPoint {
-  const row = asMetricRow(input);
+function normalizeTimeSeriesPoint(row: MetricsTimeSeriesPointDto): TimeSeriesPoint {
   return {
-    ...row,
-    timestamp: getString(row, ['timestamp']),
-    serviceName: getString(row, ['service_name']),
-    operationName: getString(row, ['operation_name']),
-    httpMethod: getString(row, ['http_method']),
-    requestCount: getNumber(row, ['request_count']),
-    errorCount: getNumber(row, ['error_count']),
-    avgLatency: getNumber(row, ['avg_latency']),
+    timestamp: row.timestamp || row.time_bucket || '',
+    serviceName: row.service_name,
+    operationName: row.operation_name,
+    httpMethod: row.http_method,
+    requestCount: row.request_count,
+    errorCount: row.error_count,
+    avgLatency: row.avg_latency,
   };
-}
-
-function asRows(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : [];
 }
 
 /**
@@ -133,8 +129,8 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
   ): Promise<ServiceMetric[]> {
-    const rows = await api.get(`${BASE}/services/metrics`, { params: { startTime, endTime } });
-    return asRows(rows).map((row: unknown) => normalizeServiceMetric(row));
+    const rows = await getArrayResponse(`${BASE}/services/metrics`, serviceSummarySchema, { startTime, endTime });
+    return rows.map((row) => normalizeServiceMetric(row));
   },
 
   async getMetricsTimeSeries(
@@ -144,10 +140,13 @@ export const metricsService = {
     serviceName?: string,
     interval?: string,
   ): Promise<TimeSeriesPoint[]> {
-    const rows = await api.get(`${BASE}/metrics/timeseries`, {
-      params: { startTime, endTime, serviceName, interval },
+    const rows = await getArrayResponse(`${BASE}/metrics/timeseries`, metricsTimeSeriesPointSchema, {
+      startTime,
+      endTime,
+      serviceName,
+      interval,
     });
-    return asRows(rows).map((row: unknown) => normalizeTimeSeriesPoint(row));
+    return rows.map((row) => normalizeTimeSeriesPoint(row));
   },
 
   async getMetricsSummary(
@@ -155,15 +154,14 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
   ): Promise<MetricsSummary> {
-    const response = await api.get(`${BASE}/metrics/summary`, { params: { startTime, endTime } });
-    const row = asMetricRow(response);
+    const row = await getObjectResponse(`${BASE}/metrics/summary`, metricsSummarySchema, { startTime, endTime });
     return {
-      totalRequests: getNumber(row, ['total_requests']),
-      errorCount: getNumber(row, ['error_count']),
-      errorRate: getNumber(row, ['error_rate']),
-      avgLatency: getNumber(row, ['avg_latency']),
-      p95Latency: getNumber(row, ['p95_latency']),
-      p99Latency: getNumber(row, ['p99_latency']),
+      totalRequests: row.total_requests,
+      errorCount: row.error_count,
+      errorRate: row.error_rate,
+      avgLatency: row.avg_latency,
+      p95Latency: row.p95_latency,
+      p99Latency: row.p99_latency,
     };
   },
 
@@ -172,16 +170,20 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     interval = '5m',
-  ): Promise<unknown> {
-    return api.get(`${BASE}/services/timeseries`, { params: { startTime, endTime, interval } });
+  ): Promise<MetricsTimeSeriesPointDto[]> {
+    return getArrayResponse(`${BASE}/services/timeseries`, metricsTimeSeriesPointSchema, {
+      startTime,
+      endTime,
+      interval,
+    });
   },
 
   async getServiceDependencies(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/services/dependencies`, { params: { startTime, endTime } });
+  ): Promise<ServiceDependencyDto[]> {
+    return getArrayResponse(`${BASE}/services/dependencies`, serviceDependencySchema, { startTime, endTime });
   },
 
   async getEndpointBreakdown(
@@ -189,8 +191,8 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName: string,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/services/${serviceName}/endpoints`, { params: { startTime, endTime } });
+  ): Promise<EndpointMetricDto[]> {
+    return getArrayResponse(`${BASE}/services/${serviceName}/endpoints`, endpointMetricSchema, { startTime, endTime });
   },
 
   async getErrorGroups(
@@ -198,8 +200,8 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName: string,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/services/${serviceName}/errors`, { params: { startTime, endTime } });
+  ): Promise<ErrorGroupDto[]> {
+    return getArrayResponse(`${BASE}/services/${serviceName}/errors`, errorGroupSchema, { startTime, endTime });
   },
 
   async getGlobalErrorGroups(
@@ -207,8 +209,8 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     params: QueryParams = {},
-  ): Promise<unknown> {
-    return api.get(`${BASE}/errors/groups`, { params: { startTime, endTime, ...params } });
+  ): Promise<ErrorGroupDto[]> {
+    return getArrayResponse(`${BASE}/errors/groups`, errorGroupSchema, { startTime, endTime, ...params });
   },
 
   async getErrorTimeSeries(
@@ -217,9 +219,12 @@ export const metricsService = {
     endTime: RequestTime,
     interval = '5m',
     serviceName?: string,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/errors/timeseries`, {
-      params: { startTime, endTime, interval, serviceName },
+  ): Promise<MetricsTimeSeriesPointDto[]> {
+    return getArrayResponse(`${BASE}/errors/timeseries`, metricsTimeSeriesPointSchema, {
+      startTime,
+      endTime,
+      interval,
+      serviceName,
     });
   },
 
@@ -227,80 +232,64 @@ export const metricsService = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-cpu`, {
-      params: { startTime, endTime },
-    });
+  ): Promise<MetricNumericValue> {
+    return getObjectResponse(`${BASE}/infrastructure/resource-utilisation/avg-cpu`, metricNumericValueSchema, { startTime, endTime });
   },
 
   async getAvgMemory(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-memory`, {
-      params: { startTime, endTime },
-    });
+  ): Promise<MetricNumericValue> {
+    return getObjectResponse(`${BASE}/infrastructure/resource-utilisation/avg-memory`, metricNumericValueSchema, { startTime, endTime });
   },
 
   async getAvgNetwork(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-network`, {
-      params: { startTime, endTime },
-    });
+  ): Promise<MetricNumericValue> {
+    return getObjectResponse(`${BASE}/infrastructure/resource-utilisation/avg-network`, metricNumericValueSchema, { startTime, endTime });
   },
 
   async getAvgConnPool(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/infrastructure/resource-utilisation/avg-conn-pool`, {
-      params: { startTime, endTime },
-    });
+  ): Promise<MetricNumericValue> {
+    return getObjectResponse(`${BASE}/infrastructure/resource-utilisation/avg-conn-pool`, metricNumericValueSchema, { startTime, endTime });
   },
 
   async getCPUUsagePercentage(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/infrastructure/resource-utilisation/cpu-usage-percentage`, {
-      params: { startTime, endTime },
-    });
+  ): Promise<ResourceUsageTimeSeriesPointDto[]> {
+    return getArrayResponse(`${BASE}/infrastructure/resource-utilisation/cpu-usage-percentage`, resourceUsageTimeSeriesPointSchema, { startTime, endTime });
   },
 
   async getMemoryUsagePercentage(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/infrastructure/resource-utilisation/memory-usage-percentage`, {
-      params: { startTime, endTime },
-    });
+  ): Promise<ResourceUsageTimeSeriesPointDto[]> {
+    return getArrayResponse(`${BASE}/infrastructure/resource-utilisation/memory-usage-percentage`, resourceUsageTimeSeriesPointSchema, { startTime, endTime });
   },
 
   async getResourceUsageByService(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/infrastructure/resource-utilisation/by-service`, {
-      params: { startTime, endTime },
-    });
+  ): Promise<ResourceUsageByServiceRowDto[]> {
+    return getArrayResponse(`${BASE}/infrastructure/resource-utilisation/by-service`, resourceUsageByServiceRowSchema, { startTime, endTime });
   },
 
   async getResourceUsageByInstance(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/infrastructure/resource-utilisation/by-instance`, {
-      params: { startTime, endTime },
-    });
+  ): Promise<ResourceUsageByInstanceRowDto[]> {
+    return getArrayResponse(`${BASE}/infrastructure/resource-utilisation/by-instance`, resourceUsageByInstanceRowSchema, { startTime, endTime });
   },
 
   async getNodeHealth(
@@ -326,8 +315,8 @@ export const metricsService = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/overview/services`, { params: { startTime, endTime } });
+  ): Promise<ServiceSummary[]> {
+    return getArrayResponse(`${BASE}/overview/services`, serviceSummarySchema, { startTime, endTime });
   },
 
   async getOverviewEndpointMetrics(
@@ -335,8 +324,8 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/overview/endpoints/metrics`, { params: { startTime, endTime, serviceName } });
+  ): Promise<EndpointMetricDto[]> {
+    return getArrayResponse(`${BASE}/overview/endpoints/metrics`, endpointMetricSchema, { startTime, endTime, serviceName });
   },
 
   async getOverviewEndpointTimeSeries(
@@ -344,8 +333,8 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-  ): Promise<unknown> {
-    return api.get(`${BASE}/overview/endpoints/timeseries`, { params: { startTime, endTime, serviceName } });
+  ): Promise<MetricsTimeSeriesPointDto[]> {
+    return getArrayResponse(`${BASE}/overview/endpoints/timeseries`, metricsTimeSeriesPointSchema, { startTime, endTime, serviceName });
   },
 
   async getOverviewErrorGroups(
@@ -353,8 +342,8 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     params: QueryParams = {},
-  ): Promise<unknown> {
-    return api.get(`${BASE}/overview/errors/groups`, { params: { startTime, endTime, ...params } });
+  ): Promise<ErrorGroupDto[]> {
+    return getArrayResponse(`${BASE}/overview/errors/groups`, errorGroupSchema, { startTime, endTime, ...params });
   },
 
   async getServiceErrorRate(
@@ -363,9 +352,12 @@ export const metricsService = {
     endTime: RequestTime,
     serviceName?: string,
     interval = '5m',
-  ): Promise<unknown> {
-    return api.get(`${BASE}/overview/errors/service-error-rate`, {
-      params: { startTime, endTime, serviceName, interval },
+  ): Promise<MetricsTimeSeriesPointDto[]> {
+    return getArrayResponse(`${BASE}/overview/errors/service-error-rate`, metricsTimeSeriesPointSchema, {
+      startTime,
+      endTime,
+      serviceName,
+      interval,
     });
   },
 
@@ -375,9 +367,12 @@ export const metricsService = {
     endTime: RequestTime,
     serviceName?: string,
     interval = '5m',
-  ): Promise<unknown> {
-    return api.get(`${BASE}/overview/errors/error-volume`, {
-      params: { startTime, endTime, serviceName, interval },
+  ): Promise<MetricsTimeSeriesPointDto[]> {
+    return getArrayResponse(`${BASE}/overview/errors/error-volume`, metricsTimeSeriesPointSchema, {
+      startTime,
+      endTime,
+      serviceName,
+      interval,
     });
   },
 
@@ -387,9 +382,12 @@ export const metricsService = {
     endTime: RequestTime,
     serviceName?: string,
     interval = '5m',
-  ): Promise<unknown> {
-    return api.get(`${BASE}/overview/errors/latency-during-error-windows`, {
-      params: { startTime, endTime, serviceName, interval },
+  ): Promise<MetricsTimeSeriesPointDto[]> {
+    return getArrayResponse(`${BASE}/overview/errors/latency-during-error-windows`, metricsTimeSeriesPointSchema, {
+      startTime,
+      endTime,
+      serviceName,
+      interval,
     });
   },
 };

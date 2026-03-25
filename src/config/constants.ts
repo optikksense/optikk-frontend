@@ -8,11 +8,11 @@ export /**
  */
 const UI_CONFIG = {
   THEME: {
-    PRIMARY_COLOR: '#7C7FF2',
-    SUCCESS_COLOR: '#52876B',
-    WARNING_COLOR: '#D97706',
-    ERROR_COLOR: '#DC2626',
-    INFO_COLOR: '#4DA6C8',
+    PRIMARY_COLOR: '#8B7FFF',
+    SUCCESS_COLOR: '#73C991',
+    WARNING_COLOR: '#F7B63A',
+    ERROR_COLOR: '#F04438',
+    INFO_COLOR: '#67B7C9',
   },
   SIDEBAR_WIDTH: 220,
   SIDEBAR_COLLAPSED_WIDTH: 56,
@@ -41,10 +41,10 @@ export /**
  *
  */
 const STATUS_COLORS = {
-  OK: '#52876B',
-  ERROR: '#DC2626',
-  WARNING: '#D97706',
-  INFO: '#4DA6C8',
+  OK: '#73C991',
+  ERROR: '#F04438',
+  WARNING: '#F7B63A',
+  INFO: '#67B7C9',
   UNKNOWN: '#6B7280',
 };
 
@@ -53,10 +53,10 @@ export /**
  */
 const LOG_LEVELS = {
   TRACE: { label: 'Trace', color: '#6B7280' },
-  DEBUG: { label: 'Debug', color: '#4DA6C8' },
-  INFO: { label: 'Info', color: '#52876B' },
-  WARN: { label: 'Warn', color: '#D97706' },
-  ERROR: { label: 'Error', color: '#DC2626' },
+  DEBUG: { label: 'Debug', color: '#67B7C9' },
+  INFO: { label: 'Info', color: '#73C991' },
+  WARN: { label: 'Warn', color: '#F7B63A' },
+  ERROR: { label: 'Error', color: '#F04438' },
   FATAL: { label: 'Fatal', color: '#991B1B' },
 };
 
@@ -64,16 +64,16 @@ export /**
  *
  */
 const CHART_COLORS = [
-  '#648FFF',
-  '#785EF0',
-  '#DC267F',
-  '#FE6100',
-  '#FFB000',
-  '#009E73',
-  '#56B4E9',
-  '#CC79A7',
-  '#7C7FF2',
-  '#52876B',
+  '#8B7FFF',
+  '#F38B6B',
+  '#66C2A5',
+  '#F2C14E',
+  '#D978FF',
+  '#6BB6FF',
+  '#EF6F98',
+  '#8CD6C5',
+  '#A695FF',
+  '#8EA1FF',
 ];
 
 export /**

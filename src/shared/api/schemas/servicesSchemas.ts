@@ -9,6 +9,6 @@ export const serviceSummarySchema = z.object({
   p50_latency: z.number().default(0),
   p95_latency: z.number().default(0),
   p99_latency: z.number().default(0),
-}).passthrough();
+}).strict();
 
 export type ServiceSummary = z.infer<typeof serviceSummarySchema>;

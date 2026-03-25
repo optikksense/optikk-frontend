@@ -1,7 +1,7 @@
 import type { DashboardDataSources, StatCardSpec } from '@/types/dashboardConfig';
 
 import StatCard from '@shared/components/ui/cards/StatCard';
-import { getDashboardIcon } from './SpecializedRendererRegistry';
+import { getDashboardIcon } from './utils/dashboardUtils';
 
 import { formatDuration, formatNumber } from '@shared/utils/formatters';
 

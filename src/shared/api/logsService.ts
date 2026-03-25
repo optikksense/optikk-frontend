@@ -21,19 +21,6 @@ const logsListSchema = z.object({
 });
 
 export const logsService = {
-  async queryExplorer(body: {
-    startTime: RequestTime;
-    endTime: RequestTime;
-    limit?: number;
-    offset?: number;
-    cursor?: string;
-    direction?: string;
-    step?: string;
-    params?: QueryParams;
-  }): Promise<unknown> {
-    return api.post(`${BASE}/logs/explorer/query`, body);
-  },
-
   async getLogs(
     _teamId: number | null,
     startTime: RequestTime,

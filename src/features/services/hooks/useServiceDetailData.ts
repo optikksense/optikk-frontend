@@ -8,6 +8,11 @@ import { resolveTimeRangeBounds } from '@/types';
 import { useAppStore } from '@store/appStore';
 
 import type {
+  EndpointMetricDto,
+  ErrorGroupDto,
+  ServiceDependencyDto,
+} from '@shared/api/schemas/metricsSchemas';
+import type {
   ServiceDependency,
   ServiceEndpointRow,
   ServiceErrorGroupRow,
@@ -17,39 +22,52 @@ import type {
 
 const n = (value: unknown): number => (value == null || Number.isNaN(Number(value)) ? 0 : Number(value));
 
-export const normalizeEndpoint = (row: Record<string, unknown> = {}): ServiceEndpointRow => ({
-  ...row,
-  service_name: String(row.service_name ?? ''),
-  operation_name: String(row.operation_name ?? ''),
-  http_method: String(row.http_method ?? ''),
-  request_count: n(row.request_count),
-  error_count: n(row.error_count),
-  avg_latency: n(row.avg_latency),
-  p95_latency: n(row.p95_latency),
-  p99_latency: n(row.p99_latency),
+export const normalizeEndpoint = (row: EndpointMetricDto): ServiceEndpointRow => ({
+  service_name: row.service_name,
+  operation_name: row.operation_name,
+  http_method: row.http_method,
+  request_count: row.request_count,
+  error_count: row.error_count,
+  avg_latency: row.avg_latency,
+  p95_latency: row.p95_latency,
+  p99_latency: row.p99_latency,
 });
 
-export const normalizeErrorGroup = (row: Record<string, unknown> = {}): ServiceErrorGroupRow => ({
-  ...row,
-  service_name: String(row.service_name ?? ''),
-  operation_name: String(row.operation_name ?? ''),
-  status_message: String(row.status_message ?? ''),
-  http_status_code: n(row.http_status_code),
-  error_count: n(row.error_count),
-  last_occurrence: String(row.last_occurrence ?? ''),
-  first_occurrence: String(row.first_occurrence ?? ''),
-  sample_trace_id: String(row.sample_trace_id ?? ''),
+export const normalizeErrorGroup = (row: ErrorGroupDto): ServiceErrorGroupRow => ({
+  service_name: row.service_name,
+  operation_name: row.operation_name,
+  status_message: row.status_message,
+  http_status_code: row.http_status_code,
+  error_count: row.error_count,
+  last_occurrence: row.last_occurrence,
+  first_occurrence: row.first_occurrence,
+  sample_trace_id: row.sample_trace_id,
 });
 
-export const normalizeTimeSeriesPoint = (row: Record<string, unknown> = {}): ServiceTimeSeriesPoint => ({
+type ServiceTimeSeriesInput =
+  | Record<string, unknown>
+  | {
+    timestamp?: string;
+    serviceName?: string;
+    operationName?: string;
+    httpMethod?: string;
+    requestCount?: number;
+    errorCount?: number;
+    avgLatency?: number;
+    p50?: number;
+    p95?: number;
+    p99?: number;
+  };
+
+export const normalizeTimeSeriesPoint = (row: ServiceTimeSeriesInput = {}): ServiceTimeSeriesPoint => ({
   ...row,
   timestamp: String(row.timestamp ?? ''),
-  service_name: String(row.service_name ?? ''),
-  operation_name: String(row.operation_name ?? ''),
-  http_method: String(row.http_method ?? ''),
-  request_count: n(row.request_count),
-  error_count: n(row.error_count),
-  avg_latency: n(row.avg_latency),
+  service_name: String(('service_name' in row ? row.service_name : row.serviceName) ?? ''),
+  operation_name: String(('operation_name' in row ? row.operation_name : row.operationName) ?? ''),
+  http_method: String(('http_method' in row ? row.http_method : row.httpMethod) ?? ''),
+  request_count: n('request_count' in row ? row.request_count : row.requestCount),
+  error_count: n('error_count' in row ? row.error_count : row.errorCount),
+  avg_latency: n('avg_latency' in row ? row.avg_latency : row.avgLatency),
   p50: n(row.p50),
   p95: n(row.p95),
   p99: n(row.p99),
@@ -64,11 +82,10 @@ export const normalizeLog = (row: Record<string, unknown> = {}): ServiceLogRow =
   span_id: String(row.span_id ?? ''),
 });
 
-export const normalizeDependency = (row: Record<string, unknown> = {}): ServiceDependency => ({
-  ...row,
-  source: String(row.source ?? ''),
-  target: String(row.target ?? ''),
-  call_count: n(row.call_count),
+export const normalizeDependency = (row: ServiceDependencyDto): ServiceDependency => ({
+  source: row.source,
+  target: row.target,
+  call_count: row.call_count,
 });
 
 export interface UseServiceDetailDataProps {
@@ -132,20 +149,20 @@ export function useServiceDetailData({ serviceName, activeTab }: UseServiceDetai
   });
 
   const endpoints = Array.isArray(endpointData)
-    ? endpointData.map((row) => normalizeEndpoint((row as Record<string, unknown>) || {}))
+    ? endpointData.map((row) => normalizeEndpoint(row))
     : [];
   const errorGroups = Array.isArray(errorData)
-    ? errorData.map((row) => normalizeErrorGroup((row as Record<string, unknown>) || {}))
+    ? errorData.map((row) => normalizeErrorGroup(row))
     : [];
   const timeSeries = Array.isArray(timeSeriesData)
-    ? timeSeriesData.map((row) => normalizeTimeSeriesPoint((row as Record<string, unknown>) || {}))
+    ? timeSeriesData.map((row) => normalizeTimeSeriesPoint(row))
     : [];
   const logsRaw = (logsData as { logs?: unknown[] } | undefined)?.logs;
   const logs = Array.isArray(logsRaw)
     ? logsRaw.map((row) => normalizeLog((row as Record<string, unknown>) || {}))
     : [];
   const dependencies = Array.isArray(dependenciesData)
-    ? dependenciesData.map((row) => normalizeDependency((row as Record<string, unknown>) || {}))
+    ? dependenciesData.map((row) => normalizeDependency(row))
     : [];
   const isLoading = endpointsLoading || errorsLoading || timeSeriesLoading;
 

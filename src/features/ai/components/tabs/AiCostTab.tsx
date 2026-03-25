@@ -2,6 +2,10 @@ import { Badge, Skeleton, Surface, SimpleTable } from '@/components/ui';
 import { useMemo } from 'react';
 
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
+import type {
+  DashboardDataSources,
+  DashboardRenderConfig,
+} from '@shared/types/dashboardConfig';
 
 import { formatNumber } from '@shared/utils/formatters';
 
@@ -9,11 +13,13 @@ import { APP_COLORS } from '@config/colorLiterals';
 
 import { dollar, n, naSpan } from './tabHelpers';
 
+type AiCostMetricRow = Record<string, unknown>;
+
 interface AiCostTabProps {
-  costMetrics: any[];
+  costMetrics: AiCostMetricRow[];
   costLoading: boolean;
-  config: any;
-  dataSources: Record<string, any>;
+  config: DashboardRenderConfig | null;
+  dataSources: DashboardDataSources;
   selectedModel: string | null;
 }
 
@@ -68,7 +74,7 @@ export default function AiCostTab({
 
   return (
     <>
-      <ConfigurableDashboard config={config} dataSources={dataSources} extraContext={{ selectedModel }} />
+      <ConfigurableDashboard config={config ?? null} dataSources={dataSources} extraContext={{ selectedModel }} />
       <Surface elevation={1} padding="md" className="ai-chart-card" style={{ marginTop: 16 }}>
         <h4>Per-Model Cost Breakdown</h4>
         {costLoading ? <Skeleton /> : data.length === 0 ? <div className="text-muted" style={{textAlign:'center',padding:32}}>No data</div> : (

@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Check, Copy } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export interface CodeTab {
   id: string;
@@ -56,16 +53,18 @@ export default function CodeTabs({ tabs }: CodeTabsProps) {
                 fontFamily: 'inherit', transition: 'color 0.2s',
               }}
             >
-              {activeTab === t.id && (
-                <motion.div
-                  layoutId="active-tab-indicator"
+              {activeTab === t.id ? (
+                <span
                   style={{
-                    position: 'absolute', bottom: 0, left: 0, right: 0,
-                    height: 2, background: '#22D3EE',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 2,
+                    background: '#22D3EE',
                   }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
-              )}
+              ) : null}
               {t.label}
             </button>
           ))}
@@ -94,28 +93,38 @@ export default function CodeTabs({ tabs }: CodeTabsProps) {
 
       {/* Code Area */}
       <div style={{ position: 'relative', minHeight: 320, padding: 0 }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            style={{ padding: 16 }}
+        <div
+          key={activeTab}
+          style={{
+            padding: 16,
+            opacity: 1,
+            transform: 'translateY(0)',
+            transition: 'opacity 160ms ease, transform 160ms ease',
+          }}
+        >
+          <div
+            aria-label={`${activeContent.label} code sample`}
+            style={{
+              margin: 0,
+              background: 'transparent',
+              padding: 0,
+              fontSize: 13,
+              lineHeight: 1.5,
+              color: '#d5def5',
+              overflowX: 'auto',
+            }}
           >
-            <SyntaxHighlighter
-              language={activeContent.language}
-              style={vscDarkPlus}
-              customStyle={{
-                margin: 0, background: 'transparent', padding: 0,
-                fontSize: 13, lineHeight: 1.5,
+            <pre
+              style={{
+                margin: 0,
+                whiteSpace: 'pre',
+                fontFamily: 'inherit',
               }}
-              codeTagProps={{ className: 'font-mono' }}
             >
-              {activeContent.code}
-            </SyntaxHighlighter>
-          </motion.div>
-        </AnimatePresence>
+              <code>{activeContent.code}</code>
+            </pre>
+          </div>
+        </div>
       </div>
     </div>
   );

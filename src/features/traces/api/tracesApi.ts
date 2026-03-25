@@ -1,21 +1,12 @@
 import { z } from 'zod';
 import { tracesService } from '@shared/api/tracesService';
-import { tracesResponseSchema } from '@/entities/trace/model';
+import { tracesResponseSchema } from '@entities/trace/model';
+import { spanRecordSchema } from '@shared/api/schemas/tracesSchemas';
 import type { QueryParams, RequestTime } from '@shared/api/service-types';
 import { normalizeTracesResponse } from '../utils/tracesUtils';
+import type { TraceExplorerParams } from '../types';
 
-export interface TracesBackendParams extends QueryParams {
-  limit?: number;
-  offset?: number;
-  status?: string;
-  services?: string[];
-  minDuration?: number;
-  maxDuration?: number;
-  traceId?: string;
-  operationName?: string;
-  httpMethod?: string;
-  httpStatusCode?: string | number;
-}
+export interface TracesBackendParams extends QueryParams, TraceExplorerParams {}
 
 /**
  * Traces API layer with Zod validation.
@@ -33,6 +24,6 @@ export const tracesApi = {
 
   async getTraceSpans(teamId: number | null, traceId: string) {
     const response = await tracesService.getTraceSpans(teamId, traceId);
-    return z.array(z.any()).parse(response); // Tree parsing logic usually in hooks
+    return z.array(spanRecordSchema).parse(response);
   },
 };

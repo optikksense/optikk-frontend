@@ -10,6 +10,9 @@ const TracesPage = lazy(() =>
 const TraceDetailPage = lazy(() =>
   import('./pages/TraceDetailPage').then((module) => ({ default: module.default })),
 );
+const TraceWaterfallRenderer = lazy(() =>
+  import('./dashboard/renderers/TraceWaterfallRenderer').then((module) => ({ default: module.TraceWaterfallRenderer })),
+);
 
 export /**
  *
@@ -30,9 +33,9 @@ const tracesConfig: DomainConfig = {
     { path: ROUTES.traces, page: TracesPage },
     { path: ROUTES.traceDetail, page: TraceDetailPage },
   ],
+  dashboardPanels: [
+    { panelType: 'trace-waterfall', kind: 'specialized', component: TraceWaterfallRenderer },
+  ],
 };
-
-export { default as TracesPageView } from './pages/TracesPage';
-export { default as TraceDetailPageView } from './pages/TraceDetailPage';
 export * from './components';
 export type { ServiceBadge, TraceColumn, TraceRecord } from './types';

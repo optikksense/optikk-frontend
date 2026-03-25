@@ -16,7 +16,7 @@ export const traceRecordSchema = z.object({
   http_status_code: z.number().optional(),
   service_name_original: z.string().optional(),
   parent_span_id: z.string().optional(),
-}).passthrough();
+}).strict();
 
 export const spanRecordSchema = z.object({
   span_id: z.string(),
@@ -29,9 +29,24 @@ export const spanRecordSchema = z.object({
   duration_ms: z.number().default(0),
   status: z.string().default('UNSET'),
   span_kind: z.string().default(''),
-}).passthrough();
+}).strict();
 
-export const tracesSummarySchema = z.record(z.string(), z.unknown()).default({});
+export const tracesSummarySchema = z.object({
+  total_traces: z.number().default(0),
+  error_traces: z.number().default(0),
+  avg_duration: z.number().default(0),
+  p50_duration: z.number().default(0),
+  p95_duration: z.number().default(0),
+  p99_duration: z.number().default(0),
+}).strict().default({
+  total_traces: 0,
+  error_traces: 0,
+  avg_duration: 0,
+  p50_duration: 0,
+  p95_duration: 0,
+  p99_duration: 0,
+});
 
 export type TraceRecord = z.infer<typeof traceRecordSchema>;
 export type SpanRecord = z.infer<typeof spanRecordSchema>;
+export type TracesSummary = z.infer<typeof tracesSummarySchema>;

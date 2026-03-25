@@ -1,13 +1,37 @@
 
 import { useMemo, memo } from 'react';
-import uPlot from 'uplot';
 
 import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
 import { tsKey, tsMs, firstValue } from '@shared/utils/chartDataUtils';
 import { CHART_COLORS } from '@config/constants';
-import { APP_COLORS } from '@config/colorLiterals';
 
-import UPlotChart, { defaultAxes, uLine } from '../UPlotChart';
+import ObservabilityChart from '../ObservabilityChart';
+
+type ChartRow = Record<string, unknown>;
+
+interface RequestChartEndpoint {
+  key?: string;
+  endpoint?: string;
+  seriesKey?: string;
+  series_key?: string;
+  service_name?: string;
+  http_method?: string;
+  httpMethod?: string;
+  operation_name?: string;
+  endpoint_name?: string;
+}
+
+interface RequestChartProps {
+  data?: ChartRow[];
+  endpoints?: RequestChartEndpoint[];
+  selectedEndpoints?: string[];
+  serviceTimeseriesMap?: Record<string, ChartRow[]>;
+  height?: number;
+  fillHeight?: boolean;
+  datasetLabel?: string;
+  color?: string;
+  valueKey?: string;
+}
 
 function getChartColor(index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
@@ -41,10 +65,12 @@ export default memo(function RequestChart({
   endpoints = [],
   selectedEndpoints = [],
   serviceTimeseriesMap = {},
+  height = 280,
+  fillHeight = false,
   datasetLabel = 'Requests/min',
-  color = APP_COLORS.hex_5e60ce,
+  color = CHART_COLORS[0],
   valueKey = 'request_count',
-}: any) {
+}: RequestChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets } = useChartTimeBuckets();
 
@@ -65,8 +91,8 @@ export default memo(function RequestChart({
     );
   };
 
-  const buildServiceDatasets = (endpointList: any[]) => {
-    const targetMap: Record<string, any> = {};
+  const buildServiceDatasets = (endpointList: RequestChartEndpoint[]) => {
+    const targetMap: Record<string, { label: string; seriesKey: string }> = {};
     for (const ep of endpointList) {
       const selectionKey = ep.key || firstValue(ep, ['service_name'], '');
       const seriesKey = ep.seriesKey || ep.series_key || selectionKey;
@@ -78,7 +104,7 @@ export default memo(function RequestChart({
       ? new Date(timeBuckets[1]).getTime() - new Date(timeBuckets[0]).getTime()
       : 60000;
 
-    return Object.entries(targetMap).map(([, info]: [string, any], idx) => {
+    return Object.entries(targetMap).map(([, info], idx) => {
       const tsData = getSeriesRows(info.seriesKey);
       const tsMap: Record<string, number> = {};
 
@@ -105,7 +131,7 @@ export default memo(function RequestChart({
 
     if (endpoints.length > 0) {
       const list = selectedEndpoints.length > 0
-        ? (endpoints as any[]).filter((ep) => {
+        ? endpoints.filter((ep) => {
           const key = ep.key || (() => {
             const method = String(firstValue(ep, ['http_method', 'httpMethod'], '')).toUpperCase();
             const op = String(firstValue(ep, ['operation_name', 'endpoint_name'], 'Unknown'));
@@ -120,7 +146,7 @@ export default memo(function RequestChart({
       if (hasServiceData) {
         seriesList = buildServiceDatasets(list);
       } else {
-        seriesList = (list as any[]).map((ep, idx) => {
+        seriesList = list.map((ep, idx) => {
           const method = firstValue(ep, ['http_method'], 'N/A');
           const operation = firstValue(ep, ['operation_name', 'endpoint_name'], 'Unknown');
           return {
@@ -133,7 +159,7 @@ export default memo(function RequestChart({
       }
     } else if (hasServiceData) {
       const stepMs = timeBuckets.length >= 2 ? new Date(timeBuckets[1]).getTime() - new Date(timeBuckets[0]).getTime() : 60000;
-      seriesList = Object.entries(serviceTimeseriesMap).slice(0, 10).map(([svcName, rows]: [string, any], idx) => {
+      seriesList = Object.entries(serviceTimeseriesMap).slice(0, 10).map(([svcName, rows], idx) => {
         const tsMap: Record<string, number> = {};
         for (const row of rows) {
           const rowTimestamp = firstValue(row, ['timestamp', 'time_bucket'], '');
@@ -150,7 +176,7 @@ export default memo(function RequestChart({
       });
     } else {
       const dataMap: Record<string, number> = {};
-      for (const d of data as any[]) {
+      for (const d of data) {
         const ts = firstValue(d, ['timestamp', 'time_bucket'], '');
         dataMap[tsKey(ts)] = Number(firstValue(d, [valueKey, 'request_count', 'value'], 0));
       }
@@ -165,13 +191,6 @@ export default memo(function RequestChart({
     [timeBuckets],
   );
 
-  const uplotData = useMemo<uPlot.AlignedData>(() => {
-    return [
-      timestamps,
-      ...chartData.map((s) => s.values),
-    ] as uPlot.AlignedData;
-  }, [timestamps, chartData]);
-
   const yAxisMax = useMemo(() => {
     let maxVal = 0;
     chartData.forEach((s) => {
@@ -184,27 +203,6 @@ export default memo(function RequestChart({
     return Math.max(Math.ceil(maxVal * 1.5), 1);
   }, [chartData]);
 
-  const opts = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(() => ({
-    axes: [
-      ...defaultAxes().slice(0, 1),
-      {
-        ...defaultAxes()[1],
-        values: (_u: uPlot, vals: number[]) =>
-          vals.map((v) => formatAxisValue(v)),
-        range: [0, yAxisMax],
-      },
-    ],
-    scales: {
-      y: { min: 0, max: yAxisMax },
-    },
-    series: [
-      {},
-      ...chartData.map((s) =>
-        uLine(s.label, s.color, { fill: s.fill }),
-      ),
-    ],
-  }), [chartData, yAxisMax]);
-
   if (data.length === 0 && timeBuckets.length === 0) {
     return (
       <div style={{ height: '100%', minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -214,8 +212,16 @@ export default memo(function RequestChart({
   }
 
   return (
-    <div style={{ position: 'relative', height: '100%', minHeight: '200px' }}>
-      <UPlotChart options={opts} data={uplotData} />
+    <div style={{ position: 'relative', height: '100%', minHeight: fillHeight ? '100%' : '220px' }}>
+      <ObservabilityChart
+        timestamps={timestamps}
+        series={chartData}
+        yMin={0}
+        yMax={yAxisMax}
+        yFormatter={formatAxisValue}
+        height={height}
+        fillHeight={fillHeight}
+      />
     </div>
   );
 });

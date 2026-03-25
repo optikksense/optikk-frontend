@@ -1,12 +1,38 @@
 import { Skeleton } from '@/components/ui';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, matchPath, useLocation } from 'react-router-dom';
 
-import { resolveRegisteredDomainRoute } from '@/app/registry/domainRegistry';
+import { resolveDashboardPageAdapter } from '@/app/registry/domainRegistry';
 import { ROUTES } from '@/shared/constants/routes';
 
-import { DashboardPage } from '@shared/components/ui';
+import { DashboardPage, PageHeader, PageShell } from '@shared/components/ui';
+import { getDashboardIcon } from '@shared/components/ui/dashboard/utils/dashboardUtils';
 
 import { usePagesConfig } from '@shared/hooks/usePagesConfig';
+import type { DefaultConfigPage } from '@/types/dashboardConfig';
+
+function matchConfiguredPage(
+  pathname: string,
+  pages: readonly DefaultConfigPage[],
+): { page: DefaultConfigPage; pathParams?: Record<string, string> } | null {
+  for (const page of pages) {
+    const matched = matchPath({ path: page.path, end: true }, pathname);
+    if (!matched) {
+      continue;
+    }
+
+    const pathParams = Object.keys(matched.params).length > 0
+      ? Object.fromEntries(
+        Object.entries(matched.params).flatMap(([key, value]) => (
+          typeof value === 'string' ? [[key, value]] : []
+        )),
+      )
+      : undefined;
+
+    return { page, pathParams };
+  }
+
+  return null;
+}
 
 export default function BackendDrivenPage(): JSX.Element {
   const location = useLocation();
@@ -27,20 +53,31 @@ export default function BackendDrivenPage(): JSX.Element {
     return <Navigate to={ROUTES.overview} replace />;
   }
 
-  const matchedPage = pages.find((page) => page.path === location.pathname);
-  if (!matchedPage) {
+  const matched = matchConfiguredPage(location.pathname, pages);
+  if (!matched) {
     return <Navigate to={pages[0]?.path || ROUTES.overview} replace />;
   }
 
-  const registeredRoute = resolveRegisteredDomainRoute(matchedPage.path);
-  if (registeredRoute) {
-    const Page = registeredRoute.page;
+  const { page: matchedPage, pathParams } = matched;
+
+  if (matchedPage.renderMode !== 'dashboard') {
+    return <Navigate to={matchedPage.path || pages[0]?.path || ROUTES.overview} replace />;
+  }
+
+  const registeredAdapter = resolveDashboardPageAdapter(matchedPage.id);
+  if (registeredAdapter) {
+    const Page = registeredAdapter.page;
     return <Page />;
   }
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1600px', margin: '0 auto' }}>
-      <DashboardPage pageId={matchedPage.id} />
-    </div>
+    <PageShell>
+      <PageHeader
+        title={matchedPage.title || matchedPage.label}
+        subtitle={matchedPage.subtitle}
+        icon={getDashboardIcon(matchedPage.icon, 24)}
+      />
+      <DashboardPage pageId={matchedPage.id} pathParams={pathParams} />
+    </PageShell>
   );
 }

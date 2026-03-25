@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { useTimeRange } from '@shared/hooks/useTimeRangeQuery';
 
-import { generateTimeBuckets, formatChartLabels } from '@shared/utils/echarts';
+import { generateTimeBuckets, formatChartLabels } from '@shared/utils/charting';
 
 function toEpochMs(value: string | number): number {
   if (typeof value === 'number' && Number.isFinite(value)) {

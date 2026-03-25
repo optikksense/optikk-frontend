@@ -13,6 +13,10 @@ import {
 
 import StatCard from '@shared/components/ui/cards/StatCard';
 import ConfigurableDashboard from '@shared/components/ui/dashboard/ConfigurableDashboard';
+import type {
+  DashboardDataSources,
+  DashboardRenderConfig,
+} from '@shared/types/dashboardConfig';
 
 import { formatDuration, formatNumber } from '@shared/utils/formatters';
 
@@ -21,10 +25,10 @@ import { APP_COLORS } from '@config/colorLiterals';
 import { dollar, latColor, n, pct, rateColor } from './tabHelpers';
 
 interface AiOverviewTabProps {
-  summary: any;
+  summary: Record<string, unknown> | null;
   summaryLoading: boolean;
-  config: any;
-  dataSources: Record<string, any>;
+  config: DashboardRenderConfig | null;
+  dataSources: DashboardDataSources;
   selectedModel: string | null;
 }
 
@@ -137,7 +141,7 @@ export default function AiOverviewTab({
 
       <div style={{ marginTop: 16 }}>
         <ConfigurableDashboard
-          config={config}
+          config={config ?? null}
           dataSources={dataSources}
           extraContext={{ selectedModel }}
         />

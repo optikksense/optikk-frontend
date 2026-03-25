@@ -27,6 +27,12 @@ const AiConversationsPage = lazy(() =>
 const AiConversationDetailPage = lazy(() =>
   import('./pages/AiConversationDetailPage').then((module) => ({ default: module.default })),
 );
+const AiLineRenderer = lazy(() =>
+  import('./dashboard/renderers/AiLineRenderer').then((module) => ({ default: module.AiLineRenderer })),
+);
+const AiBarRenderer = lazy(() =>
+  import('./dashboard/renderers/AiBarRenderer').then((module) => ({ default: module.AiBarRenderer })),
+);
 
 export const aiConfig: DomainConfig = {
   key: 'ai',
@@ -47,15 +53,19 @@ export const aiConfig: DomainConfig = {
     },
   ],
   routes: [
-    { path: ROUTES.aiObservability, page: AiPage },
     { path: ROUTES.aiRuns, page: AiRunsPage },
     { path: ROUTES.aiRunDetail, page: AiRunDetailPage },
     { path: ROUTES.aiTraceDetail, page: AiTraceDetailPage },
     { path: ROUTES.aiConversations, page: AiConversationsPage },
     { path: ROUTES.aiConversationDetail, page: AiConversationDetailPage },
   ],
+  dashboardPages: [
+    { pageId: 'ai-observability', page: AiPage },
+  ],
+  dashboardPanels: [
+    { panelType: 'ai-line', kind: 'specialized', component: AiLineRenderer },
+    { panelType: 'ai-bar', kind: 'specialized', component: AiBarRenderer },
+  ],
 };
-
-export { default as AiObservabilityPageView } from './pages/AiObservabilityPage';
 export * from './components';
 export * from './types';

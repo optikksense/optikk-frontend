@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import TracesPage from './index';
+import { useTracesExplorer } from '../../hooks/useTracesExplorer';
 
 vi.mock('@/features/explorer-core/hooks/useLiveTailStream', () => ({
   useLiveTailStream: vi.fn(() => ({
@@ -88,5 +89,66 @@ describe('TracesPage', () => {
       'min-h-[48px]',
       'bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(15,23,42,0.78))]',
     );
+  });
+
+  it('shows a normalized inline error banner when explorer decoding fails', () => {
+    vi.mocked(useTracesExplorer).mockReturnValueOnce({
+      isLoading: false,
+      isError: true,
+      error: {
+        code: 'UNKNOWN_ERROR',
+        message: 'Invalid traces explorer response',
+      } as any,
+      traces: [],
+      total: 0,
+      totalTraces: 0,
+      summary: {
+        total_traces: 0,
+        error_traces: 0,
+        avg_duration: 0,
+        p50_duration: 0,
+        p95_duration: 0,
+        p99_duration: 0,
+      },
+      errorTraces: 0,
+      errorRate: 0,
+      p50: 0,
+      p95: 0,
+      p99: 0,
+      trendBuckets: [],
+      facets: {
+        service_name: [],
+        status: [],
+        operation_name: [],
+      },
+      maxDuration: 1,
+      searchText: '',
+      selectedService: null,
+      errorsOnly: false,
+      mode: 'all',
+      page: 1,
+      pageSize: 20,
+      filters: [],
+      startTime: 1,
+      endTime: 2,
+      backendParams: {},
+      setSearchText: vi.fn(),
+      setSelectedService: vi.fn(),
+      setErrorsOnly: vi.fn(),
+      setMode: vi.fn(),
+      setPage: vi.fn(),
+      setPageSize: vi.fn(),
+      setFilters: vi.fn(),
+      clearAll: vi.fn(),
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/traces']}>
+        <TracesPage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('An unexpected error occurred')).toBeInTheDocument();
+    expect(screen.getByText('Invalid traces explorer response')).toBeInTheDocument();
   });
 });

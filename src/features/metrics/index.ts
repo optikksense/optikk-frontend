@@ -16,6 +16,15 @@ const KafkaTopicDetailPage = lazy(() =>
 const KafkaGroupDetailPage = lazy(() =>
   import('./pages/KafkaGroupDetailPage').then((module) => ({ default: module.default })),
 );
+const LatencyHistogramRenderer = lazy(() =>
+  import('./dashboard/renderers/LatencyHistogramRenderer').then((module) => ({ default: module.LatencyHistogramRenderer })),
+);
+const LatencyHeatmapRenderer = lazy(() =>
+  import('./dashboard/renderers/LatencyHeatmapRenderer').then((module) => ({ default: module.LatencyHeatmapRenderer })),
+);
+const DbSystemsRenderer = lazy(() =>
+  import('./dashboard/renderers/DbSystemsRenderer').then((module) => ({ default: module.DbSystemsRenderer })),
+);
 
 export /**
  *
@@ -39,20 +48,19 @@ const metricsConfig: DomainConfig = {
     },
   ],
   routes: [
-    { path: ROUTES.metrics, page: MetricsPage },
-    { path: ROUTES.saturation, page: SaturationHubPage },
-    { path: ROUTES.kafkaTopicDetail, page: KafkaTopicDetailPage },
-    { path: ROUTES.kafkaGroupDetail, page: KafkaGroupDetailPage },
+  ],
+  dashboardPages: [
+    { pageId: 'metrics', page: MetricsPage },
+    { pageId: 'saturation', page: SaturationHubPage },
+    { pageId: 'kafka-topic-detail', page: KafkaTopicDetailPage },
+    { pageId: 'kafka-group-detail', page: KafkaGroupDetailPage },
+  ],
+  dashboardPanels: [
+    { panelType: 'latency-histogram', kind: 'specialized', component: LatencyHistogramRenderer },
+    { panelType: 'latency-heatmap', kind: 'specialized', component: LatencyHeatmapRenderer },
+    { panelType: 'db-systems-overview', kind: 'specialized', component: DbSystemsRenderer },
   ],
 };
-
-export { default as MetricsPageView } from './pages/MetricsPage';
-export { default as SaturationHubPageView } from './pages/SaturationHubPage';
-export { default as LatencyAnalysisPageView } from './pages/LatencyAnalysisPage';
-export { default as ResourceUtilizationPageView } from './pages/ResourceUtilizationPage';
-export { default as MessagingQueueMonitoringPageView } from './pages/MessagingQueueMonitoringPage';
-export { default as KafkaTopicDetailPageView } from './pages/KafkaTopicDetailPage';
-export { default as KafkaGroupDetailPageView } from './pages/KafkaGroupDetailPage';
 export * from './components';
 export * from './utils';
 export * from './types';

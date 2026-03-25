@@ -1,6 +1,6 @@
 import { Skeleton } from '@/components/ui';
 
-import { useTabComponents } from '@shared/hooks/useTabComponents';
+import { useDashboardTabDocument } from '@shared/hooks/useDashboardTabDocument';
 
 import DashboardTabContent from './DashboardTabContent';
 
@@ -15,11 +15,11 @@ export default function ConfiguredTabPanel({
   tabId,
   pathParams,
 }: ConfiguredTabPanelProps) {
-  const { components, groups, isLoading } = useTabComponents(pageId, tabId);
+  const { tab, isLoading } = useDashboardTabDocument(pageId, tabId);
 
-  if (isLoading && components.length === 0) {
+  if (isLoading && !tab) {
     return <Skeleton active paragraph={{ rows: 6 }} />;
   }
 
-  return <DashboardTabContent components={components} groups={groups} pathParams={pathParams} />;
+  return tab ? <DashboardTabContent tab={tab} pathParams={pathParams} /> : null;
 }

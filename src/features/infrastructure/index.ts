@@ -23,8 +23,7 @@ const infrastructureConfig: DomainConfig = {
       group: 'operate',
     },
   ],
-  routes: [{ path: ROUTES.infrastructure, page: InfrastructurePage }],
+  routes: [],
+  dashboardPages: [{ pageId: 'infrastructure', page: InfrastructurePage }],
 };
-
-export { default as InfrastructureHubPageView } from './pages/InfrastructureHubPage';
 export * from './types';

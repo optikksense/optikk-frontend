@@ -1,4 +1,9 @@
-import type { LogColumn, LogFilterField, LogsBackendParams } from '../types';
+import type {
+  LogAttributeFilter,
+  LogColumn,
+  LogFilterField,
+  LogsBackendParams,
+} from '../types';
 import type { StructuredFilter } from '@shared/hooks/useURLFilters';
 
 /**
@@ -90,6 +95,7 @@ export function compileLogsStructuredFilters(
   filters: StructuredFilter[],
 ): Partial<LogsBackendParams> {
   const compiled: Partial<LogsBackendParams> = {};
+  const attributeFilters: LogAttributeFilter[] = [];
 
   const append = (
     key:
@@ -144,10 +150,16 @@ export function compileLogsStructuredFilters(
         compiled.spanId = filter.value;
         break;
       default:
-        compiled[
-          `${filter.operator === 'not_equals' ? 'attr_neq.' : 'attr.'}${filter.field}`
-        ] = filter.value;
+        attributeFilters.push({
+          key: filter.field,
+          value: filter.value,
+          op: filter.operator === 'not_equals' ? 'neq' : 'eq',
+        });
     }
+  }
+
+  if (attributeFilters.length > 0) {
+    compiled.attributeFilters = attributeFilters;
   }
 
   return compiled;

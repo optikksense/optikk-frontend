@@ -28,15 +28,6 @@ export default function ServiceDetailErrorsTab({
           rowKey: (record: any) =>
             `${record.operation_name}-${record.http_status_code}-${record.status_message}`,
         }}
-        config={{
-          expandable: {
-            expandedRowRender: (record: any) => (
-              <div className="font-mono" style={{ padding: 12, fontSize: 12, whiteSpace: 'pre-wrap', color: APP_COLORS.hex_f04438, background: `var(--bg-tertiary, ${APP_COLORS.hex_1a1a1a_2})`, borderRadius: 6 }}>
-                {record.status_message || 'No additional details'}
-              </div>
-            ),
-          },
-        }}
       />
     </Surface>
   );

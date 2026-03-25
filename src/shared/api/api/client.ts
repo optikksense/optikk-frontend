@@ -4,21 +4,12 @@ import { API_CONFIG } from '@config/apiConfig';
 
 import { attachAuthInterceptor } from './interceptors/authInterceptor';
 import { attachErrorInterceptor } from './interceptors/errorInterceptor';
-
-interface ApiEnvelope {
-  readonly success: boolean;
-  readonly data: unknown;
-  readonly error?: unknown;
-}
-
-function isApiEnvelope(value: unknown): value is ApiEnvelope {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-
-  const record = value as Record<string, unknown>;
-  return typeof record.success === 'boolean' && 'data' in record;
-}
+import {
+  createInvalidApiResponseError,
+  isApiEnvelope,
+  isHtmlLikePayload,
+  normalizeApiPayload,
+} from '../utils/decode';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || API_CONFIG.BASE_URL,
@@ -31,21 +22,29 @@ const api = axios.create({
 
 attachAuthInterceptor(api);
 api.interceptors.response.use((response) => {
-  const data = response.data;
-  if (isApiEnvelope(data)) {
-    if (!data.success) {
+  const normalized = normalizeApiPayload(response.data) as any;
+
+  if (typeof normalized === 'string' && isHtmlLikePayload(normalized)) {
+    return Promise.reject(
+      createInvalidApiResponseError(response, 'Invalid API response', normalized),
+    );
+  }
+
+  if (isApiEnvelope(normalized)) {
+    if (!normalized.success) {
       const err = new AxiosError(
         'Request failed',
         AxiosError.ERR_BAD_RESPONSE,
         response.config,
         response.request,
-        { ...response, data: data as unknown as Record<string, unknown> },
+        { ...response, data: normalized as unknown as Record<string, unknown> },
       );
       return Promise.reject(err);
     }
-    return data.data;
+    return normalizeApiPayload(normalized.data) as any;
   }
-  return data;
+
+  return normalized;
 });
 attachErrorInterceptor(api);
 

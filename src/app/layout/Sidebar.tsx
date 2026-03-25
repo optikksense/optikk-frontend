@@ -10,15 +10,14 @@ import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { getDomainNavigationItems } from '@/app/registry/domainRegistry';
-import { getDashboardIcon } from '@shared/components/ui/dashboard/SpecializedRendererRegistry';
-import { usePagesConfig } from '@/hooks/usePagesConfig';
-import { ROUTES } from '@/shared/constants/routes';
+import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ui';
+import { getDashboardIcon } from '@shared/components/ui/dashboard/utils/dashboardUtils';
+import { ROUTES } from '@/shared/constants/routes';
+import { usePagesConfig } from '@shared/hooks/usePagesConfig';
 
 import { useAppStore } from '@store/appStore';
 import { useAuthStore } from '@store/authStore';
-
-import { cn } from '@/lib/utils';
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -88,9 +87,9 @@ export default function Sidebar() {
 
   const navItemClass = (isActive: boolean, extra?: string) =>
     cn(
-      'flex items-center gap-[var(--space-sm)] w-full py-[7px] px-[var(--space-sm)] my-0.5 border border-transparent rounded-lg bg-transparent text-[var(--text-secondary)] text-[13px] font-medium cursor-pointer transition-colors text-left whitespace-nowrap',
+      'flex w-full items-center gap-[var(--space-sm)] whitespace-nowrap rounded-[var(--card-radius)] border border-transparent bg-transparent px-[var(--space-sm)] py-2 text-left text-[13px] font-medium text-[var(--text-secondary)] transition-[background-color,border-color,color,box-shadow]',
       'hover:bg-white/5 hover:text-[var(--text-primary)]',
-      isActive && 'bg-[rgba(94,96,206,0.16)] text-[var(--color-primary)] border-[rgba(94,96,206,0.25)] hover:bg-[rgba(94,96,206,0.20)]',
+      isActive && 'bg-[rgba(139,127,255,0.12)] text-[var(--text-primary)] border-[rgba(139,127,255,0.2)] shadow-[var(--shadow-sm)] hover:bg-[rgba(139,127,255,0.14)]',
       sidebarCollapsed && 'justify-center px-[7px]',
       extra,
     );
@@ -131,23 +130,23 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 bottom-0 w-[var(--space-sidebar-w,220px)] h-screen bg-[var(--glass-bg)] backdrop-blur-[var(--glass-blur)] border-r border-[var(--glass-border)] z-[100] flex flex-col transition-[width] duration-200',
+        'fixed bottom-0 left-0 top-0 z-[100] flex h-screen w-[var(--space-sidebar-w,220px)] flex-col border-r border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-[var(--shadow-md)] transition-[width] duration-200',
         sidebarCollapsed && 'w-[var(--space-sidebar-collapsed,56px)]',
       )}
       data-theme={theme === 'light' ? 'light' : undefined}
     >
       <div
         className={cn(
-          'h-[var(--space-header-h,56px)] flex items-center justify-center gap-3 px-[var(--space-lg)] border-b border-[var(--glass-border)] cursor-pointer shrink-0',
+          'flex h-[var(--space-header-h,56px)] shrink-0 cursor-pointer items-center justify-center gap-3 border-b border-[var(--border-color)] px-[var(--space-lg)]',
           sidebarCollapsed && 'px-0',
         )}
         onClick={() => navigate(ROUTES.overview)}
       >
-        <div className="w-8 h-8 bg-[var(--gradient-primary)] rounded-lg flex items-center justify-center text-white shrink-0 shadow-[0_6px_14px_rgba(94,96,206,0.35)]">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[calc(var(--card-radius)+1px)] bg-[linear-gradient(180deg,var(--color-primary),#7266ee)] text-white shadow-[var(--shadow-sm)]">
           <Layers size={20} />
         </div>
         {!sidebarCollapsed && (
-          <span className="text-lg font-bold bg-[var(--gradient-text-accent)] bg-clip-text [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] whitespace-nowrap">
+          <span className="text-[14px] font-semibold text-[var(--text-primary)] whitespace-nowrap">
             Optikk
           </span>
         )}
@@ -159,12 +158,12 @@ export default function Sidebar() {
           {renderNavGroup('Operate', operateItems)}
         </nav>
 
-        <div className="border-t border-[var(--glass-border)] shrink-0">
+        <div className="shrink-0 border-t border-[var(--border-color)]">
           <div className="p-[var(--space-xs)]">
             <button
               className={cn(
-                'flex items-center gap-[var(--space-xs)] w-full py-1.5 px-[var(--space-sm)] rounded-lg font-medium text-xs cursor-pointer transition-colors text-left',
-                'text-[var(--text-primary)] border border-[rgba(94,96,206,0.35)] bg-[rgba(94,96,206,0.14)] mb-[var(--space-xs)] hover:border-[var(--color-primary)] hover:bg-[rgba(94,96,206,0.22)]',
+                'mb-[var(--space-xs)] flex w-full items-center gap-[var(--space-xs)] rounded-[var(--card-radius)] border px-[var(--space-sm)] py-2 text-left text-[12px] font-medium transition-[background-color,border-color,color,box-shadow]',
+                'border-[rgba(139,127,255,0.26)] bg-[rgba(139,127,255,0.12)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] hover:border-[var(--color-primary)] hover:bg-[rgba(139,127,255,0.18)]',
                 sidebarCollapsed && 'justify-center px-1.5',
               )}
               onClick={() => navigate(ROUTES.settings)}
@@ -174,7 +173,7 @@ export default function Sidebar() {
             </button>
             <button
               className={cn(
-                'flex items-center gap-[var(--space-xs)] w-full py-1.5 px-[var(--space-sm)] rounded-lg font-medium text-xs cursor-pointer transition-colors text-left',
+                'flex w-full items-center gap-[var(--space-xs)] rounded-[var(--card-radius)] px-[var(--space-sm)] py-2 text-left text-[12px] font-medium transition-[background-color,border-color,color]',
                 'text-[var(--text-secondary)] border border-[var(--border-light)] bg-transparent hover:text-[var(--text-primary)] hover:border-[var(--border-color)] hover:bg-[var(--bg-hover)]',
                 sidebarCollapsed && 'justify-center px-1.5',
               )}
@@ -186,7 +185,7 @@ export default function Sidebar() {
           </div>
 
           <button
-            className="flex items-center justify-center w-full h-10 border-none border-t border-[var(--glass-border)] bg-transparent text-[var(--text-muted)] cursor-pointer transition-colors hover:text-[var(--text-primary)] hover:bg-white/[0.04]"
+            className="flex h-10 w-full items-center justify-center border-none border-t border-[var(--border-color)] bg-transparent text-[var(--text-muted)] transition-colors hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
             onClick={toggleSidebar}
             aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >

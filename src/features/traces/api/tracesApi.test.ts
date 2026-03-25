@@ -33,6 +33,8 @@ describe('tracesApi', () => {
       summary: {
         total_traces: 2,
         error_traces: 1,
+        avg_duration: 90,
+        p50_duration: 90,
         p95_duration: 90,
         p99_duration: 90,
       },

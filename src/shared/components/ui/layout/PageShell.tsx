@@ -9,7 +9,7 @@ export function PageShell({
   ...props
 }: PageShellProps): JSX.Element {
   return (
-    <div className={cn('flex flex-col gap-4 px-1 pb-6', className)} {...props}>
+    <div className={cn('flex flex-col gap-4 pb-5', className)} {...props}>
       {children}
     </div>
   );
@@ -29,7 +29,7 @@ export function PageSurface({
       elevation={elevation}
       padding={padding}
       className={cn(
-        'border-[rgba(255,255,255,0.08)] bg-[linear-gradient(180deg,rgba(16,20,31,0.98),rgba(8,11,18,0.94))] shadow-[0_24px_64px_rgba(0,0,0,0.28)]',
+        'border-[var(--border-color)] bg-[var(--bg-card)] shadow-[var(--shadow-sm)]',
         className,
       )}
       {...props}

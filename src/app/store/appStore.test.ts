@@ -84,14 +84,14 @@ describe('appStore', () => {
     useAppStore.getState().setAutoRefreshInterval(60_000);
     useAppStore.getState().setTheme('light');
     useAppStore.getState().setNotificationsEnabled(false);
-    useAppStore.getState().setViewPreference('chartDensity', 'compact');
+    useAppStore.getState().setViewPreference('density', 'compact');
     useAppStore.getState().triggerRefresh();
 
     expect(useAppStore.getState()).toMatchObject({
       autoRefreshInterval: 60_000,
       theme: 'light',
       notificationsEnabled: false,
-      viewPreferences: { chartDensity: 'compact' },
+      viewPreferences: { density: 'compact' },
     });
     const rawViewPrefs = localStorage.getItem(STORAGE_KEYS.APP_STATE);
     expect(rawViewPrefs).not.toBeNull();
@@ -100,7 +100,7 @@ describe('appStore', () => {
       autoRefreshInterval: 60_000,
       theme: 'light',
       notificationsEnabled: false,
-      viewPreferences: { chartDensity: 'compact' },
+      viewPreferences: { density: 'compact' },
     });
   });
 

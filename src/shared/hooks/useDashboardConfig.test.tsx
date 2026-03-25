@@ -11,31 +11,43 @@ vi.mock('./usePageTabs', () => ({
   })),
 }));
 
-vi.mock('./useTabComponents', () => ({
-  useTabComponents: vi.fn(() => ({
-    components: [
-      {
-        id: 'request-rate',
-        componentKey: 'request',
-        order: 10,
-        query: { method: 'GET', endpoint: '/v1/overview/request-rate' },
-      },
-    ],
+vi.mock('./useDashboardTabDocument', () => ({
+  useDashboardTabDocument: vi.fn(() => ({
+    tab: {
+      id: 'summary',
+      pageId: 'overview',
+      label: 'Summary',
+      order: 10,
+      sections: [
+        { id: 'golden-signals', title: 'Golden Signals', order: 10, kind: 'trends', layoutMode: 'two-up', collapsible: true },
+      ],
+      panels: [
+        {
+          id: 'request-rate',
+          panelType: 'request',
+          sectionId: 'golden-signals',
+          order: 10,
+          layout: { preset: 'trend' },
+          query: { method: 'GET', endpoint: '/v1/overview/request-rate' },
+          dataSource: 'request-rate',
+        },
+      ],
+    },
     isLoading: false,
     error: null,
   })),
 }));
 
 describe('useDashboardConfig', () => {
-  it('maps the first tab components into a render config', () => {
+  it('returns the first tab document as a render config', () => {
     const { result } = renderHook(() => useDashboardConfig('overview'));
 
     expect(result.current.error).toBeNull();
     expect(result.current.isLoading).toBe(false);
-    expect(result.current.config?.components).toEqual([
+    expect(result.current.config?.panels).toEqual([
       expect.objectContaining({
         id: 'request-rate',
-        componentKey: 'request',
+        panelType: 'request',
         dataSource: 'request-rate',
       }),
     ]);

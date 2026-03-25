@@ -1,35 +1,44 @@
-import type { Team, User } from '@/types';
+import { z } from 'zod';
 
 import api from '@shared/api/api/client';
 
 import { API_CONFIG } from '@config/apiConfig';
+import { teamSchema, userSchema } from '@shared/entities/user/model';
 
-interface AuthPayload {
-  readonly user?: User;
-  readonly teams?: Team[];
-  readonly currentTeam?: Team;
+const authPayloadSchema = z.object({
+  user: userSchema.optional(),
+  teams: z.array(teamSchema).optional(),
+  currentTeam: teamSchema.optional(),
+}).strict();
+
+type AuthPayload = z.infer<typeof authPayloadSchema>;
+
+interface AuthEnvelope {
+  readonly user?: z.infer<typeof userSchema>;
+  readonly teams?: Array<z.infer<typeof teamSchema>>;
+  readonly currentTeam?: z.infer<typeof teamSchema>;
   readonly success?: boolean;
   readonly data?: unknown;
-  readonly [key: string]: unknown;
 }
 
-function asAuthPayload(value: unknown): AuthPayload | null {
+function asAuthEnvelope(value: unknown): AuthEnvelope | null {
   if (typeof value !== 'object' || value === null) {
     return null;
   }
-  return value as AuthPayload;
+  return value as AuthEnvelope;
 }
 
 export const authService = {
   normalizeAuthPayload(response: unknown): AuthPayload | null {
-    const payload = asAuthPayload(response);
+    const payload = asAuthEnvelope(response);
     if (!payload) {
       return null;
     }
     if (payload.success === true) {
-      return asAuthPayload(payload.data);
+      const nestedPayload = asAuthEnvelope(payload.data);
+      return nestedPayload ? authPayloadSchema.safeParse(nestedPayload).data ?? null : null;
     }
-    return payload;
+    return authPayloadSchema.safeParse(payload).data ?? null;
   },
 
   async login(email: string, password: string): Promise<AuthPayload | unknown> {

@@ -1,8 +1,7 @@
 import { Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
 
-import { getDomainRoutes } from '@/app/registry/domainRegistry';
+import { getExplorerRoutes } from '@/app/registry/domainRegistry';
 import { ErrorBoundary, Loading } from '@/shared/components/ui/feedback';
 import { ROUTES } from '@/shared/constants/routes';
 
@@ -29,17 +28,7 @@ function toNestedRoutePath(path: string): string {
 }
 
 function PageTransition({ children }: { children: React.ReactNode }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -15 }}
-      transition={{ duration: 0.3 }}
-      style={{ width: '100%', height: '100%' }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div style={{ width: '100%', height: '100%' }}>{children}</div>;
 }
 
 function renderProtectedRoute(path: string, Page: React.ComponentType<object>): JSX.Element {
@@ -48,7 +37,10 @@ function renderProtectedRoute(path: string, Page: React.ComponentType<object>): 
       key={path}
       path={toNestedRoutePath(path)}
       element={(
-        <ErrorBoundary>
+        <ErrorBoundary
+          showDetails={import.meta.env.DEV}
+          boundaryName={`route:${path}`}
+        >
           <Suspense fallback={<Loading fullscreen />}>
             <Page />
           </Suspense>
@@ -60,10 +52,9 @@ function renderProtectedRoute(path: string, Page: React.ComponentType<object>): 
 
 export default function AppRoutes(): JSX.Element {
   const location = useLocation();
-  const protectedDomainRoutes = getDomainRoutes();
+  const protectedExplorerRoutes = getExplorerRoutes();
 
   return (
-    <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route
           path={ROUTES.login}
@@ -114,7 +105,7 @@ export default function AppRoutes(): JSX.Element {
         }
       >
         <Route index element={<Navigate to={ROUTES.overview} replace />} />
-        {protectedDomainRoutes.map((route) => renderProtectedRoute(route.path, route.page))}
+        {protectedExplorerRoutes.map((route) => renderProtectedRoute(route.path, route.page))}
         {renderProtectedRoute(ROUTES.traceCompare, TraceComparisonPage as React.ComponentType<object>)}
         <Route
           path="errors"
@@ -131,7 +122,10 @@ export default function AppRoutes(): JSX.Element {
         <Route
           path="*"
           element={(
-            <ErrorBoundary>
+            <ErrorBoundary
+              showDetails={import.meta.env.DEV}
+              boundaryName="route:backend-driven"
+            >
               <Suspense fallback={<Loading fullscreen />}>
                 <BackendDrivenPage />
               </Suspense>
@@ -142,6 +136,5 @@ export default function AppRoutes(): JSX.Element {
 
       <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
     </Routes>
-    </AnimatePresence>
   );
 }

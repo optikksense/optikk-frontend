@@ -1,0 +1,92 @@
+import { z } from 'zod';
+
+const numericValue = z.coerce.number().default(0);
+const stringValue = z.string().default('');
+
+export const metricNumericValueSchema = z.object({
+  value: numericValue,
+}).strict();
+
+export const metricsTimeSeriesPointSchema = z.object({
+  timestamp: stringValue,
+  time_bucket: stringValue.optional(),
+  service_name: stringValue,
+  operation_name: stringValue,
+  http_method: stringValue,
+  request_count: numericValue,
+  error_count: numericValue,
+  error_rate: numericValue,
+  avg_latency: numericValue,
+  p50_latency: numericValue,
+  p95_latency: numericValue,
+  p99_latency: numericValue,
+  value: numericValue,
+}).strict();
+
+export const endpointMetricSchema = z.object({
+  service_name: stringValue,
+  operation_name: stringValue,
+  endpoint_name: stringValue.optional(),
+  http_method: stringValue,
+  request_count: numericValue,
+  error_count: numericValue,
+  error_rate: numericValue,
+  avg_latency: numericValue,
+  p50_latency: numericValue,
+  p95_latency: numericValue,
+  p99_latency: numericValue,
+}).strict();
+
+export const errorGroupSchema = z.object({
+  service_name: stringValue,
+  operation_name: stringValue,
+  status_message: stringValue,
+  http_status_code: numericValue,
+  error_count: numericValue,
+  last_occurrence: stringValue,
+  first_occurrence: stringValue,
+  sample_trace_id: stringValue,
+}).strict();
+
+export const serviceDependencySchema = z.object({
+  source: stringValue,
+  target: stringValue,
+  call_count: numericValue,
+  avg_latency: numericValue,
+  error_rate: numericValue,
+}).strict();
+
+export const resourceUsageTimeSeriesPointSchema = z.object({
+  timestamp: stringValue,
+  pod: stringValue,
+  value: numericValue,
+}).strict();
+
+export const resourceUsageByServiceRowSchema = z.object({
+  service_name: stringValue,
+  avg_cpu_util: numericValue,
+  avg_memory_util: numericValue,
+  avg_disk_util: numericValue,
+  avg_network_util: numericValue,
+  avg_connection_pool_util: numericValue,
+  sample_count: numericValue,
+}).strict();
+
+export const resourceUsageByInstanceRowSchema = z.object({
+  host: stringValue,
+  pod: stringValue,
+  container: stringValue,
+  service_name: stringValue,
+  avg_cpu_util: numericValue,
+  avg_memory_util: numericValue,
+  avg_connection_pool_util: numericValue,
+}).strict();
+
+export type MetricNumericValue = z.infer<typeof metricNumericValueSchema>;
+export type MetricsTimeSeriesPointDto = z.infer<typeof metricsTimeSeriesPointSchema>;
+export type EndpointMetricDto = z.infer<typeof endpointMetricSchema>;
+export type ErrorGroupDto = z.infer<typeof errorGroupSchema>;
+export type ServiceDependencyDto = z.infer<typeof serviceDependencySchema>;
+export type ResourceUsageTimeSeriesPointDto = z.infer<typeof resourceUsageTimeSeriesPointSchema>;
+export type ResourceUsageByServiceRowDto = z.infer<typeof resourceUsageByServiceRowSchema>;
+export type ResourceUsageByInstanceRowDto = z.infer<typeof resourceUsageByInstanceRowSchema>;

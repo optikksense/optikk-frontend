@@ -11,6 +11,7 @@ import { matchPath } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import type { ComponentType, LazyExoticComponent } from 'react';
 import type { AppRoutePath } from '@/shared/constants/routes';
+import type { DashboardPanelRegistration } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
 
 /**
  *
@@ -37,6 +38,11 @@ export interface DomainRouteConfig {
   readonly page: DomainPage;
 }
 
+export interface DashboardPageAdapterConfig {
+  readonly pageId: string;
+  readonly page: DomainPage;
+}
+
 /**
  *
  */
@@ -46,6 +52,8 @@ export interface DomainConfig {
   readonly permissions: readonly string[];
   readonly navigation: readonly DomainNavigationItem[];
   readonly routes: readonly DomainRouteConfig[];
+  readonly dashboardPages?: readonly DashboardPageAdapterConfig[];
+  readonly dashboardPanels?: readonly DashboardPanelRegistration[];
 }
 
 export /**
@@ -68,11 +76,17 @@ export interface RegisteredDomainRoute extends DomainRouteConfig {
   readonly permissions: readonly string[];
 }
 
+export interface RegisteredDashboardPageAdapter extends DashboardPageAdapterConfig {
+  readonly domainKey: string;
+  readonly label: string;
+  readonly permissions: readonly string[];
+}
+
 export function getDomainNavigationItems(): readonly DomainNavigationItem[] {
   return domainRegistry.flatMap((domain) => domain.navigation);
 }
 
-export function getDomainRoutes(): readonly RegisteredDomainRoute[] {
+export function getExplorerRoutes(): readonly RegisteredDomainRoute[] {
   return domainRegistry.flatMap((domain) =>
     domain.routes.map((route) => ({
       ...route,
@@ -83,12 +97,33 @@ export function getDomainRoutes(): readonly RegisteredDomainRoute[] {
   );
 }
 
-export function resolveRegisteredDomainRoute(
+export function resolveRegisteredExplorerRoute(
   pathname: string,
 ): RegisteredDomainRoute | null {
   return (
-    getDomainRoutes().find((route) =>
+    getExplorerRoutes().find((route) =>
       matchPath({ path: route.path, end: true }, pathname),
     ) ?? null
   );
+}
+
+export function getDashboardPageAdapters(): readonly RegisteredDashboardPageAdapter[] {
+  return domainRegistry.flatMap((domain) =>
+    (domain.dashboardPages ?? []).map((pageAdapter) => ({
+      ...pageAdapter,
+      domainKey: domain.key,
+      label: domain.label,
+      permissions: domain.permissions,
+    })),
+  );
+}
+
+export function resolveDashboardPageAdapter(
+  pageId: string,
+): RegisteredDashboardPageAdapter | null {
+  return getDashboardPageAdapters().find((entry) => entry.pageId === pageId) ?? null;
+}
+
+export function getDashboardPanelRegistrations(): readonly DashboardPanelRegistration[] {
+  return domainRegistry.flatMap((domain) => domain.dashboardPanels ?? []);
 }

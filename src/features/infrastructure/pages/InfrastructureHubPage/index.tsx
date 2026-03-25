@@ -1,51 +1,9 @@
-import { Tabs, Skeleton } from '@/components/ui';
-import { Activity, Cpu, Layers, Network } from 'lucide-react';
-import { useMemo } from 'react';
+import { Layers } from 'lucide-react';
 
 import { PageHeader, PageShell } from '@shared/components/ui';
-import ConfiguredTabPanel from '@shared/components/ui/dashboard/ConfiguredTabPanel';
-
-import { usePageTabs } from '@shared/hooks/usePageTabs';
-import { useUrlSyncedTab } from '@shared/hooks/useUrlSyncedTab';
-
-const TAB_ICONS = {
-  'resource-utilization': Cpu,
-  jvm: Activity,
-  kubernetes: Layers,
-  nodes: Network,
-} as const;
+import DashboardPage from '@shared/components/ui/dashboard/DashboardPage';
 
 export default function InfrastructureHubPage() {
-  const { tabs, isLoading } = usePageTabs('infrastructure');
-
-  const tabIds = useMemo(
-    () => tabs.map((tab) => tab.id),
-    [tabs],
-  );
-
-  const defaultTabId = tabIds[0] ?? '';
-
-  const { activeTab, onTabChange } = useUrlSyncedTab({
-    allowedTabs: tabIds as readonly string[],
-    defaultTab: defaultTabId,
-  });
-
-  const items = useMemo(
-    () => tabs.map((tab) => {
-      const Icon = TAB_ICONS[tab.id as keyof typeof TAB_ICONS];
-      return {
-        key: tab.id,
-        label: tab.label,
-        icon: Icon ? <Icon size={14} /> : undefined,
-      };
-    }),
-    [tabs],
-  );
-
-  if (isLoading && tabs.length === 0) {
-    return <Skeleton variant="rect" height={300} />;
-  }
-
   return (
     <PageShell>
       <PageHeader
@@ -53,14 +11,7 @@ export default function InfrastructureHubPage() {
         subtitle="Hosts, JVMs, Kubernetes, and nodes in one consistent infrastructure workspace."
         icon={<Layers size={24} />}
       />
-      <Tabs
-        activeKey={activeTab || defaultTabId}
-        onChange={onTabChange}
-        items={items}
-        size="large"
-        className="mb-[var(--space-md)]"
-      />
-      <ConfiguredTabPanel pageId="infrastructure" tabId={activeTab || defaultTabId} />
+      <DashboardPage pageId="infrastructure" />
     </PageShell>
   );
 }

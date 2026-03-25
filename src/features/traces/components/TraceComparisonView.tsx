@@ -1,6 +1,7 @@
 import { AlertTriangle, GitCompare, Layers } from 'lucide-react';
 
 import { Badge, Card, SimpleTable } from '@/components/ui';
+import type { SimpleTableColumn } from '@shared/components/primitives/ui/simple-table';
 import { formatDuration, formatNumber } from '@/shared/utils/formatters';
 
 import type { TraceComparisonResult } from '../types';
@@ -12,7 +13,7 @@ interface TraceComparisonViewProps {
 export default function TraceComparisonView({
   comparison,
 }: TraceComparisonViewProps): JSX.Element {
-  const matchedColumns = [
+  const matchedColumns: SimpleTableColumn<TraceComparisonResult['matchedSpans'][number]>[] = [
     {
       title: 'Span',
       key: 'signature',
@@ -31,28 +32,31 @@ export default function TraceComparisonView({
       title: 'Trace A',
       dataIndex: 'durationMsA',
       key: 'durationMsA',
-      render: (value: number) => formatDuration(value),
+      render: (value) => formatDuration(typeof value === 'number' ? value : Number(value ?? 0)),
     },
     {
       title: 'Trace B',
       dataIndex: 'durationMsB',
       key: 'durationMsB',
-      render: (value: number) => formatDuration(value),
+      render: (value) => formatDuration(typeof value === 'number' ? value : Number(value ?? 0)),
     },
     {
       title: 'Delta',
       dataIndex: 'deltaMs',
       key: 'deltaMs',
-      render: (value: number) => (
+      render: (value) => {
+        const normalized = typeof value === 'number' ? value : Number(value ?? 0);
+        return (
         <span
           className={
-            value > 0 ? 'text-[var(--color-error)]' : 'text-[var(--color-success)]'
+            normalized > 0 ? 'text-[var(--color-error)]' : 'text-[var(--color-success)]'
           }
         >
-          {value > 0 ? '+' : ''}
-          {formatDuration(value)}
+          {normalized > 0 ? '+' : ''}
+          {formatDuration(normalized)}
         </span>
-      ),
+        );
+      },
     },
   ];
 

@@ -1,13 +1,17 @@
 import { useEffect, useRef, useMemo } from 'react';
 import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
+import './uplot.css';
 
 import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
+import { resolveThemeColor } from '@shared/utils/chartTheme';
+import { cn } from '@/lib/utils';
 
 export interface UPlotChartProps {
   options: Omit<uPlot.Options, 'width' | 'height'>;
   data: uPlot.AlignedData;
   height?: number;
+  fillHeight?: boolean;
   className?: string;
 }
 
@@ -18,6 +22,7 @@ export default function UPlotChart({
   options,
   data,
   height = 260,
+  fillHeight = false,
   className,
 }: UPlotChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,18 +32,21 @@ export default function UPlotChart({
   const mergedOptions = useMemo(() => ({
     ...options,
     width: 100, // will be resized immediately
-    height,
+    height: fillHeight ? Math.max(height, 180) : height,
     cursor: {
       drag: { x: true, y: false, setScale: true },
       ...options.cursor,
     },
-  }), [options, height]);
+  }), [options, height, fillHeight]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const el = containerRef.current;
-    const opts = { ...mergedOptions, width: el.clientWidth };
+    const measuredHeight = fillHeight
+      ? Math.max(el.clientHeight || height, 180)
+      : height;
+    const opts = { ...mergedOptions, width: el.clientWidth, height: measuredHeight };
 
     chartRef.current = new uPlot(opts, data, el);
 
@@ -46,7 +54,10 @@ export default function UPlotChart({
       for (const entry of entries) {
         const w = entry.contentRect.width;
         if (w > 0 && chartRef.current) {
-          chartRef.current.setSize({ width: w, height });
+          const nextHeight = fillHeight
+            ? Math.max(entry.contentRect.height || height, 180)
+            : height;
+          chartRef.current.setSize({ width: w, height: nextHeight });
         }
       }
     });
@@ -57,37 +68,40 @@ export default function UPlotChart({
       chartRef.current?.destroy();
       chartRef.current = null;
     };
-  }, [mergedOptions, data, height]);
+  }, [mergedOptions, data, height, fillHeight]);
 
-  return <div ref={containerRef} className={className} />;
+  return (
+    <div
+      ref={containerRef}
+      className={cn('uplot-shell w-full', fillHeight && 'h-full', className)}
+    />
+  );
 }
 
 // ── Shared helpers for building uPlot options ──────────────────────────────
 
-/** CSS variable reader (falls back to a default if the var is not set). */
-function cssVar(name: string, fallback: string): string {
-  if (typeof document === 'undefined') return fallback;
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-}
-
 /** Default axis styling matching the app's dark theme. */
-export function defaultAxes(): uPlot.Axis[] {
-  const gridColor = 'rgba(255,255,255,0.05)';
-  const labelColor = cssVar('--text-secondary', '#8e8e8e');
+export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
+  const gridColor = resolveThemeColor('--border-light', 'rgba(255,255,255,0.08)');
+  const labelColor = resolveThemeColor('--text-secondary', '#8e96a9');
+  const font = '12px Inter, sans-serif';
+  const yAxisSize = config?.yAxisSize ?? 60;
 
   return [
     {
       stroke: labelColor,
       grid: { stroke: gridColor, width: 1 },
       ticks: { show: false },
-      font: '11px inherit',
+      font,
+      gap: 10,
     },
     {
       stroke: labelColor,
       grid: { stroke: gridColor, width: 1 },
       ticks: { show: false },
-      font: '11px inherit',
-      size: 48,
+      font,
+      size: yAxisSize,
+      gap: 10,
     },
   ];
 }
@@ -101,8 +115,8 @@ export function uLine(
   return {
     label,
     stroke: color,
-    width: opts?.width ?? 1.5,
-    fill: opts?.fill ? `${color}22` : undefined,
+    width: opts?.width ?? 1.85,
+    fill: opts?.fill ? `${color}14` : undefined,
     dash: opts?.dash,
     points: { show: false },
   };

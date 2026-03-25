@@ -90,8 +90,8 @@ export default function Header() {
   }));
 
   return (
-    <header className="h-[var(--space-header-h,56px)] px-6 max-md:px-3 bg-[var(--bg-card,var(--bg-secondary))] border-b border-[var(--border-color)] flex items-center justify-between relative z-[200] gap-3 overflow-visible">
-      <div className="flex items-center min-w-0 flex-1 overflow-visible gap-1">
+    <header className="relative z-[200] flex h-[var(--space-header-h,56px)] items-center justify-between gap-3 overflow-visible border-b border-[var(--border-color)] bg-[var(--bg-overlay)] px-4 backdrop-blur-[12px] max-md:px-3">
+      <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-visible">
         {/* Shift back */}
         <Tooltip content="Shift time window back">
           <IconButton
@@ -118,14 +118,14 @@ export default function Header() {
 
         {/* Live indicator */}
         {isLive && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.3)] text-[10px] font-semibold text-green-400 uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+          <span className="inline-flex items-center gap-1 rounded-[var(--card-radius)] border border-[rgba(115,201,145,0.28)] bg-[rgba(115,201,145,0.12)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--color-success)] shadow-[var(--shadow-sm)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)] animate-pulse" />
             Live
           </span>
         )}
       </div>
 
-      <div className="flex items-center min-w-0 ml-auto shrink">
+      <div className="ml-auto flex min-w-0 shrink items-center gap-2.5">
         {teams.length > 0 && (
           <div className="flex items-center gap-2.5 min-w-0">
             <span className="text-[11px] tracking-wide uppercase text-[var(--text-muted)] whitespace-nowrap max-[1240px]:hidden">
@@ -143,12 +143,12 @@ export default function Header() {
           </div>
         )}
 
-        {/* Grafana-style combined refresh picker */}
+        {/* Combined refresh picker */}
         <div className="relative flex items-center" ref={pickerRef}>
           <Tooltip content={`Refresh now${refreshLabel ? ` · ${refreshLabel}` : ''}`}>
             <button
               className={cn(
-                'inline-flex items-center justify-center h-8 w-8 rounded-l-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] cursor-pointer hover:bg-white/[0.06] hover:text-[var(--text-primary)] transition-colors',
+                'inline-flex h-9 w-9 items-center justify-center rounded-l-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,color] hover:bg-white/[0.06] hover:text-[var(--text-primary)]',
                 autoRefreshInterval && 'text-[var(--color-primary)]',
               )}
               onClick={handleRefresh}
@@ -163,7 +163,7 @@ export default function Header() {
 
           <button
             className={cn(
-              'inline-flex items-center gap-1 h-8 pl-2 pr-2 rounded-r-md border border-l-0 border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-muted)] text-[11px] font-medium cursor-pointer whitespace-nowrap hover:bg-white/[0.06] hover:text-[var(--text-primary)] transition-colors',
+              'inline-flex h-9 items-center gap-1 rounded-r-[var(--card-radius)] border border-l-0 border-[var(--border-color)] bg-[var(--bg-tertiary)] pl-2.5 pr-2.5 text-[12px] font-medium whitespace-nowrap text-[var(--text-muted)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,color] hover:bg-white/[0.06] hover:text-[var(--text-primary)]',
               autoRefreshInterval && 'text-[var(--color-primary)]',
             )}
             onClick={() => setIntervalPickerOpen((v) => !v)}
@@ -173,16 +173,16 @@ export default function Header() {
           </button>
 
           {intervalPickerOpen && (
-            <div className="absolute top-[calc(100%+6px)] right-0 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-lg z-[1000] min-w-[120px] py-1 overflow-hidden">
-              <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <div className="absolute right-0 top-[calc(100%+8px)] z-[1000] min-w-[132px] overflow-hidden rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-secondary)] py-1 shadow-[var(--shadow-md)]">
+              <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-muted)]">
                 Auto-refresh
               </div>
               {AUTO_REFRESH_INTERVALS.map((opt) => (
                 <button
                   key={opt.value}
                   className={cn(
-                    'flex items-center w-full py-1.5 px-3 bg-none border-none text-[var(--text-secondary)] text-xs text-left cursor-pointer whitespace-nowrap hover:bg-white/[0.06] hover:text-[var(--text-primary)] transition-colors',
-                    opt.value === autoRefreshInterval && 'text-[var(--color-primary)] font-semibold bg-[rgba(94,96,206,0.08)]',
+                    'flex w-full items-center border-none bg-none px-3 py-2 text-left text-[12px] whitespace-nowrap text-[var(--text-secondary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]',
+                    opt.value === autoRefreshInterval && 'bg-[rgba(139,127,255,0.10)] font-semibold text-[var(--color-primary)]',
                   )}
                   onClick={() => {
                     setAutoRefreshInterval(opt.value);

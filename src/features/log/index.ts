@@ -7,6 +7,9 @@ import { ROUTES } from '@/shared/constants/routes';
 const LogsPage = lazy(() =>
   import('./pages/LogsHubPage').then((module) => ({ default: module.default })),
 );
+const LogHistogramRenderer = lazy(() =>
+  import('./dashboard/renderers/LogHistogramRenderer').then((module) => ({ default: module.LogHistogramRenderer })),
+);
 
 export /**
  *
@@ -24,6 +27,7 @@ const logsConfig: DomainConfig = {
     },
   ],
   routes: [{ path: ROUTES.logs, page: LogsPage }],
+  dashboardPanels: [
+    { panelType: 'log-histogram', kind: 'specialized', component: LogHistogramRenderer },
+  ],
 };
-
-export { default as LogsHubPageView } from './pages/LogsHubPage';

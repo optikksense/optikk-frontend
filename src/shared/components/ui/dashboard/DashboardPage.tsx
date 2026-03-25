@@ -1,10 +1,12 @@
 import { Tabs, Skeleton } from '@/components/ui';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { AlertCircle, LayoutDashboard } from 'lucide-react';
 
 import { usePageTabs } from '@shared/hooks/usePageTabs';
-import { useTabComponents } from '@shared/hooks/useTabComponents';
+import { useDashboardTabDocument } from '@shared/hooks/useDashboardTabDocument';
 import { useUrlSyncedTab } from '@shared/hooks/useUrlSyncedTab';
+import { EmptyState } from '@shared/components/ui/feedback';
 
 import DashboardTabContent from './DashboardTabContent';
 
@@ -16,10 +18,10 @@ interface DashboardPageProps {
 
 /**
  * A fully backend-driven page component.
- * Reads tabs and components from the backend JSON config hierarchy.
+ * Reads tabs and sectioned panels from the backend JSON config hierarchy.
  */
 export default function DashboardPage({ pageId, pathParams }: DashboardPageProps) {
-  const { tabs, isLoading: tabsLoading } = usePageTabs(pageId);
+  const { tabs, isLoading: tabsLoading, error: tabsError } = usePageTabs(pageId);
 
   const tabIds = useMemo(
     () => tabs.map((tab) => tab.id),
@@ -33,14 +35,68 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
     defaultTab: defaultTabId,
   });
 
-  const selectedTabId = activeTab || defaultTabId;
-  const { components, groups, isLoading: componentsLoading } = useTabComponents(pageId, selectedTabId);
+  const selectedTabId = tabIds.includes(activeTab) ? activeTab : defaultTabId;
+  const {
+    tab,
+    isLoading: tabLoading,
+    error: tabError,
+  } = useDashboardTabDocument(pageId, selectedTabId);
 
-  if ((tabsLoading || componentsLoading) && tabs.length === 0) {
+  if ((tabsLoading || tabLoading) && tabs.length === 0) {
     return (
       <div className="page-section">
         <Skeleton active paragraph={{ rows: 6 }} />
       </div>
+    );
+  }
+
+  if (tabsError) {
+    return (
+      <EmptyState
+        icon={<AlertCircle size={40} className="text-[var(--color-error)]" />}
+        title="Dashboard unavailable"
+        description={import.meta.env.DEV ? tabsError.message : 'Failed to load dashboard tabs.'}
+      />
+    );
+  }
+
+  if (tabs.length === 0) {
+    return (
+      <EmptyState
+        icon={<LayoutDashboard size={40} className="text-[var(--text-muted)]" />}
+        title="No dashboard tabs available"
+        description="This page has no tabs configured yet."
+      />
+    );
+  }
+
+  if (!selectedTabId) {
+    return (
+      <EmptyState
+        icon={<LayoutDashboard size={40} className="text-[var(--text-muted)]" />}
+        title="Dashboard tab unavailable"
+        description="No valid dashboard tab could be selected."
+      />
+    );
+  }
+
+  if (tabError && !tab) {
+    return (
+      <EmptyState
+        icon={<AlertCircle size={40} className="text-[var(--color-error)]" />}
+        title="Dashboard tab unavailable"
+        description={import.meta.env.DEV ? tabError.message : 'Failed to load dashboard tab.'}
+      />
+    );
+  }
+
+  if (!tab) {
+    return (
+      <EmptyState
+        icon={<LayoutDashboard size={40} className="text-[var(--text-muted)]" />}
+        title="Dashboard tab unavailable"
+        description="No dashboard tab document could be loaded."
+      />
     );
   }
 
@@ -60,12 +116,12 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
           size="large"
           className="mb-[var(--space-md)]"
         />
-        <DashboardTabContent components={components} groups={groups} pathParams={pathParams} />
+        <DashboardTabContent tab={tab} pathParams={pathParams} />
       </>
     );
   }
 
-  return <DashboardTabContent components={components} groups={groups} pathParams={pathParams} />;
+  return <DashboardTabContent tab={tab} pathParams={pathParams} />;
 }
 
 /**

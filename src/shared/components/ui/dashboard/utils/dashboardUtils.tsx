@@ -5,11 +5,12 @@ import {
   BarChart3, Server, ShieldCheck, TrendingDown, Box,
   CheckCircle2, Circle, FolderOpen, RefreshCw, XCircle,
   Brain, FileText, LayoutDashboard, GitBranch, Share2, TrendingUp,
+  type LucideIcon,
 } from 'lucide-react';
 
 import type { DashboardComponentSpec } from '@/types/dashboardConfig';
 
-const ICONS: Record<string, any> = {
+const ICONS: Record<string, LucideIcon> = {
   Activity, AlertCircle, Bug, Clock, Crosshair, Flame, List, Zap, Network, Layers,
   ArrowUpRight, ArrowDownRight, AlertTriangle, Database,
   HardDrive, Cpu, Radio, Gauge, GitPullRequest, Target,

@@ -2,21 +2,9 @@ import { Link } from 'react-router-dom';
 
 import { formatNumber, formatDuration } from '@shared/utils/formatters';
 import { buildInterpolatedPath } from '@shared/utils/placeholderInterpolation';
+import { CHART_COLORS } from '@config/constants';
 
 import { APP_COLORS } from '@config/colorLiterals';
-
-const CHART_COLORS = [
-  APP_COLORS.hex_5e60ce,
-  APP_COLORS.hex_48cae4,
-  APP_COLORS.hex_06d6a0,
-  APP_COLORS.hex_ffd166,
-  APP_COLORS.hex_ef476f,
-  APP_COLORS.hex_118ab2,
-  APP_COLORS.hex_073b4c,
-  APP_COLORS.hex_f78c6b,
-  APP_COLORS.hex_83d483,
-  APP_COLORS.hex_5e35b1,
-];
 
 type TopEndpointsListType = 'requests' | 'errorRate' | 'latency' | 'count';
 
@@ -38,6 +26,7 @@ interface TopEndpointsListProps {
   onToggle?: (endpointKey: string) => void;
   type?: TopEndpointsListType;
   drilldownRouteTemplate?: string;
+  maxVisibleRows?: number;
 }
 
 interface RowDisplayConfig {
@@ -54,9 +43,9 @@ function getRowDisplayConfig(
   if (type === 'errorRate') {
     const rate = endpoint.errorRate ?? endpoint.value ?? 0;
     return {
-      selectedBg: APP_COLORS.rgba_240_68_56_0p2,
-      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
-      valueColor: rate > 5 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_e0e0e0,
+      selectedBg: 'rgba(240, 68, 56, 0.12)',
+      hoverBg: 'rgba(255,255,255,0.04)',
+      valueColor: rate > 5 ? 'var(--color-error)' : 'var(--text-primary)',
       displayValue: `${Number(rate).toFixed(2)}%`,
     };
   }
@@ -64,17 +53,17 @@ function getRowDisplayConfig(
   if (type === 'latency') {
     const latency = endpoint.latency ?? 0;
     return {
-      selectedBg: APP_COLORS.rgba_247_144_9_0p2,
-      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
-      valueColor: latency > 500 ? APP_COLORS.hex_f04438 : latency > 200 ? APP_COLORS.hex_f79009 : APP_COLORS.hex_e0e0e0,
+      selectedBg: 'rgba(247, 182, 58, 0.12)',
+      hoverBg: 'rgba(255,255,255,0.04)',
+      valueColor: latency > 500 ? 'var(--color-error)' : latency > 200 ? 'var(--color-warning)' : 'var(--text-primary)',
       displayValue: formatDuration(latency),
     };
   }
 
   return {
-    selectedBg: APP_COLORS.rgba_94_96_206_0p2,
-    hoverBg: APP_COLORS.rgba_255_255_255_0p05,
-    valueColor: APP_COLORS.hex_e0e0e0,
+    selectedBg: 'rgba(124, 127, 242, 0.12)',
+    hoverBg: 'rgba(255,255,255,0.04)',
+    valueColor: 'var(--text-primary)',
     displayValue: formatNumber(endpoint.request_count ?? 0),
   };
 }
@@ -91,11 +80,13 @@ export default function TopEndpointsList({
   onToggle,
   type = 'requests', // 'requests', 'errorRate', 'latency'
   drilldownRouteTemplate,
+  maxVisibleRows,
 }: TopEndpointsListProps): JSX.Element | null {
   if (endpoints.length === 0) return null;
+  const visibleEndpoints = maxVisibleRows ? endpoints.slice(0, maxVisibleRows) : endpoints;
 
   return (
-    <div style={{ marginTop: 0, borderTop: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}` }}>
+    <div style={{ marginTop: 0, borderTop: '1px solid var(--border-color)' }}>
       <div
         style={{
           maxHeight: '180px',
@@ -115,8 +106,8 @@ export default function TopEndpointsList({
           <thead>
             <tr
               style={{
-                color: APP_COLORS.hex_8e8e8e,
-                borderBottom: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}`,
+                color: 'var(--text-secondary)',
+                borderBottom: '1px solid var(--border-color)',
               }}
             >
               <th style={{ padding: '4px 8px', fontWeight: 500 }}>Name</th>
@@ -131,7 +122,7 @@ export default function TopEndpointsList({
             </tr>
           </thead>
           <tbody>
-            {endpoints.map((endpoint, index) => {
+            {visibleEndpoints.map((endpoint, index) => {
               const endpointKey = endpoint.key ?? `${endpoint.endpoint ?? 'unknown'}-${index}`;
               const detailHref = buildInterpolatedPath(
                 drilldownRouteTemplate,
@@ -146,7 +137,7 @@ export default function TopEndpointsList({
               
               // Find max value in list for proportional bar calculation
               const getVal = (ep: TopEndpointListItem) => (type === 'errorRate' ? (ep.errorRate ?? ep.value ?? 0) : type === 'latency' ? (ep.latency ?? 0) : (ep.request_count ?? 0));
-              const maxValInList = Math.max(...endpoints.map(getVal), 1);
+              const maxValInList = Math.max(...visibleEndpoints.map(getVal), 1);
               const currentVal = getVal(endpoint);
               const pct = (currentVal / maxValInList) * 100;
               const barWidth = Math.max(Math.min(pct, 100), 2);
@@ -156,7 +147,7 @@ export default function TopEndpointsList({
                 ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
                 : type === 'latency'
                   ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
-                  : `linear-gradient(90deg, ${APP_COLORS.hex_48cae4} 0%, ${APP_COLORS.hex_5e60ce} 100%)`;
+                  : `linear-gradient(90deg, ${CHART_COLORS[1]} 0%, ${CHART_COLORS[0]} 100%)`;
 
               return (
                 <tr
@@ -189,17 +180,17 @@ export default function TopEndpointsList({
                     }}
                   >
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
                         {endpoint.endpoint}
                       </span>
                       {endpoint.service && endpoint.service !== 'unknown' && (
-                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '11px' }}>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
                           {endpoint.service}
                         </span>
                       )}
                     </div>
                     {/* Proportional Gradient Intensity Bar */}
-                    <div style={{ width: '100%', height: '3px', background: APP_COLORS.rgba_255_255_255_0p05, borderRadius: '2px', overflow: 'hidden', marginTop: '2px' }}>
+                    <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden', marginTop: '2px' }}>
                       <div style={{ width: `${barWidth}%`, height: '100%', background: barBg, borderRadius: '2px' }} />
                     </div>
                   </td>
@@ -225,12 +216,12 @@ export default function TopEndpointsList({
                         <Link
                           to={detailHref}
                           onClick={(event) => event.stopPropagation()}
-                          style={{ color: APP_COLORS.hex_48cae4, fontSize: '12px', fontWeight: 500 }}
+                          style={{ color: 'var(--color-primary)', fontSize: '12px', fontWeight: 500 }}
                         >
                           View
                         </Link>
                       ) : (
-                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '12px' }}>—</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>—</span>
                       )}
                     </td>
                   ) : null}

@@ -79,22 +79,46 @@ export function resolveFieldValue(raw: any, field: string | undefined) {
 /**
  *
  */
-export function renderStatSummary(rawData: any) {
+interface StatSummaryField {
+  label: string;
+  field?: string;
+  keys?: string[];
+}
+
+export function renderStatSummary(
+  rawData: any,
+  options?: {
+    formatter?: string;
+    fields?: StatSummaryField[];
+  },
+) {
   const summary = Array.isArray(rawData) ? rawData[0] : rawData;
   if (!summary || typeof summary !== 'object') {
     return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
   }
 
-  const cells = [
-    { label: 'P50', value: firstValue(summary, ['p50', 'p50_ms', 'p50Latency', 'p50_latency'], null) },
-    { label: 'P95', value: firstValue(summary, ['p95', 'p95_ms', 'p95Latency', 'p95_latency'], null) },
-    { label: 'P99', value: firstValue(summary, ['p99', 'p99_ms', 'p99Latency', 'p99_latency'], null) },
-    { label: 'Avg', value: firstValue(summary, ['avg', 'avg_ms', 'avgLatency', 'avg_latency'], null) },
-  ].filter((cell) => cell.value !== null && cell.value !== undefined);
+  const defaultFields: StatSummaryField[] = [
+    { label: 'P50', keys: ['p50', 'p50_ms', 'p50Latency', 'p50_latency'] },
+    { label: 'P95', keys: ['p95', 'p95_ms', 'p95Latency', 'p95_latency'] },
+    { label: 'P99', keys: ['p99', 'p99_ms', 'p99Latency', 'p99_latency'] },
+    { label: 'Avg', keys: ['avg', 'avg_ms', 'avgLatency', 'avg_latency'] },
+  ];
+  const fields = options?.fields && options.fields.length > 0 ? options.fields : defaultFields;
+
+  const cells = fields
+    .map((field) => ({
+      label: field.label,
+      value: field.field
+        ? firstValue(summary, [field.field], null)
+        : firstValue(summary, field.keys ?? [], null),
+    }))
+    .filter((cell) => cell.value !== null && cell.value !== undefined);
 
   if (cells.length === 0) {
     return <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>No data</div>;
   }
+
+  const formatter = options?.formatter ?? (fields === defaultFields ? 'ms' : undefined);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cells.length}, 1fr)`, gap: 12 }}>
@@ -102,7 +126,7 @@ export function renderStatSummary(rawData: any) {
         <div key={cell.label} style={{ padding: '8px 0' }}>
           <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{cell.label}</div>
           <div style={{ fontSize: 20, fontWeight: 700 }}>
-            {formatDuration(Number(cell.value) || 0)}
+            {formatStatValue(formatter, cell.value)}
           </div>
         </div>
       ))}
@@ -145,11 +169,8 @@ export function numValue(row: any, keys: string[], fallback: number = 0) {
  *
  */
 export function resolveComponentKey(chartConfig: DashboardComponentSpec): string {
-  if (typeof chartConfig.componentKey === 'string' && chartConfig.componentKey.length > 0) {
-    return chartConfig.componentKey;
-  }
-  if (typeof chartConfig.type === 'string' && chartConfig.type.length > 0) {
-    return chartConfig.type;
+  if (typeof chartConfig.panelType === 'string' && chartConfig.panelType.length > 0) {
+    return chartConfig.panelType;
   }
   return '';
 }

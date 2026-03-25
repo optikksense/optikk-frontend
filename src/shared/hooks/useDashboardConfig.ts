@@ -1,9 +1,7 @@
-import { useMemo } from 'react';
-
 import type { DashboardRenderConfig } from '@/types/dashboardConfig';
 
 import { usePageTabs } from './usePageTabs';
-import { useTabComponents } from './useTabComponents';
+import { useDashboardTabDocument } from './useDashboardTabDocument';
 
 interface UseDashboardConfigResult {
   config: DashboardRenderConfig | null;
@@ -18,28 +16,14 @@ export function useDashboardConfig(pageId: string): UseDashboardConfigResult {
   const { tabs, isLoading: tabsLoading, error: tabsError } = usePageTabs(pageId);
   const defaultTabId = tabs[0]?.id ?? '';
   const {
-    components,
-    groups,
-    isLoading: componentsLoading,
-    error: componentsError,
-  } = useTabComponents(pageId, defaultTabId);
-
-  const config = useMemo<DashboardRenderConfig | null>(() => {
-    if (!defaultTabId) {
-      return null;
-    }
-    return {
-      components: components.map((component) => ({
-        ...component,
-        dataSource: component.dataSource || component.id,
-      })),
-      groups,
-    };
-  }, [components, groups, defaultTabId]);
+    tab,
+    isLoading: tabLoading,
+    error: tabError,
+  } = useDashboardTabDocument(pageId, defaultTabId);
 
   return {
-    config,
-    isLoading: tabsLoading || componentsLoading,
-    error: tabsError ?? componentsError ?? null,
+    config: tab as DashboardRenderConfig | null,
+    isLoading: tabsLoading || tabLoading,
+    error: tabsError ?? tabError ?? null,
   };
 }

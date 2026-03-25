@@ -23,7 +23,7 @@ vi.mock('@shared/hooks/useURLFilters', () => ({
   })),
 }));
 
-vi.mock('@shared/store/appStore', () => ({
+vi.mock('@app/store/appStore', () => ({
   useAppStore: vi.fn(() => ({
     selectedTeamId: 1,
     timeRange: { value: 'relative', minutes: 60 },

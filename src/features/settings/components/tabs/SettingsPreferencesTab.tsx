@@ -2,6 +2,7 @@ import { Bell, Columns2, Palette, Settings } from 'lucide-react';
 import { Surface, Switch, Select } from '@/components/ui';
 
 import type {
+  SettingsPreferenceKey,
   SettingsPreferenceValue,
   SettingsViewPreferences,
 } from '../../types';
@@ -12,7 +13,10 @@ interface SettingsPreferencesTabProps {
   readonly viewPreferences: SettingsViewPreferences | null;
   readonly onThemeChange: (checked: boolean) => void;
   readonly onNotificationsChange: (checked: boolean) => void;
-  readonly onPreferenceChange: (key: string, value: SettingsPreferenceValue) => void;
+  readonly onPreferenceChange: (
+    key: SettingsPreferenceKey,
+    value: SettingsPreferenceValue,
+  ) => void;
 }
 
 function PrefRow({ icon, title, description, children }: { icon: React.ReactNode; title: string; description: string; children: React.ReactNode }) {
@@ -83,8 +87,8 @@ export default function SettingsPreferencesTab({
         description="Select default time range for dashboards"
       >
         <Select
-          value={viewPreferences?.defaultTimeRange as string || '1h'}
-          onChange={(val) => onPreferenceChange('defaultTimeRange', val as string)}
+          value={viewPreferences?.defaultTimeRange || '1h'}
+          onChange={(val) => onPreferenceChange('defaultTimeRange', String(val))}
           style={{ width: 200 }}
           options={[
             { value: '15m', label: 'Last 15 minutes' },
@@ -105,8 +109,8 @@ export default function SettingsPreferencesTab({
         description="Number of items to display per page"
       >
         <Select
-          value={viewPreferences?.defaultPageSize as number || 20}
-          onChange={(val) => onPreferenceChange('defaultPageSize', val as number)}
+          value={viewPreferences?.defaultPageSize || 20}
+          onChange={(val) => onPreferenceChange('defaultPageSize', Number(val))}
           style={{ width: 200 }}
           options={[
             { value: 10, label: '10' },

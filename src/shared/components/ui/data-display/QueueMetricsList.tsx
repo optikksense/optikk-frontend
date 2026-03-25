@@ -2,21 +2,9 @@ import { Link } from 'react-router-dom';
 
 import { formatNumber } from '@shared/utils/formatters';
 import { buildInterpolatedPath } from '@shared/utils/placeholderInterpolation';
+import { CHART_COLORS } from '@config/constants';
 
 import { APP_COLORS } from '@config/colorLiterals';
-
-const CHART_COLORS = [
-  APP_COLORS.hex_5e60ce,
-  APP_COLORS.hex_48cae4,
-  APP_COLORS.hex_06d6a0,
-  APP_COLORS.hex_ffd166,
-  APP_COLORS.hex_ef476f,
-  APP_COLORS.hex_118ab2,
-  APP_COLORS.hex_073b4c,
-  APP_COLORS.hex_f78c6b,
-  APP_COLORS.hex_83d483,
-  APP_COLORS.hex_5e35b1,
-];
 
 type QueueMetricsListType =
   | 'depth'
@@ -42,6 +30,7 @@ interface QueueMetricsListProps {
   onToggle?: (queueKey: string) => void;
   type?: QueueMetricsListType;
   drilldownRouteTemplate?: string;
+  maxVisibleRows?: number;
 }
 
 interface QueueRowDisplayConfig {
@@ -72,35 +61,35 @@ function getQueueDisplayConfig(
   if (type === 'consumerLag') {
     const lag = queue.max_consumer_lag ?? 0;
     return {
-      selectedBg: APP_COLORS.rgba_240_68_56_0p2,
-      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
-      valueColor: lag > 100 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_e0e0e0,
+      selectedBg: 'rgba(240, 68, 56, 0.12)',
+      hoverBg: 'rgba(255,255,255,0.04)',
+      valueColor: lag > 100 ? 'var(--color-error)' : 'var(--text-primary)',
       displayValue: formatNumber(lag),
     };
   }
 
   if (type === 'productionRate') {
     return {
-      selectedBg: APP_COLORS.rgba_247_144_9_0p2,
-      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
-      valueColor: APP_COLORS.hex_e0e0e0,
+      selectedBg: 'rgba(247, 182, 58, 0.12)',
+      hoverBg: 'rgba(255,255,255,0.04)',
+      valueColor: 'var(--text-primary)',
       displayValue: `${formatRate(queue.avg_publish_rate ?? 0)}/s`,
     };
   }
 
   if (type === 'consumptionRate') {
     return {
-      selectedBg: APP_COLORS.rgba_6_214_160_0p2,
-      hoverBg: APP_COLORS.rgba_255_255_255_0p05,
-      valueColor: APP_COLORS.hex_e0e0e0,
+      selectedBg: 'rgba(115, 201, 145, 0.12)',
+      hoverBg: 'rgba(255,255,255,0.04)',
+      valueColor: 'var(--text-primary)',
       displayValue: `${formatRate(queue.avg_receive_rate ?? 0)}/s`,
     };
   }
 
   return {
-    selectedBg: APP_COLORS.rgba_94_96_206_0p2,
-    hoverBg: APP_COLORS.rgba_255_255_255_0p05,
-    valueColor: APP_COLORS.hex_e0e0e0,
+    selectedBg: 'rgba(124, 127, 242, 0.12)',
+    hoverBg: 'rgba(255,255,255,0.04)',
+    valueColor: 'var(--text-primary)',
     displayValue: formatDepth(queue.avg_queue_depth ?? 0),
   };
 }
@@ -117,11 +106,13 @@ export default function QueueMetricsList({
   onToggle,
   type = 'depth', // 'depth', 'consumerLag', 'productionRate', 'consumptionRate'
   drilldownRouteTemplate,
+  maxVisibleRows,
 }: QueueMetricsListProps): JSX.Element | null {
   if (queues.length === 0) return null;
+  const visibleQueues = maxVisibleRows ? queues.slice(0, maxVisibleRows) : queues;
 
   return (
-    <div style={{ marginTop: 0, borderTop: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}` }}>
+    <div style={{ marginTop: 0, borderTop: '1px solid var(--border-color)' }}>
       <div
         style={{
           maxHeight: '180px',
@@ -141,8 +132,8 @@ export default function QueueMetricsList({
           <thead>
             <tr
               style={{
-                color: APP_COLORS.hex_8e8e8e,
-                borderBottom: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}`,
+                color: 'var(--text-secondary)',
+                borderBottom: '1px solid var(--border-color)',
               }}
             >
               <th style={{ padding: '4px 8px', fontWeight: 500 }}>Topic Name</th>
@@ -157,7 +148,7 @@ export default function QueueMetricsList({
             </tr>
           </thead>
           <tbody>
-            {queues.map((queue, index) => {
+            {visibleQueues.map((queue, index) => {
               const queueKey =
                 queue.key ??
                 `${queue.queue_name ?? 'unknown'}::${queue.service_name ?? 'unknown'}::${index}`;
@@ -179,7 +170,7 @@ export default function QueueMetricsList({
                 if (type === 'consumptionRate') return q.avg_receive_rate ?? 0;
                 return q.avg_queue_depth ?? 0;
               };
-              const maxValInList = Math.max(...queues.map(getVal), 1);
+              const maxValInList = Math.max(...visibleQueues.map(getVal), 1);
               const currentVal = getVal(queue);
               const pct = (currentVal / maxValInList) * 100;
               const barWidth = Math.max(Math.min(pct, 100), 2);
@@ -191,7 +182,7 @@ export default function QueueMetricsList({
                   ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
                   : type === 'consumptionRate'
                     ? `linear-gradient(90deg, ${APP_COLORS.hex_06d6a0} 0%, ${APP_COLORS.hex_73c991} 100%)`
-                    : `linear-gradient(90deg, ${APP_COLORS.hex_48cae4} 0%, ${APP_COLORS.hex_5e60ce} 100%)`;
+                    : `linear-gradient(90deg, ${CHART_COLORS[1]} 0%, ${CHART_COLORS[0]} 100%)`;
 
               return (
                 <tr
@@ -224,17 +215,17 @@ export default function QueueMetricsList({
                     }}
                   >
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
                         {queue.queue_name}
                       </span>
                       {queue.service_name && queue.service_name !== 'unknown' && (
-                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '11px' }}>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
                           {queue.service_name}
                         </span>
                       )}
                     </div>
                     {/* Proportional Gradient Intensity Bar */}
-                    <div style={{ width: '100%', height: '3px', background: APP_COLORS.rgba_255_255_255_0p05, borderRadius: '2px', overflow: 'hidden', marginTop: '2px' }}>
+                    <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden', marginTop: '2px' }}>
                       <div style={{ width: `${barWidth}%`, height: '100%', background: barBg, borderRadius: '2px' }} />
                     </div>
                   </td>
@@ -260,12 +251,12 @@ export default function QueueMetricsList({
                         <Link
                           to={detailHref}
                           onClick={(event) => event.stopPropagation()}
-                          style={{ color: APP_COLORS.hex_48cae4, fontSize: '12px', fontWeight: 500 }}
+                          style={{ color: 'var(--color-primary)', fontSize: '12px', fontWeight: 500 }}
                         >
                           View
                         </Link>
                       ) : (
-                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '12px' }}>—</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>—</span>
                       )}
                     </td>
                   ) : null}

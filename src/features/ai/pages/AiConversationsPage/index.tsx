@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
 import { PageHeader } from '@shared/components/ui';
-import { useAppStore } from '@shared/store/appStore';
+import { useAppStore } from '@app/store/appStore';
 import { resolveTimeRangeBounds } from '@/types';
 import { formatNumber, formatRelativeTime, formatTimestamp } from '@shared/utils/formatters';
 

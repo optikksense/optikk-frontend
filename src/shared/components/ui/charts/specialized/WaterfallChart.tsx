@@ -18,11 +18,28 @@ function kindColor(kind: string): string {
 }
 
 interface WaterfallChartProps {
-  spans?: any[];
-  onSpanClick?: (span: any) => void;
+  spans?: WaterfallSpan[];
+  onSpanClick?: (span: WaterfallSpan) => void;
   selectedSpanId?: string | null;
   criticalPathSpanIds?: Set<string>;
   errorPathSpanIds?: Set<string>;
+}
+
+interface WaterfallSpan {
+  readonly span_id: string;
+  readonly parent_span_id?: string | null;
+  readonly start_time: string;
+  readonly end_time: string;
+  readonly service_name?: string;
+  readonly operation_name?: string;
+  readonly status?: string;
+  readonly span_kind?: string;
+  readonly kind_string?: string;
+  readonly duration_ms?: number;
+}
+
+interface WaterfallTreeSpan extends WaterfallSpan {
+  readonly depth: number;
 }
 
 export default function WaterfallChart({
@@ -41,29 +58,29 @@ export default function WaterfallChart({
       return { spanTree: [], traceStart: 0, traceEnd: 0, traceDuration: 0 };
     }
 
-    const startTimes = (spans as any[]).map((s) => new Date(s.start_time).getTime());
-    const endTimes = (spans as any[]).map((s) => new Date(s.end_time).getTime());
+    const startTimes = spans.map((span) => new Date(span.start_time).getTime());
+    const endTimes = spans.map((span) => new Date(span.end_time).getTime());
     const traceStart = Math.min(...startTimes);
     const traceEnd = Math.max(...endTimes);
     const traceDuration = traceEnd - traceStart;
 
     const childrenMap: Record<string, string[]> = {};
-    const spanMap: Record<string, any> = {};
+    const spanMap: Record<string, WaterfallSpan> = {};
 
-    (spans as any[]).forEach((span) => {
+    spans.forEach((span) => {
       spanMap[span.span_id] = span;
       if (!childrenMap[span.span_id]) childrenMap[span.span_id] = [];
     });
 
-    (spans as any[]).forEach((span) => {
+    spans.forEach((span) => {
       if (span.parent_span_id) {
         if (!childrenMap[span.parent_span_id]) childrenMap[span.parent_span_id] = [];
         childrenMap[span.parent_span_id].push(span.span_id);
       }
     });
 
-    const roots = (spans as any[]).filter((s) => !s.parent_span_id || !spanMap[s.parent_span_id]);
-    const tree: any[] = [];
+    const roots = spans.filter((span) => !span.parent_span_id || !spanMap[span.parent_span_id]);
+    const tree: WaterfallTreeSpan[] = [];
     const visited = new Set();
 
     const dfs = (spanId: string, depth: number) => {

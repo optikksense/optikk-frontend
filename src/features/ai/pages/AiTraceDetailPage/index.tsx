@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
 import { PageHeader } from '@shared/components/ui';
-import { useAppStore } from '@shared/store/appStore';
+import { useAppStore } from '@app/store/appStore';
 import { formatDuration, formatNumber } from '@shared/utils/formatters';
 import { cn } from '@/lib/utils';
 

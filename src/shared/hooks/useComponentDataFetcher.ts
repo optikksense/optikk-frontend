@@ -1,7 +1,11 @@
 import { useQueries, keepPreviousData } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import type { DashboardComponentSpec } from '@/types/dashboardConfig';
+import type {
+  DashboardComponentSpec,
+  DashboardDataSourceValue,
+  DashboardDataSources,
+} from '@/types/dashboardConfig';
 
 import { api } from '@shared/api/api/client';
 import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
@@ -21,7 +25,7 @@ interface ComponentFailedRequest {
 }
 
 interface UseComponentDataFetcherResult {
-  data: Record<string, any>;
+  data: DashboardDataSources;
   isLoading: boolean;
   errors: Record<string, ApiErrorShape | null>;
   hasError: boolean;
@@ -154,7 +158,7 @@ export function useComponentDataFetcher(
     })),
   });
 
-  const data: Record<string, any> = {};
+  const data: DashboardDataSources = {};
   const errors: Record<string, ApiErrorShape | null> = {};
   let isLoading = false;
   let hasError = false;
@@ -184,7 +188,7 @@ export function useComponentDataFetcher(
     }
 
     entry.componentIds.forEach((componentId) => {
-      data[componentId] = result?.data;
+      data[componentId] = result?.data as DashboardDataSourceValue;
       errors[componentId] = normalizedError;
     });
   });

@@ -1,12 +1,18 @@
 import { SimpleTable } from '@/components/ui';
+import type {
+  SimpleTableColumn,
+  SimpleTableProps,
+} from '@shared/components/primitives/ui/simple-table';
 import { EmptyState } from '@shared/components/ui/feedback';
 import { UI_CONFIG } from '@config/constants';
 
-export interface DataTableData<RowType = any> {
-  columns: any[];
+type TableRow = object;
+
+export interface DataTableData<RowType extends TableRow = TableRow> {
+  columns: SimpleTableColumn<RowType>[];
   rows: RowType[];
   loading?: boolean;
-  rowKey?: string | ((row: RowType) => string);
+  rowKey?: SimpleTableProps<RowType>['rowKey'];
 }
 
 export interface DataTablePagination {
@@ -17,14 +23,13 @@ export interface DataTablePagination {
   showPagination?: boolean;
 }
 
-export interface DataTableConfig<RowType = any> {
+export interface DataTableConfig<RowType extends TableRow = TableRow> {
   emptyText?: string;
   scroll?: { x?: number; y?: number };
-  onRow?: (record: RowType, index?: number) => Record<string, any>;
-  expandable?: any;
+  onRow?: SimpleTableProps<RowType>['onRow'];
 }
 
-export interface DataTableProps<RowType = any> {
+export interface DataTableProps<RowType extends TableRow = TableRow> {
   data: DataTableData<RowType>;
   pagination?: DataTablePagination;
   config?: DataTableConfig<RowType>;
@@ -33,12 +38,12 @@ export interface DataTableProps<RowType = any> {
 /**
  * Shared table wrapper with consistent pagination and empty states.
  */
-export default function DataTable<RowType extends Record<string, any> = any>({
+export default function DataTable<RowType extends TableRow = TableRow>({
   data,
   pagination = {},
   config = {},
 }: DataTableProps<RowType>): JSX.Element {
-  const { columns, rows, loading = false, rowKey = 'id' } = data;
+  const { columns, rows, loading = false, rowKey } = data;
   const { page, pageSize, total, onPageChange, showPagination = true } = pagination;
   const { emptyText = 'No data found', scroll, onRow } = config;
 
@@ -64,12 +69,12 @@ export default function DataTable<RowType extends Record<string, any> = any>({
 
   return (
     <SimpleTable
-      columns={columns as any}
+      columns={columns}
       dataSource={rows}
-      rowKey={rowKey as any}
-      pagination={paginationConfig ? paginationConfig as any : undefined}
+      rowKey={rowKey}
+      pagination={paginationConfig || false}
       scroll={scroll}
-      onRow={onRow as any}
+      onRow={onRow}
       size="small"
     />
   );

@@ -1,11 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { API_CONFIG } from '@config/apiConfig';
 import type { AnomalyEvent } from '@shared/components/ui/calm/AiNarrationCard';
-import api from '@/services/api';
+import api from '@shared/api/api';
 
 import { useAppStore } from '@store/appStore';
-
-import { API_CONFIG } from '@config/apiConfig';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 

@@ -1,13 +1,12 @@
 
 import { useMemo, memo } from 'react';
-import uPlot from 'uplot';
 
 import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
 import { tsKey, tsMs, firstValue } from '@shared/utils/chartDataUtils';
 import { CHART_COLORS } from '@config/constants';
 import { APP_COLORS } from '@config/colorLiterals';
 
-import UPlotChart, { defaultAxes, uLine } from '../UPlotChart';
+import ObservabilityChart from '../ObservabilityChart';
 
 function getChartColor(index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
@@ -53,6 +52,8 @@ interface LatencyChartProps {
   endpoints?: EndpointData[];
   selectedEndpoints?: string[];
   serviceTimeseriesMap?: Record<string, LatencyDataPoint[]>;
+  height?: number;
+  fillHeight?: boolean;
   targetThreshold?: number | null;
   datasetLabel?: string;
   color?: string;
@@ -76,9 +77,11 @@ export default memo(function LatencyChart({
   endpoints = [],
   selectedEndpoints = [],
   serviceTimeseriesMap = {},
+  height = 280,
+  fillHeight = false,
   targetThreshold = null,
   datasetLabel = 'Avg Latency (ms)',
-  color = APP_COLORS.hex_5e60ce,
+  color = CHART_COLORS[0],
   valueKey = 'avg_latency',
 }: LatencyChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
@@ -203,13 +206,6 @@ export default memo(function LatencyChart({
     [timeBuckets],
   );
 
-  const uplotData = useMemo<uPlot.AlignedData>(() => {
-    return [
-      timestamps,
-      ...chartData.map((s) => s.values),
-    ] as uPlot.AlignedData;
-  }, [timestamps, chartData]);
-
   const yAxisMax = useMemo(() => {
     let maxVal = 0;
     chartData.forEach((s) => {
@@ -222,27 +218,6 @@ export default memo(function LatencyChart({
     return Math.max(Math.ceil(maxVal * 1.25), 10);
   }, [chartData]);
 
-  const opts = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(() => ({
-    axes: [
-      ...defaultAxes().slice(0, 1),
-      {
-        ...defaultAxes()[1],
-        values: (_u: uPlot, vals: number[]) =>
-          vals.map((v) => `${v}ms`),
-        range: [0, yAxisMax],
-      },
-    ],
-    scales: {
-      y: { min: 0, max: yAxisMax },
-    },
-    series: [
-      {},
-      ...chartData.map((s) =>
-        uLine(s.label, s.color, { fill: s.fill, dash: s.dash }),
-      ),
-    ],
-  }), [chartData, yAxisMax]);
-
   if (data.length === 0 && timeBuckets.length === 0) {
     return (
       <div style={{ height: '100%', minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -252,8 +227,16 @@ export default memo(function LatencyChart({
   }
 
   return (
-    <div style={{ position: 'relative', height: '100%', minHeight: '200px' }}>
-      <UPlotChart options={opts} data={uplotData} />
+    <div style={{ position: 'relative', height: '100%', minHeight: fillHeight ? '100%' : '220px' }}>
+      <ObservabilityChart
+        timestamps={timestamps}
+        series={chartData}
+        yMin={0}
+        yMax={yAxisMax}
+        yFormatter={(value) => `${value}ms`}
+        height={height}
+        fillHeight={fillHeight}
+      />
     </div>
   );
 });

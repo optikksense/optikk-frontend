@@ -10,6 +10,12 @@ const OverviewHubPage = lazy(() =>
 const ErrorDashboardPage = lazy(() =>
   import('./pages/ErrorDashboardPage').then((module) => ({ default: module.default })),
 );
+const ServiceHealthGridRenderer = lazy(() =>
+  import('./dashboard/renderers/ServiceHealthGridRenderer').then((module) => ({ default: module.ServiceHealthGridRenderer })),
+);
+const SloIndicatorsRenderer = lazy(() =>
+  import('./dashboard/renderers/SloIndicatorsRenderer').then((module) => ({ default: module.SloIndicatorsRenderer })),
+);
 
 export /**
  *
@@ -27,12 +33,15 @@ const overviewConfig: DomainConfig = {
     },
   ],
   routes: [
-    { path: ROUTES.overview, page: OverviewHubPage },
     { path: ROUTES.errors, page: ErrorDashboardPage },
   ],
+  dashboardPages: [
+    { pageId: 'overview', page: OverviewHubPage },
+  ],
+  dashboardPanels: [
+    { panelType: 'service-health-grid', kind: 'specialized', component: ServiceHealthGridRenderer },
+    { panelType: 'slo-indicators', kind: 'specialized', component: SloIndicatorsRenderer },
+  ],
 };
-
-export { default as OverviewHubPageView } from './pages/OverviewHubPage';
-export { default as ErrorDashboardPageView } from './pages/ErrorDashboardPage';
 export * from './components';
 export * from './types';

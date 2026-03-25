@@ -1,5 +1,8 @@
-/** Generic record shape used for settings payloads and view data. */
-export type DomainRecord = Record<string, unknown>;
+import type {
+  UserViewPreferenceKey,
+  UserViewPreferenceValue,
+  UserViewPreferences,
+} from '@shared/types/preferences';
 
 /** Lightweight team summary shown in the settings team tab. */
 export interface SettingsTeamViewModel {
@@ -18,11 +21,8 @@ export interface SettingsProfileViewModel {
 }
 
 /** Shared preferences stored for the current user. */
-export interface SettingsViewPreferences {
-  readonly defaultTimeRange?: string;
-  readonly defaultPageSize?: number;
-  readonly [key: string]: unknown;
-}
+export type SettingsViewPreferences = UserViewPreferences;
+export type SettingsPreferenceKey = UserViewPreferenceKey;
 
 /** Form values collected from the profile editor. */
 export interface SettingsProfileFormValues {
@@ -32,10 +32,10 @@ export interface SettingsProfileFormValues {
 }
 
 /** Command payload submitted when saving the profile form. */
-export interface SettingsProfileCommand extends Record<string, unknown> {
+export interface SettingsProfileCommand {
   readonly name: string;
   readonly avatarUrl?: string;
 }
 
 /** Allowed preference value primitives accepted by the settings page. */
-export type SettingsPreferenceValue = string | number | boolean;
+export type SettingsPreferenceValue = UserViewPreferenceValue;

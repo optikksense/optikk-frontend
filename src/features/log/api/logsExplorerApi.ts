@@ -1,14 +1,31 @@
 import { z } from 'zod';
 
-import { logEntrySchema, type LogEntry } from '@/entities/log/model';
-import { logsService } from '@/shared/api/logsService';
+import { API_CONFIG } from '@config/apiConfig';
+import { logEntrySchema, type LogEntry } from '@entities/log/model';
+import api from '@/shared/api/api/client';
+import { decodeApiResponse } from '@/shared/api/utils/validate';
 
-import type { LogsBackendParams } from './logsApi';
+import { logsAggregateSchema } from './logsApi';
+import type { LogsBackendParams } from '../types';
+
+const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 const facetSchema = z.object({
   value: z.string(),
   count: z.number(),
-});
+}).strict();
+
+const logsExplorerFacetsSchema = z.object({
+  level: z.array(facetSchema).default([]),
+  service_name: z.array(facetSchema).default([]),
+  host: z.array(facetSchema).default([]),
+  pod: z.array(facetSchema).default([]),
+  scope_name: z.array(facetSchema).default([]),
+}).strict();
+
+const logsExplorerCorrelationsSchema = z.object({
+  serviceErrorRate: logsAggregateSchema.optional(),
+}).strict();
 
 const logsExplorerSchema = z.object({
   results: z.array(logEntrySchema).default([]),
@@ -17,8 +34,8 @@ const logsExplorerSchema = z.object({
     error_logs: z.number().default(0),
     warn_logs: z.number().default(0),
     service_count: z.number().default(0),
-  }),
-  facets: z.record(z.string(), z.array(facetSchema)).default({}),
+  }).strict(),
+  facets: logsExplorerFacetsSchema,
   trend: z.object({
     step: z.string().default('5m'),
     buckets: z.array(
@@ -30,18 +47,18 @@ const logsExplorerSchema = z.object({
         infos: z.number().default(0),
         debugs: z.number().default(0),
         fatals: z.number().default(0),
-      }),
+      }).strict(),
     ).default([]),
-  }),
+  }).strict(),
   pageInfo: z.object({
     total: z.number().default(0),
     hasMore: z.boolean().default(false),
     nextCursor: z.string().optional(),
     offset: z.number().default(0),
     limit: z.number().default(50),
-  }),
-  correlations: z.record(z.string(), z.unknown()).optional(),
-});
+  }).strict(),
+  correlations: logsExplorerCorrelationsSchema.optional(),
+}).strict();
 
 export type LogsExplorerResponse = z.infer<typeof logsExplorerSchema>;
 
@@ -66,8 +83,12 @@ export const logsExplorerApi = {
     step: string;
     params: LogsBackendParams;
   }): Promise<LogsExplorerResponse> {
-    const response = await logsService.queryExplorer(body);
-    const parsed = logsExplorerSchema.parse(response);
+    const response = await api.post(`${BASE}/logs/explorer/query`, body);
+    const parsed = decodeApiResponse(logsExplorerSchema, response, {
+      context: 'logs explorer',
+      expectedType: 'object',
+      message: 'Invalid logs explorer response',
+    });
     return {
       ...parsed,
       results: parsed.results.map(normalizeLog),

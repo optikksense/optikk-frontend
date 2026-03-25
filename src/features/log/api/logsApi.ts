@@ -30,7 +30,7 @@ export const logsStatsSchema = z.object({
     level: z.array(z.object({ value: z.string(), count: z.number() })).optional(),
     service_name: z.array(z.object({ value: z.string(), count: z.number() })).optional(),
   }),
-}).passthrough();
+}).strict();
 
 export type LogsStats = z.infer<typeof logsStatsSchema>;
 
@@ -44,8 +44,8 @@ export const logsVolumeSchema = z.object({
     infos: z.number(),
     debugs: z.number(),
     fatals: z.number(),
-  })),
-}).passthrough();
+  }).strict()),
+}).strict();
 
 export const logsAggregateRowSchema = z.object({
   time_bucket: z.string(),
@@ -59,7 +59,7 @@ export const logsAggregateSchema = z.object({
   step: z.string(),
   metric: z.string(),
   rows: z.array(logsAggregateRowSchema),
-}).passthrough();
+}).strict();
 
 export type LogsAggregate = z.infer<typeof logsAggregateSchema>;
 export type LogsAggregateRow = z.infer<typeof logsAggregateRowSchema>;
@@ -69,7 +69,7 @@ export type LogsVolume = z.infer<typeof logsVolumeSchema>;
 const logsListResponseSchema = z.object({
   logs: z.array(logEntrySchema).default([]),
   total: z.union([z.number(), z.string()]).optional(),
-}).passthrough();
+}).strict();
 
 /**
  * Normalizes a parsed log entry, ensuring legacy frontend fields

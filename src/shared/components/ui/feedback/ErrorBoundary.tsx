@@ -19,7 +19,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error Boundary caught an error:', error, errorInfo);
+    console.error(
+      `Error Boundary caught an error${this.props.boundaryName ? ` [${this.props.boundaryName}]` : ''}:`,
+      error,
+      errorInfo,
+    );
     this.setState({
       error,
       errorInfo,
@@ -59,6 +63,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               ? this.state.error.toString()
               : "We're sorry for the inconvenience. Please try refreshing the page."}
           </p>
+          {this.props.showDetails && this.props.boundaryName && (
+            <p className="text-secondary text-sm" style={{ marginTop: 8 }}>
+              Boundary: {this.props.boundaryName}
+            </p>
+          )}
           <div className="flex gap-sm">
             <Button variant="primary" onClick={this.handleReset}>
               Try Again

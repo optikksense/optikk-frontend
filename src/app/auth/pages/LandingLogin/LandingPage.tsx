@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-import { useAppStore } from '@/store/appStore';
-import { useAuthStore } from '@/store/authStore';
 import { DEV_BACKEND_URL } from '@config/apiConfig';
+import { useAppStore } from '@store/appStore';
+import { useAuthStore } from '@store/authStore';
 
 import './LandingPage.css';
 

@@ -1,136 +1,18 @@
-import { Tabs } from '@/components/ui';
-import { Layers, Network, Share2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { HealthSnapshotStrip, ServiceFlyInPanel } from '@shared/components/ui/calm';
-import { useServiceHealthSummary } from '@features/overview/hooks/useServiceHealthSummary';
+import { Layers } from 'lucide-react';
 
 import { PageHeader, PageShell } from '@shared/components/ui';
-import ConfiguredTabPanel from '@shared/components/ui/dashboard/ConfiguredTabPanel';
+import DashboardPage from '@shared/components/ui/dashboard/DashboardPage';
 
-import { usePageTabs } from '@shared/hooks/usePageTabs';
-import { useUrlSyncedTab } from '@shared/hooks/useUrlSyncedTab';
-
-import { ServiceOverviewTab } from '../../components/services-page/ServiceOverviewTab';
-import { ServiceTopologyTab } from '../../components/services-page/ServiceTopologyTab';
-import { useServicesData } from '../../hooks/useServicesData';
-
-import type { ServiceSortField, ServiceSortOrder, ServiceViewMode } from '../../types';
-
-/**
- *
- */
 export default function ServicesPage() {
-  const navigate = useNavigate();
-  const { tabs } = usePageTabs('services');
-  const allowedTabs = useMemo(
-    () => (tabs.length > 0 ? tabs.map((tab) => tab.id) : ['overview']),
-    [tabs],
-  );
-
-  const { activeTab, onTabChange } = useUrlSyncedTab({
-    allowedTabs: allowedTabs as readonly string[],
-    defaultTab: 'overview',
-  });
-
-  const [viewMode, setViewMode] = useState<ServiceViewMode>('table');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [healthFilter, setHealthFilter] = useState('all');
-  const [flyInService, setFlyInService] = useState<string | null>(null);
-
-  const { data: healthSummary = [], isLoading: healthLoading } = useServiceHealthSummary();
-  const sortField: ServiceSortField | null = null;
-  const sortOrder: ServiceSortOrder | null = null;
-
-  const {
-    isLoading,
-    topologyLoading,
-    topologyError,
-    totalServices,
-    healthyServices,
-    degradedServices,
-    unhealthyServices,
-    tableData,
-    topologyNodes,
-    topologyEdges,
-    topologyStats,
-    criticalServices,
-    dependencyRows,
-    healthOptions,
-  } = useServicesData({ searchQuery, sortField, sortOrder, healthFilter });
-
-  const onNodeClick = (name: string): void => {
-    navigate(`/services/${encodeURIComponent(name)}`);
-  };
-
   return (
     <PageShell>
       <PageHeader
         title="Services"
-        subtitle="Global service health and dependency topology"
+        subtitle="Global service health and dependency map"
         icon={<Layers size={24} />}
       />
 
-      <HealthSnapshotStrip
-        services={healthSummary}
-        onServiceClick={(name) => setFlyInService(name)}
-        loading={healthLoading}
-      />
-
-      <Tabs
-        activeKey={activeTab}
-        onChange={onTabChange}
-        className="mb-[var(--space-md)]"
-        items={[
-          { key: 'overview', label: 'Overview', icon: <Layers size={14} /> },
-          { key: 'topology', label: 'Topology', icon: <Network size={14} /> },
-          { key: 'service-map', label: 'Service Map', icon: <Share2 size={14} /> },
-        ]}
-      />
-
-      {activeTab === 'overview' && (
-        <ServiceOverviewTab
-          totalServices={totalServices}
-          healthyServices={healthyServices}
-          degradedServices={degradedServices}
-          unhealthyServices={unhealthyServices}
-          isLoading={isLoading}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          tableData={tableData}
-          onNodeClick={onNodeClick}
-        />
-      )}
-
-      {activeTab === 'topology' && (
-        <ServiceTopologyTab
-          topologyStats={topologyStats}
-          topologyLoading={topologyLoading}
-          topologyError={topologyError}
-          topologyNodes={topologyNodes}
-          topologyEdges={topologyEdges}
-          criticalServices={criticalServices}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          healthFilter={healthFilter}
-          setHealthFilter={setHealthFilter}
-          healthOptions={healthOptions}
-          dependencyRows={dependencyRows}
-          onNodeClick={onNodeClick}
-        />
-      )}
-
-      {activeTab === 'service-map' && (
-        <ConfiguredTabPanel pageId="services" tabId="service-map" />
-      )}
-      <ServiceFlyInPanel
-        serviceName={flyInService}
-        open={flyInService !== null}
-        onClose={() => setFlyInService(null)}
-      />
+      <DashboardPage pageId="services" />
     </PageShell>
   );
 }

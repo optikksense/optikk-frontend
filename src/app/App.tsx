@@ -3,8 +3,11 @@ import { Suspense } from 'react';
 
 import { APP_COLORS } from '@config/colorLiterals';
 import { useAuthValidation } from '@shared/hooks/useAuthValidation';
+import { BUILT_IN_DASHBOARD_PANELS } from '@shared/components/ui/dashboard/builtInDashboardPanels';
+import { DashboardPanelRegistryProvider } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
 
 import AuthExpiryListener from './providers/AuthExpiryListener';
+import { getDashboardPanelRegistrations } from './registry/domainRegistry';
 import AppRoutes from './routes/appRoutes';
 import { ErrorBoundary } from '@shared/components/ui/feedback';
 
@@ -61,11 +64,21 @@ function AppContent(): JSX.Element {
 }
 
 export default function App(): JSX.Element {
+  const dashboardPanels = [
+    ...BUILT_IN_DASHBOARD_PANELS,
+    ...getDashboardPanelRegistrations(),
+  ];
+
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<PageLoader />}>
-        <AppContent />
-      </Suspense>
+    <ErrorBoundary
+      showDetails={import.meta.env.DEV}
+      boundaryName="app-shell"
+    >
+      <DashboardPanelRegistryProvider registrations={dashboardPanels}>
+        <Suspense fallback={<PageLoader />}>
+          <AppContent />
+        </Suspense>
+      </DashboardPanelRegistryProvider>
     </ErrorBoundary>
   );
 }

@@ -5,6 +5,8 @@
  */
 import { Surface } from '@/components/ui';
 import React, { useMemo } from 'react';
+import uPlot from 'uplot';
+import { getResolvedChartPalette, resolveThemeColor } from '@shared/utils/chartTheme';
 
 import UPlotChart, { defaultAxes, uLine } from '../UPlotChart';
 
@@ -26,9 +28,9 @@ interface BurnRateChartProps {
 }
 
 function burnRateColor(rate: number, fast: number, slow: number): string {
-    if (rate >= fast) return 'var(--severity-critical)';
-    if (rate >= slow) return 'var(--severity-high)';
-    return 'var(--severity-low)';
+    if (rate >= fast) return resolveThemeColor('--severity-critical', '#f04438');
+    if (rate >= slow) return resolveThemeColor('--severity-high', '#f79009');
+    return resolveThemeColor('--severity-low', '#8b7fff');
 }
 
 const BurnRateChart: React.FC<BurnRateChartProps> = ({
@@ -41,6 +43,7 @@ const BurnRateChart: React.FC<BurnRateChartProps> = ({
     const latest = data[data.length - 1];
     const current1h = latest?.burnRate1h ?? 0;
     const current6h = latest?.burnRate6h ?? 0;
+    const [primaryColor, secondaryColor] = getResolvedChartPalette();
 
     const tsLabels = data.map(d => d.ts);
 
@@ -71,11 +74,11 @@ const BurnRateChart: React.FC<BurnRateChartProps> = ({
             scales: { x: { range: (_u, min, max) => [min, max] as [number, number] } },
             series: [
                 {},
-                uLine('1h', 'var(--chart-1)', { width: 2 }),
-                uLine('6h', 'var(--chart-2)', { dash: [4, 4], width: 2 }),
+                uLine('1h', primaryColor, { width: 2 }),
+                uLine('6h', secondaryColor, { dash: [4, 4], width: 2 }),
             ],
         };
-    }, [tsLabels]);
+    }, [primaryColor, secondaryColor, tsLabels]);
 
     return (
         <Surface className="chart-card" padding="sm">

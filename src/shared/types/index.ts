@@ -48,7 +48,6 @@ export interface Team {
   id: number;
   name: string;
   orgName?: string;
-  [key: string]: unknown;
 }
 
 export interface User {
@@ -56,5 +55,4 @@ export interface User {
   email: string;
   name?: string;
   teams?: Team[];
-  [key: string]: unknown;
 }

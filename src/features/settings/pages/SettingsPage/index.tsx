@@ -7,8 +7,7 @@ import { z } from 'zod';
 
 import { settingsService } from '@shared/api/settingsService';
 import { PageHeader, PageShell } from '@shared/components/ui';
-
-import { useAppStore } from '@/shared/store/appStore';
+import type { UserViewPreferences } from '@shared/types/preferences';
 
 import {
   SettingsPreferencesTab,
@@ -17,11 +16,13 @@ import {
 } from '../../components/tabs';
 
 import type {
+  SettingsPreferenceKey,
   SettingsPreferenceValue,
   SettingsProfileCommand,
   SettingsProfileFormValues,
   SettingsProfileViewModel,
 } from '../../types';
+import { useAppStore } from '@store/appStore';
 
 
 const settingsProfileQueryKey = ['settings-profile'] as const;
@@ -39,7 +40,19 @@ const settingsTeamSchema = z.object({
   name: z.string().optional(),
   apiKey: z.string().optional(),
   role: z.string().optional(),
-}).passthrough();
+}).strict();
+
+const settingsPreferencesSchema = z.object({
+  theme: z.enum(['light', 'dark', 'system']).optional(),
+  timezone: z.string().optional(),
+  refreshInterval: z.number().optional(),
+  sidebarCollapsed: z.boolean().optional(),
+  density: z.enum(['compact', 'comfortable']).optional(),
+  notificationsEnabled: z.boolean().optional(),
+  favorites: z.array(z.string()).optional(),
+  defaultTimeRange: z.string().optional(),
+  defaultPageSize: z.number().optional(),
+}).strict();
 
 const settingsProfileSchema = z.object({
   name: z.string().optional(),
@@ -47,7 +60,8 @@ const settingsProfileSchema = z.object({
   avatarUrl: z.string().optional(),
   role: z.string().optional(),
   teams: z.array(settingsTeamSchema).optional(),
-}).passthrough();
+  preferences: settingsPreferencesSchema.optional(),
+}).strict();
 
 const profileCommandSchema = z.object({
   name: z.string().trim().min(1, 'Please enter your name'),
@@ -58,6 +72,7 @@ const preferenceValueSchema = z.union([
   z.string(),
   z.number(),
   z.boolean(),
+  z.array(z.string()),
 ]);
 
 function getErrorMessage(error: unknown, fallback: string): string {
@@ -142,7 +157,7 @@ export default function SettingsPage(): JSX.Element {
   });
 
   const updatePreferencesMutation = useMutation({
-    mutationFn: (preferences: Record<string, SettingsPreferenceValue>) =>
+    mutationFn: (preferences: Partial<UserViewPreferences>) =>
       settingsService.updatePreferences(preferences),
     onError: (error: unknown) => {
       toast.error(getErrorMessage(error, 'Failed to sync preferences'));
@@ -159,7 +174,7 @@ export default function SettingsPage(): JSX.Element {
   };
 
   const handleThemeChange = (checked: boolean): void => {
-    const newTheme = checked ? 'dark' : 'light';
+    const newTheme: NonNullable<UserViewPreferences['theme']> = checked ? 'dark' : 'light';
     setTheme(newTheme);
     updatePreferencesMutation.mutate({ theme: newTheme });
     toast.success(`Switched to ${newTheme} theme`);
@@ -171,7 +186,10 @@ export default function SettingsPage(): JSX.Element {
     toast.success(`Notifications ${checked ? 'enabled' : 'disabled'}`);
   };
 
-  const handlePreferenceChange = (key: string, value: SettingsPreferenceValue): void => {
+  const handlePreferenceChange = (
+    key: SettingsPreferenceKey,
+    value: SettingsPreferenceValue,
+  ): void => {
     const parsedValue = preferenceValueSchema.safeParse(value);
     if (!parsedValue.success) {
       toast.error('Unsupported preference value');
@@ -179,7 +197,7 @@ export default function SettingsPage(): JSX.Element {
     }
 
     setViewPreference(key, parsedValue.data);
-    updatePreferencesMutation.mutate({ [key]: parsedValue.data });
+    updatePreferencesMutation.mutate({ [key]: parsedValue.data } as Partial<UserViewPreferences>);
     toast.success('Preference updated');
   };
 

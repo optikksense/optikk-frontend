@@ -72,7 +72,7 @@ const config: Config = {
       },
       borderRadius: {
         lg: 'var(--card-radius)',
-        md: '8px',
+        md: '6px',
         sm: '4px',
       },
       fontFamily: {

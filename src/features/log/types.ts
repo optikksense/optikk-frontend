@@ -68,6 +68,12 @@ export interface LogAggregateRow extends DomainRecord {
   error_rate?: number;
 }
 
+export interface LogAttributeFilter {
+  key: string;
+  value: string;
+  op: 'eq' | 'neq' | 'contains' | 'regex';
+}
+
 /**
  *
  */
@@ -119,6 +125,7 @@ export type LogsBackendParams = QueryParams & {
   limit?: number;
   offset?: number;
   search?: string;
+  searchMode?: string;
   severities?: string[];
   excludeSeverities?: string[];
   services?: string[];
@@ -127,9 +134,11 @@ export type LogsBackendParams = QueryParams & {
   excludeHosts?: string[];
   pods?: string[];
   containers?: string[];
+  environments?: string[];
   loggers?: string[];
   traceId?: string;
   spanId?: string;
+  attributeFilters?: LogAttributeFilter[];
 };
 
 /**

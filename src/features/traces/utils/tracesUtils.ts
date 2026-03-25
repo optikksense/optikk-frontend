@@ -1,4 +1,4 @@
-import type { TraceRecord } from '../types';
+import type { TraceRecord, TraceSummary } from '../types';
 import { asRecord, toNumber, toStringValue } from '@shared/utils/coerce';
 export { asRecord, toNumber, toStringValue };
 
@@ -16,20 +16,13 @@ interface TraceFilterField {
   operators: TraceFilterOperator[];
 }
 
-interface TracesSummary extends Record<string, unknown> {
-  total_traces?: number;
-  error_traces?: number;
-  p95_duration?: number;
-  p99_duration?: number;
-}
-
 /**
  *
  */
 export interface TracesResponse {
   traces: unknown[];
   total: number;
-  summary: TracesSummary;
+  summary: TraceSummary;
 }
 
 /**
@@ -38,7 +31,15 @@ export interface TracesResponse {
 export function normalizeTracesResponse(value: unknown): TracesResponse {
   const row = asRecord(value);
   const traces = Array.isArray(row.traces) ? row.traces.map((trace) => normalizeTrace(trace)) : [];
-  const summary = asRecord(row.summary) as TracesSummary;
+  const summaryRecord = asRecord(row.summary);
+  const summary: TraceSummary = {
+    total_traces: toNumber(summaryRecord.total_traces),
+    error_traces: toNumber(summaryRecord.error_traces),
+    avg_duration: toNumber(summaryRecord.avg_duration),
+    p50_duration: toNumber(summaryRecord.p50_duration),
+    p95_duration: toNumber(summaryRecord.p95_duration),
+    p99_duration: toNumber(summaryRecord.p99_duration),
+  };
   const total = toNumber(row.total ?? summary.total_traces);
   return { traces, total, summary };
 }

@@ -2,13 +2,29 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useURLFilters } from '@shared/hooks/useURLFilters';
-import { useAppStore } from '@shared/store/appStore';
+import { useAppStore } from '@app/store/appStore';
 
 import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
 
 import { tracesExplorerApi } from '../api/tracesExplorerApi';
 
 import type { TracesBackendParams } from '../api/tracesApi';
+import type { TraceExplorerFacets, TraceSummary } from '../types';
+
+const EMPTY_TRACE_FACETS: TraceExplorerFacets = {
+  service_name: [],
+  status: [],
+  operation_name: [],
+};
+
+const EMPTY_TRACE_SUMMARY: TraceSummary = {
+  total_traces: 0,
+  error_traces: 0,
+  p95_duration: 0,
+  p99_duration: 0,
+  p50_duration: 0,
+  avg_duration: 0,
+};
 
 const TRACES_URL_FILTER_CONFIG = {
   params: [
@@ -149,14 +165,7 @@ export function useTracesExplorer() {
 
   const traces = useMemo(() => data?.results ?? [], [data?.results]);
   const totalTraces = Number(data?.pageInfo?.total ?? data?.summary?.total_traces ?? 0);
-  const summary = data?.summary ?? {
-    total_traces: 0,
-    error_traces: 0,
-    p95_duration: 0,
-    p99_duration: 0,
-    p50_duration: 0,
-    avg_duration: 0,
-  };
+  const summary = data?.summary ?? EMPTY_TRACE_SUMMARY;
 
   const errorTraces = Number(summary.error_traces ?? 0);
   const errorRate = totalTraces > 0 ? (errorTraces * 100) / totalTraces : 0;
@@ -188,7 +197,7 @@ export function useTracesExplorer() {
     p95,
     p99,
     trendBuckets: data?.trend ?? [],
-    facets: data?.facets ?? {},
+    facets: data?.facets ?? EMPTY_TRACE_FACETS,
     maxDuration,
     searchText,
     selectedService,

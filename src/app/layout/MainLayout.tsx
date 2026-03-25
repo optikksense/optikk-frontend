@@ -45,7 +45,7 @@ export default function MainLayout() {
           <Header />
           <main
             className={cn(
-              'p-6 max-md:p-4',
+              'p-4 max-md:p-3',
               'min-h-[calc(100vh-var(--space-header-h,56px))]',
               'bg-[var(--bg-primary,var(--literal-hex-0a0a0a-2))]',
               'relative z-[1]',

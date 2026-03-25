@@ -1,11 +1,44 @@
-import ReactECharts from 'echarts-for-react';
-
 import { APP_COLORS } from '@config/colorLiterals';
+import { CHART_THEME_DEFAULTS } from '@shared/utils/chartTheme';
 
 interface GaugeChartProps {
   value?: number;
   label?: string;
   size?: number;
+}
+
+function polarToCartesian(cx: number, cy: number, radius: number, angleInDegrees: number) {
+  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+  return {
+    x: cx + radius * Math.cos(angleInRadians),
+    y: cy + radius * Math.sin(angleInRadians),
+  };
+}
+
+function describeArc(
+  cx: number,
+  cy: number,
+  radius: number,
+  startAngle: number,
+  endAngle: number,
+) {
+  const start = polarToCartesian(cx, cy, radius, endAngle);
+  const end = polarToCartesian(cx, cy, radius, startAngle);
+  const largeArcFlag = Math.abs(endAngle - startAngle) > 180 ? '1' : '0';
+
+  return [
+    'M',
+    start.x,
+    start.y,
+    'A',
+    radius,
+    radius,
+    0,
+    largeArcFlag,
+    0,
+    end.x,
+    end.y,
+  ].join(' ');
 }
 
 function getGaugeColor(value: number): string {
@@ -26,38 +59,14 @@ export default function GaugeChart({
 }: GaugeChartProps): JSX.Element {
   const clamped = Math.min(Math.max(value, 0), 100);
   const color = getGaugeColor(clamped);
-
-  const option = {
-    backgroundColor: 'transparent',
-    series: [
-      {
-        type: 'gauge',
-        startAngle: 180,
-        endAngle: 0,
-        min: 0,
-        max: 100,
-        radius: '100%',
-        center: ['50%', '90%'],
-        splitNumber: 0,
-        axisLine: {
-          roundCap: false,
-          lineStyle: {
-            width: Math.round(size * 0.1),
-            color: [
-              [clamped / 100, color],
-              [1, `${APP_COLORS.hex_2d2d2d}99`],
-            ],
-          },
-        },
-        pointer: { show: false },
-        axisTick: { show: false },
-        splitLine: { show: false },
-        axisLabel: { show: false },
-        detail: { show: false },
-        data: [{ value: clamped }],
-      },
-    ],
-  };
+  const trackColor = CHART_THEME_DEFAULTS.borderColor();
+  const mutedText = CHART_THEME_DEFAULTS.textMuted();
+  const strokeWidth = Math.max(Math.round(size * 0.1), 8);
+  const radius = size / 2 - strokeWidth / 2;
+  const center = size / 2;
+  const progressAngle = 180 - (clamped / 100) * 180;
+  const trackPath = describeArc(center, center, radius, 180, 0);
+  const progressPath = clamped > 0 ? describeArc(center, center, radius, 180, progressAngle) : null;
 
   return (
     <div style={{
@@ -67,20 +76,37 @@ export default function GaugeChart({
       alignItems: 'center',
       margin: '0 auto',
     }}>
-      {/* The arc canvas — exactly half the height */}
-      <div style={{ width: size, height: size / 2, flexShrink: 0 }}>
-        <ReactECharts
-          option={option}
-          style={{ width: '100%', height: '100%' }}
-          opts={{ renderer: 'canvas' }}
-        />
+      <div style={{ width: size, height: size / 2, flexShrink: 0, overflow: 'hidden' }}>
+        <svg
+          width={size}
+          height={size / 2}
+          viewBox={`0 0 ${size} ${size / 2}`}
+          role="img"
+          aria-label={label || 'Gauge chart'}
+        >
+          <path
+            d={trackPath}
+            fill="none"
+            stroke={`${trackColor}99`}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+          />
+          {progressPath ? (
+            <path
+              d={progressPath}
+              fill="none"
+              stroke={color}
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+            />
+          ) : null}
+        </svg>
       </div>
 
-      {/* Score + label sit clearly BELOW the arc */}
       <div style={{ marginTop: 10, textAlign: 'center', width: '100%' }}>
         <div style={{
           fontSize: Math.round(size * 0.24),
-          fontWeight: 700,
+          fontWeight: 600,
           color,
           lineHeight: 1,
           letterSpacing: '-0.5px',
@@ -91,7 +117,7 @@ export default function GaugeChart({
         {label && (
           <div style={{
             fontSize: Math.round(size * 0.1),
-            color: 'var(--text-muted, #8e8e8e)',
+            color: mutedText,
             marginTop: 5,
             whiteSpace: 'nowrap',
             overflow: 'hidden',

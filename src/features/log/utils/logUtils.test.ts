@@ -19,7 +19,13 @@ describe('feature logUtils', () => {
       hosts: ['host-a'],
       traceId: 'trace-1',
       spanId: 'span-1',
-      'attr.user_id': '42',
+      attributeFilters: [
+        {
+          key: 'user_id',
+          value: '42',
+          op: 'eq',
+        },
+      ],
     });
   });
 
