@@ -64,11 +64,11 @@ export default function MainLayout() {
 
   return (
     <DensityProvider>
-      <div className="min-h-screen bg-[var(--bg-primary,var(--literal-hex-0a0a0a-2))]">
+      <div className="h-screen bg-[var(--bg-primary,var(--literal-hex-0a0a0a-2))]">
         <Sidebar />
         <div
           className={cn(
-            'transition-[margin-left] duration-200 ease-linear',
+            'transition-[margin-left] duration-200 ease-linear flex flex-col h-screen',
             'max-md:ml-0',
             sidebarCollapsed
               ? 'ml-[var(--space-sidebar-collapsed,56px)]'
@@ -79,7 +79,7 @@ export default function MainLayout() {
           <main
             className={cn(
               'p-4 max-md:p-3',
-              'min-h-[calc(100vh-var(--space-header-h,56px))]',
+              'flex-1 overflow-y-auto',
               'bg-[var(--bg-primary,var(--literal-hex-0a0a0a-2))]',
               'relative z-[1]'
             )}

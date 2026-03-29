@@ -8,6 +8,7 @@ import { queryClient } from '@shared/api/queryClient';
 import App from './app/App';
 import AppQueryClientProvider from './app/providers/QueryClientProvider';
 import ThemeProvider from './app/providers/ThemeProvider';
+import 'react-grid-layout/css/styles.css';
 import './index.css';
 
 export { queryClient };
@@ -28,5 +29,5 @@ ReactDOM.createRoot(rootElement).render(
         </ThemeProvider>
       </AppQueryClientProvider>
     </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

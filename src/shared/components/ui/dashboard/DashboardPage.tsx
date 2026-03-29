@@ -23,10 +23,7 @@ interface DashboardPageProps {
 export default function DashboardPage({ pageId, pathParams }: DashboardPageProps) {
   const { tabs, isLoading: tabsLoading, error: tabsError } = usePageTabs(pageId);
 
-  const tabIds = useMemo(
-    () => tabs.map((tab) => tab.id),
-    [tabs],
-  );
+  const tabIds = useMemo(() => tabs.map((tab) => tab.id), [tabs]);
 
   const defaultTabId = tabIds[0] ?? '';
 
@@ -109,13 +106,9 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
 
     return (
       <>
-        <Tabs
-          activeKey={selectedTabId}
-          onChange={onTabChange}
-          items={tabItems}
-          size="large"
-          className="mb-[var(--space-md)]"
-        />
+        <div className="sticky top-0 z-10 bg-[var(--bg-primary,var(--literal-hex-0a0a0a-2))] pb-1">
+          <Tabs activeKey={selectedTabId} onChange={onTabChange} items={tabItems} size="large" />
+        </div>
         <DashboardTabContent tab={tab} pathParams={pathParams} />
       </>
     );

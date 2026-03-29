@@ -239,7 +239,6 @@ function ConfigurableChartCardContent({
     serviceTimeseriesMap,
     endpoints,
     selectedEndpoints,
-    height: 280,
     fillHeight: true,
   };
 
