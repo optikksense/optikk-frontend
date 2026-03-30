@@ -1,7 +1,12 @@
+# Branch protection (main): require status check "Frontend CI / check".
 name: Frontend CI
 
 on:
   pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   check:
@@ -27,7 +32,10 @@ jobs:
 
       - name: Build
         run: npm run build
-        
+
+      - name: Bundle size budgets
+        run: npm run ci:budgets
+
       - name: Bundle Size Diff
         if: github.event_name == 'pull_request'
         uses: preactjs/compressed-size-action@v2

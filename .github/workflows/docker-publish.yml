@@ -1,3 +1,4 @@
+# Publishes only on push to main or manual dispatch from main (not on pull_request).
 name: Docker Publish
 
 on:
@@ -30,9 +31,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Bundle size budgets
+        run: npm run ci:budgets
+
   docker-push:
     needs: check
-    if: github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
