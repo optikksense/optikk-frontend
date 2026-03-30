@@ -31,19 +31,11 @@ export default function SparklineChart({
   height = 24,
   calm = false,
 }: SparklineChartProps) {
-  if (!data || data.length < 2) return null;
-
   const effectiveFill = calm ? false : fill;
   const effectiveHeight = calm ? Math.min(height, 36) : height;
   const lineWidth = calm ? 1 : 1.5;
 
-  const uplotData = useMemo<uPlot.AlignedData>(
-    () => [
-      data.map((_, i) => i),
-      data,
-    ],
-    [data],
-  );
+  const uplotData = useMemo<uPlot.AlignedData>(() => [data.map((_, i) => i), data], [data]);
 
   const opts = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(
     () => ({
@@ -51,13 +43,12 @@ export default function SparklineChart({
       cursor: { show: false },
       legend: { show: false },
       padding: [0, 0, 0, 0],
-      series: [
-        {},
-        uLine('', color, { fill: effectiveFill, width: lineWidth }),
-      ],
+      series: [{}, uLine('', color, { fill: effectiveFill, width: lineWidth })],
     }),
-    [color, effectiveFill, lineWidth],
+    [color, effectiveFill, lineWidth]
   );
+
+  if (!data || data.length < 2) return null;
 
   return (
     <div style={{ width, height: effectiveHeight }}>

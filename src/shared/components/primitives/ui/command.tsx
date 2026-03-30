@@ -12,7 +12,7 @@ const Command = forwardRef<
     ref={ref}
     className={cn(
       'flex h-full w-full flex-col overflow-hidden rounded-md bg-[var(--bg-secondary)] text-[var(--text-primary)]',
-      className,
+      className
     )}
     {...props}
   />
@@ -23,13 +23,13 @@ const CommandInput = forwardRef<
   React.ComponentRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
-  <div className="flex items-center gap-[10px] border-b border-border px-4 py-3" cmdk-input-wrapper="">
+  <div className="flex items-center gap-[10px] border-b border-border px-4 py-3">
     <Search size={16} className="text-muted-foreground shrink-0" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
         'flex-1 text-[15px] text-foreground bg-transparent outline-none border-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
-        className,
+        className
       )}
       {...props}
     />
@@ -69,7 +69,7 @@ const CommandGroup = forwardRef<
     ref={ref}
     className={cn(
       'overflow-hidden px-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.5px] [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1',
-      className,
+      className
     )}
     {...props}
   />
@@ -96,18 +96,17 @@ const CommandItem = forwardRef<
     ref={ref}
     className={cn(
       'flex items-center gap-[10px] px-3 py-2 rounded-md cursor-pointer text-[13px] text-foreground transition-colors duration-100 aria-selected:bg-muted hover:bg-muted outline-none',
-      className,
+      className
     )}
     {...props}
   />
 ));
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
-function CommandShortcut({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) {
-  return <span className={cn('ml-auto text-xs tracking-widest opacity-50', className)} {...props} />;
+function CommandShortcut({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span className={cn('ml-auto text-xs tracking-widest opacity-50', className)} {...props} />
+  );
 }
 
 export {
