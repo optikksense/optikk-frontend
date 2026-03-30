@@ -1,1 +1,19 @@
 npx lint-staged
+
+npm run type-check
+if [ $? -ne 0 ]; then
+    echo "[Optikk Frontend] Type check failed. Commit aborted."
+    exit 1
+fi
+
+npm run test:run
+if [ $? -ne 0 ]; then
+    echo "[Optikk Frontend] Tests failed. Commit aborted."
+    exit 1
+fi
+
+npm run build
+if [ $? -ne 0 ]; then
+    echo "[Optikk Frontend] Build failed. Commit aborted."
+    exit 1
+fi

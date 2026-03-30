@@ -58,3 +58,4 @@
 - Before making broad structural changes, inspect adjacent files for established patterns.
 - When editing large files, change only the relevant area and avoid incidental refactors.
 - Update docs when behavior, setup, or developer workflows change.
+- Do not add or change automated tests (unit, integration, E2E) unless the task explicitly requests them.
