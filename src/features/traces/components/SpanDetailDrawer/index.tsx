@@ -404,6 +404,8 @@ interface Props {
   spanEvents: SpanEvent[];
   spanSelfTimes: SpanSelfTime[];
   relatedTraces: RelatedTrace[];
+  activeTab: string;
+  onActiveTabChange: (nextTab: string) => void;
 }
 
 export default function SpanDetailDrawer({
@@ -414,9 +416,9 @@ export default function SpanDetailDrawer({
   spanEvents,
   spanSelfTimes,
   relatedTraces,
+  activeTab,
+  onActiveTabChange,
 }: Props) {
-  const [activeTab, setActiveTab] = useState('attributes');
-
   if (!selectedSpanId) return null;
 
   const eventCount = spanEvents.filter((e) => e.spanId === selectedSpanId).length;
@@ -439,7 +441,7 @@ export default function SpanDetailDrawer({
 
       <Tabs
         activeKey={activeTab}
-        onChange={setActiveTab}
+        onChange={onActiveTabChange}
         variant="compact"
         size="sm"
         items={[

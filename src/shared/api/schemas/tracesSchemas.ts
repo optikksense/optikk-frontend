@@ -69,7 +69,199 @@ export const flamegraphFrameSchema = z
   })
   .strict();
 
+export const traceLogSchema = z
+  .object({
+    id: z.string().default(''),
+    timestamp: z.union([z.string(), z.number()]),
+    observed_timestamp: z.number().optional(),
+    severity_text: z.string().default('INFO'),
+    severity_number: z.number().optional(),
+    body: z.string().default(''),
+    trace_id: z.string().default(''),
+    span_id: z.string().default(''),
+    trace_flags: z.number().optional(),
+    service_name: z.string().default(''),
+    host: z.string().default(''),
+    pod: z.string().default(''),
+    container: z.string().default(''),
+    environment: z.string().default(''),
+    attributes_string: z.record(z.string(), z.string()).optional(),
+    attributes_number: z.record(z.string(), z.number()).optional(),
+    attributes_bool: z.record(z.string(), z.boolean()).optional(),
+    scope_name: z.string().optional(),
+    scope_version: z.string().optional(),
+  })
+  .passthrough();
+
+export const traceLogsResponseSchema = z
+  .object({
+    logs: z.array(traceLogSchema).default([]),
+    is_speculative: z.boolean().default(false),
+  })
+  .strict();
+
+export const spanEventSchema = z
+  .object({
+    span_id: z.string(),
+    trace_id: z.string(),
+    event_name: z.string(),
+    timestamp: z.string(),
+    attributes: z.string().default(''),
+  })
+  .strict();
+
+export const spanKindDurationSchema = z
+  .object({
+    span_kind: z.string(),
+    total_duration_ms: z.number(),
+    span_count: z.number(),
+    pct_of_trace: z.number(),
+  })
+  .strict();
+
+export const criticalPathSpanSchema = z
+  .object({
+    span_id: z.string(),
+    operation_name: z.string(),
+    service_name: z.string(),
+    duration_ms: z.number(),
+  })
+  .strict();
+
+export const spanSelfTimeSchema = z
+  .object({
+    span_id: z.string(),
+    operation_name: z.string(),
+    total_duration_ms: z.number(),
+    self_time_ms: z.number(),
+    child_time_ms: z.number(),
+  })
+  .strict();
+
+export const errorPathSpanSchema = z
+  .object({
+    span_id: z.string(),
+    parent_span_id: z.string().default(''),
+    operation_name: z.string(),
+    service_name: z.string(),
+    status: z.string(),
+    status_message: z.string().default(''),
+    start_time: z.string(),
+    duration_ms: z.number(),
+  })
+  .strict();
+
+export const spanAttributesSchema = z
+  .object({
+    span_id: z.string(),
+    trace_id: z.string(),
+    operation_name: z.string(),
+    service_name: z.string(),
+    attributes_string: z.record(z.string(), z.string()).default({}),
+    resource_attributes: z.record(z.string(), z.string()).default({}),
+    exception_type: z.string().optional(),
+    exception_message: z.string().optional(),
+    exception_stacktrace: z.string().optional(),
+    db_system: z.string().optional(),
+    db_name: z.string().optional(),
+    db_statement: z.string().optional(),
+    db_statement_normalized: z.string().optional(),
+    attributes: z.record(z.string(), z.string()).default({}),
+  })
+  .strict();
+
+export const relatedTraceSchema = z
+  .object({
+    trace_id: z.string(),
+    span_id: z.string(),
+    operation_name: z.string(),
+    service_name: z.string(),
+    duration_ms: z.number(),
+    status: z.string(),
+    start_time: z.string(),
+  })
+  .strict();
+
+export const traceComparisonResultSchema = z
+  .object({
+    traceA: z.object({
+      traceId: z.string(),
+      spanCount: z.number(),
+      durationMs: z.number(),
+      errorCount: z.number(),
+      services: z.number(),
+    }),
+    traceB: z.object({
+      traceId: z.string(),
+      spanCount: z.number(),
+      durationMs: z.number(),
+      errorCount: z.number(),
+      services: z.number(),
+    }),
+    matchedSpans: z.array(
+      z.object({
+        signature: z.object({
+          service: z.string(),
+          operation: z.string(),
+          spanKind: z.string(),
+          depth: z.number(),
+        }),
+        spanIdA: z.string(),
+        spanIdB: z.string(),
+        durationMsA: z.number(),
+        durationMsB: z.number(),
+        deltaMs: z.number(),
+        deltaPct: z.number(),
+        statusA: z.string(),
+        statusB: z.string(),
+        statusChanged: z.boolean(),
+      })
+    ),
+    onlyInA: z.array(
+      z.object({
+        spanId: z.string(),
+        service: z.string(),
+        operation: z.string(),
+        spanKind: z.string(),
+        durationMs: z.number(),
+        status: z.string(),
+      })
+    ),
+    onlyInB: z.array(
+      z.object({
+        spanId: z.string(),
+        service: z.string(),
+        operation: z.string(),
+        spanKind: z.string(),
+        durationMs: z.number(),
+        status: z.string(),
+      })
+    ),
+    serviceDeltas: z.array(
+      z.object({
+        service: z.string(),
+        totalMsA: z.number(),
+        totalMsB: z.number(),
+        deltaMs: z.number(),
+        spanCountA: z.number(),
+        spanCountB: z.number(),
+      })
+    ),
+    totalDeltaMs: z.number(),
+  })
+  .strict();
+
 export type TraceRecord = z.infer<typeof traceRecordSchema>;
 export type SpanRecord = z.infer<typeof spanRecordSchema>;
 export type TracesSummary = z.infer<typeof tracesSummarySchema>;
 export type FlamegraphFrame = z.infer<typeof flamegraphFrameSchema>;
+export type TraceLog = z.infer<typeof traceLogSchema>;
+export type TraceLogsResponse = z.infer<typeof traceLogsResponseSchema>;
+export type SpanEventRecord = z.infer<typeof spanEventSchema>;
+export type SpanKindDurationRecord = z.infer<typeof spanKindDurationSchema>;
+export type CriticalPathSpanRecord = z.infer<typeof criticalPathSpanSchema>;
+export type SpanSelfTimeRecord = z.infer<typeof spanSelfTimeSchema>;
+export type ErrorPathSpanRecord = z.infer<typeof errorPathSpanSchema>;
+export type SpanAttributesRecord = z.infer<typeof spanAttributesSchema>;
+export type RelatedTraceRecord = z.infer<typeof relatedTraceSchema>;
+export type TraceComparisonResultRecord = z.infer<typeof traceComparisonResultSchema>;

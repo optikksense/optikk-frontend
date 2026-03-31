@@ -44,4 +44,4 @@ const tracesConfig: DomainConfig = {
   ],
 };
 export * from './components';
-export type { ServiceBadge, TraceColumn, TraceRecord } from './types';
+export type { ServiceBadge, TraceRecord } from './types';

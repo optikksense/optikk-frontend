@@ -7,7 +7,6 @@ import { PageHeader, PageShell, PageSurface } from '@shared/components/ui';
 import { tracesService } from '@shared/api/tracesService';
 
 import TraceComparisonView from '../../components/TraceComparisonView';
-import type { TraceComparisonResult } from '../../types';
 
 export default function TraceComparisonPage(): JSX.Element {
   const navigate = useNavigate();
@@ -17,8 +16,7 @@ export default function TraceComparisonPage(): JSX.Element {
 
   const comparisonQuery = useQuery({
     queryKey: ['trace-comparison', traceA, traceB],
-    queryFn: async () =>
-      (await tracesService.getTraceComparison(traceA, traceB)) as TraceComparisonResult,
+    queryFn: () => tracesService.getTraceComparison(traceA, traceB),
     enabled: traceA.length > 0 && traceB.length > 0,
   });
 

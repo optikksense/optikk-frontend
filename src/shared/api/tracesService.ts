@@ -11,6 +11,15 @@ import {
   spanRecordSchema,
   tracesSummarySchema,
   flamegraphFrameSchema,
+  traceLogsResponseSchema,
+  spanEventSchema,
+  spanKindDurationSchema,
+  criticalPathSpanSchema,
+  spanSelfTimeSchema,
+  errorPathSpanSchema,
+  spanAttributesSchema,
+  relatedTraceSchema,
+  traceComparisonResultSchema,
 } from './schemas/tracesSchemas';
 
 import type {
@@ -18,6 +27,15 @@ import type {
   SpanRecord,
   TracesSummary,
   FlamegraphFrame,
+  TraceLogsResponse,
+  SpanEventRecord,
+  SpanKindDurationRecord,
+  CriticalPathSpanRecord,
+  SpanSelfTimeRecord,
+  ErrorPathSpanRecord,
+  SpanAttributesRecord,
+  RelatedTraceRecord,
+  TraceComparisonResultRecord,
 } from './schemas/tracesSchemas';
 import type { QueryParams, RequestTime } from './service-types';
 
@@ -52,32 +70,39 @@ export const tracesService = {
     return validateResponse(spanListSchema, data);
   },
 
-  async getTraceLogs(_teamId: number | null, traceId: string): Promise<unknown> {
-    return api.get(`${BASE}/traces/${traceId}/logs`);
+  async getTraceLogs(_teamId: number | null, traceId: string): Promise<TraceLogsResponse> {
+    const data = await api.get(`${BASE}/traces/${traceId}/logs`);
+    return validateResponse(traceLogsResponseSchema, data);
   },
 
-  async getSpanEvents(traceId: string): Promise<unknown> {
-    return api.get(`${BASE}/traces/${traceId}/span-events`);
+  async getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {
+    const data = await api.get(`${BASE}/traces/${traceId}/span-events`);
+    return validateResponse(z.array(spanEventSchema), data);
   },
 
-  async getSpanKindBreakdown(traceId: string): Promise<unknown> {
-    return api.get(`${BASE}/traces/${traceId}/span-kind-breakdown`);
+  async getSpanKindBreakdown(traceId: string): Promise<SpanKindDurationRecord[]> {
+    const data = await api.get(`${BASE}/traces/${traceId}/span-kind-breakdown`);
+    return validateResponse(z.array(spanKindDurationSchema), data);
   },
 
-  async getCriticalPath(traceId: string): Promise<unknown> {
-    return api.get(`${BASE}/traces/${traceId}/critical-path`);
+  async getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
+    const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
+    return validateResponse(z.array(criticalPathSpanSchema), data);
   },
 
-  async getSpanSelfTimes(traceId: string): Promise<unknown> {
-    return api.get(`${BASE}/traces/${traceId}/span-self-times`);
+  async getSpanSelfTimes(traceId: string): Promise<SpanSelfTimeRecord[]> {
+    const data = await api.get(`${BASE}/traces/${traceId}/span-self-times`);
+    return validateResponse(z.array(spanSelfTimeSchema), data);
   },
 
-  async getErrorPath(traceId: string): Promise<unknown> {
-    return api.get(`${BASE}/traces/${traceId}/error-path`);
+  async getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
+    const data = await api.get(`${BASE}/traces/${traceId}/error-path`);
+    return validateResponse(z.array(errorPathSpanSchema), data);
   },
 
-  async getSpanAttributes(traceId: string, spanId: string): Promise<unknown> {
-    return api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`);
+  async getSpanAttributes(traceId: string, spanId: string): Promise<SpanAttributesRecord> {
+    const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`);
+    return validateResponse(spanAttributesSchema, data);
   },
 
   async getRelatedTraces(
@@ -86,8 +111,8 @@ export const tracesService = {
     operationName?: string,
     startMs?: number,
     endMs?: number
-  ): Promise<unknown> {
-    return api.get(`${BASE}/traces/${traceId}/related`, {
+  ): Promise<RelatedTraceRecord[]> {
+    const data = await api.get(`${BASE}/traces/${traceId}/related`, {
       params: {
         service: serviceName,
         operation: operationName,
@@ -95,6 +120,7 @@ export const tracesService = {
         endTime: endMs,
       },
     });
+    return validateResponse(z.array(relatedTraceSchema), data);
   },
 
   async getFlamegraphData(traceId: string): Promise<FlamegraphFrame[]> {
@@ -102,7 +128,8 @@ export const tracesService = {
     return validateResponse(z.array(flamegraphFrameSchema), data);
   },
 
-  async getTraceComparison(traceA: string, traceB: string): Promise<unknown> {
-    return api.get(`${BASE}/traces/compare`, { params: { traceA, traceB } });
+  async getTraceComparison(traceA: string, traceB: string): Promise<TraceComparisonResultRecord> {
+    const data = await api.get(`${BASE}/traces/compare`, { params: { traceA, traceB } });
+    return validateResponse(traceComparisonResultSchema, data);
   },
 };

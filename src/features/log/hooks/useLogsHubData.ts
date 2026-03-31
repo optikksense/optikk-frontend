@@ -66,7 +66,7 @@ export function useLogsHubData({
     enabled: liveTailEnabled && Boolean(selectedTeamId),
     subscribeEvent: 'subscribe:logs',
     itemEvent: 'log',
-    params: { startTime, endTime, ...backendParams },
+    params: { startMs: startTime, endMs: endTime, ...backendParams },
     normalizeItem: (value) => {
       const record = value as LogEntry;
       return {
@@ -109,5 +109,6 @@ export function useLogsHubData({
     setLiveTailEnabled,
     liveTailStatus: liveTail.status,
     liveTailLagMs: liveTail.lagMs,
+    liveTailDroppedCount: liveTail.droppedCount,
   };
 }
