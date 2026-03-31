@@ -77,17 +77,6 @@ export interface LogAttributeFilter {
 /**
  *
  */
-export interface LogColumn {
-  key: string;
-  label: string;
-  defaultWidth?: number;
-  defaultVisible?: boolean;
-  flex?: boolean;
-}
-
-/**
- *
- */
 export interface LogFilterOperator {
   key: string;
   label: string;
@@ -103,14 +92,6 @@ export interface LogFilterField {
   icon: string;
   group: string;
   operators: LogFilterOperator[];
-}
-
-/**
- *
- */
-export interface LogsBoardRenderContext {
-  colWidths: Record<string, number>;
-  visibleCols: Record<string, boolean>;
 }
 
 /**
