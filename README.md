@@ -1,371 +1,83 @@
-# Optikk Lens Frontend - The Best AI Monitoring Tool
+# Optikk Lens Frontend (React/Vite)
 
-React + Vite single-page application (SPA) for the Optikk observability platform, offering industry-leading AI and LLM monitoring capabilities alongside standard telemetry visualization (traces, logs, metrics).
+Optikk Lens Frontend is a modern, high-performance single-page application (SPA) providing real-time visualization for the Optikk observability platform. Built on React 18 and Vite, it offers an industry-leading experience for monitoring traces, logs, and metrics with a focus on ease of use and AI/LLM integration.
 
-## Quick Start
+## Core Architecture
 
-### Prerequisites
+The frontend is architected as a feature-based modular system designed for scalability, performance, and developer efficiency.
 
-- Node.js 18+ and npm/yarn
-- A running Optikk Lens backend at `http://localhost:9090` for local development, or set `VITE_API_BASE_URL` if you want the browser bundle to talk to a direct API URL.
+### Technology Stack & Tools
 
-### Local Development
+- **React 18 & TypeScript**: Core UI library and type-safe development.
+- **Vite**: Next-generation frontend tooling and fast dev server.
+- **Ant Design (antd)**: Enterprise-grade UI component library for consistent layouts.
+- **Tailwind CSS**: Utility-first styling for bespoke and responsive UI design.
+- **Zustand**: Lightweight, flexible state management for global app state (e.g., theme, time-range, session).
+- **TanStack Query**: Powering the asynchronous data tier with intelligent caching and automated refetching.
+- **Playwright**: Comprehensive E2E testing framework for UI reliability.
+
+### Architectural Patterns
+
+- **Feature-Based Organization**: Code is grouped by domain (e.g., `src/features/traces`, `src/features/log`) rather than by technical type. Each feature encapsulates its own components, hooks, types, and logic.
+- **Centralized Design System**: Shared UI primitives and high-level components are maintained in `src/design-system` and `src/shared/components`.
+- **API Integration Layer**: All network requests are abstracted into services within `src/shared/api`, providing a unified interface for data fetching and error handling.
+- **Reactive State**: Using Zustand for ephemeral app state and TanStack Query for server-side state, ensuring the UI is always in sync with the backend.
+
+## Project Structure
+
+```text
+optic-frontend/
+├── src/
+│   ├── app/                 # Routing, layout, and app-level providers
+│   ├── features/            # Feature-specific modules (Traces, Logs, Metrics, etc.)
+│   ├── shared/              # Reusable hooks, utilities, and API clients
+│   ├── design-system/       # Shared UI primitives based on AntD and Tailwind
+│   ├── config/              # App-level constants, colors, and icons
+│   ├── store/               # Global Zustand stores
+│   └── main.tsx             # Application mount point
+├── public/                  # Static assets
+├── playwright/              # E2E test suites
+└── vite.config.ts           # Build and proxy configuration
+```
+
+## Local Development
+
+### 1. Prerequisites
+
+You'll need a running Optikk Backend and infrastructure (MariaDB, ClickHouse, etc.). Use the central deployment guide:
+👉 [**Full Stack Local Deployment Guide**](../deploy/README.md)
+
+### 2. Setup
 
 ```bash
 # Install dependencies
 npm install
 
-# Start the dev server (http://localhost:3000 or http://localhost:5173)
+# Start the dev server
 npm run dev
+```
 
-# Build for production
+The dev server usually runs at `http://localhost:3000` (or `5173`). It is configured to proxy `/api/*` requests to your local backend automatically.
+
+### 3. Build & CI
+
+```bash
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Production build
 npm run build
 
-# Preview production build
+# Preview build
 npm run preview
 ```
 
-**Development defaults to proxying `/api/*` to `VITE_DEV_BACKEND_URL`**, which falls back to `http://localhost:9090` when unset. No CORS configuration is needed locally.
-
----
-
-## Docker Deployment
-
-### Pull the Image from GHCR
-
-```bash
-docker pull ghcr.io/optikk-org/optikk-lens-frontend:latest
-```
-
-Or pull a specific version:
-
-```bash
-docker pull ghcr.io/optikk-org/optikk-lens-frontend:v1.0.123
-```
-
-### Run as a Container
-
-```bash
-docker run -d \
-  --name optikk-frontend \
-  -p 8443:8443 \
-  -e BACKEND_URL=http://localhost:9090 \
-  ghcr.io/optikk-org/optikk-lens-frontend:latest
-```
-
-**Note:** The frontend runs HTTPS on port 8443 with a self-signed certificate. Access at `https://localhost:8443` (accept the SSL warning).
-
-#### Environment Variables
-
-| Variable      | Description          | Default                 |
-| ------------- | -------------------- | ----------------------- |
-| `BACKEND_URL` | Backend API base URL | `http://localhost:9090` |
-| `PORT`        | Container port       | `8443`                  |
-
----
-
-## Full Stack with Docker Compose
-
-Deploy backend, frontend, MySQL, and ClickHouse together:
-
-```bash
-# From the frontend directory
-docker-compose up -d
-```
-
-Or manually with Podman:
-
-```bash
-# Create a shared network
-podman network create observability-net
-
-# 1. MySQL
-podman run -d --name mysql --network observability-net \
-  -p 3306:3306 \
-  -e MYSQL_ROOT_PASSWORD=root123 \
-  -e MYSQL_DATABASE=observability \
-  -v mysql-data:/var/lib/mysql \
-  mariadb:11.4
-
-# 2. ClickHouse
-podman run -d --name clickhouse --network observability-net \
-  -p 9000:9000 -p 8123:8123 \
-  -e CLICKHOUSE_DB=observability \
-  -e CLICKHOUSE_USER=default \
-  -e CLICKHOUSE_PASSWORD=clickhouse123 \
-  --ulimit nofile=262144:262144 \
-  -v clickhouse-data:/var/lib/clickhouse \
-  clickhouse/clickhouse-server:26.2
-
-# 3. Backend
-podman run -d --name backend --network observability-net \
-  -p 9090:9090 \
-  -e PORT=9090 \
-  -e MYSQL_HOST=mysql \
-  -e CLICKHOUSE_HOST=clickhouse \
-  -e SESSION_COOKIE_NAME=optikk_session \
-  ghcr.io/optikk-org/optikk-lens:latest
-
-# 4. Frontend
-podman run -d --name frontend --network observability-net \
-  -p 8443:8443 \
-  -e BACKEND_URL=http://backend:9090 \
-  ghcr.io/optikk-org/optikk-lens-frontend:latest
-
-# Verify
-podman logs backend
-podman logs frontend
-
-# Access at https://localhost:8443
-```
-
----
-
-## Project Structure
-
-```
-optic-frontend/
-├── src/
-│   ├── app/                 # App-level layout & routing
-│   ├── pages/               # Top-level page components
-│   ├── features/            # Feature-specific modules
-│   │   ├── traces/          # Trace listing & detail
-│   │   ├── spans/           # Span analysis
-│   │   ├── services/        # Service topology & details
-│   │   ├── metrics/         # Dashboards (RED, saturation, resource utilization)
-│   │   ├── log/             # Log search & filtering
-│   │   ├── errors/          # Error tracking & analysis
-│   │   ├── overview/        # Dashboard aggregations
-│   │   └── ...
-│   ├── shared/              # Shared components & utilities
-│   │   ├── components/      # Reusable UI components
-│   │   ├── api/             # API service clients
-│   │   ├── hooks/           # Custom React hooks
-│   │   └── utils/           # Helper functions
-│   ├── store/               # App state management (Zustand)
-│   ├── config/              # App configuration
-│   └── main.tsx             # Entry point
-├── public/                  # Static assets
-├── vite.config.ts           # Vite configuration
-├── tsconfig.json            # TypeScript configuration
-├── tailwind.config.js       # Tailwind CSS configuration
-└── package.json             # Dependencies
-```
-
----
-
 ## Key Features
 
-### Traces & Spans
-
-- **Trace List** — Filter by service, operation, latency, error status
-- **Trace Detail** — Waterfall visualization with:
-  - Critical path highlighting
-  - Error path tracking
-  - Span event inspector (exceptions, logs)
-  - Self-time breakdown per span
-  - Related trace discovery
-  - Full attribute viewer (DB statements, RPC details, resource attributes)
-
-### Services
-
-- **Service List** — Overview of all services, throughput, error rate, p95 latency
-- **Service Detail** — Service-specific metrics, dependencies, topology
-- **Service Map** — Visualize upstream/downstream dependencies with latency
-
-### Dashboards & Metrics
-
-- **Overview** — Summary of platform health (tabbed: Summary / Errors / SLOs)
-- **RED Metrics** — Rate, Error %, Duration by operation (tabbed)
-- **Saturation** — Kafka consumer lag, queue depths, resource utilization
-- **Resource Utilization** — CPU, memory, disk, network by service & instance
-- **SLO/SLI** — SLO tracking and burn-down rates
-
-### Logs
-
-- **Log Search** — Full-text search with field filters & time range
-- **Saved Searches** — Store & reuse query filters
-- **Column Presets** — Quick column layout switching (Default / APM / Kubernetes / Verbose)
-- **Attribute Inspector** — Expandable JSON tree for detailed log attributes
-- **Keyboard Shortcuts** — `j/k` navigation, `/` search, `Esc` escape
-
-### Errors
-
-- **Error Dashboard** — Exception types, error rates, affected services
-- **Error Hotspot** — Error rate matrix by service × operation
-- **HTTP 5xx Analysis** — 5xx errors by route
-
----
-
-## Available Scripts
-
-```bash
-# Development
-npm run dev              # Start dev server
-npm run ci               # Run type-check, lint, test, and build
-npm run build           # Build for production
-npm run preview         # Preview production build
-npm run lint            # Run ESLint
-npm run type-check      # TypeScript type checking
-
-# Building Docker image locally
-docker build -t optikk-frontend:latest .
-```
-
----
-
-## Authentication
-
-The frontend uses JWT token-based authentication:
-
-1. **Login** — Enter credentials on the login page to receive a JWT
-2. **Token Storage** — JWT is stored in an httpOnly cookie (secure, XSS-protected)
-3. **Auto-Refresh** — Token refresh happens automatically before expiry
-4. **Logout** — Clears the JWT cookie
-
-Authenticated `/api/v1/*` requests rely on the server-side session cookie and `withCredentials: true`.
-
----
-
-## Configuration
-
-### Vite Environment Variables
-
-Create a `.env.local` file or use system variables:
-
-```env
-VITE_API_BASE_URL=http://localhost:9090
-VITE_DEV_BACKEND_URL=http://localhost:9090
-```
-
-`VITE_API_BASE_URL` is used by the browser client when you want a direct API URL. `VITE_DEV_BACKEND_URL` is used by the Vite dev proxy for `/api/*` requests.
-
-### Dashboard Customization
-
-Dashboards (Overview, Metrics, etc.) pull configuration from the backend:
-
-- `GET /api/v1/dashboard-config/:pageId` — Fetch dashboard layout & charts
-- Charts are configured via YAML stored in MySQL
-- Tab support for multi-tab dashboards (Overview has Summary / Errors / SLOs)
-
----
-
-## Styling
-
-- **Ant Design** — UI component library
-- **Tailwind CSS** — Utility-first styling
-- **CSS Modules** — Component-scoped styles in `*.module.css` files
-- **Color System** — Defined in `src/config/colorLiterals.ts`
-
----
-
-## State Management
-
-Uses **Zustand** for lightweight app state:
-
-- **appStore** — Global app state (theme, time range, user session, refresh key)
-- **Query-based state** — TanStack Query handles async data fetching
-
-Example:
-
-```typescript
-import { useAppStore } from '@store/appStore';
-
-function MyComponent() {
-  const { refreshKey, setRefreshKey } = useAppStore();
-
-  return <button onClick={() => setRefreshKey(Date.now())}>Refresh</button>;
-}
-```
-
----
-
-## API Integration
-
-All API calls go through service clients in `src/shared/api/`:
-
-- `tracesService` — Trace queries
-- `servicesService` — Service & topology endpoints
-- `metricsService` — RED metrics, resource utilization
-- `logsService` — Log search
-- `errorService` — Error tracking
-- etc.
-
-Each service uses the base fetch helper with automatic JWT injection and error handling:
-
-```typescript
-import { tracesService } from '@shared/api/tracesService';
-
-const traces = await tracesService.getTraces(teamId, startMs, endMs, {
-  serviceName: 'payment-api',
-  operation: 'charge',
-  limit: 100,
-});
-```
-
----
-
-## Performance
-
-- **Code Splitting** — Routes lazy-loaded via React.lazy
-- **Query Caching** — TanStack Query caches API responses intelligently
-- **Memoization** — useMemo/useCallback prevent unnecessary re-renders
-- **Virtual Scrolling** — Long lists use virtual scroll (e.g., log tables)
-- **Waterfall Charts** — Optimized rendering for large traces (1000+ spans)
-
----
-
-## Development & Contributing
-
-### Code Style
-
-- **TypeScript strict mode** — All files must pass type checking
-- **ESLint** — Enforced linting rules
-- **Path aliases** — Use `@shared/*`, `@features/*`, `@services/*`, etc. (see `tsconfig.json`)
-
-### Adding a New Feature
-
-1. Create a new directory under `src/features/<featureName>/`
-2. Organize: `pages/` → `components/` → `hooks/` → `types.ts`
-3. Add API service methods to `src/shared/api/`
-4. Register routes in `src/app/App.tsx`
-5. Test with `npm run dev`
-
-### TypeScript Strict Checks
-
-```bash
-npm run type-check
-```
-
-Ensure no `any` types and all types are properly defined.
-
----
-
-## Troubleshooting
-
-### CORS Errors
-
-**Local dev:** Vite proxy handles `/api/*` → backend automatically.
-
-**Production:** Backend must have `ALLOWED_ORIGINS` env var set to the frontend domain (e.g., `https://observability.example.com`).
-
-### Session Expired
-
-The frontend relies on the backend session cookie. If you see "Unauthorized" errors:
-
-1. Check browser DevTools to confirm the session cookie is being sent with requests
-2. Verify backend `ALLOWED_ORIGINS` and cookie settings match your frontend origin
-3. Clear cookies and re-login
-
-### Slow Dashboard Loads
-
-- Check backend response times: `curl -I http://localhost:9090/api/v1/health`
-- Review browser DevTools Network tab for slow API calls
-- Consider narrowing the time range on dashboards
-- Check ClickHouse & MySQL query performance
-
----
-
-## License
-
-This project is part of Optikk. See LICENSE file for details.
+- **Distributed Tracing Explorer**: Interactive waterfall charts with critical path analysis.
+- **Advanced Log Management**: Full-text search with structured attribute filtering.
+- **Multi-tenant Dashboarding**: Dynamic layouts and charts configured via the backend.
+- **AI Monitoring**: Specialized views for tracking LLM tokens, costs, and token-level telemetry.
