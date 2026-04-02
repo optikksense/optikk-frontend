@@ -37,7 +37,7 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
   toolbar,
 }: ExplorerResultsTableProps<RowType>): JSX.Element {
   return (
-    <PageSurface padding="lg" className="min-h-0">
+    <PageSurface padding="lg" className="min-h-0 min-w-0 w-full">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h3>

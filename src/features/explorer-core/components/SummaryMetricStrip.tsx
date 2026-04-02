@@ -10,7 +10,7 @@ const toneClasses: Record<NonNullable<SummaryMetric['tone']>, string> = {
   success: 'border-[rgba(51,211,145,0.22)] bg-[rgba(51,211,145,0.08)]',
   warning: 'border-[rgba(247,144,9,0.22)] bg-[rgba(247,144,9,0.08)]',
   danger: 'border-[rgba(240,68,56,0.22)] bg-[rgba(240,68,56,0.08)]',
-  accent: 'border-[rgba(94,96,206,0.28)] bg-[rgba(94,96,206,0.12)]',
+  accent: 'border-[rgba(77,166,200,0.28)] bg-[rgba(77,166,200,0.12)]',
 };
 
 function iconForTone(tone: SummaryMetric['tone']): JSX.Element {

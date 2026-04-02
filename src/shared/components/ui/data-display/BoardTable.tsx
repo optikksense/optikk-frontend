@@ -88,7 +88,7 @@ export function BoardTable<RowType extends Record<string, unknown>>({
               >
                 {column.label}
                 <div
-                  className="absolute top-0 -right-1 w-2 h-full cursor-col-resize z-[12] hover:bg-[rgba(94,96,206,0.35)]"
+                  className="absolute top-0 -right-1 w-2 h-full cursor-col-resize z-[12] hover:bg-[var(--color-primary-subtle-35)]"
                   onMouseDown={(event) => {
                     event.stopPropagation();
                     handleResizeMouseDown(event, column.key);

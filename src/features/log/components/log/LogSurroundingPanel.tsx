@@ -28,8 +28,8 @@ function SurroundingRow({ log, isAnchor }: { log: LogRecord; isAnchor?: boolean 
         alignItems: 'flex-start',
         padding: '4px 8px',
         borderRadius: 6,
-        background: isAnchor ? 'rgba(94,96,206,0.15)' : 'transparent',
-        border: isAnchor ? '1px solid rgba(94,96,206,0.4)' : '1px solid transparent',
+        background: isAnchor ? 'rgba(10,174,214,0.12)' : 'transparent',
+        border: isAnchor ? '1px solid rgba(10,174,214,0.35)' : '1px solid transparent',
         opacity: isAnchor ? 1 : 0.6,
       }}
     >

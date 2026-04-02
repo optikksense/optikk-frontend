@@ -54,6 +54,14 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        // Socket.IO (live tail for logs/traces) uses path /socket.io/ on the API server; must be
+        // proxied alongside /api so the browser (same origin as Vite) can reach the backend.
+        '/socket.io': {
+          target: devBackendUrl,
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+        },
       },
     },
     build: {

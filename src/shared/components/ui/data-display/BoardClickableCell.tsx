@@ -39,7 +39,7 @@ export function BoardClickableCell({
 
   return (
     <span
-      className="group inline-flex items-center gap-1 cursor-pointer rounded-sm px-[2px] py-[1px] transition-colors duration-100 hover:bg-[rgba(94,96,206,0.12)]"
+      className="group inline-flex items-center gap-1 cursor-pointer rounded-sm px-[2px] py-[1px] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-12)]"
       style={style}
       onClick={(event) => {
         event.stopPropagation();

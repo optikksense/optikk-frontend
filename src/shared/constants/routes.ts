@@ -10,6 +10,8 @@ const ROUTES = {
   selfHost: '/self-host',
   overview: '/overview',
   logs: '/logs',
+  logsPatterns: '/logs/patterns',
+  logsTransactions: '/logs/transactions',
   traces: '/traces',
   traceDetail: '/traces/:traceId',
   traceCompare: '/traces/compare',

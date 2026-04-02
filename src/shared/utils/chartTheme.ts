@@ -7,12 +7,12 @@ const CHART_THEME_FALLBACKS = {
   bgTertiary: '#1c212c',
   borderColor: '#2b3140',
   borderLight: 'rgba(255,255,255,0.08)',
-  colorPrimary: '#8b7fff',
+  colorPrimary: '#3b82f6',
   colorInfo: '#67b7c9',
 } as const;
 
 const CHART_PALETTE_TOKENS = [
-  ['--chart-1', '#8b7fff'],
+  ['--chart-1', '#3b82f6'],
   ['--chart-2', '#f38b6b'],
   ['--chart-3', '#66c2a5'],
   ['--chart-4', '#f2c14e'],

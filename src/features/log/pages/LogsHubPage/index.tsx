@@ -1,14 +1,28 @@
-import { AlertCircle, FileText, Radio, Share2 } from 'lucide-react';
+import { Activity, AlertCircle, FileText, Radio, Share2 } from 'lucide-react';
 
 import { ERROR_CODE_LABELS } from '@/shared/constants/errorCodes';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { Badge, Button } from '@/components/ui';
+import { Badge, Button, Switch } from '@/components/ui';
 import type { SimpleTableColumn } from '@/components/ui';
+import {
+  AnalyticsToolbar,
+  type AggregationSpec,
+  type ExplorerVizMode,
+} from '@/features/explorer-core/components/AnalyticsToolbar';
 import { ExplorerResultsTable, FacetRail } from '@/features/explorer-core/components';
+import { LOGS_QUERY_FIELDS } from '@/features/explorer-core/constants/fields';
+import { useExplorerAnalytics } from '@/features/explorer-core/hooks/useExplorerAnalytics';
+import { AnalyticsPieChart } from '@/features/explorer-core/components/visualizations/AnalyticsPieChart';
+import { AnalyticsTable } from '@/features/explorer-core/components/visualizations/AnalyticsTable';
+import { AnalyticsTimeseries } from '@/features/explorer-core/components/visualizations/AnalyticsTimeseries';
+import { AnalyticsTopList } from '@/features/explorer-core/components/visualizations/AnalyticsTopList';
+import { buildLogsExplorerQuery } from '@/features/explorer-core/utils/explorerQuery';
+import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
 import { cn } from '@/lib/utils';
+import { useAppStore } from '@app/store/appStore';
 import {
   ObservabilityDetailPanel,
   ObservabilityQueryBar,
@@ -22,6 +36,7 @@ import { tsLabel } from '@shared/utils/time';
 import type { StructuredFilter } from '@/shared/hooks/useURLFilters';
 import { useURLFilters } from '@/shared/hooks/useURLFilters';
 
+import { LogsNavTabs } from '../../components/LogsNavTabs';
 import { LevelBadge } from '../../components/log/LogRow';
 import { useLogDetailFields } from '../../hooks/useLogDetailFields';
 import { useLogsHubData } from '../../hooks/useLogsHubData';
@@ -33,6 +48,11 @@ import {
   upsertLogFacetFilter,
 } from '../../utils/logUtils';
 import type { LogRecord, LogsBackendParams } from '../../types';
+
+const LOG_METRIC_FIELDS = [
+  { value: 'duration', label: 'duration (logs)' },
+  { value: 'body', label: 'body' },
+];
 
 const LOG_LEVEL_SORT_ORDER: Record<string, number> = {
   TRACE: 0,
@@ -64,6 +84,7 @@ function formatLiveTailStatus(
 
 export default function LogsHubPage(): JSX.Element {
   const navigate = useNavigate();
+  const { timeRange } = useAppStore();
 
   const {
     values: urlValues,
@@ -73,27 +94,71 @@ export default function LogsHubPage(): JSX.Element {
     clearAll: clearURLFilters,
   } = useURLFilters(LOGS_URL_FILTER_CONFIG);
 
-  const searchText = typeof urlValues['search'] === 'string' ? urlValues['search'] : '';
+  const queryText = typeof urlValues['query'] === 'string' ? urlValues['query'] : '';
+  const errorsOnly = urlValues['errorsOnly'] === true;
 
-  const setSearchText = (value: string): void => {
-    urlSetters['search']?.(value);
+  const setQueryText = (value: string): void => {
+    urlSetters['query']?.(value);
   };
+
+  const setErrorsOnly = (value: boolean): void => {
+    urlSetters['errorsOnly']?.(value);
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.get('query') && params.get('search')) {
+      setQueryText(params.get('search') || '');
+    }
+  }, []);
 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [selectedLog, setSelectedLog] = useState<LogRecord | null>(null);
 
-  const backendParams = useMemo((): LogsBackendParams => {
+  const [explorerMode, setExplorerMode] = useState<'list' | 'analytics'>('list');
+  const [vizMode, setVizMode] = useState<ExplorerVizMode>('table');
+  const [groupBy, setGroupBy] = useState<string[]>(['service']);
+  const [aggregations, setAggregations] = useState<AggregationSpec[]>([
+    { function: 'count', alias: 'count' },
+  ]);
+  const [analyticsStep, setAnalyticsStep] = useState('5m');
+
+  const explorerQuery = useMemo(
+    () => buildLogsExplorerQuery({ queryText, filters, errorsOnly }),
+    [queryText, filters, errorsOnly]
+  );
+
+  const liveTailParams = useMemo((): LogsBackendParams => {
     const params: LogsBackendParams = {
       ...compileLogsStructuredFilters(filters),
     };
-
-    if (searchText.trim()) {
-      params.search = searchText.trim();
+    if (errorsOnly) {
+      params.severities = [...(params.severities ?? []), 'ERROR'];
     }
-
     return params;
-  }, [filters, searchText]);
+  }, [errorsOnly, filters]);
+
+  const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
+
+  const analyticsEnabled =
+    explorerMode === 'analytics' && groupBy.length > 0 && aggregations.length > 0;
+
+  const analyticsQuery = useExplorerAnalytics('logs', {
+    query: explorerQuery,
+    startTime,
+    endTime,
+    groupBy,
+    aggregations: aggregations.map((a) => ({
+      function: a.function,
+      field: a.field,
+      alias: a.alias || 'm',
+    })),
+    vizMode: vizMode === 'list' ? 'table' : vizMode,
+    step: analyticsStep,
+    limit: 500,
+    enabled: analyticsEnabled,
+  });
 
   const {
     logs,
@@ -103,15 +168,22 @@ export default function LogsHubPage(): JSX.Element {
     total,
     serviceFacets,
     levelFacets,
+    hostFacets,
+    podFacets,
+    containerFacets,
+    environmentFacets,
+    scopeNameFacets,
     liveTailEnabled,
     setLiveTailEnabled,
     liveTailStatus,
     liveTailLagMs,
+    liveTailErrorMessage,
     liveTailDroppedCount,
+    errorCount,
   } = useLogsHubData({
-    searchText,
+    explorerQuery,
     filters,
-    backendParams,
+    liveTailParams,
     page,
     pageSize,
   });
@@ -127,11 +199,17 @@ export default function LogsHubPage(): JSX.Element {
       service_name:
         filters.find((filter) => filter.field === 'service_name' && filter.operator === 'equals')
           ?.value ?? null,
-      level:
-        filters.find((filter) => filter.field === 'level' && filter.operator === 'equals')?.value ??
-        null,
+      level: errorsOnly
+        ? 'ERROR'
+        : (filters.find((filter) => filter.field === 'level' && filter.operator === 'equals')
+            ?.value ?? null),
+      host: filters.find((f) => f.field === 'host')?.value ?? null,
+      pod: filters.find((f) => f.field === 'pod')?.value ?? null,
+      container: filters.find((f) => f.field === 'container')?.value ?? null,
+      environment: filters.find((f) => f.field === 'environment')?.value ?? null,
+      scope_name: filters.find((f) => f.field === 'logger')?.value ?? null,
     }),
-    [filters]
+    [errorsOnly, filters]
   );
 
   const columns = useMemo<SimpleTableColumn<LogRecord>[]>(
@@ -234,19 +312,26 @@ export default function LogsHubPage(): JSX.Element {
 
   const facetGroups = useMemo(
     () => [
-      {
-        key: 'service_name',
-        label: 'Top Services',
-        buckets: serviceFacets.slice(0, 10),
-      },
-      {
-        key: 'level',
-        label: 'Severity',
-        buckets: levelFacets.slice(0, 8),
-      },
+      { key: 'service_name', label: 'Service', buckets: serviceFacets },
+      { key: 'level', label: 'Severity', buckets: levelFacets },
+      { key: 'host', label: 'Host', buckets: hostFacets },
+      { key: 'pod', label: 'Pod', buckets: podFacets },
+      { key: 'container', label: 'Container', buckets: containerFacets },
+      { key: 'environment', label: 'Environment', buckets: environmentFacets },
+      { key: 'scope_name', label: 'Scope / logger', buckets: scopeNameFacets },
     ],
-    [levelFacets, serviceFacets]
+    [
+      containerFacets,
+      environmentFacets,
+      hostFacets,
+      levelFacets,
+      podFacets,
+      scopeNameFacets,
+      serviceFacets,
+    ]
   );
+
+  const analyticsData = analyticsQuery.data;
 
   return (
     <PageShell>
@@ -272,40 +357,29 @@ export default function LogsHubPage(): JSX.Element {
       />
 
       <PageSurface padding="lg" className="relative z-[40] overflow-visible">
+        <LogsNavTabs />
         <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="relative z-[70] min-w-[320px] max-w-3xl flex-1">
-              <div className="mb-2 flex items-center gap-2">
-                <Badge variant={liveTailEnabled ? 'info' : 'default'}>
-                  {liveTailEnabled ? 'Live' : 'Snapshot'}
+          {liveTailEnabled && liveTailErrorMessage ? (
+            <div className="flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.35)] bg-[rgba(240,68,56,0.08)] px-4 py-2.5 text-[13px] text-[var(--color-error)]">
+              <AlertCircle size={16} className="shrink-0" />
+              <span className="font-medium">Live tail disconnected</span>
+              <span className="opacity-90">{liveTailErrorMessage}</span>
+            </div>
+          ) : null}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Badge variant="info">All logs</Badge>
+              {liveTailEnabled ? (
+                <Badge variant={liveTailStatus === 'live' ? 'warning' : 'default'}>
+                  {liveTailStatus === 'live' ? `${Math.max(0, liveTailLagMs)}ms lag` : 'connecting'}
                 </Badge>
-                {liveTailEnabled ? (
-                  <Badge variant="warning">
-                    {formatLiveTailStatus(liveTailStatus, liveTailLagMs)}
-                  </Badge>
-                ) : null}
-                {liveTailEnabled && liveTailDroppedCount > 0 ? (
-                  <Badge variant="error">{formatNumber(liveTailDroppedCount)} dropped</Badge>
-                ) : null}
-              </div>
-              <ObservabilityQueryBar
-                fields={LOG_FILTER_FIELDS}
-                filters={filters}
-                setFilters={(nextFilters: StructuredFilter[]) => {
-                  setFilters(nextFilters);
-                  setPage(1);
-                }}
-                searchText={searchText}
-                setSearchText={(value: string) => {
-                  setSearchText(value);
-                  setPage(1);
-                }}
-                onClearAll={() => {
-                  clearURLFilters();
-                  setPage(1);
-                }}
-                placeholder="Search logs, services, hosts, trace IDs, or free text"
-              />
+              ) : null}
+              <Badge variant={errorCount > 0 ? 'error' : 'default'}>
+                {formatNumber(errorCount)} error logs
+              </Badge>
+              {liveTailEnabled && liveTailDroppedCount > 0 ? (
+                <Badge variant="error">{formatNumber(liveTailDroppedCount)} dropped</Badge>
+              ) : null}
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -328,20 +402,95 @@ export default function LogsHubPage(): JSX.Element {
               </Button>
             </div>
           </div>
+
+          <div className="relative z-[70] grid items-start gap-3 lg:grid-cols-[minmax(320px,1fr)_220px]">
+            <ObservabilityQueryBar
+              fields={LOG_FILTER_FIELDS}
+              filters={filters}
+              setFilters={(nextFilters: StructuredFilter[]) => {
+                setFilters(nextFilters);
+                setPage(1);
+              }}
+              searchText={queryText}
+              setSearchText={(value: string) => {
+                setQueryText(value);
+                setPage(1);
+              }}
+              onClearAll={() => {
+                clearURLFilters();
+                setPage(1);
+              }}
+              placeholder="service:web AND status:error — or use + Filter"
+              syntaxFields={[...LOGS_QUERY_FIELDS]}
+              onSubmitQuery={() => setPage(1)}
+              rightSlot={
+                <div
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-colors',
+                    errorsOnly
+                      ? 'border-[rgba(240,68,56,0.35)] bg-[rgba(240,68,56,0.08)] text-[var(--color-error)]'
+                      : 'border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                  )}
+                >
+                  <Activity size={13} />
+                  Errors only
+                  <Switch
+                    size="sm"
+                    checked={errorsOnly}
+                    onChange={(event) => {
+                      setErrorsOnly(event.target.checked);
+                      setPage(1);
+                    }}
+                  />
+                </div>
+              }
+            />
+            <div className="hidden lg:block" aria-hidden />
+          </div>
+
+          <AnalyticsToolbar
+            mode={explorerMode}
+            onModeChange={setExplorerMode}
+            vizMode={vizMode}
+            onVizModeChange={setVizMode}
+            groupBy={groupBy}
+            onGroupByChange={setGroupBy}
+            aggregations={aggregations}
+            onAggregationsChange={setAggregations}
+            step={analyticsStep}
+            onStepChange={setAnalyticsStep}
+            fieldOptions={[...LOGS_QUERY_FIELDS]}
+            metricFields={LOG_METRIC_FIELDS}
+          />
         </div>
       </PageSurface>
 
-      <div className="relative z-0 grid gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
-        <FacetRail
-          groups={facetGroups}
-          selected={activeSelections}
-          onSelect={(groupKey, value) => {
-            setFilters(upsertLogFacetFilter(filters, groupKey, value));
-            setPage(1);
-          }}
-        />
+      <div
+        className={cn(
+          'relative z-0 grid gap-4',
+          explorerMode === 'list' ? 'xl:grid-cols-[300px_minmax(0,1fr)]' : 'grid-cols-1'
+        )}
+      >
+        {explorerMode === 'list' ? (
+          <FacetRail
+            groups={facetGroups}
+            selected={activeSelections}
+            onSelect={(groupKey, value) => {
+              if (groupKey === 'level') {
+                setErrorsOnly(false);
+              }
+              if (groupKey === 'scope_name') {
+                setFilters(upsertLogFacetFilter(filters, 'logger', value));
+                setPage(1);
+                return;
+              }
+              setFilters(upsertLogFacetFilter(filters, groupKey, value));
+              setPage(1);
+            }}
+          />
+        ) : null}
 
-        {logsError && normalizedLogsError && (
+        {logsError && normalizedLogsError && explorerMode === 'list' && (
           <div className="mb-3 flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.3)] bg-[rgba(240,68,56,0.08)] px-4 py-3 text-[var(--color-error)]">
             <AlertCircle size={16} className="shrink-0" />
             <span className="text-sm font-medium">
@@ -353,32 +502,55 @@ export default function LogsHubPage(): JSX.Element {
           </div>
         )}
 
-        <ExplorerResultsTable
-          title="Logs Explorer"
-          subtitle={`${formatNumber(logs.length)} rows in view, ${formatNumber(total)} total matches`}
-          rows={logs}
-          columns={columns}
-          rowKey={(row) => String(row.id)}
-          isLoading={logsLoading}
-          page={page}
-          pageSize={pageSize}
-          total={liveTailEnabled ? logs.length : total}
-          onPageChange={setPage}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-          }}
-          onRow={(row) => ({
-            onClick: () => setSelectedLog(row),
-          })}
-          rowClassName={(row) =>
-            cn(
-              'cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]',
-              selectedLog?.id === row.id &&
-                'bg-[rgba(94,96,206,0.12)] ring-1 ring-inset ring-[rgba(94,96,206,0.3)]'
-            )
-          }
-        />
+        {explorerMode === 'list' ? (
+          <ExplorerResultsTable
+            title="Logs Explorer"
+            subtitle={`${formatNumber(logs.length)} rows in view, ${formatNumber(total)} total matches`}
+            rows={logs}
+            columns={columns}
+            rowKey={(row) => String(row.id)}
+            isLoading={logsLoading}
+            page={page}
+            pageSize={pageSize}
+            total={liveTailEnabled ? logs.length : total}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            onRow={(row) => ({
+              onClick: () => setSelectedLog(row),
+            })}
+            rowClassName={(row) =>
+              cn(
+                'cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]',
+                selectedLog?.id === row.id &&
+                  'bg-[rgba(10,174,214,0.12)] ring-1 ring-inset ring-[rgba(10,174,214,0.28)]'
+              )
+            }
+          />
+        ) : (
+          <PageSurface padding="lg" className="min-h-[320px]">
+            {analyticsQuery.isLoading ? (
+              <div className="text-[13px] text-[var(--text-muted)]">Loading analytics…</div>
+            ) : analyticsQuery.isError ? (
+              <div className="text-[13px] text-[var(--color-error)]">Analytics request failed.</div>
+            ) : analyticsData ? (
+              <div className="space-y-4">
+                {vizMode === 'timeseries' ? <AnalyticsTimeseries result={analyticsData} /> : null}
+                {vizMode === 'toplist' ? <AnalyticsTopList result={analyticsData} /> : null}
+                {vizMode === 'table' || vizMode === 'list' ? (
+                  <AnalyticsTable result={analyticsData} />
+                ) : null}
+                {vizMode === 'piechart' ? <AnalyticsPieChart result={analyticsData} /> : null}
+              </div>
+            ) : (
+              <div className="text-[13px] text-[var(--text-muted)]">
+                Configure group by and metrics.
+              </div>
+            )}
+          </PageSurface>
+        )}
       </div>
 
       {selectedLog ? (
@@ -394,11 +566,15 @@ export default function LogsHubPage(): JSX.Element {
           }
           actions={
             <>
-              {selectedLog.trace_id ? (
+              {selectedLog.trace_id || selectedLog.traceId ? (
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => navigate(`/traces/${selectedLog.trace_id}`)}
+                  onClick={() =>
+                    navigate(
+                      `/traces/${encodeURIComponent(selectedLog.trace_id || selectedLog.traceId || '')}`
+                    )
+                  }
                 >
                   Open Trace
                 </Button>

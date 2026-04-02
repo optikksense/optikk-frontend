@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 
+import { buildTracesExplorerQuery } from '@/features/explorer-core/utils/explorerQuery';
 import { useURLFilters } from '@shared/hooks/useURLFilters';
 import { useAppStore } from '@app/store/appStore';
 
@@ -15,6 +16,10 @@ const EMPTY_TRACE_FACETS: TraceExplorerFacets = {
   service_name: [],
   status: [],
   operation_name: [],
+  span_kind: [],
+  http_method: [],
+  http_status_code: [],
+  db_system: [],
 };
 
 const EMPTY_TRACE_SUMMARY: TraceSummary = {
@@ -28,13 +33,13 @@ const EMPTY_TRACE_SUMMARY: TraceSummary = {
 
 const TRACES_URL_FILTER_CONFIG = {
   params: [
-    { key: 'search', type: 'string' as const, defaultValue: '' },
+    { key: 'query', type: 'string' as const, defaultValue: '' },
     { key: 'service', type: 'string' as const, defaultValue: '' },
     { key: 'errorsOnly', type: 'boolean' as const, defaultValue: false },
     { key: 'mode', type: 'string' as const, defaultValue: 'all' },
   ],
   syncStructuredFilters: true,
-  stripParams: ['view'],
+  stripParams: ['view', 'search'],
 };
 
 function compileStructuredFilters(
@@ -70,6 +75,12 @@ function compileStructuredFilters(
           compiled.maxDuration = Number(filter.value);
         }
         break;
+      case 'span_kind':
+        compiled.spanKind = filter.value;
+        break;
+      case 'db_system':
+        compiled.dbSystem = filter.value;
+        break;
       default:
         break;
     }
@@ -89,7 +100,7 @@ export function useTracesExplorer() {
     clearAll: clearURLFilters,
   } = useURLFilters(TRACES_URL_FILTER_CONFIG);
 
-  const searchText = typeof urlValues['search'] === 'string' ? urlValues['search'] : '';
+  const queryText = typeof urlValues['query'] === 'string' ? urlValues['query'] : '';
   const selectedService =
     typeof urlValues['service'] === 'string' && urlValues['service'].length > 0
       ? urlValues['service']
@@ -97,8 +108,8 @@ export function useTracesExplorer() {
   const errorsOnly = urlValues['errorsOnly'] === true;
   const mode = typeof urlValues['mode'] === 'string' ? urlValues['mode'] : 'all';
 
-  const setSearchText = (value: string): void => {
-    urlSetters['search']?.(value);
+  const setQueryText = (value: string): void => {
+    urlSetters['query']?.(value);
   };
 
   const setSelectedService = (value: string | null): void => {
@@ -118,11 +129,24 @@ export function useTracesExplorer() {
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
 
+  const explorerQuery = useMemo(
+    () =>
+      buildTracesExplorerQuery({
+        queryText,
+        filters,
+        errorsOnly,
+        selectedService,
+      }),
+    [queryText, filters, errorsOnly, selectedService]
+  );
+
+  /** Params for live tail socket (legacy shape). */
   const backendParams = useMemo((): TracesBackendParams & { search?: string; mode?: string } => {
     const params: TracesBackendParams & { search?: string; mode?: string } = {
       limit: pageSize,
       offset: (page - 1) * pageSize,
       mode,
+      ...compileStructuredFilters(filters),
     };
 
     if (errorsOnly) {
@@ -131,18 +155,25 @@ export function useTracesExplorer() {
     if (selectedService) {
       params.services = [selectedService];
     }
-    if (searchText.trim()) {
-      params.search = searchText.trim();
+    if (queryText.trim()) {
+      params.search = queryText.trim();
     }
 
-    return {
-      ...params,
-      ...compileStructuredFilters(filters),
-    };
-  }, [errorsOnly, filters, mode, page, pageSize, searchText, selectedService]);
+    return params;
+  }, [errorsOnly, filters, mode, page, pageSize, queryText, selectedService]);
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['traces', 'explorer', selectedTeamId, startTime, endTime, backendParams, refreshKey],
+    queryKey: [
+      'traces',
+      'explorer',
+      selectedTeamId,
+      startTime,
+      endTime,
+      page,
+      pageSize,
+      explorerQuery,
+      refreshKey,
+    ],
     queryFn: () =>
       tracesExplorerApi.query({
         startTime,
@@ -150,7 +181,7 @@ export function useTracesExplorer() {
         limit: pageSize,
         offset: (page - 1) * pageSize,
         step: '5m',
-        params: backendParams,
+        query: explorerQuery,
       }),
     enabled: Boolean(selectedTeamId),
     placeholderData: (previous) => previous,
@@ -193,7 +224,8 @@ export function useTracesExplorer() {
     trendBuckets: data?.trend ?? [],
     facets: data?.facets ?? EMPTY_TRACE_FACETS,
     maxDuration,
-    searchText,
+    queryText,
+    searchText: queryText,
     selectedService,
     errorsOnly,
     mode,
@@ -203,7 +235,9 @@ export function useTracesExplorer() {
     startTime,
     endTime,
     backendParams,
-    setSearchText,
+    explorerQuery,
+    setQueryText,
+    setSearchText: setQueryText,
     setSelectedService,
     setErrorsOnly,
     setMode,

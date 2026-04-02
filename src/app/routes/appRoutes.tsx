@@ -11,12 +11,6 @@ import { lazy } from 'react';
 
 const LoginPage = lazy(() => import('@/app/auth'));
 const ProductPage = lazy(() => import('@/app/auth/pages/Pricing'));
-const OAuthCallbackSuccess = lazy(() =>
-  import('@/app/auth/pages/OAuthCallback').then((m) => ({ default: m.OAuthCallbackSuccess }))
-);
-const OAuthSignupPage = lazy(() =>
-  import('@/app/auth/pages/OAuthCallback').then((m) => ({ default: m.OAuthSignupPage }))
-);
 const BackendDrivenPage = lazy(() => import('./BackendDrivenPage'));
 
 function toNestedRoutePath(path: string): string {
@@ -85,26 +79,6 @@ export default function AppRoutes(): JSX.Element {
           />
         )
       )}
-
-      <Route
-        path="/oauth/success"
-        element={
-          <Suspense fallback={<Loading fullscreen />}>
-            <PageTransition>
-              <OAuthCallbackSuccess />
-            </PageTransition>
-          </Suspense>
-        }
-      />
-
-      <Route
-        path="/oauth/signup"
-        element={
-          <Suspense fallback={<Loading fullscreen />}>
-            <OAuthSignupPage />
-          </Suspense>
-        }
-      />
 
       <Route
         path={ROUTES.home}

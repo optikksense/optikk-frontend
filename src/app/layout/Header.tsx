@@ -188,7 +188,7 @@ export default function Header() {
                   className={cn(
                     'flex w-full items-center border-none bg-none px-3 py-2 text-left text-[12px] whitespace-nowrap text-[var(--text-secondary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]',
                     opt.value === autoRefreshInterval &&
-                      'bg-[rgba(139,127,255,0.10)] font-semibold text-[var(--color-primary)]'
+                      'bg-[var(--color-primary-subtle-10)] font-semibold text-[var(--color-primary)]'
                   )}
                   onClick={() => {
                     setAutoRefreshInterval(opt.value);

@@ -30,7 +30,7 @@ interface BurnRateChartProps {
 function burnRateColor(rate: number, fast: number, slow: number): string {
   if (rate >= fast) return resolveThemeColor('--severity-critical', '#f04438');
   if (rate >= slow) return resolveThemeColor('--severity-high', '#f79009');
-  return resolveThemeColor('--severity-low', '#8b7fff');
+  return resolveThemeColor('--severity-low', '#3b82f6');
 }
 
 const BurnRateChart: React.FC<BurnRateChartProps> = ({

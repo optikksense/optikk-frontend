@@ -279,8 +279,20 @@
   --text-caption: rgba(142, 150, 169, 0.82);
 
   /* Brand / semantic tokens */
-  --color-primary: #8b7fff;
-  --color-primary-hover: #9b90ff;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-subtle-08: rgba(59, 130, 246, 0.08);
+  --color-primary-subtle-10: rgba(59, 130, 246, 0.1);
+  --color-primary-subtle-12: rgba(59, 130, 246, 0.12);
+  --color-primary-subtle-14: rgba(59, 130, 246, 0.14);
+  --color-primary-subtle-15: rgba(59, 130, 246, 0.15);
+  --color-primary-subtle-18: rgba(59, 130, 246, 0.18);
+  --color-primary-subtle-20: rgba(59, 130, 246, 0.2);
+  --color-primary-subtle-22: rgba(59, 130, 246, 0.22);
+  --color-primary-subtle-25: rgba(59, 130, 246, 0.25);
+  --color-primary-subtle-28: rgba(59, 130, 246, 0.28);
+  --color-primary-subtle-30: rgba(59, 130, 246, 0.3);
+  --color-primary-subtle-35: rgba(59, 130, 246, 0.35);
   --color-success: #73c991;
   --color-warning: #f7b63a;
   --color-error: #f04438;
@@ -294,8 +306,8 @@
   --color-critical: #f04438;
   --color-critical-glow: rgba(240, 68, 56, 0.2);
   --color-unknown: #6b7280;
-  --color-ai-accent: #8b7fff;
-  --color-ai-subtle: rgba(139, 127, 255, 0.12);
+  --color-ai-accent: var(--color-primary);
+  --color-ai-subtle: var(--color-primary-subtle-12);
 
   /* Severity tokens */
   --severity-critical: #f04438;
@@ -304,13 +316,13 @@
   --severity-high-subtle: rgba(247, 144, 9, 0.14);
   --severity-medium: #f7b63a;
   --severity-medium-subtle: rgba(247, 182, 58, 0.16);
-  --severity-low: #8b7fff;
-  --severity-low-subtle: rgba(139, 127, 255, 0.16);
+  --severity-low: var(--color-primary);
+  --severity-low-subtle: var(--color-primary-subtle-18);
   --severity-info: #67b7c9;
   --severity-info-subtle: rgba(103, 183, 201, 0.16);
 
   /* Datadog-inspired chart palette */
-  --chart-1: #8b7fff;
+  --chart-1: var(--color-primary);
   --chart-2: #f38b6b;
   --chart-3: #66c2a5;
   --chart-4: #f2c14e;

@@ -28,14 +28,14 @@ function Pagination({
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-4 text-[13px] text-[var(--text-secondary)]',
+        'flex w-full min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[13px] text-[var(--text-secondary)]',
         className
       )}
     >
-      <span>
+      <span className="min-w-0 shrink">
         {start}–{end} of {total.toLocaleString()}
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         {onPageSizeChange ? (
           <select
             value={pageSize}

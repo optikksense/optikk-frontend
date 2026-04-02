@@ -24,9 +24,9 @@ export default function AiContextBar(): JSX.Element {
   const location = useLocation();
 
   return (
-    <div className="border-b border-[var(--border-color)] bg-[linear-gradient(90deg,rgba(94,96,206,0.1),rgba(6,174,213,0.06),transparent)] px-6 py-2.5 max-md:px-4">
+    <div className="border-b border-[var(--border-color)] bg-[linear-gradient(90deg,var(--color-primary-subtle-10),rgba(6,174,213,0.06),transparent)] px-6 py-2.5 max-md:px-4">
       <div className="flex items-center gap-3 overflow-x-auto">
-        <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(94,96,206,0.3)] bg-[rgba(94,96,206,0.12)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-primary-subtle-30)] bg-[var(--color-primary-subtle-12)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)]">
           <Sparkles size={12} />
           AI Context
         </div>
@@ -42,11 +42,11 @@ export default function AiContextBar(): JSX.Element {
               className={cn(
                 'inline-flex min-w-[220px] items-center gap-3 rounded-xl border px-3 py-2 transition-colors',
                 active
-                  ? 'border-[rgba(94,96,206,0.35)] bg-[rgba(94,96,206,0.14)]'
-                  : 'border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[rgba(94,96,206,0.28)] hover:bg-[rgba(94,96,206,0.08)]'
+                  ? 'border-[var(--color-primary-subtle-35)] bg-[var(--color-primary-subtle-14)]'
+                  : 'border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[var(--color-primary-subtle-28)] hover:bg-[var(--color-primary-subtle-08)]'
               )}
             >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[rgba(94,96,206,0.12)] text-[var(--color-primary)]">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)]">
                 <Icon size={16} />
               </span>
               <span className="min-w-0">

@@ -6,7 +6,6 @@ import api from '@/shared/api/api/client';
 import { decodeApiResponse } from '@/shared/api/utils/validate';
 
 import { normalizeTrace } from '../utils/tracesUtils';
-import type { TracesBackendParams } from './tracesApi';
 import type { TraceExplorerCorrelations, TraceExplorerFacets } from '../types';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
@@ -23,6 +22,10 @@ const traceExplorerFacetsSchema = z
     service_name: z.array(facetSchema).default([]),
     status: z.array(facetSchema).default([]),
     operation_name: z.array(facetSchema).default([]),
+    span_kind: z.array(facetSchema).default([]),
+    http_method: z.array(facetSchema).default([]),
+    http_status_code: z.array(facetSchema).default([]),
+    db_system: z.array(facetSchema).default([]),
   })
   .strict();
 
@@ -79,7 +82,8 @@ export const tracesExplorerApi = {
     limit: number;
     offset: number;
     step: string;
-    params: TracesBackendParams & { search?: string; mode?: string };
+    query: string;
+    cursor?: string;
   }): Promise<TracesExplorerResponse> {
     const response = await api.post(`${BASE}/traces/explorer/query`, body);
     const parsed = decodeApiResponse(tracesExplorerSchema, response, {
@@ -88,10 +92,20 @@ export const tracesExplorerApi = {
       message: 'Invalid traces explorer response',
     });
 
+    const facets: TraceExplorerFacets = {
+      service_name: parsed.facets.service_name,
+      status: parsed.facets.status,
+      operation_name: parsed.facets.operation_name,
+      span_kind: parsed.facets.span_kind ?? [],
+      http_method: parsed.facets.http_method ?? [],
+      http_status_code: parsed.facets.http_status_code ?? [],
+      db_system: parsed.facets.db_system ?? [],
+    };
+
     return {
       ...parsed,
       results: parsed.results.map((trace) => normalizeTrace(trace)),
-      facets: parsed.facets as TraceExplorerFacets,
+      facets,
       correlations: parsed.correlations as TraceExplorerCorrelations | undefined,
     };
   },

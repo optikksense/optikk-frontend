@@ -174,126 +174,146 @@ export default function TraceDetailPage() {
         <PageSurface className="flex min-h-[320px] items-center justify-center">
           <div className="ok-spinner" />
         </PageSurface>
-      ) : spans.length === 0 ? (
-        <PageSurface className="py-12 text-center text-[var(--text-muted)]">
-          No spans found for this trace
-        </PageSurface>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-            <StatCard
-              metric={{ title: 'Total Spans', value: stats.totalSpans, formatter: formatNumber }}
-              visuals={{ icon: <Layers size={20} />, iconColor: APP_COLORS.hex_5e60ce }}
-            />
-            <StatCard
-              metric={{ title: 'Duration', value: stats.duration, formatter: formatDuration }}
-              visuals={{ icon: <Clock size={20} />, iconColor: APP_COLORS.hex_73c991 }}
-            />
-            <StatCard
-              metric={{ title: 'Services', value: stats.services.size, formatter: formatNumber }}
-              visuals={{ icon: <GitBranch size={20} />, iconColor: APP_COLORS.hex_06aed5 }}
-            />
-            <StatCard
-              metric={{ title: 'Errors', value: stats.errors, formatter: formatNumber }}
-              visuals={{
-                icon: <AlertCircle size={20} />,
-                iconColor: stats.errors > 0 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_73c991,
-              }}
-            />
-            <StatCard
-              metric={{
-                title: 'Critical Path',
-                value: criticalPathSpanIds.size,
-                formatter: formatNumber,
-              }}
-              visuals={{ icon: <Layers size={20} />, iconColor: APP_COLORS.hex_73c991 }}
-            />
-            <StatCard
-              metric={{
-                title: 'Linked Logs',
-                value: traceLogs.length,
-                formatter: formatNumber,
-              }}
-              visuals={{ icon: <Clock size={20} />, iconColor: APP_COLORS.hex_06aed5 }}
-            />
-          </div>
-
-          <PageSurface className="flex flex-wrap items-start gap-6">
-            <div className="min-w-[240px] flex-1">
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
-                Services
+          {spans.length === 0 ? (
+            <PageSurface className="space-y-3 py-10 text-center">
+              <p className="text-base font-medium text-[var(--text-primary)]">
+                No spans found for this trace
+              </p>
+              <p className="mx-auto max-w-xl text-sm text-[var(--text-secondary)]">
+                {traceLogs.length > 0
+                  ? 'Logs in Optik reference this trace ID, but no span rows were found. Timeline and flamegraph need ingested spans; associated logs are listed below.'
+                  : 'There are no span rows for this trace ID in Optik. If you opened this from logs, span data may not be ingested yet, may have aged out, or the trace ID may not match your spans pipeline.'}
+              </p>
+            </PageSurface>
+          ) : (
+            <>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+                <StatCard
+                  metric={{
+                    title: 'Total Spans',
+                    value: stats.totalSpans,
+                    formatter: formatNumber,
+                  }}
+                  visuals={{ icon: <Layers size={20} />, iconColor: APP_COLORS.hex_5e60ce }}
+                />
+                <StatCard
+                  metric={{ title: 'Duration', value: stats.duration, formatter: formatDuration }}
+                  visuals={{ icon: <Clock size={20} />, iconColor: APP_COLORS.hex_73c991 }}
+                />
+                <StatCard
+                  metric={{
+                    title: 'Services',
+                    value: stats.services.size,
+                    formatter: formatNumber,
+                  }}
+                  visuals={{ icon: <GitBranch size={20} />, iconColor: APP_COLORS.hex_06aed5 }}
+                />
+                <StatCard
+                  metric={{ title: 'Errors', value: stats.errors, formatter: formatNumber }}
+                  visuals={{
+                    icon: <AlertCircle size={20} />,
+                    iconColor: stats.errors > 0 ? APP_COLORS.hex_f04438 : APP_COLORS.hex_73c991,
+                  }}
+                />
+                <StatCard
+                  metric={{
+                    title: 'Critical Path',
+                    value: criticalPathSpanIds.size,
+                    formatter: formatNumber,
+                  }}
+                  visuals={{ icon: <Layers size={20} />, iconColor: APP_COLORS.hex_73c991 }}
+                />
+                <StatCard
+                  metric={{
+                    title: 'Linked Logs',
+                    value: traceLogs.length,
+                    formatter: formatNumber,
+                  }}
+                  visuals={{ icon: <Clock size={20} />, iconColor: APP_COLORS.hex_06aed5 }}
+                />
               </div>
-              <ServicePills spans={spans} activeService={null} onSelect={() => {}} />
-            </div>
-            {spanKindBreakdown.length > 0 ? (
-              <div className="min-w-[220px] flex-1">
-                <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
-                  Span Kind Breakdown
+
+              <PageSurface className="flex flex-wrap items-start gap-6">
+                <div className="min-w-[240px] flex-1">
+                  <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
+                    Services
+                  </div>
+                  <ServicePills spans={spans} activeService={null} onSelect={() => {}} />
                 </div>
-                <SpanKindBreakdown data={spanKindBreakdown} />
-              </div>
-            ) : null}
-          </PageSurface>
+                {spanKindBreakdown.length > 0 ? (
+                  <div className="min-w-[220px] flex-1">
+                    <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
+                      Span Kind Breakdown
+                    </div>
+                    <SpanKindBreakdown data={spanKindBreakdown} />
+                  </div>
+                ) : null}
+              </PageSurface>
 
-          <PageSurface>
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <h2 className="text-base font-semibold text-[var(--text-primary)]">
-                  Trace Visualization
-                </h2>
-                <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                  Switch between timeline and flamegraph views without leaving the trace context.
-                </p>
-              </div>
-            </div>
+              <PageSurface>
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-base font-semibold text-[var(--text-primary)]">
+                      Trace Visualization
+                    </h2>
+                    <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                      Switch between timeline and flamegraph views without leaving the trace
+                      context.
+                    </p>
+                  </div>
+                </div>
 
-            <Tabs
-              activeKey={activeTab}
-              onChange={(nextTab) => setActiveTab(nextTab as 'timeline' | 'flamegraph')}
-              items={[
-                { key: 'timeline', label: 'Trace Timeline' },
-                { key: 'flamegraph', label: 'Flamegraph' },
-              ]}
-              size="lg"
-              className="mb-4 mt-4"
-            />
+                <Tabs
+                  activeKey={activeTab}
+                  onChange={(nextTab) => setActiveTab(nextTab as 'timeline' | 'flamegraph')}
+                  items={[
+                    { key: 'timeline', label: 'Trace Timeline' },
+                    { key: 'flamegraph', label: 'Flamegraph' },
+                  ]}
+                  size="lg"
+                  className="mb-4 mt-4"
+                />
 
-            {activeTab === 'timeline' ? (
-              <WaterfallChart
-                spans={spans}
-                onSpanClick={handleSpanClick}
+                {activeTab === 'timeline' ? (
+                  <WaterfallChart
+                    spans={spans}
+                    onSpanClick={handleSpanClick}
+                    selectedSpanId={selectedSpanId}
+                    criticalPathSpanIds={criticalPathSpanIds}
+                    errorPathSpanIds={errorPathSpanIds}
+                  />
+                ) : flamegraphLoading ? (
+                  <div className="flex min-h-[400px] items-center justify-center">
+                    <div className="ok-spinner" />
+                  </div>
+                ) : flamegraphError ? (
+                  <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-8 text-center text-sm text-[var(--text-muted)]">
+                    Could not load flamegraph data for this trace.
+                  </div>
+                ) : flamegraphData ? (
+                  <Flamegraph data={flamegraphData} />
+                ) : (
+                  <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-8 text-center text-sm text-[var(--text-muted)]">
+                    No flamegraph data available for this trace.
+                  </div>
+                )}
+              </PageSurface>
+
+              <SpanDetailDrawer
                 selectedSpanId={selectedSpanId}
-                criticalPathSpanIds={criticalPathSpanIds}
-                errorPathSpanIds={errorPathSpanIds}
+                selectedSpan={selectedSpan ?? null}
+                spanAttributes={spanAttributes}
+                spanAttributesLoading={spanAttributesLoading}
+                spanEvents={spanEvents}
+                spanSelfTimes={spanSelfTimes}
+                relatedTraces={relatedTraces}
+                activeTab={activeDetailTab}
+                onActiveTabChange={setActiveDetailTab}
               />
-            ) : flamegraphLoading ? (
-              <div className="flex min-h-[400px] items-center justify-center">
-                <div className="ok-spinner" />
-              </div>
-            ) : flamegraphError ? (
-              <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-                Could not load flamegraph data for this trace.
-              </div>
-            ) : flamegraphData ? (
-              <Flamegraph data={flamegraphData} />
-            ) : (
-              <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-                No flamegraph data available for this trace.
-              </div>
-            )}
-          </PageSurface>
-
-          <SpanDetailDrawer
-            selectedSpanId={selectedSpanId}
-            selectedSpan={selectedSpan ?? null}
-            spanAttributes={spanAttributes}
-            spanAttributesLoading={spanAttributesLoading}
-            spanEvents={spanEvents}
-            spanSelfTimes={spanSelfTimes}
-            relatedTraces={relatedTraces}
-            activeTab={activeDetailTab}
-            onActiveTabChange={setActiveDetailTab}
-          />
+            </>
+          )}
 
           <PageSurface className="space-y-4">
             <div className="flex items-center gap-2 text-[15px] font-semibold text-[var(--text-primary)]">

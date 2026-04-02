@@ -1,14 +1,28 @@
 import { Activity, AlertCircle, GitBranch, GitCompare, Radio, Share2 } from 'lucide-react';
 
 import { ERROR_CODE_LABELS } from '@/shared/constants/errorCodes';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import { Badge, Button, Select, Switch } from '@/components/ui';
 import type { SelectOption, SimpleTableColumn } from '@/components/ui';
+import {
+  AnalyticsToolbar,
+  type AggregationSpec,
+  type ExplorerVizMode,
+} from '@/features/explorer-core/components/AnalyticsToolbar';
 import { ExplorerResultsTable, FacetRail } from '@/features/explorer-core/components';
+import { TRACES_QUERY_FIELDS } from '@/features/explorer-core/constants/fields';
+import { AnalyticsPieChart } from '@/features/explorer-core/components/visualizations/AnalyticsPieChart';
+import { AnalyticsTable } from '@/features/explorer-core/components/visualizations/AnalyticsTable';
+import { AnalyticsTimeseries } from '@/features/explorer-core/components/visualizations/AnalyticsTimeseries';
+import { AnalyticsTopList } from '@/features/explorer-core/components/visualizations/AnalyticsTopList';
+import { useExplorerAnalytics } from '@/features/explorer-core/hooks/useExplorerAnalytics';
 import { useLiveTailStream } from '@/features/explorer-core/hooks/useLiveTailStream';
+import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
+import { ROUTES } from '@/shared/constants/routes';
+import { useAppStore } from '@app/store/appStore';
 import { cn } from '@/lib/utils';
 import { tracesService } from '@shared/api/tracesService';
 import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
@@ -108,8 +122,14 @@ function upsertFacetFilter(
   ];
 }
 
+const TRACE_METRIC_FIELDS = [
+  { value: 'duration_nano', label: 'duration (ns)' },
+  { value: 'duration', label: 'duration' },
+];
+
 export default function TracesPage(): JSX.Element {
   const navigate = useNavigate();
+  const { timeRange } = useAppStore();
 
   const {
     isLoading,
@@ -119,7 +139,8 @@ export default function TracesPage(): JSX.Element {
     totalTraces,
     errorTraces,
     facets,
-    searchText,
+    queryText,
+    explorerQuery,
     selectedService,
     errorsOnly,
     mode,
@@ -127,7 +148,7 @@ export default function TracesPage(): JSX.Element {
     pageSize,
     filters,
     backendParams,
-    setSearchText,
+    setQueryText,
     setSelectedService,
     setErrorsOnly,
     setMode,
@@ -137,8 +158,39 @@ export default function TracesPage(): JSX.Element {
     clearAll,
   } = useTracesExplorer();
 
+  const [explorerMode, setExplorerMode] = useState<'list' | 'analytics'>('list');
+  const [vizMode, setVizMode] = useState<ExplorerVizMode>('table');
+  const [groupBy, setGroupBy] = useState<string[]>(['service']);
+  const [aggregations, setAggregations] = useState<AggregationSpec[]>([
+    { function: 'count', alias: 'count' },
+  ]);
+  const [analyticsStep, setAnalyticsStep] = useState('5m');
+
+  const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
+
+  const analyticsEnabled =
+    explorerMode === 'analytics' && groupBy.length > 0 && aggregations.length > 0;
+
+  const analyticsQuery = useExplorerAnalytics('traces', {
+    query: explorerQuery,
+    startTime,
+    endTime,
+    groupBy,
+    aggregations: aggregations.map((a) => ({
+      function: a.function,
+      field: a.field,
+      alias: a.alias || 'm',
+    })),
+    vizMode: vizMode === 'list' ? 'table' : vizMode,
+    step: analyticsStep,
+    limit: 500,
+    enabled: analyticsEnabled,
+  });
+
   const [selectedTrace, setSelectedTrace] = useState<TraceRecord | null>(null);
   const [selectedTraceIds, setSelectedTraceIds] = useState<string[]>([]);
+  const selectedTraceIdsRef = useRef<string[]>(selectedTraceIds);
+  selectedTraceIdsRef.current = selectedTraceIds;
   const [isLiveTail, setIsLiveTail] = useState(false);
   const normalizedError = useMemo(() => (error ? toApiErrorShape(error) : null), [error]);
 
@@ -170,7 +222,7 @@ export default function TracesPage(): JSX.Element {
         render: (_value, row) => (
           <input
             type="checkbox"
-            checked={selectedTraceIds.includes(row.trace_id)}
+            checked={selectedTraceIdsRef.current.includes(row.trace_id)}
             onChange={(event) => {
               setSelectedTraceIds((previous) => {
                 if (event.target.checked) {
@@ -215,9 +267,11 @@ export default function TracesPage(): JSX.Element {
         title: 'Operation',
         key: 'operation_name',
         dataIndex: 'operation_name',
+        width: 220,
+        ellipsis: true,
         sorter: (left, right) => compareTraceText(left.operation_name, right.operation_name),
         render: (value) => (
-          <span className="text-[12.5px] text-[var(--text-secondary)]">
+          <span className="block truncate text-[12.5px] text-[var(--text-secondary)]">
             {String(value || 'Unknown')}
           </span>
         ),
@@ -263,28 +317,32 @@ export default function TracesPage(): JSX.Element {
         ),
       },
     ],
-    [selectedTraceIds]
+    []
   );
 
   const facetGroups = useMemo(
     () => [
+      { key: 'service_name', label: 'Services', buckets: facets.service_name ?? [] },
+      { key: 'status', label: 'Status', buckets: facets.status ?? [] },
+      { key: 'operation_name', label: 'Operations', buckets: facets.operation_name ?? [] },
+      { key: 'span_kind', label: 'Span kind', buckets: facets.span_kind ?? [] },
+      { key: 'http_method', label: 'HTTP method', buckets: facets.http_method ?? [] },
       {
-        key: 'service_name',
-        label: 'Top Services',
-        buckets: (facets.service_name ?? []).slice(0, 10),
+        key: 'http_status_code',
+        label: 'HTTP status',
+        buckets: facets.http_status_code ?? [],
       },
-      {
-        key: 'status',
-        label: 'Status',
-        buckets: (facets.status ?? []).slice(0, 6),
-      },
-      {
-        key: 'operation_name',
-        label: 'Operations',
-        buckets: (facets.operation_name ?? []).slice(0, 10),
-      },
+      { key: 'db_system', label: 'DB system', buckets: facets.db_system ?? [] },
     ],
-    [facets.operation_name, facets.service_name, facets.status]
+    [
+      facets.db_system,
+      facets.http_method,
+      facets.http_status_code,
+      facets.operation_name,
+      facets.service_name,
+      facets.span_kind,
+      facets.status,
+    ]
   );
 
   const selectedFacetState = useMemo(
@@ -292,6 +350,10 @@ export default function TracesPage(): JSX.Element {
       service_name: selectedService,
       status: errorsOnly ? 'ERROR' : null,
       operation_name: filters.find((filter) => filter.field === 'operation_name')?.value ?? null,
+      span_kind: filters.find((filter) => filter.field === 'span_kind')?.value ?? null,
+      http_method: filters.find((filter) => filter.field === 'http_method')?.value ?? null,
+      http_status_code: filters.find((filter) => filter.field === 'http_status')?.value ?? null,
+      db_system: filters.find((filter) => filter.field === 'db_system')?.value ?? null,
     }),
     [errorsOnly, filters, selectedService]
   );
@@ -329,6 +391,13 @@ export default function TracesPage(): JSX.Element {
 
       <PageSurface padding="lg" className="relative z-[40] overflow-visible">
         <div className="flex flex-col gap-4">
+          {isLiveTail && liveTail.errorMessage ? (
+            <div className="flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.35)] bg-[rgba(240,68,56,0.08)] px-4 py-2.5 text-[13px] text-[var(--color-error)]">
+              <AlertCircle size={16} className="shrink-0" />
+              <span className="font-medium">Live tail disconnected</span>
+              <span className="opacity-90">{liveTail.errorMessage}</span>
+            </div>
+          ) : null}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Badge variant="info">{mode === 'all' ? 'All spans' : 'Root spans'}</Badge>
@@ -376,13 +445,15 @@ export default function TracesPage(): JSX.Element {
                 setFilters(nextFilters);
                 setPage(1);
               }}
-              searchText={searchText}
+              searchText={queryText}
               setSearchText={(value: string) => {
-                setSearchText(value);
+                setQueryText(value);
                 setPage(1);
               }}
               onClearAll={clearAll}
-              placeholder="Search traces, operations, services, or IDs"
+              placeholder="service:api AND status:ERROR — or + Filter"
+              syntaxFields={[...TRACES_QUERY_FIELDS]}
+              onSubmitQuery={() => setPage(1)}
               rightSlot={
                 <div
                   className={cn(
@@ -414,67 +485,113 @@ export default function TracesPage(): JSX.Element {
               options={modeOptions}
             />
           </div>
+          <AnalyticsToolbar
+            mode={explorerMode}
+            onModeChange={setExplorerMode}
+            vizMode={vizMode}
+            onVizModeChange={setVizMode}
+            groupBy={groupBy}
+            onGroupByChange={setGroupBy}
+            aggregations={aggregations}
+            onAggregationsChange={setAggregations}
+            step={analyticsStep}
+            onStepChange={setAnalyticsStep}
+            fieldOptions={[...TRACES_QUERY_FIELDS]}
+            metricFields={TRACE_METRIC_FIELDS}
+          />
         </div>
       </PageSurface>
 
-      <div className="relative z-0 grid gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
-        <FacetRail
-          groups={facetGroups}
-          selected={selectedFacetState}
-          onSelect={(groupKey, value) => {
-            if (groupKey === 'service_name') {
-              setSelectedService(value);
-              setPage(1);
-              return;
-            }
-            if (groupKey === 'status') {
-              setErrorsOnly(value === 'ERROR');
-              setPage(1);
-              return;
-            }
-            setFilters(upsertFacetFilter(filters, groupKey, value));
-            setPage(1);
-          }}
-        />
-
-        {isError && normalizedError && (
-          <div className="mb-3 flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.3)] bg-[rgba(240,68,56,0.08)] px-4 py-3 text-[var(--color-error)]">
-            <AlertCircle size={16} className="shrink-0" />
-            <span className="text-sm font-medium">
-              {ERROR_CODE_LABELS[normalizedError.code] ?? 'Error'}
-            </span>
-            <span className="text-sm opacity-80">
-              {normalizedError.message || 'Failed to load traces'}
-            </span>
-          </div>
+      <div
+        className={cn(
+          'relative z-0 grid gap-4',
+          explorerMode === 'list' ? 'xl:grid-cols-[300px_minmax(0,1fr)]' : 'grid-cols-1'
         )}
+      >
+        {explorerMode === 'list' ? (
+          <>
+            <FacetRail
+              groups={facetGroups}
+              selected={selectedFacetState}
+              onSelect={(groupKey, value) => {
+                if (groupKey === 'service_name') {
+                  setSelectedService(value);
+                  setPage(1);
+                  return;
+                }
+                if (groupKey === 'status') {
+                  setErrorsOnly(value === 'ERROR');
+                  setPage(1);
+                  return;
+                }
+                setFilters(upsertFacetFilter(filters, groupKey, value));
+                setPage(1);
+              }}
+            />
 
-        <ExplorerResultsTable
-          title="Trace Explorer"
-          subtitle={`${formatNumber(renderedTraces.length)} rows in view, ${formatNumber(totalTraces)} total traces`}
-          rows={renderedTraces}
-          columns={columns}
-          rowKey={(row) => row.trace_id}
-          isLoading={isLoading}
-          page={page}
-          pageSize={pageSize}
-          total={isLiveTail ? renderedTraces.length : totalTraces}
-          onPageChange={setPage}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-          }}
-          onRow={(row) => ({
-            onClick: () => setSelectedTrace(row),
-          })}
-          rowClassName={(row) =>
-            cn(
-              'cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]',
-              selectedTrace?.trace_id === row.trace_id &&
-                'bg-[rgba(10,174,214,0.12)] ring-1 ring-inset ring-[rgba(10,174,214,0.28)]'
-            )
-          }
-        />
+            {isError && normalizedError && (
+              <div className="mb-3 flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.3)] bg-[rgba(240,68,56,0.08)] px-4 py-3 text-[var(--color-error)]">
+                <AlertCircle size={16} className="shrink-0" />
+                <span className="text-sm font-medium">
+                  {ERROR_CODE_LABELS[normalizedError.code] ?? 'Error'}
+                </span>
+                <span className="text-sm opacity-80">
+                  {normalizedError.message || 'Failed to load traces'}
+                </span>
+              </div>
+            )}
+
+            <ExplorerResultsTable
+              title="Trace Explorer"
+              subtitle={`${formatNumber(renderedTraces.length)} rows in view, ${formatNumber(totalTraces)} total traces`}
+              rows={renderedTraces}
+              columns={columns}
+              rowKey={(row) => row.trace_id}
+              isLoading={isLoading}
+              page={page}
+              pageSize={pageSize}
+              total={isLiveTail ? renderedTraces.length : totalTraces}
+              onPageChange={setPage}
+              onPageSizeChange={(size) => {
+                setPageSize(size);
+                setPage(1);
+              }}
+              onRow={(row) => ({
+                onClick: () => setSelectedTrace(row),
+              })}
+              rowClassName={(row) =>
+                cn(
+                  'cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]',
+                  selectedTrace?.trace_id === row.trace_id &&
+                    'bg-[rgba(10,174,214,0.12)] ring-1 ring-inset ring-[rgba(10,174,214,0.28)]'
+                )
+              }
+            />
+          </>
+        ) : (
+          <PageSurface padding="lg" className="min-h-[320px]">
+            {analyticsQuery.isLoading ? (
+              <div className="text-[13px] text-[var(--text-muted)]">Loading analytics…</div>
+            ) : analyticsQuery.isError ? (
+              <div className="text-[13px] text-[var(--color-error)]">Analytics request failed.</div>
+            ) : analyticsQuery.data ? (
+              <div className="space-y-4">
+                {vizMode === 'timeseries' ? (
+                  <AnalyticsTimeseries result={analyticsQuery.data} />
+                ) : null}
+                {vizMode === 'toplist' ? <AnalyticsTopList result={analyticsQuery.data} /> : null}
+                {vizMode === 'table' || vizMode === 'list' ? (
+                  <AnalyticsTable result={analyticsQuery.data} />
+                ) : null}
+                {vizMode === 'piechart' ? <AnalyticsPieChart result={analyticsQuery.data} /> : null}
+              </div>
+            ) : (
+              <div className="text-[13px] text-[var(--text-muted)]">
+                Configure group by and metrics.
+              </div>
+            )}
+          </PageSurface>
+        )}
       </div>
 
       {selectedTrace ? (
@@ -506,10 +623,9 @@ export default function TracesPage(): JSX.Element {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  const params = new URLSearchParams({
-                    filters: `trace_id:equals:${selectedTrace.trace_id}`,
-                  });
-                  navigate(`/logs?${params.toString()}`);
+                  navigate(
+                    `${ROUTES.logs}?query=${encodeURIComponent(`trace_id:${selectedTrace.trace_id}`)}`
+                  );
                 }}
               >
                 Related logs

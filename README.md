@@ -59,6 +59,26 @@ npm run dev
 
 The dev server usually runs at `http://localhost:3000` (or `5173`). It is configured to proxy `/api/*` requests to your local backend automatically.
 
+**Socket.IO (live tail):** The app connects to the same origin with path `/socket.io` and namespace `/live`. The Vite dev server also proxies `/socket.io` to the backend (with WebSocket upgrade) so **Logs** and **Traces** live tail can reach the API server. If you change the backend URL, set `VITE_DEV_BACKEND_URL` in `.env` (same as for `/api`).
+
+**Production / separate UI host:** If the static UI is served from a different origin than the API, your reverse proxy must forward both `/api` and `/socket.io` to the Optikk backend (and enable WebSocket upgrades for `/socket.io`). Example (nginx):
+
+```nginx
+location /api/ {
+  proxy_pass http://optikk_backend;
+  proxy_http_version 1.1;
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+location /socket.io/ {
+  proxy_pass http://optikk_backend;
+  proxy_http_version 1.1;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection "upgrade";
+  proxy_set_header Host $host;
+}
+```
+
 ### 3. Build & CI
 
 ```bash

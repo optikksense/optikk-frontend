@@ -174,6 +174,10 @@ export interface TraceExplorerFacets {
   service_name: TraceFacet[];
   status: TraceFacet[];
   operation_name: TraceFacet[];
+  span_kind: TraceFacet[];
+  http_method: TraceFacet[];
+  http_status_code: TraceFacet[];
+  db_system: TraceFacet[];
 }
 
 export interface TraceExplorerCorrelations {
@@ -196,4 +200,5 @@ export interface TraceExplorerParams extends QueryParams {
   mode?: string;
   spanKind?: string;
   spanName?: string;
+  dbSystem?: string;
 }

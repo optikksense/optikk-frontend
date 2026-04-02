@@ -83,7 +83,7 @@ export default function TraceComparisonView({ comparison }: TraceComparisonViewP
 
         <Card
           padding="lg"
-          className="space-y-3 border-[rgba(94,96,206,0.24)] bg-[rgba(94,96,206,0.08)]"
+          className="space-y-3 border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-08)]"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-[var(--text-primary)]">Total Delta</h3>

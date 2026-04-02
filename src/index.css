@@ -59,7 +59,7 @@ body {
   min-height: 100vh;
   color: var(--text-primary);
   background:
-    radial-gradient(circle at top left, rgba(139, 127, 255, 0.08), transparent 30%),
+    radial-gradient(circle at top left, var(--color-primary-subtle-08), transparent 30%),
     radial-gradient(circle at top right, rgba(243, 139, 107, 0.05), transparent 24%),
     var(--bg-primary);
 }

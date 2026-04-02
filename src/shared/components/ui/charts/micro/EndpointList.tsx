@@ -210,7 +210,7 @@ export default function EndpointList({
         case 'latency':
           return APP_COLORS.rgba_250_173_20_0p2;
         default:
-          return 'rgba(139,127,255,0.16)';
+          return 'var(--color-primary-subtle-18)';
       }
     }
     return 'var(--bg-secondary)';

@@ -61,7 +61,7 @@ export default function QueryFieldPicker({
             {groupFields.map((field) => (
               <div
                 key={field.key}
-                className="group flex items-center gap-2 px-3.5 py-[9px] cursor-pointer text-[12.5px] transition-colors duration-100 hover:bg-[rgba(94,96,206,0.1)] first:rounded-t-[10px] last:rounded-b-[10px]"
+                className="group flex items-center gap-2 px-3.5 py-[9px] cursor-pointer text-[12.5px] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-10)] first:rounded-t-[10px] last:rounded-b-[10px]"
                 onClick={() => onPickField(field)}
               >
                 <span className="text-[14px] w-5 text-center shrink-0">{field.icon}</span>

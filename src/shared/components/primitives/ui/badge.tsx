@@ -19,7 +19,8 @@ const variantClasses: Record<BadgeVariant, string> = {
 
 const colorClasses: Record<string, string> = {
   blue: 'bg-[rgba(107,182,255,0.12)] text-[#6BB6FF] border-[rgba(107,182,255,0.28)]',
-  purple: 'bg-[rgba(139,127,255,0.12)] text-[var(--color-primary)] border-[rgba(139,127,255,0.28)]',
+  purple:
+    'bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)] border-[var(--color-primary-subtle-28)]',
   green: 'bg-[rgba(82,135,107,0.15)] text-[#52876B] border-[rgba(82,135,107,0.3)]',
   red: 'bg-[rgba(220,38,38,0.12)] text-[#DC2626] border-[rgba(220,38,38,0.3)]',
   orange: 'bg-[rgba(217,119,6,0.12)] text-[#D97706] border-[rgba(217,119,6,0.3)]',

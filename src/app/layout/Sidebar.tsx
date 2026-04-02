@@ -84,7 +84,7 @@ export default function Sidebar() {
       'flex w-full items-center gap-[var(--space-sm)] whitespace-nowrap rounded-[var(--card-radius)] border border-transparent bg-transparent px-[var(--space-sm)] py-2 text-left text-[13px] font-medium text-[var(--text-secondary)] transition-[background-color,border-color,color,box-shadow]',
       'hover:bg-white/5 hover:text-[var(--text-primary)]',
       isActive &&
-        'bg-[rgba(139,127,255,0.12)] text-[var(--text-primary)] border-[rgba(139,127,255,0.2)] shadow-[var(--shadow-sm)] hover:bg-[rgba(139,127,255,0.14)]',
+        'bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)] border-[var(--color-primary-subtle-20)] shadow-[var(--shadow-sm)] hover:bg-[var(--color-primary-subtle-14)]',
       sidebarCollapsed && 'justify-center px-[7px]',
       extra
     );
@@ -163,7 +163,7 @@ export default function Sidebar() {
             <button
               className={cn(
                 'mb-[var(--space-xs)] flex w-full items-center gap-[var(--space-xs)] rounded-[var(--card-radius)] border px-[var(--space-sm)] py-2 text-left text-[12px] font-medium transition-[background-color,border-color,color,box-shadow]',
-                'border-[rgba(139,127,255,0.26)] bg-[rgba(139,127,255,0.12)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] hover:border-[var(--color-primary)] hover:bg-[rgba(139,127,255,0.18)]',
+                'border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-subtle-18)]',
                 sidebarCollapsed && 'justify-center px-1.5'
               )}
               onClick={() => navigate(ROUTES.settings)}

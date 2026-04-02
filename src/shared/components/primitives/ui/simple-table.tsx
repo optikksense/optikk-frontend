@@ -304,7 +304,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        'relative border-b border-[var(--border-color)] bg-[rgba(255,255,255,0.015)] text-[11px] font-medium normal-case tracking-[0.01em] text-[var(--text-secondary)]',
+                        'relative min-w-0 overflow-hidden border-b border-[var(--border-color)] bg-[rgba(255,255,255,0.015)] text-[11px] font-medium normal-case tracking-[0.01em] text-[var(--text-secondary)]',
                         headRowClasses[size],
                         header.column.getCanSort() && 'cursor-pointer select-none'
                       )}
@@ -314,11 +314,20 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                       }}
                       onClick={header.column.getToggleSortingHandler()}
                     >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: ' ↑',
-                        desc: ' ↓',
-                      }[header.column.getIsSorted() as string] ?? ''}
+                      <div
+                        className={cn(
+                          'min-w-0 pr-4',
+                          meta?.ellipsis
+                            ? 'truncate'
+                            : 'overflow-hidden text-ellipsis whitespace-nowrap'
+                        )}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{
+                          asc: ' ↑',
+                          desc: ' ↓',
+                        }[header.column.getIsSorted() as string] ?? ''}
+                      </div>
 
                       {/* Resize handle */}
                       <div
@@ -352,13 +361,25 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                     return (
                       <TableCell
                         key={cell.id}
-                        className={cn(cellPadClasses[size], meta?.ellipsis && 'max-w-0 truncate')}
+                        className={cn(
+                          cellPadClasses[size],
+                          'min-w-0 overflow-hidden',
+                          meta?.ellipsis && 'max-w-0'
+                        )}
                         style={{
                           textAlign: meta?.align ?? 'left',
                           width: resolvedWidth,
+                          maxWidth: resolvedWidth,
                         }}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        <div
+                          className={cn(
+                            'min-w-0',
+                            meta?.ellipsis ? 'truncate' : 'overflow-x-hidden'
+                          )}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
                       </TableCell>
                     );
                   })}

@@ -37,7 +37,7 @@ export function StatCardsGridRenderer({
   }, [services]);
 
   return (
-    <div className="p-2">
+    <div className="h-full min-h-0 overflow-y-auto p-2">
       <StatCardsGrid
         stats={[
           {

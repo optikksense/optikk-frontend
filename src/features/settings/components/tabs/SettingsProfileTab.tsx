@@ -83,7 +83,7 @@ export default function SettingsProfileTab({
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               required
-              className="h-9 w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] pl-10 pr-3 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[rgba(94,96,206,0.1)]"
+              className="h-9 w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] pl-10 pr-3 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-10)]"
             />
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function SettingsProfileTab({
             value={avatarUrl}
             onChange={(e) => setAvatarUrl(e.target.value)}
             placeholder="https://example.com/avatar.jpg"
-            className="h-9 w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[rgba(94,96,206,0.1)]"
+            className="h-9 w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-10)]"
           />
         </div>
 

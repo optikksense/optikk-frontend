@@ -96,6 +96,22 @@ export function useSocketStream<Item>({
       setErrorMessage(err?.message ?? 'Socket connection failed');
     });
 
+    // Backend emits subscribeError (not "error") — Socket.IO reserves "error" for transport/protocol use.
+    socket.on('subscribeError', (payload: unknown) => {
+      const message =
+        typeof payload === 'string'
+          ? payload
+          : payload &&
+              typeof payload === 'object' &&
+              payload !== null &&
+              'message' in payload &&
+              typeof (payload as { message: unknown }).message === 'string'
+            ? (payload as { message: string }).message
+            : 'Subscription error';
+      setStatus('error');
+      setErrorMessage(message);
+    });
+
     return () => {
       socket.disconnect();
       setStatus('closed');

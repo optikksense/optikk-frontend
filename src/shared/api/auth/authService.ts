@@ -62,10 +62,6 @@ export const authService = {
   async refreshSession(): Promise<AuthPayload | null> {
     return this.validateSession();
   },
-
-  async completeOAuthLogin(): Promise<AuthPayload | null> {
-    return this.refreshSession();
-  },
 };
 
 export type { AuthPayload, AuthTeam, AuthUser };

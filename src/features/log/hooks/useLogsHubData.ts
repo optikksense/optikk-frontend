@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import { logsService } from '@shared/api/logsService';
 import { useAppStore } from '@app/store/appStore';
 
 import type { LogEntry } from '@entities/log/model';
@@ -13,9 +12,10 @@ import { logsExplorerApi } from '../api/logsExplorerApi';
 import type { LogAggregateRow, LogFacet, LogVolumeBucket, LogsBackendParams } from '../types';
 
 export interface UseLogsHubDataProps {
-  searchText: string;
+  explorerQuery: string;
   filters: StructuredFilter[];
-  backendParams: LogsBackendParams;
+  /** Params derived for live tail (legacy socket payload shape). */
+  liveTailParams: LogsBackendParams;
   page: number;
   pageSize: number;
 }
@@ -23,9 +23,9 @@ export interface UseLogsHubDataProps {
 const DEFAULT_STEP = '5m';
 
 export function useLogsHubData({
-  searchText,
+  explorerQuery,
   filters,
-  backendParams,
+  liveTailParams,
   page,
   pageSize,
 }: UseLogsHubDataProps) {
@@ -34,28 +34,23 @@ export function useLogsHubData({
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
 
-  const explorerQuery = useQuery({
-    queryKey: [
-      'logs',
-      'explorer',
-      selectedTeamId,
+  const explorerQueryKey = useMemo(
+    () => ({
       startTime,
       endTime,
-      page,
-      pageSize,
-      searchText,
-      filters,
-      backendParams,
-      refreshKey,
-    ],
+      limit: pageSize,
+      offset: (page - 1) * pageSize,
+      step: DEFAULT_STEP,
+      query: explorerQuery,
+    }),
+    [startTime, endTime, page, pageSize, explorerQuery]
+  );
+
+  const explorerQueryFn = useQuery({
+    queryKey: ['logs', 'explorer', selectedTeamId, explorerQueryKey, refreshKey],
     queryFn: () =>
       logsExplorerApi.query({
-        startTime,
-        endTime,
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
-        step: DEFAULT_STEP,
-        params: backendParams,
+        ...explorerQueryKey,
       }),
     enabled: Boolean(selectedTeamId),
     placeholderData: (previous) => previous,
@@ -66,7 +61,7 @@ export function useLogsHubData({
     enabled: liveTailEnabled && Boolean(selectedTeamId),
     subscribeEvent: 'subscribe:logs',
     itemEvent: 'log',
-    params: { startMs: startTime, endMs: endTime, ...backendParams },
+    params: { startMs: startTime, endMs: endTime, ...liveTailParams },
     normalizeItem: (value) => {
       const record = value as LogEntry;
       return {
@@ -79,36 +74,47 @@ export function useLogsHubData({
     },
   });
 
-  const results = explorerQuery.data;
+  const results = explorerQueryFn.data;
   const logs = liveTailEnabled ? liveTail.items : (results?.results ?? []);
   const total = liveTailEnabled ? liveTail.items.length : Number(results?.pageInfo.total ?? 0);
   const serviceFacets = (results?.facets.service_name ?? []) as LogFacet[];
   const levelFacets = (results?.facets.level ?? []) as LogFacet[];
+  const hostFacets = (results?.facets.host ?? []) as LogFacet[];
+  const podFacets = (results?.facets.pod ?? []) as LogFacet[];
+  const containerFacets = (results?.facets.container ?? []) as LogFacet[];
+  const environmentFacets = (results?.facets.environment ?? []) as LogFacet[];
+  const scopeNameFacets = (results?.facets.scope_name ?? []) as LogFacet[];
   const aggregateRows = ((
     results?.correlations?.serviceErrorRate as { rows?: LogAggregateRow[] } | undefined
   )?.rows ?? []) as LogAggregateRow[];
 
   return {
     logs,
-    logsLoading: explorerQuery.isLoading,
-    logsError: explorerQuery.isError,
-    logsErrorDetail: explorerQuery.error,
+    logsLoading: explorerQueryFn.isLoading,
+    logsError: explorerQueryFn.isError,
+    logsErrorDetail: explorerQueryFn.error,
     total,
     volumeBuckets: (results?.trend.buckets ?? []) as LogVolumeBucket[],
     volumeStep: results?.trend.step ?? DEFAULT_STEP,
-    volumeLoading: explorerQuery.isLoading,
+    volumeLoading: explorerQueryFn.isLoading,
     errorCount: Number(results?.summary.error_logs ?? 0),
     warnCount: Number(results?.summary.warn_logs ?? 0),
     totalCount: Number(results?.summary.total_logs ?? total),
     serviceFacets,
     levelFacets,
-    statsLoading: explorerQuery.isLoading,
+    hostFacets,
+    podFacets,
+    containerFacets,
+    environmentFacets,
+    scopeNameFacets,
+    statsLoading: explorerQueryFn.isLoading,
     aggregateRows,
-    aggregateLoading: explorerQuery.isLoading,
+    aggregateLoading: explorerQueryFn.isLoading,
     liveTailEnabled,
     setLiveTailEnabled,
     liveTailStatus: liveTail.status,
     liveTailLagMs: liveTail.lagMs,
+    liveTailErrorMessage: liveTail.errorMessage,
     liveTailDroppedCount: liveTail.droppedCount,
   };
 }

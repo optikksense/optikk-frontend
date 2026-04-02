@@ -41,7 +41,7 @@ export default function QueryOperatorPicker({
       {operators.map((operator) => (
         <div
           key={operator.key}
-          className="flex items-center gap-2 px-3.5 py-[9px] cursor-pointer text-[12.5px] transition-colors duration-100 hover:bg-[rgba(94,96,206,0.1)] first:rounded-t-[10px] last:rounded-b-[10px]"
+          className="flex items-center gap-2 px-3.5 py-[9px] cursor-pointer text-[12.5px] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-10)] first:rounded-t-[10px] last:rounded-b-[10px]"
           onClick={() => onPickOperator(operator)}
         >
           <span className="font-mono text-primary text-[14px] w-7 text-center shrink-0">

@@ -175,7 +175,7 @@ export function ObservabilityDetailPanel({
                     {label}
                     {canFilter && (
                       <button
-                        className="bg-transparent border-none text-muted-foreground px-[3px] cursor-pointer flex items-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-100 hover:bg-[rgba(94,96,206,0.15)] hover:text-primary"
+                        className="bg-transparent border-none text-muted-foreground px-[3px] cursor-pointer flex items-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-100 hover:bg-[var(--color-primary-subtle-15)] hover:text-primary"
                         onClick={() => {
                           if (onAddFilter && isFilterValue(value)) {
                             onAddFilter({ field: key, value, operator: 'equals' });

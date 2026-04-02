@@ -78,7 +78,7 @@
 
 .log-level--debug,
 .log-level--trace {
-  background: rgba(94, 96, 206, 0.12);
-  border-color: rgba(94, 96, 206, 0.3);
+  background: var(--color-primary-subtle-12);
+  border-color: var(--color-primary-subtle-30);
   color: var(--color-primary);
 }

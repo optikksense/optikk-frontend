@@ -4,8 +4,14 @@ import { lazy } from 'react';
 import type { DomainConfig } from '@/app/registry/domainRegistry';
 import { ROUTES } from '@/shared/constants/routes';
 
-const LogsPage = lazy(() =>
+const LogsHubPage = lazy(() =>
   import('./pages/LogsHubPage').then((module) => ({ default: module.default }))
+);
+const LogPatternsPage = lazy(() =>
+  import('./pages/LogPatternsPage').then((module) => ({ default: module.default }))
+);
+const LogTransactionsPage = lazy(() =>
+  import('./pages/LogTransactionsPage').then((module) => ({ default: module.default }))
 );
 const LogHistogramRenderer = lazy(() =>
   import('./dashboard/renderers/LogHistogramRenderer').then((module) => ({
@@ -28,7 +34,11 @@ const logsConfig: DomainConfig = {
       group: 'observe',
     },
   ],
-  routes: [{ path: ROUTES.logs, page: LogsPage }],
+  routes: [
+    { path: ROUTES.logs, page: LogsHubPage },
+    { path: ROUTES.logsPatterns, page: LogPatternsPage },
+    { path: ROUTES.logsTransactions, page: LogTransactionsPage },
+  ],
   dashboardPanels: [
     { panelType: 'log-histogram', kind: 'specialized', component: LogHistogramRenderer },
   ],

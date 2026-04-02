@@ -32,7 +32,7 @@ export default function QueryValuePicker({
       {filteredHints.map((hint) => (
         <div
           key={hint}
-          className="flex items-center gap-2 px-3.5 py-[9px] cursor-pointer text-[12.5px] transition-colors duration-100 hover:bg-[rgba(94,96,206,0.1)] first:rounded-t-[10px] last:rounded-b-[10px]"
+          className="flex items-center gap-2 px-3.5 py-[9px] cursor-pointer text-[12.5px] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-10)] first:rounded-t-[10px] last:rounded-b-[10px]"
           onClick={() => onPickValue(hint)}
         >
           <span className="text-foreground flex-1">{hint}</span>

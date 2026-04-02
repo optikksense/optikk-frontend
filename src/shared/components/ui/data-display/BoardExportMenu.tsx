@@ -36,7 +36,7 @@ export default function BoardExportMenu({
   return (
     <div ref={ref} className="relative inline-block">
       <button
-        className="inline-flex items-center gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap hover:border-primary hover:bg-[rgba(94,96,206,0.08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap hover:border-primary hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
         disabled={rowsLength === 0}
         onClick={() => setOpen((o) => !o)}
       >
@@ -49,7 +49,7 @@ export default function BoardExportMenu({
           </div>
           <div className="flex flex-col gap-1.5 py-1">
             <button
-              className="inline-flex items-center justify-start gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap w-full hover:border-primary hover:bg-[rgba(94,96,206,0.08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-start gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap w-full hover:border-primary hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
               onClick={() => {
                 onExportCSV();
                 setOpen(false);
@@ -59,7 +59,7 @@ export default function BoardExportMenu({
               Export as CSV
             </button>
             <button
-              className="inline-flex items-center justify-start gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap w-full hover:border-primary hover:bg-[rgba(94,96,206,0.08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-start gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap w-full hover:border-primary hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
               onClick={() => {
                 onExportJSON();
                 setOpen(false);

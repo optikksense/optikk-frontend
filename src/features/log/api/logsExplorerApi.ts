@@ -6,8 +6,6 @@ import api from '@/shared/api/api/client';
 import { decodeApiResponse } from '@/shared/api/utils/validate';
 
 import { logsAggregateSchema } from './logsApi';
-import type { LogsBackendParams } from '../types';
-
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 const facetSchema = z
@@ -23,6 +21,8 @@ const logsExplorerFacetsSchema = z
     service_name: z.array(facetSchema).default([]),
     host: z.array(facetSchema).default([]),
     pod: z.array(facetSchema).default([]),
+    container: z.array(facetSchema).default([]),
+    environment: z.array(facetSchema).default([]),
     scope_name: z.array(facetSchema).default([]),
   })
   .strict();
@@ -99,7 +99,9 @@ export const logsExplorerApi = {
     limit: number;
     offset: number;
     step: string;
-    params: LogsBackendParams;
+    query: string;
+    cursor?: string;
+    direction?: string;
   }): Promise<LogsExplorerResponse> {
     const response = await api.post(`${BASE}/logs/explorer/query`, body);
     const parsed = decodeApiResponse(logsExplorerSchema, response, {

@@ -33,7 +33,7 @@ export default function BoardColumnSettingsPopover({
   return (
     <div ref={ref} className="relative inline-block">
       <button
-        className="inline-flex items-center gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap hover:border-primary hover:bg-[rgba(94,96,206,0.08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap hover:border-primary hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
         onClick={() => setOpen((o) => !o)}
       >
         <Settings2 size={13} /> Columns
@@ -49,7 +49,7 @@ export default function BoardColumnSettingsPopover({
               return (
                 <div
                   key={column.key}
-                  className={`flex items-center gap-2 px-1 py-[5px] rounded-[5px] cursor-pointer text-[12.5px] text-[color:var(--text-secondary)] transition-colors duration-100 select-none hover:bg-[rgba(94,96,206,0.08)] hover:text-foreground ${
+                  className={`flex items-center gap-2 px-1 py-[5px] rounded-[5px] cursor-pointer text-[12.5px] text-[color:var(--text-secondary)] transition-colors duration-100 select-none hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground ${
                     checked ? 'text-foreground' : ''
                   }`}
                   onClick={() => onToggle(column.key)}

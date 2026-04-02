@@ -227,7 +227,7 @@ function ContextSpanRow({ span, isCurrent }: { span: ChainSpan; isCurrent: boole
     <div
       className={cn(
         'flex items-center gap-[10px] px-[18px] py-[10px] border-b border-[var(--border-color)] last:border-b-0 text-[12px]',
-        isCurrent && 'bg-[rgba(94,96,206,0.08)]'
+        isCurrent && 'bg-[var(--color-primary-subtle-08)]'
       )}
     >
       <span

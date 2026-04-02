@@ -125,11 +125,11 @@ export function MiniCalendar({
                   'text-[rgba(255,255,255,0.55)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white rounded-sm',
                 (isRangeStart || isRangeEnd) && 'trp-cal__day--range-start-or-end',
                 isRangeStart &&
-                  'trp-cal__day--range-start bg-primary text-white font-bold shadow-[0_2px_8px_rgba(94,96,206,0.35)] z-[1]',
+                  'trp-cal__day--range-start bg-primary text-white font-bold shadow-[0_2px_8px_var(--color-primary-subtle-35)] z-[1]',
                 isRangeEnd &&
-                  'trp-cal__day--range-end bg-primary text-white font-bold shadow-[0_2px_8px_rgba(94,96,206,0.35)] z-[1]',
+                  'trp-cal__day--range-end bg-primary text-white font-bold shadow-[0_2px_8px_var(--color-primary-subtle-35)] z-[1]',
                 inRange &&
-                  'trp-cal__day--in-range bg-[rgba(94,96,206,0.18)] text-[rgba(255,255,255,0.9)]'
+                  'trp-cal__day--in-range bg-[var(--color-primary-subtle-18)] text-[rgba(255,255,255,0.9)]'
               )}
               onClick={() => {
                 if (c.current) onSelectDate(new Date(calYear, calMonth, c.day));
