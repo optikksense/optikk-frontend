@@ -1,6 +1,6 @@
 import { Badge, Button, SimpleTable, Tabs } from '@/components/ui';
 import { AlertCircle, ArrowLeft, Clock, FileText, GitBranch, Layers } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Flamegraph from '@shared/components/ui/charts/specialized/Flamegraph';
@@ -27,10 +27,12 @@ export default function TraceDetailPage() {
   const navigate = useNavigate();
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
   const [activeTab, setActiveTab] = useState<'timeline' | 'flamegraph'>('timeline');
+  const [activeDetailTab, setActiveDetailTab] = useState('attributes');
 
   const {
     spans,
     traceLogs,
+    traceLogsIsSpeculative,
     stats,
     selectedSpan,
     selectedSpanId,
@@ -38,6 +40,27 @@ export default function TraceDetailPage() {
     isLoading,
     logsLoading,
   } = useTraceDetailData(selectedTeamId, traceIdParam);
+
+  const traceTimeBounds = useMemo(() => {
+    if (spans.length === 0) {
+      return { startMs: undefined, endMs: undefined };
+    }
+
+    let minStart = Infinity;
+    let maxEnd = -Infinity;
+
+    spans.forEach((span) => {
+      const start = span.start_time ? new Date(span.start_time).getTime() : NaN;
+      const end = span.end_time ? new Date(span.end_time).getTime() : NaN;
+      if (Number.isFinite(start)) minStart = Math.min(minStart, start);
+      if (Number.isFinite(end)) maxEnd = Math.max(maxEnd, end);
+    });
+
+    return {
+      startMs: Number.isFinite(minStart) ? minStart : undefined,
+      endMs: Number.isFinite(maxEnd) ? maxEnd : undefined,
+    };
+  }, [spans]);
 
   const {
     data: flamegraphData,
@@ -54,7 +77,14 @@ export default function TraceDetailPage() {
     relatedTraces,
     spanAttributes,
     spanAttributesLoading,
-  } = useTraceDetailEnhanced(traceIdParam, selectedSpanId, selectedSpan ?? spans[0] ?? null);
+  } = useTraceDetailEnhanced(
+    traceIdParam,
+    selectedSpanId,
+    selectedSpan ?? spans[0] ?? null,
+    traceTimeBounds.startMs,
+    traceTimeBounds.endMs,
+    activeDetailTab
+  );
 
   const handleSpanClick = (span: { span_id?: string }) => {
     setSelectedSpanId(span.span_id ?? null);
@@ -189,17 +219,17 @@ export default function TraceDetailPage() {
                 />
                 <StatCard
                   metric={{
-                    title: 'Apdex Score',
-                    value: 0.95,
-                    formatter: (value: unknown) => Number(value).toFixed(2),
+                    title: 'Critical Path',
+                    value: criticalPathSpanIds.size,
+                    formatter: formatNumber,
                   }}
                   visuals={{ icon: <Layers size={20} />, iconColor: APP_COLORS.hex_73c991 }}
                 />
                 <StatCard
                   metric={{
-                    title: 'Self Time',
-                    value: spanSelfTimes.reduce((acc, span) => acc + span.selfTimeMs, 0),
-                    formatter: formatDuration,
+                    title: 'Linked Logs',
+                    value: traceLogs.length,
+                    formatter: formatNumber,
                   }}
                   visuals={{ icon: <Clock size={20} />, iconColor: APP_COLORS.hex_06aed5 }}
                 />
@@ -279,6 +309,8 @@ export default function TraceDetailPage() {
                 spanEvents={spanEvents}
                 spanSelfTimes={spanSelfTimes}
                 relatedTraces={relatedTraces}
+                activeTab={activeDetailTab}
+                onActiveTabChange={setActiveDetailTab}
               />
             </>
           )}
@@ -300,7 +332,18 @@ export default function TraceDetailPage() {
                   {traceLogs.length} events
                 </Badge>
               ) : null}
+              {traceLogs.length > 0 ? (
+                <Badge variant={traceLogsIsSpeculative ? 'warning' : 'success'}>
+                  {traceLogsIsSpeculative ? 'Heuristic correlation' : 'Exact trace correlation'}
+                </Badge>
+              ) : null}
             </div>
+            {traceLogsIsSpeculative ? (
+              <p className="text-sm text-[var(--text-secondary)]">
+                These logs were matched from surrounding service and time context because an exact
+                trace-linked set was not available.
+              </p>
+            ) : null}
 
             {logsLoading ? (
               <div className="flex min-h-[240px] items-center justify-center">

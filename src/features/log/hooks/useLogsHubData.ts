@@ -115,5 +115,6 @@ export function useLogsHubData({
     liveTailStatus: liveTail.status,
     liveTailLagMs: liveTail.lagMs,
     liveTailErrorMessage: liveTail.errorMessage,
+    liveTailDroppedCount: liveTail.droppedCount,
   };
 }

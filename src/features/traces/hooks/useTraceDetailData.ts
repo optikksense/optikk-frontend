@@ -3,6 +3,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { tracesService } from '@shared/api/tracesService';
 import { normalizeSpan, normalizeTraceLog, calculateTraceStats } from '../utils/traceCalculations';
+import type { LogRecord } from '@/features/log/types';
 
 export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: string) {
   const [searchParams] = useSearchParams();
@@ -38,7 +39,7 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
   });
 
   const traceLogs = useMemo(
-    () => (Array.isArray(logsData) ? logsData : []).map(normalizeTraceLog),
+    () => (logsData?.logs ?? []).map((log) => normalizeTraceLog(log) as LogRecord),
     [logsData]
   );
 
@@ -51,6 +52,7 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
   return {
     spans,
     traceLogs,
+    traceLogsIsSpeculative: logsData?.is_speculative ?? false,
     stats,
     selectedSpan,
     selectedSpanId,

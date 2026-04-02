@@ -74,7 +74,7 @@ export function normalizeTraceLog(log: any): any {
     service_name: log.service_name,
     trace_id: log.trace_id,
     span_id: log.span_id,
-    level: log.level || 'INFO',
-    message: log.message || '',
+    level: log.level || log.severity_text || 'INFO',
+    message: log.message || log.body || '',
   };
 }

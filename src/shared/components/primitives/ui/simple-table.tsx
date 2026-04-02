@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   type ColumnDef,
+  type PaginationState,
   type Row,
   type SortingFn,
   type SortingState,
+  type Updater,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -14,6 +16,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useResizableColumns, type ColumnWidthMap } from '@shared/hooks/useResizableColumns';
 
+import { Pagination } from './pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 
 type TableRowData = object;
@@ -40,6 +43,8 @@ export interface SimpleTablePagination {
   pageSize?: number;
   current?: number;
   total?: number;
+  manual?: boolean;
+  pageCount?: number;
   showSizeChanger?: boolean;
   onChange?: (page: number, pageSize: number) => void;
 }
@@ -54,6 +59,8 @@ export interface SimpleTableProps<RowType extends TableRowData = TableRowData> {
   className?: string;
   rowClassName?: string | ((record: RowType, index: number) => string);
   onRow?: (record: RowType, index?: number) => React.HTMLAttributes<HTMLTableRowElement>;
+  sorting?: SortingState;
+  onSortingChange?: (sorting: SortingState) => void;
 }
 
 interface ColumnMeta {
@@ -80,6 +87,14 @@ function toColumnId<RowType extends TableRowData>(column: SimpleTableColumn<RowT
   return String(column.key ?? column.dataIndex ?? '');
 }
 
+function resolveUpdater<T>(updater: Updater<T>, previous: T): T {
+  if (typeof updater === 'function') {
+    return (updater as (old: T) => T)(previous);
+  }
+
+  return updater;
+}
+
 function SimpleTable<RowType extends TableRowData = TableRowData>({
   columns: incomingColumns,
   dataSource,
@@ -90,6 +105,8 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
   className,
   rowClassName,
   onRow,
+  sorting: controlledSorting,
+  onSortingChange,
 }: SimpleTableProps<RowType>) {
   const initialSorting = useMemo<SortingState>(() => {
     for (const column of incomingColumns) {
@@ -105,7 +122,40 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
     return [];
   }, [incomingColumns]);
 
-  const [sorting, setSorting] = useState<SortingState>(initialSorting);
+  const [uncontrolledSorting, setUncontrolledSorting] = useState<SortingState>(initialSorting);
+  const sorting = controlledSorting ?? uncontrolledSorting;
+
+  useEffect(() => {
+    if (!controlledSorting) {
+      setUncontrolledSorting(initialSorting);
+    }
+  }, [controlledSorting, initialSorting]);
+
+  const resolvedPagination = pagination && typeof pagination === 'object' ? pagination : null;
+  const [paginationState, setPaginationState] = useState<PaginationState>({
+    pageIndex: Math.max((resolvedPagination?.current ?? 1) - 1, 0),
+    pageSize: resolvedPagination?.pageSize ?? 10,
+  });
+
+  useEffect(() => {
+    if (!resolvedPagination) {
+      return;
+    }
+
+    setPaginationState((previous) => {
+      const nextPageIndex = Math.max((resolvedPagination.current ?? 1) - 1, 0);
+      const nextPageSize = resolvedPagination.pageSize ?? previous.pageSize;
+
+      if (previous.pageIndex === nextPageIndex && previous.pageSize === nextPageSize) {
+        return previous;
+      }
+
+      return {
+        pageIndex: nextPageIndex,
+        pageSize: nextPageSize,
+      };
+    });
+  }, [resolvedPagination?.current, resolvedPagination?.pageSize, resolvedPagination]);
 
   // Build initial widths from column definitions
   const initialWidths = useMemo<ColumnWidthMap>(() => {
@@ -172,21 +222,44 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
     return (row: RowType, index: number) => String(asRowRecord(row).key ?? index);
   }, [rowKey]);
 
-  const pageSize =
-    pagination && typeof pagination === 'object' ? (pagination.pageSize ?? 10) : dataSource.length;
+  const totalRows = resolvedPagination?.total ?? dataSource.length;
+  const pageCount = resolvedPagination
+    ? (resolvedPagination.pageCount ??
+      Math.max(1, Math.ceil(totalRows / Math.max(paginationState.pageSize, 1))))
+    : Math.max(1, Math.ceil(dataSource.length / Math.max(paginationState.pageSize, 1)));
+
+  const handleSortingStateChange = (updater: Updater<SortingState>) => {
+    const next = resolveUpdater(updater, sorting);
+    onSortingChange?.(next);
+    if (!controlledSorting) {
+      setUncontrolledSorting(next);
+    }
+  };
+
+  const handlePaginationStateChange = (updater: Updater<PaginationState>) => {
+    setPaginationState((previous) => {
+      const next = resolveUpdater(updater, previous);
+      resolvedPagination?.onChange?.(next.pageIndex + 1, next.pageSize);
+      return next;
+    });
+  };
+
+  const tableState = pagination ? { sorting, pagination: paginationState } : { sorting };
 
   const table = useReactTable({
     data: dataSource,
     columns,
-    state: { sorting },
-    onSortingChange: setSorting,
+    state: tableState,
+    onSortingChange: handleSortingStateChange,
+    onPaginationChange: pagination ? handlePaginationStateChange : undefined,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: pagination ? getPaginationRowModel() : undefined,
+    getPaginationRowModel:
+      pagination && !resolvedPagination?.manual ? getPaginationRowModel() : undefined,
     getRowId,
-    initialState: {
-      pagination: pagination ? { pageSize, pageIndex: 0 } : undefined,
-    },
+    manualPagination: resolvedPagination?.manual ?? false,
+    pageCount: pagination ? pageCount : undefined,
+    rowCount: pagination ? totalRows : undefined,
   });
 
   const sizeClasses = {
@@ -326,43 +399,20 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
           </TableBody>
         </Table>
       </div>
-      {pagination && table.getPageCount() > 1 ? (
-        <div className="flex items-center justify-between border-t border-[var(--border-color)] px-3 py-2.5 text-[12px] text-[var(--text-secondary)]">
-          <span>{dataSource.length} total</span>
-          <div className="flex items-center gap-2">
-            {typeof pagination === 'object' && pagination.showSizeChanger ? (
-              <select
-                value={table.getState().pagination.pageSize}
-                onChange={(event) => table.setPageSize(Number(event.target.value))}
-                className="h-7 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 text-[11px] text-[var(--text-primary)]"
-              >
-                {[10, 20, 50, 100].map((value) => (
-                  <option key={value} value={value}>
-                    {value} / page
-                  </option>
-                ))}
-              </select>
-            ) : null}
-            <button
-              type="button"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => table.previousPage()}
-              className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 py-0.5 disabled:opacity-40"
-            >
-              ‹
-            </button>
-            <span>
-              {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
-            </span>
-            <button
-              type="button"
-              disabled={!table.getCanNextPage()}
-              onClick={() => table.nextPage()}
-              className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 py-0.5 disabled:opacity-40"
-            >
-              ›
-            </button>
-          </div>
+      {pagination ? (
+        <div className="border-t border-[var(--border-color)] px-3 py-2.5">
+          <Pagination
+            page={table.getState().pagination.pageIndex + 1}
+            pageSize={table.getState().pagination.pageSize}
+            total={totalRows}
+            onPageChange={(page) => table.setPageIndex(Math.max(page - 1, 0))}
+            onPageSizeChange={
+              typeof pagination === 'object' && pagination.showSizeChanger
+                ? (pageSize) => table.setPageSize(pageSize)
+                : undefined
+            }
+            pageSizeOptions={[10, 20, 50, 100]}
+          />
         </div>
       ) : null}
     </div>

@@ -78,8 +78,13 @@ export function useSocketStream<Item>({
       });
     });
 
-    socket.on('heartbeat', (payload: { lagMs?: number }) => {
+    socket.on('heartbeat', (payload: { lagMs?: number; droppedCount?: number }) => {
       if (payload?.lagMs != null) setLagMs(payload.lagMs);
+      if (payload?.droppedCount != null) setDroppedCount(payload.droppedCount);
+    });
+
+    socket.on('done', () => {
+      setStatus('closed');
     });
 
     socket.on('disconnect', () => {

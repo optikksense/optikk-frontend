@@ -1,4 +1,4 @@
-import type { LogAttributeFilter, LogColumn, LogFilterField, LogsBackendParams } from '../types';
+import type { LogAttributeFilter, LogFilterField, LogsBackendParams } from '../types';
 import type { StructuredFilter } from '@shared/hooks/useURLFilters';
 
 /**
@@ -101,21 +101,6 @@ export const LOG_FILTER_FIELDS: LogFilterField[] = [
     group: 'Correlation',
     operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
   },
-];
-
-/**
- *
- */
-export const LOG_COLUMNS: LogColumn[] = [
-  { key: 'timestamp', label: 'Time', defaultWidth: 175, defaultVisible: true },
-  { key: 'level', label: 'Level', defaultWidth: 80, defaultVisible: true },
-  { key: 'service_name', label: 'Service', defaultWidth: 160, defaultVisible: true },
-  { key: 'host', label: 'Host/Pod', defaultWidth: 140, defaultVisible: false },
-  { key: 'logger', label: 'Logger', defaultWidth: 160, defaultVisible: false },
-  { key: 'trace_id', label: 'Trace ID', defaultWidth: 220, defaultVisible: false },
-  { key: 'thread', label: 'Thread', defaultWidth: 120, defaultVisible: false },
-  { key: 'container', label: 'Container', defaultWidth: 140, defaultVisible: false },
-  { key: 'message', label: 'Message', defaultWidth: 720, defaultVisible: true, flex: true },
 ];
 
 export const LOGS_URL_FILTER_CONFIG = {

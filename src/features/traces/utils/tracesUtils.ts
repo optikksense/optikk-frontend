@@ -149,18 +149,3 @@ export const TRACE_FILTER_FIELDS: TraceFilterField[] = [
     operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
   },
 ];
-
-import type { TraceColumn } from '../types';
-
-/**
- *
- */
-export const TRACE_COLUMNS: TraceColumn[] = [
-  { key: 'trace_id', label: 'Trace ID', defaultWidth: 185, defaultVisible: true },
-  { key: 'service_name', label: 'Service', defaultWidth: 155, defaultVisible: true },
-  { key: 'status', label: 'Status', defaultWidth: 100, defaultVisible: true },
-  { key: 'duration_ms', label: 'Duration', defaultWidth: 135, defaultVisible: true },
-  { key: 'http_status_code', label: 'HTTP Code', defaultWidth: 90, defaultVisible: false },
-  { key: 'start_time', label: 'Start Time', defaultWidth: 165, defaultVisible: true },
-  { key: 'operation_name', label: 'Operation', defaultVisible: true, flex: true },
-];

@@ -54,6 +54,34 @@ const LOG_METRIC_FIELDS = [
   { value: 'body', label: 'body' },
 ];
 
+const LOG_LEVEL_SORT_ORDER: Record<string, number> = {
+  TRACE: 0,
+  DEBUG: 1,
+  INFO: 2,
+  WARN: 3,
+  WARNING: 3,
+  ERROR: 4,
+  FATAL: 5,
+};
+
+function compareText(left: unknown, right: unknown): number {
+  return String(left ?? '').localeCompare(String(right ?? ''), undefined, { sensitivity: 'base' });
+}
+
+function compareTimestamp(left: unknown, right: unknown): number {
+  return new Date(String(left ?? 0)).getTime() - new Date(String(right ?? 0)).getTime();
+}
+
+function formatLiveTailStatus(
+  status: 'idle' | 'connecting' | 'live' | 'closed' | 'error',
+  lagMs: number
+): string {
+  if (status === 'live') return `${Math.max(0, lagMs)}ms lag`;
+  if (status === 'closed') return 'session ended';
+  if (status === 'error') return 'stream error';
+  return 'connecting';
+}
+
 export default function LogsHubPage(): JSX.Element {
   const navigate = useNavigate();
   const { timeRange } = useAppStore();
@@ -150,6 +178,7 @@ export default function LogsHubPage(): JSX.Element {
     liveTailStatus,
     liveTailLagMs,
     liveTailErrorMessage,
+    liveTailDroppedCount,
     errorCount,
   } = useLogsHubData({
     explorerQuery,
@@ -190,6 +219,8 @@ export default function LogsHubPage(): JSX.Element {
         key: 'timestamp',
         dataIndex: 'timestamp',
         width: 168,
+        sorter: (left, right) => compareTimestamp(left.timestamp, right.timestamp),
+        defaultSortOrder: 'descend',
         render: (value, row) => {
           const timestamp =
             value instanceof Date || typeof value === 'string' || typeof value === 'number'
@@ -213,6 +244,12 @@ export default function LogsHubPage(): JSX.Element {
         key: 'level',
         dataIndex: 'level',
         width: 90,
+        sorter: (left, right) =>
+          (LOG_LEVEL_SORT_ORDER[String(left.level ?? left.severity_text ?? 'INFO').toUpperCase()] ??
+            0) -
+          (LOG_LEVEL_SORT_ORDER[
+            String(right.level ?? right.severity_text ?? 'INFO').toUpperCase()
+          ] ?? 0),
         render: (value, row) => <LevelBadge level={String(value ?? row.severity_text ?? 'INFO')} />,
       },
       {
@@ -220,6 +257,8 @@ export default function LogsHubPage(): JSX.Element {
         key: 'service_name',
         dataIndex: 'service_name',
         width: 160,
+        sorter: (left, right) =>
+          compareText(left.service_name ?? left.service, right.service_name ?? right.service),
         render: (value) => (
           <span className="text-[12.5px] font-medium text-[var(--text-primary)]">
             {toDisplayText(value)}
@@ -231,6 +270,7 @@ export default function LogsHubPage(): JSX.Element {
         key: 'host',
         dataIndex: 'host',
         width: 148,
+        sorter: (left, right) => compareText(left.host ?? left.pod, right.host ?? right.pod),
         render: (value, row) => (
           <span className="text-[12px] text-[var(--text-secondary)]">
             {toDisplayText(value || row.pod)}
@@ -241,6 +281,8 @@ export default function LogsHubPage(): JSX.Element {
         title: 'Message',
         key: 'message',
         dataIndex: 'message',
+        sorter: (left, right) =>
+          compareText(left.message ?? left.body, right.message ?? right.body),
         render: (value, row) => (
           <button
             type="button"
@@ -256,6 +298,8 @@ export default function LogsHubPage(): JSX.Element {
         key: 'trace_id',
         dataIndex: 'trace_id',
         width: 150,
+        sorter: (left, right) =>
+          compareText(left.trace_id ?? left.traceId, right.trace_id ?? right.traceId),
         render: (value) => (
           <span className="font-mono text-[11px] text-[var(--text-muted)]">
             {value ? String(value).slice(0, 12) : '—'}
@@ -333,6 +377,9 @@ export default function LogsHubPage(): JSX.Element {
               <Badge variant={errorCount > 0 ? 'error' : 'default'}>
                 {formatNumber(errorCount)} error logs
               </Badge>
+              {liveTailEnabled && liveTailDroppedCount > 0 ? (
+                <Badge variant="error">{formatNumber(liveTailDroppedCount)} dropped</Badge>
+              ) : null}
             </div>
             <div className="flex items-center gap-2">
               <Button

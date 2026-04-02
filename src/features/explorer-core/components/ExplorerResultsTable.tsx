@@ -1,4 +1,4 @@
-import { Pagination, SimpleTable, Skeleton } from '@/components/ui';
+import { SimpleTable, Skeleton } from '@/components/ui';
 import { PageSurface } from '@shared/components/ui';
 
 import type { SimpleTableColumn, SimpleTableProps } from '@/components/ui';
@@ -53,25 +53,25 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
           columns={columns}
           dataSource={rows}
           rowKey={rowKey}
-          pagination={false}
+          pagination={{
+            current: page,
+            pageSize,
+            total,
+            manual: true,
+            showSizeChanger: true,
+            onChange: (nextPage, nextPageSize) => {
+              if (nextPageSize !== pageSize) {
+                onPageSizeChange(nextPageSize);
+                return;
+              }
+              onPageChange(nextPage);
+            },
+          }}
           onRow={onRow}
           rowClassName={rowClassName}
           className="[&_td]:align-top [&_td]:py-2.5 [&_th]:py-2.5"
         />
       )}
-
-      {total > 0 ? (
-        <div className="mt-4 border-t border-[rgba(255,255,255,0.06)] pt-4">
-          <Pagination
-            page={page}
-            pageSize={pageSize}
-            total={total}
-            onPageChange={onPageChange}
-            onPageSizeChange={onPageSizeChange}
-            pageSizeOptions={[10, 20, 50, 100]}
-          />
-        </div>
-      ) : null}
     </PageSurface>
   );
 }
