@@ -10,6 +10,9 @@ const ServicesPage = lazy(() =>
 const ServiceDetailPage = lazy(() =>
   import('./pages/ServiceDetailPage').then((module) => ({ default: module.default }))
 );
+const EndpointDetailPage = lazy(() =>
+  import('./pages/EndpointDetailPage').then((module) => ({ default: module.default }))
+);
 const ServiceMapRenderer = lazy(() =>
   import('./dashboard/renderers/ServiceMapRenderer').then((module) => ({
     default: module.ServiceMapRenderer,
@@ -31,13 +34,15 @@ const servicesConfig: DomainConfig = {
       group: 'observe',
     },
   ],
-  routes: [],
+  routes: [
+    { path: ROUTES.endpointDetail, page: EndpointDetailPage },
+    { path: ROUTES.serviceDetail, page: ServiceDetailPage },
+  ],
   dashboardPages: [
     { pageId: 'services', page: ServicesPage },
-    { pageId: 'service-detail', page: ServiceDetailPage },
   ],
   dashboardPanels: [
     { panelType: 'service-map', kind: 'specialized', component: ServiceMapRenderer },
   ],
 };
-export * from './components/detail';
+

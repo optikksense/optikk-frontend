@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 
-import ServiceGraph, {
-  type ServiceGraphEdge,
-  type ServiceGraphNode,
+import type {
+  ServiceGraphEdge,
+  ServiceGraphNode,
 } from '@shared/components/ui/charts/specialized/ServiceGraph';
+import ServiceTopologyMap from '../../components/topology/ServiceTopologyMap';
 import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
 import { getDashboardRecordArrayField } from '@shared/components/ui/dashboard/utils/runtimeValue';
 import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
@@ -59,7 +60,7 @@ export function ServiceMapRenderer({
   }
   return (
     <div className="h-full min-h-0">
-      <ServiceGraph nodes={payload.nodes} edges={payload.edges} />
+      <ServiceTopologyMap nodes={[...payload.nodes]} edges={[...payload.edges]} />
     </div>
   );
 }

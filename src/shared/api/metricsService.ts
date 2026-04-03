@@ -22,6 +22,12 @@ import {
   type ResourceUsageTimeSeriesPointDto,
   serviceDependencySchema,
   type ServiceDependencyDto,
+  serviceDependencyDetailSchema,
+  type ServiceDependencyDetailDto,
+  spanAnalysisRowSchema,
+  type SpanAnalysisRowDto,
+  serviceInfraMetricsSchema,
+  type ServiceInfraMetricsDto,
 } from './schemas/metricsSchemas';
 import { serviceSummarySchema, type ServiceSummary } from './schemas/servicesSchemas';
 import type { QueryParams, RequestTime } from './service-types';
@@ -206,6 +212,45 @@ export const metricsService = {
       startTime,
       endTime,
     });
+  },
+
+  async getServiceUpstreamDownstream(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string
+  ): Promise<ServiceDependencyDetailDto[]> {
+    return getArrayResponse(
+      `${BASE}/services/${encodeURIComponent(serviceName)}/upstream-downstream`,
+      serviceDependencyDetailSchema,
+      { startTime, endTime }
+    );
+  },
+
+  async getSpanAnalysis(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string
+  ): Promise<SpanAnalysisRowDto[]> {
+    return getArrayResponse(
+      `${BASE}/services/${encodeURIComponent(serviceName)}/span-analysis`,
+      spanAnalysisRowSchema,
+      { startTime, endTime }
+    );
+  },
+
+  async getServiceInfraMetrics(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string
+  ): Promise<ServiceInfraMetricsDto> {
+    return getObjectResponse(
+      `${BASE}/services/${encodeURIComponent(serviceName)}/infrastructure`,
+      serviceInfraMetricsSchema,
+      { startTime, endTime }
+    );
   },
 
   async getEndpointBreakdown(

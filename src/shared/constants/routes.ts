@@ -17,6 +17,7 @@ const ROUTES = {
   traceCompare: '/traces/compare',
   services: '/services',
   serviceDetail: '/services/:serviceName',
+  endpointDetail: '/services/:serviceName/endpoints/:endpointName',
   metrics: '/metrics',
   infrastructure: '/infrastructure',
   errors: '/errors',
