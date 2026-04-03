@@ -13,6 +13,10 @@ export interface UPlotChartProps {
   height?: number;
   fillHeight?: boolean;
   className?: string;
+  /** Pass a shared uPlot.SyncPubSub instance to synchronize cursors across charts */
+  syncKey?: uPlot.SyncPubSub;
+  /** Called when user drag-selects a time range on the chart */
+  onTimeBrush?: (startMs: number, endMs: number) => void;
   tooltipContent?: (params: { u: uPlot; idx: number; data: uPlot.AlignedData }) => {
     title?: string;
     rows: Array<{ label: string; value: string; color?: string }>;
@@ -28,6 +32,8 @@ export default function UPlotChart({
   height = 260,
   fillHeight = false,
   className,
+  syncKey,
+  onTimeBrush,
   tooltipContent,
 }: UPlotChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,11 +55,29 @@ export default function UPlotChart({
       width: 100, // will be resized immediately
       height: fillHeight ? Math.max(height, 180) : height,
       cursor: {
-        drag: { x: true, y: false, setScale: true },
+        drag: { x: true, y: false, setScale: !onTimeBrush },
+        sync: syncKey ? { key: syncKey.key } : undefined,
         ...options.cursor,
       },
       hooks: {
         ...existingHooks,
+        setSelect: [
+          ...(existingHooks.setSelect ?? []),
+          ...(onTimeBrush
+            ? [
+                (u: uPlot) => {
+                  const left = u.select.left;
+                  const width = u.select.width;
+                  if (width < 10) return; // ignore tiny drags
+                  const startMs = u.posToVal(left, 'x') * 1000;
+                  const endMs = u.posToVal(left + width, 'x') * 1000;
+                  if (startMs < endMs) onTimeBrush(startMs, endMs);
+                  // Reset the selection rectangle
+                  u.setSelect({ left: 0, width: 0, top: 0, height: 0 }, false);
+                },
+              ]
+            : []),
+        ],
         setCursor: [
           ...setCursorHooks,
           (u: uPlot) => {
@@ -92,7 +116,7 @@ export default function UPlotChart({
         ],
       },
     };
-  }, [options, height, fillHeight, tooltipContent, data]);
+  }, [options, height, fillHeight, tooltipContent, data, syncKey, onTimeBrush]);
 
   useEffect(() => {
     if (!containerRef.current) return;

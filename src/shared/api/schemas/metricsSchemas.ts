@@ -104,6 +104,48 @@ export type MetricsTimeSeriesPointDto = z.infer<typeof metricsTimeSeriesPointSch
 export type EndpointMetricDto = z.infer<typeof endpointMetricSchema>;
 export type ErrorGroupDto = z.infer<typeof errorGroupSchema>;
 export type ServiceDependencyDto = z.infer<typeof serviceDependencySchema>;
+
+export const serviceDependencyDetailSchema = z
+  .object({
+    source: stringValue,
+    target: stringValue,
+    call_count: numericValue,
+    p95_latency_ms: numericValue,
+    error_rate: numericValue,
+    direction: z.enum(['upstream', 'downstream']),
+  })
+  .strict();
+
+export type ServiceDependencyDetailDto = z.infer<typeof serviceDependencyDetailSchema>;
+
+export const spanAnalysisRowSchema = z
+  .object({
+    span_kind: stringValue,
+    operation_name: stringValue,
+    span_count: numericValue,
+    total_duration: numericValue,
+    avg_duration: numericValue,
+    p95_duration: numericValue,
+    error_count: numericValue,
+    error_rate: numericValue,
+  })
+  .strict();
+
+export type SpanAnalysisRowDto = z.infer<typeof spanAnalysisRowSchema>;
+
+export const serviceInfraMetricsSchema = z
+  .object({
+    service_name: stringValue,
+    avg_cpu_util: numericValue,
+    avg_memory_util: numericValue,
+    avg_disk_util: numericValue,
+    avg_network_util: numericValue,
+    avg_conn_pool_util: numericValue,
+    sample_count: numericValue,
+  })
+  .strict();
+
+export type ServiceInfraMetricsDto = z.infer<typeof serviceInfraMetricsSchema>;
 export type ResourceUsageTimeSeriesPointDto = z.infer<typeof resourceUsageTimeSeriesPointSchema>;
 export type ResourceUsageByServiceRowDto = z.infer<typeof resourceUsageByServiceRowSchema>;
 export type ResourceUsageByInstanceRowDto = z.infer<typeof resourceUsageByInstanceRowSchema>;
