@@ -19,10 +19,7 @@ const TraceComparisonPage = lazy(() =>
   import('./pages/TraceComparisonPage').then((module) => ({ default: module.default }))
 );
 
-export /**
- *
- */
-const tracesConfig: DomainConfig = {
+export const tracesConfig: DomainConfig = {
   key: 'traces',
   label: 'Traces',
   permissions: ['traces:read'],
@@ -43,5 +40,3 @@ const tracesConfig: DomainConfig = {
     { panelType: 'trace-waterfall', kind: 'specialized', component: TraceWaterfallRenderer },
   ],
 };
-export * from './components';
-export type { ServiceBadge, TraceRecord } from './types';

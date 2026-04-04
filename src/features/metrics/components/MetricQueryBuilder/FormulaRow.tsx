@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { QUERY_LABELS } from '../../constants/metricsExplorerConstants';
+import { QUERY_LABELS } from '../../constants';
 
 interface FormulaRowProps {
   readonly id: string;

@@ -10,6 +10,7 @@ import { MetricsExplorerChart } from '../../components/MetricsExplorerChart';
 import { MetricsExplorerToolbar } from '../../components/MetricsExplorerToolbar';
 import { useMetricsExplorer } from '../../hooks/useMetricsExplorer';
 import { useMetricsExplorerQuery } from '../../hooks/useMetricsExplorerQuery';
+import type { MetricExplorerResults } from '../../types';
 
 export default function MetricsExplorerPage() {
   const {
@@ -35,7 +36,7 @@ export default function MetricsExplorerPage() {
   const { data, isLoading, isError, refetch } = useMetricsExplorerQuery(queries, step, spaceAgg);
 
   const handleShare = useCallback(() => {
-    navigator.clipboard.writeText(window.location.href);
+    void navigator.clipboard.writeText(window.location.href);
     toast.success('Link copied to clipboard');
   }, []);
 
@@ -82,7 +83,7 @@ export default function MetricsExplorerPage() {
       <MetricsExplorerChart
         queries={queries}
         formulas={formulas}
-        results={data?.results}
+        results={(data?.results ?? {}) as MetricExplorerResults}
         chartType={chartType}
         isLoading={isLoading}
         isError={isError}

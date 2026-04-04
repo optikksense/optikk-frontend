@@ -1,6 +1,6 @@
 import './LogRow.css';
 
-/* ─── Level badge ─────────────────────────────────────────────────────────── */
+
 
 const LEVEL_CLASS: Record<string, string> = {
   FATAL: 'log-level--fatal',

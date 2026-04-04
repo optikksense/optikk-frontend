@@ -118,6 +118,66 @@ export const serviceDependencyDetailSchema = z
 
 export type ServiceDependencyDetailDto = z.infer<typeof serviceDependencyDetailSchema>;
 
+export const topologyNodeSchema = z
+  .object({
+    name: stringValue,
+    status: stringValue,
+    request_count: numericValue,
+    error_rate: numericValue,
+    avg_latency: numericValue,
+  })
+  .strict();
+
+export const topologyEdgeSchema = z
+  .object({
+    source: stringValue,
+    target: stringValue,
+    call_count: numericValue,
+    avg_latency: numericValue,
+    p95_latency_ms: numericValue,
+    error_rate: numericValue,
+  })
+  .strict();
+
+export const serviceDependencyGraphSchema = z
+  .object({
+    center: stringValue,
+    nodes: z.array(topologyNodeSchema),
+    edges: z.array(topologyEdgeSchema),
+  })
+  .strict();
+
+export type TopologyNodeDto = z.infer<typeof topologyNodeSchema>;
+export type TopologyEdgeDto = z.infer<typeof topologyEdgeSchema>;
+export type ServiceDependencyGraphDto = z.infer<typeof serviceDependencyGraphSchema>;
+
+export const enrichedTopologyNodeSchema = topologyNodeSchema
+  .extend({
+    service_type: stringValue,
+    sparkline: z.array(numericValue),
+  })
+  .strict();
+
+export const enrichedTopologySchema = z
+  .object({
+    nodes: z.array(enrichedTopologyNodeSchema),
+    edges: z.array(topologyEdgeSchema),
+  })
+  .strict();
+
+export type EnrichedTopologyNodeDto = z.infer<typeof enrichedTopologyNodeSchema>;
+export type EnrichedTopologyDto = z.infer<typeof enrichedTopologySchema>;
+
+export const topologyClusterSchema = z
+  .object({
+    name: stringValue,
+    services: z.array(stringValue),
+    count: numericValue,
+  })
+  .strict();
+
+export type TopologyClusterDto = z.infer<typeof topologyClusterSchema>;
+
 export const spanAnalysisRowSchema = z
   .object({
     span_kind: stringValue,
@@ -132,6 +192,18 @@ export const spanAnalysisRowSchema = z
   .strict();
 
 export type SpanAnalysisRowDto = z.infer<typeof spanAnalysisRowSchema>;
+
+export const serviceErrorTimeSeriesSchema = z
+  .object({
+    service_name: stringValue,
+    timestamp: stringValue,
+    total_count: numericValue,
+    error_count: numericValue,
+    error_rate: numericValue,
+  })
+  .strict();
+
+export type ServiceErrorTimeSeriesDto = z.infer<typeof serviceErrorTimeSeriesSchema>;
 
 export const serviceInfraMetricsSchema = z
   .object({

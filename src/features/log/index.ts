@@ -19,10 +19,7 @@ const LogHistogramRenderer = lazy(() =>
   }))
 );
 
-export /**
- *
- */
-const logsConfig: DomainConfig = {
+export const logsConfig: DomainConfig = {
   key: 'logs',
   label: 'Logs',
   permissions: ['logs:read'],

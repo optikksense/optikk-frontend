@@ -1,6 +1,5 @@
 import { ChevronDown, Search } from 'lucide-react';
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import { useCallback, useDeferredValue, useMemo, useRef, useState } from 'react';
 
 import { Popover } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -28,11 +27,10 @@ function groupByPrefix(metrics: MetricNameEntry[]): Map<string, MetricNameEntry[
 export function MetricSelector({ value, onChange }: MetricSelectorProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const debouncedSetSearch = useDebouncedCallback((val: string) => setDebouncedSearch(val), 300);
+  const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data } = useMetricNames(debouncedSearch);
+  const { data } = useMetricNames(deferredSearch);
   const metrics = data?.metrics ?? [];
 
   const grouped = useMemo(() => groupByPrefix(metrics), [metrics]);
@@ -53,7 +51,6 @@ export function MetricSelector({ value, onChange }: MetricSelectorProps) {
         requestAnimationFrame(() => inputRef.current?.focus());
       } else {
         setSearch('');
-        setDebouncedSearch('');
       }
     },
     []
@@ -91,7 +88,6 @@ export function MetricSelector({ value, onChange }: MetricSelectorProps) {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              debouncedSetSearch(e.target.value);
             }}
             placeholder="Search metrics…"
             className="h-6 flex-1 bg-transparent text-[12px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none"

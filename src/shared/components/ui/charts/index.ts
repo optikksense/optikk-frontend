@@ -11,4 +11,3 @@ export { default as ExceptionTypeLineChart } from './time-series/ExceptionTypeLi
 export { default as RequestChart } from './time-series/RequestChart';
 export { default as LatencyChart } from './time-series/LatencyChart';
 export { default as WaterfallChart } from './specialized/WaterfallChart';
-export { default as ServiceGraph } from './specialized/ServiceGraph';

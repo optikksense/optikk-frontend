@@ -20,6 +20,15 @@ export const DASHBOARD_SCHEMA_VERSION = 2 as const;
 export type DashboardSchemaVersion = 1 | 2;
 
 export type DashboardRenderMode = 'dashboard' | 'explorer';
+export type DashboardColumnAlign = 'left' | 'center' | 'right';
+export type DashboardDrawerEntity =
+  | 'aiModel'
+  | 'databaseSystem'
+  | 'errorGroup'
+  | 'kafkaGroup'
+  | 'kafkaTopic'
+  | 'node'
+  | 'redisInstance';
 export const DASHBOARD_PANEL_TYPES = [
   'ai-bar',
   'ai-line',
@@ -36,6 +45,7 @@ export const DASHBOARD_PANEL_TYPES = [
   'log-histogram',
   'pie',
   'request',
+  'service-catalog',
   'service-health-grid',
   'service-map',
   'slo-indicators',
@@ -100,6 +110,20 @@ export interface DashboardStatSummaryField {
   keys?: string[];
 }
 
+export interface DashboardTableColumn {
+  key: string;
+  label: string;
+  formatter?: string;
+  align?: DashboardColumnAlign;
+  width?: number;
+}
+
+export interface DashboardDrawerAction {
+  entity: DashboardDrawerEntity;
+  idField: string;
+  titleField?: string;
+}
+
 export interface DashboardPanelSpec {
   id: string;
   panelType: DashboardPanelType;
@@ -132,7 +156,8 @@ export interface DashboardPanelSpec {
   listSortField?: string;
   listType?: string;
   listTitle?: string;
-  drilldownRoute?: string;
+  columns?: DashboardTableColumn[];
+  drawerAction?: DashboardDrawerAction;
   targetThreshold?: number;
   summaryFields?: DashboardStatSummaryField[];
   yPrefix?: string;

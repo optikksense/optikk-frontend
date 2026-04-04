@@ -8,7 +8,7 @@ import { APP_COLORS } from '@config/colorLiterals';
 
 import type { LogVolumeBucket } from '../../types';
 
-/* ─── Level colours ───────────────────────────────────────────────────────── */
+
 const LEVEL_COLORS: Record<
   'errors' | 'warnings' | 'infos' | 'debugs' | 'fatals' | 'traces',
   string
@@ -89,7 +89,7 @@ function formatBucketLabel(
   return dateFnsFormat(parsed, 'HH:mm');
 }
 
-/* ─── VolumeBar ───────────────────────────────────────────────────────────── */
+
 interface VolumeBarProps {
   bucket: LogVolumeBucket;
   maxTotal: number;
@@ -142,7 +142,7 @@ function VolumeBar({ bucket, maxTotal, step }: VolumeBarProps) {
   );
 }
 
-/* ─── Axis tick helpers ───────────────────────────────────────────────────── */
+
 function pickTickIndices(count: number, desired = 5): number[] {
   if (count <= desired) return Array.from({ length: count }, (_, index) => index);
 
@@ -159,13 +159,8 @@ function getTickPosition(index: number, count: number): string {
   return `${(index / (count - 1)) * 100}%`;
 }
 
-/* ─── LogVolumeChart ──────────────────────────────────────────────────────── */
-/**
- *
- * @param root0
- * @param root0.buckets
- * @param root0.isLoading
- */
+
+
 interface LogVolumeChartProps {
   buckets: LogVolumeBucket[];
   step: string;
@@ -229,19 +224,13 @@ export default function LogVolumeChart({ buckets, step, isLoading }: LogVolumeCh
   );
 }
 
-/* ─── VolumeLegend ────────────────────────────────────────────────────────── */
-/**
- *
- * @param root0
- * @param root0.buckets
- */
+
+
 interface VolumeLegendProps {
   buckets: LogVolumeBucket[];
 }
 
-/**
- *
- */
+
 export function VolumeLegend({ buckets }: VolumeLegendProps) {
   if (!buckets.length) return null;
 

@@ -1,17 +1,13 @@
-/**
- *
- */
+
 import { type TraceRecord as EntityTraceRecord } from '@entities/trace/model';
 import type { QueryParams } from '@shared/api/service-types';
 
 export type TraceRecord = EntityTraceRecord;
 
-/**
- *
- */
+
 export type ServiceBadge = [string, number];
 
-// ── Trace Detail Enhancement Types ────────────────────────────────────────────
+
 
 export interface SpanEvent {
   spanId: string;
@@ -81,7 +77,7 @@ export interface RelatedTrace {
   startTime: string;
 }
 
-// ── Comparison Types ──────────────────────────────────────────────
+
 
 export interface TraceComparisonResult {
   traceA: {

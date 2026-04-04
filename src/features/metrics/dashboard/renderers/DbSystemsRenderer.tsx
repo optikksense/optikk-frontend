@@ -1,10 +1,10 @@
 import { Database } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { APP_COLORS } from '@config/colorLiterals';
 import { formatDuration, formatNumber, normalizePercentage } from '@shared/utils/formatters';
 import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
-import { buildInterpolatedPath } from '@shared/utils/placeholderInterpolation';
+import { buildDashboardDrawerSearch } from '@shared/components/ui/dashboard/utils/dashboardDrawerState';
 import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
 
 const DB_SYSTEM_META: Record<string, { label: string; color: string; gradient: string }> = {
@@ -212,6 +212,7 @@ export function DbSystemsRenderer({
   fillHeight: _fillHeight,
 }: DashboardPanelRendererProps) {
   const { data: systems } = useDashboardData(chartConfig, dataSources);
+  const location = useLocation();
 
   if (!systems || systems.length === 0) {
     return (
@@ -232,17 +233,21 @@ export function DbSystemsRenderer({
       }}
     >
       {systems.map((system: any) => {
-        const href = buildInterpolatedPath(chartConfig.drilldownRoute, system);
+        const search = buildDashboardDrawerSearch(
+          location.search,
+          chartConfig.drawerAction,
+          system
+        );
         const card = <DbSystemCard system={system} />;
 
-        if (!href) {
+        if (!search) {
           return <div key={system.db_system}>{card}</div>;
         }
 
         return (
           <Link
             key={system.db_system}
-            to={href}
+            to={{ pathname: location.pathname, search }}
             style={{ display: 'block', textDecoration: 'none' }}
             aria-label={`Open ${system.db_system} database detail`}
           >

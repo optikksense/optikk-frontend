@@ -1,16 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { metricsService } from '@shared/api/metricsService';
-
 import { resolveTimeRangeBounds } from '@/types';
 import { useAppStore } from '@store/appStore';
-
-import {
-  normalizeEndpointMetric,
-  normalizeMetricSummary,
-  normalizeServiceMetric,
-  normalizeTimeSeriesPoint,
-} from '../utils/metricNormalizers';
+import { metricsOverviewApi } from '../api/metricsOverviewApi';
 
 import type {
   EndpointMetricPoint,
@@ -21,13 +13,6 @@ import type {
   UseMetricsQueriesParams,
   UseMetricsQueriesResult,
 } from '../types';
-
-function asArray<T>(value: unknown, normalize: (row: unknown) => T): T[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  return value.map(normalize);
-}
 
 /**
  *
@@ -43,31 +28,25 @@ export function useMetricsQueries({
     timeRange.kind === 'relative' ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`;
   const getTimeRange = () => resolveTimeRangeBounds(timeRange);
 
-  const { data: servicesData } = useQuery<unknown, Error, MetricsServiceOption[]>({
+  const { data: servicesData } = useQuery<MetricsServiceOption[]>({
     queryKey: ['services', selectedTeamId, rangeKey, refreshKey],
     queryFn: () => {
       const { startTime, endTime } = getTimeRange();
-      return metricsService.getOverviewServices(selectedTeamId, startTime, endTime);
+      return metricsOverviewApi.getOverviewServices(selectedTeamId, startTime, endTime);
     },
-    select: (data) => asArray(data, (row) => row as MetricsServiceOption),
     enabled: Boolean(selectedTeamId),
   });
 
-  const { data: summaryData, isLoading: summaryLoading } = useQuery<unknown, Error, MetricSummary>({
+  const { data: summaryData, isLoading: summaryLoading } = useQuery<MetricSummary>({
     queryKey: ['metrics-summary', selectedTeamId, rangeKey, refreshKey],
     queryFn: () => {
       const { startTime, endTime } = getTimeRange();
-      return metricsService.getMetricsSummary(selectedTeamId, startTime, endTime);
+      return metricsOverviewApi.getMetricsSummary(selectedTeamId, startTime, endTime);
     },
-    select: (data) => normalizeMetricSummary(data),
     enabled: Boolean(selectedTeamId),
   });
 
-  const { data: metricsData, isLoading: metricsLoading } = useQuery<
-    unknown,
-    Error,
-    MetricTimeSeriesPoint[]
-  >({
+  const { data: metricsData, isLoading: metricsLoading } = useQuery<MetricTimeSeriesPoint[]>({
     queryKey: [
       'metrics-timeseries',
       selectedTeamId,
@@ -78,7 +57,7 @@ export function useMetricsQueries({
     ],
     queryFn: () => {
       const { startTime, endTime } = getTimeRange();
-      return metricsService.getMetricsTimeSeries(
+      return metricsOverviewApi.getMetricsTimeSeries(
         selectedTeamId,
         startTime,
         endTime,
@@ -86,47 +65,43 @@ export function useMetricsQueries({
         '5m'
       );
     },
-    select: (data) => asArray(data, normalizeTimeSeriesPoint),
     enabled: Boolean(selectedTeamId),
   });
 
-  const { data: serviceMetricsData } = useQuery<unknown, Error, ServiceMetricPoint[]>({
+  const { data: serviceMetricsData } = useQuery<ServiceMetricPoint[]>({
     queryKey: ['service-metrics', selectedTeamId, rangeKey, refreshKey],
     queryFn: () => {
       const { startTime, endTime } = getTimeRange();
-      return metricsService.getServiceMetrics(selectedTeamId, startTime, endTime);
+      return metricsOverviewApi.getServiceMetrics(selectedTeamId, startTime, endTime);
     },
-    select: (data) => asArray(data, normalizeServiceMetric),
     enabled: Boolean(selectedTeamId) && activeTab === 'services',
   });
 
-  const { data: endpointMetricsData } = useQuery<unknown, Error, EndpointMetricPoint[]>({
+  const { data: endpointMetricsData } = useQuery<EndpointMetricPoint[]>({
     queryKey: ['endpoints-metrics', selectedTeamId, rangeKey, selectedService, refreshKey],
     queryFn: () => {
       const { startTime, endTime } = getTimeRange();
-      return metricsService.getOverviewEndpointMetrics(
+      return metricsOverviewApi.getOverviewEndpointMetrics(
         selectedTeamId,
         startTime,
         endTime,
         selectedService || undefined
       );
     },
-    select: (data) => asArray(data, normalizeEndpointMetric),
     enabled: Boolean(selectedTeamId),
   });
 
-  const { data: endpointTimeSeriesData } = useQuery<unknown, Error, MetricTimeSeriesPoint[]>({
+  const { data: endpointTimeSeriesData } = useQuery<MetricTimeSeriesPoint[]>({
     queryKey: ['endpoints-timeseries', selectedTeamId, rangeKey, selectedService, refreshKey],
     queryFn: () => {
       const { startTime, endTime } = getTimeRange();
-      return metricsService.getOverviewEndpointTimeSeries(
+      return metricsOverviewApi.getOverviewEndpointTimeSeries(
         selectedTeamId,
         startTime,
         endTime,
         selectedService || undefined
       );
     },
-    select: (data) => asArray(data, normalizeTimeSeriesPoint),
     enabled: Boolean(selectedTeamId) && activeTab === 'overview',
   });
 

@@ -8,8 +8,8 @@ export const metricsPaletteActions: PaletteAction[] = [
     keywords: ['metrics', 'dashboard', 'charts'],
     group: 'navigation',
     hotkey: 'g m',
-    perform: () => {
-      window.location.href = '/metrics';
+    perform: ({ navigate }) => {
+      navigate('/metrics');
     },
   },
   {

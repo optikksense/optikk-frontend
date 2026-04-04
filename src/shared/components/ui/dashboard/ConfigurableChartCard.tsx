@@ -8,6 +8,7 @@ import ChartErrorOverlay from '@shared/components/ui/feedback/ChartErrorOverlay'
 import ChartNoDataOverlay from '@shared/components/ui/feedback/ChartNoDataOverlay';
 
 import { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import type {
   DashboardPanelSpec,
@@ -115,6 +116,7 @@ function ConfigurableChartCardContent({
   titleContent,
 }: ConfigurableChartCardContentProps) {
   const chartConfig = componentConfig;
+  const location = useLocation();
   const panelType = resolveComponentKey(chartConfig);
   const [selectedEndpoints, setSelectedEndpoints] = useState<string[]>([]);
 
@@ -342,7 +344,9 @@ function ConfigurableChartCardContent({
                 endpoints={endpoints}
                 selectedEndpoints={selectedEndpoints}
                 onToggle={toggleEndpoint}
-                drilldownRouteTemplate={chartConfig.drilldownRoute}
+                drawerAction={chartConfig.drawerAction}
+                currentPathname={location.pathname}
+                currentSearch={location.search}
               />
             )}
             {showQueueList && (
@@ -352,7 +356,9 @@ function ConfigurableChartCardContent({
                 queues={endpoints}
                 selectedQueues={selectedEndpoints}
                 onToggle={toggleEndpoint}
-                drilldownRouteTemplate={chartConfig.drilldownRoute}
+                drawerAction={chartConfig.drawerAction}
+                currentPathname={location.pathname}
+                currentSearch={location.search}
               />
             )}
           </div>

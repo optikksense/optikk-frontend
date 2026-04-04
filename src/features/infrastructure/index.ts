@@ -8,10 +8,7 @@ const InfrastructurePage = lazy(() =>
   import('./pages/InfrastructureHubPage').then((module) => ({ default: module.default }))
 );
 
-export /**
- *
- */
-const infrastructureConfig: DomainConfig = {
+export const infrastructureConfig: DomainConfig = {
   key: 'infrastructure',
   label: 'Infrastructure',
   permissions: ['infrastructure:read'],
@@ -26,4 +23,3 @@ const infrastructureConfig: DomainConfig = {
   routes: [],
   dashboardPages: [{ pageId: 'infrastructure', page: InfrastructurePage }],
 };
-export * from './types';

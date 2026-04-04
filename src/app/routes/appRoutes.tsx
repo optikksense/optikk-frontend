@@ -2,16 +2,23 @@ import { Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import { getExplorerRoutes } from '@/app/registry/domainRegistry';
-import { ErrorBoundary, Loading, FeatureErrorBoundary } from '@/shared/components/ui/feedback';
+import { Loading, FeatureErrorBoundary } from '@/shared/components/ui/feedback';
 import { ROUTES } from '@/shared/constants/routes';
 
 import ProtectedRoute from './ProtectedRoute';
 import MainLayout from '../layout/MainLayout';
 import { lazy } from 'react';
+import LegacyDashboardDetailRedirect from './LegacyDashboardDetailRedirect';
 
 const LoginPage = lazy(() => import('@/app/auth'));
 const ProductPage = lazy(() => import('@/app/auth/pages/Pricing'));
-const BackendDrivenPage = lazy(() => import('./BackendDrivenPage'));
+const OverviewHubPage = lazy(() => import('@/features/overview/pages/OverviewHubPage'));
+const MetricsPage = lazy(() => import('@/features/metrics/pages/MetricsExplorerPage'));
+const SaturationHubPage = lazy(() => import('@/features/metrics/pages/SaturationHubPage'));
+const InfrastructureHubPage = lazy(
+  () => import('@/features/infrastructure/pages/InfrastructureHubPage')
+);
+const AiObservabilityPage = lazy(() => import('@/features/ai/pages/AiObservabilityPage'));
 
 function toNestedRoutePath(path: string): string {
   if (!path || path === ROUTES.home) {
@@ -90,25 +97,93 @@ export default function AppRoutes(): JSX.Element {
       >
         <Route index element={<Navigate to={ROUTES.overview} replace />} />
         {protectedExplorerRoutes.map((route) => renderProtectedRoute(route.path, route.page))}
+        {renderProtectedRoute(ROUTES.overview, OverviewHubPage)}
+        {renderProtectedRoute(ROUTES.metrics, MetricsPage)}
+        {renderProtectedRoute(ROUTES.saturation, SaturationHubPage)}
+        {renderProtectedRoute(ROUTES.infrastructure, InfrastructureHubPage)}
+        {renderProtectedRoute(ROUTES.aiObservability, AiObservabilityPage)}
         <Route path="errors" element={<Navigate to={`${ROUTES.overview}?tab=errors`} replace />} />
         <Route
-          path={toNestedRoutePath(ROUTES.latencyAlias)}
-          element={<Navigate to={`${ROUTES.overview}?tab=latency-analysis`} replace />}
-        />
-        <Route
-          path="service-map"
-          element={<Navigate to={`${ROUTES.services}?tab=service-map`} replace />}
-        />
-        <Route
-          path="*"
+          path="errors/:errorGroupId"
           element={
-            <ErrorBoundary showDetails={import.meta.env.DEV} boundaryName="route:backend-driven">
-              <Suspense fallback={<Loading fullscreen />}>
-                <BackendDrivenPage />
-              </Suspense>
-            </ErrorBoundary>
+            <LegacyDashboardDetailRedirect
+              parentPath={ROUTES.overview}
+              drawerEntity="errorGroup"
+              paramKey="errorGroupId"
+              tab="errors"
+            />
           }
         />
+        <Route
+          path="infrastructure/nodes/:host"
+          element={
+            <LegacyDashboardDetailRedirect
+              parentPath={ROUTES.infrastructure}
+              drawerEntity="node"
+              paramKey="host"
+              tab="nodes"
+            />
+          }
+        />
+        <Route
+          path="saturation/database/:dbSystem"
+          element={
+            <LegacyDashboardDetailRedirect
+              parentPath={ROUTES.saturation}
+              drawerEntity="databaseSystem"
+              paramKey="dbSystem"
+              tab="database"
+            />
+          }
+        />
+        <Route
+          path="saturation/redis/:instance"
+          element={
+            <LegacyDashboardDetailRedirect
+              parentPath={ROUTES.saturation}
+              drawerEntity="redisInstance"
+              paramKey="instance"
+              tab="redis"
+            />
+          }
+        />
+        <Route
+          path="saturation/kafka/topics/:topic"
+          element={
+            <LegacyDashboardDetailRedirect
+              parentPath={ROUTES.saturation}
+              drawerEntity="kafkaTopic"
+              paramKey="topic"
+              tab="queue"
+            />
+          }
+        />
+        <Route
+          path="saturation/kafka/groups/:groupId"
+          element={
+            <LegacyDashboardDetailRedirect
+              parentPath={ROUTES.saturation}
+              drawerEntity="kafkaGroup"
+              paramKey="groupId"
+              tab="queue"
+            />
+          }
+        />
+        <Route
+          path="ai-observability/models/:modelName"
+          element={
+            <LegacyDashboardDetailRedirect
+              parentPath={ROUTES.aiObservability}
+              drawerEntity="aiModel"
+              paramKey="modelName"
+            />
+          }
+        />
+        <Route
+          path="services/:serviceName/operations/:operationName"
+          element={<Navigate to={ROUTES.metrics} replace />}
+        />
+        <Route path="*" element={<Navigate to={ROUTES.overview} replace />} />
       </Route>
 
       <Route path="*" element={<Navigate to={ROUTES.home} replace />} />

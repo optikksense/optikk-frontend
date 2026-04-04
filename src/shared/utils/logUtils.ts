@@ -39,7 +39,7 @@ function asLogLike(value: unknown): LogLike {
   return value as LogLike;
 }
 
-// ── Response page parsing ──────────────────────────────────────────────────
+
 
 /**
  * Returns a normalized logs array from a backend page shape.
@@ -111,7 +111,7 @@ export function getNextCursorFromPage(page: unknown): CursorValue | undefined {
   return undefined;
 }
 
-// ── Timestamp parsing ──────────────────────────────────────────────────────
+
 
 /**
  * Parses an unknown timestamp value to epoch milliseconds.
@@ -183,7 +183,7 @@ export function getTimestampMs(log: unknown): number {
   return parseTimestampMs(logLike.timestamp);
 }
 
-// ── BigInt ID comparison ───────────────────────────────────────────────────
+
 
 /**
  * Normalizes an id-like value into BigInt when possible.
@@ -223,7 +223,7 @@ export function compareIdsDesc(aId: unknown, bId: unknown): number {
   return bStr.localeCompare(aStr);
 }
 
-// ── Log field accessor (shared across LogRow, LogsRawView) ─────────────────
+
 
 /**
  * Reads a display value from a log row using legacy and normalized key aliases.
@@ -250,7 +250,7 @@ export function getLogValue(log: unknown, key: string): unknown {
   return logLike[key] ?? '';
 }
 
-// ── Row key generation ─────────────────────────────────────────────────────
+
 
 /**
  * Builds a stable React row key for log rows.
@@ -269,7 +269,7 @@ export function rowKey(log: unknown, i: number): string {
   return `log-${i}-${String(logLike.timestamp ?? '')}`;
 }
 
-// ── Server total extraction ────────────────────────────────────────────────
+
 
 /**
  * Reads a total-count value from the first paginated backend response.
@@ -282,7 +282,7 @@ export function extractServerTotal(pages: unknown): number {
   return Number(firstPage?.total ?? firstPage?.total_count ?? 0);
 }
 
-// ── Volume Bucket Gap Filling ──────────────────────────────────────────────
+
 
 /** Maps supported volume step labels to their millisecond duration. */
 export const STEP_MS_BY_LABEL: Record<string, number> = {

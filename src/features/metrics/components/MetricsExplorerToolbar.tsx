@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import {
   SPACE_AGGREGATION_OPTIONS,
   TIME_STEP_OPTIONS,
-} from '../constants/metricsExplorerConstants';
+} from '../constants';
 import type { ChartType, MetricSpaceAggregation, TimeStep } from '../types';
 
 interface MetricsExplorerToolbarProps {

@@ -8,6 +8,8 @@ import api from './api';
 import {
   errorGroupSchema,
   type ErrorGroupDto,
+  enrichedTopologySchema,
+  type EnrichedTopologyDto,
   endpointMetricSchema,
   type EndpointMetricDto,
   metricNumericValueSchema,
@@ -24,12 +26,31 @@ import {
   type ServiceDependencyDto,
   serviceDependencyDetailSchema,
   type ServiceDependencyDetailDto,
+  serviceDependencyGraphSchema,
+  type ServiceDependencyGraphDto,
+  serviceErrorTimeSeriesSchema,
+  type ServiceErrorTimeSeriesDto,
   spanAnalysisRowSchema,
   type SpanAnalysisRowDto,
   serviceInfraMetricsSchema,
   type ServiceInfraMetricsDto,
+  topologyClusterSchema,
+  type TopologyClusterDto,
 } from './schemas/metricsSchemas';
-import { serviceSummarySchema, type ServiceSummary } from './schemas/servicesSchemas';
+const serviceSummarySchema = z
+  .object({
+    service_name: z.string().default(''),
+    request_count: z.coerce.number().default(0),
+    error_count: z.coerce.number().default(0),
+    error_rate: z.coerce.number().default(0),
+    avg_latency: z.coerce.number().default(0),
+    p50_latency: z.coerce.number().default(0),
+    p95_latency: z.coerce.number().default(0),
+    p99_latency: z.coerce.number().default(0),
+  })
+  .strict();
+
+type ServiceSummary = z.infer<typeof serviceSummarySchema>;
 import type { QueryParams, RequestTime } from './service-types';
 import { validateResponse } from './utils/validate';
 
@@ -227,6 +248,19 @@ export const metricsService = {
     );
   },
 
+  async getServiceDependencyGraph(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string
+  ): Promise<ServiceDependencyGraphDto> {
+    return getObjectResponse(
+      `${BASE}/services/${encodeURIComponent(serviceName)}/dependency-graph`,
+      serviceDependencyGraphSchema,
+      { startTime, endTime }
+    );
+  },
+
   async getSpanAnalysis(
     _teamId: number | null,
     startTime: RequestTime,
@@ -253,16 +287,52 @@ export const metricsService = {
     );
   },
 
+  async getServiceErrorTimeSeries(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string
+  ): Promise<ServiceErrorTimeSeriesDto[]> {
+    return getArrayResponse(
+      `${BASE}/services/${encodeURIComponent(serviceName)}/errors/timeseries`,
+      serviceErrorTimeSeriesSchema,
+      { startTime, endTime }
+    );
+  },
+
+  async getEnrichedTopology(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime
+  ): Promise<EnrichedTopologyDto> {
+    return getObjectResponse(`${BASE}/services/topology/enriched`, enrichedTopologySchema, {
+      startTime,
+      endTime,
+    });
+  },
+
+  async getTopologyClusters(
+    _teamId: number | null,
+    startTime: RequestTime,
+    endTime: RequestTime
+  ): Promise<TopologyClusterDto[]> {
+    return getArrayResponse(`${BASE}/services/topology/clusters`, topologyClusterSchema, {
+      startTime,
+      endTime,
+    });
+  },
+
   async getEndpointBreakdown(
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName: string
   ): Promise<EndpointMetricDto[]> {
-    return getArrayResponse(`${BASE}/services/${serviceName}/endpoints`, endpointMetricSchema, {
-      startTime,
-      endTime,
-    });
+    return getArrayResponse(
+      `${BASE}/services/${encodeURIComponent(serviceName)}/endpoints`,
+      endpointMetricSchema,
+      { startTime, endTime }
+    );
   },
 
   async getErrorGroups(
@@ -271,10 +341,11 @@ export const metricsService = {
     endTime: RequestTime,
     serviceName: string
   ): Promise<ErrorGroupDto[]> {
-    return getArrayResponse(`${BASE}/services/${serviceName}/errors`, errorGroupSchema, {
-      startTime,
-      endTime,
-    });
+    return getArrayResponse(
+      `${BASE}/services/${encodeURIComponent(serviceName)}/errors`,
+      errorGroupSchema,
+      { startTime, endTime }
+    );
   },
 
   async getGlobalErrorGroups(

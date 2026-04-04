@@ -3,12 +3,33 @@ import { z } from 'zod';
 import { API_CONFIG } from '@config/apiConfig';
 import api from '@/shared/api/api/client';
 import { decodeApiResponse } from '@/shared/api/utils/validate';
+import type { MetricQueryDefinition, MetricSpaceAggregation, TimeStep } from '../types';
+
+export function buildExplorerQueryRequest(
+  queries: MetricQueryDefinition[],
+  startTime: number,
+  endTime: number,
+  step: TimeStep,
+  spaceAgg: MetricSpaceAggregation
+): MetricExplorerQueryRequest {
+  return {
+    startTime,
+    endTime,
+    step,
+    queries: queries
+      .filter((q) => q.metricName)
+      .map((q) => ({
+        id: q.id,
+        aggregation: q.aggregation,
+        metricName: q.metricName,
+        where: q.where.map((w) => ({ key: w.key, operator: w.operator, value: w.value })),
+        groupBy: [...q.groupBy],
+        spaceAggregation: spaceAgg,
+      })),
+  };
+}
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
-
-// ---------------------------------------------------------------------------
-// Schemas
-// ---------------------------------------------------------------------------
 
 const metricNameEntrySchema = z.object({
   name: z.string(),
@@ -31,7 +52,7 @@ const metricTagsResponseSchema = z.object({
 });
 
 const metricSeriesSchema = z.object({
-  tags: z.record(z.string()),
+  tags: z.record(z.string(), z.string()),
   values: z.array(z.number().nullable()),
 });
 
@@ -41,12 +62,10 @@ const metricQueryResultSchema = z.object({
 });
 
 const metricsExplorerResponseSchema = z.object({
-  results: z.record(metricQueryResultSchema),
+  results: z.record(z.string(), metricQueryResultSchema),
 });
 
-// ---------------------------------------------------------------------------
 // Request types
-// ---------------------------------------------------------------------------
 
 export interface MetricNamesRequest {
   readonly startTime: number;
@@ -79,17 +98,13 @@ export interface MetricExplorerQueryRequest {
   }>;
 }
 
-// ---------------------------------------------------------------------------
 // Response types (inferred from schemas)
-// ---------------------------------------------------------------------------
 
 export type MetricNamesResponse = z.infer<typeof metricNamesResponseSchema>;
 export type MetricTagsResponse = z.infer<typeof metricTagsResponseSchema>;
 export type MetricsExplorerResponse = z.infer<typeof metricsExplorerResponseSchema>;
 
-// ---------------------------------------------------------------------------
 // API functions
-// ---------------------------------------------------------------------------
 
 export const metricsExplorerApi = {
   async fetchMetricNames(params: MetricNamesRequest): Promise<MetricNamesResponse> {

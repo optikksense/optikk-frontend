@@ -12,7 +12,7 @@ const STATUS_VARIANT: Record<string, 'success' | 'error' | 'default'> = {
   UNSET: 'default',
 };
 
-// ── Section + KV helpers ──────────────────────────────────────────────────────
+
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -33,7 +33,7 @@ function KVRow({ label, value, mono }: { label: string; value?: string | null; m
   );
 }
 
-// ── Virtualized Attribute Table ───────────────────────────────────────────────
+
 
 function VirtualizedAttrTable({ attrs }: { attrs: [string, string][] }) {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -92,7 +92,7 @@ function VirtualizedAttrTable({ attrs }: { attrs: [string, string][] }) {
   );
 }
 
-// ── Attributes Tab ────────────────────────────────────────────────────────────
+
 
 function AttributesTab({ attrs, loading }: { attrs: SpanAttributes | null; loading: boolean }) {
   const [attrSearch, setAttrSearch] = useState('');
@@ -208,7 +208,7 @@ function AttributesTab({ attrs, loading }: { attrs: SpanAttributes | null; loadi
   );
 }
 
-// ── Events Tab ────────────────────────────────────────────────────────────────
+
 
 function EventsTab({
   events,
@@ -281,7 +281,7 @@ function EventsTab({
   );
 }
 
-// ── Self-Time Tab ─────────────────────────────────────────────────────────────
+
 
 function SelfTimeTab({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
   if (selfTimes.length === 0) {
@@ -357,7 +357,7 @@ function SelfTimeTab({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
   );
 }
 
-// ── Related Traces Tab ────────────────────────────────────────────────────────
+
 
 function RelatedTab({ traces }: { traces: RelatedTrace[] }) {
   const navigate = useNavigate();
@@ -394,7 +394,7 @@ function RelatedTab({ traces }: { traces: RelatedTrace[] }) {
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+
 
 interface Props {
   selectedSpanId: string | null;

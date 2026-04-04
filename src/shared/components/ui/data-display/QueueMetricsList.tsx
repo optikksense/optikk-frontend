@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 
 import { formatNumber } from '@shared/utils/formatters';
-import { buildInterpolatedPath } from '@shared/utils/placeholderInterpolation';
 import { CHART_COLORS } from '@config/constants';
+import type { DashboardDrawerAction } from '@/types/dashboardConfig';
+import { buildDashboardDrawerSearch } from '@shared/components/ui/dashboard/utils/dashboardDrawerState';
 
 import { APP_COLORS } from '@config/colorLiterals';
 
@@ -25,7 +26,9 @@ interface QueueMetricsListProps {
   selectedQueues?: string[];
   onToggle?: (queueKey: string) => void;
   type?: QueueMetricsListType;
-  drilldownRouteTemplate?: string;
+  drawerAction?: DashboardDrawerAction;
+  currentPathname?: string;
+  currentSearch?: string;
   maxVisibleRows?: number;
 }
 
@@ -101,7 +104,9 @@ export default function QueueMetricsList({
   selectedQueues = [],
   onToggle,
   type = 'depth', // 'depth', 'consumerLag', 'productionRate', 'consumptionRate'
-  drilldownRouteTemplate,
+  drawerAction,
+  currentPathname = '',
+  currentSearch = '',
   maxVisibleRows,
 }: QueueMetricsListProps): JSX.Element | null {
   if (queues.length === 0) return null;
@@ -134,7 +139,7 @@ export default function QueueMetricsList({
             >
               <th style={{ padding: '4px 8px', fontWeight: 500 }}>Topic Name</th>
               <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>{title}</th>
-              {drilldownRouteTemplate ? (
+              {drawerAction ? (
                 <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>Details</th>
               ) : null}
             </tr>
@@ -144,8 +149,9 @@ export default function QueueMetricsList({
               const queueKey =
                 queue.key ??
                 `${queue.queue_name ?? 'unknown'}::${queue.service_name ?? 'unknown'}::${index}`;
-              const detailHref = buildInterpolatedPath(
-                drilldownRouteTemplate,
+              const detailSearch = buildDashboardDrawerSearch(
+                currentSearch,
+                drawerAction,
                 queue as Record<string, unknown>
               );
               const isSelected = selectedQueues.includes(queueKey);
@@ -248,7 +254,7 @@ export default function QueueMetricsList({
                   >
                     {displayValue}
                   </td>
-                  {drilldownRouteTemplate ? (
+                  {drawerAction ? (
                     <td
                       style={{
                         padding: '4px 8px',
@@ -256,9 +262,9 @@ export default function QueueMetricsList({
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {detailHref ? (
+                      {detailSearch ? (
                         <Link
-                          to={detailHref}
+                          to={{ pathname: currentPathname, search: detailSearch }}
                           onClick={(event) => event.stopPropagation()}
                           style={{
                             color: 'var(--color-primary)',

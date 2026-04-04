@@ -15,10 +15,7 @@ const ROUTES = {
   traces: '/traces',
   traceDetail: '/traces/:traceId',
   traceCompare: '/traces/compare',
-  services: '/services',
-  serviceDetail: '/services/:serviceName',
-  endpointDetail: '/services/:serviceName/endpoints/:endpointName',
-  metrics: '/metrics',
+metrics: '/metrics',
   infrastructure: '/infrastructure',
   errors: '/errors',
   saturation: '/saturation',
@@ -31,7 +28,6 @@ const ROUTES = {
   aiConversations: '/ai-conversations',
   aiConversationDetail: '/ai-conversations/:conversationId',
   settings: '/settings',
-  latencyAlias: '/latency',
 } as const;
 
 /**

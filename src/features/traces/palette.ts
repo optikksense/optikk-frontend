@@ -8,9 +8,8 @@ export const tracePaletteActions: PaletteAction[] = [
     keywords: ['traces', 'spans', 'apm'],
     group: 'navigation',
     hotkey: 'g t',
-    perform: () => {
-      // Mock navigation routing via generic hook/event since we omit React Router direct link without a navigator prop
-      window.location.href = '/traces';
+    perform: ({ navigate }) => {
+      navigate('/traces');
     },
   },
   {

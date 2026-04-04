@@ -186,7 +186,7 @@ export default function UPlotChart({
   );
 }
 
-// ── Shared helpers for building uPlot options ──────────────────────────────
+
 
 /** Default axis styling matching the app's dark theme. */
 export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {

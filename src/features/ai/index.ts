@@ -69,4 +69,3 @@ export const aiConfig: DomainConfig = {
     { panelType: 'ai-bar', kind: 'specialized', component: AiBarRenderer },
   ],
 };
-export * from './types';

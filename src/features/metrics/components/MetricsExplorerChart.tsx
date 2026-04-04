@@ -7,7 +7,7 @@ import ObservabilityChart, {
 } from '@shared/components/ui/charts/ObservabilityChart';
 import { PageSurface } from '@shared/components/ui';
 
-import { QUERY_LABEL_COLORS } from '../constants/metricsExplorerConstants';
+import { QUERY_LABEL_COLORS } from '../constants';
 import { getChartColor } from '@shared/utils/charting';
 import { evaluateFormula } from '../utils/formulaEvaluator';
 import type { ChartType, FormulaDefinition, MetricExplorerResults, MetricQueryDefinition } from '../types';

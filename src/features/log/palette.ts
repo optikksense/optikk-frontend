@@ -7,8 +7,8 @@ export const logsPaletteActions: PaletteAction[] = [
     keywords: ['logs', 'search', 'tail', 'events'],
     group: 'navigation',
     hotkey: 'g l',
-    perform: () => {
-      window.location.href = '/logs';
+    perform: ({ navigate }) => {
+      navigate('/logs');
     },
   },
 ];

@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
 import type {
+  DashboardDrawerAction,
   DashboardLayout,
   DashboardPanelSpec,
   DashboardQuerySpec,
   DashboardStatSummaryField,
+  DashboardTableColumn,
   DashboardSectionSpec,
   DashboardTabDocument,
   DashboardSchemaVersion,
@@ -102,6 +104,32 @@ const statSummaryFieldSchema: z.ZodType<DashboardStatSummaryField> = z
   })
   .strict();
 
+const dashboardTableColumnSchema: z.ZodType<DashboardTableColumn> = z
+  .object({
+    key: z.string(),
+    label: z.string(),
+    formatter: z.string().optional(),
+    align: z.enum(['left', 'center', 'right']).optional(),
+    width: z.number().int().positive().optional(),
+  })
+  .strict();
+
+const dashboardDrawerActionSchema: z.ZodType<DashboardDrawerAction> = z
+  .object({
+    entity: z.enum([
+      'aiModel',
+      'databaseSystem',
+      'errorGroup',
+      'kafkaGroup',
+      'kafkaTopic',
+      'node',
+      'redisInstance',
+    ]),
+    idField: z.string(),
+    titleField: z.string().optional(),
+  })
+  .strict();
+
 const panelSchema: z.ZodType<DashboardPanelSpec> = z
   .object({
     id: z.string(),
@@ -135,7 +163,8 @@ const panelSchema: z.ZodType<DashboardPanelSpec> = z
     listSortField: z.string().optional(),
     listType: z.string().optional(),
     listTitle: z.string().optional(),
-    drilldownRoute: z.string().optional(),
+    columns: z.array(dashboardTableColumnSchema).optional(),
+    drawerAction: dashboardDrawerActionSchema.optional(),
     targetThreshold: z.number().optional(),
     summaryFields: z.array(statSummaryFieldSchema).optional(),
     yPrefix: z.string().optional(),

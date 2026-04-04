@@ -5,7 +5,7 @@ import {
   serializeStateSnapshot,
   deserializeStateSnapshot,
 } from '@/features/explorer-core/utils/urlState';
-import { createDefaultQuery, QUERY_LABELS } from '../constants/metricsExplorerConstants';
+import { createDefaultQuery, QUERY_LABELS } from '../constants';
 import type {
   ChartType,
   FormulaDefinition,

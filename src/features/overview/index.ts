@@ -7,9 +7,6 @@ import { ROUTES } from '@/shared/constants/routes';
 const OverviewHubPage = lazy(() =>
   import('./pages/OverviewHubPage').then((module) => ({ default: module.default }))
 );
-const MetricsDashboardPage = lazy(() =>
-  import('@/features/metrics/pages/MetricsPage').then((module) => ({ default: module.default }))
-);
 const SaturationHubPage = lazy(() =>
   import('@/features/metrics/pages/SaturationHubPage').then((module) => ({
     default: module.default,
@@ -46,10 +43,7 @@ const DbSystemsRenderer = lazy(() =>
   }))
 );
 
-export /**
- *
- */
-const overviewConfig: DomainConfig = {
+export const overviewConfig: DomainConfig = {
   key: 'overview',
   label: 'Overview',
   permissions: ['overview:read'],
@@ -70,7 +64,6 @@ const overviewConfig: DomainConfig = {
   routes: [],
   dashboardPages: [
     { pageId: 'overview', page: OverviewHubPage },
-    { pageId: 'metrics', page: MetricsDashboardPage },
     { pageId: 'saturation', page: SaturationHubPage },
   ],
   dashboardPanels: [
@@ -86,5 +79,3 @@ const overviewConfig: DomainConfig = {
     { panelType: 'db-systems-overview', kind: 'specialized', component: DbSystemsRenderer },
   ],
 };
-export * from './components';
-export * from './types';

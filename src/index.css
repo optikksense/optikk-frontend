@@ -15,7 +15,7 @@
 }
 
 :root {
-  /* ── Typography scale tokens ───────────────────────────────── */
+
   --text-xs: 11px;
   --text-sm: 12px;
   --text-base: 13px;
@@ -35,7 +35,7 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
 
-  /* ── Grid gap ─────────────────────────────────────────────── */
+
   --grid-gutter: 12px;
 
   font-family:
@@ -96,7 +96,7 @@ code {
   border-radius: 6px;
 }
 
-/* ─── Spacing utilities ─── */
+
 .page-section {
   margin-top: var(--space-md);
 }

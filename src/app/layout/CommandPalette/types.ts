@@ -1,5 +1,9 @@
 import React from 'react';
 
+export interface PaletteActionContext {
+  navigate: (path: string) => void;
+}
+
 export interface PaletteAction {
   id: string; // unique, stable - used for hotkey binding
   label: string; // displayed in palette
@@ -7,6 +11,6 @@ export interface PaletteAction {
   icon?: React.ReactNode;
   group: 'navigation' | 'time' | 'feature' | 'settings';
   hotkey?: string; // optional direct hotkey e.g. 'g t' for go to traces
-  perform: () => void; // the actual action
+  perform: (context: PaletteActionContext) => void; // the actual action
   enabled?: () => boolean; // conditional visibility
 }

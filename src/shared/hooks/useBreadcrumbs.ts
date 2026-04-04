@@ -32,15 +32,7 @@ function buildDynamicCrumbs(pathname: string): BreadcrumbItem[] {
     ];
   }
 
-  const serviceDetailMatch = matchPath({ path: ROUTES.serviceDetail, end: true }, pathname);
-  if (serviceDetailMatch?.params.serviceName) {
-    return [
-      { label: navLookup.get(ROUTES.services) ?? 'Services', path: ROUTES.services },
-      { label: serviceDetailMatch.params.serviceName },
-    ];
-  }
-
-  const kafkaTopicMatch = matchPath({ path: ROUTES.kafkaTopicDetail, end: true }, pathname);
+const kafkaTopicMatch = matchPath({ path: ROUTES.kafkaTopicDetail, end: true }, pathname);
   if (kafkaTopicMatch?.params.topic) {
     return [
       { label: navLookup.get(ROUTES.saturation) ?? 'Saturation', path: ROUTES.saturation },

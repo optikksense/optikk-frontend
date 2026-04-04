@@ -6,6 +6,8 @@ import type {
   TimeStep,
 } from '../types';
 
+export const DOMAIN_KEY = 'metrics';
+
 export const QUERY_LABELS = ['a', 'b', 'c', 'd', 'e', 'f'] as const;
 
 export const QUERY_LABEL_COLORS: Record<string, string> = {

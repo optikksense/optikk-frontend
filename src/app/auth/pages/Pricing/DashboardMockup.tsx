@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-/* ── tiny sparkline helper ─────────────────────────────────────────── */
+
 function Sparkline({ data, color }: { data: number[]; color: string }) {
   const w = 96,
     h = 28;
@@ -35,7 +35,7 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
   );
 }
 
-/* ── animated counter ───────────────────────────────────────────────── */
+
 function useCountUp(target: number, duration = 1200) {
   const [val, setVal] = useState(0);
   const started = useRef(false);
@@ -54,7 +54,7 @@ function useCountUp(target: number, duration = 1200) {
   return val;
 }
 
-/* ── KPI card ───────────────────────────────────────────────────────── */
+
 function KpiCard({
   label,
   rawVal,
@@ -118,7 +118,7 @@ function KpiCard({
   );
 }
 
-/* ── donut ring ─────────────────────────────────────────────────────── */
+
 function DonutRing({ label, pct, color }: { label: string; pct: number; color: string }) {
   const r = 22,
     circ = 2 * Math.PI * r;
@@ -171,7 +171,7 @@ function DonutRing({ label, pct, color }: { label: string; pct: number; color: s
   );
 }
 
-/* ── sidebar nav item ───────────────────────────────────────────────── */
+
 const SidebarItem = ({
   icon,
   label,

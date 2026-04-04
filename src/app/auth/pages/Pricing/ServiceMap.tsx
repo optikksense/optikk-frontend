@@ -1,144 +1,78 @@
+import { motion } from 'framer-motion';
+
+const NODES = [
+  { id: 'gateway', label: 'API Gateway', x: 360, y: 40, color: '#6366F1' },
+  { id: 'users', label: 'Users Service', x: 160, y: 160, color: '#06B6D4' },
+  { id: 'orders', label: 'Orders Service', x: 560, y: 160, color: '#06B6D4' },
+  { id: 'postgres', label: 'PostgreSQL', x: 80, y: 300, color: '#F59E0B' },
+  { id: 'redis', label: 'Redis', x: 280, y: 300, color: '#EF4444' },
+  { id: 'kafka', label: 'Kafka', x: 480, y: 300, color: '#10B981' },
+  { id: 'payments', label: 'Payments', x: 640, y: 300, color: '#8B5CF6' },
+] as const;
+
+const EDGES: readonly { from: string; to: string }[] = [
+  { from: 'gateway', to: 'users' },
+  { from: 'gateway', to: 'orders' },
+  { from: 'users', to: 'postgres' },
+  { from: 'users', to: 'redis' },
+  { from: 'orders', to: 'kafka' },
+  { from: 'orders', to: 'payments' },
+];
+
+function getNode(id: string) {
+  return NODES.find((n) => n.id === id)!;
+}
+
 export default function ServiceMap() {
-  const nodes = [
-    { id: 'api', label: 'API Gateway', cx: 220, cy: 90, color: '#6366F1' },
-    { id: 'auth', label: 'Auth', cx: 100, cy: 185, color: '#22D3EE' },
-    { id: 'pay', label: 'Payment', cx: 340, cy: 185, color: '#10B981' },
-    { id: 'db', label: 'DB', cx: 100, cy: 285, color: '#8B5CF6' },
-    { id: 'cache', label: 'Cache', cx: 220, cy: 285, color: '#F59E0B' },
-    { id: 'notif', label: 'Notif', cx: 340, cy: 285, color: '#EC4899' },
-  ];
-  const edges = [
-    { from: 'api', to: 'auth', x1: 220, y1: 90, x2: 100, y2: 185 },
-    { from: 'api', to: 'pay', x1: 220, y1: 90, x2: 340, y2: 185 },
-    { from: 'auth', to: 'db', x1: 100, y1: 185, x2: 100, y2: 285 },
-    { from: 'pay', to: 'cache', x1: 340, y1: 185, x2: 220, y2: 285 },
-    { from: 'pay', to: 'notif', x1: 340, y1: 185, x2: 340, y2: 285 },
-    { from: 'auth', to: 'cache', x1: 100, y1: 185, x2: 220, y2: 285 },
-  ];
-
   return (
-    <div
-      style={{
-        width: '100%',
-        borderRadius: 14,
-        overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.10)',
-        background: '#0D0E14',
-        boxShadow: '0 32px 80px -20px rgba(0,0,0,0.7)',
-      }}
-    >
-      {/* Browser chrome */}
-      <div
-        style={{
-          background: '#161720',
-          padding: '10px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
-        <div style={{ display: 'flex', gap: 6 }}>
-          {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => (
-            <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
-          ))}
-        </div>
-        <div
-          className="font-mono"
-          style={{
-            flex: 1,
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: 6,
-            padding: '3px 12px',
-            fontSize: 10,
-            color: '#475569',
-          }}
-        >
-          app.optikk.io/services
-        </div>
-      </div>
-
-      <svg
-        viewBox="0 0 440 370"
-        width="100%"
-        style={{ display: 'block', background: '#0D0E14', padding: '8px 0' }}
-      >
-        <defs>
-          {edges.map((e, i) => (
-            <marker
-              key={i}
-              id={`arrow-${i}`}
-              markerWidth="6"
-              markerHeight="6"
-              refX="5"
-              refY="3"
-              orient="auto"
-            >
-              <path d="M0,0 L0,6 L6,3 z" fill="rgba(255,255,255,0.15)" />
-            </marker>
-          ))}
-        </defs>
-
-        {/* Edges */}
-        {edges.map((e, i) => {
-          const len = Math.sqrt((e.x2 - e.x1) ** 2 + (e.y2 - e.y1) ** 2);
+    <div className="component-card" style={{ padding: 24, overflow: 'hidden' }}>
+      <svg viewBox="0 0 760 380" width="100%" height="100%" style={{ display: 'block' }}>
+        {EDGES.map((e, i) => {
+          const from = getNode(e.from);
+          const to = getNode(e.to);
           return (
-            <g key={i}>
-              <line
-                x1={e.x1}
-                y1={e.y1}
-                x2={e.x2}
-                y2={e.y2}
-                stroke="rgba(255,255,255,0.10)"
-                strokeWidth={1.5}
-                markerEnd={`url(#arrow-${i})`}
-              />
-              {/* animated dot */}
-              <circle r={3} fill="#6366F1" opacity={0.8}>
-                <animateMotion
-                  dur={`${1.5 + i * 0.4}s`}
-                  repeatCount="indefinite"
-                  begin={`${i * 0.3}s`}
-                >
-                  <mpath href={`#epath-${i}`} />
-                </animateMotion>
-              </circle>
-              <path id={`epath-${i}`} d={`M ${e.x1} ${e.y1} L ${e.x2} ${e.y2}`} fill="none" />
-            </g>
+            <motion.line
+              key={i}
+              x1={from.x + 50}
+              y1={from.y + 20}
+              x2={to.x + 50}
+              y2={to.y + 20}
+              stroke="#334155"
+              strokeWidth={1.5}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.6 }}
+              transition={{ duration: 0.6, delay: 0.3 + i * 0.1 }}
+            />
           );
         })}
-
-        {/* Nodes */}
-        {nodes.map((n) => (
-          <g key={n.id}>
-            <circle
-              cx={n.cx}
-              cy={n.cy}
-              r={32}
-              fill={`${n.color}18`}
-              stroke={n.color}
+        {NODES.map((node, i) => (
+          <motion.g
+            key={node.id}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: i * 0.08 }}
+          >
+            <rect
+              x={node.x}
+              y={node.y}
+              width={100}
+              height={40}
+              rx={8}
+              fill="#1E293B"
+              stroke={node.color}
               strokeWidth={1.5}
             />
-            <circle cx={n.cx} cy={n.cy} r={4} fill={n.color} opacity={0.9} />
             <text
-              x={n.cx}
-              y={n.cy + 46}
+              x={node.x + 50}
+              y={node.y + 24}
               textAnchor="middle"
-              className="font-mono"
-              style={{ fontSize: 10, fill: '#94A3B8' }}
+              fill="#E2E8F0"
+              fontSize={11}
+              fontFamily="Inter, system-ui, sans-serif"
             >
-              {n.label}
+              {node.label}
             </text>
-            {/* health dot */}
-            <circle
-              cx={n.cx + 22}
-              cy={n.cy - 22}
-              r={5}
-              fill={n.id === 'notif' ? '#EF4444' : '#10B981'}
-              stroke="#0D0E14"
-              strokeWidth={1.5}
-            />
-          </g>
+          </motion.g>
         ))}
       </svg>
     </div>

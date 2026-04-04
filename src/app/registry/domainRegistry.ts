@@ -3,7 +3,6 @@ import { infrastructureConfig } from '@/features/infrastructure';
 import { logsConfig } from '@/features/log';
 import { metricsConfig } from '@/features/metrics';
 import { overviewConfig } from '@/features/overview';
-import { servicesConfig } from '@/features/services';
 import { settingsConfig } from '@/features/settings';
 import { tracesConfig } from '@/features/traces';
 import { matchPath } from 'react-router-dom';
@@ -60,15 +59,11 @@ export interface DomainConfig {
   readonly dashboardPanels?: readonly DashboardPanelRegistration[];
 }
 
-export /**
- *
- */
-const domainRegistry: readonly DomainConfig[] = [
+export const domainRegistry: readonly DomainConfig[] = [
   overviewConfig,
   metricsConfig,
   logsConfig,
   tracesConfig,
-  servicesConfig,
   infrastructureConfig,
   aiConfig,
   settingsConfig,

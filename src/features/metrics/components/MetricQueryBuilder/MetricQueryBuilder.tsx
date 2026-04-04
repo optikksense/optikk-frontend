@@ -2,7 +2,7 @@ import { Calculator, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui';
 
-import { MAX_QUERIES } from '../../constants/metricsExplorerConstants';
+import { MAX_QUERIES } from '../../constants';
 import type {
   FormulaDefinition,
   MetricAggregation,

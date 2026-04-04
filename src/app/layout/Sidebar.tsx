@@ -6,9 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { getDomainNavigationItems } from '@/app/registry/domainRegistry';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ui';
-import { getDashboardIcon } from '@shared/components/ui/dashboard/utils/dashboardUtils';
 import { ROUTES } from '@/shared/constants/routes';
-import { usePagesConfig } from '@shared/hooks/usePagesConfig';
 
 import { useAppStore } from '@store/appStore';
 import { useAuthStore } from '@store/authStore';
@@ -18,7 +16,6 @@ export default function Sidebar() {
   const location = useLocation();
   const { sidebarCollapsed, toggleSidebar, theme } = useAppStore();
   const logout = useAuthStore((state) => state.logout);
-  const { pages } = usePagesConfig();
 
   const staticNavEntries = useMemo(
     () =>
@@ -31,24 +28,7 @@ export default function Sidebar() {
     []
   );
 
-  const dynamicNavEntries = useMemo(
-    () =>
-      pages
-        .filter((page) => page.navigable)
-        .filter((page) => !staticNavEntries.some((entry) => entry.path === page.path))
-        .map((page) => ({
-          path: page.path,
-          label: page.label,
-          group: page.group,
-          iconNode: getDashboardIcon(page.icon, 18),
-        })),
-    [pages, staticNavEntries]
-  );
-
-  const navEntries = useMemo(
-    () => [...staticNavEntries, ...dynamicNavEntries],
-    [dynamicNavEntries, staticNavEntries]
-  );
+  const navEntries = staticNavEntries;
 
   const observeItems = useMemo(
     () => navEntries.filter((entry) => entry.group === 'observe'),
@@ -62,9 +42,7 @@ export default function Sidebar() {
 
   const getSelectedKey = () => {
     const pathname = location.pathname;
-    if (pathname.startsWith(ROUTES.latencyAlias)) return ROUTES.metrics;
     if (pathname.startsWith('/errors')) return ROUTES.overview;
-    if (pathname.startsWith('/service-map')) return ROUTES.services;
     const matchedEntry = navEntries.find(
       (entry) => pathname === entry.path || pathname.startsWith(`${entry.path}/`)
     );

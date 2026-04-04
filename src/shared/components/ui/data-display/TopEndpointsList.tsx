@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 
 import { formatNumber, formatDuration } from '@shared/utils/formatters';
-import { buildInterpolatedPath } from '@shared/utils/placeholderInterpolation';
 import { CHART_COLORS } from '@config/constants';
+import type { DashboardDrawerAction } from '@/types/dashboardConfig';
+import { buildDashboardDrawerSearch } from '@shared/components/ui/dashboard/utils/dashboardDrawerState';
 
 import { APP_COLORS } from '@config/colorLiterals';
 
@@ -25,7 +26,9 @@ interface TopEndpointsListProps {
   selectedEndpoints?: string[];
   onToggle?: (endpointKey: string) => void;
   type?: TopEndpointsListType;
-  drilldownRouteTemplate?: string;
+  drawerAction?: DashboardDrawerAction;
+  currentPathname?: string;
+  currentSearch?: string;
   maxVisibleRows?: number;
 }
 
@@ -84,7 +87,9 @@ export default function TopEndpointsList({
   selectedEndpoints = [],
   onToggle,
   type = 'requests', // 'requests', 'errorRate', 'latency'
-  drilldownRouteTemplate,
+  drawerAction,
+  currentPathname = '',
+  currentSearch = '',
   maxVisibleRows,
 }: TopEndpointsListProps): JSX.Element | null {
   if (endpoints.length === 0) return null;
@@ -117,7 +122,7 @@ export default function TopEndpointsList({
             >
               <th style={{ padding: '4px 8px', fontWeight: 500 }}>Name</th>
               <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>{title}</th>
-              {drilldownRouteTemplate ? (
+              {drawerAction ? (
                 <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>Details</th>
               ) : null}
             </tr>
@@ -125,8 +130,9 @@ export default function TopEndpointsList({
           <tbody>
             {visibleEndpoints.map((endpoint, index) => {
               const endpointKey = endpoint.key ?? `${endpoint.endpoint ?? 'unknown'}-${index}`;
-              const detailHref = buildInterpolatedPath(
-                drilldownRouteTemplate,
+              const detailSearch = buildDashboardDrawerSearch(
+                currentSearch,
+                drawerAction,
                 endpoint as Record<string, unknown>
               );
               const isSelected = selectedEndpoints.includes(endpointKey);
@@ -227,7 +233,7 @@ export default function TopEndpointsList({
                   >
                     {displayValue}
                   </td>
-                  {drilldownRouteTemplate ? (
+                  {drawerAction ? (
                     <td
                       style={{
                         padding: '4px 8px',
@@ -235,9 +241,9 @@ export default function TopEndpointsList({
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {detailHref ? (
+                      {detailSearch ? (
                         <Link
-                          to={detailHref}
+                          to={{ pathname: currentPathname, search: detailSearch }}
                           onClick={(event) => event.stopPropagation()}
                           style={{
                             color: 'var(--color-primary)',

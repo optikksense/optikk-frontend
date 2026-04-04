@@ -2,7 +2,7 @@ import { X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-import { QUERY_LABEL_COLORS } from '../../constants/metricsExplorerConstants';
+import { QUERY_LABEL_COLORS } from '../../constants';
 import type {
   MetricAggregation,
   MetricQueryDefinition,

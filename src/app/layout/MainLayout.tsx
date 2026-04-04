@@ -3,7 +3,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Outlet } from 'react-router-dom';
 
-import CommandPalette from '@shared/components/ui/overlay/CommandPalette';
 import ShortcutHelpOverlay from '@shared/components/ui/overlay/ShortcutHelpOverlay';
 import { DensityProvider } from '@/components/ui/providers/DensityProvider';
 import { useKeyboardShortcuts } from '@shared/hooks/useKeyboardShortcuts';
@@ -40,18 +39,8 @@ function ErrorFallback({
 
 export default function MainLayout() {
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
-  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
   const { shortcuts } = useKeyboardShortcuts();
-
-  useHotkeys(
-    'mod+k',
-    (e) => {
-      e.preventDefault();
-      setCommandPaletteOpen((prev) => !prev);
-    },
-    { enableOnFormTags: true }
-  );
 
   useHotkeys(
     'shift+/',
@@ -89,7 +78,6 @@ export default function MainLayout() {
             </ErrorBoundary>
           </main>
         </div>
-        <CommandPalette open={commandPaletteOpen} onClose={() => setCommandPaletteOpen(false)} />
         <ShortcutHelpOverlay
           open={shortcutHelpOpen}
           onClose={() => setShortcutHelpOpen(false)}

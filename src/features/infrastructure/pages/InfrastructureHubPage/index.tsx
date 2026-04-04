@@ -1,6 +1,7 @@
 import { Layers } from 'lucide-react';
 
 import { PageHeader, PageShell } from '@shared/components/ui';
+import DashboardEntityDrawer from '@shared/components/ui/dashboard/DashboardEntityDrawer';
 import DashboardPage from '@shared/components/ui/dashboard/DashboardPage';
 
 export default function InfrastructureHubPage() {
@@ -12,6 +13,7 @@ export default function InfrastructureHubPage() {
         icon={<Layers size={24} />}
       />
       <DashboardPage pageId="infrastructure" />
+      <DashboardEntityDrawer />
     </PageShell>
   );
 }

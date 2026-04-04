@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Command,
@@ -11,21 +12,30 @@ import {
 } from '@/components/ui/command';
 
 import { allActions } from './registry';
-import { PaletteAction } from './types';
+import { type PaletteAction, type PaletteActionContext } from './types';
 
 function ActionHotkey({ action }: { action: PaletteAction }) {
+  const navigate = useNavigate();
+  const context: PaletteActionContext = {
+    navigate: (path) => navigate(path),
+  };
+
   useHotkeys(action.hotkey!, (e) => {
     e.preventDefault();
     if (action.enabled && !action.enabled()) {
       return;
     }
-    action.perform();
+    action.perform(context);
   });
   return null;
 }
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const actionContext: PaletteActionContext = {
+    navigate: (path) => navigate(path),
+  };
 
   // Toggle palette with Cmd+K or Ctrl+K
   useHotkeys('meta+k, ctrl+k', (e) => {
@@ -34,7 +44,7 @@ export function CommandPalette() {
   });
 
   const handleSelect = (action: PaletteAction) => {
-    action.perform();
+    action.perform(actionContext);
     setOpen(false);
   };
 
@@ -44,6 +54,9 @@ export function CommandPalette() {
 
   const featureActions = allActions.filter(
     (a) => a.group === 'feature' && (!a.enabled || a.enabled())
+  );
+  const appActions = allActions.filter(
+    (a) => a.group === 'settings' && (!a.enabled || a.enabled())
   );
 
   return (
@@ -91,6 +104,26 @@ export function CommandPalette() {
                 {featureActions.length > 0 && (
                   <CommandGroup heading="Feature Actions">
                     {featureActions.map((action) => (
+                      <CommandItem
+                        key={action.id}
+                        onSelect={() => handleSelect(action)}
+                        keywords={action.keywords}
+                      >
+                        {action.icon}
+                        <span style={{ marginLeft: action.icon ? 8 : 0 }}>{action.label}</span>
+                        {action.hotkey && (
+                          <span style={{ marginLeft: 'auto', fontSize: '0.75rem', opacity: 0.5 }}>
+                            {action.hotkey.toUpperCase()}
+                          </span>
+                        )}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+
+                {appActions.length > 0 && (
+                  <CommandGroup heading="App Actions">
+                    {appActions.map((action) => (
                       <CommandItem
                         key={action.id}
                         onSelect={() => handleSelect(action)}
