@@ -1,8 +1,11 @@
-# Branch protection (main): require status check "Frontend CI / check".
-name: Frontend CI
+# Branch protection (main): require status check "Build and Test / check".
+name: Build and Test
 
 on:
+  push:
+    branches: [main]
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
