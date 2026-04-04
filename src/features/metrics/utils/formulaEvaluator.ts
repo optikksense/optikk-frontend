@@ -108,9 +108,10 @@ function parse(tokens: Token[]): Expr | null {
 
 function isOperator(
   token: Token | undefined,
-  values: ReadonlyArray<'+' | '-' | '*' | '/'>
+  values: string[]
 ): token is Extract<Token, { type: 'op' }> {
-  return token?.type === 'op' && values.includes((token as any).value);
+  if (token?.type !== 'op') return false;
+  return values.includes(token.value);
 }
 
 function evaluate(

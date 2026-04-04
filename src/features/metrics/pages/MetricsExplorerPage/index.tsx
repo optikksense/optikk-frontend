@@ -83,7 +83,7 @@ export default function MetricsExplorerPage() {
       <MetricsExplorerChart
         queries={queries}
         formulas={formulas}
-        results={data?.results as MetricExplorerResults}
+        results={(data?.results ?? {}) as MetricExplorerResults}
         chartType={chartType}
         isLoading={isLoading}
         isError={isError}
