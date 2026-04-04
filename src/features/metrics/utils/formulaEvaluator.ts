@@ -64,11 +64,11 @@ function parse(tokens: Token[]): Expr | null {
     if (!t) return null;
     if (t.type === 'number') {
       consume();
-      return { kind: 'num', value: t.value };
+      return { kind: 'num', value: (t as Extract<Token, { type: 'number' }>).value };
     }
     if (t.type === 'ref') {
       consume();
-      return { kind: 'ref', label: t.value };
+      return { kind: 'ref', label: (t as Extract<Token, { type: 'ref' }>).value };
     }
     if (t.type === 'lparen') {
       consume();
@@ -83,10 +83,7 @@ function parse(tokens: Token[]): Expr | null {
     let left = parseAtom();
     if (!left) return null;
     while (isOperator(peek(), ['*', '/'])) {
-      const op = consume();
-      if (op.type !== 'op') {
-        return left;
-      }
+      const op = consume() as Extract<Token, { type: 'op' }>;
       const right = parseAtom();
       if (!right) return left;
       left = { kind: 'binop', op: op.value, left, right };
@@ -98,10 +95,7 @@ function parse(tokens: Token[]): Expr | null {
     let left = parseMulDiv();
     if (!left) return null;
     while (isOperator(peek(), ['+', '-'])) {
-      const op = consume();
-      if (op.type !== 'op') {
-        return left;
-      }
+      const op = consume() as Extract<Token, { type: 'op' }>;
       const right = parseMulDiv();
       if (!right) return left;
       left = { kind: 'binop', op: op.value, left, right };
@@ -116,7 +110,7 @@ function isOperator(
   token: Token | undefined,
   values: ReadonlyArray<'+' | '-' | '*' | '/'>
 ): token is Extract<Token, { type: 'op' }> {
-  return token?.type === 'op' && values.includes(token.value);
+  return token?.type === 'op' && values.includes((token as any).value);
 }
 
 function evaluate(

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z as zod } from 'zod';
 
 import { API_CONFIG } from '@config/apiConfig';
 import api from '@/shared/api/api/client';
@@ -31,40 +31,38 @@ export function buildExplorerQueryRequest(
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-
-
-const metricNameEntrySchema = z.object({
-  name: z.string(),
-  type: z.enum(['gauge', 'counter', 'histogram', 'summary']),
-  unit: z.string().optional(),
-  description: z.string().optional(),
+const metricNameEntrySchema = zod.object({
+  name: zod.string(),
+  type: zod.enum(['gauge', 'counter', 'histogram', 'summary']),
+  unit: zod.string().optional(),
+  description: zod.string().optional(),
 });
 
-const metricNamesResponseSchema = z.object({
-  metrics: z.array(metricNameEntrySchema),
+const metricNamesResponseSchema = zod.object({
+  metrics: zod.array(metricNameEntrySchema),
 });
 
-const metricTagSchema = z.object({
-  key: z.string(),
-  values: z.array(z.string()),
+const metricTagSchema = zod.object({
+  key: zod.string(),
+  values: zod.array(zod.string()),
 });
 
-const metricTagsResponseSchema = z.object({
-  tags: z.array(metricTagSchema),
+const metricTagsResponseSchema = zod.object({
+  tags: zod.array(metricTagSchema),
 });
 
-const metricSeriesSchema = z.object({
-  tags: z.record(z.string(), z.string()),
-  values: z.array(z.number().nullable()),
+const metricSeriesSchema = zod.object({
+  tags: zod.record(zod.string(), zod.string()),
+  values: zod.array(zod.number().nullable()),
 });
 
-const metricQueryResultSchema = z.object({
-  timestamps: z.array(z.number()),
-  series: z.array(metricSeriesSchema),
+const metricQueryResultSchema = zod.object({
+  timestamps: zod.array(zod.number()),
+  series: zod.array(metricSeriesSchema),
 });
 
-const metricsExplorerResponseSchema = z.object({
-  results: z.record(z.string(), metricQueryResultSchema),
+const metricsExplorerResponseSchema = zod.object({
+  results: zod.record(zod.string(), metricQueryResultSchema),
 });
 
 // Request types
@@ -102,9 +100,9 @@ export interface MetricExplorerQueryRequest {
 
 // Response types (inferred from schemas)
 
-export type MetricNamesResponse = z.infer<typeof metricNamesResponseSchema>;
-export type MetricTagsResponse = z.infer<typeof metricTagsResponseSchema>;
-export type MetricsExplorerResponse = z.infer<typeof metricsExplorerResponseSchema>;
+export type MetricNamesResponse = zod.infer<typeof metricNamesResponseSchema>;
+export type MetricTagsResponse = zod.infer<typeof metricTagsResponseSchema>;
+export type MetricsExplorerResponse = zod.infer<typeof metricsExplorerResponseSchema>;
 
 // API functions
 
