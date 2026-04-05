@@ -18,6 +18,8 @@ function logsUiFieldToQueryField(field: string): string {
       return 'status';
     case 'logger':
       return 'logger';
+    case 'search':
+      return '';
     default:
       return field;
   }
@@ -38,6 +40,8 @@ function tracesUiFieldToQueryField(field: string): string {
       return 'duration';
     case 'span_kind':
       return 'span.kind';
+    case 'search':
+      return '';
     default:
       return field;
   }
@@ -51,6 +55,8 @@ function structuredFilterToClause(
   const qField = mapField(filter.field);
   const escaped = escapeQueryValue(filter.value);
   const raw = filter.value.trim();
+
+  if (filter.field === 'search') return escaped;
 
   switch (filter.operator) {
     case 'not_equals':
@@ -86,13 +92,10 @@ export function structuredFiltersToQueryString(
 
 /** Merge free-text query with structured filters and optional logs “errors only” flag. */
 export function buildLogsExplorerQuery(params: {
-  queryText: string;
   filters: StructuredFilter[];
   errorsOnly: boolean;
 }): string {
   const parts: string[] = [];
-  const t = params.queryText.trim();
-  if (t) parts.push(t);
   const structured = structuredFiltersToQueryString(params.filters, 'logs');
   if (structured) parts.push(structured);
   if (params.errorsOnly) parts.push('status:ERROR');
@@ -101,14 +104,11 @@ export function buildLogsExplorerQuery(params: {
 
 /** Merge free-text query with structured filters for traces. */
 export function buildTracesExplorerQuery(params: {
-  queryText: string;
   filters: StructuredFilter[];
   errorsOnly: boolean;
   selectedService: string | null;
 }): string {
   const parts: string[] = [];
-  const t = params.queryText.trim();
-  if (t) parts.push(t);
   const structured = structuredFiltersToQueryString(params.filters, 'traces');
   if (structured) parts.push(structured);
   if (params.errorsOnly) parts.push('status:ERROR');

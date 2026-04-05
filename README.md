@@ -59,9 +59,9 @@ npm run dev
 
 The dev server usually runs at `http://localhost:3000` (or `5173`). It is configured to proxy `/api/*` requests to your local backend automatically.
 
-**Socket.IO (live tail):** The app connects to the same origin with path `/socket.io` and namespace `/live`. The Vite dev server also proxies `/socket.io` to the backend (with WebSocket upgrade) so **Logs** and **Traces** live tail can reach the API server. If you change the backend URL, set `VITE_DEV_BACKEND_URL` in `.env` (same as for `/api`).
+**Live tail (WebSocket):** The app opens a WebSocket to the same origin at **`/api/v1/ws/live`** (session cookies). The Vite dev server proxies **`/api`** to the backend with **`ws: true`**, so live tail works in dev without extra paths. If you change the backend URL, set `VITE_DEV_BACKEND_URL` in `.env`.
 
-**Production / separate UI host:** If the static UI is served from a different origin than the API, your reverse proxy must forward both `/api` and `/socket.io` to the Optikk backend (and enable WebSocket upgrades for `/socket.io`). Example (nginx):
+**Production / separate UI host:** Proxy **`/api`** to the Optikk backend with HTTP/1.1 and WebSocket upgrade support (live tail uses the same `/api` prefix). Example (nginx):
 
 ```nginx
 location /api/ {
@@ -69,13 +69,8 @@ location /api/ {
   proxy_http_version 1.1;
   proxy_set_header Host $host;
   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-}
-location /socket.io/ {
-  proxy_pass http://optikk_backend;
-  proxy_http_version 1.1;
   proxy_set_header Upgrade $http_upgrade;
   proxy_set_header Connection "upgrade";
-  proxy_set_header Host $host;
 }
 ```
 

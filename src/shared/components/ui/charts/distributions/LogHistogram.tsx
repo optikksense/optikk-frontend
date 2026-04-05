@@ -223,66 +223,68 @@ export default function LogHistogram({
     };
   }, [data, startTime, endTime, interval]);
 
-  if (!hasData) return null;
+  const chartPlot = useMemo(() => {
+    if (!hasData || seriesData.length === 0) {
+      return null;
+    }
+
+    const stackedSeriesValues: number[][] = [];
+    for (let si = 0; si < seriesData.length; si++) {
+      const cumulative = seriesData[si].data.map((val, bi) => {
+        let sum = val;
+        for (let below = 0; below < si; below++) {
+          sum += seriesData[below].data[bi];
+        }
+        return sum;
+      });
+      stackedSeriesValues.push(cumulative);
+    }
+
+    const reversedSeries = [...seriesData].reverse();
+    const reversedStacked = [...stackedSeriesValues].reverse();
+    const xValues = allBuckets.map((ms) => ms / 1000);
+    const uplotData: uPlot.AlignedData = [xValues, ...reversedStacked];
+    const timeLabels = allBuckets.map(fmtTime);
+
+    const chartOpts: Omit<uPlot.Options, 'width' | 'height'> = {
+      axes: [
+        {
+          stroke: APP_COLORS.hex_6b7280_2,
+          grid: { show: false },
+          ticks: { show: false },
+          font: '10px inherit',
+          values: (_u: uPlot, splits: number[]) =>
+            splits.map((s) => {
+              const idx = xValues.indexOf(s);
+              return idx >= 0 ? timeLabels[idx] : '';
+            }),
+        },
+        {
+          stroke: APP_COLORS.hex_6b7280_2,
+          grid: { stroke: 'rgba(255,255,255,0.04)', width: 1 },
+          ticks: { show: false },
+          font: '10px inherit',
+          size: 40,
+          values: (_u: uPlot, splits: number[]) => splits.map(fmtCount),
+        },
+      ],
+      cursor: { show: true },
+      legend: { show: false },
+      series: [
+        {},
+        ...reversedSeries.map((s) =>
+          uBars((s as any).label || s.level, LEVEL_COLORS[s.level] || APP_COLORS.hex_98a2b3)
+        ),
+      ],
+    };
+
+    return { uplotData, opts: chartOpts };
+  }, [allBuckets, seriesData, hasData]);
+
+  if (!hasData || !chartPlot) return null;
 
   const legendLevels = LEGEND_ORDER.filter((l) => activeLevels.includes(l));
-
-  // Build stacked data: each series value = sum of all series at/below it
-  // uPlot draws bars from 0, so we pre-stack by rendering from top level down
-  // with cumulative values, and each subsequent series paints over the previous.
-  const stackedSeriesValues: number[][] = [];
-  for (let si = 0; si < seriesData.length; si++) {
-    const cumulative = seriesData[si].data.map((val, bi) => {
-      let sum = val;
-      for (let below = 0; below < si; below++) {
-        sum += seriesData[below].data[bi];
-      }
-      return sum;
-    });
-    stackedSeriesValues.push(cumulative);
-  }
-
-  // Reverse order so the highest cumulative series is drawn first (background)
-  const reversedSeries = [...seriesData].reverse();
-  const reversedStacked = [...stackedSeriesValues].reverse();
-
-  const xValues = allBuckets.map((ms) => ms / 1000); // epoch seconds
-
-  const uplotData: uPlot.AlignedData = [xValues, ...reversedStacked];
-
-  const timeLabels = allBuckets.map(fmtTime);
-
-  const opts: Omit<uPlot.Options, 'width' | 'height'> = {
-    axes: [
-      {
-        stroke: APP_COLORS.hex_6b7280_2,
-        grid: { show: false },
-        ticks: { show: false },
-        font: '10px inherit',
-        values: (_u: uPlot, splits: number[]) =>
-          splits.map((s) => {
-            const idx = xValues.indexOf(s);
-            return idx >= 0 ? timeLabels[idx] : '';
-          }),
-      },
-      {
-        stroke: APP_COLORS.hex_6b7280_2,
-        grid: { stroke: 'rgba(255,255,255,0.04)', width: 1 },
-        ticks: { show: false },
-        font: '10px inherit',
-        size: 40,
-        values: (_u: uPlot, splits: number[]) => splits.map(fmtCount),
-      },
-    ],
-    cursor: { show: true },
-    legend: { show: false },
-    series: [
-      {},
-      ...reversedSeries.map((s) =>
-        uBars((s as any).label || s.level, LEVEL_COLORS[s.level] || APP_COLORS.hex_98a2b3)
-      ),
-    ],
-  };
+  const { uplotData, opts } = chartPlot;
 
   return (
     <div className="lh-chart-wrap h-full min-h-0">

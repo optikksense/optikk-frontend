@@ -30,7 +30,8 @@ export const logEntrySchema = z
     level: z.string().optional(),
     message: z.string().optional(),
     service: z.string().optional(),
-  })
-  .strict();
+    // Internal metadata
+    emit_ms: z.number().optional(),
+  });
 
 export type LogEntry = z.infer<typeof logEntrySchema>;

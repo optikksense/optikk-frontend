@@ -31,8 +31,9 @@ export function useAutoRefresh({
     setLastRefreshAt(Date.now());
   }, []);
 
+  // Update "Xs ago" label periodically without re-rendering every second (avoids header flicker).
   useEffect(() => {
-    const timerId = window.setInterval(() => setNow(Date.now()), 1000);
+    const timerId = window.setInterval(() => setNow(Date.now()), 5_000);
     return () => window.clearInterval(timerId);
   }, []);
 

@@ -10,6 +10,7 @@ import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
 import type { StructuredFilter } from '@shared/hooks/useURLFilters';
 import { logsExplorerApi } from '../api/logsExplorerApi';
 import type { LogAggregateRow, LogFacet, LogVolumeBucket, LogsBackendParams } from '../types';
+import { sortLogEntriesNewestFirst } from '../utils/sortLogEntries';
 
 export interface UseLogsHubDataProps {
   explorerQuery: string;
@@ -21,6 +22,9 @@ export interface UseLogsHubDataProps {
 }
 
 const DEFAULT_STEP = '5m';
+
+/** Live tail buffer size (must match `maxItems` on `useLiveTailStream` and any UI cap). */
+export const LOGS_LIVE_TAIL_MAX_ROWS = 20;
 
 export function useLogsHubData({
   explorerQuery,
@@ -61,6 +65,7 @@ export function useLogsHubData({
     enabled: liveTailEnabled && Boolean(selectedTeamId),
     subscribeEvent: 'subscribe:logs',
     itemEvent: 'log',
+    maxItems: LOGS_LIVE_TAIL_MAX_ROWS,
     params: { startMs: startTime, endMs: endTime, ...liveTailParams },
     normalizeItem: (value) => {
       const record = value as LogEntry;
@@ -75,8 +80,11 @@ export function useLogsHubData({
   });
 
   const results = explorerQueryFn.data;
-  const logs = liveTailEnabled ? liveTail.items : (results?.results ?? []);
-  const total = liveTailEnabled ? liveTail.items.length : Number(results?.pageInfo.total ?? 0);
+  const logs = useMemo(() => {
+    if (!liveTailEnabled) return results?.results ?? [];
+    return sortLogEntriesNewestFirst(liveTail.items).slice(0, LOGS_LIVE_TAIL_MAX_ROWS);
+  }, [liveTailEnabled, results?.results, liveTail.items]);
+  const total = liveTailEnabled ? logs.length : Number(results?.pageInfo.total ?? 0);
   const serviceFacets = (results?.facets.service_name ?? []) as LogFacet[];
   const levelFacets = (results?.facets.level ?? []) as LogFacet[];
   const hostFacets = (results?.facets.host ?? []) as LogFacet[];
@@ -90,7 +98,9 @@ export function useLogsHubData({
 
   return {
     logs,
-    logsLoading: explorerQueryFn.isLoading,
+    logsLoading: liveTailEnabled
+      ? liveTail.status === 'connecting' && liveTail.items.length === 0
+      : explorerQueryFn.isLoading,
     logsError: explorerQueryFn.isError,
     logsErrorDetail: explorerQueryFn.error,
     total,

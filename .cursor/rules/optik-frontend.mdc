@@ -1,0 +1,140 @@
+---
+description: Optik frontend (optic-frontend) — orientation and hot paths for AI sessions
+alwaysApply: true
+---
+
+## Session workflow (do this first)
+
+1. **Read** **`CODEBASE_INDEX.md`** at the **repository root** (full map for this repo).
+2. **Read** this file — **`.cursor/rules/optik-frontend.mdc`** — hot paths and patterns.
+3. **Read** **`.cursor/rules/engineering-workflow.mdc`** — plan, approval before code, two options, quality bar.
+4. **After every iteration (mandatory):** Review and update if anything changed:
+   - **`CODEBASE_INDEX.md`** — new features, routes, hooks, types, panels, cross-repo contracts
+   - **This file** (`.cursor/rules/optik-frontend.mdc`) — new patterns, conventions, LLD details
+   - **`.agent/SKILL.md`** and **`CLAUDE.md`** — keep aligned
+
+   Documentation must always reflect current architecture. Always check, even for small changes.
+
+## Canonical map
+
+**`CODEBASE_INDEX.md`** (repo root) lists domains, routes, shared layers, and the cross-repo map to **optikk-backend**.
+
+## Stack
+
+React 18, Vite 5, TypeScript, TanStack Query v5, React Router 6, Tailwind. Quality: `npm run ci`.
+
+## Entry points
+
+- `src/main.tsx`, `src/app/App.tsx`, `src/app/routes/appRoutes.tsx`
+- Feature registry: `src/app/registry/domainRegistry.ts`
+- Routes: `src/shared/constants/routes.ts` — includes **`ROUTES.service`** (`/service`) → `ServiceHubPage`; pass **`?serviceName=`** for deployment dashboard panel params (`{serviceName}` interpolation)
+
+## Shared / API
+
+- HTTP: `src/shared/api/api/client.ts`, decode: `src/shared/api/utils/decode.ts`
+- Dashboard shell: `src/shared/components/ui/dashboard/` (`ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx`)
+- **uPlot:** `src/shared/components/ui/charts/UPlotChart.tsx` — on data-only updates (same options/geometry), call **`setData`** instead of destroying/recreating the chart. Dashboard panel renderers must build **`options` inside `useMemo`** (see `BarRenderer`, `ObservabilityChart`) so a new object is not created every render; otherwise **`mergedOptions` changes** and the chart tears down even when data shape is unchanged.
+
+## Global refresh / auto-refresh
+
+- **Zustand:** `src/app/store/appStore.ts` — `triggerRefresh()` increments **`refreshKey`** (also bumps on time-range changes).
+- **TanStack Query:** Many hooks include `refreshKey` in `queryKey` to force refetch when the time window is unchanged (e.g. absolute range + manual/auto refresh). Use **`placeholderData: keepPreviousData`** (or `(p) => p`) on queries so refetches do not flash empty/loading UI.
+- **Backend-driven dashboard panels** (`useComponentDataFetcher`, `useDataSourceFetcher`): **do not** put `refreshKey` in `queryKey` — that creates a new cache entry every tick and blinks the grid. Use stable keys (`component-query` / `datasource` + team + endpoint + time bounds) and **`useInvalidateQueriesOnAppRefresh`** to `invalidateQueries` when `refreshKey` changes. Treat **loading** as `isPending && data === undefined`, not `isLoading`, so background refetch does not flip cards to “loading”.
+- **Header UI:** `src/app/layout/Header.tsx` + `src/shared/hooks/useAutoRefresh.ts` — interval auto-refresh calls `triggerRefresh`; the hook also ticks a clock for the “Xs ago” tooltip (throttled) so the header does not re-render every second.
+
+## Aliases
+
+See `vite.config.ts`: `@/`, `@features/`, `@shared/`, `@app/`, `@config/`, etc.
+
+---
+
+## Low-Level Design Patterns
+
+### Feature module pattern
+
+Each feature's `index.ts` exports a `DomainConfig`:
+
+```tsx
+import { lazy } from 'react';
+import type { DomainConfig } from '@/app/registry/domainRegistry';
+import { ROUTES } from '@/shared/constants/routes';
+
+const MyPage = lazy(() => import('./pages/MyPage').then(m => ({ default: m.default })));
+const MyRenderer = lazy(() => import('./dashboard/renderers/MyRenderer').then(m => ({ default: m.MyRenderer })));
+
+export const myConfig: DomainConfig = {
+  key: 'my-domain',
+  label: 'My Domain',
+  permissions: ['my-domain:read'],
+  navigation: [{ path: ROUTES.myDomain, label: 'My Domain', icon: SomeIcon, group: 'observe' }],
+  routes: [{ path: ROUTES.myDomain, page: MyPage }],
+  dashboardPanels: [{ panelType: 'my-panel', kind: 'specialized', component: MyRenderer }],
+};
+```
+
+- All pages and renderers use `lazy()` for code splitting
+- Register in `domainRegistry.ts` array — order determines nav order
+- Add route constant to `src/shared/constants/routes.ts`
+
+### Dashboard panel registration
+
+- `DashboardPanelRegistration`: `{ panelType, kind: 'base-chart' | 'specialized' | 'self-contained', component }`
+- `base-chart` — receives `BaseChartComponentProps` (data, height, valueKey, etc.)
+- `specialized` / `self-contained` �� receives `DashboardPanelRendererProps` (chartConfig, dataSources, extraContext)
+- Registry built from `BUILT_IN_DASHBOARD_PANELS` + all domain `dashboardPanels` via `getDashboardPanelRegistrations()`
+- Provided via `DashboardPanelRegistryProvider` context in `App.tsx`
+- Resolve at render: `useDashboardPanelRegistration(panelType)`
+- Lifecycle hooks: `onMount`, `onUnmount`, `onGlobalTimeChange`, `onDataUpdate`
+
+### Query patterns
+
+| Scope | Key pattern | `refreshKey` in key? | Invalidation |
+|-------|-------------|---------------------|--------------|
+| Explorer queries | `[feature, endpoint, ...params, refreshKey]` | Yes | Key change triggers refetch |
+| Dashboard component | `['component-query', teamId, endpoint, timeRange]` | **No** | `useInvalidateQueriesOnAppRefresh` |
+| Dashboard datasource | `['datasource', teamId, endpoint, timeRange]` | **No** | `useInvalidateQueriesOnAppRefresh` |
+
+- **Always** use `placeholderData: keepPreviousData` to prevent loading flash on refetch
+- **Loading state** = `isPending && data === undefined` (not `isLoading`) — distinguishes initial load from background refresh
+- `enabled: !!selectedTeamId` — don't fire queries without a team
+- `staleTime: 0`, `gcTime: 30_000`, `retry: false` — standard for dashboard queries
+
+### API client (`src/shared/api/api/client.ts`)
+
+- Axios with interceptors: auto-unwraps `APIResponse` envelope (`{success, data, error}`)
+- Auth: session cookies (`withCredentials: true`); `attachAuthInterceptor()` for token refresh
+- Decode boundary: `src/shared/api/utils/decode.ts` — Zod schemas validate API responses
+- `normalizeApiPayload` handles nested JSON strings from some endpoints
+- Normalized client exports: `api.get<T>()`, `api.post<T>()`, `api.put<T>()`, `api.delete<T>()`
+
+### Component hierarchy
+
+- **Primitives**: `shared/components/primitives/` — Radix UI re-exports (shadcn/ui styled)
+- **UI components**: `shared/components/ui/` — dashboard shell, charts, feedback, data-display, forms, overlay
+- **Feature components**: `features/<domain>/components/` — domain-specific
+- **No cross-feature imports** — ESLint enforced (see below)
+
+### ESLint feature boundary
+
+- `no-restricted-imports` on `src/features/**/*.{ts,tsx}`: cannot import `@features/*` from another feature
+- Move shared logic to `@shared/` or export explicit public contract
+- `no-restricted-syntax`: no TS enums → use `as const` objects + union types
+- `@typescript-eslint/no-floating-promises`: error
+- `import/no-cycle`: warn
+- `import/order`: alphabetical with grouping (builtin → external → internal → relative)
+
+### State management hierarchy
+
+- **Zustand** (`appStore`): global ephemeral state — `timeRange`, `selectedTeamId`, `refreshKey`, `theme`, `sidebarCollapsed`, `autoRefreshInterval`, `timezone`, `comparisonMode`
+- **TanStack Query**: all server/API state — caching, background refetch, deduplication
+- **Local state** (React `useState`): component-specific UI (dropdowns, form inputs, hover)
+- **Never** duplicate server state in Zustand — TanStack Query is the source of truth for API data
+- Use computed selectors: `useTimeRange()`, `useTeamId()`, `useRefreshKey()`, `useTheme()`, etc.
+
+### CSS theming
+
+- CSS variables in `src/config/themeColors.css` → Tailwind maps in `tailwind.config.ts`
+- Semantic tokens: `--bg-primary/secondary/tertiary/card/hover`, `--text-primary/secondary/muted`, `--color-primary/success/warning/error/info`, `--border-color/light`, `--chart-1..8`
+- Dark mode via class-based toggle (`appStore.setTheme()`)
+- Severity colors: `critical`, `high`, `medium`, `low`, `info`
+- Fonts: Inter (sans), JetBrains Mono / Fira Code (mono)

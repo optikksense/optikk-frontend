@@ -38,7 +38,6 @@ export default function Header() {
 
   const handleRefresh = () => {
     triggerHeaderRefresh();
-    toast.success('Data refreshed');
   };
 
   const shiftTimeRange = useCallback(

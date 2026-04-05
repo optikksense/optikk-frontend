@@ -101,11 +101,17 @@ export const LOG_FILTER_FIELDS: LogFilterField[] = [
     group: 'Correlation',
     operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
   },
+  {
+    key: 'search',
+    label: 'Search',
+    icon: '🔍',
+    group: 'Log',
+    operators: [{ key: 'contains', label: 'contains', symbol: '~' }],
+  },
 ];
 
 export const LOGS_URL_FILTER_CONFIG = {
   params: [
-    { key: 'query', type: 'string' as const, defaultValue: '' },
     { key: 'errorsOnly', type: 'boolean' as const, defaultValue: false },
   ],
   syncStructuredFilters: true,

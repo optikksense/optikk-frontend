@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import type { DashboardTabDocument } from '@/types/dashboardConfig';
@@ -25,6 +25,7 @@ export function useDashboardTabDocument(
     enabled: !!selectedTeamId && !!pageId && !!tabId,
     staleTime: 0,
     refetchOnMount: 'always',
+    placeholderData: keepPreviousData,
   });
 
   const tab = useMemo<DashboardTabDocument | null>(() => {

@@ -1,4 +1,4 @@
-import { Gauge, LayoutDashboard } from 'lucide-react';
+import { Gauge, LayoutDashboard, Server } from 'lucide-react';
 import { lazy } from 'react';
 
 import type { DomainConfig } from '@/app/registry/domainRegistry';
@@ -11,6 +11,9 @@ const SaturationHubPage = lazy(() =>
   import('@/features/metrics/pages/SaturationHubPage').then((module) => ({
     default: module.default,
   }))
+);
+const ServiceHubPage = lazy(() =>
+  import('./pages/ServiceHubPage').then((module) => ({ default: module.default }))
 );
 const ServiceHealthGridRenderer = lazy(() =>
   import('./dashboard/renderers/ServiceHealthGridRenderer').then((module) => ({
@@ -60,11 +63,18 @@ export const overviewConfig: DomainConfig = {
       icon: Gauge,
       group: 'operate',
     },
+    {
+      path: ROUTES.service,
+      label: 'Service',
+      icon: Server,
+      group: 'observe',
+    },
   ],
   routes: [],
   dashboardPages: [
     { pageId: 'overview', page: OverviewHubPage },
     { pageId: 'saturation', page: SaturationHubPage },
+    { pageId: 'service', page: ServiceHubPage },
   ],
   dashboardPanels: [
     { panelType: 'service-health-grid', kind: 'specialized', component: ServiceHealthGridRenderer },

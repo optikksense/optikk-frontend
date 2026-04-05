@@ -1,5 +1,7 @@
-import { useQueries } from '@tanstack/react-query';
+import { keepPreviousData, useQueries, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
+
+import { useInvalidateQueriesOnAppRefresh } from '@shared/hooks/useInvalidateQueriesOnAppRefresh';
 
 import type {
   DashboardDataSourceValue,
@@ -40,6 +42,8 @@ export function useDataSourceFetcher(
 ): UseDataSourceFetcherResult {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();
 
+  useInvalidateQueriesOnAppRefresh(refreshKey, 'datasource', selectedTeamId);
+
   const { startMs, endMs } = useMemo(() => {
     void refreshKey;
     const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
@@ -60,7 +64,6 @@ export function useDataSourceFetcher(
           resolvedEndpoint,
           startMs,
           endMs,
-          refreshKey,
         ],
         queryFn: () =>
           api.get(resolvedEndpoint, {
@@ -74,6 +77,7 @@ export function useDataSourceFetcher(
         staleTime: 0,
         gcTime: 30_000,
         retry: false,
+        placeholderData: keepPreviousData,
       };
     }),
   });
@@ -85,19 +89,12 @@ export function useDataSourceFetcher(
   const failedRequests: DataSourceFailedRequest[] = [];
 
   dataSources.forEach((spec, i) => {
-    const result = results[i] as
-      | {
-          data?: unknown;
-          isLoading?: boolean;
-          isError?: boolean;
-          error?: unknown;
-        }
-      | undefined;
+    const result = results[i] as UseQueryResult<unknown> | undefined;
     if (result) {
       const normalizedError = result.isError ? toApiErrorShape(result.error) : null;
       data[spec.id] = (result.data ?? undefined) as DashboardDataSourceValue;
       errors[spec.id] = normalizedError;
-      if (result.isLoading) isLoading = true;
+      if (result.isPending && result.data === undefined) isLoading = true;
       if (normalizedError) {
         hasError = true;
         failedRequests.push({

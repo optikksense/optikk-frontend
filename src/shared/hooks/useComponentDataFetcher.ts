@@ -1,5 +1,7 @@
-import { useQueries, keepPreviousData } from '@tanstack/react-query';
+import { keepPreviousData, useQueries, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
+
+import { useInvalidateQueriesOnAppRefresh } from '@shared/hooks/useInvalidateQueriesOnAppRefresh';
 
 import type {
   DashboardPanelSpec,
@@ -55,6 +57,8 @@ export function useComponentDataFetcher(
   pathParams?: Record<string, string>
 ): UseComponentDataFetcherResult {
   const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+
+  useInvalidateQueriesOnAppRefresh(refreshKey, 'component-query', selectedTeamId);
 
   const { startMs, endMs } = useMemo(() => {
     void refreshKey;
@@ -117,7 +121,6 @@ export function useComponentDataFetcher(
         entry.params,
         startMs,
         endMs,
-        refreshKey,
       ],
       queryFn: () =>
         api.request({
@@ -144,16 +147,10 @@ export function useComponentDataFetcher(
   const failedRequests: ComponentFailedRequest[] = [];
 
   requestEntries.forEach((entry, index) => {
-    const result = results[index] as
-      | {
-          data?: unknown;
-          isLoading?: boolean;
-          isError?: boolean;
-          error?: unknown;
-        }
-      | undefined;
+    const result = results[index] as UseQueryResult<unknown> | undefined;
 
-    if (result?.isLoading) {
+    // Pending with no cached row yet — not mere background refetch (avoids chart blink).
+    if (result?.isPending && result.data === undefined) {
       isLoading = true;
     }
 

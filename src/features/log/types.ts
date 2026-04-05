@@ -1,4 +1,4 @@
-import type { QueryParams } from '@shared/api/service-types';
+import type { QueryParams, QueryParamValue } from '@shared/api/service-types';
 
 import type { LogEntry } from '@entities/log/model';
 import type { StructuredFilter } from '@shared/hooks/useURLFilters';
@@ -102,7 +102,8 @@ export type LogStructuredFilter = StructuredFilter;
 /**
  *
  */
-export type LogsBackendParams = QueryParams & {
+export interface LogsBackendParams {
+  [K: string]: QueryParamValue | LogAttributeFilter[] | undefined;
   limit?: number;
   offset?: number;
   search?: string;
@@ -120,7 +121,7 @@ export type LogsBackendParams = QueryParams & {
   traceId?: string;
   spanId?: string;
   attributeFilters?: LogAttributeFilter[];
-};
+}
 
 /**
  *

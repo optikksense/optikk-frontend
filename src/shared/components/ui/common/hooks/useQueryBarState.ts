@@ -44,8 +44,6 @@ export interface UseQueryBarStateOptions {
   fields: QueryField[];
   filters: ActiveFilter[];
   setFilters: (filters: ActiveFilter[]) => void;
-  searchText: string;
-  setSearchText: (value: string) => void;
   onClearAll: () => void;
 }
 
@@ -56,8 +54,6 @@ export function useQueryBarState({
   fields,
   filters,
   setFilters,
-  searchText,
-  setSearchText,
   onClearAll,
 }: UseQueryBarStateOptions) {
   // 0=closed, 1=pick field, 2=pick operator, 3=enter value
@@ -71,7 +67,6 @@ export function useQueryBarState({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-  const normalizedSearchText = String(searchText || '');
 
   const closeDropdown = useCallback((): void => {
     setStep(0);
@@ -158,7 +153,6 @@ export function useQueryBarState({
     }
 
     setFieldSearch(nextValue);
-    setSearchText(nextValue);
     if (step === 0) setStep(1);
   };
 
@@ -189,7 +183,6 @@ export function useQueryBarState({
       } else if (
         step === 0 &&
         fieldSearch === '' &&
-        normalizedSearchText === '' &&
         filters.length > 0
       ) {
         event.preventDefault();
@@ -224,9 +217,7 @@ export function useQueryBarState({
       valueInput,
       fieldSearch,
       showHints,
-      searchText,
-      normalizedSearchText,
-      hasFilters: filters.length > 0 || normalizedSearchText.length > 0,
+      hasFilters: filters.length > 0,
     },
     refs: {
       inputRef,

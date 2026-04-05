@@ -23,6 +23,26 @@ export interface UPlotChartProps {
   } | null;
 }
 
+function seriesLikeLength(value: unknown): number {
+  if (value == null) return 0;
+  if (Array.isArray(value)) return value.length;
+  if (typeof (value as ArrayLike<number>).length === 'number') {
+    return (value as ArrayLike<number>).length;
+  }
+  return 0;
+}
+
+function isAlignedDataShapeCompatible(
+  next: uPlot.AlignedData,
+  prev: uPlot.AlignedData
+): boolean {
+  if (next.length !== prev.length) return false;
+  for (let i = 0; i < next.length; i += 1) {
+    if (seriesLikeLength(next[i]) !== seriesLikeLength(prev[i])) return false;
+  }
+  return true;
+}
+
 /**
  * Generic uPlot wrapper with auto-resize, theme-aware defaults, and cleanup.
  */
@@ -38,12 +58,31 @@ export default function UPlotChart({
 }: UPlotChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<uPlot | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  /** Latest series for tooltips / hooks without re-merging options on every data tick */
+  const dataRef = useRef(data);
+  dataRef.current = data;
+
   const [hoverState, setHoverState] = useState<{
     left: number;
     top: number;
     title?: string;
     rows: Array<{ label: string; value: string; color?: string }>;
   } | null>(null);
+
+  /** When this changes, uPlot options/geometry must be rebuilt (not just setData). */
+  const structureKey = useMemo(
+    () =>
+      [
+        options.series?.length ?? 0,
+        height,
+        fillHeight ? 1 : 0,
+        syncKey?.key ?? '',
+        tooltipContent ? 1 : 0,
+        onTimeBrush ? 1 : 0,
+      ].join(':'),
+    [options.series?.length, height, fillHeight, syncKey, tooltipContent, onTimeBrush]
+  );
 
   // Memoize the merged options to avoid unnecessary re-renders
   const mergedOptions = useMemo(() => {
@@ -91,7 +130,7 @@ export default function UPlotChart({
               return;
             }
 
-            const content = tooltipContent({ u, idx, data });
+            const content = tooltipContent({ u, idx, data: dataRef.current });
             if (!content || content.rows.length === 0) {
               setHoverState(null);
               return;
@@ -116,16 +155,27 @@ export default function UPlotChart({
         ],
       },
     };
-  }, [options, height, fillHeight, tooltipContent, data, syncKey, onTimeBrush]);
+  }, [options, height, fillHeight, tooltipContent, syncKey, onTimeBrush]);
 
+  /** Bumps when `data` series shape changes so the structural effect rebuilds the chart. */
+  const [dataLayoutVersion, setDataLayoutVersion] = useState(0);
+
+  /** Mount / rebuild chart when structure/options change. `data` is not a dep — data-only updates use `setData` in a separate effect. */
   useEffect(() => {
-    if (!containerRef.current) return;
-
     const el = containerRef.current;
+    if (!el) return;
+
+    if (resizeObserverRef.current) {
+      resizeObserverRef.current.disconnect();
+      resizeObserverRef.current = null;
+    }
+    chartRef.current?.destroy();
+    chartRef.current = null;
+
     const measuredHeight = fillHeight ? Math.max(el.clientHeight || height, 180) : height;
     const opts = { ...mergedOptions, width: el.clientWidth, height: measuredHeight };
 
-    chartRef.current = new uPlot(opts, data, el);
+    chartRef.current = new uPlot(opts, dataRef.current, el);
 
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -139,6 +189,7 @@ export default function UPlotChart({
       }
     });
     ro.observe(el);
+    resizeObserverRef.current = ro;
 
     const handleMouseLeave = () => setHoverState(null);
     el.addEventListener('mouseleave', handleMouseLeave);
@@ -146,10 +197,22 @@ export default function UPlotChart({
     return () => {
       el.removeEventListener('mouseleave', handleMouseLeave);
       ro.disconnect();
+      resizeObserverRef.current = null;
       chartRef.current?.destroy();
       chartRef.current = null;
     };
-  }, [mergedOptions, data, height, fillHeight]);
+  }, [mergedOptions, height, fillHeight, structureKey, dataLayoutVersion]);
+
+  /** Data-only refetch: update series in place without destroying the canvas. */
+  useEffect(() => {
+    const u = chartRef.current;
+    if (!u) return;
+    if (!isAlignedDataShapeCompatible(data, u.data as uPlot.AlignedData)) {
+      setDataLayoutVersion((v) => v + 1);
+      return;
+    }
+    u.setData(data, false);
+  }, [data]);
 
   return (
     <div

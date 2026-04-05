@@ -3,11 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/shared/constants/routes';
 
-const TABS = [
-  { to: ROUTES.logs, label: 'Explorer', end: true },
-  { to: ROUTES.logsPatterns, label: 'Patterns' },
-  { to: ROUTES.logsTransactions, label: 'Transactions' },
-] as const;
+const TABS = [{ to: ROUTES.logs, label: 'Explorer', end: true }] as const;
 
 export function LogsNavTabs(): JSX.Element {
   return (

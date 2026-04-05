@@ -32,6 +32,7 @@ import {
 } from '@shared/components/ui';
 import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
 import { formatNumber, formatRelativeTime } from '@shared/utils/formatters';
+import { parseTimestampMs, rowKey as logRowKey } from '@shared/utils/logUtils';
 import { tsLabel } from '@shared/utils/time';
 import type { StructuredFilter } from '@/shared/hooks/useURLFilters';
 import { useURLFilters } from '@/shared/hooks/useURLFilters';
@@ -39,7 +40,7 @@ import { useURLFilters } from '@/shared/hooks/useURLFilters';
 import { LogsNavTabs } from '../../components/LogsNavTabs';
 import { LevelBadge } from '../../components/log/LogRow';
 import { useLogDetailFields } from '../../hooks/useLogDetailFields';
-import { useLogsHubData } from '../../hooks/useLogsHubData';
+import { LOGS_LIVE_TAIL_MAX_ROWS, useLogsHubData } from '../../hooks/useLogsHubData';
 import {
   compileLogsStructuredFilters,
   LOG_FILTER_FIELDS,
@@ -68,8 +69,9 @@ function compareText(left: unknown, right: unknown): number {
   return String(left ?? '').localeCompare(String(right ?? ''), undefined, { sensitivity: 'base' });
 }
 
+/** Table sorter — must handle OTLP/log ns integers from WebSocket, not only ISO strings. */
 function compareTimestamp(left: unknown, right: unknown): number {
-  return new Date(String(left ?? 0)).getTime() - new Date(String(right ?? 0)).getTime();
+  return parseTimestampMs(left) - parseTimestampMs(right);
 }
 
 function formatLiveTailStatus(
@@ -94,23 +96,14 @@ export default function LogsHubPage(): JSX.Element {
     clearAll: clearURLFilters,
   } = useURLFilters(LOGS_URL_FILTER_CONFIG);
 
-  const queryText = typeof urlValues['query'] === 'string' ? urlValues['query'] : '';
-  const errorsOnly = urlValues['errorsOnly'] === true;
 
-  const setQueryText = (value: string): void => {
-    urlSetters['query']?.(value);
-  };
+  const errorsOnly = urlValues['errorsOnly'] === true;
 
   const setErrorsOnly = (value: boolean): void => {
     urlSetters['errorsOnly']?.(value);
   };
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.get('query') && params.get('search')) {
-      setQueryText(params.get('search') || '');
-    }
-  }, []);
+
 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -125,8 +118,8 @@ export default function LogsHubPage(): JSX.Element {
   const [analyticsStep, setAnalyticsStep] = useState('5m');
 
   const explorerQuery = useMemo(
-    () => buildLogsExplorerQuery({ queryText, filters, errorsOnly }),
-    [queryText, filters, errorsOnly]
+    () => buildLogsExplorerQuery({ filters, errorsOnly }),
+    [filters, errorsOnly]
   );
 
   const liveTailParams = useMemo((): LogsBackendParams => {
@@ -219,8 +212,14 @@ export default function LogsHubPage(): JSX.Element {
         key: 'timestamp',
         dataIndex: 'timestamp',
         width: 168,
-        sorter: (left, right) => compareTimestamp(left.timestamp, right.timestamp),
-        defaultSortOrder: 'descend',
+        // Live tail rows are pre-sorted newest-first; disable client sort so order stays correct.
+        ...(liveTailEnabled
+          ? {}
+          : {
+              sorter: (left: LogRecord, right: LogRecord) =>
+                compareTimestamp(left.timestamp, right.timestamp),
+              defaultSortOrder: 'descend' as const,
+            }),
         render: (value, row) => {
           const timestamp =
             value instanceof Date || typeof value === 'string' || typeof value === 'number'
@@ -244,12 +243,16 @@ export default function LogsHubPage(): JSX.Element {
         key: 'level',
         dataIndex: 'level',
         width: 90,
-        sorter: (left, right) =>
-          (LOG_LEVEL_SORT_ORDER[String(left.level ?? left.severity_text ?? 'INFO').toUpperCase()] ??
-            0) -
-          (LOG_LEVEL_SORT_ORDER[
-            String(right.level ?? right.severity_text ?? 'INFO').toUpperCase()
-          ] ?? 0),
+        ...(liveTailEnabled
+          ? {}
+          : {
+              sorter: (left: LogRecord, right: LogRecord) =>
+                (LOG_LEVEL_SORT_ORDER[String(left.level ?? left.severity_text ?? 'INFO').toUpperCase()] ??
+                  0) -
+                (LOG_LEVEL_SORT_ORDER[
+                  String(right.level ?? right.severity_text ?? 'INFO').toUpperCase()
+                ] ?? 0),
+            }),
         render: (value, row) => <LevelBadge level={String(value ?? row.severity_text ?? 'INFO')} />,
       },
       {
@@ -257,8 +260,12 @@ export default function LogsHubPage(): JSX.Element {
         key: 'service_name',
         dataIndex: 'service_name',
         width: 160,
-        sorter: (left, right) =>
-          compareText(left.service_name ?? left.service, right.service_name ?? right.service),
+        ...(liveTailEnabled
+          ? {}
+          : {
+              sorter: (left: LogRecord, right: LogRecord) =>
+                compareText(left.service_name ?? left.service, right.service_name ?? right.service),
+            }),
         render: (value) => (
           <span className="text-[12.5px] font-medium text-[var(--text-primary)]">
             {toDisplayText(value)}
@@ -270,7 +277,12 @@ export default function LogsHubPage(): JSX.Element {
         key: 'host',
         dataIndex: 'host',
         width: 148,
-        sorter: (left, right) => compareText(left.host ?? left.pod, right.host ?? right.pod),
+        ...(liveTailEnabled
+          ? {}
+          : {
+              sorter: (left: LogRecord, right: LogRecord) =>
+                compareText(left.host ?? left.pod, right.host ?? right.pod),
+            }),
         render: (value, row) => (
           <span className="text-[12px] text-[var(--text-secondary)]">
             {toDisplayText(value || row.pod)}
@@ -281,8 +293,12 @@ export default function LogsHubPage(): JSX.Element {
         title: 'Message',
         key: 'message',
         dataIndex: 'message',
-        sorter: (left, right) =>
-          compareText(left.message ?? left.body, right.message ?? right.body),
+        ...(liveTailEnabled
+          ? {}
+          : {
+              sorter: (left: LogRecord, right: LogRecord) =>
+                compareText(left.message ?? left.body, right.message ?? right.body),
+            }),
         render: (value, row) => (
           <button
             type="button"
@@ -298,8 +314,12 @@ export default function LogsHubPage(): JSX.Element {
         key: 'trace_id',
         dataIndex: 'trace_id',
         width: 150,
-        sorter: (left, right) =>
-          compareText(left.trace_id ?? left.traceId, right.trace_id ?? right.traceId),
+        ...(liveTailEnabled
+          ? {}
+          : {
+              sorter: (left: LogRecord, right: LogRecord) =>
+                compareText(left.trace_id ?? left.traceId, right.trace_id ?? right.traceId),
+            }),
         render: (value) => (
           <span className="font-mono text-[11px] text-[var(--text-muted)]">
             {value ? String(value).slice(0, 12) : '—'}
@@ -307,7 +327,7 @@ export default function LogsHubPage(): JSX.Element {
         ),
       },
     ],
-    []
+    [liveTailEnabled]
   );
 
   const facetGroups = useMemo(
@@ -411,18 +431,11 @@ export default function LogsHubPage(): JSX.Element {
                 setFilters(nextFilters);
                 setPage(1);
               }}
-              searchText={queryText}
-              setSearchText={(value: string) => {
-                setQueryText(value);
-                setPage(1);
-              }}
               onClearAll={() => {
                 clearURLFilters();
                 setPage(1);
               }}
-              placeholder="service:web AND status:error — or use + Filter"
-              syntaxFields={[...LOGS_QUERY_FIELDS]}
-              onSubmitQuery={() => setPage(1)}
+              placeholder="service:web AND status:error — or use Search filter"
               rightSlot={
                 <div
                   className={cn(
@@ -504,15 +517,21 @@ export default function LogsHubPage(): JSX.Element {
 
         {explorerMode === 'list' ? (
           <ExplorerResultsTable
+            key={liveTailEnabled ? 'logs-live-tail' : 'logs-explorer'}
             title="Logs Explorer"
-            subtitle={`${formatNumber(logs.length)} rows in view, ${formatNumber(total)} total matches`}
-            rows={logs}
+            subtitle={
+              liveTailEnabled
+                ? `${formatNumber(logs.length)} live tail rows`
+                : `${formatNumber(logs.length)} rows in view, ${formatNumber(total)} total matches`
+            }
+            rows={liveTailEnabled ? logs.slice(0, LOGS_LIVE_TAIL_MAX_ROWS) : logs}
             columns={columns}
-            rowKey={(row) => String(row.id)}
+            rowKey={(row, index) => logRowKey(row, index ?? 0)}
             isLoading={logsLoading}
             page={page}
             pageSize={pageSize}
             total={liveTailEnabled ? logs.length : total}
+            showPagination={!liveTailEnabled}
             onPageChange={setPage}
             onPageSizeChange={(size) => {
               setPageSize(size);

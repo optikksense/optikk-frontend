@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import type { DefaultConfigPage } from '@/types/dashboardConfig';
 
@@ -24,6 +24,7 @@ export function usePagesConfig(): UsePagesConfigResult {
     enabled: !!selectedTeamId,
     staleTime: 0,
     refetchOnMount: 'always',
+    placeholderData: keepPreviousData,
   });
 
   return {

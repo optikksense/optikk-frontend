@@ -18,6 +18,8 @@ interface ExplorerResultsTableProps<RowType extends Record<string, unknown>> {
   onRow?: SimpleTableProps<RowType>['onRow'];
   rowClassName?: SimpleTableProps<RowType>['rowClassName'];
   toolbar?: React.ReactNode;
+  /** When false, all rows render with no pager (e.g. live tail buffer). Default true. */
+  showPagination?: boolean;
 }
 
 export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
@@ -35,6 +37,7 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
   onRow,
   rowClassName,
   toolbar,
+  showPagination = true,
 }: ExplorerResultsTableProps<RowType>): JSX.Element {
   return (
     <PageSurface padding="lg" className="min-h-0 min-w-0 w-full">
@@ -53,20 +56,24 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
           columns={columns}
           dataSource={rows}
           rowKey={rowKey}
-          pagination={{
-            current: page,
-            pageSize,
-            total,
-            manual: true,
-            showSizeChanger: true,
-            onChange: (nextPage, nextPageSize) => {
-              if (nextPageSize !== pageSize) {
-                onPageSizeChange(nextPageSize);
-                return;
-              }
-              onPageChange(nextPage);
-            },
-          }}
+          pagination={
+            showPagination
+              ? {
+                  current: page,
+                  pageSize,
+                  total,
+                  manual: true,
+                  showSizeChanger: true,
+                  onChange: (nextPage, nextPageSize) => {
+                    if (nextPageSize !== pageSize) {
+                      onPageSizeChange(nextPageSize);
+                      return;
+                    }
+                    onPageChange(nextPage);
+                  },
+                }
+              : false
+          }
           onRow={onRow}
           rowClassName={rowClassName}
           className="[&_td]:align-top [&_td]:py-2.5 [&_th]:py-2.5"

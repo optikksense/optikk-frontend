@@ -7,7 +7,6 @@ import type { QueryFieldOption } from '@/features/explorer-core/constants/fields
 import QueryFieldPicker from './QueryFieldPicker';
 import QueryKeyboardHints from './QueryKeyboardHints';
 import QueryOperatorPicker from './QueryOperatorPicker';
-import QuerySyntaxInput from './QuerySyntaxInput';
 import QueryValuePicker from './QueryValuePicker';
 import {
   EXPLORER_QUERY_DROPDOWN_CLASSNAME,
@@ -27,23 +26,16 @@ import {
 type QueryBarSearchValue = string | string[] | number | boolean;
 
 type SetFiltersFn = (filters: ActiveFilter[]) => void;
-type SetSearchTextFn = (value: string) => void;
 type ClearAllFn = () => void;
-
 interface ObservabilityQueryBarProps {
   fields?: QueryField[];
   filters?: ActiveFilter[];
   setFilters: SetFiltersFn;
-  searchText?: QueryBarSearchValue;
-  setSearchText: SetSearchTextFn;
   onClearAll: ClearAllFn;
   placeholder?: string;
   className?: string;
   rightSlot?: ReactNode;
   valueHints?: Record<string, string[]>;
-  /** Datadog-style query field registry for syntax autocomplete */
-  syntaxFields?: readonly QueryFieldOption[];
-  onSubmitQuery?: () => void;
 }
 
 /**
@@ -53,22 +45,16 @@ export default function ObservabilityQueryBar({
   fields = [],
   filters = [],
   setFilters,
-  searchText = '',
-  setSearchText,
   onClearAll,
   placeholder,
   className = '',
   rightSlot,
   valueHints,
-  syntaxFields,
-  onSubmitQuery,
 }: ObservabilityQueryBarProps): JSX.Element {
   const { state, refs, actions } = useQueryBarState({
     fields,
     filters,
     setFilters,
-    searchText: String(searchText || ''),
-    setSearchText,
     onClearAll,
   });
 
@@ -110,7 +96,6 @@ export default function ObservabilityQueryBar({
         : 'Click to filter, or type to search…');
 
   const inputValue = step === 3 ? state.valueInput : step <= 1 ? fieldSearch : '';
-  const showSyntaxInput = step === 0 && syntaxFields && syntaxFields.length > 0;
 
   return (
     <div className={cn(EXPLORER_QUERY_WRAPPER_CLASSNAME, 'group', className)} ref={wrapperRef}>
@@ -125,26 +110,24 @@ export default function ObservabilityQueryBar({
         )}
         style={{ rowGap: 4 }}
         onClick={() => {
-          if (step === 0 && !syntaxFields?.length) openDropdown();
+          openDropdown();
         }}
       >
         <Search
           size={14}
           className={cn(EXPLORER_QUERY_ICON_CLASSNAME, step > 0 && 'text-[var(--color-info)]')}
         />
-        {syntaxFields && syntaxFields.length > 0 ? (
-          <button
-            type="button"
-            title="Add structured filter"
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors hover:border-[var(--color-primary-subtle-28)] hover:text-[var(--text-primary)]"
-            onClick={(event) => {
-              event.stopPropagation();
-              openDropdown();
-            }}
-          >
-            <Plus size={14} />
-          </button>
-        ) : null}
+        <button
+          type="button"
+          title="Add structured filter"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors hover:border-[var(--color-primary-subtle-28)] hover:text-[var(--text-primary)]"
+          onClick={(event) => {
+            event.stopPropagation();
+            openDropdown();
+          }}
+        >
+          <Plus size={14} />
+        </button>
 
         {/* Pills */}
         <div className="flex items-center gap-[5px] flex-wrap">
@@ -191,35 +174,18 @@ export default function ObservabilityQueryBar({
           )}
         </div>
 
-        {/* Query syntax (free text) or structured wizard input */}
-        {showSyntaxInput ? (
-          <QuerySyntaxInput
-            value={String(searchText || '')}
-            onChange={(v) => {
-              setSearchText(v);
-            }}
-            onSubmit={onSubmitQuery}
-            fields={syntaxFields ?? []}
-            placeholder={placeholder ?? 'service:web AND status:error'}
-            className="min-w-[200px]"
-            onCompositeKeyDown={(e) => {
-              handleKeyDown(e as unknown as React.KeyboardEvent<HTMLInputElement>);
-            }}
-          />
-        ) : (
-          <input
-            ref={inputRef}
-            type="text"
-            className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] min-w-[160px] leading-[1.4] placeholder:text-muted-foreground"
-            placeholder={inputPlaceholder}
-            value={inputValue}
-            onChange={onInputChange}
-            onKeyDown={handleKeyDown}
-            onFocus={() => {
-              if (step === 0) openDropdown();
-            }}
-          />
-        )}
+        <input
+          ref={inputRef}
+          type="text"
+          className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] min-w-[160px] leading-[1.4] placeholder:text-muted-foreground"
+          placeholder={inputPlaceholder}
+          value={inputValue}
+          onChange={onInputChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => {
+            if (step === 0) openDropdown();
+          }}
+        />
 
         {/* Right controls */}
         <div

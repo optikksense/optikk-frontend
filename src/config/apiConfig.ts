@@ -4,7 +4,7 @@ const API_RETRY_ATTEMPTS = 3;
 
 export const DEV_FRONTEND_PORT = 3000;
 const DEV_BACKEND_HOST = 'localhost';
-const DEV_BACKEND_PORT = 9090;
+const DEV_BACKEND_PORT = 19090;
 export const DEV_BACKEND_URL = `http://${DEV_BACKEND_HOST}:${DEV_BACKEND_PORT}`;
 
 export const API_ENDPOINTS = {

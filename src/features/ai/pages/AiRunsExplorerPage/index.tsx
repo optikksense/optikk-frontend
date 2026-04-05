@@ -86,8 +86,6 @@ export default function AiRunsExplorerPage(): JSX.Element {
               fields={AI_RUN_FILTER_FIELDS}
               filters={filters as StructuredFilter[]}
               setFilters={(next: StructuredFilter[]) => setFilters(next)}
-              searchText=""
-              setSearchText={() => {}}
               onClearAll={clearAll}
               placeholder="Filter LLM runs by model, operation, provider, service, or status"
             />

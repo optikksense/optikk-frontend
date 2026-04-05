@@ -33,7 +33,6 @@ const EMPTY_TRACE_SUMMARY: TraceSummary = {
 
 const TRACES_URL_FILTER_CONFIG = {
   params: [
-    { key: 'query', type: 'string' as const, defaultValue: '' },
     { key: 'service', type: 'string' as const, defaultValue: '' },
     { key: 'errorsOnly', type: 'boolean' as const, defaultValue: false },
     { key: 'mode', type: 'string' as const, defaultValue: 'all' },
@@ -100,7 +99,6 @@ export function useTracesExplorer() {
     clearAll: clearURLFilters,
   } = useURLFilters(TRACES_URL_FILTER_CONFIG);
 
-  const queryText = typeof urlValues['query'] === 'string' ? urlValues['query'] : '';
   const selectedService =
     typeof urlValues['service'] === 'string' && urlValues['service'].length > 0
       ? urlValues['service']
@@ -108,9 +106,7 @@ export function useTracesExplorer() {
   const errorsOnly = urlValues['errorsOnly'] === true;
   const mode = typeof urlValues['mode'] === 'string' ? urlValues['mode'] : 'all';
 
-  const setQueryText = (value: string): void => {
-    urlSetters['query']?.(value);
-  };
+
 
   const setSelectedService = (value: string | null): void => {
     urlSetters['service']?.(value || '');
@@ -132,17 +128,16 @@ export function useTracesExplorer() {
   const explorerQuery = useMemo(
     () =>
       buildTracesExplorerQuery({
-        queryText,
         filters,
         errorsOnly,
         selectedService,
       }),
-    [queryText, filters, errorsOnly, selectedService]
+    [filters, errorsOnly, selectedService]
   );
 
   /** Params for live tail socket (legacy shape). */
-  const backendParams = useMemo((): TracesBackendParams & { search?: string; mode?: string } => {
-    const params: TracesBackendParams & { search?: string; mode?: string } = {
+  const backendParams = useMemo((): TracesBackendParams & { mode?: string } => {
+    const params: TracesBackendParams & { mode?: string } = {
       limit: pageSize,
       offset: (page - 1) * pageSize,
       mode,
@@ -155,12 +150,9 @@ export function useTracesExplorer() {
     if (selectedService) {
       params.services = [selectedService];
     }
-    if (queryText.trim()) {
-      params.search = queryText.trim();
-    }
 
     return params;
-  }, [errorsOnly, filters, mode, page, pageSize, queryText, selectedService]);
+  }, [errorsOnly, filters, mode, page, pageSize, selectedService]);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [
@@ -224,8 +216,6 @@ export function useTracesExplorer() {
     trendBuckets: data?.trend ?? [],
     facets: data?.facets ?? EMPTY_TRACE_FACETS,
     maxDuration,
-    queryText,
-    searchText: queryText,
     selectedService,
     errorsOnly,
     mode,
@@ -236,8 +226,6 @@ export function useTracesExplorer() {
     endTime,
     backendParams,
     explorerQuery,
-    setQueryText,
-    setSearchText: setQueryText,
     setSelectedService,
     setErrorsOnly,
     setMode,

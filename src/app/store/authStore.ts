@@ -35,15 +35,29 @@ function asLoginPayload(value: unknown): AuthPayload | null {
 }
 
 function getErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
   if (typeof error === 'object' && error !== null) {
     const record = error as Record<string, unknown>;
+
+    // Handle "hijacked" 500 responses where login succeeded but session storage failed
+    const apiData = record.data as any;
+    if (
+      record.status === 500 &&
+      apiData &&
+      typeof apiData === 'object' &&
+      (apiData.success === true || (apiData.data && apiData.data.user))
+    ) {
+      return 'Authentication succeeded, but the session could not be saved (Redis failure). Please contact your administrator.';
+    }
+
     if (typeof record.message === 'string' && record.message.length > 0) {
       return record.message;
     }
   }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
   return fallback;
 }
 

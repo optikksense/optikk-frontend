@@ -20,16 +20,19 @@ function asAuthEnvelope(value: unknown): AuthEnvelope | null {
 
 export const authService = {
   normalizeAuthPayload(response: unknown): AuthPayload | null {
-    const payload = asAuthEnvelope(response);
-    if (!payload) {
+    if (!response || typeof response !== 'object') {
       return null;
     }
 
-    if (payload.success === true) {
-      const nestedPayload = asAuthEnvelope(payload.data);
-      return nestedPayload ? (authPayloadSchema.safeParse(nestedPayload).data ?? null) : null;
+    const payload = response as Record<string, unknown>;
+
+    // If it's a success envelope, unwrap the nested data
+    if (payload.success === true && payload.data && typeof payload.data === 'object') {
+      return authPayloadSchema.safeParse(payload.data).data ?? null;
     }
 
+    // Otherwise, assume it's already unwrapped and parse it directly
+    // This handles the case where the global API interceptor has already stripped the envelope.
     return authPayloadSchema.safeParse(payload).data ?? null;
   },
 

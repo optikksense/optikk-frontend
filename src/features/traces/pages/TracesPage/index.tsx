@@ -13,7 +13,7 @@ import {
   type ExplorerVizMode,
 } from '@/features/explorer-core/components/AnalyticsToolbar';
 import { ExplorerResultsTable, FacetRail } from '@/features/explorer-core/components';
-import { TRACES_QUERY_FIELDS } from '@/features/explorer-core/constants/fields';
+
 import { AnalyticsPieChart } from '@/features/explorer-core/components/visualizations/AnalyticsPieChart';
 import { AnalyticsTable } from '@/features/explorer-core/components/visualizations/AnalyticsTable';
 import { AnalyticsTimeseries } from '@/features/explorer-core/components/visualizations/AnalyticsTimeseries';
@@ -139,7 +139,6 @@ export default function TracesPage(): JSX.Element {
     totalTraces,
     errorTraces,
     facets,
-    queryText,
     explorerQuery,
     selectedService,
     errorsOnly,
@@ -148,7 +147,6 @@ export default function TracesPage(): JSX.Element {
     pageSize,
     filters,
     backendParams,
-    setQueryText,
     setSelectedService,
     setErrorsOnly,
     setMode,
@@ -445,15 +443,8 @@ export default function TracesPage(): JSX.Element {
                 setFilters(nextFilters);
                 setPage(1);
               }}
-              searchText={queryText}
-              setSearchText={(value: string) => {
-                setQueryText(value);
-                setPage(1);
-              }}
               onClearAll={clearAll}
-              placeholder="service:api AND status:ERROR — or + Filter"
-              syntaxFields={[...TRACES_QUERY_FIELDS]}
-              onSubmitQuery={() => setPage(1)}
+              placeholder="service:api AND status:ERROR — or use Search filter"
               rightSlot={
                 <div
                   className={cn(
@@ -496,7 +487,7 @@ export default function TracesPage(): JSX.Element {
             onAggregationsChange={setAggregations}
             step={analyticsStep}
             onStepChange={setAnalyticsStep}
-            fieldOptions={[...TRACES_QUERY_FIELDS]}
+            fieldOptions={[...TRACE_FILTER_FIELDS.map(f => ({ name: f.key, description: f.label }))]}
             metricFields={TRACE_METRIC_FIELDS}
           />
         </div>

@@ -1,4 +1,4 @@
-import { useInfiniteQuery, InfiniteData } from '@tanstack/react-query';
+import { useInfiniteQuery, InfiniteData, keepPreviousData } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { logsService } from '@shared/api/logsService';
@@ -92,6 +92,7 @@ export function useInfiniteLogs({
     enabled: !!selectedTeamId,
     refetchInterval: liveTail ? 3000 : false,
     refetchIntervalInBackground: false,
+    placeholderData: keepPreviousData,
   });
 
   // Deduplicate + sort newest-first

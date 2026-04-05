@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { resolveTimeRangeBounds } from '@/types';
 import { useAppStore } from '@store/appStore';
@@ -35,6 +35,7 @@ export function useMetricsQueries({
       return metricsOverviewApi.getOverviewServices(selectedTeamId, startTime, endTime);
     },
     enabled: Boolean(selectedTeamId),
+    placeholderData: keepPreviousData,
   });
 
   const { data: summaryData, isLoading: summaryLoading } = useQuery<MetricSummary>({
@@ -44,6 +45,7 @@ export function useMetricsQueries({
       return metricsOverviewApi.getMetricsSummary(selectedTeamId, startTime, endTime);
     },
     enabled: Boolean(selectedTeamId),
+    placeholderData: keepPreviousData,
   });
 
   const { data: metricsData, isLoading: metricsLoading } = useQuery<MetricTimeSeriesPoint[]>({
@@ -66,6 +68,7 @@ export function useMetricsQueries({
       );
     },
     enabled: Boolean(selectedTeamId),
+    placeholderData: keepPreviousData,
   });
 
   const { data: serviceMetricsData } = useQuery<ServiceMetricPoint[]>({
@@ -75,6 +78,7 @@ export function useMetricsQueries({
       return metricsOverviewApi.getServiceMetrics(selectedTeamId, startTime, endTime);
     },
     enabled: Boolean(selectedTeamId) && activeTab === 'services',
+    placeholderData: keepPreviousData,
   });
 
   const { data: endpointMetricsData } = useQuery<EndpointMetricPoint[]>({
@@ -89,6 +93,7 @@ export function useMetricsQueries({
       );
     },
     enabled: Boolean(selectedTeamId),
+    placeholderData: keepPreviousData,
   });
 
   const { data: endpointTimeSeriesData } = useQuery<MetricTimeSeriesPoint[]>({
@@ -103,6 +108,7 @@ export function useMetricsQueries({
       );
     },
     enabled: Boolean(selectedTeamId) && activeTab === 'overview',
+    placeholderData: keepPreviousData,
   });
 
   return {

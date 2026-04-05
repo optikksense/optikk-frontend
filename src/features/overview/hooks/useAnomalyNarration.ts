@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { API_CONFIG } from '@config/apiConfig';
 import type { AnomalyEvent } from '@shared/components/ui/calm/AiNarrationCard';
@@ -34,5 +34,6 @@ export function useAnomalyNarration() {
     staleTime: 60_000,
     gcTime: 120_000,
     retry: false,
+    placeholderData: keepPreviousData,
   });
 }

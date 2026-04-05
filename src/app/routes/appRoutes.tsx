@@ -18,6 +18,7 @@ const SaturationHubPage = lazy(() => import('@/features/metrics/pages/Saturation
 const InfrastructureHubPage = lazy(
   () => import('@/features/infrastructure/pages/InfrastructureHubPage')
 );
+const ServiceHubPage = lazy(() => import('@/features/overview/pages/ServiceHubPage'));
 const AiObservabilityPage = lazy(() => import('@/features/ai/pages/AiObservabilityPage'));
 
 function toNestedRoutePath(path: string): string {
@@ -96,11 +97,14 @@ export default function AppRoutes(): JSX.Element {
         }
       >
         <Route index element={<Navigate to={ROUTES.overview} replace />} />
+        <Route path="logs/patterns" element={<Navigate to={ROUTES.logs} replace />} />
+        <Route path="logs/transactions" element={<Navigate to={ROUTES.logs} replace />} />
         {protectedExplorerRoutes.map((route) => renderProtectedRoute(route.path, route.page))}
         {renderProtectedRoute(ROUTES.overview, OverviewHubPage)}
         {renderProtectedRoute(ROUTES.metrics, MetricsPage)}
         {renderProtectedRoute(ROUTES.saturation, SaturationHubPage)}
         {renderProtectedRoute(ROUTES.infrastructure, InfrastructureHubPage)}
+        {renderProtectedRoute(ROUTES.service, ServiceHubPage)}
         {renderProtectedRoute(ROUTES.aiObservability, AiObservabilityPage)}
         <Route path="errors" element={<Navigate to={`${ROUTES.overview}?tab=errors`} replace />} />
         <Route

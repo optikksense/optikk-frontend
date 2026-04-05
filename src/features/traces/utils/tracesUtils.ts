@@ -148,4 +148,11 @@ export const TRACE_FILTER_FIELDS: TraceFilterField[] = [
     group: 'Database',
     operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
   },
+  {
+    key: 'search',
+    label: 'Search',
+    icon: '🔍',
+    group: 'Trace',
+    operators: [{ key: 'contains', label: 'contains', symbol: '~' }],
+  },
 ];

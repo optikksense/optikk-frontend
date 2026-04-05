@@ -92,43 +92,54 @@ export function BarRenderer({
     return { xVals, valArrays, series: seriesConfigs, labels, hasData };
   }, [rows, filterValue, groupKey, labelKey, stacked, chartConfig, valueKey]);
 
-  if (!chartResult || !chartResult.hasData) {
+  const plot = useMemo(() => {
+    if (!chartResult || !chartResult.hasData) return null;
+
+    const { xVals, valArrays, series, labels } = chartResult;
+    const alignedData: uPlot.AlignedData = [xVals, ...valArrays];
+    const showLegend = stacked || series.length > 1;
+
+    const yAxisFormatter = chartConfig.yPrefix
+      ? (_self: uPlot, ticks: number[]) =>
+          ticks.map((v) => `${chartConfig.yPrefix}${Number(v).toFixed(chartConfig.yDecimals ?? 4)}`)
+      : undefined;
+
+    const axes = defaultAxes();
+    axes[0] = {
+      ...axes[0],
+      values: (_self: uPlot, splits: number[]) => splits.map((i) => labels[Math.round(i)] ?? ''),
+    };
+
+    if (yAxisFormatter) {
+      axes[1] = {
+        ...axes[1],
+        values: yAxisFormatter,
+      };
+    }
+
+    const options: Omit<uPlot.Options, 'width' | 'height'> = {
+      axes,
+      series: [{}, ...series],
+      legend: { show: showLegend },
+      scales: {
+        x: { time: false, distr: 2 },
+        y: { min: 0 },
+      },
+    };
+
+    return { alignedData, options };
+  }, [chartResult, stacked, chartConfig.yPrefix, chartConfig.yDecimals]);
+
+  if (!plot) {
     return <ChartNoDataOverlay />;
   }
 
-  const { xVals, valArrays, series, labels } = chartResult;
-  const alignedData: uPlot.AlignedData = [xVals, ...valArrays];
-  const showLegend = stacked || series.length > 1;
-
-  const yAxisFormatter = chartConfig.yPrefix
-    ? (_self: uPlot, ticks: number[]) =>
-        ticks.map((v) => `${chartConfig.yPrefix}${Number(v).toFixed(chartConfig.yDecimals ?? 4)}`)
-    : undefined;
-
-  const axes = defaultAxes();
-  axes[0] = {
-    ...axes[0],
-    values: (_self: uPlot, splits: number[]) => splits.map((i) => labels[Math.round(i)] ?? ''),
-  };
-
-  if (yAxisFormatter) {
-    axes[1] = {
-      ...axes[1],
-      values: yAxisFormatter,
-    };
-  }
-
-  const options: Omit<uPlot.Options, 'width' | 'height'> = {
-    axes,
-    series: [{}, ...series],
-    legend: { show: showLegend },
-    scales: {
-      x: { time: false, distr: 2 },
-      y: { min: 0 },
-    },
-  };
-
   return (
-    <UPlotChart options={options} data={alignedData} className="w-full" fillHeight={fillHeight} />
+    <UPlotChart
+      options={plot.options}
+      data={plot.alignedData}
+      className="w-full"
+      fillHeight={fillHeight}
+    />
   );
 }

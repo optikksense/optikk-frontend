@@ -80,6 +80,30 @@ export function AiLineRenderer({
     return { alignedData, series: seriesConfigs, hasData: true };
   }, [rows, chartConfig.valueKey, chartConfig.groupByKey, extraContext?.selectedModel]);
 
+  const options = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(() => {
+    const yAxisFormatter = chartConfig.yPrefix
+      ? (_self: uPlot, ticks: number[]) =>
+          ticks.map((v) => `${chartConfig.yPrefix}${Number(v).toFixed(chartConfig.yDecimals ?? 2)}`)
+      : undefined;
+
+    const axes = defaultAxes();
+    if (yAxisFormatter) {
+      axes[1] = {
+        ...axes[1],
+        values: yAxisFormatter,
+      };
+    }
+
+    return {
+      axes,
+      series: [{}, ...series],
+      legend: { show: series.length > 0 },
+      scales: {
+        y: { min: 0 },
+      },
+    };
+  }, [series, chartConfig.yPrefix, chartConfig.yDecimals]);
+
   if (!hasData) {
     return (
       <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
@@ -87,28 +111,6 @@ export function AiLineRenderer({
       </div>
     );
   }
-
-  const yAxisFormatter = chartConfig.yPrefix
-    ? (self: uPlot, ticks: number[]) =>
-        ticks.map((v) => `${chartConfig.yPrefix}${Number(v).toFixed(chartConfig.yDecimals ?? 2)}`)
-    : undefined;
-
-  const axes = defaultAxes();
-  if (yAxisFormatter) {
-    axes[1] = {
-      ...axes[1],
-      values: yAxisFormatter,
-    };
-  }
-
-  const options: Omit<uPlot.Options, 'width' | 'height'> = {
-    axes,
-    series: [{}, ...series],
-    legend: { show: series.length > 0 },
-    scales: {
-      y: { min: 0 },
-    },
-  };
 
   return (
     <UPlotChart options={options} data={alignedData} className="w-full" fillHeight={fillHeight} />
