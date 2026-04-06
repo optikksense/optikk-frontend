@@ -255,18 +255,14 @@ export function getLogValue(log: unknown, key: string): unknown {
 /**
  * Builds a stable React row key for log rows.
  * @param log
- * @param i
  */
-export function rowKey(log: unknown, i: number): string {
+export function rowKey(log: unknown): string {
   const logLike = asLogLike(log);
-  const id = String(logLike.id ?? '').trim();
-  if (id && id !== '0') return `log-${id}`;
-
   const traceId = logLike.trace_id || '';
   const spanId = logLike.span_id || '';
-  if (traceId && spanId) return `${traceId}-${spanId}-${String(logLike.timestamp ?? '')}`;
+  const timestamp = String(logLike.timestamp ?? '');
 
-  return `log-${i}-${String(logLike.timestamp ?? '')}`;
+  return `${traceId}-${spanId}-${timestamp}`;
 }
 
 

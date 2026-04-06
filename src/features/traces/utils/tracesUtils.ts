@@ -156,3 +156,4 @@ export const TRACE_FILTER_FIELDS: TraceFilterField[] = [
     operators: [{ key: 'contains', label: 'contains', symbol: '~' }],
   },
 ];
+

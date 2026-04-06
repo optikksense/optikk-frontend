@@ -38,15 +38,21 @@ This skill defines the development standards and architectural patterns for the 
 
 ## Canonical Paths
 
-- **Feature Registry**: `src/app/registry/domainRegistry.ts`
+- **Feature Registry**: `src/app/registry/domainRegistry.ts` — 7 domains: overview, metrics, logs, traces, infrastructure, ai, settings
 - **Route Constants**: `src/shared/constants/routes.ts`
-- **Dashboard UI**: `src/shared/components/ui/dashboard/`
-- **Panel Registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx`
+- **Dashboard UI**: `src/shared/components/ui/dashboard/` (`DashboardPage.tsx`, `ConfigurableDashboard.tsx`, `DashboardEntityDrawer.tsx`)
+- **Panel Registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain-contributed panels
+- **Built-in Panels**: `src/shared/components/ui/dashboard/builtInDashboardPanels.tsx`
 - **HTTP Client**: `src/shared/api/api/client.ts`
 - **API Decode**: `src/shared/api/utils/decode.ts`
+- **Default Config API**: `src/shared/api/defaultConfigService.ts`
 - **Global Store**: `src/app/store/appStore.ts`
-- **Charts**: `src/shared/components/ui/charts/UPlotChart.tsx`
+- **Charts**: `src/shared/components/ui/charts/` (UPlotChart, ObservabilityChart, time-series/, distributions/, micro/, specialized/)
 - **Theme**: `src/config/themeColors.css`
+- **Entities**: `src/shared/entities/` (log, metric, trace, user)
+- **Live Tail**: `src/shared/hooks/useSocketStream.ts` (core), `src/features/explorer-core/hooks/useLiveTailStream.ts` (wrapper)
+- **Explorer Core**: `src/features/explorer-core/` (shared analytics, facets, visualizations)
+- **AI Module**: `src/features/ai/` (6 pages, 2 dashboard renderers, 4 API files)
 
 ## Low-Level Design Patterns
 
@@ -72,6 +78,7 @@ export const myConfig: DomainConfig = {
 - `DashboardPanelRegistration`: `{ panelType, kind: 'base-chart'|'specialized'|'self-contained', component }`
 - Built from all domain configs via `getDashboardPanelRegistrations()` + `DashboardPanelRegistryProvider`
 - Resolve at render: `useDashboardPanelRegistration(panelType)`
+- Drawer entities: `aiModel`, `databaseSystem`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance`
 
 ### Query Patterns
 
@@ -86,7 +93,7 @@ export const myConfig: DomainConfig = {
 
 ### State Management
 
-- **Zustand** (`appStore`): `timeRange`, `teamId`, `refreshKey`, `theme`, `sidebar`
+- **Zustand** (`appStore`): `timeRange`, `teamId`, `refreshKey`, `theme`, `sidebar`, `autoRefreshInterval`, `timezone`, `comparisonMode`, `viewPreferences`, `recentPages`, `recentTimeRanges`
 - **TanStack Query**: all server/API state
 - **Local state**: component-specific UI
 - Never duplicate server state in Zustand
@@ -101,3 +108,4 @@ export const myConfig: DomainConfig = {
 
 - CSS variables in `themeColors.css` → Tailwind in `tailwind.config.ts`
 - Tokens: `--bg-primary`, `--text-primary`, `--color-success/warning/error`, `--chart-1..8`
+- Dark mode via class toggle; Fonts: Inter (sans), JetBrains Mono / Fira Code (mono)

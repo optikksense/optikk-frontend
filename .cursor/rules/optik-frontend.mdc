@@ -17,34 +17,65 @@ alwaysApply: true
 
 ## Canonical map
 
-**`CODEBASE_INDEX.md`** (repo root) lists domains, routes, shared layers, and the cross-repo map to **optikk-backend**.
+**`CODEBASE_INDEX.md`** (repo root) lists 7 domains, all routes, 22+ panel renderers, shared layers, and the cross-repo map to **optikk-backend**.
 
 ## Stack
 
-React 18, Vite 5, TypeScript, TanStack Query v5, React Router 6, Tailwind. Quality: `npm run ci`.
+React 18, Vite 5, TypeScript, TanStack Query v5, React Router 6, Tailwind 3.4, Zustand 4.5, uPlot 1.6. Quality: `npm run ci`.
 
 ## Entry points
 
 - `src/main.tsx`, `src/app/App.tsx`, `src/app/routes/appRoutes.tsx`
-- Feature registry: `src/app/registry/domainRegistry.ts`
+- Feature registry: `src/app/registry/domainRegistry.ts` — 7 domains: overview, metrics, logs, traces, infrastructure, ai, settings
 - Routes: `src/shared/constants/routes.ts` — includes **`ROUTES.service`** (`/service`) → `ServiceHubPage`; pass **`?serviceName=`** for deployment dashboard panel params (`{serviceName}` interpolation)
+
+## Domain overview
+
+| Domain | Key pages | Dashboard page IDs | Panel renderers |
+|--------|-----------|-------------------|----------------|
+| overview | OverviewHub, ServiceHub | overview, saturation, service | service-health-grid, slo-indicators, error-hotspot-ranking, latency-histogram, latency-heatmap, db-systems-overview |
+| metrics | MetricsExplorer, SaturationHub, KafkaDetail | — | latency-histogram, latency-heatmap, db-systems-overview |
+| logs | LogsHubPage | — | log-histogram |
+| traces | TracesPage, TraceDetail, TraceComparison | — | trace-waterfall |
+| infrastructure | InfrastructureHub | infrastructure | — |
+| ai | AiObservability, AiRuns, AiRunDetail, AiTraceDetail, AiConversations, AiConversationDetail | ai-observability | ai-line, ai-bar |
+| settings | SettingsPage (3 tabs) | — | — |
 
 ## Shared / API
 
-- HTTP: `src/shared/api/api/client.ts`, decode: `src/shared/api/utils/decode.ts`
-- Dashboard shell: `src/shared/components/ui/dashboard/` (`ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx`)
-- **uPlot:** `src/shared/components/ui/charts/UPlotChart.tsx` — on data-only updates (same options/geometry), call **`setData`** instead of destroying/recreating the chart. Dashboard panel renderers must build **`options` inside `useMemo`** (see `BarRenderer`, `ObservabilityChart`) so a new object is not created every render; otherwise **`mergedOptions` changes** and the chart tears down even when data shape is unchanged.
+- HTTP: `src/shared/api/api/client.ts` — Axios; auto-unwraps `APIResponse` envelope; decode: `src/shared/api/utils/decode.ts`
+- Default config: `src/shared/api/defaultConfigService.ts` — `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId`
+- Dashboard shell: `src/shared/components/ui/dashboard/` (`DashboardPage.tsx`, `ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx`, `DashboardEntityDrawer.tsx`)
+- **uPlot:** `src/shared/components/ui/charts/UPlotChart.tsx` — on data-only updates, call **`setData`** (not destroy/recreate). Build **`options` inside `useMemo`** so the chart doesn't tear down on parent re-render.
+- Entities: `src/shared/entities/` — `log/`, `metric/`, `trace/`, `user/`
+
+## Charts (`src/shared/components/ui/charts/`)
+
+| Category | Components |
+|----------|-----------|
+| Time-series (`charts/time-series/`) | RequestChart, ErrorRateChart, ExceptionTypeLineChart, LatencyChart |
+| Distributions (`charts/distributions/`) | LatencyHistogram, LogHistogram |
+| Micro (`charts/micro/`) | DonutChart, EndpointList, GaugeChart, SparklineChart |
+| Specialized (`charts/specialized/`) | BurnRateChart, Flamegraph, GoldenSignalsHeatmap, LatencyHeatmapChart, N1QueryDetector, PodLifecycleGantt, WaterfallChart |
+
+## Live tail streaming
+
+- **`useSocketStream`** (`src/shared/hooks/useSocketStream.ts`) — core WebSocket to `/api/v1/ws/live`: connection, dedup, lag, drop tracking. Status: idle → connecting → live → closed/error
+- **`useLiveTailStream`** (`src/features/explorer-core/hooks/useLiveTailStream.ts`) — wrapper injecting `teamId`; accepts `subscribeEvent`, `itemEvent`, `params`, `maxItems`
+- Protocol: `{op: "subscribe:logs", ...params}` → server streams `{event: "log", data: ...}` + heartbeat every 15s
+- Used by: Logs domain (`useLogsHubData`)
 
 ## Global refresh / auto-refresh
 
 - **Zustand:** `src/app/store/appStore.ts` — `triggerRefresh()` increments **`refreshKey`** (also bumps on time-range changes).
-- **TanStack Query:** Many hooks include `refreshKey` in `queryKey` to force refetch when the time window is unchanged (e.g. absolute range + manual/auto refresh). Use **`placeholderData: keepPreviousData`** (or `(p) => p`) on queries so refetches do not flash empty/loading UI.
-- **Backend-driven dashboard panels** (`useComponentDataFetcher`, `useDataSourceFetcher`): **do not** put `refreshKey` in `queryKey` — that creates a new cache entry every tick and blinks the grid. Use stable keys (`component-query` / `datasource` + team + endpoint + time bounds) and **`useInvalidateQueriesOnAppRefresh`** to `invalidateQueries` when `refreshKey` changes. Treat **loading** as `isPending && data === undefined`, not `isLoading`, so background refetch does not flip cards to “loading”.
-- **Header UI:** `src/app/layout/Header.tsx` + `src/shared/hooks/useAutoRefresh.ts` — interval auto-refresh calls `triggerRefresh`; the hook also ticks a clock for the “Xs ago” tooltip (throttled) so the header does not re-render every second.
+- **Persisted state:** `selectedTeamId`, `timeRange`, `autoRefreshInterval`, `theme`, `timezone`, `comparisonMode`, `viewPreferences`, `recentPages`, `recentTimeRanges`
+- **Runtime state:** `refreshKey`
+- **TanStack Query:** Many hooks include `refreshKey` in `queryKey` to force refetch when the time window is unchanged. Use **`placeholderData: keepPreviousData`** on queries so refetches do not flash empty/loading UI.
+- **Backend-driven dashboard panels** (`useComponentDataFetcher`, `useDataSourceFetcher`): **do not** put `refreshKey` in `queryKey`. Use stable keys and **`useInvalidateQueriesOnAppRefresh`** to `invalidateQueries` when `refreshKey` changes. Treat **loading** as `isPending && data === undefined`.
 
 ## Aliases
 
-See `vite.config.ts`: `@/`, `@features/`, `@shared/`, `@app/`, `@config/`, etc.
+See `vite.config.ts`: `@/`, `@features/`, `@shared/`, `@app/`, `@config/`, `@entities/`, `@store/`, `@optikk/design-system`, etc.
 
 ---
 
@@ -80,11 +111,14 @@ export const myConfig: DomainConfig = {
 
 - `DashboardPanelRegistration`: `{ panelType, kind: 'base-chart' | 'specialized' | 'self-contained', component }`
 - `base-chart` — receives `BaseChartComponentProps` (data, height, valueKey, etc.)
-- `specialized` / `self-contained` �� receives `DashboardPanelRendererProps` (chartConfig, dataSources, extraContext)
-- Registry built from `BUILT_IN_DASHBOARD_PANELS` + all domain `dashboardPanels` via `getDashboardPanelRegistrations()`
-- Provided via `DashboardPanelRegistryProvider` context in `App.tsx`
+- `specialized` / `self-contained` — receives `DashboardPanelRendererProps` (chartConfig, dataSources, extraContext)
+- Built-in: 12 panels (4 base-chart, 6 specialized, 2 self-contained)
+- Domain-contributed: 10 panels across overview, metrics, logs, traces, ai
+- Registry built via `getDashboardPanelRegistrations()` + `DashboardPanelRegistryProvider`
 - Resolve at render: `useDashboardPanelRegistration(panelType)`
 - Lifecycle hooks: `onMount`, `onUnmount`, `onGlobalTimeChange`, `onDataUpdate`
+
+**Drawer entities:** `aiModel`, `databaseSystem`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance` — rendered by `DashboardEntityDrawer.tsx`
 
 ### Query patterns
 
@@ -95,29 +129,27 @@ export const myConfig: DomainConfig = {
 | Dashboard datasource | `['datasource', teamId, endpoint, timeRange]` | **No** | `useInvalidateQueriesOnAppRefresh` |
 
 - **Always** use `placeholderData: keepPreviousData` to prevent loading flash on refetch
-- **Loading state** = `isPending && data === undefined` (not `isLoading`) — distinguishes initial load from background refresh
+- **Loading state** = `isPending && data === undefined` (not `isLoading`)
 - `enabled: !!selectedTeamId` — don't fire queries without a team
-- `staleTime: 0`, `gcTime: 30_000`, `retry: false` — standard for dashboard queries
+- `staleTime: 0`, `gcTime: 30_000`, `retry: false`
 
 ### API client (`src/shared/api/api/client.ts`)
 
 - Axios with interceptors: auto-unwraps `APIResponse` envelope (`{success, data, error}`)
-- Auth: session cookies (`withCredentials: true`); `attachAuthInterceptor()` for token refresh
+- Auth: session cookies (`withCredentials: true`)
 - Decode boundary: `src/shared/api/utils/decode.ts` — Zod schemas validate API responses
-- `normalizeApiPayload` handles nested JSON strings from some endpoints
-- Normalized client exports: `api.get<T>()`, `api.post<T>()`, `api.put<T>()`, `api.delete<T>()`
+- Normalized exports: `api.get<T>()`, `api.post<T>()`, `api.put<T>()`, `api.delete<T>()`
 
 ### Component hierarchy
 
 - **Primitives**: `shared/components/primitives/` — Radix UI re-exports (shadcn/ui styled)
 - **UI components**: `shared/components/ui/` — dashboard shell, charts, feedback, data-display, forms, overlay
 - **Feature components**: `features/<domain>/components/` — domain-specific
-- **No cross-feature imports** — ESLint enforced (see below)
+- **No cross-feature imports** — ESLint enforced
 
 ### ESLint feature boundary
 
 - `no-restricted-imports` on `src/features/**/*.{ts,tsx}`: cannot import `@features/*` from another feature
-- Move shared logic to `@shared/` or export explicit public contract
 - `no-restricted-syntax`: no TS enums → use `as const` objects + union types
 - `@typescript-eslint/no-floating-promises`: error
 - `import/no-cycle`: warn
@@ -125,11 +157,11 @@ export const myConfig: DomainConfig = {
 
 ### State management hierarchy
 
-- **Zustand** (`appStore`): global ephemeral state — `timeRange`, `selectedTeamId`, `refreshKey`, `theme`, `sidebarCollapsed`, `autoRefreshInterval`, `timezone`, `comparisonMode`
+- **Zustand** (`appStore`): global ephemeral + persisted state — `timeRange`, `selectedTeamId`, `refreshKey`, `theme`, `sidebarCollapsed`, `autoRefreshInterval`, `timezone`, `comparisonMode`, `viewPreferences`, `recentPages`, `recentTimeRanges`
 - **TanStack Query**: all server/API state — caching, background refetch, deduplication
-- **Local state** (React `useState`): component-specific UI (dropdowns, form inputs, hover)
-- **Never** duplicate server state in Zustand — TanStack Query is the source of truth for API data
-- Use computed selectors: `useTimeRange()`, `useTeamId()`, `useRefreshKey()`, `useTheme()`, etc.
+- **Local state** (React `useState`): component-specific UI
+- **Never** duplicate server state in Zustand — TanStack Query is source of truth for API data
+- Selectors: `useTimeRange()`, `useTeamId()`, `useRefreshKey()`, `useTheme()`, `useTimezone()`, `useComparisonMode()`
 
 ### CSS theming
 

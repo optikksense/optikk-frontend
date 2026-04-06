@@ -1,6 +1,6 @@
 import { SimpleTable } from '@/components/ui';
 import { useMemo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useDashboardData } from '../hooks/useDashboardData';
 import ChartNoDataOverlay from '@shared/components/ui/feedback/ChartNoDataOverlay';
@@ -18,6 +18,7 @@ export function TableRenderer({
 }: DashboardPanelRendererProps) {
   const { data: rows } = useDashboardData(chartConfig, dataSources);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const columns = useMemo(() => {
     if (rows.length === 0) return [];
@@ -46,7 +47,21 @@ export function TableRenderer({
       align: column.align,
       ellipsis: true,
       render: (val: any) => {
-        if (val == null) return '—';
+        if (val == null || val === '') return '—';
+        if (column.key === 'sample_trace_id' || column.key === 'trace_id') {
+          return (
+            <span 
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                navigate(`/traces/${val}`);
+              }}
+              className="text-[var(--color-primary)] hover:underline cursor-pointer group flex items-center gap-1"
+            >
+              {String(val)}
+            </span>
+          );
+        }
         if (typeof val === 'number') return Number.isInteger(val) ? val : Number(val).toFixed(2);
         return String(val);
       },

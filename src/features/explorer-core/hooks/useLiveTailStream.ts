@@ -11,6 +11,8 @@ interface UseLiveTailStreamOptions<Item> {
   params?: Record<string, unknown>;
   maxItems?: number;
   normalizeItem?: (value: unknown) => Item;
+  getItemKey?: (item: Item) => string;
+  getItemTimestamp?: (item: Item) => number;
 }
 
 interface UseLiveTailStreamResult<Item> {
@@ -26,8 +28,10 @@ export function useLiveTailStream<Item>({
   subscribeEvent = 'subscribe:spans',
   itemEvent = 'span',
   params,
-  maxItems = 250,
+  maxItems = 20,
   normalizeItem,
+  getItemKey,
+  getItemTimestamp,
 }: UseLiveTailStreamOptions<Item>): UseLiveTailStreamResult<Item> {
   const teamId = useTeamId();
 
@@ -38,5 +42,7 @@ export function useLiveTailStream<Item>({
     params: { teamId, ...params },
     maxItems,
     normalizeItem,
+    getItemKey,
+    getItemTimestamp,
   });
 }

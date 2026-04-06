@@ -10,7 +10,7 @@ Orientation for **optic-frontend** (React/Vite/TypeScript). Read this file and `
 
 ## Related repository
 
-The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (see that repo’s `CODEBASE_INDEX.md`). This frontend implements explorers, dashboard runtime, and the panel registry against those APIs.
+The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (see that repo's `CODEBASE_INDEX.md`). This frontend implements explorers, dashboard runtime, and the panel registry against those APIs.
 
 **Hybrid model:** backend-authored dashboards (JSON + default config), frontend-owned explorer routes and feature modules, shared dashboard panel registry and API decode boundary.
 
@@ -18,8 +18,8 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 
 ## Stack and commands
 
-- **Stack:** React 18, Vite 5, TypeScript, TanStack Query, React Router 6, Zod, Tailwind.
-- **Dev:** `npm run dev` (see `package.json`).
+- **Stack:** React 18, Vite 5 (8.0.3), TypeScript, TanStack Query v5, React Router 6, Zod, Tailwind 3.4, Zustand 4.5, uPlot 1.6, React Grid Layout 2.2.
+- **Dev:** `npm run dev` (Vite dev server with API proxy + WebSocket support for live tail).
 - **Quality:** `npm run ci` (type-check, lint, build, bundle budgets).
 
 ## Entry and app shell
@@ -28,8 +28,8 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 |------|---------|
 | `src/main.tsx` | App bootstrap |
 | `src/app/App.tsx` | Root router and providers |
-| `src/app/routes/appRoutes.tsx` | Route table (includes `/service` → `ServiceHubPage`; legacy `/logs/patterns` and `/logs/transactions` redirect to `ROUTES.logs`) |
-| `src/app/routes/BackendDrivenPage.tsx` | Backend-driven dashboard pages |
+| `src/app/routes/appRoutes.tsx` | Route table (domain routes + legacy redirects + drawer routes) |
+| `src/app/routes/BackendDrivenPage.tsx` | Backend-driven dashboard pages: matches URL → page config → domain adapter or generic `DashboardPage` |
 | `src/app/layout/MainLayout.tsx` | Shell layout |
 
 **Service dashboard:** `ROUTES.service` → `src/features/overview/pages/ServiceHubPage` — passes `serviceName` from the query string (`?serviceName=`) into `DashboardPage` as `pathParams` for panel `params` interpolation (`{serviceName}`).
@@ -44,14 +44,47 @@ Defined in `vite.config.ts`. Common imports:
 - `@app/` → `src/app/`
 - `@config/` → `src/config/`
 - `@components`, `@hooks`, `@services` → shared components, hooks, API layer under `src/shared/`
+- `@entities` → `src/shared/entities/`
+- `@store` → `src/app/store/`
+- `@optikk/design-system` → `src/design-system/`
 
 ## Domain registry (feature ownership)
 
-All product domains are registered in **`src/app/registry/domainRegistry.ts`**. Order and exports:
+All product domains are registered in **`src/app/registry/domainRegistry.ts`**. 7 domains in order:
 
-- `overview`, `metrics`, `log`, `traces`, `services`, `infrastructure`, `ai`, `settings`
+1. **overview** — Overview, Saturation, Service hub pages (3 dashboard page adapters, 6 panel renderers)
+2. **metrics** — Metrics Explorer, Saturation hub page, Kafka detail pages (3 panel renderers)
+3. **logs** — Log search + live tail (1 route, 1 panel renderer: `log-histogram`)
+4. **traces** — Traces explorer, detail, comparison (3 routes, 1 panel renderer: `trace-waterfall`)
+5. **infrastructure** — Infrastructure hub page (1 dashboard page adapter)
+6. **ai** — AI Observability dashboard, LLM Runs, Conversations (5 routes, 1 dashboard page, 2 panel renderers: `ai-line`, `ai-bar`)
+7. **settings** — User/team settings (1 route)
 
-Each feature’s `index.ts` exports a **domain config**: navigation, explorer `routes`, optional `dashboardPages` and `dashboardPanels`.
+Each feature's `index.ts` exports a **domain config**: navigation, explorer `routes`, optional `dashboardPages` and `dashboardPanels`.
+
+**Utility functions** from `domainRegistry.ts`:
+- `getDomainNavigationItems()` — flattens all navigation items
+- `getExplorerRoutes()` — gets all routes with domain metadata
+- `resolveRegisteredExplorerRoute(pathname)` — route matcher
+- `getDashboardPageAdapters()` — dashboard page registry
+- `getDashboardPanelRegistrations()` — dashboard panel renderers from all domains
+
+## Route constants (`src/shared/constants/routes.ts`)
+
+| Area | Routes |
+|------|--------|
+| Marketing | `/login`, `/product`, `/`, `/pricing`, `/opentelemetry`, `/self-host` |
+| Overview | `/overview`, `/service`, `/saturation` |
+| Logs | `/logs` |
+| Traces | `/traces`, `/traces/:traceId`, `/traces/compare` |
+| Metrics | `/metrics` |
+| Infrastructure | `/infrastructure` |
+| Errors | `/errors` |
+| Saturation detail | `/saturation/kafka/topics/:topic`, `/saturation/kafka/groups/:groupId` |
+| AI | `/ai-observability`, `/ai-runs`, `/ai-runs/:spanId`, `/ai-traces/:traceId`, `/ai-conversations`, `/ai-conversations/:conversationId` |
+| Settings | `/settings` |
+
+**Legacy drawer redirects** (in `appRoutes.tsx`): `/errors/:errorGroupId`, `/infrastructure/nodes/:host`, `/saturation/database/:dbSystem`, `/saturation/redis/:instance`, `/saturation/kafka/topics/:topic`, `/saturation/kafka/groups/:groupId`, `/ai-observability/models/:modelName`
 
 ## Feature folders (`src/features/<domain>/`)
 
@@ -61,35 +94,149 @@ Each feature’s `index.ts` exports a **domain config**: navigation, explorer `r
 | `dashboard/` | Panel renderers for that domain (backend-driven UI) |
 | `components/`, `hooks/`, `store/` | Domain UI and state |
 | `api/` or `services/` | Domain API wrappers (often calling `@shared/api`) |
+| `utils/`, `types.ts`, `constants.ts` | Domain utilities |
+
+### Feature domain details
+
+| Domain | Key | Pages | Routes | Dashboard pages | Panel renderers |
+|--------|-----|-------|--------|----------------|----------------|
+| Overview | `overview` | OverviewHubPage, ServiceHubPage | 0 | overview, saturation, service | service-health-grid, slo-indicators, error-hotspot-ranking, latency-histogram, latency-heatmap, db-systems-overview |
+| Metrics | `metrics` | MetricsExplorerPage, SaturationHubPage, KafkaTopicDetailPage, KafkaGroupDetailPage | 0 | — | latency-histogram, latency-heatmap, db-systems-overview |
+| Logs | `logs` | LogsHubPage | `/logs` | — | log-histogram |
+| Traces | `traces` | TracesPage, TraceDetailPage, TraceComparisonPage | `/traces`, `/traces/:traceId`, `/traces/compare` | — | trace-waterfall |
+| Infrastructure | `infrastructure` | InfrastructureHubPage | 0 | infrastructure | — |
+| AI | `ai` | AiObservabilityPage, AiRunsExplorerPage, AiRunDetailPage, AiTraceDetailPage, AiConversationsPage, AiConversationDetailPage | `/ai-runs`, `/ai-runs/:spanId`, `/ai-traces/:traceId`, `/ai-conversations`, `/ai-conversations/:conversationId` | ai-observability | ai-line, ai-bar |
+| Settings | `settings` | SettingsPage (Profile, Team, Preferences tabs) | `/settings` | — | — |
 
 ### Explorer Core (`src/features/explorer-core/`)
 
-Shared infrastructure for all data explorers (Logs, Traces, Metrics):
-- **Components**: `AnalyticsToolbar.tsx`, `FacetRail.tsx`, ` ExplorerResultsTable.tsx`.
-- **Hooks**: `useExplorerAnalytics.ts`, `useLiveTailStream.ts` (native WebSocket `/api/v1/ws/live`).
-- **Visualizations**: Domain-specific chart renderers under `visualizations/`.
+Shared infrastructure for all data explorers (Logs, Traces, Metrics) — **not a registered domain**:
+- **Components**: `AnalyticsToolbar.tsx`, `FacetRail.tsx`, `ExplorerResultsTable.tsx`, `SummaryMetricStrip.tsx`
+- **Visualizations**: `AnalyticsTimeseries.tsx`, `AnalyticsTopList.tsx`, `AnalyticsTable.tsx`, `AnalyticsPieChart.tsx`
+- **Hooks**: `useExplorerAnalytics.ts`, `useLiveTailStream.ts` (native WebSocket `/api/v1/ws/live`)
+- **API**: `explorerAnalyticsApi.ts` — `POST /api/v1/explorer/:scope/analytics`
+- **Utils**: `urlState.ts`, `analyticsResult.ts`, `timeRange.ts`, `explorerQuery.ts`
+
+### AI domain details
+
+| Page | Path | Purpose |
+|------|------|---------|
+| AiObservabilityPage | `/ai-observability` | Backend-driven dashboard (pageId: `ai-observability`) |
+| AiRunsExplorerPage | `/ai-runs` | Explorer table for LLM runs |
+| AiRunDetailPage | `/ai-runs/:spanId` | Single run detail with messages and context |
+| AiTraceDetailPage | `/ai-traces/:traceId` | AI-specific trace detail view |
+| AiConversationsPage | `/ai-conversations` | Conversation list |
+| AiConversationDetailPage | `/ai-conversations/:conversationId` | Conversation thread view |
+
+**API files**: `aiRunsApi.ts`, `aiRunDetailApi.ts`, `aiTracesApi.ts`, `aiConversationsApi.ts`, `queryOptions.ts`
 
 ## Shared Layer (`src/shared/`)
 
 | Area | Path | Notes |
 |------|------|--------|
-| HTTP client | `shared/api/api/client.ts` | Axios client |
+| HTTP client | `shared/api/api/client.ts` | Axios with auth interceptors; auto-unwraps `APIResponse` envelope |
 | Response decode | `shared/api/utils/decode.ts` | Zod validation boundary |
-| Default config | `shared/api/defaultConfigService.ts` | Fetches backend dashboard definitions |
-| Dashboard UI | `shared/components/ui/dashboard/` | `ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx` |
-| Auth | `shared/api/auth/` | |
+| Default config | `shared/api/defaultConfigService.ts` | `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId` |
+| Dashboard UI | `shared/components/ui/dashboard/` | `ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx`, `DashboardPage.tsx`, `DashboardEntityDrawer.tsx` |
+| Auth | `shared/api/auth/` | Session cookies with `withCredentials: true` |
+| Entities | `shared/entities/` | Domain entity types: `log/`, `metric/`, `trace/`, `user/` |
+| Design system | `design-system/` (aliased `@optikk/design-system`) | Shared components and providers |
 
 ### Charting Engine (`src/shared/components/ui/charts/`)
 
-- **`UPlotChart.tsx`**: Primary time-series renderer. **Mandatory Pattern**: use `setData()` for flicker-free auto-refresh updates. Pass **`options` from `useMemo`** (or use **`ObservabilityChart`**, which memoizes options) so parent re-renders do not rebuild uPlot on every tick.
+- **`UPlotChart.tsx`**: Primary time-series renderer. **Mandatory Pattern**: use `setData()` for flicker-free auto-refresh updates. Pass **`options` from `useMemo`** so parent re-renders do not rebuild uPlot on every tick.
 - **`ObservabilityChart.tsx`**: High-level wrapper with legend and tooltip logic (memoized `options`).
-- **Types**: `src/shared/types/chart.ts`.
+- **`GrafanaChart.tsx`**: Grafana integration chart.
+
+**Chart categories:**
+
+| Category | Components |
+|----------|-----------|
+| Time-series | `RequestChart`, `ErrorRateChart`, `ExceptionTypeLineChart`, `LatencyChart` (under `charts/time-series/`) |
+| Distributions | `LatencyHistogram`, `LogHistogram` (under `charts/distributions/`) |
+| Micro/embedded | `DonutChart`, `EndpointList`, `GaugeChart`, `SparklineChart` (under `charts/micro/`) |
+| Specialized | `BurnRateChart`, `Flamegraph`, `GoldenSignalsHeatmap`, `LatencyHeatmapChart`, `N1QueryDetector`, `PodLifecycleGantt`, `WaterfallChart` (under `charts/specialized/`) |
+
+## Dashboard Panel Registry
+
+### Built-in panels (`shared/components/ui/dashboard/builtInDashboardPanels.tsx`)
+
+| Panel type | Kind | Component |
+|-----------|------|-----------|
+| `request` | base-chart | RequestChart (lazy) |
+| `error-rate` | base-chart | ErrorRateChart (lazy) |
+| `exception-type-line` | base-chart | ExceptionTypeLineChart (lazy) |
+| `latency` | base-chart | LatencyChart (lazy) |
+| `table` | specialized | TableRenderer |
+| `bar` | specialized | BarRenderer |
+| `gauge` | specialized | GaugeRenderer |
+| `heatmap` | specialized | HeatmapRenderer |
+| `pie` | specialized | PieRenderer |
+| `stat-cards-grid` | specialized | StatCardsGridRenderer |
+| `stat-card` | self-contained | StatCardRenderer |
+| `stat-summary` | self-contained | StatSummaryRenderer |
+
+### Domain-contributed panels
+
+| Panel type | Domain | Component |
+|-----------|--------|-----------|
+| `service-health-grid` | overview | ServiceHealthGridRenderer |
+| `slo-indicators` | overview | SloIndicatorsRenderer |
+| `error-hotspot-ranking` | overview | ErrorHotspotRankingRenderer |
+| `latency-histogram` | metrics (registered via overview) | LatencyHistogramRenderer |
+| `latency-heatmap` | metrics (registered via overview) | LatencyHeatmapRenderer |
+| `db-systems-overview` | metrics (registered via overview) | DbSystemsRenderer |
+| `log-histogram` | logs | LogHistogramRenderer |
+| `trace-waterfall` | traces | TraceWaterfallRenderer |
+| `ai-line` | ai | AiLineRenderer |
+| `ai-bar` | ai | AiBarRenderer |
+
+### Dashboard runtime components (`shared/components/ui/dashboard/`)
+
+| Component | Purpose |
+|-----------|---------|
+| `DashboardPage.tsx` | Root page: loads tabs, handles tab switching via URL |
+| `DashboardTabContent.tsx` | Renders sections and panels for active tab |
+| `DashboardSection.tsx` | Section with collapsible header |
+| `DashboardPanelGrid.tsx` | CSS Grid container (12-column model) |
+| `ConfigurableChartCard.tsx` | Panel card wrapper with error/no-data overlays |
+| `ConfigurableDashboard.tsx` | Top-level dashboard orchestrator |
+| `DashboardEntityDrawer.tsx` | Detail drawer for entities |
+| `DashboardStatCards.tsx` | Stat cards row |
+| `panelSizePolicy.ts` | Grid sizing logic |
+| `dashboardAggregators.tsx` | Data transformation: grouping, normalization |
+
+**Drawer entities:** `aiModel`, `databaseSystem`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance`
 
 ## Global State & Auto-Refresh
 
-- **`src/app/store/appStore.ts`**: Unified store for `timeRange`, `refreshKey`, and `globalFilter`.
+- **`src/app/store/appStore.ts`**: Unified Zustand store.
+
+**Persisted state:** `selectedTeamId`, `selectedTeamIds`, `timeRange`, `sidebarCollapsed`, `autoRefreshInterval` (default 10000ms), `theme` (default 'dark'), `notificationsEnabled`, `viewPreferences`, `recentPages`, `recentTimeRanges`, `timezone` (default 'local'), `comparisonMode` (default 'off')
+
+**Runtime state:** `refreshKey` (incremented to trigger data refetch)
+
+**Selectors:** `useTimeRange()`, `useTeamId()`, `useTeamIds()`, `useRefreshKey()`, `useSidebarCollapsed()`, `useTheme()`, `useTimezone()`, `useComparisonMode()`
+
 - **`src/shared/hooks/useAutoRefresh.ts`**: Ticks the `refreshKey` at configured intervals.
 - **`src/shared/hooks/useInvalidateQueriesOnAppRefresh.ts`**: Triggers TanStack Query invalidation when the global refresh is clicked.
+
+## Live Tail Streaming
+
+WebSocket-based real-time streaming over native WebSocket to `/api/v1/ws/live`.
+
+| Hook | File | Purpose |
+|------|------|---------|
+| `useSocketStream` | `src/shared/hooks/useSocketStream.ts` | Core WebSocket hook: manages connection, subscription, item streaming, deduplication via `getItemKey`, timestamp-ordered insertion, lag/dropped metrics. Status: `idle` → `connecting` → `live` → `closed`/`error` |
+| `useLiveTailStream` | `src/features/explorer-core/hooks/useLiveTailStream.ts` | Wrapper that injects `teamId` context. Accepts `subscribeEvent` (e.g. `subscribe:logs`), `itemEvent`, `params`, `maxItems`, `normalizeItem`, `getItemKey`, `getItemTimestamp` |
+
+**Protocol:** Client sends JSON `{op: "subscribe:logs", ...params}`, server streams `{event: "log", data: ...}` + heartbeat every 15s.
+
+**Vite proxy:** `/api` proxied to backend with `ws: true` for dev environment.
+
+**Used by:** Logs domain (`useLogsHubData` hook), Traces planned.
+
+See `.agent/workflows/live_tail.md` for full architecture docs.
 
 ## Feature Module Anatomy (LLD)
 
@@ -118,11 +265,13 @@ All pages/renderers use `React.lazy()` for code splitting. Vite auto-chunks each
 
 ```
 BackendDrivenPage (route match)
+  → matchPath against page.path patterns (supports params like /trace/:traceId)
+  → resolveDashboardPageAdapter(pageId) — domain-specific or generic DashboardPage
   → usePagesConfig / useDashboardTabDocument (fetch page JSON from backend)
   → ConfigurableDashboard (renders sections)
     → react-grid-layout (uses layout.w / layout.h from panel spec, 12-column model)
     → Each cell: useDashboardPanelRegistration(panelType) → resolve renderer
-    → useComponentDataFetcher (batch-fetches panel data)
+    → useComponentDataFetcher (batch-fetches panel data, deduplicates by endpoint)
       → queryKey: ['component-query', teamId, method, endpoint, params, startMs, endMs]
       → placeholderData: keepPreviousData
     → useInvalidateQueriesOnAppRefresh(refreshKey, 'component-query', teamId)
@@ -133,6 +282,8 @@ BackendDrivenPage (route match)
 - `base-chart` — receives `BaseChartComponentProps` (generic data, height, valueKey)
 - `specialized` — receives `DashboardPanelRendererProps` (full chartConfig + dataSources)
 - `self-contained` — receives `DashboardPanelRendererProps`, fetches its own data
+
+**Lifecycle hooks:** `onMount`, `onUnmount`, `onGlobalTimeChange`, `onDataUpdate`
 
 ## Query Patterns (LLD)
 
@@ -154,12 +305,12 @@ BackendDrivenPage (route match)
 | `useAutoRefresh` | Ticks `refreshKey` at configured interval; "Xs ago" label (throttled 5s) |
 | `useInvalidateQueriesOnAppRefresh` | Invalidates `[scope, teamId]` queries when `refreshKey` bumps |
 | `useComponentDataFetcher` | Batches dashboard panel data fetches; deduplicates identical requests |
-| `useDataSourceFetcher` | Fetches shared data sources for dashboard panels |
+| `useDataSourceFetcher` | Fetches shared data sources for dashboard panels with path param interpolation |
+| `useSocketStream` | Core WebSocket client for `/api/v1/ws/live`: connection, dedup, lag tracking |
 | `useChartTimeBuckets` | Computes adaptive time buckets for chart x-axis |
 | `useChartZoom` | Handles zoom-to-select on time-series charts |
 | `useComparisonQuery` | Dual-period data fetch for comparison views |
 | `useInfiniteLogs` | Infinite scroll for log explorer |
-| `useSocketStream` | Live tail WebSocket client ([agent-docs](.agent/workflows/live_tail.md)) |
 | `useTimeRangeQuery` | Time-range-aware query wrapper |
 | `useTimeRangeURL` | Bidirectional URL ↔ time range sync |
 | `useURLFilters` | Syncs filter state with URL params |
@@ -180,12 +331,14 @@ BackendDrivenPage (route match)
 | Type | Location | Purpose |
 |------|----------|---------|
 | `TimeRange` | `shared/types/index.ts` | Discriminated union: `RelativeTimeRange` (`kind: 'relative'`, `preset`, `minutes`) or `AbsoluteTimeRange` (`kind: 'absolute'`, `startMs`, `endMs`) |
-| `DashboardPanelType` | `shared/types/dashboardConfig.ts` | Union of 25+ panel types: `'bar'`, `'line'`, `'stat-card'`, `'table'`, `'service-map'`, `'heatmap'`, `'gauge'`, `'pie'`, etc. |
-| `DashboardLayoutVariant` | `shared/types/dashboardConfig.ts` | 10 layout presets: `'kpi'`, `'summary'`, `'standard-chart'`, `'wide-chart'`, `'ranking'`, `'hero'`, etc. |
-| `DashboardSectionTemplate` | `shared/types/dashboardConfig.ts` | 8 section layouts: `'kpi-band'`, `'two-up'`, `'three-up'`, `'stacked'`, `'hero-plus-table'`, etc. |
+| `DashboardPanelType` | `shared/types/dashboardConfig.ts` | Union of 24 panel types (matches backend `enums.go`) |
+| `DashboardLayoutVariant` | `shared/types/dashboardConfig.ts` | 10 layout presets: `kpi`, `summary`, `standard-chart`, `wide-chart`, `ranking`, `hero`, etc. |
+| `DashboardSectionTemplate` | `shared/types/dashboardConfig.ts` | 8 section layouts: `kpi-band`, `two-up`, `three-up`, `stacked`, `hero-plus-table`, etc. |
 | `DashboardPanelSpec` | `shared/types/dashboardConfig.ts` | Full panel config: type, layout (w/h/x/y), query, data keys, columns, formatter |
+| `DashboardTabDocument` | `shared/types/dashboardConfig.ts` | Tab with sections and panels |
 | `DomainConfig` | `app/registry/domainRegistry.ts` | Feature module registration: key, label, permissions, navigation, routes, dashboardPanels |
 | `DashboardPanelRegistration` | `shared/components/ui/dashboard/dashboardPanelRegistry.tsx` | Panel renderer binding: panelType, kind, component, lifecycle hooks |
+| `DrawerEntity` | `shared/types/dashboardConfig.ts` | Drawer entity types: aiModel, databaseSystem, errorGroup, kafkaGroup, kafkaTopic, node, redisInstance |
 
 ## ESLint Constraints
 
@@ -198,8 +351,7 @@ BackendDrivenPage (route match)
 ## Bundle Splitting
 
 - All page components and dashboard renderers use `React.lazy()` in feature `index.ts`
-- Vite config: `manualChunks` splits each feature into `feature-${name}` chunks
-- Shared layer is a common chunk; Radix UI and other large deps are separate vendor chunks
+- Vite `manualChunks`: `feature-${name}` per feature, `marketing-runtime`, `ui-runtime` (radix, lucide), `chart-runtime` (uplot), `data-runtime` (axios, tanstack, zod)
 - Bundle budget checks: `npm run ci:budgets` (via `scripts/check-budgets.js`)
 
 ---
@@ -212,10 +364,18 @@ Use when a change spans frontend and API. Backend paths refer to **`optikk-backe
 |--------------|-----------|----------------------------|
 | Registry / route wiring | `domainRegistry.ts`, feature `index.ts` | `internal/app/server/modules_manifest.go` |
 | Explorer APIs | Feature `api/` or `shared/api` | Matching `internal/modules/.../handler.go` |
-| Metrics Explorer | `src/features/metrics` | `internal/modules/metricsexplorer` |
-| Dashboard panels | `dashboard/renderers/`, `dashboardPanelRegistry` | `internal/infra/dashboardcfg/pages/`, panel types |
+| Explorer analytics | `explorer-core/api/explorerAnalyticsApi.ts` | `internal/modules/explorer/analytics/` |
+| Metrics Explorer | `src/features/metrics` (`metricsExplorerApi.ts`) | `internal/modules/metricsexplorer` (`/metrics/names`, `/:metricName/tags`, `/explorer/query`) |
+| Dashboard panels | `dashboard/renderers/`, `dashboardPanelRegistry` | `internal/infra/dashboardcfg/`, panel types in `enums.go` |
+| Dashboard config API | `defaultConfigService.ts` | `internal/modules/dashboard/` |
+| Default pages | Dashboard page adapters | `internal/infra/dashboardcfg/defaults/{overview,service,ai_observability,infrastructure,saturation}/` |
 | Auth | `shared/api/auth/` | `internal/modules/user/auth/` |
-| Default config fetch | `defaultConfigService.ts` | `internal/modules/dashboard/`, `internal/infra/dashboardcfg/` |
+| AI Observability | `src/features/ai/api/` | `internal/modules/ai/{dashboard,runs,rundetail,conversations,traces}/` |
+| Logs live tail | `useSocketStream` → `useLiveTailStream` | `internal/modules/logs/search/livetail_run.go`, `internal/infra/livetailws/` |
+| Overview | `src/features/overview/` | `internal/modules/overview/{overview,errors,slo}/` |
+| Infrastructure | `src/features/infrastructure/` | `internal/modules/infrastructure/*/`, `internal/infra/dashboardcfg/defaults/infrastructure/` |
+| Saturation | `src/features/metrics/pages/SaturationHubPage` | `internal/modules/saturation/database/*/`, `saturation/kafka/` |
+| Traces | `src/features/traces/api/` | `internal/modules/traces/{query,explorer,tracedetail,redmetrics,errorfingerprint,errortracking,tracecompare}/` |
 
 ---
 

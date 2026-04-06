@@ -45,6 +45,8 @@ import { useTraceDetailFields } from '../../hooks/useTraceDetailFields';
 import { useTracesExplorer } from '../../hooks/useTracesExplorer';
 import { TRACE_FILTER_FIELDS } from '../../utils/tracesUtils';
 
+const TRACES_LIVE_TAIL_MAX_ROWS = 20;
+
 import type { TraceRecord } from '../../types';
 
 const TRACE_STATUS_SORT_ORDER: Record<string, number> = {
@@ -198,6 +200,7 @@ export default function TracesPage(): JSX.Element {
     enabled: isLiveTail,
     subscribeEvent: 'subscribe:spans',
     itemEvent: 'span',
+    maxItems: TRACES_LIVE_TAIL_MAX_ROWS,
     params: {
       services: backendParams.services,
       status: backendParams.status,
@@ -206,10 +209,14 @@ export default function TracesPage(): JSX.Element {
       operationName: backendParams.operationName,
       httpMethod: backendParams.httpMethod,
     },
+    getItemKey: (t) => `${t.trace_id}-${t.span_id}`,
+    getItemTimestamp: (t) => new Date(String(t.start_time ?? 0)).getTime(),
     normalizeItem: buildTraceRecordFromLiveItem,
   });
 
-  const renderedTraces = isLiveTail ? liveTail.items : traces;
+  const renderedTraces = isLiveTail
+    ? liveTail.items.slice(0, TRACES_LIVE_TAIL_MAX_ROWS)
+    : traces;
 
   const columns = useMemo<SimpleTableColumn<TraceRecord>[]>(
     () => [
@@ -242,7 +249,9 @@ export default function TracesPage(): JSX.Element {
         key: 'trace_id',
         dataIndex: 'trace_id',
         width: 170,
-        sorter: (left, right) => compareTraceText(left.trace_id, right.trace_id),
+        ...(isLiveTail
+          ? {}
+          : { sorter: (left, right) => compareTraceText(left.trace_id, right.trace_id) }),
         render: (value) => (
           <span className="font-mono text-[11px] text-[var(--text-primary)]">
             {String(value).slice(0, 14)}
@@ -254,7 +263,9 @@ export default function TracesPage(): JSX.Element {
         key: 'service_name',
         dataIndex: 'service_name',
         width: 160,
-        sorter: (left, right) => compareTraceText(left.service_name, right.service_name),
+        ...(isLiveTail
+          ? {}
+          : { sorter: (left, right) => compareTraceText(left.service_name, right.service_name) }),
         render: (value) => (
           <span className="text-[12.5px] font-medium text-[var(--text-primary)]">
             {String(value || 'Unknown')}
@@ -267,7 +278,11 @@ export default function TracesPage(): JSX.Element {
         dataIndex: 'operation_name',
         width: 220,
         ellipsis: true,
-        sorter: (left, right) => compareTraceText(left.operation_name, right.operation_name),
+        ...(isLiveTail
+          ? {}
+          : {
+              sorter: (left, right) => compareTraceText(left.operation_name, right.operation_name),
+            }),
         render: (value) => (
           <span className="block truncate text-[12.5px] text-[var(--text-secondary)]">
             {String(value || 'Unknown')}
@@ -279,9 +294,13 @@ export default function TracesPage(): JSX.Element {
         key: 'status',
         dataIndex: 'status',
         width: 110,
-        sorter: (left, right) =>
-          (TRACE_STATUS_SORT_ORDER[String(left.status ?? 'UNSET').toUpperCase()] ?? 0) -
-          (TRACE_STATUS_SORT_ORDER[String(right.status ?? 'UNSET').toUpperCase()] ?? 0),
+        ...(isLiveTail
+          ? {}
+          : {
+              sorter: (left, right) =>
+                (TRACE_STATUS_SORT_ORDER[String(left.status ?? 'UNSET').toUpperCase()] ?? 0) -
+                (TRACE_STATUS_SORT_ORDER[String(right.status ?? 'UNSET').toUpperCase()] ?? 0),
+            }),
         render: (value) => renderTraceStatus(String(value)),
       },
       {
@@ -289,7 +308,11 @@ export default function TracesPage(): JSX.Element {
         key: 'duration_ms',
         dataIndex: 'duration_ms',
         width: 120,
-        sorter: (left, right) => Number(left.duration_ms ?? 0) - Number(right.duration_ms ?? 0),
+        ...(isLiveTail
+          ? {}
+          : {
+              sorter: (left, right) => Number(left.duration_ms ?? 0) - Number(right.duration_ms ?? 0),
+            }),
         render: (value) => (
           <span className="font-medium text-[var(--text-primary)]">
             {formatDuration(Number(value ?? 0))}
@@ -301,8 +324,12 @@ export default function TracesPage(): JSX.Element {
         key: 'start_time',
         dataIndex: 'start_time',
         width: 176,
-        sorter: (left, right) => compareTraceTimestamp(left.start_time, right.start_time),
-        defaultSortOrder: 'descend',
+        ...(isLiveTail
+          ? {}
+          : {
+              sorter: (left, right) => compareTraceTimestamp(left.start_time, right.start_time),
+              defaultSortOrder: 'descend',
+            }),
         render: (value) => (
           <div className="space-y-1">
             <div className="text-[12px] text-[var(--text-primary)]">
@@ -315,7 +342,7 @@ export default function TracesPage(): JSX.Element {
         ),
       },
     ],
-    []
+    [isLiveTail]
   );
 
   const facetGroups = useMemo(
@@ -541,6 +568,7 @@ export default function TracesPage(): JSX.Element {
               isLoading={isLoading}
               page={page}
               pageSize={pageSize}
+              showPagination={!isLiveTail}
               total={isLiveTail ? renderedTraces.length : totalTraces}
               onPageChange={setPage}
               onPageSizeChange={(size) => {

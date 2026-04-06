@@ -6,11 +6,11 @@ import { useAppStore } from '@app/store/appStore';
 import type { LogEntry } from '@entities/log/model';
 import { useLiveTailStream } from '@/features/explorer-core/hooks/useLiveTailStream';
 import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
+import { getTimestampMs, rowKey as logRowKey } from '@shared/utils/logUtils';
 
 import type { StructuredFilter } from '@shared/hooks/useURLFilters';
 import { logsExplorerApi } from '../api/logsExplorerApi';
 import type { LogAggregateRow, LogFacet, LogVolumeBucket, LogsBackendParams } from '../types';
-import { sortLogEntriesNewestFirst } from '../utils/sortLogEntries';
 
 export interface UseLogsHubDataProps {
   explorerQuery: string;
@@ -67,6 +67,8 @@ export function useLogsHubData({
     itemEvent: 'log',
     maxItems: LOGS_LIVE_TAIL_MAX_ROWS,
     params: { startMs: startTime, endMs: endTime, ...liveTailParams },
+    getItemKey: (log) => logRowKey(log),
+    getItemTimestamp: (log) => getTimestampMs(log),
     normalizeItem: (value) => {
       const record = value as LogEntry;
       return {
@@ -82,7 +84,7 @@ export function useLogsHubData({
   const results = explorerQueryFn.data;
   const logs = useMemo(() => {
     if (!liveTailEnabled) return results?.results ?? [];
-    return sortLogEntriesNewestFirst(liveTail.items).slice(0, LOGS_LIVE_TAIL_MAX_ROWS);
+    return liveTail.items.slice(0, LOGS_LIVE_TAIL_MAX_ROWS);
   }, [liveTailEnabled, results?.results, liveTail.items]);
   const total = liveTailEnabled ? logs.length : Number(results?.pageInfo.total ?? 0);
   const serviceFacets = (results?.facets.service_name ?? []) as LogFacet[];

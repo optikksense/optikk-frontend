@@ -523,9 +523,9 @@ export default function LogsHubPage(): JSX.Element {
                 ? `${formatNumber(logs.length)} live tail rows`
                 : `${formatNumber(logs.length)} rows in view, ${formatNumber(total)} total matches`
             }
-            rows={liveTailEnabled ? logs.slice(0, LOGS_LIVE_TAIL_MAX_ROWS) : logs}
+            rows={logs}
             columns={columns}
-            rowKey={(row, index) => logRowKey(row, index ?? 0)}
+            rowKey={(row) => logRowKey(row)}
             isLoading={logsLoading}
             page={page}
             pageSize={pageSize}

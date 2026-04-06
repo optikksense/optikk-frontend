@@ -10,6 +10,10 @@ interface UseSocketStreamOptions<Item> {
   params?: Record<string, unknown>;
   maxItems?: number;
   normalizeItem?: (value: unknown) => Item;
+  /** If provided, deduplicates items merging into the stream */
+  getItemKey?: (item: Item) => string;
+  /** If provided, inserts items ordered by timestamp (newest first) */
+  getItemTimestamp?: (item: Item) => number;
 }
 
 interface UseSocketStreamResult<Item> {
@@ -40,6 +44,8 @@ export function useSocketStream<Item>({
   params,
   maxItems = 250,
   normalizeItem,
+  getItemKey,
+  getItemTimestamp,
 }: UseSocketStreamOptions<Item>): UseSocketStreamResult<Item> {
   const [items, setItems] = useState<Item[]>([]);
   const [status, setStatus] = useState<UseSocketStreamResult<Item>['status']>('idle');
@@ -96,11 +102,27 @@ export function useSocketStream<Item>({
         setItems((previous) => {
           const nextItem = normalizeItem ? normalizeItem(payload.item) : (payload.item as Item);
           if (nextItem === undefined) return previous;
-          // `slice(0, undefined)` returns the full array — never pass undefined as the end index.
           const cap =
             typeof maxItems === 'number' && Number.isFinite(maxItems) && maxItems > 0
               ? maxItems
               : 250;
+
+          if (getItemKey && getItemTimestamp) {
+            const key = getItemKey(nextItem);
+            const time = getItemTimestamp(nextItem);
+
+            const filtered = previous.filter((p) => getItemKey(p) !== key);
+            // findIndex where timestamp <= new time (newest first)
+            const insertIdx = filtered.findIndex((p) => getItemTimestamp(p) <= time);
+
+            if (insertIdx === -1) {
+              filtered.push(nextItem);
+            } else {
+              filtered.splice(insertIdx, 0, nextItem);
+            }
+            return filtered.slice(0, cap);
+          }
+
           return [nextItem, ...previous].slice(0, cap);
         });
         return;

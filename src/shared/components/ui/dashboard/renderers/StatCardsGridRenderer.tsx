@@ -14,27 +14,46 @@ export function StatCardsGridRenderer({
   dataSources,
   fillHeight: _fillHeight,
 }: DashboardPanelRendererProps) {
-  const { data: services } = useDashboardData(chartConfig, dataSources);
+  const { data: services, rawData } = useDashboardData(chartConfig, dataSources);
 
   const summary = useMemo(() => {
+    // If backend returns a single summary object it's often in rawData (not data array)
+    if (rawData && typeof rawData === 'object' && !Array.isArray(rawData)) {
+      const s = rawData as any;
+      const totalRequests = Number(s.total_requests ?? 0);
+      const errorCount = Number(s.error_count ?? 0);
+      return {
+        totalRequests,
+        errorRate: totalRequests > 0 ? (errorCount / totalRequests) * 100 : 0,
+        avgLatency: Number(s.avg_latency ?? 0),
+        p95Latency: Number(s.p95_latency ?? 0),
+      };
+    }
+
+    if (!services || services.length === 0) {
+      return { totalRequests: 0, errorRate: 0, avgLatency: 0, p95Latency: 0 };
+    }
+
+    // Legacy: Aggregation logic (deprecated)
     let totalRequests = 0;
     let totalErrors = 0;
     let latencySum = 0;
     let p95Max = 0;
 
     for (const s of services) {
-      const req = Number(s.request_count ?? 0);
+      const { request_count, error_count, avg_latency, p95_latency } = s as any;
+      const req = Number(request_count ?? 0);
       totalRequests += req;
-      totalErrors += Number(s.error_count ?? 0);
-      latencySum += Number(s.avg_latency ?? 0) * req;
-      p95Max = Math.max(p95Max, Number(s.p95_latency ?? 0));
+      totalErrors += Number(error_count ?? 0);
+      latencySum += Number(avg_latency ?? 0) * req;
+      p95Max = Math.max(p95Max, Number(p95_latency ?? 0));
     }
 
     const errorRate = totalRequests > 0 ? (totalErrors / totalRequests) * 100 : 0;
     const avgLatency = totalRequests > 0 ? latencySum / totalRequests : 0;
 
     return { totalRequests, errorRate, avgLatency, p95Latency: p95Max };
-  }, [services]);
+  }, [services, rawData]);
 
   return (
     <div className="h-full min-h-0 overflow-y-auto p-2">

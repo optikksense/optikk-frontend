@@ -20,18 +20,34 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 
 ## Quick reference
 
-- **Stack**: React 18, Vite 5, TypeScript, TanStack Query v5, React Router 6, Zustand, Tailwind, Zod
+- **Stack**: React 18, Vite 5, TypeScript, TanStack Query v5, React Router 6, Zustand 4.5, Tailwind 3.4, uPlot 1.6, Zod
 - **Entry**: `src/main.tsx` → `src/app/App.tsx` → `src/app/routes/appRoutes.tsx`
-- **Feature registry**: `src/app/registry/domainRegistry.ts`
-- **Route constants**: `src/shared/constants/routes.ts` — `service`: `/service` (deployments dashboard; use `?serviceName=`)
+- **Feature registry**: `src/app/registry/domainRegistry.ts` — 7 domains: overview, metrics, logs, traces, infrastructure, ai, settings
+- **Route constants**: `src/shared/constants/routes.ts`
 - **HTTP client**: `src/shared/api/api/client.ts`
-- **Dashboard shell**: `src/shared/components/ui/dashboard/`
-- **Panel registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx`
-- **Charts**: `src/shared/components/ui/charts/UPlotChart.tsx` — use `setData()` for flicker-free refresh
-- **Global store**: `src/app/store/appStore.ts` — `triggerRefresh()` increments `refreshKey`
+- **Default config API**: `src/shared/api/defaultConfigService.ts` — `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId`
+- **Dashboard shell**: `src/shared/components/ui/dashboard/` — `DashboardPage.tsx`, `ConfigurableDashboard.tsx`, `DashboardEntityDrawer.tsx`
+- **Panel registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain panels
+- **Built-in panels**: `builtInDashboardPanels.tsx` — request, error-rate, latency, exception-type-line (base-chart); table, bar, gauge, heatmap, pie, stat-cards-grid (specialized); stat-card, stat-summary (self-contained)
+- **Charts**: `src/shared/components/ui/charts/` — UPlotChart (use `setData()` for flicker-free refresh), ObservabilityChart, time-series/, distributions/, micro/, specialized/
+- **Global store**: `src/app/store/appStore.ts` — `triggerRefresh()` increments `refreshKey`; persisted: timeRange, teamId, theme, timezone, comparisonMode, viewPreferences, recentPages
+- **Live tail**: `src/shared/hooks/useSocketStream.ts` (core WebSocket), `src/features/explorer-core/hooks/useLiveTailStream.ts` (wrapper with teamId)
+- **Explorer core**: `src/features/explorer-core/` — shared analytics, facets, visualizations for Logs/Traces/Metrics explorers
+- **Entities**: `src/shared/entities/` — log, metric, trace, user
+- **AI module**: `src/features/ai/` — 6 pages (AiObservability, AiRuns, AiRunDetail, AiTraceDetail, AiConversations, AiConversationDetail), 2 renderers (ai-line, ai-bar)
 - **Theme**: `src/config/themeColors.css` → `tailwind.config.ts`
 - **Dev**: `npm run dev` | **CI**: `npm run ci`
 - **Sibling repo**: `optikk-backend` (see its `CODEBASE_INDEX.md`)
+
+## Domain → dashboard page mapping
+
+| Dashboard page ID | Feature | Hub page component |
+|-------------------|---------|-------------------|
+| overview | overview | OverviewHubPage |
+| service | overview | ServiceHubPage |
+| saturation | overview → metrics | SaturationHubPage |
+| infrastructure | infrastructure | InfrastructureHubPage |
+| ai-observability | ai | AiObservabilityPage |
 
 ## Key patterns
 
@@ -40,6 +56,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Always**: `placeholderData: keepPreviousData`; loading = `isPending && data === undefined`
 - **No cross-feature imports** — ESLint enforced; move shared code to `@shared/`
 - **No TS enums** — use `as const` + union types
+- **Drawer entities**: aiModel, databaseSystem, errorGroup, kafkaGroup, kafkaTopic, node, redisInstance
 
 ## Engineering principles
 
