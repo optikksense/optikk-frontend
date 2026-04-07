@@ -1,9 +1,9 @@
-import { forwardRef, useRef } from 'react';
+import { useRef } from 'react';
 import { X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface InputProps extends Omit<React.ComponentPropsWithRef<'input'>, 'size'> {
   allowClear?: boolean;
   size?: 'small' | 'middle' | 'large';
   variant?: 'default' | 'search';
@@ -15,19 +15,16 @@ const sizeClasses: Record<NonNullable<InputProps['size']>, string> = {
   large: 'h-10 px-4 text-[14px]',
 };
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      allowClear,
-      size = 'middle',
-      variant: _variant = 'default',
-      className,
-      value,
-      onChange,
-      ...props
-    },
-    ref
-  ) => {
+function Input({
+  allowClear,
+  size = 'middle',
+  variant: _variant = 'default',
+  className,
+  value,
+  onChange,
+  ref,
+  ...props
+}: InputProps) {
     const innerRef = useRef<HTMLInputElement>(null);
     const inputRef = (ref as React.RefObject<HTMLInputElement>) || innerRef;
 
@@ -76,8 +73,5 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       </div>
     );
   }
-);
-
-Input.displayName = 'Input';
 
 export { Input };

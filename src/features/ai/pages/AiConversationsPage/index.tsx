@@ -1,11 +1,11 @@
 import { MessageSquare } from 'lucide-react';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
 import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
 import { PageHeader } from '@shared/components/ui';
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
 import { resolveTimeRangeBounds } from '@/types';
 import { formatNumber, formatRelativeTime, formatTimestamp } from '@shared/utils/formatters';
 
@@ -20,9 +20,11 @@ function getErrorMessage(error: { message?: string } | null | undefined, fallbac
   return fallback;
 }
 
-export default function AiConversationsPage(): JSX.Element {
+export default function AiConversationsPage() {
   const navigate = useNavigate();
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   const { startMs, endMs } = useMemo(() => {
     void refreshKey;
@@ -97,7 +99,7 @@ export default function AiConversationsPage(): JSX.Element {
               key={convo.conversationId}
               className="grid grid-cols-[1fr_140px_160px_80px_100px_140px] gap-2 items-center px-[18px] py-[10px] border-b border-[var(--border-color)] text-[12px] cursor-pointer transition-colors last:border-b-0 hover:bg-white/[0.02]"
               onClick={() =>
-                navigate(`/ai-conversations/${encodeURIComponent(convo.conversationId)}`)
+                navigate({ to: `/ai-conversations/${encodeURIComponent(convo.conversationId)}` })
               }
             >
               <span

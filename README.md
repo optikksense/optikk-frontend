@@ -1,6 +1,6 @@
 # Optikk Lens Frontend (React/Vite)
 
-Optikk Lens Frontend is a modern, high-performance single-page application (SPA) providing real-time visualization for the Optikk observability platform. Built on React 18 and Vite, it offers an industry-leading experience for monitoring traces, logs, and metrics with a focus on ease of use and AI/LLM integration.
+Optikk Lens Frontend is a modern, high-performance single-page application (SPA) providing real-time visualization for the Optikk observability platform. Built on React 19 and Vite, it offers an industry-leading experience for monitoring traces, logs, and metrics with a focus on ease of use and AI/LLM integration.
 
 ## Core Architecture
 
@@ -8,12 +8,12 @@ The frontend is architected as a feature-based modular system designed for scala
 
 ### Technology Stack & Tools
 
-- **React 18 & TypeScript**: Core UI library and type-safe development.
-- **Vite**: Next-generation frontend tooling and fast dev server.
-- **Ant Design (antd)**: Enterprise-grade UI component library for consistent layouts.
+- **React 19 & TypeScript**: Core UI library and type-safe development using native ref prop and `use()`.
+- **Vite 8**: Next-generation frontend tooling and fast dev server.
+- **TanStack Router**: Type-safe routing for nested and dynamic route management.
 - **Tailwind CSS**: Utility-first styling for bespoke and responsive UI design.
-- **Zustand**: Lightweight, flexible state management for global app state (e.g., theme, time-range, session).
-- **TanStack Query**: Powering the asynchronous data tier with intelligent caching and automated refetching.
+- **Zustand 5**: Atomic state management for global app state with optimized selectors.
+- **TanStack Query 5**: Powering the asynchronous data tier with intelligent caching and automated refetching.
 - **Playwright**: Comprehensive E2E testing framework for UI reliability.
 
 ### Architectural Patterns

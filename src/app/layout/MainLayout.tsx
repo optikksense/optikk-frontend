@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from '@tanstack/react-router';
 
 import ShortcutHelpOverlay from '@shared/components/ui/overlay/ShortcutHelpOverlay';
 import { DensityProvider } from '@/components/ui/providers/DensityProvider';

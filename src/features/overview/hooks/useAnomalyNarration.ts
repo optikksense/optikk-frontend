@@ -4,7 +4,7 @@ import { API_CONFIG } from '@config/apiConfig';
 import type { AnomalyEvent } from '@shared/components/ui/calm/AiNarrationCard';
 import api from '@shared/api/api';
 
-import { useAppStore } from '@store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@store/appStore';
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -12,7 +12,9 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
  *
  */
 export function useAnomalyNarration() {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   return useQuery<AnomalyEvent | null, Error>({
     queryKey: [

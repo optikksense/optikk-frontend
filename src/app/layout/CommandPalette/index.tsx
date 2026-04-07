@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import {
   Command,
@@ -17,7 +17,7 @@ import { type PaletteAction, type PaletteActionContext } from './types';
 function ActionHotkey({ action }: { action: PaletteAction }) {
   const navigate = useNavigate();
   const context: PaletteActionContext = {
-    navigate: (path) => navigate(path),
+    navigate: (path: string) => navigate({ to: path } as any),
   };
 
   useHotkeys(action.hotkey!, (e) => {
@@ -34,7 +34,7 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const actionContext: PaletteActionContext = {
-    navigate: (path) => navigate(path),
+    navigate: (path: string) => navigate({ to: path } as any),
   };
 
   // Toggle palette with Cmd+K or Ctrl+K

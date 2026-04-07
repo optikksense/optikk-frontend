@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { formatNumber } from '@shared/utils/formatters';
 import { CHART_COLORS } from '@config/constants';
@@ -264,7 +264,7 @@ export default function QueueMetricsList({
                     >
                       {detailSearch ? (
                         <Link
-                          to={{ pathname: currentPathname, search: detailSearch }}
+                          to={currentPathname + detailSearch}
                           onClick={(event) => event.stopPropagation()}
                           style={{
                             color: 'var(--color-primary)',

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { authService } from '@shared/api/auth/authService';
 
@@ -49,7 +49,7 @@ export function useAuthValidation(): AuthValidationState {
       } else {
         clearSession();
         setState('invalid');
-        navigate('/login', { replace: true });
+        navigate({ to: '/login', replace: true });
       }
     })();
 

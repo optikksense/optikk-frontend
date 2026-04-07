@@ -1,18 +1,18 @@
 import * as SwitchPrimitive from '@radix-ui/react-switch';
-import { forwardRef } from 'react';
+
 
 import { cn } from '@/lib/utils';
 
 export interface SwitchProps extends Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  'type' | 'size'
+  React.ComponentPropsWithRef<'button'>,
+  'type' | 'size' | 'onChange'
 > {
   label?: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
-const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
-  ({ checked, onChange, label, disabled, className, size: _size, ...props }, ref) => (
+function Switch({ checked, onChange, label, disabled, className, size: _size, ref, ...props }: SwitchProps & { onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; checked?: boolean }) {
+  return (
     <label
       className={cn(
         'inline-flex cursor-pointer items-center gap-2',
@@ -42,9 +42,7 @@ const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
       </SwitchPrimitive.Root>
       {label ? <span className="text-[13px] text-[var(--text-secondary)]">{label}</span> : null}
     </label>
-  )
-);
-
-Switch.displayName = 'Switch';
+  );
+}
 
 export { Switch };

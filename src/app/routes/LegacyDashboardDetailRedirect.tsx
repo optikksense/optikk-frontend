@@ -1,4 +1,4 @@
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from '@tanstack/react-router';
 
 import type { DashboardDrawerEntity } from '@/types/dashboardConfig';
 
@@ -18,7 +18,7 @@ export default function LegacyDashboardDetailRedirect({
   tab,
 }: LegacyDashboardDetailRedirectProps): JSX.Element {
   const location = useLocation();
-  const params = useParams();
+  const params = useParams({ strict: false });
 
   const rawValue = params[paramKey] ?? '';
   const nextSearchParams = new URLSearchParams(location.search);
@@ -38,5 +38,5 @@ export default function LegacyDashboardDetailRedirect({
       ? `?${currentSearch}`
       : '';
 
-  return <Navigate to={{ pathname: parentPath, search }} replace />;
+  return <Navigate to={parentPath + search} replace />;
 }

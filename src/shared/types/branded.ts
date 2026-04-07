@@ -12,7 +12,6 @@ export type TeamId = Brand<number, 'TeamId'>;
 export type TraceId = Brand<string, 'TraceId'>;
 export type SpanId = Brand<string, 'SpanId'>;
 export type MetricId = Brand<string, 'MetricId'>;
-export type LogId = Brand<string, 'LogId'>;
 
 /**
  * Utility to cast to a branded type.
@@ -33,6 +32,4 @@ export function asSpanId(id: string): SpanId {
 export function asMetricId(id: string): MetricId {
   return id as MetricId;
 }
-export function asLogId(id: string): LogId {
-  return id as LogId;
-}
+

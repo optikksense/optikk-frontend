@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
 
 import { ErrorBoundary } from '@shared/components/ui/feedback';
 import { queryClient } from '@shared/api/queryClient';
@@ -20,14 +19,12 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AppQueryClientProvider>
-        <ThemeProvider>
-          <ErrorBoundary showDetails={import.meta.env.DEV} boundaryName="root">
-            <App />
-          </ErrorBoundary>
-        </ThemeProvider>
-      </AppQueryClientProvider>
-    </BrowserRouter>
+    <AppQueryClientProvider>
+      <ThemeProvider>
+        <ErrorBoundary showDetails={import.meta.env.DEV} boundaryName="root">
+          <App />
+        </ErrorBoundary>
+      </ThemeProvider>
+    </AppQueryClientProvider>
   </React.StrictMode>
 );

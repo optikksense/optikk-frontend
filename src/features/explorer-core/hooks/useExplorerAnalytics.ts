@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId, useRefreshKey } from '@app/store/appStore';
 
 import { explorerAnalyticsApi, type ExplorerAnalyticsRequest } from '../api/explorerAnalyticsApi';
 
@@ -8,7 +8,8 @@ export function useExplorerAnalytics(
   scope: 'logs' | 'traces',
   params: ExplorerAnalyticsRequest & { enabled?: boolean }
 ) {
-  const { selectedTeamId, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const refreshKey = useRefreshKey();
   const { enabled: enabledOverride, ...body } = params;
 
   return useQuery({

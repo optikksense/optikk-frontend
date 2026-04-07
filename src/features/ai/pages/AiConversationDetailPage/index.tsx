@@ -1,10 +1,10 @@
 import { MessageSquare } from 'lucide-react';
 import { useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
 import { PageHeader } from '@shared/components/ui';
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
 import { resolveTimeRangeBounds } from '@/types';
 import { formatDuration, formatNumber, formatTimestamp } from '@shared/utils/formatters';
 import { cn } from '@/lib/utils';
@@ -12,10 +12,12 @@ import { cn } from '@/lib/utils';
 import { aiConversationQueries } from '../../api/queryOptions';
 import type { ConversationTurn } from '../../types';
 
-export default function AiConversationDetailPage(): JSX.Element {
-  const { conversationId = '' } = useParams<{ conversationId: string }>();
+export default function AiConversationDetailPage() {
+  const { conversationId = '' } = useParams({ strict: false });
   const navigate = useNavigate();
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   const { startMs, endMs } = useMemo(() => {
     void refreshKey;
@@ -69,7 +71,7 @@ export default function AiConversationDetailPage(): JSX.Element {
           <div
             key={turn.spanId}
             className="flex gap-3 px-[18px] py-[14px] border-b border-[var(--border-color)] cursor-pointer transition-colors last:border-b-0 hover:bg-white/[0.02]"
-            onClick={() => navigate(`/ai-runs/${turn.spanId}`)}
+            onClick={() => navigate({ to: `/ai-runs/${turn.spanId}` })}
           >
             <div className="w-7 h-7 rounded-full bg-[var(--glass-bg)] border border-[var(--border-color)] flex items-center justify-center text-[11px] font-semibold text-[var(--text-muted)] shrink-0">
               {i + 1}

@@ -1,4 +1,4 @@
-import { matchPath, useLocation } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
 
 import { ROUTES } from '@/shared/constants/routes';
 import { getDomainNavigationItems } from '@/app/registry/domainRegistry';
@@ -15,36 +15,33 @@ function buildDynamicCrumbs(pathname: string): BreadcrumbItem[] {
   );
 
   const rootCrumbs: BreadcrumbItem[] = [];
+  const segments = pathname.split('/').filter(Boolean);
 
-  const traceCompareMatch = matchPath({ path: ROUTES.traceCompare, end: true }, pathname);
-  if (traceCompareMatch) {
+  if (pathname === ROUTES.traceCompare) {
     return [
       { label: navLookup.get(ROUTES.traces) ?? 'Traces', path: ROUTES.traces },
       { label: 'Compare' },
     ];
   }
 
-  const tracesMatch = matchPath({ path: ROUTES.traceDetail, end: true }, pathname);
-  if (tracesMatch?.params.traceId) {
+  if (pathname.startsWith('/traces/') && segments.length === 2 && segments[1] !== 'compare') {
     return [
       { label: navLookup.get(ROUTES.traces) ?? 'Traces', path: ROUTES.traces },
-      { label: tracesMatch.params.traceId },
+      { label: segments[1] },
     ];
   }
 
-const kafkaTopicMatch = matchPath({ path: ROUTES.kafkaTopicDetail, end: true }, pathname);
-  if (kafkaTopicMatch?.params.topic) {
+  if (pathname.startsWith('/saturation/kafka/topics/') && segments.length === 4) {
     return [
       { label: navLookup.get(ROUTES.saturation) ?? 'Saturation', path: ROUTES.saturation },
-      { label: kafkaTopicMatch.params.topic },
+      { label: segments[3] },
     ];
   }
 
-  const kafkaGroupMatch = matchPath({ path: ROUTES.kafkaGroupDetail, end: true }, pathname);
-  if (kafkaGroupMatch?.params.groupId) {
+  if (pathname.startsWith('/saturation/kafka/groups/') && segments.length === 4) {
     return [
       { label: navLookup.get(ROUTES.saturation) ?? 'Saturation', path: ROUTES.saturation },
-      { label: kafkaGroupMatch.params.groupId },
+      { label: segments[3] },
     ];
   }
 
@@ -54,7 +51,6 @@ const kafkaTopicMatch = matchPath({ path: ROUTES.kafkaTopicDetail, end: true }, 
     return rootCrumbs;
   }
 
-  const segments = pathname.split('/').filter(Boolean);
   if (segments.length === 0) {
     return rootCrumbs;
   }

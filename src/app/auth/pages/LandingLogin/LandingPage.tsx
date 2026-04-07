@@ -1,16 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 
-import { useAppStore } from '@store/appStore';
-import { useAuthStore } from '@store/authStore';
+import { useAppStore, useTimeRange } from '@store/appStore';
+import { useAuthStore, useIsAuthenticated, useAuthIsLoading, useAuthError } from '@store/authStore';
 
 import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated, isLoading, error, clearError } = useAuthStore();
-  const { setTimeRange } = useAppStore();
+  const login = useAuthStore((s) => s.login);
+  const isAuthenticated = useIsAuthenticated();
+  const isLoading = useAuthIsLoading();
+  const error = useAuthError();
+  const clearError = useAuthStore((s) => s.clearError);
+  const setTimeRange = useAppStore((s) => s.setTimeRange);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -149,7 +153,7 @@ const LandingPage: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/overview');
+      navigate({ to: '/overview' });
     }
   }, [isAuthenticated, navigate]);
 
@@ -170,7 +174,7 @@ const LandingPage: React.FC = () => {
       if (result.success) {
         setTimeRange({ kind: 'relative', preset: '30m', label: 'Last 30 minutes', minutes: 30 });
         toast.success('Login successful!');
-        navigate('/overview');
+        navigate({ to: '/home' });
       }
     }
   };

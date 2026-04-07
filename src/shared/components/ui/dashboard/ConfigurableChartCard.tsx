@@ -8,7 +8,7 @@ import ChartErrorOverlay from '@shared/components/ui/feedback/ChartErrorOverlay'
 import ChartNoDataOverlay from '@shared/components/ui/feedback/ChartNoDataOverlay';
 
 import { useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
 
 import type {
   DashboardPanelSpec,

@@ -1,7 +1,7 @@
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from '@tanstack/react-router';
 
 function BrandIcon() {
   return (
@@ -94,7 +94,7 @@ export default function MarketingNav() {
       >
         {/* Brand */}
         <div
-          onClick={() => navigate('/')}
+          onClick={() => navigate({ to: '/' })}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -137,7 +137,7 @@ export default function MarketingNav() {
                 {lx.label}
               </a>
             ) : (
-              <div key={lx.label} className="nav-link" onClick={() => navigate(lx.path)}>
+              <div key={lx.label} className="nav-link" onClick={() => navigate({ to: lx.path as any })}>
                 {lx.label}
                 {location.pathname === lx.path && (
                   <motion.div
@@ -181,7 +181,7 @@ export default function MarketingNav() {
 
         {/* CTA */}
         <div className="desktop-links" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button className="nav-cta-btn" onClick={() => navigate('/login')}>
+          <button className="nav-cta-btn" onClick={() => navigate({ to: '/login' })}>
             Get Started
           </button>
         </div>
@@ -236,7 +236,7 @@ export default function MarketingNav() {
                 onClick={() => {
                   setMobileMenuOpen(false);
                   if (lx.ext) window.open(lx.path, '_blank');
-                  else navigate(lx.path);
+                  else navigate({ to: lx.path as any });
                 }}
               >
                 {lx.label}
@@ -262,7 +262,7 @@ export default function MarketingNav() {
             <button
               className="nav-cta-btn"
               style={{ marginTop: 8, padding: 14 }}
-              onClick={() => navigate('/login')}
+              onClick={() => navigate({ to: '/login' })}
             >
               Get Started
             </button>

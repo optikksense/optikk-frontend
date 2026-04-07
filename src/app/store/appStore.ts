@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import type { TimeRange, RelativeTimeRange } from '@/types';
+import type { TimeRange, RelativeTimeRange, AbsoluteTimeRange } from '@/types';
 
 import { STORAGE_KEYS, TIME_RANGES } from '@config/constants';
 import type { ComparisonMode } from '@shared/components/ui/TimeSelector/constants';
@@ -202,25 +202,45 @@ export const useAppStore = create<AppState>()(
       },
 
       setTimeRange: (range: TimeRange): void => {
-        set((state) => ({
-          timeRange: range,
-          refreshKey: state.refreshKey + 1,
-          recentTimeRanges: pushRecentRange(state.recentTimeRanges, range),
-        }));
+        set((state) => {
+          const isSame =
+            state.timeRange.kind === range.kind &&
+            (range.kind === 'relative'
+              ? range.preset === (state.timeRange as RelativeTimeRange).preset
+              : (state.timeRange as AbsoluteTimeRange).startMs === range.startMs &&
+                (state.timeRange as AbsoluteTimeRange).endMs === range.endMs);
+
+          if (isSame) return state;
+
+          return {
+            timeRange: range,
+            refreshKey: state.refreshKey + 1,
+            recentTimeRanges: pushRecentRange(state.recentTimeRanges, range),
+          };
+        });
       },
 
       setCustomTimeRange: (startMs: number, endMs: number, label?: string): void => {
-        const range: TimeRange = {
-          kind: 'absolute',
-          startMs,
-          endMs,
-          label: label ?? 'Custom range',
-        };
-        set((state) => ({
-          timeRange: range,
-          refreshKey: state.refreshKey + 1,
-          recentTimeRanges: pushRecentRange(state.recentTimeRanges, range),
-        }));
+        set((state) => {
+          const isSame =
+            state.timeRange.kind === 'absolute' &&
+            (state.timeRange as AbsoluteTimeRange).startMs === startMs &&
+            (state.timeRange as AbsoluteTimeRange).endMs === endMs;
+
+          if (isSame) return state;
+
+          const range: TimeRange = {
+            kind: 'absolute',
+            startMs,
+            endMs,
+            label: label ?? 'Custom range',
+          };
+          return {
+            timeRange: range,
+            refreshKey: state.refreshKey + 1,
+            recentTimeRanges: pushRecentRange(state.recentTimeRanges, range),
+          };
+        });
       },
 
       toggleSidebar: (): void => {
@@ -328,3 +348,8 @@ export const useSidebarCollapsed = () => useAppStore((s) => s.sidebarCollapsed);
 export const useTheme = () => useAppStore((s) => s.theme);
 export const useTimezone = () => useAppStore((s) => s.timezone);
 export const useComparisonMode = () => useAppStore((s) => s.comparisonMode);
+export const useAutoRefreshInterval = () => useAppStore((s) => s.autoRefreshInterval);
+export const useNotificationsEnabled = () => useAppStore((s) => s.notificationsEnabled);
+export const useViewPreferences = () => useAppStore((s) => s.viewPreferences);
+export const useRecentPages = () => useAppStore((s) => s.recentPages);
+export const useRecentTimeRanges = () => useAppStore((s) => s.recentTimeRanges);

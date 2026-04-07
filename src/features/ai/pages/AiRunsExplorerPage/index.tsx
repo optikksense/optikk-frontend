@@ -1,6 +1,6 @@
 import { Brain, Play } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import {
   ObservabilityDataBoard,
@@ -54,7 +54,7 @@ export default function AiRunsExplorerPage(): JSX.Element {
 
   const onRowClick = useCallback(
     (spanId: string) => {
-      navigate(`/ai-runs/${spanId}`);
+      navigate({ to: `/ai-runs/${spanId}` });
     },
     [navigate]
   );

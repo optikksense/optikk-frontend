@@ -9,7 +9,7 @@ import {
 import type { TimeRange } from '@/types';
 import { resolveTimeRangeBounds } from '@/types';
 
-import { useAppStore } from '@store/appStore';
+import { useTeamId, useTimeRange as useAppStoreTimeRange, useRefreshKey } from '@store/appStore';
 
 type QueryTime = string | number;
 
@@ -50,7 +50,9 @@ export function useTimeRangeQuery<TData = unknown>(
   queryFn: TimeRangeQueryFunction<TData>,
   options: TimeRangeQueryOptions<TData> = {}
 ): UseQueryResult<TData, Error> {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useAppStoreTimeRange();
+  const refreshKey = useRefreshKey();
   const { extraKeys = [], enabled, ...queryOptions } = options;
 
   return useQuery<TData, Error>({
@@ -77,7 +79,9 @@ export function useTimeRange(): {
   refreshKey: number;
   getTimeRange: () => TimeRangeBounds;
 } {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useAppStoreTimeRange();
+  const refreshKey = useRefreshKey();
 
   return {
     selectedTeamId,

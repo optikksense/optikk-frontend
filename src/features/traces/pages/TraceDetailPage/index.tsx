@@ -1,7 +1,7 @@
 import { Badge, Button, SimpleTable, Tabs } from '@/components/ui';
 import { AlertCircle, ArrowLeft, Clock, FileText, GitBranch, Layers } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@tanstack/react-router';
 
 import Flamegraph from '@shared/components/ui/charts/specialized/Flamegraph';
 import WaterfallChart from '@shared/components/ui/charts/specialized/WaterfallChart';
@@ -22,7 +22,7 @@ import { useTraceFlamegraph } from '../../hooks/useTraceFlamegraph';
 import './TraceDetailPage.css';
 
 export default function TraceDetailPage() {
-  const { traceId } = useParams();
+  const { traceId } = useParams({ strict: false });
   const traceIdParam = traceId ?? '';
   const navigate = useNavigate();
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
@@ -163,7 +163,7 @@ export default function TraceDetailPage() {
             variant="ghost"
             size="sm"
             icon={<ArrowLeft size={16} />}
-            onClick={() => navigate('/traces')}
+            onClick={() => navigate({ to: '/traces' })}
           >
             Back to Traces
           </Button>

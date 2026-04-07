@@ -15,7 +15,7 @@ import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
 
 import { resolveTimeRangeBounds } from '@/types';
 
-import { useAppStore } from '@store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
 
 interface DataSourceFailedRequest {
   dataSourceId: string;
@@ -40,7 +40,9 @@ export function useDataSourceFetcher(
   dataSources: DataSourceSpec[],
   pathParams?: Record<string, string>
 ): UseDataSourceFetcherResult {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   useInvalidateQueriesOnAppRefresh(refreshKey, 'datasource', selectedTeamId);
 

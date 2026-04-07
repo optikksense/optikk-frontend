@@ -11,7 +11,8 @@ This skill defines the development standards and architectural patterns for the 
 
 1. **Read [CODEBASE_INDEX.md](../../CODEBASE_INDEX.md)** at the repository root. This provides the full map of domains, routes, and shared layers.
 2. **Review [Active Rules](../../.cursor/rules/optik-frontend.mdc)** for the latest hot paths and patterns.
-3. **Plan First, Code After Approval**:
+3. **Read [Agent Philosophy](./philosophy/)**: Review strategic alignment, ADRs, and **[Highest Standards](./philosophy/highest-standards.md)** (No Python, Direct Imports, Conventional Commits) for Staff-level context.
+4. **Plan First, Code After Approval**:
    - For non-trivial work, produce a plan.
    - **At least two viable approaches** must be presented with Pros/Cons.
    - Do **not** modify project files until the user explicitly approves the plan.
@@ -21,6 +22,11 @@ This skill defines the development standards and architectural patterns for the 
    - This file (`.agent/SKILL.md`) and `CLAUDE.md` — keep aligned
    
    Documentation must always reflect current architecture. Always check, even for small changes.
+
+- **Biome**: Unified toolchain for linting and formatting. Use `npm run lint:fix` before completion.
+- **Conventional Commits**: Use `feat:`, `fix:`, `refactor:` prefixes for all summaries.
+- **Direct Imports**: No barrel imports. Import directly from the source file.
+- **Import Type**: Always use `import type` for TypeScript types.
 
 ## Performance and UI Patterns
 

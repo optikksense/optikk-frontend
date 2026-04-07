@@ -34,7 +34,7 @@ export function resolveTimeRangeBounds(r: TimeRange): { startTime: number; endTi
   if (r.kind === 'absolute') {
     return { startTime: r.startMs, endTime: r.endMs };
   }
-  const now = Math.floor(Date.now() / 60_000) * 60_000; // stabilize to minute
+  const now = Math.floor(Date.now() / 10_000) * 10_000; // stabilize to 10 seconds
   return { startTime: now - r.minutes * 60_000, endTime: now };
 }
 

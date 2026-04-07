@@ -160,7 +160,7 @@ export const useAuthStore = create<AuthState>()(
         clearSessionState(set);
       },
 
-      clearError: (): void => set({ error: null }),
+      clearError: (): void => { set({ error: null }); },
     }),
     {
       name: STORAGE_KEYS.AUTH_STATE,
@@ -172,3 +172,10 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+// Computed selectors
+export const useAuthUser = () => useAuthStore((s) => s.user);
+export const useAuthTenant = () => useAuthStore((s) => s.tenant);
+export const useIsAuthenticated = () => useAuthStore((s) => s.isAuthenticated);
+export const useAuthIsLoading = () => useAuthStore((s) => s.isLoading);
+export const useAuthError = () => useAuthStore((s) => s.error);

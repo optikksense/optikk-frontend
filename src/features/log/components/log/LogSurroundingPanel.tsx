@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { logsService } from '@shared/api/logsService';
 import { tsLabel } from '@shared/utils/time';
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId } from '@app/store/appStore';
 import { LevelBadge } from './LogRow';
 import type { LogRecord } from '../../types';
 
@@ -56,8 +56,8 @@ function SurroundingRow({ log, isAnchor }: { log: LogRecord; isAnchor?: boolean 
 }
 
 export default function LogSurroundingPanel({ log }: LogSurroundingPanelProps) {
-  const { selectedTeamId } = useAppStore();
-  const logId = log.id;
+  const selectedTeamId = useTeamId();
+  const logTimestamp = String(log.timestamp);
 
   const [localBefore, setLocalBefore] = useState<LogRecord[]>([]);
   const [localAfter, setLocalAfter] = useState<LogRecord[]>([]);
@@ -66,17 +66,17 @@ export default function LogSurroundingPanel({ log }: LogSurroundingPanelProps) {
 
   // Avoid running this query aggressively per keystroke or without a true logId
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['logs', 'surrounding', logId],
+    queryKey: ['logs', 'surrounding', logTimestamp],
     queryFn: async () => {
-      if (!logId) return null;
+      if (!logTimestamp) return null;
       return (await logsService.getLogSurrounding(
         selectedTeamId,
-        logId,
+        logTimestamp,
         20,
         20
       )) as SurroundingResponse;
     },
-    enabled: !!logId,
+    enabled: !!logTimestamp,
     staleTime: 300000,
   });
 
@@ -92,11 +92,11 @@ export default function LogSurroundingPanel({ log }: LogSurroundingPanelProps) {
     if (!selectedTeamId || localBefore.length === 0) return;
     try {
       setLoadingOlder(true);
-      const oldestId = localBefore[0].id;
-      if (!oldestId) return;
+      const oldestTs = String(localBefore[0].timestamp);
+      if (!oldestTs) return;
       const res = (await logsService.getLogSurrounding(
         selectedTeamId,
-        oldestId as string,
+        oldestTs,
         40,
         0
       )) as SurroundingResponse;
@@ -114,11 +114,11 @@ export default function LogSurroundingPanel({ log }: LogSurroundingPanelProps) {
     if (!selectedTeamId || localAfter.length === 0) return;
     try {
       setLoadingNewer(true);
-      const newestId = localAfter[localAfter.length - 1].id;
-      if (!newestId) return;
+      const newestTs = String(localAfter[localAfter.length - 1].timestamp);
+      if (!newestTs) return;
       const res = (await logsService.getLogSurrounding(
         selectedTeamId,
-        newestId as string,
+        newestTs,
         0,
         40
       )) as SurroundingResponse;
@@ -194,13 +194,13 @@ export default function LogSurroundingPanel({ log }: LogSurroundingPanelProps) {
       )}
 
       {localBefore.map((l, i) => (
-        <SurroundingRow key={l.id ?? `before-${i}`} log={l} />
+        <SurroundingRow key={String(l.timestamp) ?? `before-${i}`} log={l} />
       ))}
 
       {anchor && <SurroundingRow log={anchor} isAnchor />}
 
       {localAfter.map((l, i) => (
-        <SurroundingRow key={l.id ?? `after-${i}`} log={l} />
+        <SurroundingRow key={String(l.timestamp) ?? `after-${i}`} log={l} />
       ))}
 
       {localAfter.length > 0 && (

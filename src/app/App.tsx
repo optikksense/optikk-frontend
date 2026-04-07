@@ -8,9 +8,10 @@ import { DashboardPanelRegistryProvider } from '@shared/components/ui/dashboard/
 
 import AuthExpiryListener from './providers/AuthExpiryListener';
 import { getDashboardPanelRegistrations } from './registry/domainRegistry';
-import AppRoutes from './routes/appRoutes';
 import { CommandPalette } from './layout/CommandPalette';
 import { ErrorBoundary } from '@shared/components/ui/feedback';
+import { RouterProvider, Outlet } from '@tanstack/react-router';
+import { router } from './routes/router';
 
 function PageLoader(): JSX.Element {
   return (
@@ -34,7 +35,7 @@ function PageLoader(): JSX.Element {
  * Inner component rendered inside BrowserRouter so that useNavigate works.
  * Probes the backend session once on mount; shows a loader while in-flight.
  */
-function AppContent(): JSX.Element {
+export function AppContent(): JSX.Element {
   const authState = useAuthValidation();
 
   if (authState === 'pending') {
@@ -60,7 +61,7 @@ function AppContent(): JSX.Element {
         }}
       />
       <CommandPalette />
-      <AppRoutes />
+      <Outlet />
     </>
   );
 }
@@ -71,9 +72,7 @@ export default function App(): JSX.Element {
   return (
     <ErrorBoundary showDetails={import.meta.env.DEV} boundaryName="app-shell">
       <DashboardPanelRegistryProvider registrations={dashboardPanels}>
-        <Suspense fallback={<PageLoader />}>
-          <AppContent />
-        </Suspense>
+        <RouterProvider router={router} />
       </DashboardPanelRegistryProvider>
     </ErrorBoundary>
   );

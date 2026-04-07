@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { useAuthStore } from '@store/authStore';
 
@@ -9,7 +9,7 @@ export default function AuthExpiryListener(): null {
   useEffect(() => {
     const handleAuthExpired = () => {
       useAuthStore.getState().clearSession();
-      navigate('/login', { replace: true });
+      navigate({ to: '/login', replace: true });
     };
     window.addEventListener('auth:expired', handleAuthExpired);
 

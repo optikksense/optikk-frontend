@@ -5,7 +5,7 @@ import type { DashboardTabDocument } from '@/types/dashboardConfig';
 
 import { defaultConfigService } from '@shared/api/defaultConfigService';
 
-import { useAppStore } from '@store/appStore';
+import { useTeamId } from '@app/store/appStore';
 
 interface UseDashboardTabDocumentResult {
   tab: DashboardTabDocument | null;
@@ -17,7 +17,7 @@ export function useDashboardTabDocument(
   pageId: string,
   tabId: string
 ): UseDashboardTabDocumentResult {
-  const { selectedTeamId } = useAppStore();
+  const selectedTeamId = useTeamId();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['default-config', 'tab-document', selectedTeamId, pageId, tabId],

@@ -5,7 +5,7 @@ import { metricsConfig } from '@/features/metrics';
 import { overviewConfig } from '@/features/overview';
 import { settingsConfig } from '@/features/settings';
 import { tracesConfig } from '@/features/traces';
-import { matchPath } from 'react-router-dom';
+
 
 import type { LucideIcon } from 'lucide-react';
 import type { ComponentType, LazyExoticComponent } from 'react';
@@ -97,10 +97,13 @@ export function getExplorerRoutes(): readonly RegisteredDomainRoute[] {
 }
 
 export function resolveRegisteredExplorerRoute(pathname: string): RegisteredDomainRoute | null {
-  return (
-    getExplorerRoutes().find((route) => matchPath({ path: route.path, end: true }, pathname)) ??
-    null
-  );
+  const routes = getExplorerRoutes();
+  for (const route of routes) {
+    if (pathname.startsWith(route.path) && (pathname.length === route.path.length || pathname[route.path.length] === '/')) {
+      return route;
+    }
+  }
+  return null;
 }
 
 export function getDashboardPageAdapters(): readonly RegisteredDashboardPageAdapter[] {

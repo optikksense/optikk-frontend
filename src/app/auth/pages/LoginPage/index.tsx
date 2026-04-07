@@ -2,11 +2,11 @@ import { Surface, Button } from '@/components/ui';
 import { Mail, Lock, Layers } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
 
-import { useAppStore } from '@store/appStore';
-import { useAuthStore } from '@store/authStore';
+import { useAppStore, useTimeRange } from '@store/appStore';
+import { useAuthStore, useIsAuthenticated, useAuthIsLoading, useAuthError } from '@store/authStore';
 
 import { APP_COLORS } from '@config/colorLiterals';
 
@@ -22,14 +22,18 @@ const loginFormSchema = z.object({
  */
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, isAuthenticated, isLoading, error, clearError } = useAuthStore();
-  const { setTimeRange } = useAppStore();
+  const login = useAuthStore((s) => s.login);
+  const isAuthenticated = useIsAuthenticated();
+  const isLoading = useAuthIsLoading();
+  const error = useAuthError();
+  const clearError = useAuthStore((s) => s.clearError);
+  const setTimeRange = useAppStore((s) => s.setTimeRange);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/overview');
+      navigate({ to: '/overview' });
     }
   }, [isAuthenticated, navigate]);
 
@@ -52,7 +56,7 @@ export default function LoginPage() {
     if (result.success) {
       setTimeRange({ kind: 'relative', preset: '30m', label: 'Last 30 minutes', minutes: 30 });
       toast.success('Login successful!');
-      navigate('/overview');
+      navigate({ to: '/overview' });
     }
   };
 

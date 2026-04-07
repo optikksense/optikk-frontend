@@ -1,5 +1,5 @@
 import { Brain } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 import { PageHeader } from '@shared/components/ui';
 import { formatDuration, formatNumber, formatTimestamp } from '@shared/utils/formatters';
@@ -17,7 +17,7 @@ function getErrorMessage(error: { message?: string } | null | undefined, fallbac
 }
 
 export default function AiRunDetailPage(): JSX.Element {
-  const { spanId = '' } = useParams<{ spanId: string }>();
+  const { spanId = '' } = useParams({ strict: false });
   const {
     detail,
     messages,

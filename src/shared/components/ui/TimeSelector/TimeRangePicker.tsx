@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 import type { TimeRange } from '@/types';
 
-import { useAppStore } from '@store/appStore';
+import { useTimeRange, useAppStore } from '@app/store/appStore';
 
 import { RANGE_GROUPS, DISPLAY_MAP } from './constants';
 import { fmtDatetime, parseDatetime } from './utils';
@@ -15,7 +15,9 @@ import './TimeSelector.css';
 type Tab = 'relative' | 'absolute';
 
 export default function TimeRangePicker() {
-  const { timeRange, setTimeRange, setCustomTimeRange } = useAppStore();
+  const timeRange = useTimeRange();
+  const setTimeRange = useAppStore((s) => s.setTimeRange);
+  const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
 
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);

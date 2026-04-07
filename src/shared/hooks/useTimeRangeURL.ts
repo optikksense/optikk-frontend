@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
 
 import type { TimeRange, RelativeTimeRange } from '@/types';
 
 import { TIME_RANGES } from '@config/constants';
 
-import { useAppStore } from '@store/appStore';
+import { useTimeRange, useAppStore } from '@store/appStore';
 
 const PARAM_FROM = 'from';
 const PARAM_TO = 'to';
@@ -91,7 +91,10 @@ function timeRangeToUrlParams(r: TimeRange): { from: string; to: string } {
  */
 export function useTimeRangeURL(): void {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { timeRange, timezone, setTimeRange, setTimezone } = useAppStore();
+  const timeRange = useTimeRange();
+  const timezone = useAppStore((s) => s.timezone);
+  const setTimeRange = useAppStore((s) => s.setTimeRange);
+  const setTimezone = useAppStore((s) => s.setTimezone);
   const initializedRef = useRef(false);
   const skipNextUrlUpdateRef = useRef(false);
 
@@ -113,11 +116,18 @@ export function useTimeRangeURL(): void {
     } else {
       // No URL params — push store to URL
       const params = timeRangeToUrlParams(timeRange);
-      const next = new URLSearchParams(searchParams);
-      next.set(PARAM_FROM, params.from);
-      next.set(PARAM_TO, params.to);
-      if (timezone !== 'local') next.set(PARAM_TZ, timezone);
-      setSearchParams(next, { replace: true });
+      setSearchParams(
+        (prevSearchParams) => {
+          const next = new URLSearchParams(prevSearchParams);
+          next.set(PARAM_FROM, params.from);
+          next.set(PARAM_TO, params.to);
+          if (timezone !== 'local') {
+            next.set(PARAM_TZ, timezone);
+          }
+          return next;
+        },
+        { replace: true }
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -131,15 +141,20 @@ export function useTimeRangeURL(): void {
     }
 
     const params = timeRangeToUrlParams(timeRange);
-    const next = new URLSearchParams(searchParams);
-    next.set(PARAM_FROM, params.from);
-    next.set(PARAM_TO, params.to);
-    if (timezone !== 'local') {
-      next.set(PARAM_TZ, timezone);
-    } else {
-      next.delete(PARAM_TZ);
-    }
-    setSearchParams(next, { replace: true });
+    setSearchParams(
+      (prevSearchParams) => {
+        const next = new URLSearchParams(prevSearchParams);
+        next.set(PARAM_FROM, params.from);
+        next.set(PARAM_TO, params.to);
+        if (timezone !== 'local') {
+          next.set(PARAM_TZ, timezone);
+        } else {
+          next.delete(PARAM_TZ);
+        }
+        return next;
+      },
+      { replace: true }
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange, timezone]);
 
@@ -152,10 +167,11 @@ export function useTimeRangeURL(): void {
     const parsed = parseUrlTimeRange(urlFrom, urlTo);
 
     if (!parsed) return;
-
-    // Check if URL differs from current store
-    const current = timeRangeToUrlParams(timeRange);
-    if (current.from === (urlFrom ?? '') && current.to === (urlTo ?? '')) return;
+    
+    const currentParams = timeRangeToUrlParams(timeRange);
+    const parsedParams = timeRangeToUrlParams(parsed);
+    
+    if (currentParams.from === parsedParams.from && currentParams.to === parsedParams.to) return;
 
     skipNextUrlUpdateRef.current = true;
     setTimeRange(parsed);

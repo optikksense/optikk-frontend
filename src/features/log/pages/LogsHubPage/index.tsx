@@ -3,7 +3,7 @@ import { Activity, AlertCircle, FileText, Radio, Share2 } from 'lucide-react';
 import { ERROR_CODE_LABELS } from '@/shared/constants/errorCodes';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { Badge, Button, Switch } from '@/components/ui';
 import type { SimpleTableColumn } from '@/components/ui';
@@ -22,7 +22,7 @@ import { AnalyticsTopList } from '@/features/explorer-core/components/visualizat
 import { buildLogsExplorerQuery } from '@/features/explorer-core/utils/explorerQuery';
 import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
 import { cn } from '@/lib/utils';
-import { useAppStore } from '@app/store/appStore';
+import { useTimeRange } from '@app/store/appStore';
 import {
   ObservabilityDetailPanel,
   ObservabilityQueryBar,
@@ -84,9 +84,9 @@ function formatLiveTailStatus(
   return 'connecting';
 }
 
-export default function LogsHubPage(): JSX.Element {
+export default function LogsHubPage() {
   const navigate = useNavigate();
-  const { timeRange } = useAppStore();
+  const timeRange = useTimeRange();
 
   const {
     values: urlValues,
@@ -542,7 +542,7 @@ export default function LogsHubPage(): JSX.Element {
             rowClassName={(row) =>
               cn(
                 'cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]',
-                selectedLog?.id === row.id &&
+                selectedLog?.timestamp === row.timestamp &&
                   'bg-[rgba(10,174,214,0.12)] ring-1 ring-inset ring-[rgba(10,174,214,0.28)]'
               )
             }
@@ -589,9 +589,11 @@ export default function LogsHubPage(): JSX.Element {
                   variant="secondary"
                   size="sm"
                   onClick={() =>
-                    navigate(
-                      `/traces/${encodeURIComponent(selectedLog.trace_id || selectedLog.traceId || '')}`
-                    )
+                    navigate({
+                      to: `/traces/${encodeURIComponent(
+                        selectedLog.trace_id || selectedLog.traceId || ''
+                      )}` as any,
+                    })
                   }
                 >
                   Open Trace

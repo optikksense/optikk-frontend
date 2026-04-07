@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from '@tanstack/react-router';
 
 import { authService } from '@shared/api/auth/authService';
 
@@ -41,7 +41,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps): JSX.E
       const payload = await authService.validateSession();
       if (!payload || !applyAuthPayload(payload)) {
         clearSession();
-        navigate('/login', { replace: true });
+        navigate({ to: '/login', replace: true });
       }
     })();
   }, [applyAuthPayload, clearSession, isAuthenticated, navigate, selectedTeamId]);

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from '@tanstack/react-router';
+import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
 
 import { DetailDrawer } from '@shared/components/ui/layout';
 
@@ -77,13 +78,7 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
     <DetailDrawer
       open
       onClose={() =>
-        navigate(
-          {
-            pathname: location.pathname,
-            search: clearDashboardDrawerSearch(location.search),
-          },
-          { replace: true }
-        )
+        navigate({ to: location.pathname + clearDashboardDrawerSearch(location.search) as any, replace: true })
       }
       title={
         drawer.title || (drawer.entity ? (ENTITY_LABELS[drawer.entity] ?? 'Details') : 'Details')

@@ -1,8 +1,8 @@
-import { forwardRef } from 'react';
+
 
 import { cn } from '@/lib/utils';
 
-export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface IconButtonProps extends React.ComponentPropsWithRef<'button'> {
   icon: React.ReactNode;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -24,8 +24,8 @@ const sizeClasses: Record<NonNullable<IconButtonProps['size']>, string> = {
   lg: 'h-10 w-10 rounded-md',
 };
 
-const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ icon, size = 'md', variant = 'ghost', label, className, ...props }, ref) => (
+function IconButton({ icon, size = 'md', variant = 'ghost', label, className, ref, ...props }: IconButtonProps) {
+  return (
     <button
       ref={ref}
       className={cn(
@@ -40,9 +40,7 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     >
       {icon}
     </button>
-  )
-);
-
-IconButton.displayName = 'IconButton';
+  );
+}
 
 export { IconButton };

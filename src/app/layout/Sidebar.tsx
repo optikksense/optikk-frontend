@@ -1,20 +1,22 @@
 import { Layers, LogOut, Settings, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 
 import { getDomainNavigationItems } from '@/app/registry/domainRegistry';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ui';
 import { ROUTES } from '@/shared/constants/routes';
 
-import { useAppStore } from '@store/appStore';
+import { useSidebarCollapsed, useTheme, useAppStore } from '@store/appStore';
 import { useAuthStore } from '@store/authStore';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { sidebarCollapsed, toggleSidebar, theme } = useAppStore();
+  const sidebarCollapsed = useSidebarCollapsed();
+  const toggleSidebar = useAppStore((s) => s.toggleSidebar);
+  const theme = useTheme();
   const logout = useAuthStore((state) => state.logout);
 
   const staticNavEntries = useMemo(
@@ -54,7 +56,7 @@ export default function Sidebar() {
   const handleLogout = async () => {
     await logout();
     toast.success('Logged out successfully');
-    navigate(ROUTES.login);
+    navigate({ to: ROUTES.login as any });
   };
 
   const navItemClass = (isActive: boolean, extra?: string) =>
@@ -80,7 +82,7 @@ export default function Sidebar() {
           <button
             key={item.path}
             className={navItemClass(isActive)}
-            onClick={() => navigate(item.path)}
+            onClick={() => navigate({ to: item.path as any })}
             aria-current={isActive ? 'page' : undefined}
           >
             <span className="inline-flex items-center shrink-0">{item.iconNode}</span>
@@ -115,7 +117,7 @@ export default function Sidebar() {
           'flex h-[var(--space-header-h,56px)] shrink-0 cursor-pointer items-center justify-center gap-3 border-b border-[var(--border-color)] px-[var(--space-lg)]',
           sidebarCollapsed && 'px-0'
         )}
-        onClick={() => navigate(ROUTES.overview)}
+        onClick={() => navigate({ to: ROUTES.overview })}
       >
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[calc(var(--card-radius)+1px)] bg-[linear-gradient(180deg,var(--color-primary),#7266ee)] text-white shadow-[var(--shadow-sm)]">
           <Layers size={20} />
@@ -144,7 +146,7 @@ export default function Sidebar() {
                 'border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-subtle-18)]',
                 sidebarCollapsed && 'justify-center px-1.5'
               )}
-              onClick={() => navigate(ROUTES.settings)}
+              onClick={() => navigate({ to: ROUTES.settings as any })}
             >
               <Settings size={14} />
               {!sidebarCollapsed && 'Settings'}

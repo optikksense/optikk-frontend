@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import Breadcrumbs from '@/components/ui/breadcrumb';
 import { cn } from '@/lib/utils';
 import { useBreadcrumbs } from '@shared/hooks/useBreadcrumbs';

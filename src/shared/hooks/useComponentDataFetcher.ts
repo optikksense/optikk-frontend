@@ -16,7 +16,7 @@ import { interpolateValue } from '@shared/utils/placeholderInterpolation';
 
 import { resolveTimeRangeBounds } from '@/types';
 
-import { useAppStore } from '@store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
 
 interface ComponentFailedRequest {
   componentIds: string[];
@@ -56,7 +56,9 @@ export function useComponentDataFetcher(
   components: DashboardPanelSpec[],
   pathParams?: Record<string, string>
 ): UseComponentDataFetcherResult {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   useInvalidateQueriesOnAppRefresh(refreshKey, 'component-query', selectedTeamId);
 

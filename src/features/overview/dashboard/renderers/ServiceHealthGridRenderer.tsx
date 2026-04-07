@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { HealthIndicator } from '@shared/components/ui';
 import { formatNumber } from '@shared/utils/formatters';
@@ -45,7 +45,7 @@ export function ServiceHealthGridRenderer({
             <div key={service.name}>
               <div
                 className="bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg p-3 cursor-pointer transition-all duration-200 text-center hover:border-[var(--color-primary)] hover:-translate-y-px"
-                onClick={() => navigate(`/services/${encodeURIComponent(service.name)}`)}
+                onClick={() => navigate({ to: `/services/${encodeURIComponent(service.name)}` })}
               >
                 <HealthIndicator status={service.status} size={8} />
                 <div className="text-xs font-semibold text-[var(--text-primary)] mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap">

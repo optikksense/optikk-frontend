@@ -1,10 +1,10 @@
-import { forwardRef } from 'react';
+
 
 import { cn } from '@/lib/utils';
 
 export type BadgeVariant = 'default' | 'success' | 'error' | 'warning' | 'info';
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface BadgeProps extends React.ComponentPropsWithRef<'div'> {
   variant?: BadgeVariant;
   color?: string;
 }
@@ -27,8 +27,7 @@ const colorClasses: Record<string, string> = {
   yellow: 'bg-[rgba(245,158,11,0.12)] text-[#F59E0B] border-[rgba(245,158,11,0.3)]',
 };
 
-const Badge = forwardRef<HTMLDivElement, BadgeProps>(
-  ({ variant = 'default', color, className, children, ...props }, ref) => {
+function Badge({ variant = 'default', color, className, children, ref, ...props }: BadgeProps) {
     const classes = color
       ? (colorClasses[color] ?? variantClasses.default)
       : variantClasses[variant];
@@ -46,9 +45,6 @@ const Badge = forwardRef<HTMLDivElement, BadgeProps>(
         {children}
       </div>
     );
-  }
-);
-
-Badge.displayName = 'Badge';
+}
 
 export { Badge };

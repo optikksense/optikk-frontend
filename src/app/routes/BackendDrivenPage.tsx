@@ -1,4 +1,4 @@
-import { Navigate, matchPath, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from '@tanstack/react-router';
 
 import { DashboardPage, PageHeader, PageShell } from '@shared/components/ui';
 import { getDashboardIcon } from '@shared/components/ui/dashboard/utils/dashboardUtils';
@@ -14,21 +14,15 @@ function matchConfiguredPage(
   pages: readonly DefaultConfigPage[]
 ): { page: DefaultConfigPage; pathParams?: Record<string, string> } | null {
   for (const page of pages) {
-    const matched = matchPath({ path: page.path, end: true }, pathname);
-    if (!matched) {
+    // Manual simple matching for dynamic backend pages
+    const isMatched = pathname === page.path;
+    if (!isMatched) {
       continue;
     }
 
-    const pathParams =
-      Object.keys(matched.params).length > 0
-        ? Object.fromEntries(
-            Object.entries(matched.params).flatMap(([key, value]) =>
-              typeof value === 'string' ? [[key, value]] : []
-            )
-          )
-        : undefined;
-
-    return { page, pathParams };
+    // Backend pages generally don't have complex params handled here yet,
+    // but we can extract them if needed. For now, simple match.
+    return { page, pathParams: undefined };
   }
 
   return null;

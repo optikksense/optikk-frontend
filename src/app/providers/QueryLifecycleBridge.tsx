@@ -12,17 +12,20 @@ interface QueryLifecycleBridgeProps {
 }
 
 export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeProps): JSX.Element {
-  const teamScope = useAppStore((state) => ({
-    selectedTeamId: state.selectedTeamId,
-    selectedTeamIds: state.selectedTeamIds,
-  }));
+  const selectedTeamId = useAppStore((state) => state.selectedTeamId);
+  const selectedTeamIds = useAppStore((state) => state.selectedTeamIds);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  const teamScopeKey = useMemo(() => JSON.stringify(teamScope), [teamScope]);
+  const teamScopeKey = useMemo(
+    () => JSON.stringify({ selectedTeamId, selectedTeamIds }),
+    [selectedTeamId, selectedTeamIds]
+  );
+  
   const isFirstTeamScope = useRef(true);
   const previousAuthState = useRef(isAuthenticated);
 
   useEffect(() => {
+    console.log('[QueryLifecycleBridge] Team scope changed:', teamScopeKey);
     if (isFirstTeamScope.current) {
       isFirstTeamScope.current = false;
       return;
@@ -32,6 +35,7 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
   }, [teamScopeKey]);
 
   useEffect(() => {
+    console.log('[QueryLifecycleBridge] Auth state changed:', isAuthenticated);
     if (previousAuthState.current && !isAuthenticated) {
       queryClient.clear();
     }

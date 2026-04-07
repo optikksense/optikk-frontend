@@ -8,24 +8,29 @@ import { useTimeRangeURL } from '@shared/hooks/useTimeRangeURL';
 import { IconButton, Tooltip, Select } from '@/components/ui';
 import { resolveTimeRangeBounds, timeRangeDurationMs, isRelativeRange } from '@/types';
 
-import { useAppStore } from '@store/appStore';
-import { useAuthStore } from '@store/authStore';
+import { useTheme, useTeamId, useTeamIds, useSidebarCollapsed, useAppStore } from '@store/appStore';
+import { useAuthUser, useAuthTenant, useAuthStore } from '@store/authStore';
 
 import { AUTO_REFRESH_INTERVALS } from '@config/constants';
 
 import { cn } from '@/lib/utils';
 
 export default function Header() {
-  const { user } = useAuthStore();
-  const {
-    selectedTeamIds,
-    setSelectedTeamIds,
-    triggerRefresh,
-    autoRefreshInterval,
-    setAutoRefreshInterval,
-    timeRange,
-    setCustomTimeRange,
-  } = useAppStore();
+  const user = useAuthUser();
+  const tenant = useAuthTenant();
+  const logout = useAuthStore((s) => s.logout);
+  const theme = useTheme();
+  const selectedTeamId = useTeamId();
+  const selectedTeamIds = useTeamIds();
+  const sidebarCollapsed = useSidebarCollapsed();
+  const toggleSidebar = useAppStore((s) => s.toggleSidebar);
+  const setSelectedTeamId = useAppStore((s) => s.setSelectedTeamId);
+  const setSelectedTeamIds = useAppStore((s) => s.setSelectedTeamIds);
+  const triggerRefresh = useAppStore((s) => s.triggerRefresh);
+  const autoRefreshInterval = useAppStore((s) => s.autoRefreshInterval);
+  const setAutoRefreshInterval = useAppStore((s) => s.setAutoRefreshInterval);
+  const timeRange = useAppStore((s) => s.timeRange);
+  const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
   const [intervalPickerOpen, setIntervalPickerOpen] = useState(false);
   const pickerRef = useRef<HTMLDivElement | null>(null);
   const { refreshLabel, triggerRefresh: triggerHeaderRefresh } = useAutoRefresh({

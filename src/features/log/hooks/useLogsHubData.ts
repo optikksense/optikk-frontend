@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
 
 import type { LogEntry } from '@entities/log/model';
 import { useLiveTailStream } from '@/features/explorer-core/hooks/useLiveTailStream';
@@ -33,7 +33,9 @@ export function useLogsHubData({
   page,
   pageSize,
 }: UseLogsHubDataProps) {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
   const [liveTailEnabled, setLiveTailEnabled] = useState(false);
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);

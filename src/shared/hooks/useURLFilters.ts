@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
 
 import type { Dispatch, SetStateAction } from 'react';
 
@@ -166,36 +166,43 @@ export function useURLFilters(config: URLFilterConfig): {
       }
 
       pendingTimerRef.current = setTimeout(() => {
-        const nextSearchParams = new URLSearchParams();
+        setSearchParams(
+          (prevParams) => {
+            const nextSearchParams = new URLSearchParams(prevParams);
 
-        for (const [key, value] of searchParams.entries()) {
-          const isManagedKey =
-            config.params.some((param) => param.key === key) ||
-            key === 'filters' ||
-            config.stripParams?.includes(key);
-          if (!isManagedKey) {
-            nextSearchParams.set(key, value);
-          }
-        }
+            // Clear only parameters managed by this hook, preserving others (e.g. from/to)
+            for (const param of config.params) {
+              nextSearchParams.delete(param.key);
+            }
+            nextSearchParams.delete('filters');
+            if (config.stripParams) {
+              for (const key of config.stripParams) {
+                nextSearchParams.delete(key);
+              }
+            }
 
-        for (const param of config.params) {
-          const serialised = serialiseParamValue(nextValues[param.key], param.type);
-          if (serialised !== null) {
-            nextSearchParams.set(param.key, serialised);
-          }
-        }
+            // Apply new filter values
+            for (const param of config.params) {
+              const serialised = serialiseParamValue(nextValues[param.key], param.type);
+              if (serialised !== null) {
+                nextSearchParams.set(param.key, serialised);
+              }
+            }
 
-        if (config.syncStructuredFilters) {
-          const encodedFilters = encodeStructuredFilters(nextFilters);
-          if (encodedFilters) {
-            nextSearchParams.set('filters', encodedFilters);
-          }
-        }
+            if (config.syncStructuredFilters) {
+              const encodedFilters = encodeStructuredFilters(nextFilters);
+              if (encodedFilters) {
+                nextSearchParams.set('filters', encodedFilters);
+              }
+            }
 
-        setSearchParams(nextSearchParams, { replace: true });
+            return nextSearchParams;
+          },
+          { replace: true }
+        );
       }, 300);
     },
-    // searchParams is intentionally read lazily within the debounced callback.
+    // config.params and dependencies are intentionally captured to ensure the callback is stable where possible.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [config.params, config.stripParams, config.syncStructuredFilters, setSearchParams]
   );
@@ -205,20 +212,25 @@ export function useURLFilters(config: URLFilterConfig): {
       return;
     }
 
-    const nextSearchParams = new URLSearchParams(searchParams);
-    let hasChanges = false;
+    setSearchParams(
+      (prevParams) => {
+        const nextSearchParams = new URLSearchParams(prevParams);
+        let hasChanges = false;
 
-    for (const key of config.stripParams) {
-      if (nextSearchParams.has(key)) {
-        nextSearchParams.delete(key);
-        hasChanges = true;
-      }
-    }
+        for (const key of config.stripParams!) {
+          if (nextSearchParams.has(key)) {
+            nextSearchParams.delete(key);
+            hasChanges = true;
+          }
+        }
 
-    if (hasChanges) {
-      setSearchParams(nextSearchParams, { replace: true });
-    }
-  }, [config.stripParams, searchParams, setSearchParams]);
+        return hasChanges ? nextSearchParams : prevParams;
+      },
+      { replace: true }
+    );
+    // searchParams dependency removed as it's now handled by functional update
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.stripParams, setSearchParams]);
 
   useEffect(() => {
     if (isFirstRenderRef.current) {

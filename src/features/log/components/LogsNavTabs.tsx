@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/shared/constants/routes';
@@ -9,21 +9,27 @@ export function LogsNavTabs(): JSX.Element {
   return (
     <nav className="mb-4 flex flex-wrap gap-2 border-b border-[var(--border-color)] pb-3">
       {TABS.map((tab) => (
-        <NavLink
+        <Link
           key={tab.to}
           to={tab.to}
-          end={'end' in tab ? tab.end : false}
-          className={({ isActive }) =>
-            cn(
+          activeOptions={{
+            exact: 'end' in tab ? (tab.end as boolean) : false,
+          }}
+          activeProps={{
+            className: cn(
               'rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors',
-              isActive
-                ? 'bg-[rgba(77,166,200,0.16)] text-[var(--text-primary)]'
-                : 'text-[var(--text-muted)] hover:bg-[rgba(255,255,255,0.04)] hover:text-[var(--text-primary)]'
-            )
-          }
+              'bg-[rgba(77,166,200,0.16)] text-[var(--text-primary)]'
+            ),
+          }}
+          inactiveProps={{
+            className: cn(
+              'rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors',
+              'text-[var(--text-muted)] hover:bg-[rgba(255,255,255,0.04)] hover:text-[var(--text-primary)]'
+            ),
+          }}
         >
           {tab.label}
-        </NavLink>
+        </Link>
       ))}
     </nav>
   );

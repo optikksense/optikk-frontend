@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Check } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import './Product.css';
 import DashboardMockup from './DashboardMockup';
@@ -109,7 +109,7 @@ volumes:
               transition={{ duration: 0.5, delay: 0.7 }}
               className="hero-ctas"
             >
-              <button className="btn-primary" onClick={() => navigate('/login')}>
+              <button className="btn-primary" onClick={() => navigate({ to: '/login' })}>
                 Deploy Now
               </button>
               <button

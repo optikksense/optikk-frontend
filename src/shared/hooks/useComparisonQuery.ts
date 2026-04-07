@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 
 import { resolveTimeRangeBounds, timeRangeDurationMs } from '@/types';
-import { useAppStore } from '@store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey, useComparisonMode } from '@store/appStore';
 import type { ComparisonMode } from '@shared/components/ui/TimeSelector/constants';
 
 type QueryTime = string | number;
@@ -51,7 +51,10 @@ export function useComparisonQuery<TData = unknown>(
   queryFn: ComparisonQueryFunction<TData>,
   options: { extraKeys?: QueryKey; enabled?: boolean } = {}
 ): UseComparisonQueryResult<TData> {
-  const { selectedTeamId, timeRange, refreshKey, comparisonMode } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
+  const comparisonMode = useComparisonMode();
   const { extraKeys = [], enabled } = options;
 
   const { startTime, endTime } = resolveTimeRangeBounds(timeRange);

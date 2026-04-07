@@ -1,6 +1,6 @@
 import { Users } from 'lucide-react';
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 import type { DashboardAdapterPageProps } from '@/app/registry/domainRegistry';
 
@@ -12,7 +12,7 @@ import { ROUTES } from '@/shared/constants/routes';
 export default function KafkaGroupDetailPage({
   pathParams: adapterPathParams,
 }: DashboardAdapterPageProps) {
-  const params = useParams();
+  const params = useParams({ strict: false });
   const groupId = adapterPathParams?.groupId ?? params.groupId ?? '';
 
   const dashboardPathParams = useMemo(() => (groupId ? { groupId } : undefined), [groupId]);

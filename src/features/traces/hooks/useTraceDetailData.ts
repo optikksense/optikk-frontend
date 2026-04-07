@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
 import { tracesService } from '@shared/api/tracesService';
 import { normalizeSpan, normalizeTraceLog, calculateTraceStats } from '../utils/traceCalculations';
 import type { LogRecord } from '@/features/log/types';

@@ -1,6 +1,7 @@
 import { GitCompare } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
+import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
 
 import { Button, Skeleton } from '@/components/ui';
 import { PageHeader, PageShell, PageSurface } from '@shared/components/ui';
@@ -28,7 +29,7 @@ export default function TraceComparisonPage(): JSX.Element {
         subtitle="Compare structure, service deltas, and latency movement across two traces without leaving the traces workflow."
         breadcrumbs={[{ label: 'Traces', path: '/traces' }, { label: 'Compare' }]}
         actions={
-          <Button variant="ghost" size="sm" onClick={() => navigate('/traces')}>
+          <Button variant="ghost" size="sm" onClick={() => navigate({ to: '/traces' })}>
             Back to Traces
           </Button>
         }
@@ -40,7 +41,7 @@ export default function TraceComparisonPage(): JSX.Element {
             Select exactly two traces from the explorer to compare them here.
           </p>
           <div className="flex gap-2">
-            <Button variant="secondary" size="sm" onClick={() => navigate('/traces')}>
+            <Button variant="secondary" size="sm" onClick={() => navigate({ to: '/traces' })}>
               Open Trace Explorer
             </Button>
           </div>

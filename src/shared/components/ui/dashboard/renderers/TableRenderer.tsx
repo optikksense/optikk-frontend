@@ -1,10 +1,11 @@
 import { SimpleTable } from '@/components/ui';
 import { useMemo } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 
 import { useDashboardData } from '../hooks/useDashboardData';
 import ChartNoDataOverlay from '@shared/components/ui/feedback/ChartNoDataOverlay';
 import { buildDashboardDrawerSearch } from '../utils/dashboardDrawerState';
+import { formatDuration, formatNumber, formatPercentage } from '@shared/utils/formatters';
 
 import type { DashboardPanelRendererProps } from '../dashboardPanelRegistry';
 
@@ -25,6 +26,7 @@ export function TableRenderer({
     const resolvedColumns: Array<{
       key: string;
       label: string;
+      formatter?: string;
       width?: number;
       align?: 'left' | 'center' | 'right';
     }> = chartConfig.columns?.length
@@ -54,7 +56,7 @@ export function TableRenderer({
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                navigate(`/traces/${val}`);
+                navigate({ to: `/traces/${val}` });
               }}
               className="text-[var(--color-primary)] hover:underline cursor-pointer group flex items-center gap-1"
             >
@@ -62,6 +64,16 @@ export function TableRenderer({
             </span>
           );
         }
+
+        if (column.formatter) {
+          switch (column.formatter) {
+            case 'ms': return formatDuration(val);
+            case 'number': return formatNumber(val);
+            case 'percent':
+            case 'percent2': return formatPercentage(val);
+          }
+        }
+
         if (typeof val === 'number') return Number.isInteger(val) ? val : Number(val).toFixed(2);
         return String(val);
       },
@@ -78,7 +90,7 @@ export function TableRenderer({
         align: 'right' as const,
         render: (_val: unknown, row: Record<string, unknown>) => {
           const search = buildDashboardDrawerSearch(location.search, chartConfig.drawerAction, row);
-          return search ? <Link to={{ pathname: location.pathname, search }}>View</Link> : '—';
+          return search ? <Link to={location.pathname + search}>View</Link> : '—';
         },
       },
     ];

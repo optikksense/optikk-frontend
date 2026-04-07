@@ -14,7 +14,7 @@ import { useAppStore } from '@store/appStore';
  * @param timestamps Array of timestamps (ms or ISO strings) corresponding to x-axis data points
  */
 export function useChartZoom(timestamps: (number | string)[]) {
-  const { setCustomTimeRange } = useAppStore();
+  const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
 
   const handleDataZoom = useCallback(
     (params: any) => {

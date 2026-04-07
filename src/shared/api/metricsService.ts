@@ -22,8 +22,6 @@ import {
   type ResourceUsageByServiceRowDto,
   resourceUsageTimeSeriesPointSchema,
   type ResourceUsageTimeSeriesPointDto,
-  serviceDependencySchema,
-  type ServiceDependencyDto,
   serviceDependencyDetailSchema,
   type ServiceDependencyDetailDto,
   serviceDependencyGraphSchema,
@@ -221,17 +219,6 @@ export const metricsService = {
       startTime,
       endTime,
       interval,
-    });
-  },
-
-  async getServiceDependencies(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime
-  ): Promise<ServiceDependencyDto[]> {
-    return getArrayResponse(`${BASE}/services/dependencies`, serviceDependencySchema, {
-      startTime,
-      endTime,
     });
   },
 

@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { buildTracesExplorerQuery } from '@/features/explorer-core/utils/explorerQuery';
 import { useURLFilters } from '@shared/hooks/useURLFilters';
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
 
 import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
 
@@ -89,7 +89,9 @@ function compileStructuredFilters(
 }
 
 export function useTracesExplorer() {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   const {
     values: urlValues,

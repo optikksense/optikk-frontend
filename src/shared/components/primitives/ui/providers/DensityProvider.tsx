@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, use, useEffect } from 'react';
 
 import { useAppStore } from '@store/appStore';
 
@@ -7,7 +7,7 @@ type Density = 'comfortable' | 'compact';
 const DensityContext = createContext<Density>('comfortable');
 
 function useDensity() {
-  return useContext(DensityContext);
+  return use(DensityContext);
 }
 
 interface DensityProviderProps {

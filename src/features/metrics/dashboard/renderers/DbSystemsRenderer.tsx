@@ -1,5 +1,5 @@
 import { Database } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from '@tanstack/react-router';
 
 import { APP_COLORS } from '@config/colorLiterals';
 import { formatDuration, formatNumber, normalizePercentage } from '@shared/utils/formatters';
@@ -247,7 +247,7 @@ export function DbSystemsRenderer({
         return (
           <Link
             key={system.db_system}
-            to={{ pathname: location.pathname, search }}
+            to={location.pathname + search}
             style={{ display: 'block', textDecoration: 'none' }}
             aria-label={`Open ${system.db_system} database detail`}
           >

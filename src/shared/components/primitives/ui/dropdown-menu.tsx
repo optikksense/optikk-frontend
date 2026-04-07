@@ -1,6 +1,5 @@
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { ChevronRight } from 'lucide-react';
-import { forwardRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -37,10 +36,8 @@ function DropdownMenuContent({ className, ...props }: React.HTMLAttributes<HTMLD
   return <div className={cn('space-y-1', className)} {...props} />;
 }
 
-const DropdownMenuItem = forwardRef<
-  HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & { inset?: boolean }
->(({ className, inset, ...props }, ref) => (
+function DropdownMenuItem({ className, inset, ref, ...props }: React.ComponentPropsWithRef<typeof DropdownMenuPrimitive.Item> & { inset?: boolean }) {
+  return (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
@@ -50,24 +47,22 @@ const DropdownMenuItem = forwardRef<
     )}
     {...props}
   />
-));
-DropdownMenuItem.displayName = 'DropdownMenuItem';
+  );
+}
 
 function DropdownMenuLabel({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn('px-2 py-1.5 text-xs font-medium', className)} {...props} />;
 }
 
-const DropdownMenuSeparator = forwardRef<
-  HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
->(({ className, ...props }, ref) => (
+function DropdownMenuSeparator({ className, ref, ...props }: React.ComponentPropsWithRef<typeof DropdownMenuPrimitive.Separator>) {
+  return (
   <DropdownMenuPrimitive.Separator
     ref={ref}
     className={cn('my-1 h-px bg-[var(--border-color)]', className)}
     {...props}
   />
-));
-DropdownMenuSeparator.displayName = 'DropdownMenuSeparator';
+  );
+}
 
 function DropdownMenuShortcut({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
   return (

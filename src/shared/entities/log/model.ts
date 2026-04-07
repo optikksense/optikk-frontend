@@ -6,7 +6,6 @@ import { z } from 'zod';
  */
 export const logEntrySchema = z
   .object({
-    id: z.string().brand<'LogId'>(),
     // Timestamp arrives as a nanosecond integer or an ISO string
     timestamp: z.union([z.string(), z.number()]),
     severity_text: z.string().optional(),

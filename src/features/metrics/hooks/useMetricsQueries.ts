@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { resolveTimeRangeBounds } from '@/types';
-import { useAppStore } from '@store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@store/appStore';
 import { metricsOverviewApi } from '../api/metricsOverviewApi';
 
 import type {
@@ -22,7 +22,9 @@ export function useMetricsQueries({
   showErrorsOnly,
   activeTab,
 }: UseMetricsQueriesParams): UseMetricsQueriesResult {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   const rangeKey =
     timeRange.kind === 'relative' ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`;

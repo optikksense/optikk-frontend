@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
 import { useURLFilters } from '@shared/hooks/useURLFilters';
 import { resolveTimeRangeBounds } from '@/types';
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
 import { aiRunsQueries } from '../api/queryOptions';
 import type { LLMRunFilters } from '../types';
 
@@ -20,7 +20,9 @@ const AI_RUNS_URL_FILTER_CONFIG = {
 };
 
 export function useAiRunsExplorer() {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   const {
     values: urlValues,

@@ -19,6 +19,7 @@ import type {
   SettingsProfileViewModel,
 } from '../../types';
 import { useAppStore } from '@store/appStore';
+import { useShallow } from 'zustand/react/shallow';
 
 const settingsProfileQueryKey = ['settings-profile'] as const;
 
@@ -101,7 +102,7 @@ function toProfileCommand(values: SettingsProfileFormValues): SettingsProfileCom
 /**
  * Settings page container that coordinates profile/preferences/team tabs.
  */
-export default function SettingsPage(): JSX.Element {
+export default function SettingsPage() {
   const queryClient = useQueryClient();
   const [activeSettingsTab, setActiveSettingsTab] = useState('profile');
 
@@ -112,7 +113,16 @@ export default function SettingsPage(): JSX.Element {
     setTheme,
     setNotificationsEnabled,
     setViewPreference,
-  } = useAppStore();
+  } = useAppStore(
+    useShallow((s) => ({
+      theme: s.theme,
+      notificationsEnabled: s.notificationsEnabled,
+      viewPreferences: s.viewPreferences,
+      setTheme: s.setTheme,
+      setNotificationsEnabled: s.setNotificationsEnabled,
+      setViewPreference: s.setViewPreference,
+    }))
+  );
 
   const { data: profileData, isLoading: profileLoading } = useQuery<SettingsProfileViewModel>({
     queryKey: settingsProfileQueryKey,

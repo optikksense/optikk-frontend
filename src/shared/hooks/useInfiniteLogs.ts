@@ -5,7 +5,7 @@ import { logsService } from '@shared/api/logsService';
 
 import { resolveTimeRangeBounds } from '@/types';
 
-import { useAppStore } from '@store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
 
 import {
   getLogsFromPage,
@@ -46,7 +46,9 @@ export function useInfiniteLogs({
   liveTail = false,
   pageSize = 100,
 }: UseInfiniteLogsOptions) {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   // Pin the time window so all pages share the same boundaries
   const { stableStart, stableEnd } = useMemo(() => {

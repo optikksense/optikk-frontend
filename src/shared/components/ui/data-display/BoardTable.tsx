@@ -1,4 +1,4 @@
-import { forwardRef, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import BoardLoadMoreFooter from './BoardLoadMoreFooter';
@@ -44,7 +44,7 @@ export function BoardTable<RowType extends Record<string, unknown>>({
   handleResizeMouseDown,
   entityName,
   pagination,
-}: BoardTableProps<RowType>): JSX.Element {
+}: BoardTableProps<RowType>) {
   const { hasNextPage = false, isFetchingNextPage = false, fetchNextPage } = pagination;
   const fixedWidth = useMemo(
     () => fixedColumns.reduce((total, column) => total + (colWidths[column.key] ?? 0), 0),
@@ -57,18 +57,15 @@ export function BoardTable<RowType extends Record<string, unknown>>({
 
   const BoardScroller = useMemo(
     () =>
-      forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-        function BoardScrollerComponent(props, ref) {
-          const { className, ...rest } = props;
-          return (
-            <div
-              {...rest}
-              ref={ref}
-              className={`h-full min-w-0 overflow-auto${className ? ` ${className}` : ''}`}
-            />
-          );
-        }
-      ),
+      function BoardScrollerComponent({ className, ref, ...rest }: React.ComponentPropsWithRef<'div'>) {
+        return (
+          <div
+            {...rest}
+            ref={ref}
+            className={`h-full min-w-0 overflow-auto${className ? ` ${className}` : ''}`}
+          />
+        );
+      },
     []
   );
 

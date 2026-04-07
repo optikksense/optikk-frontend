@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { Tabs, Badge, Input, Surface, Skeleton } from '@/components/ui';
 import { formatDuration, formatTimestamp } from '@shared/utils/formatters';
 import type { SpanAttributes, SpanEvent, SpanSelfTime, RelatedTrace } from '../../types';
@@ -377,7 +377,7 @@ function RelatedTab({ traces }: { traces: RelatedTrace[] }) {
           <div
             key={t.traceId}
             className="sdd-attr-table__row sdd-attr-table__row--clickable"
-            onClick={() => navigate(`/traces/${t.traceId}`)}
+            onClick={() => navigate({ to: `/traces/${t.traceId}` })}
           >
             <span className="font-mono text-xs" style={{ flex: 2, color: 'var(--color-primary)' }}>
               {t.traceId.slice(0, 16)}…

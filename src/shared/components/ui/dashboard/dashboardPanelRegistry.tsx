@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useEffect } from 'react';
+import { createContext, use, useMemo, useEffect } from 'react';
 
 import type { ComponentType, PropsWithChildren } from 'react';
 
@@ -98,7 +98,7 @@ export function DashboardPanelRegistryProvider({
 export function useDashboardPanelRegistration(
   panelType: DashboardPanelType | null | undefined
 ): DashboardPanelRegistration | null {
-  const registry = useContext(DashboardPanelRegistryContext);
+  const registry = use(DashboardPanelRegistryContext);
   if (!panelType) {
     return null;
   }

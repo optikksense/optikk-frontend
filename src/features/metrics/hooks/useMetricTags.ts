@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId, useTimeRange, useRefreshKey } from '@store/appStore';
 import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
 import { metricsExplorerApi } from '../api/metricsExplorerApi';
 
 export function useMetricTags(metricName: string) {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
   const { startTime, endTime } = resolveTimeBounds(timeRange);
 
   return useQuery({

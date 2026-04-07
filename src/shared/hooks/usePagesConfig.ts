@@ -4,7 +4,7 @@ import type { DefaultConfigPage } from '@/types/dashboardConfig';
 
 import { defaultConfigService } from '@shared/api/defaultConfigService';
 
-import { useAppStore } from '@store/appStore';
+import { useTeamId } from '@app/store/appStore';
 
 interface UsePagesConfigResult {
   pages: DefaultConfigPage[];
@@ -16,7 +16,7 @@ interface UsePagesConfigResult {
  *
  */
 export function usePagesConfig(): UsePagesConfigResult {
-  const { selectedTeamId } = useAppStore();
+  const selectedTeamId = useTeamId();
 
   const { data, isLoading, error } = useQuery<DefaultConfigPage[], Error>({
     queryKey: ['default-config', 'pages', selectedTeamId],

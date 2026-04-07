@@ -3,7 +3,7 @@ import { Activity, AlertCircle, GitBranch, GitCompare, Radio, Share2 } from 'luc
 import { ERROR_CODE_LABELS } from '@/shared/constants/errorCodes';
 import { useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { Badge, Button, Select, Switch } from '@/components/ui';
 import type { SelectOption, SimpleTableColumn } from '@/components/ui';
@@ -22,7 +22,7 @@ import { useExplorerAnalytics } from '@/features/explorer-core/hooks/useExplorer
 import { useLiveTailStream } from '@/features/explorer-core/hooks/useLiveTailStream';
 import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
 import { ROUTES } from '@/shared/constants/routes';
-import { useAppStore } from '@app/store/appStore';
+import { useTimeRange } from '@app/store/appStore';
 import { cn } from '@/lib/utils';
 import { tracesService } from '@shared/api/tracesService';
 import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
@@ -65,7 +65,7 @@ function compareTraceTimestamp(left: unknown, right: unknown): number {
   return new Date(String(left ?? 0)).getTime() - new Date(String(right ?? 0)).getTime();
 }
 
-function renderTraceStatus(status: string): JSX.Element {
+function renderTraceStatus(status: string) {
   const normalized = (status || 'UNSET').toUpperCase();
   const variant = normalized === 'ERROR' ? 'error' : normalized === 'OK' ? 'success' : 'default';
   return <Badge variant={variant}>{normalized}</Badge>;
@@ -129,9 +129,9 @@ const TRACE_METRIC_FIELDS = [
   { value: 'duration', label: 'duration' },
 ];
 
-export default function TracesPage(): JSX.Element {
+export default function TracesPage() {
   const navigate = useNavigate();
-  const { timeRange } = useAppStore();
+  const timeRange = useTimeRange();
 
   const {
     isLoading,
@@ -445,7 +445,7 @@ export default function TracesPage(): JSX.Element {
                   size="sm"
                   icon={<GitCompare size={14} />}
                   onClick={() =>
-                    navigate(`/traces/compare?a=${selectedTraceIds[0]}&b=${selectedTraceIds[1]}`)
+                    navigate({ to: `/traces/compare?a=${selectedTraceIds[0]}&b=${selectedTraceIds[1]}` })
                   }
                 >
                   Compare selected
@@ -634,7 +634,7 @@ export default function TracesPage(): JSX.Element {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => navigate(`/traces/${selectedTrace.trace_id}`)}
+                onClick={() => navigate({ to: `/traces/${selectedTrace.trace_id}` })}
               >
                 View full trace
               </Button>
@@ -642,9 +642,9 @@ export default function TracesPage(): JSX.Element {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  navigate(
-                    `${ROUTES.logs}?query=${encodeURIComponent(`trace_id:${selectedTrace.trace_id}`)}`
-                  );
+                  navigate({
+                    to: `${ROUTES.logs}?query=${encodeURIComponent(`trace_id:${selectedTrace.trace_id}`)}`,
+                  });
                 }}
               >
                 Related logs

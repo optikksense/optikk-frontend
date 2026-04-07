@@ -1,10 +1,10 @@
 import { Brain } from 'lucide-react';
 import { useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
 import { PageHeader } from '@shared/components/ui';
-import { useAppStore } from '@app/store/appStore';
+import { useTeamId } from '@app/store/appStore';
 import { formatDuration, formatNumber } from '@shared/utils/formatters';
 import { cn } from '@/lib/utils';
 
@@ -20,10 +20,10 @@ function getErrorMessage(error: { message?: string } | null | undefined, fallbac
   return fallback;
 }
 
-export default function AiTraceDetailPage(): JSX.Element {
-  const { traceId = '' } = useParams<{ traceId: string }>();
+export default function AiTraceDetailPage() {
+  const { traceId = '' } = useParams({ strict: false });
   const navigate = useNavigate();
-  const { selectedTeamId } = useAppStore();
+  const selectedTeamId = useTeamId();
 
   const spansQuery = useQuery(aiTraceQueries.trace(selectedTeamId, traceId));
   const spans = (spansQuery.data ?? []) as LLMTraceSpan[];
@@ -125,7 +125,7 @@ export default function AiTraceDetailPage(): JSX.Element {
               depth={depthMap.get(span.spanId) ?? 0}
               traceStartMs={traceStartMs}
               traceDurationMs={traceDurationMs}
-              onClick={() => navigate(`/ai-runs/${span.spanId}`)}
+              onClick={() => navigate({ to: `/ai-runs/${span.spanId}` })}
             />
           ))}
       </div>
@@ -133,7 +133,7 @@ export default function AiTraceDetailPage(): JSX.Element {
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: string }): JSX.Element {
+function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-lg px-[14px] py-3 text-center">
       <div className="text-[10px] uppercase tracking-[0.5px] text-[var(--text-muted)] mb-1">
@@ -156,7 +156,7 @@ function SpanRow({
   traceStartMs: number;
   traceDurationMs: number;
   onClick: () => void;
-}): JSX.Element {
+}) {
   const spanStartMs = new Date(span.startTime).getTime();
   const leftPct = ((spanStartMs - traceStartMs) / traceDurationMs) * 100;
   const widthPct = Math.max((span.durationMs / traceDurationMs) * 100, 0.5);

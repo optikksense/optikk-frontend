@@ -8,7 +8,7 @@ import type {
   DashboardTabDocument,
 } from '@/types/dashboardConfig';
 
-import { useAppStore } from '@store/appStore';
+import { useTeamId } from '@app/store/appStore';
 
 import DashboardPanelGrid from './DashboardPanelGrid';
 import DashboardSection from './DashboardSection';
@@ -48,7 +48,7 @@ export default function ConfigurableDashboard({
   isLoading = false,
   extraContext = {},
 }: ConfigurableDashboardProps) {
-  const { selectedTeamId } = useAppStore();
+  const selectedTeamId = useTeamId();
 
   const sortedSections = useMemo(() => sortSections(config?.sections ?? []), [config?.sections]);
 
