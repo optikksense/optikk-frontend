@@ -1,11 +1,11 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from "react";
 
-import { useURLFilters, type URLFilterConfig } from '@/shared/hooks/useURLFilters';
 import {
-  serializeStateSnapshot,
   deserializeStateSnapshot,
-} from '@/features/explorer-core/utils/urlState';
-import { createDefaultQuery, QUERY_LABELS } from '../constants';
+  serializeStateSnapshot,
+} from "@/features/explorer-core/utils/urlState";
+import { type URLFilterConfig, useURLFilters } from "@/shared/hooks/useURLFilters";
+import { QUERY_LABELS, createDefaultQuery } from "../constants";
 import type {
   ChartType,
   FormulaDefinition,
@@ -14,15 +14,15 @@ import type {
   MetricSpaceAggregation,
   MetricTagFilter,
   TimeStep,
-} from '../types';
+} from "../types";
 
 const URL_CONFIG: URLFilterConfig = {
   params: [
-    { key: 'queries', type: 'string', defaultValue: '' },
-    { key: 'formulas', type: 'string', defaultValue: '' },
-    { key: 'chartType', type: 'string', defaultValue: 'line' },
-    { key: 'step', type: 'string', defaultValue: '5m' },
-    { key: 'spaceAgg', type: 'string', defaultValue: 'avg' },
+    { key: "queries", type: "string", defaultValue: "" },
+    { key: "formulas", type: "string", defaultValue: "" },
+    { key: "chartType", type: "string", defaultValue: "line" },
+    { key: "step", type: "string", defaultValue: "5m" },
+    { key: "spaceAgg", type: "string", defaultValue: "avg" },
   ],
 };
 
@@ -46,7 +46,7 @@ function decodeFormulas(raw: string): FormulaDefinition[] {
 }
 
 function encodeFormulas(formulas: FormulaDefinition[]): string {
-  if (formulas.length === 0) return '';
+  if (formulas.length === 0) return "";
   return serializeStateSnapshot(formulas);
 }
 
@@ -55,17 +55,11 @@ let formulaCounter = 0;
 export function useMetricsExplorer() {
   const { values, setters } = useURLFilters(URL_CONFIG);
 
-  const queries = useMemo(
-    () => decodeQueries(values.queries as string),
-    [values.queries]
-  );
-  const formulas = useMemo(
-    () => decodeFormulas(values.formulas as string),
-    [values.formulas]
-  );
-  const chartType = (values.chartType as ChartType) || 'line';
-  const step = (values.step as TimeStep) || '5m';
-  const spaceAgg = (values.spaceAgg as MetricSpaceAggregation) || 'avg';
+  const queries = useMemo(() => decodeQueries(values.queries as string), [values.queries]);
+  const formulas = useMemo(() => decodeFormulas(values.formulas as string), [values.formulas]);
+  const chartType = (values.chartType as ChartType) || "line";
+  const step = (values.step as TimeStep) || "5m";
+  const spaceAgg = (values.spaceAgg as MetricSpaceAggregation) || "avg";
 
   const setQueries = useCallback(
     (next: MetricQueryDefinition[]) => {
@@ -116,20 +110,11 @@ export function useMetricsExplorer() {
     [updateQuery]
   );
 
-  const setChartType = useCallback(
-    (ct: ChartType) => setters.chartType(ct),
-    [setters]
-  );
+  const setChartType = useCallback((ct: ChartType) => setters.chartType(ct), [setters]);
 
-  const setStep = useCallback(
-    (s: TimeStep) => setters.step(s),
-    [setters]
-  );
+  const setStep = useCallback((s: TimeStep) => setters.step(s), [setters]);
 
-  const setSpaceAgg = useCallback(
-    (sa: MetricSpaceAggregation) => setters.spaceAgg(sa),
-    [setters]
-  );
+  const setSpaceAgg = useCallback((sa: MetricSpaceAggregation) => setters.spaceAgg(sa), [setters]);
 
   const setFormulas = useCallback(
     (next: FormulaDefinition[]) => {
@@ -140,7 +125,7 @@ export function useMetricsExplorer() {
 
   const addFormula = useCallback(() => {
     formulaCounter++;
-    setFormulas([...formulas, { id: `f${formulaCounter}`, expression: '' }]);
+    setFormulas([...formulas, { id: `f${formulaCounter}`, expression: "" }]);
   }, [formulas, setFormulas]);
 
   const removeFormula = useCallback(

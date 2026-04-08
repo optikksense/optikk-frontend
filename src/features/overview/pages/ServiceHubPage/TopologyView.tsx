@@ -1,27 +1,27 @@
 import {
   Background,
   Controls,
-  MiniMap,
-  ReactFlow,
-  ReactFlowProvider,
   type Edge,
+  type EdgeTypes,
+  MiniMap,
   type Node,
   type NodeTypes,
-  type EdgeTypes,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from '@tanstack/react-router';
+  ReactFlow,
+  ReactFlowProvider,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 
-import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
-import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { fetchServiceTopology, type ServiceTopologyResponse } from './topology/api';
-import { layoutTopology } from './topology/layout';
-import { ServiceTopologyEdge, type TopologyEdgeData } from './topology/ServiceTopologyEdge';
-import { ServiceTopologyNode, type TopologyNodeData } from './topology/ServiceTopologyNode';
-import { TopologyToolbar } from './topology/TopologyToolbar';
-import { buildServiceDrawerSearch } from '../../components/serviceDrawerState';
+import { buildServiceDrawerSearch } from "../../components/serviceDrawerState";
+import { ServiceTopologyEdge, type TopologyEdgeData } from "./topology/ServiceTopologyEdge";
+import { ServiceTopologyNode, type TopologyNodeData } from "./topology/ServiceTopologyNode";
+import { TopologyToolbar } from "./topology/TopologyToolbar";
+import { type ServiceTopologyResponse, fetchServiceTopology } from "./topology/api";
+import { layoutTopology } from "./topology/layout";
 
 const nodeTypes: NodeTypes = { service: ServiceTopologyNode };
 const edgeTypes: EdgeTypes = { service: ServiceTopologyEdge };
@@ -46,7 +46,7 @@ function buildGraph({ data, filter, onOpen }: BuildArgs): { nodes: Node[]; edges
     };
     return {
       id: n.name,
-      type: 'service',
+      type: "service",
       position: { x: 0, y: 0 },
       data: nodeData as unknown as Record<string, unknown>,
       draggable: true,
@@ -69,7 +69,7 @@ function buildGraph({ data, filter, onOpen }: BuildArgs): { nodes: Node[]; edges
       id: `${e.source}->${e.target}`,
       source: e.source,
       target: e.target,
-      type: 'service',
+      type: "service",
       animated: e.call_count > 0,
       data: edgeData as unknown as Record<string, unknown>,
     };
@@ -136,11 +136,11 @@ function TopologyCanvas() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const focusService = searchParams.get('topologyFocus') ?? '';
-  const [filter, setFilter] = useState('');
+  const focusService = searchParams.get("topologyFocus") ?? "";
+  const [filter, setFilter] = useState("");
 
   const query = useTimeRangeQuery(
-    'services-topology',
+    "services-topology",
     async (_teamId, startTime, endTime) => {
       return fetchServiceTopology({
         startTime,
@@ -158,8 +158,8 @@ function TopologyCanvas() {
 
   const setFocus = (name: string): void => {
     const next = new URLSearchParams(searchParams);
-    if (name) next.set('topologyFocus', name);
-    else next.delete('topologyFocus');
+    if (name) next.set("topologyFocus", name);
+    else next.delete("topologyFocus");
     setSearchParams(next);
   };
 
@@ -167,7 +167,6 @@ function TopologyCanvas() {
   const { nodes, edges } = useMemo(
     () => buildGraph({ data, filter, onOpen: openService }),
     // openService closes over searchParams but re-creating per render is cheap
-    // biome-ignore lint/correctness/useExhaustiveDependencies: intentional
     [data, filter]
   );
 
@@ -182,7 +181,7 @@ function TopologyCanvas() {
         nodeCount={data.nodes.length}
         edgeCount={data.edges.length}
         focusService={focusService}
-        onClearFocus={() => setFocus('')}
+        onClearFocus={() => setFocus("")}
       />
       <div className="relative flex-1">
         {query.isLoading ? (
@@ -218,7 +217,7 @@ function TopologyCanvas() {
           <MiniMap
             zoomable
             pannable
-            nodeColor={() => 'var(--text-muted)'}
+            nodeColor={() => "var(--text-muted)"}
             maskColor="rgba(0,0,0,0.45)"
           />
         </ReactFlow>

@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { API_CONFIG } from '@config/apiConfig';
-import api from '@/shared/api/api/client';
-import type { QueryParams, RequestTime } from '@/shared/api/service-types';
-import { validateResponse } from '@/shared/api/utils/validate';
+import api from "@/shared/api/api/client";
+import type { QueryParams, RequestTime } from "@/shared/api/service-types";
+import { validateResponse } from "@/shared/api/utils/validate";
+import { API_CONFIG } from "@config/apiConfig";
 
 import type {
   EndpointMetricPoint,
@@ -11,7 +11,7 @@ import type {
   MetricTimeSeriesPoint,
   MetricsServiceOption,
   ServiceMetricPoint,
-} from '../types';
+} from "../types";
 
 export interface OverviewRequestRatePoint {
   readonly timestamp: string;
@@ -36,7 +36,7 @@ export interface OverviewP95LatencyPoint {
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 const numericValue = z.coerce.number().default(0);
-const stringValue = z.string().default('');
+const stringValue = z.string().default("");
 
 const serviceSummarySchema = z
   .object({
@@ -129,17 +129,17 @@ type ComparisonPayload<T> = {
 };
 
 function unwrapComparisonPayload<T>(value: unknown): T {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return value as T;
   }
 
   const record = value as Record<string, unknown>;
-  if (!('data' in record)) {
+  if (!("data" in record)) {
     return value as T;
   }
 
   const keys = Object.keys(record);
-  if (keys.length <= 2 && (keys.length === 1 || 'comparison' in record)) {
+  if (keys.length <= 2 && (keys.length === 1 || "comparison" in record)) {
     return record.data as T;
   }
 
@@ -187,7 +187,7 @@ function normalizeTimeSeriesPoint(
   row: z.infer<typeof metricsTimeSeriesPointSchema>
 ): MetricTimeSeriesPoint {
   return {
-    timestamp: row.timestamp || row.time_bucket || '',
+    timestamp: row.timestamp || row.time_bucket || "",
     request_count: row.request_count,
     error_count: row.error_count,
     avg_latency: row.avg_latency,
@@ -229,7 +229,7 @@ function normalizeRequestRatePoint(
 ): OverviewRequestRatePoint {
   return {
     timestamp: row.timestamp,
-    serviceName: row.service_name ?? '',
+    serviceName: row.service_name ?? "",
     requestCount: row.request_count,
   };
 }
@@ -239,7 +239,7 @@ function normalizeErrorRatePoint(
 ): OverviewErrorRatePoint {
   return {
     timestamp: row.timestamp,
-    serviceName: row.service_name ?? '',
+    serviceName: row.service_name ?? "",
     requestCount: row.request_count,
     errorCount: row.error_count,
     errorRate: row.error_rate,
@@ -251,7 +251,7 @@ function normalizeP95LatencyPoint(
 ): OverviewP95LatencyPoint {
   return {
     timestamp: row.timestamp,
-    serviceName: row.service_name ?? '',
+    serviceName: row.service_name ?? "",
     p95: row.p95,
   };
 }
@@ -340,14 +340,18 @@ export const metricsOverviewApi = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-    interval = '5m'
+    interval = "5m"
   ): Promise<MetricTimeSeriesPoint[]> {
-    const rows = await getArrayResponse(`${BASE}/services/timeseries`, metricsTimeSeriesPointSchema, {
-      startTime,
-      endTime,
-      serviceName,
-      interval,
-    });
+    const rows = await getArrayResponse(
+      `${BASE}/services/timeseries`,
+      metricsTimeSeriesPointSchema,
+      {
+        startTime,
+        endTime,
+        serviceName,
+        interval,
+      }
+    );
     return rows.map(normalizeTimeSeriesPoint);
   },
 
@@ -369,11 +373,15 @@ export const metricsOverviewApi = {
     endTime: RequestTime,
     serviceName?: string
   ): Promise<EndpointMetricPoint[]> {
-    const rows = await getArrayResponse(`${BASE}/overview/endpoints/metrics`, endpointMetricSchema, {
-      startTime,
-      endTime,
-      serviceName,
-    });
+    const rows = await getArrayResponse(
+      `${BASE}/overview/endpoints/metrics`,
+      endpointMetricSchema,
+      {
+        startTime,
+        endTime,
+        serviceName,
+      }
+    );
     return rows.map(normalizeEndpointMetric);
   },
 

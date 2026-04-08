@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
-import BoardColumnSettingsPopover from './BoardColumnSettingsPopover';
-import BoardExportMenu from './BoardExportMenu';
+import BoardColumnSettingsPopover from "./BoardColumnSettingsPopover";
+import BoardExportMenu from "./BoardExportMenu";
 
 interface BoardActionBarProps {
   entityName: string;
@@ -43,19 +43,19 @@ export default function BoardActionBar({
   onExportJSON,
 }: BoardActionBarProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-[7px] bg-transparent border-b border-[color:var(--glass-border)] shrink-0 gap-[10px]">
-      <div className="flex items-center gap-[7px] text-xs text-muted-foreground">
-        <span className="w-1.5 h-1.5 rounded-full bg-success inline-block shrink-0" />
-        <span className="text-[color:var(--text-secondary)] font-medium">
+    <div className="flex shrink-0 items-center justify-between gap-[10px] border-[color:var(--glass-border)] border-b bg-transparent px-4 py-[7px]">
+      <div className="flex items-center gap-[7px] text-muted-foreground text-xs">
+        <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-success" />
+        <span className="font-medium text-[color:var(--text-secondary)]">
           {displayCount.toLocaleString()} {entityName}
-          {displayCount !== 1 ? 's' : ''}
+          {displayCount !== 1 ? "s" : ""}
         </span>
         {total > 0 && total !== displayCount && (
           <span className="text-muted-foreground">of {total.toLocaleString()}</span>
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 ml-auto">
+      <div className="ml-auto flex items-center gap-1.5">
         {extraActions}
 
         <BoardExportMenu

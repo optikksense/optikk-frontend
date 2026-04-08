@@ -1,37 +1,34 @@
-import { ArrowUpRight, GitBranch, Server } from 'lucide-react';
-import { useLocation, useNavigate } from '@tanstack/react-router';
-import { useMemo } from 'react';
+import { useLocation, useNavigate } from "@tanstack/react-router";
+import { ArrowUpRight, GitBranch, Server } from "lucide-react";
+import { useMemo } from "react";
 
-import { Button } from '@/components/ui';
+import { Button } from "@/components/ui";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import StatCard from '@shared/components/ui/cards/StatCard';
-import ErrorRateChart from '@shared/components/ui/charts/time-series/ErrorRateChart';
-import LatencyChart from '@shared/components/ui/charts/time-series/LatencyChart';
-import RequestChart from '@shared/components/ui/charts/time-series/RequestChart';
-import { useTimeRangeQuery } from '@shared/hooks/useTimeRangeQuery';
-import { ROUTES } from '@/shared/constants/routes';
-import { formatDuration, formatNumber, formatPercentage } from '@shared/utils/formatters';
+} from "@/components/ui/drawer";
 import {
-  metricsOverviewApi,
   type OverviewErrorRatePoint,
   type OverviewP95LatencyPoint,
   type OverviewRequestRatePoint,
-} from '@/features/metrics/api/metricsOverviewApi';
+  metricsOverviewApi,
+} from "@/features/metrics/api/metricsOverviewApi";
 import {
-  fetchServiceTopology,
   type ServiceTopologyEdge,
-} from '@/features/overview/pages/ServiceHubPage/topology/api';
+  fetchServiceTopology,
+} from "@/features/overview/pages/ServiceHubPage/topology/api";
+import { ROUTES } from "@/shared/constants/routes";
+import StatCard from "@shared/components/ui/cards/StatCard";
+import ErrorRateChart from "@shared/components/ui/charts/time-series/ErrorRateChart";
+import LatencyChart from "@shared/components/ui/charts/time-series/LatencyChart";
+import RequestChart from "@shared/components/ui/charts/time-series/RequestChart";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
-import {
-  buildServiceLogsSearch,
-  buildServiceTracesSearch,
-} from './serviceDrawerState';
+import { buildServiceLogsSearch, buildServiceTracesSearch } from "./serviceDrawerState";
 
 interface ServiceDetailDrawerProps {
   open: boolean;
@@ -51,7 +48,7 @@ interface TrendPanelProps {
   title: string;
   subtitle: string;
   headline: string;
-  tone?: 'requests' | 'errors' | 'latency';
+  tone?: "requests" | "errors" | "latency";
   children: React.ReactNode;
 }
 
@@ -59,7 +56,7 @@ interface Column<Row> {
   key: string;
   label: string;
   render: (row: Row) => React.ReactNode;
-  align?: 'left' | 'right' | 'center';
+  align?: "left" | "right" | "center";
 }
 
 interface ServiceSummarySnapshot {
@@ -94,7 +91,7 @@ function DrawerSection({ title, subtitle, children }: DrawerSectionProps) {
   return (
     <section className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
       <div className="mb-3">
-        <h3 className="text-[14px] font-semibold text-[var(--text-primary)]">{title}</h3>
+        <h3 className="font-semibold text-[14px] text-[var(--text-primary)]">{title}</h3>
         {subtitle ? (
           <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{subtitle}</p>
         ) : null}
@@ -104,19 +101,13 @@ function DrawerSection({ title, subtitle, children }: DrawerSectionProps) {
   );
 }
 
-function TrendPanel({
-  title,
-  subtitle,
-  headline,
-  tone = 'requests',
-  children,
-}: TrendPanelProps) {
+function TrendPanel({ title, subtitle, headline, tone = "requests", children }: TrendPanelProps) {
   const toneClasses =
-    tone === 'errors'
-      ? 'border-[rgba(240,68,56,0.16)] bg-[linear-gradient(180deg,rgba(240,68,56,0.07),rgba(240,68,56,0.02))]'
-      : tone === 'latency'
-        ? 'border-[rgba(245,158,11,0.16)] bg-[linear-gradient(180deg,rgba(245,158,11,0.07),rgba(245,158,11,0.02))]'
-        : 'border-[rgba(94,96,206,0.16)] bg-[linear-gradient(180deg,rgba(94,96,206,0.07),rgba(94,96,206,0.02))]';
+    tone === "errors"
+      ? "border-[rgba(240,68,56,0.16)] bg-[linear-gradient(180deg,rgba(240,68,56,0.07),rgba(240,68,56,0.02))]"
+      : tone === "latency"
+        ? "border-[rgba(245,158,11,0.16)] bg-[linear-gradient(180deg,rgba(245,158,11,0.07),rgba(245,158,11,0.02))]"
+        : "border-[rgba(94,96,206,0.16)] bg-[linear-gradient(180deg,rgba(94,96,206,0.07),rgba(94,96,206,0.02))]";
 
   return (
     <section
@@ -124,10 +115,10 @@ function TrendPanel({
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h3 className="text-[15px] font-semibold text-[var(--text-primary)]">{title}</h3>
-          <p className="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">{subtitle}</p>
+          <h3 className="font-semibold text-[15px] text-[var(--text-primary)]">{title}</h3>
+          <p className="mt-1 text-[12px] text-[var(--text-secondary)] leading-5">{subtitle}</p>
         </div>
-        <div className="rounded-full border border-[var(--border-color)] bg-[rgba(255,255,255,0.03)] px-3 py-1 text-[12px] font-semibold tracking-[0.02em] text-[var(--text-primary)]">
+        <div className="rounded-full border border-[var(--border-color)] bg-[rgba(255,255,255,0.03)] px-3 py-1 font-semibold text-[12px] text-[var(--text-primary)] tracking-[0.02em]">
           {headline}
         </div>
       </div>
@@ -155,12 +146,12 @@ function CompactTable<Row extends { id: string }>({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-[12px]">
         <thead>
-          <tr className="border-b border-[var(--border-color)] text-[var(--text-muted)]">
+          <tr className="border-[var(--border-color)] border-b text-[var(--text-muted)]">
             {columns.map((column) => (
               <th
                 key={column.key}
                 className="px-2 py-2 font-medium"
-                style={{ textAlign: column.align ?? 'left' }}
+                style={{ textAlign: column.align ?? "left" }}
               >
                 {column.label}
               </th>
@@ -169,12 +160,12 @@ function CompactTable<Row extends { id: string }>({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} className="border-b border-[var(--border-color)] last:border-b-0">
+            <tr key={row.id} className="border-[var(--border-color)] border-b last:border-b-0">
               {columns.map((column) => (
                 <td
                   key={column.key}
                   className="px-2 py-2 text-[var(--text-primary)]"
-                  style={{ textAlign: column.align ?? 'left' }}
+                  style={{ textAlign: column.align ?? "left" }}
                 >
                   {column.render(row)}
                 </td>
@@ -192,17 +183,19 @@ function normalizeServiceKey(value: string): string {
 }
 
 function readNumber(value: unknown): number | null {
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     return Number.isFinite(value) ? value : null;
   }
-  if (typeof value === 'string' && value.trim() !== '') {
+  if (typeof value === "string" && value.trim() !== "") {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
   }
   return null;
 }
 
-function buildInitialSummary(data: Record<string, unknown> | null | undefined): ServiceSummarySnapshot | null {
+function buildInitialSummary(
+  data: Record<string, unknown> | null | undefined
+): ServiceSummarySnapshot | null {
   if (!data) {
     return null;
   }
@@ -224,13 +217,13 @@ function buildInitialSummary(data: Record<string, unknown> | null | undefined): 
 function buildDependencyRows(
   edges: readonly ServiceTopologyEdge[],
   serviceName: string,
-  direction: 'upstream' | 'downstream'
+  direction: "upstream" | "downstream"
 ): DependencyRow[] {
   const normalizedServiceName = normalizeServiceKey(serviceName);
 
   return edges
     .filter((edge) =>
-      direction === 'upstream'
+      direction === "upstream"
         ? normalizeServiceKey(edge.target) === normalizedServiceName
         : normalizeServiceKey(edge.source) === normalizedServiceName
     )
@@ -238,7 +231,7 @@ function buildDependencyRows(
     .slice(0, 6)
     .map((edge) => ({
       id: `${direction}:${edge.source}->${edge.target}`,
-      serviceName: direction === 'upstream' ? edge.source : edge.target,
+      serviceName: direction === "upstream" ? edge.source : edge.target,
       callCount: Number(edge.call_count ?? 0),
       p95LatencyMs: Number(edge.p95_latency_ms ?? 0),
     }));
@@ -267,7 +260,7 @@ function buildErrorTrendSeries(points: readonly OverviewErrorRatePoint[]) {
   }));
 }
 
-function formatEndpointLabel(row: Pick<EndpointRow, 'endpoint_name' | 'operation_name'>): string {
+function formatEndpointLabel(row: Pick<EndpointRow, "endpoint_name" | "operation_name">): string {
   const endpointName = row.endpoint_name?.trim();
   const operationName = row.operation_name.trim();
 
@@ -275,14 +268,16 @@ function formatEndpointLabel(row: Pick<EndpointRow, 'endpoint_name' | 'operation
     return endpointName;
   }
 
-  if (operationName && !operationName.startsWith('/')) {
+  if (operationName && !operationName.startsWith("/")) {
     return operationName;
   }
 
-  return operationName || 'Route unavailable';
+  return operationName || "Route unavailable";
 }
 
-function formatEndpointMeta(row: Pick<EndpointRow, 'endpoint_name' | 'operation_name'>): string | null {
+function formatEndpointMeta(
+  row: Pick<EndpointRow, "endpoint_name" | "operation_name">
+): string | null {
   const endpointName = row.endpoint_name?.trim();
   const operationName = row.operation_name.trim();
 
@@ -292,7 +287,7 @@ function formatEndpointMeta(row: Pick<EndpointRow, 'endpoint_name' | 'operation_
 
   if (!endpointName && operationName) {
     return operationName === formatEndpointLabel(row)
-      ? 'Route label unavailable in spans'
+      ? "Route label unavailable in spans"
       : `Span: ${operationName}`;
   }
 
@@ -311,42 +306,42 @@ export default function ServiceDetailDrawer({
   const normalizedServiceName = normalizeServiceKey(serviceName);
 
   const metricsQuery = useTimeRangeQuery(
-    'service-drawer-metrics',
+    "service-drawer-metrics",
     async (teamId, startTime, endTime) =>
       metricsOverviewApi.getOverviewServiceMetrics(teamId, startTime, endTime),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
   );
 
   const requestTrendQuery = useTimeRangeQuery(
-    'service-drawer-request-trend',
+    "service-drawer-request-trend",
     async (teamId, startTime, endTime) =>
       metricsOverviewApi.getOverviewRequestRate(teamId, startTime, endTime, serviceName),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
   );
 
   const errorTrendQuery = useTimeRangeQuery(
-    'service-drawer-error-trend',
+    "service-drawer-error-trend",
     async (teamId, startTime, endTime) =>
       metricsOverviewApi.getOverviewErrorRate(teamId, startTime, endTime, serviceName),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
   );
 
   const latencyTrendQuery = useTimeRangeQuery(
-    'service-drawer-latency-trend',
+    "service-drawer-latency-trend",
     async (teamId, startTime, endTime) =>
       metricsOverviewApi.getOverviewP95Latency(teamId, startTime, endTime, serviceName),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
   );
 
   const endpointsQuery = useTimeRangeQuery(
-    'service-drawer-endpoints',
+    "service-drawer-endpoints",
     async (teamId, startTime, endTime) =>
       metricsOverviewApi.getOverviewEndpointMetrics(teamId, startTime, endTime, serviceName),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
   );
 
   const dependenciesQuery = useTimeRangeQuery(
-    'service-drawer-dependencies',
+    "service-drawer-dependencies",
     async (_teamId, startTime, endTime) =>
       fetchServiceTopology({ startTime, endTime, service: serviceName }),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
@@ -409,12 +404,12 @@ export default function ServiceDetailDrawer({
   );
 
   const upstreamRows = useMemo(
-    () => buildDependencyRows(dependenciesQuery.data?.edges ?? [], serviceName, 'upstream'),
+    () => buildDependencyRows(dependenciesQuery.data?.edges ?? [], serviceName, "upstream"),
     [dependenciesQuery.data?.edges, serviceName]
   );
 
   const downstreamRows = useMemo(
-    () => buildDependencyRows(dependenciesQuery.data?.edges ?? [], serviceName, 'downstream'),
+    () => buildDependencyRows(dependenciesQuery.data?.edges ?? [], serviceName, "downstream"),
     [dependenciesQuery.data?.edges, serviceName]
   );
 
@@ -473,11 +468,11 @@ export default function ServiceDetailDrawer({
       direction="right"
     >
       <DrawerContent
-        className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto h-auto overflow-y-auto border-l border-[var(--border-color)] z-[1100] select-text"
+        className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto z-[1100] h-auto select-text overflow-y-auto border-[var(--border-color)] border-l"
         style={{
-          width: 'min(980px, calc(100vw - 24px))',
-          userSelect: 'text',
-          WebkitUserSelect: 'text',
+          width: "min(980px, calc(100vw - 24px))",
+          userSelect: "text",
+          WebkitUserSelect: "text",
         }}
       >
         <DrawerHeader className="items-start">
@@ -486,7 +481,7 @@ export default function ServiceDetailDrawer({
               <div className="min-w-0">
                 <DrawerTitle className="flex items-center gap-2 text-[var(--text-primary)]">
                   <Server size={18} className="shrink-0" />
-                  <span className="truncate">{serviceLabel || 'Service'}</span>
+                  <span className="truncate">{serviceLabel || "Service"}</span>
                 </DrawerTitle>
                 <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
                   Frontend-owned service detail drawer with quick diagnostics and workflow links.
@@ -494,16 +489,26 @@ export default function ServiceDetailDrawer({
               </div>
               <DrawerClose
                 aria-label="Close"
-                className="shrink-0 rounded-[var(--card-radius)] border border-[var(--border-color)] px-3 py-1 text-[18px] leading-none text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                className="shrink-0 rounded-[var(--card-radius)] border border-[var(--border-color)] px-3 py-1 text-[18px] text-[var(--text-secondary)] leading-none transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
               >
                 &times;
               </DrawerClose>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Button variant="secondary" size="sm" icon={<GitBranch size={14} />} onClick={openTraces}>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={<GitBranch size={14} />}
+                onClick={openTraces}
+              >
                 Open in Traces
               </Button>
-              <Button variant="secondary" size="sm" icon={<ArrowUpRight size={14} />} onClick={openLogs}>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={<ArrowUpRight size={14} />}
+                onClick={openLogs}
+              >
                 Open in Logs
               </Button>
             </div>
@@ -514,7 +519,7 @@ export default function ServiceDetailDrawer({
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               metric={{
-                title: 'Requests',
+                title: "Requests",
                 value: summaryMetrics?.requestCount ?? 0,
                 formatter: formatNumber,
               }}
@@ -522,7 +527,7 @@ export default function ServiceDetailDrawer({
             />
             <StatCard
               metric={{
-                title: 'Error Rate',
+                title: "Error Rate",
                 value: summaryMetrics?.errorRate ?? 0,
                 formatter: (value) => formatPercentage(Number(value)),
               }}
@@ -530,7 +535,7 @@ export default function ServiceDetailDrawer({
             />
             <StatCard
               metric={{
-                title: 'Avg Latency',
+                title: "Avg Latency",
                 value: summaryMetrics?.avgLatency ?? 0,
                 formatter: formatDuration,
               }}
@@ -538,7 +543,7 @@ export default function ServiceDetailDrawer({
             />
             <StatCard
               metric={{
-                title: 'P95 Latency',
+                title: "P95 Latency",
                 value: summaryMetrics?.p95Latency ?? 0,
                 formatter: formatDuration,
               }}
@@ -548,7 +553,8 @@ export default function ServiceDetailDrawer({
 
           {metricsQuery.isError && !hasSummary ? (
             <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-card)] px-4 py-3 text-[12px] text-[var(--text-muted)]">
-              Service summary is unavailable right now. You can still open Logs or Traces for this service.
+              Service summary is unavailable right now. You can still open Logs or Traces for this
+              service.
             </div>
           ) : null}
 
@@ -566,7 +572,9 @@ export default function ServiceDetailDrawer({
               tone="requests"
             >
               {requestTrendQuery.isError ? (
-                <div className="text-[12px] text-[var(--text-muted)]">Request trend is unavailable.</div>
+                <div className="text-[12px] text-[var(--text-muted)]">
+                  Request trend is unavailable.
+                </div>
               ) : requestTrendLoading ? (
                 <div className="text-[12px] text-[var(--text-muted)]">Loading request trend…</div>
               ) : requestTrendSeries.length > 0 ? (
@@ -583,7 +591,9 @@ export default function ServiceDetailDrawer({
               tone="errors"
             >
               {errorTrendQuery.isError ? (
-                <div className="text-[12px] text-[var(--text-muted)]">Error trend is unavailable.</div>
+                <div className="text-[12px] text-[var(--text-muted)]">
+                  Error trend is unavailable.
+                </div>
               ) : errorTrendLoading ? (
                 <div className="text-[12px] text-[var(--text-muted)]">Loading error trend…</div>
               ) : errorTrendSeries.length > 0 ? (
@@ -600,7 +610,9 @@ export default function ServiceDetailDrawer({
               tone="latency"
             >
               {latencyTrendQuery.isError ? (
-                <div className="text-[12px] text-[var(--text-muted)]">Latency trend is unavailable.</div>
+                <div className="text-[12px] text-[var(--text-muted)]">
+                  Latency trend is unavailable.
+                </div>
               ) : latencyTrendLoading ? (
                 <div className="text-[12px] text-[var(--text-muted)]">Loading latency trend…</div>
               ) : latencyTrendSeries.length > 0 ? (
@@ -617,7 +629,9 @@ export default function ServiceDetailDrawer({
               subtitle="Most active endpoints for this service in the current window."
             >
               {endpointsQuery.isError ? (
-                <div className="text-[12px] text-[var(--text-muted)]">Endpoint breakdown is unavailable.</div>
+                <div className="text-[12px] text-[var(--text-muted)]">
+                  Endpoint breakdown is unavailable.
+                </div>
               ) : endpointsLoading ? (
                 <div className="text-[12px] text-[var(--text-muted)]">Loading endpoints…</div>
               ) : (
@@ -626,17 +640,17 @@ export default function ServiceDetailDrawer({
                   emptyText="No endpoint activity for this service."
                   columns={[
                     {
-                      key: 'method',
-                      label: 'Method',
+                      key: "method",
+                      label: "Method",
                       render: (row) => (
                         <span className="font-medium text-[var(--text-secondary)]">
-                          {row.http_method || '—'}
+                          {row.http_method || "—"}
                         </span>
                       ),
                     },
                     {
-                      key: 'operation',
-                      label: 'Endpoint Detail',
+                      key: "operation",
+                      label: "Endpoint Detail",
                       render: (row) => (
                         <div className="flex flex-col gap-0.5">
                           <span className="break-all">{formatEndpointLabel(row)}</span>
@@ -649,15 +663,15 @@ export default function ServiceDetailDrawer({
                       ),
                     },
                     {
-                      key: 'requests',
-                      label: 'Requests',
-                      align: 'right',
+                      key: "requests",
+                      label: "Requests",
+                      align: "right",
                       render: (row) => formatNumber(row.request_count),
                     },
                     {
-                      key: 'errors',
-                      label: 'Err %',
-                      align: 'right',
+                      key: "errors",
+                      label: "Err %",
+                      align: "right",
                       render: (row) =>
                         formatPercentage(
                           Number(row.request_count ?? 0) > 0
@@ -666,15 +680,15 @@ export default function ServiceDetailDrawer({
                         ),
                     },
                     {
-                      key: 'avg',
-                      label: 'Avg',
-                      align: 'right',
+                      key: "avg",
+                      label: "Avg",
+                      align: "right",
                       render: (row) => formatDuration(row.avg_latency),
                     },
                     {
-                      key: 'latency',
-                      label: 'p95',
-                      align: 'right',
+                      key: "latency",
+                      label: "p95",
+                      align: "right",
                       render: (row) => formatDuration(row.p95_latency),
                     },
                   ]}
@@ -687,13 +701,15 @@ export default function ServiceDetailDrawer({
               subtitle="Top upstream and downstream relationships for this service."
             >
               {dependenciesQuery.isError ? (
-                <div className="text-[12px] text-[var(--text-muted)]">Dependency map is unavailable.</div>
+                <div className="text-[12px] text-[var(--text-muted)]">
+                  Dependency map is unavailable.
+                </div>
               ) : dependenciesLoading ? (
                 <div className="text-[12px] text-[var(--text-muted)]">Loading dependencies…</div>
               ) : (
                 <div className="grid gap-4 lg:grid-cols-2">
                   <div>
-                    <div className="mb-2 text-[12px] font-medium text-[var(--text-secondary)]">
+                    <div className="mb-2 font-medium text-[12px] text-[var(--text-secondary)]">
                       Upstream
                     </div>
                     <CompactTable
@@ -701,27 +717,27 @@ export default function ServiceDetailDrawer({
                       emptyText="No upstream callers in range."
                       columns={[
                         {
-                          key: 'service',
-                          label: 'Service',
-                          render: (row) => row.serviceName || 'Unknown',
+                          key: "service",
+                          label: "Service",
+                          render: (row) => row.serviceName || "Unknown",
                         },
                         {
-                          key: 'calls',
-                          label: 'Calls',
-                          align: 'right',
+                          key: "calls",
+                          label: "Calls",
+                          align: "right",
                           render: (row) => formatNumber(row.callCount),
                         },
                         {
-                          key: 'latency',
-                          label: 'p95',
-                          align: 'right',
+                          key: "latency",
+                          label: "p95",
+                          align: "right",
                           render: (row) => formatDuration(row.p95LatencyMs),
                         },
                       ]}
                     />
                   </div>
                   <div>
-                    <div className="mb-2 text-[12px] font-medium text-[var(--text-secondary)]">
+                    <div className="mb-2 font-medium text-[12px] text-[var(--text-secondary)]">
                       Downstream
                     </div>
                     <CompactTable
@@ -729,20 +745,20 @@ export default function ServiceDetailDrawer({
                       emptyText="No downstream dependencies in range."
                       columns={[
                         {
-                          key: 'service',
-                          label: 'Service',
-                          render: (row) => row.serviceName || 'Unknown',
+                          key: "service",
+                          label: "Service",
+                          render: (row) => row.serviceName || "Unknown",
                         },
                         {
-                          key: 'calls',
-                          label: 'Calls',
-                          align: 'right',
+                          key: "calls",
+                          label: "Calls",
+                          align: "right",
                           render: (row) => formatNumber(row.callCount),
                         },
                         {
-                          key: 'latency',
-                          label: 'p95',
-                          align: 'right',
+                          key: "latency",
+                          label: "p95",
+                          align: "right",
                           render: (row) => formatDuration(row.p95LatencyMs),
                         },
                       ]}

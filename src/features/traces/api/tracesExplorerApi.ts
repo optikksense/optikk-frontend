@@ -1,12 +1,12 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { API_CONFIG } from '@config/apiConfig';
-import { traceRecordSchema } from '@entities/trace/model';
-import api from '@/shared/api/api/client';
-import { decodeApiResponse } from '@/shared/api/utils/validate';
+import api from "@/shared/api/api/client";
+import { decodeApiResponse } from "@/shared/api/utils/validate";
+import { API_CONFIG } from "@config/apiConfig";
+import { traceRecordSchema } from "@entities/trace/model";
 
-import { normalizeTrace } from '../utils/tracesUtils';
-import type { TraceExplorerCorrelations, TraceExplorerFacets } from '../types';
+import type { TraceExplorerCorrelations, TraceExplorerFacets } from "../types";
+import { normalizeTrace } from "../utils/tracesUtils";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -87,9 +87,9 @@ export const tracesExplorerApi = {
   }): Promise<TracesExplorerResponse> {
     const response = await api.post(`${BASE}/traces/explorer/query`, body);
     const parsed = decodeApiResponse(tracesExplorerSchema, response, {
-      context: 'traces explorer',
-      expectedType: 'object',
-      message: 'Invalid traces explorer response',
+      context: "traces explorer",
+      expectedType: "object",
+      message: "Invalid traces explorer response",
     });
 
     const facets: TraceExplorerFacets = {

@@ -1,9 +1,9 @@
-import { Tooltip } from '@/components/ui';
-import { useMemo } from 'react';
+import { Tooltip } from "@/components/ui";
+import { useMemo } from "react";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-const LATENCY_BUCKETS = ['0-50ms', '50-100ms', '100-250ms', '250-500ms', '500ms-1s', '>1s'];
+const LATENCY_BUCKETS = ["0-50ms", "50-100ms", "100-250ms", "250-500ms", "500ms-1s", ">1s"];
 
 export interface LatencyHeatmapDataPoint {
   time_bucket: string | number;
@@ -43,7 +43,7 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
 
   if (!data.length) {
     return (
-      <div className="text-center py-10 text-[color:var(--text-muted)]">
+      <div className="py-10 text-center text-[color:var(--text-muted)]">
         No latency data available
       </div>
     );
@@ -56,7 +56,7 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
         {LATENCY_BUCKETS.map((lb) => (
           <div key={lb} className="flex items-center gap-1">
             {/* Y label */}
-            <div className="w-20 min-w-[80px] text-[11px] text-[color:var(--text-muted)] text-right pr-2 whitespace-nowrap">
+            <div className="w-20 min-w-[80px] whitespace-nowrap pr-2 text-right text-[11px] text-[color:var(--text-muted)]">
               {lb}
             </div>
             {/* Cells */}
@@ -72,7 +72,7 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
                     content={`${lb} @ ${new Date(tb).toLocaleTimeString()}: ${count.toLocaleString()} spans`}
                   >
                     <div
-                      className="flex-1 h-6 rounded-[2px] transition-[opacity,transform] duration-150 ease-out cursor-default hover:opacity-85 hover:scale-y-[1.15]"
+                      className="h-6 flex-1 cursor-default rounded-[2px] transition-[opacity,transform] duration-150 ease-out hover:scale-y-[1.15] hover:opacity-85"
                       style={{ background: getColor(count) }}
                     />
                   </Tooltip>
@@ -84,7 +84,7 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
       </div>
 
       {/* X axis */}
-      <div className="flex items-start gap-1 mt-0.5">
+      <div className="mt-0.5 flex items-start gap-1">
         <div className="w-20 min-w-[80px]" />
         <div className="flex flex-1 justify-between">
           {timeBuckets
@@ -92,22 +92,22 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
             .map((tb) => (
               <span
                 key={String(tb)}
-                className="text-[10px] text-[color:var(--text-muted)] whitespace-nowrap"
+                className="whitespace-nowrap text-[10px] text-[color:var(--text-muted)]"
               >
-                {new Date(tb).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(tb).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </span>
             ))}
         </div>
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-2 mt-1 pl-[84px]">
+      <div className="mt-1 flex items-center gap-2 pl-[84px]">
         <span className="text-[color:var(--text-muted)] text-xs">Low</span>
         <div
-          className="flex-1 max-w-[160px] h-2 rounded"
+          className="h-2 max-w-[160px] flex-1 rounded"
           style={{
             background:
-              'linear-gradient(to right, var(--literal-rgb-30-100-180), var(--literal-rgb-130-50-90), var(--literal-rgb-217-0-0))',
+              "linear-gradient(to right, var(--literal-rgb-30-100-180), var(--literal-rgb-130-50-90), var(--literal-rgb-217-0-0))",
           }}
         />
         <span className="text-[color:var(--text-muted)] text-xs">High</span>

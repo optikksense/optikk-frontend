@@ -1,4 +1,4 @@
-import type { ServiceBadge } from '../../types';
+import type { ServiceBadge } from "../../types";
 
 interface TracesServicePillsProps {
   serviceBadges: ServiceBadge[];
@@ -19,7 +19,7 @@ export default function TracesServicePills({
   return (
     <div className="traces-service-pills">
       <div
-        className={`traces-service-pill ${!selectedService ? 'active' : ''}`}
+        className={`traces-service-pill ${!selectedService ? "active" : ""}`}
         onClick={() => onSelect(null)}
       >
         All <span className="traces-service-pill-count">{total}</span>
@@ -27,7 +27,7 @@ export default function TracesServicePills({
       {serviceBadges.map(([serviceName, count]) => (
         <div
           key={serviceName}
-          className={`traces-service-pill ${selectedService === serviceName ? 'active' : ''}`}
+          className={`traces-service-pill ${selectedService === serviceName ? "active" : ""}`}
           onClick={() => onSelect(selectedService === serviceName ? null : serviceName)}
         >
           {serviceName}

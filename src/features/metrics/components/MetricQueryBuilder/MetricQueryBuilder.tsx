@@ -1,16 +1,16 @@
-import { Calculator, Plus } from 'lucide-react';
+import { Calculator, Plus } from "lucide-react";
 
-import { Button } from '@/components/ui';
+import { Button } from "@/components/ui";
 
-import { MAX_QUERIES } from '../../constants';
+import { MAX_QUERIES } from "../../constants";
 import type {
   FormulaDefinition,
   MetricAggregation,
   MetricQueryDefinition,
   MetricTagFilter,
-} from '../../types';
-import { FormulaRow } from './FormulaRow';
-import { MetricQueryRow } from './MetricQueryRow';
+} from "../../types";
+import { FormulaRow } from "./FormulaRow";
+import { MetricQueryRow } from "./MetricQueryRow";
 
 interface MetricQueryBuilderProps {
   readonly queries: MetricQueryDefinition[];

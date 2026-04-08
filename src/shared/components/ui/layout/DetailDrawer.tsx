@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 import {
   Drawer,
@@ -6,7 +6,7 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
+} from "@/components/ui/drawer";
 
 interface DetailDrawerField {
   label: string;
@@ -32,7 +32,7 @@ interface DetailDrawerProps {
 export default function DetailDrawer({
   open,
   onClose,
-  title = 'Details',
+  title = "Details",
   width = 640,
   sections = [],
   data,
@@ -53,25 +53,25 @@ export default function DetailDrawer({
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerClose
             aria-label="Close"
-            className="bg-transparent border-none cursor-pointer text-lg leading-none"
+            className="cursor-pointer border-none bg-transparent text-lg leading-none"
           >
             &times;
           </DrawerClose>
         </DrawerHeader>
-        <div className="px-6 py-4 flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto px-6 py-4">
           {sections.map((section, idx) => (
             <div key={idx} className="mb-6">
               {section.title && (
-                <h4 className="text-[color:var(--text-primary)] text-[14px] font-semibold mb-4 pb-2 border-b border-[color:var(--glass-border)] tracking-[0.02em]">
+                <h4 className="mb-4 border-[color:var(--glass-border)] border-b pb-2 font-semibold text-[14px] text-[color:var(--text-primary)] tracking-[0.02em]">
                   {section.title}
                 </h4>
               )}
-              <table className="w-full border-collapse text-[13px] mb-4">
+              <table className="mb-4 w-full border-collapse text-[13px]">
                 <tbody>
                   {section.fields.map((field) => (
-                    <tr key={field.key} className="border-b border-border">
-                      <td className="py-2 px-3 font-medium w-[30%] align-top">{field.label}</td>
-                      <td className="py-2 px-3">
+                    <tr key={field.key} className="border-border border-b">
+                      <td className="w-[30%] px-3 py-2 align-top font-medium">{field.label}</td>
+                      <td className="px-3 py-2">
                         {field.render
                           ? field.render(data[field.key], data)
                           : renderValue(data[field.key])}
@@ -92,8 +92,8 @@ export default function DetailDrawer({
 
 function renderValue(value: unknown) {
   if (value == null) return <span className="text-[color:var(--text-secondary,#999)]">-</span>;
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  if (typeof value === 'object')
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "object")
     return <pre className="m-0 text-xs">{JSON.stringify(value, null, 2)}</pre>;
   return String(value);
 }

@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react';
-import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useCallback, useMemo } from "react";
 
 interface UseUrlSyncedTabOptions<T extends string> {
   allowedTabs: readonly T[];
@@ -21,7 +21,7 @@ interface UseUrlSyncedTabResult<T extends string> {
 export function useUrlSyncedTab<T extends string>({
   allowedTabs,
   defaultTab,
-  paramName = 'tab',
+  paramName = "tab",
   clearParamOnDefault = true,
 }: UseUrlSyncedTabOptions<T>): UseUrlSyncedTabResult<T> {
   const [searchParams, setSearchParams] = useSearchParams();

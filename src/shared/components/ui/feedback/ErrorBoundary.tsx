@@ -1,8 +1,8 @@
-import { AlertCircle } from 'lucide-react';
-import React from 'react';
-import { Button } from '@/components/ui';
+import { Button } from "@/components/ui";
+import { AlertCircle } from "lucide-react";
+import React from "react";
 
-import type { ErrorBoundaryProps, ErrorBoundaryState } from './types';
+import type { ErrorBoundaryProps, ErrorBoundaryState } from "./types";
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -20,7 +20,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error(
-      `Error Boundary caught an error${this.props.boundaryName ? ` [${this.props.boundaryName}]` : ''}:`,
+      `Error Boundary caught an error${this.props.boundaryName ? ` [${this.props.boundaryName}]` : ""}:`,
       error,
       errorInfo
     );
@@ -55,10 +55,10 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       <div className="flex items-center justify-center" style={{ minHeight: 400, padding: 24 }}>
         <div
           className="flex-col items-center gap-lg"
-          style={{ textAlign: 'center', maxWidth: 420 }}
+          style={{ textAlign: "center", maxWidth: 420 }}
         >
           <AlertCircle size={48} color="var(--color-error)" />
-          <h2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 600, color: "var(--text-primary)", margin: 0 }}>
             Something went wrong
           </h2>
           <p className="text-secondary text-sm">
@@ -75,7 +75,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             <Button variant="primary" onClick={this.handleReset}>
               Try Again
             </Button>
-            <Button variant="secondary" onClick={() => (window.location.href = '/')}>
+            <Button variant="secondary" onClick={() => (window.location.href = "/")}>
               Go Home
             </Button>
           </div>

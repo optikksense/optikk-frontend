@@ -1,24 +1,24 @@
-import { z } from 'zod';
-import { aiService } from '@shared/api/aiService';
-import type { LLMRunDetail, LLMMessage, LLMRunContext } from '../types';
+import { aiService } from "@shared/api/aiService";
+import { z } from "zod";
+import type { LLMMessage, LLMRunContext, LLMRunDetail } from "../types";
 
 const runDetailSchema = z.object({
   spanId: z.string(),
   traceId: z.string(),
-  parentSpanId: z.string().optional().default(''),
+  parentSpanId: z.string().optional().default(""),
   serviceName: z.string(),
   operationName: z.string(),
   model: z.string(),
-  provider: z.string().optional().default(''),
-  operationType: z.string().optional().default(''),
+  provider: z.string().optional().default(""),
+  operationType: z.string().optional().default(""),
   startTime: z.string(),
   durationMs: z.number(),
   inputTokens: z.number(),
   outputTokens: z.number(),
   totalTokens: z.number(),
   hasError: z.boolean(),
-  statusMessage: z.string().optional().default(''),
-  finishReason: z.string().optional().default(''),
+  statusMessage: z.string().optional().default(""),
+  finishReason: z.string().optional().default(""),
   spanKind: z.string(),
   attributes: z.record(z.string(), z.string()).optional(),
 });
@@ -26,12 +26,12 @@ const runDetailSchema = z.object({
 const messageSchema = z.object({
   role: z.string(),
   content: z.string(),
-  type: z.enum(['prompt', 'completion']),
+  type: z.enum(["prompt", "completion"]),
 });
 
 const chainSpanSchema = z.object({
   spanId: z.string(),
-  parentSpanId: z.string().optional().default(''),
+  parentSpanId: z.string().optional().default(""),
   serviceName: z.string(),
   operationName: z.string(),
   startTime: z.string(),
@@ -39,7 +39,7 @@ const chainSpanSchema = z.object({
   hasError: z.boolean(),
   spanKind: z.string(),
   role: z.string(),
-  model: z.string().optional().default(''),
+  model: z.string().optional().default(""),
 });
 
 const contextSchema = z.object({

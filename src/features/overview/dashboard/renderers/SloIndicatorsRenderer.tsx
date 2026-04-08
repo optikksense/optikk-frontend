@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { APP_COLORS } from '@config/colorLiterals';
-import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
-import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+import { APP_COLORS } from "@config/colorLiterals";
+import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 
 function SloGauge({
   value,
@@ -26,8 +26,8 @@ function SloGauge({
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <div style={{ position: 'relative', width: 80, height: 80 }}>
-        <svg viewBox="0 0 80 80" width={80} height={80}>
+      <div style={{ position: "relative", width: 80, height: 80 }}>
+        <svg aria-hidden="true">
           <circle
             cx="40"
             cy="40"
@@ -50,19 +50,19 @@ function SloGauge({
         </svg>
         <div
           style={{
-            position: 'absolute',
+            position: "absolute",
             inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             fontSize: 12,
             fontWeight: 700,
           }}
         >
-          {value.toFixed(label === 'Availability' ? 2 : 0)}%
+          {value.toFixed(label === "Availability" ? 2 : 0)}%
         </div>
       </div>
-      <div className="text-[13px] font-semibold text-[var(--text-primary)] mt-1">{label}</div>
+      <div className="mt-1 font-semibold text-[13px] text-[var(--text-primary)]">{label}</div>
       <div className="text-[11px] text-[var(--text-muted)]">{subtitle}</div>
     </div>
   );

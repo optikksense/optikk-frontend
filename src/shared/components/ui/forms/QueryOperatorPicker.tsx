@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 interface QueryOperator {
   key: string;
@@ -33,21 +33,21 @@ export default function QueryOperatorPicker({
 }: QueryOperatorPickerProps) {
   return (
     <>
-      <div className="flex items-center gap-1.5 px-3.5 pt-[10px] pb-2 text-[11px] text-muted-foreground border-b border-border tracking-[0.04em]">
-        <span className="text-[14px] w-5 text-center shrink-0">{pendingField.icon}</span>
+      <div className="flex items-center gap-1.5 border-border border-b px-3.5 pt-[10px] pb-2 text-[11px] text-muted-foreground tracking-[0.04em]">
+        <span className="w-5 shrink-0 text-center text-[14px]">{pendingField.icon}</span>
         <strong>{pendingField.label}</strong>
-        <span className="text-muted-foreground ml-1">— select operator</span>
+        <span className="ml-1 text-muted-foreground">— select operator</span>
       </div>
       {operators.map((operator) => (
         <div
           key={operator.key}
-          className="flex items-center gap-2 px-3.5 py-[9px] cursor-pointer text-[12.5px] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-10)] first:rounded-t-[10px] last:rounded-b-[10px]"
+          className="flex cursor-pointer items-center gap-2 px-3.5 py-[9px] text-[12.5px] transition-colors duration-100 first:rounded-t-[10px] last:rounded-b-[10px] hover:bg-[var(--color-primary-subtle-10)]"
           onClick={() => onPickOperator(operator)}
         >
-          <span className="font-mono text-primary text-[14px] w-7 text-center shrink-0">
+          <span className="w-7 shrink-0 text-center font-mono text-[14px] text-primary">
             {operator.symbol}
           </span>
-          <span className="text-foreground flex-1">{operator.label}</span>
+          <span className="flex-1 text-foreground">{operator.label}</span>
         </div>
       ))}
     </>

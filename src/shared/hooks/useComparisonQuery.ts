@@ -1,13 +1,13 @@
 import {
-  keepPreviousData,
-  useQuery,
   type QueryKey,
   type UseQueryResult,
-} from '@tanstack/react-query';
+  keepPreviousData,
+  useQuery,
+} from "@tanstack/react-query";
 
-import { resolveTimeRangeBounds, timeRangeDurationMs } from '@/types';
-import { useTeamId, useTimeRange, useRefreshKey, useComparisonMode } from '@store/appStore';
-import type { ComparisonMode } from '@shared/components/ui/TimeSelector/constants';
+import { resolveTimeRangeBounds, timeRangeDurationMs } from "@/types";
+import type { ComparisonMode } from "@shared/components/ui/TimeSelector/constants";
+import { useComparisonMode, useRefreshKey, useTeamId, useTimeRange } from "@store/appStore";
 
 type QueryTime = string | number;
 
@@ -22,14 +22,14 @@ function computeComparisonBounds(
   startMs: number,
   endMs: number
 ): { startTime: number; endTime: number } | null {
-  if (mode === 'off') return null;
+  if (mode === "off") return null;
   const duration = endMs - startMs;
   switch (mode) {
-    case 'previous_period':
+    case "previous_period":
       return { startTime: startMs - duration, endTime: startMs };
-    case 'previous_day':
+    case "previous_day":
       return { startTime: startMs - 86400000, endTime: endMs - 86400000 };
-    case 'previous_week':
+    case "previous_week":
       return { startTime: startMs - 604800000, endTime: endMs - 604800000 };
     default:
       return null;
@@ -59,7 +59,7 @@ export function useComparisonQuery<TData = unknown>(
 
   const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
   const rangeKey =
-    timeRange.kind === 'relative' ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`;
+    timeRange.kind === "relative" ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`;
 
   const isEnabled = Boolean(selectedTeamId) && enabled !== false;
 
@@ -69,7 +69,7 @@ export function useComparisonQuery<TData = unknown>(
     enabled: isEnabled,
     staleTime: 0,
     gcTime: 30_000,
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     placeholderData: keepPreviousData,
   });
 
@@ -82,7 +82,7 @@ export function useComparisonQuery<TData = unknown>(
   const comparisonQuery = useQuery<TData, Error>({
     queryKey: [
       key,
-      'comparison',
+      "comparison",
       selectedTeamId,
       rangeKey,
       comparisonMode,
@@ -90,13 +90,13 @@ export function useComparisonQuery<TData = unknown>(
       ...extraKeys,
     ],
     queryFn: async () => {
-      if (!comparisonBounds) throw new Error('No comparison bounds');
+      if (!comparisonBounds) throw new Error("No comparison bounds");
       return queryFn(selectedTeamId, comparisonBounds.startTime, comparisonBounds.endTime);
     },
     enabled: isEnabled && comparisonBounds !== null,
     staleTime: 0,
     gcTime: 30_000,
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     placeholderData: keepPreviousData,
   });
 

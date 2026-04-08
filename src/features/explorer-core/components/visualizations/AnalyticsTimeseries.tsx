@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from "react";
 
-import uPlot from 'uplot';
-import 'uplot/dist/uPlot.min.css';
+import uPlot from "uplot";
+import "uplot/dist/uPlot.min.css";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { ExplorerAnalyticsResult } from '../../api/explorerAnalyticsApi';
-import { cellValue } from '../../utils/analyticsResult';
+import type { ExplorerAnalyticsResult } from "../../api/explorerAnalyticsApi";
+import { cellValue } from "../../utils/analyticsResult";
 
-import '@/shared/components/ui/charts/uplot.css';
+import "@/shared/components/ui/charts/uplot.css";
 
 interface AnalyticsTimeseriesProps {
   result: ExplorerAnalyticsResult;
@@ -17,27 +17,27 @@ interface AnalyticsTimeseriesProps {
 
 export function AnalyticsTimeseries({
   result,
-  className = '',
+  className = "",
 }: AnalyticsTimeseriesProps): JSX.Element {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const uRef = useRef<uPlot | null>(null);
 
   const { data, labels } = useMemo(() => {
     const { columns, rows } = result;
-    if (!columns.includes('time_bucket') || rows.length === 0) {
+    if (!columns.includes("time_bucket") || rows.length === 0) {
       return { data: null as uPlot.AlignedData | null, labels: [] as string[] };
     }
 
-    const timeIdx = columns.indexOf('time_bucket');
-    const metricCols = columns.filter((c) => c !== 'time_bucket');
-    const times = [...new Set(rows.map((r) => String(cellValue(r, 'time_bucket') ?? '')))].sort();
+    const timeIdx = columns.indexOf("time_bucket");
+    const metricCols = columns.filter((c) => c !== "time_bucket");
+    const times = [...new Set(rows.map((r) => String(cellValue(r, "time_bucket") ?? "")))].sort();
 
     const x = times.map((_, i) => i);
-    const seriesKeys = metricCols.length > 0 ? metricCols : ['value'];
+    const seriesKeys = metricCols.length > 0 ? metricCols : ["value"];
     const yArrays: number[][] = seriesKeys.map(() => times.map(() => 0));
 
     for (const row of rows) {
-      const t = String(cellValue(row, 'time_bucket') ?? '');
+      const t = String(cellValue(row, "time_bucket") ?? "");
       const xi = times.indexOf(t);
       if (xi < 0) continue;
       seriesKeys.forEach((mk, si) => {
@@ -71,12 +71,12 @@ export function AnalyticsTimeseries({
         ],
         axes: [
           {
-            stroke: 'rgba(255,255,255,0.2)',
-            grid: { stroke: 'rgba(255,255,255,0.06)' },
+            stroke: "rgba(255,255,255,0.2)",
+            grid: { stroke: "rgba(255,255,255,0.06)" },
           },
           {
-            stroke: 'rgba(255,255,255,0.2)',
-            grid: { stroke: 'rgba(255,255,255,0.06)' },
+            stroke: "rgba(255,255,255,0.2)",
+            grid: { stroke: "rgba(255,255,255,0.06)" },
           },
         ],
         scales: { x: { time: false } },
@@ -93,11 +93,11 @@ export function AnalyticsTimeseries({
 
   if (!data) {
     return (
-      <div className={cn('text-[13px] text-[var(--text-muted)]', className)}>
+      <div className={cn("text-[13px] text-[var(--text-muted)]", className)}>
         Timeseries needs a time_bucket column and metric columns.
       </div>
     );
   }
 
-  return <div ref={rootRef} className={cn('w-full min-h-[220px]', className)} />;
+  return <div ref={rootRef} className={cn("min-h-[220px] w-full", className)} />;
 }

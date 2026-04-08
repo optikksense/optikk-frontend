@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 
 export interface CodeTab {
   id: string;
@@ -29,51 +29,51 @@ export default function CodeTabs({ tabs }: CodeTabsProps) {
     <div
       className="font-mono"
       style={{
-        background: '#0D0E14',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: "#0D0E14",
+        border: "1px solid rgba(255,255,255,0.08)",
         borderRadius: 12,
-        overflow: 'hidden',
-        width: '100%',
+        overflow: "hidden",
+        width: "100%",
       }}
     >
       {/* Chrome header */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: '#161720',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "#161720",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
         {/* Tabs */}
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: "flex" }}>
           {tabs.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setActiveTab(t.id)}
               style={{
-                background: 'transparent',
-                border: 'none',
-                padding: '12px 20px',
+                background: "transparent",
+                border: "none",
+                padding: "12px 20px",
                 fontSize: 13,
-                color: activeTab === t.id ? '#22D3EE' : '#64748B',
-                cursor: 'pointer',
-                position: 'relative',
-                fontFamily: 'inherit',
-                transition: 'color 0.2s',
+                color: activeTab === t.id ? "#22D3EE" : "#64748B",
+                cursor: "pointer",
+                position: "relative",
+                fontFamily: "inherit",
+                transition: "color 0.2s",
               }}
             >
               {activeTab === t.id ? (
                 <span
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     bottom: 0,
                     left: 0,
                     right: 0,
                     height: 2,
-                    background: '#22D3EE',
+                    background: "#22D3EE",
                   }}
                 />
               ) : null}
@@ -88,18 +88,18 @@ export default function CodeTabs({ tabs }: CodeTabsProps) {
             type="button"
             onClick={handleCopy}
             style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: 6,
-              padding: '6px 10px',
-              color: '#94A3B8',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
+              padding: "6px 10px",
+              color: "#94A3B8",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
               gap: 6,
-              transition: 'all 0.2s',
+              transition: "all 0.2s",
               fontSize: 11,
-              fontFamily: 'inherit',
+              fontFamily: "inherit",
             }}
           >
             {copiedId === activeContent.id ? (
@@ -116,33 +116,33 @@ export default function CodeTabs({ tabs }: CodeTabsProps) {
       </div>
 
       {/* Code Area */}
-      <div style={{ position: 'relative', minHeight: 320, padding: 0 }}>
+      <div style={{ position: "relative", minHeight: 320, padding: 0 }}>
         <div
           key={activeTab}
           style={{
             padding: 16,
             opacity: 1,
-            transform: 'translateY(0)',
-            transition: 'opacity 160ms ease, transform 160ms ease',
+            transform: "translateY(0)",
+            transition: "opacity 160ms ease, transform 160ms ease",
           }}
         >
           <div
             aria-label={`${activeContent.label} code sample`}
             style={{
               margin: 0,
-              background: 'transparent',
+              background: "transparent",
               padding: 0,
               fontSize: 13,
               lineHeight: 1.5,
-              color: '#d5def5',
-              overflowX: 'auto',
+              color: "#d5def5",
+              overflowX: "auto",
             }}
           >
             <pre
               style={{
                 margin: 0,
-                whiteSpace: 'pre',
-                fontFamily: 'inherit',
+                whiteSpace: "pre",
+                fontFamily: "inherit",
               }}
             >
               <code>{activeContent.code}</code>

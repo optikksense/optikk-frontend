@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { useTimeRange } from '@shared/hooks/useTimeRangeQuery';
+import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 
-import { generateTimeBuckets, formatChartLabels } from '@shared/utils/charting';
+import { formatChartLabels, generateTimeBuckets } from "@shared/utils/charting";
 
 function toEpochMs(value: string | number): number {
-  if (typeof value === 'number' && Number.isFinite(value)) {
+  if (typeof value === "number" && Number.isFinite(value)) {
     return value;
   }
   const parsed = Date.parse(String(value));

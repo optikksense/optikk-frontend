@@ -1,12 +1,12 @@
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { useMemo, useState } from "react";
 
-import { Badge, Button, ScrollArea } from '@/components/ui';
-import { PageSurface } from '@shared/components/ui';
+import { Badge, Button, ScrollArea } from "@/components/ui";
+import { PageSurface } from "@shared/components/ui";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { FacetGroup } from '../types';
+import type { FacetGroup } from "../types";
 
 const DEFAULT_VISIBLE = 10;
 
@@ -22,7 +22,7 @@ interface FacetRailProps {
 function isValueActive(
   groupKey: string,
   value: string,
-  selected: FacetRailProps['selected'],
+  selected: FacetRailProps["selected"],
   multiSelect: boolean
 ): boolean {
   const raw = selected[groupKey];
@@ -52,8 +52,8 @@ export function FacetRail({
     <PageSurface padding="lg" className="h-full min-h-0">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Facets</h3>
-          <p className="mt-1 text-xs text-[var(--text-muted)]">
+          <h3 className="font-semibold text-[var(--text-primary)] text-sm">Facets</h3>
+          <p className="mt-1 text-[var(--text-muted)] text-xs">
             Narrow results by dimension; multi-select keeps a running OR within a group when
             enabled.
           </p>
@@ -77,7 +77,7 @@ export function FacetRail({
                   className="flex w-full items-center justify-between gap-2 text-left"
                   onClick={() => toggleCollapsed(group.key)}
                 >
-                  <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                  <span className="flex items-center gap-1.5 font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-[0.12em]">
                     {isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
                     {group.label}
                   </span>
@@ -100,12 +100,12 @@ export function FacetRail({
                           }}
                           className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left transition-all ${
                             active
-                              ? 'border-[rgba(77,166,200,0.45)] bg-[rgba(77,166,200,0.14)] text-[var(--text-primary)]'
-                              : 'border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-[var(--text-secondary)] hover:border-[rgba(255,255,255,0.16)] hover:text-[var(--text-primary)]'
+                              ? "border-[rgba(77,166,200,0.45)] bg-[rgba(77,166,200,0.14)] text-[var(--text-primary)]"
+                              : "border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-[var(--text-secondary)] hover:border-[rgba(255,255,255,0.16)] hover:text-[var(--text-primary)]"
                           }`}
                         >
-                          <span className="truncate text-[13px]">{bucket.value || 'Unknown'}</span>
-                          <span className="ml-3 text-[11px] font-semibold tabular-nums text-[var(--text-muted)]">
+                          <span className="truncate text-[13px]">{bucket.value || "Unknown"}</span>
+                          <span className="ml-3 font-semibold text-[11px] text-[var(--text-muted)] tabular-nums">
                             {bucket.count}
                           </span>
                         </button>

@@ -1,12 +1,12 @@
-import { useMemo } from 'react';
-import { useLocation, useNavigate } from '@tanstack/react-router';
+import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useMemo } from "react";
 
-import { buildServiceDrawerSearch } from '@/features/overview/components/serviceDrawerState';
-import { HealthIndicator } from '@shared/components/ui';
-import { formatNumber } from '@shared/utils/formatters';
-import { APP_COLORS } from '@config/colorLiterals';
-import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
-import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
+import { APP_COLORS } from "@config/colorLiterals";
+import { HealthIndicator } from "@shared/components/ui";
+import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
+import { formatNumber } from "@shared/utils/formatters";
 
 export function ServiceHealthGridRenderer({
   chartConfig,
@@ -22,7 +22,7 @@ export function ServiceHealthGridRenderer({
       const requestCount = Number(s.request_count ?? 0);
       const errorCount = Number(s.error_count ?? 0);
       const errorRate = requestCount > 0 ? (errorCount / requestCount) * 100 : 0;
-      const status = errorRate > 5 ? 'unhealthy' : errorRate > 1 ? 'degraded' : 'healthy';
+      const status = errorRate > 5 ? "unhealthy" : errorRate > 1 ? "degraded" : "healthy";
       return {
         name: s.service_name,
         status,
@@ -41,16 +41,16 @@ export function ServiceHealthGridRenderer({
       {serviceHealth.length > 0 ? (
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
             gap: 8,
-            alignContent: 'start',
+            alignContent: "start",
           }}
         >
           {serviceHealth.map((service) => (
             <div key={service.name}>
               <div
-                className="bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg p-3 cursor-pointer transition-all duration-200 text-center hover:border-[var(--color-primary)] hover:-translate-y-px"
+                className="hover:-translate-y-px cursor-pointer rounded-lg border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-3 text-center transition-all duration-200 hover:border-[var(--color-primary)]"
                 onClick={() =>
                   navigate({
                     to:
@@ -68,16 +68,16 @@ export function ServiceHealthGridRenderer({
                 }
               >
                 <HealthIndicator status={service.status} size={8} />
-                <div className="text-xs font-semibold text-[var(--text-primary)] mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap">
+                <div className="mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-primary)] text-xs">
                   {service.name}
                 </div>
-                <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">
                   {formatNumber(service.requestCount)} req
                 </div>
                 <div
-                  className="text-[11px] mt-0.5"
+                  className="mt-0.5 text-[11px]"
                   style={{
-                    color: service.errorRate > 1 ? APP_COLORS.hex_f04438 : 'var(--text-muted)',
+                    color: service.errorRate > 1 ? APP_COLORS.hex_f04438 : "var(--text-muted)",
                   }}
                 >
                   {Math.max(0, Number(service.errorRate)).toFixed(2)}% err
@@ -87,7 +87,7 @@ export function ServiceHealthGridRenderer({
           ))}
         </div>
       ) : (
-        <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+        <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
           No services data available
         </div>
       )}

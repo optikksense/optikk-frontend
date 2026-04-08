@@ -24,9 +24,10 @@ export default function BoardLoadMoreFooter({
   }
 
   return (
-    <div className="p-4 text-center border-t border-[color:var(--glass-border)]">
+    <div className="border-[color:var(--glass-border)] border-t p-4 text-center">
       <button
-        className="min-w-[200px] px-6 py-2 bg-transparent border border-primary text-primary rounded-[7px] cursor-pointer text-[13px] font-medium transition-all duration-150 hover:bg-[var(--color-primary-subtle-10)] disabled:opacity-50 disabled:cursor-not-allowed"
+        type="button"
+        className="min-w-[200px] cursor-pointer rounded-[7px] border border-primary bg-transparent px-6 py-2 font-medium text-[13px] text-primary transition-all duration-150 hover:bg-[var(--color-primary-subtle-10)] disabled:cursor-not-allowed disabled:opacity-50"
         onClick={() => onFetchNextPage?.()}
         disabled={isFetchingNextPage}
       >

@@ -1,13 +1,13 @@
-import { useCallback, useMemo, type ReactNode } from 'react';
+import { type ReactNode, useCallback, useMemo } from "react";
 
-import { BoardActionBar, BoardEmptyState, BoardSkeleton } from './index';
+import { BoardActionBar, BoardEmptyState, BoardSkeleton } from "./index";
 
-import { usePersistedColumns } from '@shared/hooks/usePersistedColumns';
-import { useResizableColumns } from '@shared/hooks/useResizableColumns';
+import { usePersistedColumns } from "@shared/hooks/usePersistedColumns";
+import { useResizableColumns } from "@shared/hooks/useResizableColumns";
 
-import { ObservabilityDetailPanel, type DetailPanelField } from './ObservabilityDetailPanel';
-import { BoardClickableCell, type BoardClickableCellProps } from './BoardClickableCell';
-import { BoardTable } from './BoardTable';
+import { BoardClickableCell, type BoardClickableCellProps } from "./BoardClickableCell";
+import { BoardTable } from "./BoardTable";
+import { type DetailPanelField, ObservabilityDetailPanel } from "./ObservabilityDetailPanel";
 
 const BOARD_ROW_HEIGHT = 32;
 const BOARD_CHROME_HEIGHT = 72;
@@ -24,7 +24,7 @@ export type BoardFilterValue = string | number | boolean;
 export interface BoardFilter {
   field: string;
   value: BoardFilterValue;
-  operator: 'equals';
+  operator: "equals";
 }
 
 export interface BoardColumn {
@@ -79,7 +79,7 @@ function randomSkeletonWidth(basePercent: number, rangePercent: number): string 
 function downloadFile(content: string, filename: string, type: string): void {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
-  const anchorElement = document.createElement('a');
+  const anchorElement = document.createElement("a");
   anchorElement.href = url;
   anchorElement.download = filename;
   anchorElement.click();
@@ -138,7 +138,7 @@ export default function ObservabilityDataBoard<
     columns = [],
     rowKey = (_row: RowType, index: number) => index,
     renderRow,
-    entityName = 'item',
+    entityName = "item",
     storageKey,
     emptyTips,
   } = config;
@@ -165,14 +165,14 @@ export default function ObservabilityDataBoard<
     const visibleKeys = columns
       .filter((column) => visibleCols[column.key])
       .map((column) => column.key);
-    const header = visibleKeys.join(',');
+    const header = visibleKeys.join(",");
     const csvRows = rows.map((row) =>
       visibleKeys
-        .map((columnKey) => `"${String(row[columnKey] ?? '').replace(/"/g, '""')}"`)
-        .join(',')
+        .map((columnKey) => `"${String(row[columnKey] ?? "").replace(/"/g, '""')}"`)
+        .join(",")
     );
 
-    downloadFile([header, ...csvRows].join('\n'), `${entityName}-${Date.now()}.csv`, 'text/csv');
+    downloadFile([header, ...csvRows].join("\n"), `${entityName}-${Date.now()}.csv`, "text/csv");
   }, [rows, exportRowsAsCSV, columns, visibleCols, entityName]);
 
   const handleExportJSON = useCallback((): void => {
@@ -181,7 +181,7 @@ export default function ObservabilityDataBoard<
     downloadFile(
       JSON.stringify(rows, null, 2),
       `${entityName}-${Date.now()}.json`,
-      'application/json'
+      "application/json"
     );
   }, [rows, entityName]);
 
@@ -223,8 +223,8 @@ export default function ObservabilityDataBoard<
 
   return (
     <div
-      className="flex-1 flex flex-col min-w-0 min-h-0 relative overflow-hidden bg-[color:var(--glass-bg)] border border-[color:var(--glass-border)] rounded-xl"
-      style={{ backdropFilter: 'var(--glass-blur)', WebkitBackdropFilter: 'var(--glass-blur)' }}
+      className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-[color:var(--glass-border)] bg-[color:var(--glass-bg)]"
+      style={{ backdropFilter: "var(--glass-blur)", WebkitBackdropFilter: "var(--glass-blur)" }}
     >
       <BoardActionBar
         entityName={entityName}
@@ -244,7 +244,7 @@ export default function ObservabilityDataBoard<
         onExportJSON={handleExportJSON}
       />
 
-      <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="flex flex-1 flex-col overflow-hidden">
         {isLoading && rows.length === 0 ? (
           <BoardSkeleton
             fixedColumns={fixedColumns}

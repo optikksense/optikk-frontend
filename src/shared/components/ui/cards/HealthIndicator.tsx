@@ -1,4 +1,4 @@
-import { getHealthColor } from '@shared/utils/formatters';
+import { getHealthColor } from "@shared/utils/formatters";
 
 interface HealthIndicatorProps {
   status: string;
@@ -19,19 +19,19 @@ export default function HealthIndicator({
   const color = getHealthColor(status);
 
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
       <span
         style={{
           width: size,
           height: size,
-          borderRadius: '50%',
+          borderRadius: "50%",
           backgroundColor: color,
-          display: 'inline-block',
+          display: "inline-block",
           flexShrink: 0,
         }}
       />
       {showLabel && (
-        <span style={{ fontSize: 13, color: 'var(--text-secondary)', textTransform: 'capitalize' }}>
+        <span style={{ fontSize: 13, color: "var(--text-secondary)", textTransform: "capitalize" }}>
           {status}
         </span>
       )}

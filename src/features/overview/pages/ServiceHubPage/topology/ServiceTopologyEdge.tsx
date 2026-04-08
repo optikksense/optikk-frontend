@@ -1,6 +1,6 @@
-import { BaseEdge, EdgeLabelRenderer, getBezierPath, type EdgeProps } from '@xyflow/react';
+import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from "@xyflow/react";
 
-import { Tooltip } from '@shared/components/primitives/ui';
+import { Tooltip } from "@shared/components/primitives/ui";
 
 export interface TopologyEdgeData {
   callCount: number;
@@ -21,7 +21,7 @@ function formatNumber(n: number): string {
 }
 
 function formatMs(n: number): string {
-  if (!Number.isFinite(n) || n <= 0) return '—';
+  if (!Number.isFinite(n) || n <= 0) return "—";
   if (n >= 1000) return `${(n / 1000).toFixed(2)}s`;
   return `${n.toFixed(1)}ms`;
 }
@@ -31,9 +31,9 @@ function formatPct(n: number): string {
 }
 
 function edgeColor(d: TopologyEdgeData): string {
-  if (d.errorRate > 0.05) return 'var(--color-error)';
-  if (d.p95LatencyMs > 500) return 'var(--color-warning)';
-  return 'var(--border-color)';
+  if (d.errorRate > 0.05) return "var(--color-error)";
+  if (d.p95LatencyMs > 500) return "var(--color-warning)";
+  return "var(--border-color)";
 }
 
 function edgeWidth(d: TopologyEdgeData): number {
@@ -92,14 +92,14 @@ export function ServiceTopologyEdge(props: EdgeProps) {
         id={id}
         path={edgePath}
         markerEnd={markerEnd}
-        style={{ stroke, strokeWidth: width, opacity, transition: 'opacity 150ms' }}
+        style={{ stroke, strokeWidth: width, opacity, transition: "opacity 150ms" }}
       />
       <EdgeLabelRenderer>
         <div
           style={{
-            position: 'absolute',
+            position: "absolute",
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-            pointerEvents: 'all',
+            pointerEvents: "all",
             opacity,
           }}
           className="nodrag nopan"

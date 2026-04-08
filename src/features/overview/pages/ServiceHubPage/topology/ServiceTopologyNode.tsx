@@ -1,19 +1,19 @@
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Handle, type NodeProps, Position } from "@xyflow/react";
 
-import { Tooltip } from '@shared/components/primitives/ui';
+import { Tooltip } from "@shared/components/primitives/ui";
 
-import type { ServiceTopologyNode } from './api';
-import { NODE_HEIGHT, NODE_WIDTH } from './layout';
+import type { ServiceTopologyNode } from "./api";
+import { NODE_HEIGHT, NODE_WIDTH } from "./layout";
 
 export type TopologyNodeData = ServiceTopologyNode & {
   dimmed: boolean;
   onOpen: (name: string) => void;
 };
 
-const healthRingColor: Record<ServiceTopologyNode['health'], string> = {
-  healthy: 'var(--color-success)',
-  degraded: 'var(--color-warning)',
-  unhealthy: 'var(--color-error)',
+const healthRingColor: Record<ServiceTopologyNode["health"], string> = {
+  healthy: "var(--color-success)",
+  degraded: "var(--color-warning)",
+  unhealthy: "var(--color-error)",
 };
 
 function formatNumber(n: number): string {
@@ -23,7 +23,7 @@ function formatNumber(n: number): string {
 }
 
 function formatMs(n: number): string {
-  if (!Number.isFinite(n) || n <= 0) return '—';
+  if (!Number.isFinite(n) || n <= 0) return "—";
   if (n >= 1000) return `${(n / 1000).toFixed(2)}s`;
   return `${n.toFixed(1)}ms`;
 }
@@ -69,7 +69,7 @@ export function ServiceTopologyNode({ data }: NodeProps) {
       <div
         onClick={() => d.onOpen(d.name)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') d.onOpen(d.name);
+          if (e.key === "Enter" || e.key === " ") d.onOpen(d.name);
         }}
         role="button"
         tabIndex={0}
@@ -85,7 +85,7 @@ export function ServiceTopologyNode({ data }: NodeProps) {
             style={{ backgroundColor: ringColor, boxShadow: `0 0 0 3px ${ringColor}22` }}
             aria-hidden
           />
-          <span className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
+          <span className="truncate font-semibold text-[13px] text-[var(--text-primary)]">
             {d.name}
           </span>
         </div>
@@ -99,7 +99,7 @@ export function ServiceTopologyNode({ data }: NodeProps) {
             <span className="text-[var(--text-muted)]">err</span>
             <span
               style={{
-                color: d.error_rate > 0.05 ? 'var(--color-error)' : 'var(--text-primary)',
+                color: d.error_rate > 0.05 ? "var(--color-error)" : "var(--text-primary)",
               }}
             >
               {formatPct(d.error_rate)}

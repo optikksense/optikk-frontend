@@ -1,14 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { Navigate, useNavigate } from '@tanstack/react-router';
+import { Navigate, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 
-import { authService } from '@shared/api/auth/authService';
+import { authService } from "@shared/api/auth/authService";
 
-import { useAppStore } from '@store/appStore';
-import { useAuthStore } from '@store/authStore';
+import { useAppStore } from "@store/appStore";
+import { useAuthStore } from "@store/authStore";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 interface ProtectedRouteProps {
   readonly children: ReactNode;
@@ -41,7 +41,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps): JSX.E
       const payload = await authService.validateSession();
       if (!payload || !applyAuthPayload(payload)) {
         clearSession();
-        navigate({ to: '/login', replace: true });
+        navigate({ to: "/login", replace: true });
       }
     })();
   }, [applyAuthPayload, clearSession, isAuthenticated, navigate, selectedTeamId]);

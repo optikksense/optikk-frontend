@@ -1,11 +1,11 @@
 /**
  * AI Observability Service — API calls for AI/ML model monitoring.
  */
-import { API_CONFIG } from '@config/apiConfig';
+import { API_CONFIG } from "@config/apiConfig";
 
-import api from './api';
+import api from "./api";
 
-import type { RequestTime } from './service-types';
+import type { RequestTime } from "./service-types";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -57,7 +57,7 @@ export const aiService = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    interval = '5m'
+    interval = "5m"
   ): Promise<unknown> {
     return api.get(`${BASE}/ai/performance/timeseries`, {
       params: { startTime, endTime, interval },
@@ -87,7 +87,7 @@ export const aiService = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    interval = '5m'
+    interval = "5m"
   ): Promise<unknown> {
     return api.get(`${BASE}/ai/cost/timeseries`, { params: { startTime, endTime, interval } });
   },
@@ -112,7 +112,7 @@ export const aiService = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    interval = '5m'
+    interval = "5m"
   ): Promise<unknown> {
     return api.get(`${BASE}/ai/security/timeseries`, { params: { startTime, endTime, interval } });
   },

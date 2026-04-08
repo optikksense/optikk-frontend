@@ -1,14 +1,14 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
-import type { Team, User } from '@/types';
+import type { Team, User } from "@/types";
 
-import { authService } from '@shared/api/authService';
-import type { AuthPayload, AuthTeam } from '@shared/api/auth/authService';
+import type { AuthPayload, AuthTeam } from "@shared/api/auth/authService";
+import { authService } from "@shared/api/authService";
 
-import { useAppStore } from '@store/appStore';
+import { useAppStore } from "@store/appStore";
 
-import { STORAGE_KEYS } from '@config/constants';
+import { STORAGE_KEYS } from "@config/constants";
 
 interface AuthState {
   readonly user: User | null;
@@ -27,7 +27,7 @@ interface AuthState {
 }
 
 function asLoginPayload(value: unknown): AuthPayload | null {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== "object" || value === null) {
     return null;
   }
 
@@ -35,7 +35,7 @@ function asLoginPayload(value: unknown): AuthPayload | null {
 }
 
 function getErrorMessage(error: unknown, fallback: string): string {
-  if (typeof error === 'object' && error !== null) {
+  if (typeof error === "object" && error !== null) {
     const record = error as Record<string, unknown>;
 
     // Handle "hijacked" 500 responses where login succeeded but session storage failed
@@ -43,13 +43,13 @@ function getErrorMessage(error: unknown, fallback: string): string {
     if (
       record.status === 500 &&
       apiData &&
-      typeof apiData === 'object' &&
-      (apiData.success === true || (apiData.data && apiData.data.user))
+      typeof apiData === "object" &&
+      (apiData.success === true || apiData.data?.user)
     ) {
-      return 'Authentication succeeded, but the session could not be saved (Redis failure). Please contact your administrator.';
+      return "Authentication succeeded, but the session could not be saved (Redis failure). Please contact your administrator.";
     }
 
-    if (typeof record.message === 'string' && record.message.length > 0) {
+    if (typeof record.message === "string" && record.message.length > 0) {
       return record.message;
     }
   }
@@ -123,7 +123,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
-      tenant: { features: ['newTraceView'] },
+      tenant: { features: ["newTraceView"] },
       isAuthenticated: false,
       isLoading: false,
       error: null,
@@ -139,11 +139,11 @@ export const useAuthStore = create<AuthState>()(
             return { success: true };
           }
 
-          const message = 'Login failed';
+          const message = "Login failed";
           set({ isLoading: false, error: message });
           return { success: false, error: message };
         } catch (error: unknown) {
-          const message = getErrorMessage(error, 'Login failed');
+          const message = getErrorMessage(error, "Login failed");
           set({ isLoading: false, error: message });
           return { success: false, error: message };
         }
@@ -160,7 +160,9 @@ export const useAuthStore = create<AuthState>()(
         clearSessionState(set);
       },
 
-      clearError: (): void => { set({ error: null }); },
+      clearError: (): void => {
+        set({ error: null });
+      },
     }),
     {
       name: STORAGE_KEYS.AUTH_STATE,

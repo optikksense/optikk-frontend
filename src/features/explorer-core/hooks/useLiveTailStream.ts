@@ -1,5 +1,5 @@
-import { useSocketStream } from '@shared/hooks/useSocketStream';
-import { useTeamId } from '@/app/store/appStore';
+import { useTeamId } from "@/app/store/appStore";
+import { useSocketStream } from "@shared/hooks/useSocketStream";
 
 interface UseLiveTailStreamOptions<Item> {
   enabled: boolean;
@@ -17,7 +17,7 @@ interface UseLiveTailStreamOptions<Item> {
 
 interface UseLiveTailStreamResult<Item> {
   items: Item[];
-  status: 'idle' | 'connecting' | 'live' | 'closed' | 'error';
+  status: "idle" | "connecting" | "live" | "closed" | "error";
   lagMs: number;
   droppedCount: number;
   errorMessage: string | null;
@@ -25,8 +25,8 @@ interface UseLiveTailStreamResult<Item> {
 
 export function useLiveTailStream<Item>({
   enabled,
-  subscribeEvent = 'subscribe:spans',
-  itemEvent = 'span',
+  subscribeEvent = "subscribe:spans",
+  itemEvent = "span",
   params,
   maxItems = 20,
   normalizeItem,

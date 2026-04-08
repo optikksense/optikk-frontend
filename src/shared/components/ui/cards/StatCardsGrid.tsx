@@ -1,4 +1,4 @@
-import { StatCard } from '@shared/components/ui';
+import { StatCard } from "@shared/components/ui";
 
 interface StatCardsGridProps {
   stats?: any[];
@@ -11,7 +11,7 @@ export default function StatCardsGrid({ stats = [], style, className }: StatCard
   if (!stats || stats.length === 0) return null;
 
   return (
-    <div className={`stat-cards-grid ${className || ''}`} style={style}>
+    <div className={`stat-cards-grid ${className || ""}`} style={style}>
       {stats.map((stat, index) => {
         const { colProps, ...cardProps } = stat;
         return <StatCard key={index} {...cardProps} />;

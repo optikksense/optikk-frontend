@@ -1,18 +1,23 @@
-import { AlertCircle, BarChart3, RefreshCw } from 'lucide-react';
+import { AlertCircle, BarChart3, RefreshCw } from "lucide-react";
 
-import { Button } from '@shared/components/primitives/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import { Button } from "@shared/components/primitives/ui/button";
+import { PageSurface } from "@shared/components/ui";
 import ObservabilityChart, {
   type ObservabilityChartSeries,
-} from '@shared/components/ui/charts/ObservabilityChart';
-import { PageSurface } from '@shared/components/ui';
+} from "@shared/components/ui/charts/ObservabilityChart";
 
-import { QUERY_LABEL_COLORS } from '../constants';
-import { getChartColor } from '@shared/utils/charting';
-import { evaluateFormula } from '../utils/formulaEvaluator';
-import type { ChartType, FormulaDefinition, MetricExplorerResults, MetricQueryDefinition } from '../types';
+import { getChartColor } from "@shared/utils/charting";
+import { QUERY_LABEL_COLORS } from "../constants";
+import type {
+  ChartType,
+  FormulaDefinition,
+  MetricExplorerResults,
+  MetricQueryDefinition,
+} from "../types";
+import { evaluateFormula } from "../utils/formulaEvaluator";
 
-const FORMULA_COLOR = '#f59e0b';
+const FORMULA_COLOR = "#f59e0b";
 
 interface MetricsExplorerChartProps {
   readonly queries: MetricQueryDefinition[];
@@ -45,7 +50,7 @@ function buildSeries(
     const baseColor = QUERY_LABEL_COLORS[query.id] ?? getChartColor(colorIdx);
 
     for (const series of result.series) {
-      const tagLabel = Object.values(series.tags).join(', ');
+      const tagLabel = Object.values(series.tags).join(", ");
       const label = tagLabel
         ? `${query.id}: ${query.aggregation}(${query.metricName}) [${tagLabel}]`
         : `${query.id}: ${query.aggregation}(${query.metricName})`;
@@ -54,7 +59,7 @@ function buildSeries(
         label,
         values: series.values,
         color: result.series.length > 1 ? getChartColor(colorIdx) : baseColor,
-        fill: chartType === 'area',
+        fill: chartType === "area",
       });
       colorIdx++;
     }
@@ -93,7 +98,7 @@ export function MetricsExplorerChart({
       <PageSurface padding="lg" className="flex min-h-[400px] items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-center">
           <BarChart3 size={40} className="text-[var(--text-muted)] opacity-40" />
-          <div className="text-[14px] font-medium text-[var(--text-secondary)]">
+          <div className="font-medium text-[14px] text-[var(--text-secondary)]">
             Select a metric to start exploring
           </div>
           <div className="max-w-[320px] text-[12px] text-[var(--text-muted)]">
@@ -134,7 +139,9 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="min-h-[400px]">
         <div className="flex h-[360px] items-center justify-center">
-          <div className="text-[13px] text-[var(--text-muted)]">No data for the selected query.</div>
+          <div className="text-[13px] text-[var(--text-muted)]">
+            No data for the selected query.
+          </div>
         </div>
       </PageSurface>
     );
@@ -145,7 +152,7 @@ export function MetricsExplorerChart({
   return (
     <PageSurface
       padding="lg"
-      className={cn('min-h-[400px]', isLoading && 'opacity-70 transition-opacity duration-200')}
+      className={cn("min-h-[400px]", isLoading && "opacity-70 transition-opacity duration-200")}
     >
       <ObservabilityChart
         timestamps={timestamps}

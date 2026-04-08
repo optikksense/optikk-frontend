@@ -1,6 +1,6 @@
-import React from 'react';
-import { AlertCircle } from 'lucide-react';
-import { Button } from '@optikk/design-system';
+import { Button } from "@optikk/design-system";
+import { AlertCircle } from "lucide-react";
+import React from "react";
 
 export interface FeatureErrorBoundaryProps {
   children: React.ReactNode;
@@ -33,20 +33,20 @@ export class FeatureErrorBoundary extends React.Component<FeatureErrorBoundaryPr
     if (this.state.error) {
       return (
         <div
-          className="flex flex-col items-center justify-center p-6 border rounded-md"
+          className="flex flex-col items-center justify-center rounded-md border p-6"
           style={{
-            borderColor: 'var(--color-error, #ef4444)',
-            backgroundColor: 'var(--bg-surface, #1e1e24)',
+            borderColor: "var(--color-error, #ef4444)",
+            backgroundColor: "var(--bg-surface, #1e1e24)",
           }}
         >
           <AlertCircle color="var(--color-error, #ef4444)" className="mb-2" size={32} />
           <h3
-            className="text-md font-semibold mt-2"
-            style={{ color: 'var(--color-error, #ef4444)' }}
+            className="mt-2 font-semibold text-md"
+            style={{ color: "var(--color-error, #ef4444)" }}
           >
             Module Unavailable: {this.props.featureName}
           </h3>
-          <p className="text-sm mt-1 mb-4" style={{ color: 'var(--text-secondary, #a1a1aa)' }}>
+          <p className="mt-1 mb-4 text-sm" style={{ color: "var(--text-secondary, #a1a1aa)" }}>
             This feature encountered an unexpected error and has been isolated.
           </p>
           <Button variant="secondary" onClick={() => this.setState({ error: null })}>

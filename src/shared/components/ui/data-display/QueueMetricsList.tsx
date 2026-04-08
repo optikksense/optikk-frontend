@@ -1,13 +1,13 @@
-import { Link } from '@tanstack/react-router';
+import { Link } from "@tanstack/react-router";
 
-import { formatNumber } from '@shared/utils/formatters';
-import { CHART_COLORS } from '@config/constants';
-import type { DashboardDrawerAction } from '@/types/dashboardConfig';
-import { buildDashboardDrawerSearch } from '@shared/components/ui/dashboard/utils/dashboardDrawerState';
+import type { DashboardDrawerAction } from "@/types/dashboardConfig";
+import { CHART_COLORS } from "@config/constants";
+import { buildDashboardDrawerSearch } from "@shared/components/ui/dashboard/utils/dashboardDrawerState";
+import { formatNumber } from "@shared/utils/formatters";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-export type QueueMetricsListType = 'depth' | 'consumerLag' | 'productionRate' | 'consumptionRate';
+export type QueueMetricsListType = "depth" | "consumerLag" | "productionRate" | "consumptionRate";
 
 interface QueueMetricsItem {
   key?: string;
@@ -41,14 +41,14 @@ interface QueueRowDisplayConfig {
 
 function formatRate(value: number): string {
   const numericValue = Number(value);
-  if (!Number.isFinite(numericValue)) return '0';
+  if (!Number.isFinite(numericValue)) return "0";
   if (Math.abs(numericValue) >= 1000) return formatNumber(numericValue);
   return numericValue.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 
 function formatDepth(value: number): string {
   const numericValue = Number(value);
-  if (!Number.isFinite(numericValue)) return '0';
+  if (!Number.isFinite(numericValue)) return "0";
   if (Math.abs(numericValue) >= 1000) return formatNumber(numericValue);
   return numericValue.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
@@ -57,38 +57,38 @@ function getQueueDisplayConfig(
   type: QueueMetricsListType,
   queue: QueueMetricsItem
 ): QueueRowDisplayConfig {
-  if (type === 'consumerLag') {
+  if (type === "consumerLag") {
     const lag = queue.max_consumer_lag ?? 0;
     return {
-      selectedBg: 'rgba(240, 68, 56, 0.12)',
-      hoverBg: 'rgba(255,255,255,0.04)',
-      valueColor: lag > 100 ? 'var(--color-error)' : 'var(--text-primary)',
+      selectedBg: "rgba(240, 68, 56, 0.12)",
+      hoverBg: "rgba(255,255,255,0.04)",
+      valueColor: lag > 100 ? "var(--color-error)" : "var(--text-primary)",
       displayValue: formatNumber(lag),
     };
   }
 
-  if (type === 'productionRate') {
+  if (type === "productionRate") {
     return {
-      selectedBg: 'rgba(247, 182, 58, 0.12)',
-      hoverBg: 'rgba(255,255,255,0.04)',
-      valueColor: 'var(--text-primary)',
+      selectedBg: "rgba(247, 182, 58, 0.12)",
+      hoverBg: "rgba(255,255,255,0.04)",
+      valueColor: "var(--text-primary)",
       displayValue: `${formatRate(queue.avg_publish_rate ?? 0)}/s`,
     };
   }
 
-  if (type === 'consumptionRate') {
+  if (type === "consumptionRate") {
     return {
-      selectedBg: 'rgba(115, 201, 145, 0.12)',
-      hoverBg: 'rgba(255,255,255,0.04)',
-      valueColor: 'var(--text-primary)',
+      selectedBg: "rgba(115, 201, 145, 0.12)",
+      hoverBg: "rgba(255,255,255,0.04)",
+      valueColor: "var(--text-primary)",
       displayValue: `${formatRate(queue.avg_receive_rate ?? 0)}/s`,
     };
   }
 
   return {
-    selectedBg: 'rgba(124, 127, 242, 0.12)',
-    hoverBg: 'rgba(255,255,255,0.04)',
-    valueColor: 'var(--text-primary)',
+    selectedBg: "rgba(124, 127, 242, 0.12)",
+    hoverBg: "rgba(255,255,255,0.04)",
+    valueColor: "var(--text-primary)",
     displayValue: formatDepth(queue.avg_queue_depth ?? 0),
   };
 }
@@ -103,44 +103,44 @@ export default function QueueMetricsList({
   queues = [],
   selectedQueues = [],
   onToggle,
-  type = 'depth', // 'depth', 'consumerLag', 'productionRate', 'consumptionRate'
+  type = "depth", // 'depth', 'consumerLag', 'productionRate', 'consumptionRate'
   drawerAction,
-  currentPathname = '',
-  currentSearch = '',
+  currentPathname = "",
+  currentSearch = "",
   maxVisibleRows,
 }: QueueMetricsListProps): JSX.Element | null {
   if (queues.length === 0) return null;
   const visibleQueues = maxVisibleRows ? queues.slice(0, maxVisibleRows) : queues;
 
   return (
-    <div style={{ marginTop: 0, borderTop: '1px solid var(--border-color)' }}>
+    <div style={{ marginTop: 0, borderTop: "1px solid var(--border-color)" }}>
       <div
         style={{
-          maxHeight: '180px',
-          overflowY: 'auto',
-          scrollbarWidth: 'thin',
+          maxHeight: "180px",
+          overflowY: "auto",
+          scrollbarWidth: "thin",
           scrollbarColor: `var(--border-color, ${APP_COLORS.hex_2d2d2d}) transparent`,
         }}
       >
         <table
           style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            fontSize: '12px',
-            textAlign: 'left',
+            width: "100%",
+            borderCollapse: "collapse",
+            fontSize: "12px",
+            textAlign: "left",
           }}
         >
           <thead>
             <tr
               style={{
-                color: 'var(--text-secondary)',
-                borderBottom: '1px solid var(--border-color)',
+                color: "var(--text-secondary)",
+                borderBottom: "1px solid var(--border-color)",
               }}
             >
-              <th style={{ padding: '4px 8px', fontWeight: 500 }}>Topic Name</th>
-              <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>{title}</th>
+              <th style={{ padding: "4px 8px", fontWeight: 500 }}>Topic Name</th>
+              <th style={{ padding: "4px 8px", fontWeight: 500, textAlign: "right" }}>{title}</th>
               {drawerAction ? (
-                <th style={{ padding: '4px 8px', fontWeight: 500, textAlign: 'right' }}>Details</th>
+                <th style={{ padding: "4px 8px", fontWeight: 500, textAlign: "right" }}>Details</th>
               ) : null}
             </tr>
           </thead>
@@ -148,7 +148,7 @@ export default function QueueMetricsList({
             {visibleQueues.map((queue, index) => {
               const queueKey =
                 queue.key ??
-                `${queue.queue_name ?? 'unknown'}::${queue.service_name ?? 'unknown'}::${index}`;
+                `${queue.queue_name ?? "unknown"}::${queue.service_name ?? "unknown"}::${index}`;
               const detailSearch = buildDashboardDrawerSearch(
                 currentSearch,
                 drawerAction,
@@ -163,9 +163,9 @@ export default function QueueMetricsList({
 
               // Find max value in list for proportional bar calculation
               const getVal = (q: QueueMetricsItem) => {
-                if (type === 'consumerLag') return q.max_consumer_lag ?? 0;
-                if (type === 'productionRate') return q.avg_publish_rate ?? 0;
-                if (type === 'consumptionRate') return q.avg_receive_rate ?? 0;
+                if (type === "consumerLag") return q.max_consumer_lag ?? 0;
+                if (type === "productionRate") return q.avg_publish_rate ?? 0;
+                if (type === "consumptionRate") return q.avg_receive_rate ?? 0;
                 return q.avg_queue_depth ?? 0;
               };
               const maxValInList = Math.max(...visibleQueues.map(getVal), 1);
@@ -175,11 +175,11 @@ export default function QueueMetricsList({
 
               // Gradient based on type
               const barBg =
-                type === 'consumerLag'
+                type === "consumerLag"
                   ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
-                  : type === 'productionRate'
+                  : type === "productionRate"
                     ? `linear-gradient(90deg, ${APP_COLORS.hex_ffd166} 0%, ${APP_COLORS.hex_f79009} 100%)`
-                    : type === 'consumptionRate'
+                    : type === "consumptionRate"
                       ? `linear-gradient(90deg, ${APP_COLORS.hex_06d6a0} 0%, ${APP_COLORS.hex_73c991} 100%)`
                       : `linear-gradient(90deg, ${CHART_COLORS[1]} 0%, ${CHART_COLORS[0]} 100%)`;
 
@@ -191,9 +191,9 @@ export default function QueueMetricsList({
                     onToggle?.(queueKey);
                   }}
                   style={{
-                    background: isSelected ? selectedBg : 'transparent',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s',
+                    background: isSelected ? selectedBg : "transparent",
+                    cursor: "pointer",
+                    transition: "background 0.2s",
                     opacity: isFaded ? 0.4 : 1,
                   }}
                   onMouseEnter={(event) => {
@@ -202,23 +202,23 @@ export default function QueueMetricsList({
                     }
                   }}
                   onMouseLeave={(event) => {
-                    event.currentTarget.style.background = isSelected ? selectedBg : 'transparent';
+                    event.currentTarget.style.background = isSelected ? selectedBg : "transparent";
                   }}
                 >
                   <td
                     style={{
-                      padding: '4px 8px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px',
+                      padding: "4px 8px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
                     }}
                   >
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>
                         {queue.queue_name}
                       </span>
-                      {queue.service_name && queue.service_name !== 'unknown' && (
-                        <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+                      {queue.service_name && queue.service_name !== "unknown" && (
+                        <span style={{ color: "var(--text-muted)", fontSize: "11px" }}>
                           {queue.service_name}
                         </span>
                       )}
@@ -226,20 +226,20 @@ export default function QueueMetricsList({
                     {/* Proportional Gradient Intensity Bar */}
                     <div
                       style={{
-                        width: '100%',
-                        height: '3px',
-                        background: 'rgba(255,255,255,0.06)',
-                        borderRadius: '999px',
-                        overflow: 'hidden',
-                        marginTop: '2px',
+                        width: "100%",
+                        height: "3px",
+                        background: "rgba(255,255,255,0.06)",
+                        borderRadius: "999px",
+                        overflow: "hidden",
+                        marginTop: "2px",
                       }}
                     >
                       <div
                         style={{
                           width: `${barWidth}%`,
-                          height: '100%',
+                          height: "100%",
                           background: barBg,
-                          borderRadius: '2px',
+                          borderRadius: "2px",
                         }}
                       />
                     </div>
@@ -247,8 +247,8 @@ export default function QueueMetricsList({
                   <td
                     className="font-mono"
                     style={{
-                      padding: '4px 8px',
-                      textAlign: 'right',
+                      padding: "4px 8px",
+                      textAlign: "right",
                       color: valueColor,
                     }}
                   >
@@ -257,9 +257,9 @@ export default function QueueMetricsList({
                   {drawerAction ? (
                     <td
                       style={{
-                        padding: '4px 8px',
-                        textAlign: 'right',
-                        whiteSpace: 'nowrap',
+                        padding: "4px 8px",
+                        textAlign: "right",
+                        whiteSpace: "nowrap",
                       }}
                     >
                       {detailSearch ? (
@@ -267,15 +267,15 @@ export default function QueueMetricsList({
                           to={currentPathname + detailSearch}
                           onClick={(event) => event.stopPropagation()}
                           style={{
-                            color: 'var(--color-primary)',
-                            fontSize: '12px',
+                            color: "var(--color-primary)",
+                            fontSize: "12px",
                             fontWeight: 500,
                           }}
                         >
                           View
                         </Link>
                       ) : (
-                        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>—</span>
+                        <span style={{ color: "var(--text-muted)", fontSize: "12px" }}>—</span>
                       )}
                     </td>
                   ) : null}

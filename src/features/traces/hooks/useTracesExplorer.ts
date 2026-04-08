@@ -1,16 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { useCallback, useMemo, useState } from "react";
 
-import { buildTracesExplorerQuery } from '@/features/explorer-core/utils/explorerQuery';
-import { useURLFilters } from '@shared/hooks/useURLFilters';
-import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
+import { buildTracesExplorerQuery } from "@/features/explorer-core/utils/explorerQuery";
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
+import { useURLFilters } from "@shared/hooks/useURLFilters";
 
-import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
+import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
 
-import { tracesExplorerApi } from '../api/tracesExplorerApi';
+import { tracesExplorerApi } from "../api/tracesExplorerApi";
 
-import type { TracesBackendParams } from '../api/tracesApi';
-import type { TraceExplorerFacets, TraceSummary } from '../types';
+import type { TracesBackendParams } from "../api/tracesApi";
+import type { TraceExplorerFacets, TraceSummary } from "../types";
 
 const EMPTY_TRACE_FACETS: TraceExplorerFacets = {
   service_name: [],
@@ -33,12 +33,12 @@ const EMPTY_TRACE_SUMMARY: TraceSummary = {
 
 const TRACES_URL_FILTER_CONFIG = {
   params: [
-    { key: 'service', type: 'string' as const, defaultValue: '' },
-    { key: 'errorsOnly', type: 'boolean' as const, defaultValue: false },
-    { key: 'mode', type: 'string' as const, defaultValue: 'all' },
+    { key: "service", type: "string" as const, defaultValue: "" },
+    { key: "errorsOnly", type: "boolean" as const, defaultValue: false },
+    { key: "mode", type: "string" as const, defaultValue: "all" },
   ],
   syncStructuredFilters: true,
-  stripParams: ['view', 'search'],
+  stripParams: ["view", "search"],
 };
 
 function compileStructuredFilters(
@@ -48,36 +48,36 @@ function compileStructuredFilters(
 
   for (const filter of filters) {
     switch (filter.field) {
-      case 'trace_id':
+      case "trace_id":
         compiled.traceId = filter.value;
         break;
-      case 'operation_name':
+      case "operation_name":
         compiled.operationName = filter.value;
         break;
-      case 'status':
+      case "status":
         compiled.status = filter.value;
         break;
-      case 'service_name':
+      case "service_name":
         compiled.services = [filter.value];
         break;
-      case 'http_method':
+      case "http_method":
         compiled.httpMethod = filter.value;
         break;
-      case 'http_status':
+      case "http_status":
         compiled.httpStatusCode = filter.value;
         break;
-      case 'duration_ms':
-        if (filter.operator === 'gt') {
+      case "duration_ms":
+        if (filter.operator === "gt") {
           compiled.minDuration = Number(filter.value);
         }
-        if (filter.operator === 'lt') {
+        if (filter.operator === "lt") {
           compiled.maxDuration = Number(filter.value);
         }
         break;
-      case 'span_kind':
+      case "span_kind":
         compiled.spanKind = filter.value;
         break;
-      case 'db_system':
+      case "db_system":
         compiled.dbSystem = filter.value;
         break;
       default:
@@ -102,24 +102,22 @@ export function useTracesExplorer() {
   } = useURLFilters(TRACES_URL_FILTER_CONFIG);
 
   const selectedService =
-    typeof urlValues['service'] === 'string' && urlValues['service'].length > 0
-      ? urlValues['service']
+    typeof urlValues.service === "string" && urlValues.service.length > 0
+      ? urlValues.service
       : null;
-  const errorsOnly = urlValues['errorsOnly'] === true;
-  const mode = typeof urlValues['mode'] === 'string' ? urlValues['mode'] : 'all';
-
-
+  const errorsOnly = urlValues.errorsOnly === true;
+  const mode = typeof urlValues.mode === "string" ? urlValues.mode : "all";
 
   const setSelectedService = (value: string | null): void => {
-    urlSetters['service']?.(value || '');
+    urlSetters.service?.(value || "");
   };
 
   const setErrorsOnly = (value: boolean): void => {
-    urlSetters['errorsOnly']?.(value);
+    urlSetters.errorsOnly?.(value);
   };
 
   const setMode = (value: string): void => {
-    urlSetters['mode']?.(value);
+    urlSetters.mode?.(value);
   };
 
   const [page, setPage] = useState(1);
@@ -147,7 +145,7 @@ export function useTracesExplorer() {
     };
 
     if (errorsOnly) {
-      params.status = 'ERROR';
+      params.status = "ERROR";
     }
     if (selectedService) {
       params.services = [selectedService];
@@ -158,8 +156,8 @@ export function useTracesExplorer() {
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [
-      'traces',
-      'explorer',
+      "traces",
+      "explorer",
       selectedTeamId,
       startTime,
       endTime,
@@ -174,7 +172,7 @@ export function useTracesExplorer() {
         endTime,
         limit: pageSize,
         offset: (page - 1) * pageSize,
-        step: '5m',
+        step: "5m",
         query: explorerQuery,
       }),
     enabled: Boolean(selectedTeamId),

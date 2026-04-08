@@ -1,14 +1,14 @@
-import { queryOptions } from '@tanstack/react-query';
-import { aiRunsApi } from './aiRunsApi';
-import { aiRunDetailApi } from './aiRunDetailApi';
-import { aiTracesApi } from './aiTracesApi';
-import { aiConversationsApi } from './aiConversationsApi';
-import type { RequestTime } from '@shared/api/service-types';
-import type { LLMRunFilters } from '../types';
+import type { RequestTime } from "@shared/api/service-types";
+import { queryOptions } from "@tanstack/react-query";
+import type { LLMRunFilters } from "../types";
+import { aiConversationsApi } from "./aiConversationsApi";
+import { aiRunDetailApi } from "./aiRunDetailApi";
+import { aiRunsApi } from "./aiRunsApi";
+import { aiTracesApi } from "./aiTracesApi";
 
 export const aiRunsKeys = {
-  all: ['ai-runs'] as const,
-  lists: () => [...aiRunsKeys.all, 'list'] as const,
+  all: ["ai-runs"] as const,
+  lists: () => [...aiRunsKeys.all, "list"] as const,
   list: (
     teamId: number | null,
     startTime: RequestTime,
@@ -16,7 +16,7 @@ export const aiRunsKeys = {
     filters: LLMRunFilters,
     refreshKey?: number
   ) => [...aiRunsKeys.lists(), { teamId, startTime, endTime, refreshKey, ...filters }] as const,
-  summaries: () => [...aiRunsKeys.all, 'summary'] as const,
+  summaries: () => [...aiRunsKeys.all, "summary"] as const,
   summary: (
     teamId: number | null,
     startTime: RequestTime,
@@ -25,9 +25,9 @@ export const aiRunsKeys = {
     refreshKey?: number
   ) => [...aiRunsKeys.summaries(), { teamId, startTime, endTime, refreshKey, ...filters }] as const,
   models: (teamId: number | null, startTime: RequestTime, endTime: RequestTime) =>
-    [...aiRunsKeys.all, 'models', { teamId, startTime, endTime }] as const,
+    [...aiRunsKeys.all, "models", { teamId, startTime, endTime }] as const,
   operations: (teamId: number | null, startTime: RequestTime, endTime: RequestTime) =>
-    [...aiRunsKeys.all, 'operations', { teamId, startTime, endTime }] as const,
+    [...aiRunsKeys.all, "operations", { teamId, startTime, endTime }] as const,
 };
 
 export const aiRunsQueries = {
@@ -81,13 +81,13 @@ export const aiRunsQueries = {
 };
 
 export const aiRunDetailKeys = {
-  all: ['ai-run-detail'] as const,
+  all: ["ai-run-detail"] as const,
   detail: (teamId: number | null, spanId: string) =>
-    [...aiRunDetailKeys.all, 'detail', { teamId, spanId }] as const,
+    [...aiRunDetailKeys.all, "detail", { teamId, spanId }] as const,
   messages: (teamId: number | null, spanId: string) =>
-    [...aiRunDetailKeys.all, 'messages', { teamId, spanId }] as const,
+    [...aiRunDetailKeys.all, "messages", { teamId, spanId }] as const,
   context: (teamId: number | null, spanId: string, traceId: string) =>
-    [...aiRunDetailKeys.all, 'context', { teamId, spanId, traceId }] as const,
+    [...aiRunDetailKeys.all, "context", { teamId, spanId, traceId }] as const,
 };
 
 export const aiRunDetailQueries = {
@@ -120,11 +120,11 @@ export const aiRunDetailQueries = {
 };
 
 export const aiTraceKeys = {
-  all: ['ai-traces'] as const,
+  all: ["ai-traces"] as const,
   trace: (teamId: number | null, traceId: string) =>
-    [...aiTraceKeys.all, 'trace', { teamId, traceId }] as const,
+    [...aiTraceKeys.all, "trace", { teamId, traceId }] as const,
   summary: (teamId: number | null, traceId: string) =>
-    [...aiTraceKeys.all, 'summary', { teamId, traceId }] as const,
+    [...aiTraceKeys.all, "summary", { teamId, traceId }] as const,
 };
 
 export const aiTraceQueries = {
@@ -148,16 +148,16 @@ export const aiTraceQueries = {
 };
 
 export const aiConversationKeys = {
-  all: ['ai-conversations'] as const,
+  all: ["ai-conversations"] as const,
   list: (teamId: number | null, startTime: RequestTime, endTime: RequestTime) =>
-    [...aiConversationKeys.all, 'list', { teamId, startTime, endTime }] as const,
+    [...aiConversationKeys.all, "list", { teamId, startTime, endTime }] as const,
   detail: (
     teamId: number | null,
     conversationId: string,
     startTime: RequestTime,
     endTime: RequestTime
   ) =>
-    [...aiConversationKeys.all, 'detail', { teamId, conversationId, startTime, endTime }] as const,
+    [...aiConversationKeys.all, "detail", { teamId, conversationId, startTime, endTime }] as const,
 };
 
 export const aiConversationQueries = {

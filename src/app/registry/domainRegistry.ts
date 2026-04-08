@@ -1,16 +1,15 @@
-import { aiConfig } from '@/features/ai';
-import { infrastructureConfig } from '@/features/infrastructure';
-import { logsConfig } from '@/features/log';
-import { metricsConfig } from '@/features/metrics';
-import { overviewConfig } from '@/features/overview';
-import { settingsConfig } from '@/features/settings';
-import { tracesConfig } from '@/features/traces';
+import { aiConfig } from "@/features/ai";
+import { infrastructureConfig } from "@/features/infrastructure";
+import { logsConfig } from "@/features/log";
+import { metricsConfig } from "@/features/metrics";
+import { overviewConfig } from "@/features/overview";
+import { settingsConfig } from "@/features/settings";
+import { tracesConfig } from "@/features/traces";
 
-
-import type { LucideIcon } from 'lucide-react';
-import type { ComponentType, LazyExoticComponent } from 'react';
-import type { AppRoutePath } from '@/shared/constants/routes';
-import type { DashboardPanelRegistration } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+import type { AppRoutePath } from "@/shared/constants/routes";
+import type { DashboardPanelRegistration } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import type { LucideIcon } from "lucide-react";
+import type { ComponentType, LazyExoticComponent } from "react";
 
 export interface DashboardAdapterPageProps {
   readonly pathParams?: Record<string, string>;
@@ -99,7 +98,10 @@ export function getExplorerRoutes(): readonly RegisteredDomainRoute[] {
 export function resolveRegisteredExplorerRoute(pathname: string): RegisteredDomainRoute | null {
   const routes = getExplorerRoutes();
   for (const route of routes) {
-    if (pathname.startsWith(route.path) && (pathname.length === route.path.length || pathname[route.path.length] === '/')) {
+    if (
+      pathname.startsWith(route.path) &&
+      (pathname.length === route.path.length || pathname[route.path.length] === "/")
+    ) {
       return route;
     }
   }

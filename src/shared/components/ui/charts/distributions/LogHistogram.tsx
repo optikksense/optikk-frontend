@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react';
-import uPlot from 'uplot';
+import { useMemo, useState } from "react";
+import type uPlot from "uplot";
 
-import { APP_COLORS } from '@config/colorLiterals';
-import { LOG_LEVELS } from '@config/constants';
+import { APP_COLORS } from "@config/colorLiterals";
+import { LOG_LEVELS } from "@config/constants";
 
-import UPlotChart, { uBars } from '../UPlotChart';
+import UPlotChart, { uBars } from "../UPlotChart";
 
-const LEVEL_ORDER = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
+const LEVEL_ORDER = ["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"];
 
 const LEVEL_COLORS: Record<string, string> = {
   TRACE: APP_COLORS.hex_7e8ea0,
@@ -17,16 +17,16 @@ const LEVEL_COLORS: Record<string, string> = {
   FATAL: APP_COLORS.hex_c00021,
 };
 
-const LEGEND_ORDER = ['ERROR', 'INFO', 'WARN', 'DEBUG', 'FATAL', 'TRACE'];
+const LEGEND_ORDER = ["ERROR", "INFO", "WARN", "DEBUG", "FATAL", "TRACE"];
 
 const INTERVAL_MS: Record<string, number> = {
-  '30s': 30_000,
-  '1m': 60_000,
-  '5m': 300_000,
-  '15m': 900_000,
-  '30m': 1_800_000,
-  '1h': 3_600_000,
-  '6h': 21_600_000,
+  "30s": 30_000,
+  "1m": 60_000,
+  "5m": 300_000,
+  "15m": 900_000,
+  "30m": 1_800_000,
+  "1h": 3_600_000,
+  "6h": 21_600_000,
 };
 
 function getBucketTimeValue(row: any) {
@@ -34,9 +34,9 @@ function getBucketTimeValue(row: any) {
 }
 
 function parseBucketMs(value: any) {
-  const timeStr = String(value ?? '');
+  const timeStr = String(value ?? "");
   const isSqlFormat = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(timeStr);
-  return new Date(isSqlFormat ? timeStr.replace(' ', 'T') + 'Z' : timeStr).getTime();
+  return new Date(isSqlFormat ? `${timeStr.replace(" ", "T")}Z` : timeStr).getTime();
 }
 
 function getPointCount(row: any) {
@@ -47,14 +47,14 @@ function getPointCount(row: any) {
 
 function fmtTime(ms: number) {
   const d = new Date(ms);
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
 function fmtCount(n: any) {
   const val = Number(n);
   if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}M`;
   if (val >= 1_000) return `${(val / 1_000).toFixed(1)}k`;
-  return val > 0 ? String(val) : '';
+  return val > 0 ? String(val) : "";
 }
 
 function generateAllBuckets(startTime: number, endTime: number, interval: string) {
@@ -92,13 +92,13 @@ export function LogHistogramPanel({ chartConfig, dataSources, extraContext = {} 
 
   const startTime = extraContext?.startTime || dataSources?._meta?.startTime;
   const endTime = extraContext?.endTime || dataSources?._meta?.endTime;
-  const interval = extraContext?.interval || dataSources?._meta?.interval || '1m';
+  const interval = extraContext?.interval || dataSources?._meta?.interval || "1m";
 
   return (
     <div className="lh-panel">
       <div className="lh-panel__header" onClick={() => setCollapsed((c) => !c)}>
-        <span className="lh-panel__chevron">{collapsed ? '›' : 'v'}</span>
-        <span className="lh-panel__title">{chartConfig.title || 'Logs volume'}</span>
+        <span className="lh-panel__chevron">{collapsed ? "›" : "v"}</span>
+        <span className="lh-panel__title">{chartConfig.title || "Logs volume"}</span>
       </div>
       {!collapsed && (
         <div className="lh-panel__body">
@@ -111,7 +111,7 @@ export function LogHistogramPanel({ chartConfig, dataSources, extraContext = {} 
               interval={interval}
             />
           ) : (
-            <div style={{ textAlign: 'center', padding: 12, color: 'var(--text-muted)' }}>
+            <div style={{ textAlign: "center", padding: 12, color: "var(--text-muted)" }}>
               No log data
             </div>
           )}
@@ -135,7 +135,7 @@ export default function LogHistogram({
   height = 180,
   startTime,
   endTime,
-  interval = '1m',
+  interval = "1m",
   fillHeight = false,
 }: any) {
   const { allBuckets, seriesData, activeLevels, hasData } = useMemo(() => {
@@ -144,7 +144,7 @@ export default function LogHistogram({
         const allBuckets = generateAllBuckets(startTime, endTime, interval);
         return {
           allBuckets,
-          seriesData: [{ level: 'INFO', data: allBuckets.map(() => 0) }],
+          seriesData: [{ level: "INFO", data: allBuckets.map(() => 0) }],
           activeLevels: [] as string[],
           hasData: true,
         };
@@ -182,7 +182,7 @@ export default function LogHistogram({
         const ts = parseBucketMs(getBucketTimeValue(d));
         if (!Number.isFinite(ts)) return;
         const bucketMs = Math.round(ts / stepMs) * stepMs;
-        const lvl = String(d.level || 'INFO').toUpperCase();
+        const lvl = String(d.level || "INFO").toUpperCase();
         if (!countMap[bucketMs]) countMap[bucketMs] = {};
         countMap[bucketMs][lvl] = (countMap[bucketMs][lvl] || 0) + getPointCount(d);
       });
@@ -190,7 +190,7 @@ export default function LogHistogram({
       const activeLevels = LEVEL_ORDER.filter((lvl) =>
         Object.values(countMap).some((cm) => (cm[lvl] || 0) > 0)
       );
-      const levels = activeLevels.length > 0 ? activeLevels : ['INFO'];
+      const levels = activeLevels.length > 0 ? activeLevels : ["INFO"];
       const seriesData = levels.map((lvl) => ({
         level: lvl,
         label: (LOG_LEVELS as any)[lvl]?.label || lvl,
@@ -213,12 +213,12 @@ export default function LogHistogram({
       allBuckets,
       seriesData: [
         {
-          level: 'INFO',
-          label: 'logs',
+          level: "INFO",
+          label: "logs",
           data: allBuckets.map((b) => countByBucket[b] || 0),
         },
       ],
-      activeLevels: ['INFO'],
+      activeLevels: ["INFO"],
       hasData: true,
     };
   }, [data, startTime, endTime, interval]);
@@ -246,24 +246,24 @@ export default function LogHistogram({
     const uplotData: uPlot.AlignedData = [xValues, ...reversedStacked];
     const timeLabels = allBuckets.map(fmtTime);
 
-    const chartOpts: Omit<uPlot.Options, 'width' | 'height'> = {
+    const chartOpts: Omit<uPlot.Options, "width" | "height"> = {
       axes: [
         {
           stroke: APP_COLORS.hex_6b7280_2,
           grid: { show: false },
           ticks: { show: false },
-          font: '10px inherit',
+          font: "10px inherit",
           values: (_u: uPlot, splits: number[]) =>
             splits.map((s) => {
               const idx = xValues.indexOf(s);
-              return idx >= 0 ? timeLabels[idx] : '';
+              return idx >= 0 ? timeLabels[idx] : "";
             }),
         },
         {
           stroke: APP_COLORS.hex_6b7280_2,
-          grid: { stroke: 'rgba(255,255,255,0.04)', width: 1 },
+          grid: { stroke: "rgba(255,255,255,0.04)", width: 1 },
           ticks: { show: false },
-          font: '10px inherit',
+          font: "10px inherit",
           size: 40,
           values: (_u: uPlot, splits: number[]) => splits.map(fmtCount),
         },
@@ -289,7 +289,7 @@ export default function LogHistogram({
   return (
     <div className="lh-chart-wrap h-full min-h-0">
       <div
-        className={fillHeight ? 'h-full min-h-0' : undefined}
+        className={fillHeight ? "h-full min-h-0" : undefined}
         style={fillHeight ? undefined : { height }}
       >
         <UPlotChart options={opts} data={uplotData} height={height} fillHeight={fillHeight} />

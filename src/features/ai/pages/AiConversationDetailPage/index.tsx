@@ -1,19 +1,19 @@
-import { MessageSquare } from 'lucide-react';
-import { useMemo } from 'react';
-import { useNavigate, useParams } from '@tanstack/react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "@tanstack/react-router";
+import { MessageSquare } from "lucide-react";
+import { useMemo } from "react";
 
-import { PageHeader } from '@shared/components/ui';
-import { useTeamId, useTimeRange, useRefreshKey } from '@app/store/appStore';
-import { resolveTimeRangeBounds } from '@/types';
-import { formatDuration, formatNumber, formatTimestamp } from '@shared/utils/formatters';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import { resolveTimeRangeBounds } from "@/types";
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
+import { PageHeader } from "@shared/components/ui";
+import { formatDuration, formatNumber, formatTimestamp } from "@shared/utils/formatters";
 
-import { aiConversationQueries } from '../../api/queryOptions';
-import type { ConversationTurn } from '../../types';
+import { aiConversationQueries } from "../../api/queryOptions";
+import type { ConversationTurn } from "../../types";
 
 export default function AiConversationDetailPage() {
-  const { conversationId = '' } = useParams({ strict: false });
+  const { conversationId = "" } = useParams({ strict: false });
   const navigate = useNavigate();
   const selectedTeamId = useTeamId();
   const timeRange = useTimeRange();
@@ -30,22 +30,22 @@ export default function AiConversationDetailPage() {
   );
 
   return (
-    <div className="max-w-[900px] mx-auto px-6 pb-6">
+    <div className="mx-auto max-w-[900px] px-6 pb-6">
       <PageHeader
         title="Conversation"
         icon={<MessageSquare size={24} />}
         breadcrumbs={[
-          { label: 'Conversations', path: '/ai-conversations' },
+          { label: "Conversations", path: "/ai-conversations" },
           {
             label:
               decodeURIComponent(conversationId).slice(0, 20) +
-              (conversationId.length > 20 ? '…' : ''),
+              (conversationId.length > 20 ? "…" : ""),
           },
         ]}
       />
 
-      <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-[10px] overflow-hidden">
-        <h3 className="text-[13px] font-semibold text-[var(--text-primary)] px-[18px] py-[14px] m-0 border-b border-[var(--border-color)]">
+      <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+        <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
           <MessageSquare size={14} style={{ marginRight: 6, verticalAlign: -2 }} />
           Turns
           <span className="traces-count-badge" style={{ marginLeft: 8 }}>
@@ -54,14 +54,14 @@ export default function AiConversationDetailPage() {
         </h3>
 
         {isLoading && (
-          <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+          <div style={{ padding: 40, textAlign: "center", color: "var(--text-muted)" }}>
             Loading...
           </div>
         )}
 
         {!isLoading && turns.length === 0 && (
           <div
-            style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontSize: 12.5 }}
+            style={{ padding: 40, textAlign: "center", color: "var(--text-muted)", fontSize: 12.5 }}
           >
             No turns found for this conversation.
           </div>
@@ -70,22 +70,22 @@ export default function AiConversationDetailPage() {
         {turns.map((turn: ConversationTurn, i: number) => (
           <div
             key={turn.spanId}
-            className="flex gap-3 px-[18px] py-[14px] border-b border-[var(--border-color)] cursor-pointer transition-colors last:border-b-0 hover:bg-white/[0.02]"
+            className="flex cursor-pointer gap-3 border-[var(--border-color)] border-b px-[18px] py-[14px] transition-colors last:border-b-0 hover:bg-white/[0.02]"
             onClick={() => navigate({ to: `/ai-runs/${turn.spanId}` })}
           >
-            <div className="w-7 h-7 rounded-full bg-[var(--glass-bg)] border border-[var(--border-color)] flex items-center justify-center text-[11px] font-semibold text-[var(--text-muted)] shrink-0">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border-color)] bg-[var(--glass-bg)] font-semibold text-[11px] text-[var(--text-muted)]">
               {i + 1}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[12px] font-semibold text-[var(--text-primary)]">
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center gap-2">
+                <span className="font-semibold text-[12px] text-[var(--text-primary)]">
                   {turn.model}
                 </span>
                 {turn.hasError && (
                   <span
                     className={cn(
-                      'inline-flex py-0.5 px-2 rounded text-[10px] font-semibold',
-                      'bg-[rgba(240,68,56,0.12)] text-[#f04438]'
+                      "inline-flex rounded px-2 py-0.5 font-semibold text-[10px]",
+                      "bg-[rgba(240,68,56,0.12)] text-[#f04438]"
                     )}
                   >
                     Error

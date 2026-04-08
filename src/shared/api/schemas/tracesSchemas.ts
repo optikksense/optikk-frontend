@@ -1,16 +1,16 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const traceRecordSchema = z
   .object({
     span_id: z.string(),
     trace_id: z.string(),
-    service_name: z.string().default(''),
-    operation_name: z.string().default(''),
-    start_time: z.string().default(''),
-    end_time: z.string().default(''),
+    service_name: z.string().default(""),
+    operation_name: z.string().default(""),
+    start_time: z.string().default(""),
+    end_time: z.string().default(""),
     duration_ms: z.number().default(0),
-    status: z.string().default('UNSET'),
-    span_kind: z.string().default(''),
+    status: z.string().default("UNSET"),
+    span_kind: z.string().default(""),
     status_message: z.string().optional(),
     http_method: z.string().optional(),
     http_url: z.string().optional(),
@@ -23,22 +23,22 @@ export const traceRecordSchema = z
 export const spanRecordSchema = z
   .object({
     span_id: z.string(),
-    trace_id: z.string().default(''),
+    trace_id: z.string().default(""),
     parent_span_id: z.string().optional(),
-    service_name: z.string().default(''),
-    operation_name: z.string().default(''),
-    start_time: z.string().default(''),
-    end_time: z.string().default(''),
+    service_name: z.string().default(""),
+    operation_name: z.string().default(""),
+    start_time: z.string().default(""),
+    end_time: z.string().default(""),
     duration_ms: z.number().default(0),
-    status: z.string().default('UNSET'),
-    span_kind: z.string().default(''),
-    status_message: z.string().default(''),
-    http_method: z.string().default(''),
-    http_url: z.string().default(''),
+    status: z.string().default("UNSET"),
+    span_kind: z.string().default(""),
+    status_message: z.string().default(""),
+    http_method: z.string().default(""),
+    http_url: z.string().default(""),
     http_status_code: z.number().default(0),
-    host: z.string().default(''),
-    pod: z.string().default(''),
-    attributes: z.string().default(''),
+    host: z.string().default(""),
+    pod: z.string().default(""),
+    attributes: z.string().default(""),
   })
   .strict();
 
@@ -78,20 +78,20 @@ export const flamegraphFrameSchema = z
 
 export const traceLogSchema = z
   .object({
-    id: z.string().default(''),
+    id: z.string().default(""),
     timestamp: z.union([z.string(), z.number()]),
     observed_timestamp: z.number().optional(),
-    severity_text: z.string().default('INFO'),
+    severity_text: z.string().default("INFO"),
     severity_number: z.number().optional(),
-    body: z.string().default(''),
-    trace_id: z.string().default(''),
-    span_id: z.string().default(''),
+    body: z.string().default(""),
+    trace_id: z.string().default(""),
+    span_id: z.string().default(""),
     trace_flags: z.number().optional(),
-    service_name: z.string().default(''),
-    host: z.string().default(''),
-    pod: z.string().default(''),
-    container: z.string().default(''),
-    environment: z.string().default(''),
+    service_name: z.string().default(""),
+    host: z.string().default(""),
+    pod: z.string().default(""),
+    container: z.string().default(""),
+    environment: z.string().default(""),
     attributes_string: z.record(z.string(), z.string()).optional(),
     attributes_number: z.record(z.string(), z.number()).optional(),
     attributes_bool: z.record(z.string(), z.boolean()).optional(),
@@ -113,7 +113,7 @@ export const spanEventSchema = z
     trace_id: z.string(),
     event_name: z.string(),
     timestamp: z.string(),
-    attributes: z.string().default(''),
+    attributes: z.string().default(""),
   })
   .strict();
 
@@ -148,11 +148,11 @@ export const spanSelfTimeSchema = z
 export const errorPathSpanSchema = z
   .object({
     span_id: z.string(),
-    parent_span_id: z.string().default(''),
+    parent_span_id: z.string().default(""),
     operation_name: z.string(),
     service_name: z.string(),
     status: z.string(),
-    status_message: z.string().default(''),
+    status_message: z.string().default(""),
     start_time: z.string(),
     duration_ms: z.number(),
   })

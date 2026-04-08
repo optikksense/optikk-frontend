@@ -6,7 +6,7 @@
  * Coerce an unknown value to a plain record. Returns `{}` for non-objects.
  */
 export function asRecord(value: unknown): Record<string, unknown> {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== "object" || value === null) {
     return {};
   }
   return value as Record<string, unknown>;
@@ -31,5 +31,5 @@ export function toNumber(value: unknown): number {
  * Coerce an unknown value to a string. Returns `''` for non-strings.
  */
 export function toStringValue(value: unknown): string {
-  return typeof value === 'string' ? value : '';
+  return typeof value === "string" ? value : "";
 }

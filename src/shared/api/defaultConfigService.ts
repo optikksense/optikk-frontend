@@ -1,28 +1,28 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 import type {
   DashboardDrawerAction,
   DashboardLayout,
   DashboardPanelSpec,
   DashboardQuerySpec,
-  DashboardStatSummaryField,
-  DashboardTableColumn,
-  DashboardSectionSpec,
-  DashboardTabDocument,
   DashboardSchemaVersion,
+  DashboardSectionSpec,
+  DashboardStatSummaryField,
+  DashboardTabDocument,
+  DashboardTableColumn,
   DefaultConfigPage,
   DefaultConfigTab,
-} from '@/types/dashboardConfig';
+} from "@/types/dashboardConfig";
 import {
   DASHBOARD_LAYOUT_VARIANTS,
   DASHBOARD_PANEL_TYPES,
   DASHBOARD_SECTION_TEMPLATES,
-} from '@/types/dashboardConfig';
+} from "@/types/dashboardConfig";
 
-import { API_CONFIG } from '@config/apiConfig';
+import { API_CONFIG } from "@config/apiConfig";
 
-import api from './api';
-import { decodeApiResponse } from './utils/validate';
+import api from "./api";
+import { decodeApiResponse } from "./utils/validate";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -41,7 +41,7 @@ const pageSchema: z.ZodType<DefaultConfigPage> = z.object({
   order: z.number(),
   defaultTabId: z.string().optional(),
   navigable: z.boolean(),
-  renderMode: z.enum(['dashboard', 'explorer']),
+  renderMode: z.enum(["dashboard", "explorer"]),
   title: z.string().optional(),
   subtitle: z.string().optional(),
 });
@@ -109,7 +109,7 @@ const dashboardTableColumnSchema: z.ZodType<DashboardTableColumn> = z
     key: z.string(),
     label: z.string(),
     formatter: z.string().optional(),
-    align: z.enum(['left', 'center', 'right']).optional(),
+    align: z.enum(["left", "center", "right"]).optional(),
     width: z.number().int().positive().optional(),
   })
   .strict();
@@ -117,14 +117,14 @@ const dashboardTableColumnSchema: z.ZodType<DashboardTableColumn> = z
 const dashboardDrawerActionSchema: z.ZodType<DashboardDrawerAction> = z
   .object({
     entity: z.enum([
-      'aiModel',
-      'databaseSystem',
-      'errorGroup',
-      'kafkaGroup',
-      'kafkaTopic',
-      'node',
-      'redisInstance',
-      'service',
+      "aiModel",
+      "databaseSystem",
+      "errorGroup",
+      "kafkaGroup",
+      "kafkaTopic",
+      "node",
+      "redisInstance",
+      "service",
     ]),
     idField: z.string(),
     titleField: z.string().optional(),
@@ -189,8 +189,8 @@ const defaultConfigService = {
   async listPages(_teamId: number | null): Promise<DefaultConfigPage[]> {
     const response = await api.get(`${BASE}/default-config/pages`);
     return decodeApiResponse(listPagesSchema, response, {
-      context: 'default config pages',
-      expectedType: 'object',
+      context: "default config pages",
+      expectedType: "object",
     }).pages;
   },
 
@@ -198,7 +198,7 @@ const defaultConfigService = {
     const response = await api.get(`${BASE}/default-config/pages/${pageId}/tabs`);
     return decodeApiResponse(listTabsSchema, response, {
       context: `default config tabs for ${pageId}`,
-      expectedType: 'object',
+      expectedType: "object",
     }).tabs;
   },
 
@@ -210,7 +210,7 @@ const defaultConfigService = {
     const response = await api.get(`${BASE}/default-config/pages/${pageId}/tabs/${tabId}`);
     return decodeApiResponse(dashboardTabDocumentSchema, response, {
       context: `default config tab document for ${pageId}/${tabId}`,
-      expectedType: 'object',
+      expectedType: "object",
     });
   },
 };

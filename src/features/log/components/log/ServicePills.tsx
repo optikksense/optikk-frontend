@@ -1,6 +1,6 @@
-import { formatNumber } from '@shared/utils/formatters';
+import { formatNumber } from "@shared/utils/formatters";
 
-import type { LogFacet } from '../../types';
+import type { LogFacet } from "../../types";
 
 interface ServicePillsProps {
   facets: LogFacet[];
@@ -23,7 +23,7 @@ export default function ServicePills({ facets, selectedService, onSelect }: Serv
   return (
     <div className="logs-service-pills">
       <div
-        className={`logs-service-pill ${!selectedService ? 'active' : ''}`}
+        className={`logs-service-pill ${!selectedService ? "active" : ""}`}
         onClick={() => onSelect(null)}
       >
         All <span className="logs-service-pill-count">{formatNumber(total)}</span>
@@ -31,7 +31,7 @@ export default function ServicePills({ facets, selectedService, onSelect }: Serv
       {facets.slice(0, 8).map((facet: LogFacet) => (
         <div
           key={facet.value}
-          className={`logs-service-pill ${selectedService === facet.value ? 'active' : ''}`}
+          className={`logs-service-pill ${selectedService === facet.value ? "active" : ""}`}
           onClick={() => onSelect(selectedService === facet.value ? null : facet.value)}
         >
           {facet.value}

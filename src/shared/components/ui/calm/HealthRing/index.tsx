@@ -1,9 +1,9 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 /**
  *
  */
-export type HealthStatus = 'healthy' | 'degraded' | 'critical' | 'unknown';
+export type HealthStatus = "healthy" | "degraded" | "critical" | "unknown";
 
 interface HealthRingProps {
   serviceName: string;
@@ -16,17 +16,17 @@ interface HealthRingProps {
 }
 
 const STATUS_COLORS: Record<HealthStatus, string> = {
-  healthy: 'var(--color-healthy, #52876B)',
-  degraded: 'var(--color-degraded, #D97706)',
-  critical: 'var(--color-critical, #DC2626)',
-  unknown: 'var(--color-unknown, #6B7280)',
+  healthy: "var(--color-healthy, #52876B)",
+  degraded: "var(--color-degraded, #D97706)",
+  critical: "var(--color-critical, #DC2626)",
+  unknown: "var(--color-unknown, #6B7280)",
 };
 
 const STATUS_GLOW: Record<HealthStatus, string> = {
-  healthy: 'var(--color-healthy-glow, rgba(82, 135, 107, 0.25))',
-  degraded: 'var(--color-degraded-glow, rgba(217, 119, 6, 0.20))',
-  critical: 'var(--color-critical-glow, rgba(220, 38, 38, 0.20))',
-  unknown: 'transparent',
+  healthy: "var(--color-healthy-glow, rgba(82, 135, 107, 0.25))",
+  degraded: "var(--color-degraded-glow, rgba(217, 119, 6, 0.20))",
+  critical: "var(--color-critical-glow, rgba(220, 38, 38, 0.20))",
+  unknown: "transparent",
 };
 
 export default function HealthRing({
@@ -51,24 +51,19 @@ export default function HealthRing({
   if (rps !== undefined) tooltipParts.push(`${rps.toFixed(1)} rps`);
   if (errorPct !== undefined) tooltipParts.push(`${errorPct.toFixed(1)}% errors`);
   if (p95Ms !== undefined) tooltipParts.push(`p95 ${p95Ms.toFixed(0)}ms`);
-  const tooltip = tooltipParts.join(' · ');
+  const tooltip = tooltipParts.join(" · ");
 
   return (
     <button
+      type="button"
       className={cn(
-        'inline-flex flex-col items-center gap-1.5 bg-transparent border-0 cursor-pointer rounded-lg transition-[background] duration-150 ease-out flex-shrink-0 hover:bg-[var(--bg-hover)]'
+        "inline-flex flex-shrink-0 cursor-pointer flex-col items-center gap-1.5 rounded-lg border-0 bg-transparent transition-[background] duration-150 ease-out hover:bg-[var(--bg-hover)]"
       )}
       title={tooltip ? `${serviceName}: ${tooltip}` : serviceName}
       onClick={() => onClick?.(serviceName)}
-      style={{ width: size + 16, padding: '8px 0' }}
+      style={{ width: size + 16, padding: "8px 0" }}
     >
-      <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        className="block"
-        style={{ filter: status !== 'unknown' ? `drop-shadow(0 0 4px ${glow})` : 'none' }}
-      >
+      <svg aria-hidden="true">
         {/* Track */}
         <circle
           cx={cx}
@@ -108,8 +103,8 @@ export default function HealthRing({
       </svg>
       <span
         className={cn(
-          'text-[10px] font-medium text-[color:var(--text-secondary)] whitespace-nowrap max-w-[64px] overflow-hidden text-ellipsis text-center',
-          status === 'critical' && 'text-[color:var(--color-critical)]'
+          "max-w-[64px] overflow-hidden text-ellipsis whitespace-nowrap text-center font-medium text-[10px] text-[color:var(--text-secondary)]",
+          status === "critical" && "text-[color:var(--color-critical)]"
         )}
       >
         {serviceName}

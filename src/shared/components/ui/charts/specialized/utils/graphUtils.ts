@@ -1,4 +1,4 @@
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
 export const NODE_WIDTH = 252;
 export const NODE_HEIGHT = 94;
@@ -10,47 +10,47 @@ export const PAD_TOP = 88;
 export const PAD_BOTTOM = 70;
 
 export function truncate(text: any, max = 30) {
-  const value = String(text || '');
+  const value = String(text || "");
   if (value.length <= max) return value;
   return `${value.slice(0, max - 1)}...`;
 }
 
-export function inferDomain(name = '') {
+export function inferDomain(name = "") {
   const value = name.toLowerCase();
   if (
-    value.includes('kafka') ||
-    value.includes('rabbit') ||
-    value.includes('sqs') ||
-    value.includes('pulsar')
+    value.includes("kafka") ||
+    value.includes("rabbit") ||
+    value.includes("sqs") ||
+    value.includes("pulsar")
   )
-    return 'kafka';
-  if (value.includes('redis') || value.includes('cache')) return 'redis';
+    return "kafka";
+  if (value.includes("redis") || value.includes("cache")) return "redis";
   if (
-    value.includes('postgres') ||
-    value.includes('mysql') ||
-    value.includes('mongo') ||
-    value.includes('sql') ||
-    value.includes('db')
+    value.includes("postgres") ||
+    value.includes("mysql") ||
+    value.includes("mongo") ||
+    value.includes("sql") ||
+    value.includes("db")
   )
-    return 'postgresql';
-  if (value.includes('k8s') || value.includes('kube') || value.includes('pod')) return 'kubernetes';
-  return 'application';
+    return "postgresql";
+  if (value.includes("k8s") || value.includes("kube") || value.includes("pod")) return "kubernetes";
+  return "application";
 }
 
 export function nodeSeverity(node: any = {}) {
   const risk = Number(node.riskScore || 0);
-  const status = String(node.status || '').toLowerCase();
+  const status = String(node.status || "").toLowerCase();
 
-  if (status === 'unhealthy' || risk >= 75) {
-    return { key: 'critical', label: 'CRITICAL', color: APP_COLORS.hex_ff4d5a_2 };
+  if (status === "unhealthy" || risk >= 75) {
+    return { key: "critical", label: "CRITICAL", color: APP_COLORS.hex_ff4d5a_2 };
   }
-  if (status === 'degraded' || risk >= 55) {
-    return { key: 'high', label: 'HIGH', color: APP_COLORS.hex_f7b63a_2 };
+  if (status === "degraded" || risk >= 55) {
+    return { key: "high", label: "HIGH", color: APP_COLORS.hex_f7b63a_2 };
   }
   if (risk >= 30) {
-    return { key: 'medium', label: 'MEDIUM', color: APP_COLORS.hex_c8d43d_2 };
+    return { key: "medium", label: "MEDIUM", color: APP_COLORS.hex_c8d43d_2 };
   }
-  return { key: 'low', label: 'LOW', color: APP_COLORS.hex_4ade80 };
+  return { key: "low", label: "LOW", color: APP_COLORS.hex_4ade80 };
 }
 
 export function buildPath(fromX: number, fromY: number, toX: number, toY: number) {
@@ -127,7 +127,7 @@ export function buildLayout(nodes: readonly any[], edges: readonly any[]) {
   const stageColumns = columns.filter(Boolean).map((column) =>
     [...column].sort((a, b) => {
       const sevDiff =
-        (nodeSeverity(b).key === 'critical' ? 1 : 0) - (nodeSeverity(a).key === 'critical' ? 1 : 0);
+        (nodeSeverity(b).key === "critical" ? 1 : 0) - (nodeSeverity(a).key === "critical" ? 1 : 0);
       if (sevDiff !== 0) return sevDiff;
       return Number(b.riskScore || 0) - Number(a.riskScore || 0);
     })

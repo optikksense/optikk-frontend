@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import toast from 'react-hot-toast';
+import { useNavigate } from "@tanstack/react-router";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 
-import { useAppStore, useTimeRange } from '@store/appStore';
-import { useAuthStore, useIsAuthenticated, useAuthIsLoading, useAuthError } from '@store/authStore';
+import { useAppStore, useTimeRange } from "@store/appStore";
+import { useAuthError, useAuthIsLoading, useAuthStore, useIsAuthenticated } from "@store/authStore";
 
-import './LandingPage.css';
+import "./LandingPage.css";
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const LandingPage: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let animationFrameId: number;
@@ -46,13 +47,13 @@ const LandingPage: React.FC = () => {
     };
 
     class TelemetrySpan {
-      length: number = 0;
-      speed: number = 0;
-      thickness: number = 0;
-      x: number = 0;
-      y: number = 0;
-      baseAlpha: number = 0;
-      color: string = '';
+      length = 0;
+      speed = 0;
+      thickness = 0;
+      x = 0;
+      y = 0;
+      baseAlpha = 0;
+      color = "";
       nodes: { offset: number; size: number; pulse: number }[] = [];
 
       constructor() {
@@ -98,7 +99,7 @@ const LandingPage: React.FC = () => {
         ctx.beginPath();
         const tailGrad = ctx.createLinearGradient(this.x, this.y, this.x + this.length, this.y);
         tailGrad.addColorStop(0, this.color);
-        tailGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        tailGrad.addColorStop(1, "rgba(0,0,0,0)");
 
         ctx.strokeStyle = tailGrad;
         ctx.lineWidth = this.thickness;
@@ -122,7 +123,7 @@ const LandingPage: React.FC = () => {
     }
 
     const initCanvas = () => {
-      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener("resize", resizeCanvas);
       resizeCanvas();
 
       if (window.innerWidth > 1024 && cWidth && cHeight) {
@@ -146,14 +147,14 @@ const LandingPage: React.FC = () => {
     initCanvas();
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate({ to: '/overview' });
+      navigate({ to: "/overview" });
     }
   }, [isAuthenticated, navigate]);
 
@@ -172,27 +173,27 @@ const LandingPage: React.FC = () => {
     if (email && password) {
       const result = await login(email, password);
       if (result.success) {
-        setTimeRange({ kind: 'relative', preset: '30m', label: 'Last 30 minutes', minutes: 30 });
-        toast.success('Login successful!');
-        navigate({ to: '/home' });
+        setTimeRange({ kind: "relative", preset: "30m", label: "Last 30 minutes", minutes: 30 });
+        toast.success("Login successful!");
+        navigate({ to: "/home" });
       }
     }
   };
 
   return (
     <div className="landing-container">
-      <div className="noise-layer"></div>
+      <div className="noise-layer" />
 
       <div className="split-layout">
         {/* ===== LEFT PANEL ===== */}
         <div className="left-panel">
-          <canvas ref={canvasRef} id="telemetryCanvas" className="canvas-bg"></canvas>
-          <div className="gradient-overlay"></div>
+          <canvas ref={canvasRef} id="telemetryCanvas" className="canvas-bg" />
+          <div className="gradient-overlay" />
 
           <div className="left-content">
             <div className="brand">
               <div className="brand-icon">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg aria-hidden="true">
                   <defs>
                     <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#6366F1" />
@@ -244,15 +245,8 @@ const LandingPage: React.FC = () => {
             <div className="features">
               <div className="feature-card">
                 <div className="feature-icon-wrapper">
-                  <svg
-                    className="feature-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  <svg aria-hidden="true">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                   </svg>
                 </div>
                 <span className="feature-label">Real-time Metrics</span>
@@ -260,18 +254,11 @@ const LandingPage: React.FC = () => {
 
               <div className="feature-card">
                 <div className="feature-icon-wrapper">
-                  <svg
-                    className="feature-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="18" cy="18" r="3"></circle>
-                    <circle cx="6" cy="6" r="3"></circle>
-                    <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
-                    <line x1="6" y1="9" x2="6" y2="21"></line>
+                  <svg aria-hidden="true">
+                    <circle cx="18" cy="18" r="3" />
+                    <circle cx="6" cy="6" r="3" />
+                    <path d="M13 6h3a2 2 0 0 1 2 2v7" />
+                    <line x1="6" y1="9" x2="6" y2="21" />
                   </svg>
                 </div>
                 <span className="feature-label">Distributed Tracing</span>
@@ -279,18 +266,11 @@ const LandingPage: React.FC = () => {
 
               <div className="feature-card">
                 <div className="feature-icon-wrapper">
-                  <svg
-                    className="feature-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="4" y1="6" x2="20" y2="6"></line>
-                    <line x1="4" y1="12" x2="20" y2="12"></line>
-                    <line x1="4" y1="18" x2="14" y2="18"></line>
-                    <rect x="18" y="16" width="4" height="4" rx="1" fill="currentColor"></rect>
+                  <svg aria-hidden="true">
+                    <line x1="4" y1="6" x2="20" y2="6" />
+                    <line x1="4" y1="12" x2="20" y2="12" />
+                    <line x1="4" y1="18" x2="14" y2="18" />
+                    <rect x="18" y="16" width="4" height="4" rx="1" fill="currentColor" />
                   </svg>
                 </div>
                 <span className="feature-label">Centralized Logs</span>
@@ -302,7 +282,7 @@ const LandingPage: React.FC = () => {
             <div className="proof-label">Trusted by 2,400+ engineering teams</div>
             <div className="client-logos">
               {/* Fictional Tech Logos */}
-              <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
+              <svg aria-hidden="true">
                 <path d="M10 15a5 5 0 1010 0 5 5 0 10-10 0zm20 0l5-8h5l-7 10 7 10h-5l-5-8-2 3v5h-4v-20h4v6zM50 15a5 5 0 1010 0 5 5 0 10-10 0z" />
                 <text
                   x="65"
@@ -315,7 +295,7 @@ const LandingPage: React.FC = () => {
                   AcmeCorp
                 </text>
               </svg>
-              <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
+              <svg aria-hidden="true">
                 <circle cx="15" cy="15" r="8" fill="none" stroke="#FFFFFF" strokeWidth="3" />
                 <circle cx="25" cy="15" r="8" fill="none" stroke="#FFFFFF" strokeWidth="3" />
                 <text
@@ -330,7 +310,7 @@ const LandingPage: React.FC = () => {
                   NEXUS
                 </text>
               </svg>
-              <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
+              <svg aria-hidden="true">
                 <path d="M5 25L15 5h5l10 20h-4l-8.5-17L8.5 25z" fill="#FFFFFF" />
                 <text
                   x="35"
@@ -343,7 +323,7 @@ const LandingPage: React.FC = () => {
                   VERTEX
                 </text>
               </svg>
-              <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
+              <svg aria-hidden="true">
                 <rect
                   x="5"
                   y="5"
@@ -366,7 +346,7 @@ const LandingPage: React.FC = () => {
                   Quantum
                 </text>
               </svg>
-              <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
+              <svg aria-hidden="true">
                 <path
                   d="M5 15q10-10 20 0t20 0"
                   fill="none"
@@ -397,7 +377,7 @@ const LandingPage: React.FC = () => {
               <div id="formSection">
                 <div className="card-header">
                   <div className="brand-icon">
-                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg aria-hidden="true">
                       <rect width="32" height="32" rx="8" fill="url(#logo-grad)" />
                       <g transform="translate(4, 4)">
                         <polygon
@@ -463,7 +443,7 @@ const LandingPage: React.FC = () => {
                     <button
                       type="button"
                       className="text-link"
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                      style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
                       onClick={() => setShowForgotPassword(true)}
                     >
                       Forgot password?
@@ -472,12 +452,12 @@ const LandingPage: React.FC = () => {
                       <p
                         className="forgot-password-msg"
                         style={{
-                          marginTop: '8px',
-                          fontSize: '13px',
-                          color: 'rgba(255,255,255,0.75)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
+                          marginTop: "8px",
+                          fontSize: "13px",
+                          color: "rgba(255,255,255,0.75)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
                         }}
                       >
                         Password resets are managed by your IT administrator. Please contact your IT
@@ -486,11 +466,11 @@ const LandingPage: React.FC = () => {
                           type="button"
                           onClick={() => setShowForgotPassword(false)}
                           style={{
-                            background: 'none',
-                            border: 'none',
-                            color: 'rgba(255,255,255,0.5)',
-                            cursor: 'pointer',
-                            fontSize: '14px',
+                            background: "none",
+                            border: "none",
+                            color: "rgba(255,255,255,0.5)",
+                            cursor: "pointer",
+                            fontSize: "14px",
                             padding: 0,
                             lineHeight: 1,
                           }}
@@ -507,16 +487,16 @@ const LandingPage: React.FC = () => {
                     className="btn-primary"
                     id="btnSubmit"
                     disabled={isLoading}
-                    style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
+                    style={{ pointerEvents: isLoading ? "none" : "auto" }}
                   >
-                    <span id="btnText" style={{ display: isLoading ? 'none' : 'inline' }}>
+                    <span id="btnText" style={{ display: isLoading ? "none" : "inline" }}>
                       Sign In
                     </span>
                     <div
                       className="loading-spinner"
                       id="btnSpinner"
-                      style={{ display: isLoading ? 'block' : 'none' }}
-                    ></div>
+                      style={{ display: isLoading ? "block" : "none" }}
+                    />
                   </button>
                 </form>
 

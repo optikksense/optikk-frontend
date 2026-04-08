@@ -1,9 +1,9 @@
-import { ROUTES } from '@/shared/constants/routes';
+import { ROUTES } from "@/shared/constants/routes";
 import {
   DASHBOARD_DRAWER_PARAMS,
   buildDashboardDrawerSearch,
   buildLegacyDashboardDrawerSearch,
-} from '@shared/components/ui/dashboard/utils/dashboardDrawerState';
+} from "@shared/components/ui/dashboard/utils/dashboardDrawerState";
 
 export interface ServiceDrawerSeedData {
   readonly name: string;
@@ -19,9 +19,9 @@ export function buildServiceDrawerSearch(
   currentSearch: string,
   service: string | ServiceDrawerSeedData
 ): string {
-  const serviceName = typeof service === 'string' ? service : service.name;
+  const serviceName = typeof service === "string" ? service : service.name;
   const row =
-    typeof service === 'string'
+    typeof service === "string"
       ? { service_name: serviceName }
       : {
           service_name: service.name,
@@ -36,9 +36,9 @@ export function buildServiceDrawerSearch(
   return (
     buildDashboardDrawerSearch(
       currentSearch,
-      { entity: 'service', idField: 'service_name', titleField: 'service_name' },
+      { entity: "service", idField: "service_name", titleField: "service_name" },
       row
-    ) ?? buildLegacyDashboardDrawerSearch(currentSearch, 'service', serviceName, serviceName)
+    ) ?? buildLegacyDashboardDrawerSearch(currentSearch, "service", serviceName, serviceName)
   );
 }
 
@@ -76,11 +76,11 @@ export function buildServiceTracesSearch(
 ): Record<string, string | string[]> {
   const next = new URLSearchParams(currentSearch);
   clearServiceDrawerParams(next);
-  next.delete('view');
-  next.delete('topologyFocus');
-  next.delete('filters');
-  next.delete('serviceName');
-  next.set('service', serviceName);
+  next.delete("view");
+  next.delete("topologyFocus");
+  next.delete("filters");
+  next.delete("serviceName");
+  next.set("service", serviceName);
   return searchParamsToObject(next);
 }
 
@@ -90,11 +90,11 @@ export function buildServiceLogsSearch(
 ): Record<string, string | string[]> {
   const next = new URLSearchParams(currentSearch);
   clearServiceDrawerParams(next);
-  next.delete('view');
-  next.delete('topologyFocus');
-  next.delete('service');
-  next.delete('serviceName');
-  next.set('filters', `service_name:equals:${encodeURIComponent(serviceName)}`);
+  next.delete("view");
+  next.delete("topologyFocus");
+  next.delete("service");
+  next.delete("serviceName");
+  next.set("filters", `service_name:equals:${encodeURIComponent(serviceName)}`);
   return searchParamsToObject(next);
 }
 

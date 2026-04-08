@@ -1,4 +1,4 @@
 export /**
  *
  */
-const DOMAIN_KEY = 'traces';
+const DOMAIN_KEY = "traces";

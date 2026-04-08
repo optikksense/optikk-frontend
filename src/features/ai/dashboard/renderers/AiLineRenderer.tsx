@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
-import uPlot from 'uplot';
+import { useMemo } from "react";
+import type uPlot from "uplot";
 
-import { getChartColor } from '@shared/utils/charting';
-import { tsMs } from '@shared/utils/chartDataUtils';
-import UPlotChart, { defaultAxes, uLine } from '@shared/components/ui/charts/UPlotChart';
-import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
-import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+import UPlotChart, { defaultAxes, uLine } from "@shared/components/ui/charts/UPlotChart";
+import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
+import { tsMs } from "@shared/utils/chartDataUtils";
+import { getChartColor } from "@shared/utils/charting";
 
 /**
  *
@@ -20,18 +20,18 @@ export function AiLineRenderer({
 
   const { alignedData, series, hasData } = useMemo(() => {
     const arr = Array.isArray(rows) ? rows : [];
-    const metricKey = chartConfig.valueKey || 'value';
-    const groupKey = chartConfig.groupByKey || 'model_name';
+    const metricKey = chartConfig.valueKey || "value";
+    const groupKey = chartConfig.groupByKey || "model_name";
     const filterValue =
-      typeof extraContext?.selectedModel === 'string' ? extraContext.selectedModel : null;
+      typeof extraContext?.selectedModel === "string" ? extraContext.selectedModel : null;
     const filtered = filterValue ? arr.filter((row) => row[groupKey] === filterValue) : arr;
 
     const tsSet = new Set<string>();
     const groupSet = new Set<string>();
     for (const row of filtered) {
-      if (row[metricKey] != null && row[metricKey] !== '' && row[metricKey] !== 0) {
-        tsSet.add(String(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? ''));
-        groupSet.add(String(row[groupKey] ?? 'unknown'));
+      if (row[metricKey] != null && row[metricKey] !== "" && row[metricKey] !== 0) {
+        tsSet.add(String(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? ""));
+        groupSet.add(String(row[groupKey] ?? "unknown"));
       }
     }
 
@@ -51,10 +51,10 @@ export function AiLineRenderer({
     // Build lookup: group -> timestamp -> value
     const lookup: Record<string, Record<string, number | null>> = {};
     for (const row of filtered) {
-      const group = String(row[groupKey] ?? 'unknown');
+      const group = String(row[groupKey] ?? "unknown");
       if (!lookup[group]) lookup[group] = {};
       const value = Number(row[metricKey]);
-      const timestamp = String(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? '');
+      const timestamp = String(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "");
       if (!timestamp) {
         continue;
       }
@@ -80,7 +80,7 @@ export function AiLineRenderer({
     return { alignedData, series: seriesConfigs, hasData: true };
   }, [rows, chartConfig.valueKey, chartConfig.groupByKey, extraContext?.selectedModel]);
 
-  const options = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(() => {
+  const options = useMemo<Omit<uPlot.Options, "width" | "height">>(() => {
     const yAxisFormatter = chartConfig.yPrefix
       ? (_self: uPlot, ticks: number[]) =>
           ticks.map((v) => `${chartConfig.yPrefix}${Number(v).toFixed(chartConfig.yDecimals ?? 2)}`)
@@ -106,7 +106,7 @@ export function AiLineRenderer({
 
   if (!hasData) {
     return (
-      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+      <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
         No data
       </div>
     );

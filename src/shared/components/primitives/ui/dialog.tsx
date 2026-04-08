@@ -1,7 +1,7 @@
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 export interface ModalProps {
   open: boolean;
@@ -32,13 +32,13 @@ function Modal({
       }}
     >
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[rgba(8,10,16,0.72)] backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-[rgba(8,10,16,0.72)] backdrop-blur-sm data-[state=closed]:animate-out data-[state=open]:animate-in" />
         <DialogPrimitive.Content
           className={cn(
-            'fixed left-1/2 top-[12vh] z-50 -translate-x-1/2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-[var(--shadow-lg)] focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=open]:slide-in-from-left-1/2',
+            "-translate-x-1/2 data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=open]:slide-in-from-left-1/2 fixed top-[12vh] left-1/2 z-50 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-[var(--shadow-lg)] focus:outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
             className
           )}
-          style={{ width: typeof width === 'number' ? `${width}px` : width }}
+          style={{ width: typeof width === "number" ? `${width}px` : width }}
           onEscapeKeyDown={(e) => {
             if (!closable) e.preventDefault();
           }}
@@ -50,9 +50,9 @@ function Modal({
           }}
         >
           {title || closable ? (
-            <div className="flex items-center justify-between border-b border-[var(--border-color)] px-4 py-3">
+            <div className="flex items-center justify-between border-[var(--border-color)] border-b px-4 py-3">
               {title ? (
-                <DialogPrimitive.Title className="text-[15px] font-semibold text-[var(--text-primary)]">
+                <DialogPrimitive.Title className="font-semibold text-[15px] text-[var(--text-primary)]">
                   {title}
                 </DialogPrimitive.Title>
               ) : null}
@@ -65,7 +65,7 @@ function Modal({
           ) : null}
           <div className="px-4 py-4">{children}</div>
           {footer !== undefined && footer !== null ? (
-            <div className="flex items-center justify-end gap-2 border-t border-[var(--border-color)] px-4 py-3">
+            <div className="flex items-center justify-end gap-2 border-[var(--border-color)] border-t px-4 py-3">
               {footer}
             </div>
           ) : null}
@@ -84,19 +84,19 @@ function DialogContent({ children }: React.PropsWithChildren<Record<string, neve
 }
 
 function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('flex flex-col gap-1.5', className)} {...props} />;
+  return <div className={cn("flex flex-col gap-1.5", className)} {...props} />;
 }
 
 function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn('text-[15px] font-semibold', className)} {...props} />;
+  return <h2 className={cn("font-semibold text-[15px]", className)} {...props} />;
 }
 
 function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('text-[12px] text-muted-foreground', className)} {...props} />;
+  return <p className={cn("text-[12px] text-muted-foreground", className)} {...props} />;
 }
 
 function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('flex items-center justify-end gap-2', className)} {...props} />;
+  return <div className={cn("flex items-center justify-end gap-2", className)} {...props} />;
 }
 
 const Sheet = Dialog;

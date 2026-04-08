@@ -1,5 +1,5 @@
-import { useCallback, useEffect } from 'react';
-import { useLocalStorage } from 'react-use';
+import { useCallback, useEffect } from "react";
+import { useLocalStorage } from "react-use";
 
 /**
  *
@@ -7,7 +7,7 @@ import { useLocalStorage } from 'react-use';
 export type VisibleColumnsState = Record<string, boolean>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+  return typeof value === "object" && value !== null;
 }
 
 /**
@@ -24,13 +24,13 @@ export function usePersistedColumns(
 ] {
   const [persistedColumns, setPersistedColumns] = useLocalStorage<
     VisibleColumnsState | Record<string, unknown>
-  >(storageKey ?? '__disabled__', defaults);
+  >(storageKey ?? "__disabled__", defaults);
   const visibleColumns =
     storageKey && isRecord(persistedColumns)
       ? Object.keys(defaults).reduce<VisibleColumnsState>(
           (acc, key) => {
             acc[key] =
-              typeof persistedColumns[key] === 'boolean'
+              typeof persistedColumns[key] === "boolean"
                 ? Boolean(persistedColumns[key])
                 : defaults[key];
             return acc;
@@ -51,7 +51,7 @@ export function usePersistedColumns(
 
       const merged: VisibleColumnsState = { ...defaults };
       for (const key of Object.keys(defaults)) {
-        if (typeof previous[key] === 'boolean') {
+        if (typeof previous[key] === "boolean") {
           merged[key] = Boolean(previous[key]);
         }
       }
@@ -72,13 +72,13 @@ export function usePersistedColumns(
           ? Object.keys(defaults).reduce<VisibleColumnsState>(
               (acc, key) => {
                 acc[key] =
-                  typeof previous[key] === 'boolean' ? Boolean(previous[key]) : defaults[key];
+                  typeof previous[key] === "boolean" ? Boolean(previous[key]) : defaults[key];
                 return acc;
               },
               { ...defaults }
             )
           : { ...defaults };
-        const next = typeof updater === 'function' ? updater(base) : updater;
+        const next = typeof updater === "function" ? updater(base) : updater;
         return { ...base, ...next };
       });
     },

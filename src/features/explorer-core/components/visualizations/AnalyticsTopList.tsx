@@ -1,12 +1,12 @@
-import { cellValue } from '../../utils/analyticsResult';
-import type { ExplorerAnalyticsResult } from '../../api/explorerAnalyticsApi';
+import type { ExplorerAnalyticsResult } from "../../api/explorerAnalyticsApi";
+import { cellValue } from "../../utils/analyticsResult";
 
 interface AnalyticsTopListProps {
   result: ExplorerAnalyticsResult;
   className?: string;
 }
 
-export function AnalyticsTopList({ result, className = '' }: AnalyticsTopListProps): JSX.Element {
+export function AnalyticsTopList({ result, className = "" }: AnalyticsTopListProps): JSX.Element {
   const { columns, rows } = result;
   if (columns.length < 2 || rows.length === 0) {
     return (
@@ -20,7 +20,7 @@ export function AnalyticsTopList({ result, className = '' }: AnalyticsTopListPro
   const metric = columns[columns.length - 1];
   const parsed = rows
     .map((row) => ({
-      label: String(cellValue(row, dim) ?? ''),
+      label: String(cellValue(row, dim) ?? ""),
       value: Number(cellValue(row, metric) ?? 0),
     }))
     .filter((r) => r.label)
@@ -45,7 +45,7 @@ export function AnalyticsTopList({ result, className = '' }: AnalyticsTopListPro
               style={{ width: `${(row.value / max) * 100}%` }}
             />
           </div>
-          <div className="w-20 shrink-0 text-right font-mono text-[12px] tabular-nums text-[var(--text-secondary)]">
+          <div className="w-20 shrink-0 text-right font-mono text-[12px] text-[var(--text-secondary)] tabular-nums">
             {row.value.toLocaleString()}
           </div>
         </div>

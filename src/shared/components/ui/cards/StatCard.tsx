@@ -1,8 +1,8 @@
-import React from 'react';
-import { Surface, Skeleton } from '@/components/ui';
-import { TrendIndicator } from '@shared/components/ui';
-import { APP_COLORS } from '@config/colorLiterals';
-import SparklineChart from '../charts/micro/SparklineChart';
+import { Skeleton, Surface } from "@/components/ui";
+import { APP_COLORS } from "@config/colorLiterals";
+import { TrendIndicator } from "@shared/components/ui";
+import React from "react";
+import SparklineChart from "../charts/micro/SparklineChart";
 
 export interface StatCardMetric {
   title: string;
@@ -50,7 +50,7 @@ const StatCard = React.memo(function StatCard({ metric, trend = {}, visuals = {}
       ) : (
         <>
           <div className="mb-3 flex items-start justify-between gap-3">
-            <span className="min-w-0 flex-1 text-[11px] font-medium uppercase tracking-[0.5px] text-[color:var(--text-secondary)]">
+            <span className="min-w-0 flex-1 font-medium text-[11px] text-[color:var(--text-secondary)] uppercase tracking-[0.5px]">
               {title}
             </span>
             {icon && (
@@ -58,22 +58,22 @@ const StatCard = React.memo(function StatCard({ metric, trend = {}, visuals = {}
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full opacity-90"
                 style={{
                   color: iconColor,
-                  backgroundColor: 'color-mix(in srgb, var(--bg-tertiary) 88%, transparent)',
+                  backgroundColor: "color-mix(in srgb, var(--bg-tertiary) 88%, transparent)",
                 }}
               >
                 {React.isValidElement(icon) ? icon : React.createElement(icon as any, { size: 20 })}
               </span>
             )}
           </div>
-          <div className="text-foreground text-xl font-light tabular-nums leading-[1.2]">
+          <div className="font-light text-foreground text-xl tabular-nums leading-[1.2]">
             {displayValue}
             {suffix && (
-              <span className="text-base font-normal ml-1 text-[color:var(--text-secondary)]">
+              <span className="ml-1 font-normal text-[color:var(--text-secondary)] text-base">
                 {suffix}
               </span>
             )}
           </div>
-          {description && <div className="text-muted-foreground text-xs mt-1">{description}</div>}
+          {description && <div className="mt-1 text-muted-foreground text-xs">{description}</div>}
           {sparklineData && sparklineData.length > 1 && (
             <div className="mt-2">
               <SparklineChart

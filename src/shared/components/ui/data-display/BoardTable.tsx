@@ -1,15 +1,15 @@
-import { useMemo } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import { useMemo } from "react";
+import { Virtuoso } from "react-virtuoso";
 
-import BoardLoadMoreFooter from './BoardLoadMoreFooter';
+import BoardLoadMoreFooter from "./BoardLoadMoreFooter";
 
+import type { ReactNode } from "react";
 import type {
   BoardColumn,
-  RenderRowContext,
-  BoardPaginationState,
   BoardFilter,
-} from './ObservabilityDataBoard';
-import type { ReactNode } from 'react';
+  BoardPaginationState,
+  RenderRowContext,
+} from "./ObservabilityDataBoard";
 
 /**
  * Props for the shared virtualized observability board table.
@@ -57,12 +57,16 @@ export function BoardTable<RowType extends Record<string, unknown>>({
 
   const BoardScroller = useMemo(
     () =>
-      function BoardScrollerComponent({ className, ref, ...rest }: React.ComponentPropsWithRef<'div'>) {
+      function BoardScrollerComponent({
+        className,
+        ref,
+        ...rest
+      }: React.ComponentPropsWithRef<"div">) {
         return (
           <div
             {...rest}
             ref={ref}
-            className={`h-full min-w-0 overflow-auto${className ? ` ${className}` : ''}`}
+            className={`h-full min-w-0 overflow-auto${className ? ` ${className}` : ""}`}
           />
         );
       },
@@ -74,18 +78,18 @@ export function BoardTable<RowType extends Record<string, unknown>>({
       function BoardHeaderComponent() {
         return (
           <div
-            className="flex border-b border-[color:var(--glass-border)] text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground sticky top-0 bg-[rgba(255,255,255,0.02)] z-20 select-none"
-            style={{ minWidth: tableMinWidth, width: 'max-content' }}
+            className="sticky top-0 z-20 flex select-none border-[color:var(--glass-border)] border-b bg-[rgba(255,255,255,0.02)] font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.05em]"
+            style={{ minWidth: tableMinWidth, width: "max-content" }}
           >
             {fixedColumns.map((column) => (
               <div
                 key={column.key}
-                className="relative flex items-center shrink-0 border-r border-[color:var(--glass-border)] px-3 py-[9px] whitespace-nowrap overflow-hidden text-ellipsis box-border"
+                className="relative box-border flex shrink-0 items-center overflow-hidden text-ellipsis whitespace-nowrap border-[color:var(--glass-border)] border-r px-3 py-[9px]"
                 style={{ width: colWidths[column.key] }}
               >
                 {column.label}
                 <div
-                  className="absolute top-0 -right-1 w-2 h-full cursor-col-resize z-[12] hover:bg-[var(--color-primary-subtle-35)]"
+                  className="-right-1 absolute top-0 z-[12] h-full w-2 cursor-col-resize hover:bg-[var(--color-primary-subtle-35)]"
                   onMouseDown={(event) => {
                     event.stopPropagation();
                     handleResizeMouseDown(event, column.key);
@@ -95,7 +99,7 @@ export function BoardTable<RowType extends Record<string, unknown>>({
             ))}
             {flexColumn && (
               <div
-                className="relative flex items-center border-[color:var(--glass-border)] px-3 py-[9px] whitespace-nowrap overflow-hidden text-ellipsis box-border flex-1 border-r-0"
+                className="relative box-border flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap border-[color:var(--glass-border)] border-r-0 px-3 py-[9px]"
                 style={{ flex: `1 0 ${flexColumnWidth}px`, minWidth: flexColumnWidth }}
               >
                 {flexColumn.label}
@@ -108,10 +112,10 @@ export function BoardTable<RowType extends Record<string, unknown>>({
   );
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 min-h-0">
-      <div className="flex-1 min-w-0 min-h-0">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="min-h-0 min-w-0 flex-1">
         <Virtuoso
-          style={{ height: '100%' }}
+          style={{ height: "100%" }}
           data={rows}
           components={{
             Scroller: BoardScroller,
@@ -133,8 +137,8 @@ export function BoardTable<RowType extends Record<string, unknown>>({
           itemContent={(index, row) => (
             <div
               key={rowKey(row, index)}
-              className="flex items-baseline cursor-pointer border-b border-[color:var(--glass-border)] transition-colors duration-[80ms] ease-in-out font-mono text-xs hover:bg-[rgba(255,255,255,0.05)]"
-              style={{ minWidth: tableMinWidth, width: 'max-content' }}
+              className="flex cursor-pointer items-baseline border-[color:var(--glass-border)] border-b font-mono text-xs transition-colors duration-[80ms] ease-in-out hover:bg-[rgba(255,255,255,0.05)]"
+              style={{ minWidth: tableMinWidth, width: "max-content" }}
             >
               {renderRow(row, { colWidths, visibleCols, onAddFilter })}
             </div>

@@ -1,6 +1,6 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 export interface PaginationProps {
   page: number;
@@ -28,7 +28,7 @@ function Pagination({
   return (
     <div
       className={cn(
-        'flex w-full min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[13px] text-[var(--text-secondary)]',
+        "flex w-full min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[13px] text-[var(--text-secondary)]",
         className
       )}
     >

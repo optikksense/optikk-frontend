@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { APP_COLORS } from '@config/colorLiterals';
-import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
-import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+import { APP_COLORS } from "@config/colorLiterals";
+import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 
 interface HotspotRow {
   readonly label: string;
@@ -22,13 +22,13 @@ export function ErrorHotspotRankingRenderer({
   fillHeight: _fillHeight,
 }: DashboardPanelRendererProps) {
   const { data: rows } = useDashboardData(chartConfig, dataSources);
-  const valueKey = chartConfig.valueKey || 'error_rate';
+  const valueKey = chartConfig.valueKey || "error_rate";
 
   const items = useMemo<HotspotRow[]>(() => {
     return rows
       .map((row) => {
-        const serviceName = String(row.service_name ?? 'unknown-service');
-        const operationName = String(row.operation_name ?? 'unknown-operation');
+        const serviceName = String(row.service_name ?? "unknown-service");
+        const operationName = String(row.operation_name ?? "unknown-operation");
         const errorRate = Math.max(0, Number(row[valueKey] ?? 0));
         const errorCount = Math.max(0, Number(row.error_count ?? 0));
         const totalCount = Math.max(0, Number(row.total_count ?? 0));
@@ -57,7 +57,7 @@ export function ErrorHotspotRankingRenderer({
 
   if (items.length === 0) {
     return (
-      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+      <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
         No data
       </div>
     );
@@ -70,7 +70,7 @@ export function ErrorHotspotRankingRenderer({
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div
-                className="truncate text-[12px] font-medium text-[var(--text-primary)]"
+                className="truncate font-medium text-[12px] text-[var(--text-primary)]"
                 title={item.label}
               >
                 {item.label}
@@ -78,7 +78,7 @@ export function ErrorHotspotRankingRenderer({
               <div className="text-[11px] text-[var(--text-muted)]">{item.detail}</div>
             </div>
             <div
-              className="shrink-0 text-[11px] font-semibold tabular-nums"
+              className="shrink-0 font-semibold text-[11px] tabular-nums"
               style={{ color: getBarColor(item.errorRate) }}
             >
               {item.errorRate >= 10 ? item.errorRate.toFixed(0) : item.errorRate.toFixed(1)}%

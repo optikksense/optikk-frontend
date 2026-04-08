@@ -1,11 +1,11 @@
-import { Bell, Columns2, Palette, Settings } from 'lucide-react';
-import { Surface, Switch, Select } from '@/components/ui';
+import { Select, Surface, Switch } from "@/components/ui";
+import { Bell, Columns2, Palette, Settings } from "lucide-react";
 
 import type {
   SettingsPreferenceKey,
   SettingsPreferenceValue,
   SettingsViewPreferences,
-} from '../../types';
+} from "../../types";
 
 interface SettingsPreferencesTabProps {
   readonly theme: string;
@@ -28,12 +28,12 @@ function PrefRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between items-center py-sm border-b">
+    <div className="flex items-center justify-between border-b py-sm">
       <div className="flex items-center gap-sm">
         <span className="text-secondary">{icon}</span>
         <div>
           <div className="font-semibold text-base">{title}</div>
-          <div className="text-xs text-muted">{description}</div>
+          <div className="text-muted text-xs">{description}</div>
         </div>
       </div>
       {children}
@@ -49,7 +49,7 @@ export default function SettingsPreferencesTab({
   onNotificationsChange,
   onPreferenceChange,
 }: SettingsPreferencesTabProps): JSX.Element {
-  const density = viewPreferences?.density || 'comfortable';
+  const density = viewPreferences?.density || "comfortable";
 
   return (
     <Surface elevation={1} padding="lg" className="settings-card">
@@ -59,9 +59,9 @@ export default function SettingsPreferencesTab({
         description="Switch between light and dark mode"
       >
         <Switch
-          checked={theme === 'dark'}
+          checked={theme === "dark"}
           onChange={(e) => onThemeChange(e.target.checked)}
-          label={theme === 'dark' ? 'Dark' : 'Light'}
+          label={theme === "dark" ? "Dark" : "Light"}
         />
       </PrefRow>
 
@@ -71,11 +71,11 @@ export default function SettingsPreferencesTab({
         description="Compact mode reduces spacing for more data density"
       >
         <Switch
-          checked={density === 'compact'}
+          checked={density === "compact"}
           onChange={(e) =>
-            onPreferenceChange('density', e.target.checked ? 'compact' : 'comfortable')
+            onPreferenceChange("density", e.target.checked ? "compact" : "comfortable")
           }
-          label={density === 'compact' ? 'Compact' : 'Comfortable'}
+          label={density === "compact" ? "Compact" : "Comfortable"}
         />
       </PrefRow>
 
@@ -96,18 +96,18 @@ export default function SettingsPreferencesTab({
         description="Select default time range for dashboards"
       >
         <Select
-          value={viewPreferences?.defaultTimeRange || '1h'}
-          onChange={(val) => onPreferenceChange('defaultTimeRange', String(val))}
+          value={viewPreferences?.defaultTimeRange || "1h"}
+          onChange={(val) => onPreferenceChange("defaultTimeRange", String(val))}
           style={{ width: 200 }}
           options={[
-            { value: '15m', label: 'Last 15 minutes' },
-            { value: '30m', label: 'Last 30 minutes' },
-            { value: '1h', label: 'Last 1 hour' },
-            { value: '3h', label: 'Last 3 hours' },
-            { value: '6h', label: 'Last 6 hours' },
-            { value: '12h', label: 'Last 12 hours' },
-            { value: '24h', label: 'Last 24 hours' },
-            { value: '7d', label: 'Last 7 days' },
+            { value: "15m", label: "Last 15 minutes" },
+            { value: "30m", label: "Last 30 minutes" },
+            { value: "1h", label: "Last 1 hour" },
+            { value: "3h", label: "Last 3 hours" },
+            { value: "6h", label: "Last 6 hours" },
+            { value: "12h", label: "Last 12 hours" },
+            { value: "24h", label: "Last 24 hours" },
+            { value: "7d", label: "Last 7 days" },
           ]}
         />
       </PrefRow>
@@ -119,13 +119,13 @@ export default function SettingsPreferencesTab({
       >
         <Select
           value={viewPreferences?.defaultPageSize || 20}
-          onChange={(val) => onPreferenceChange('defaultPageSize', Number(val))}
+          onChange={(val) => onPreferenceChange("defaultPageSize", Number(val))}
           style={{ width: 200 }}
           options={[
-            { value: 10, label: '10' },
-            { value: 20, label: '20' },
-            { value: 50, label: '50' },
-            { value: 100, label: '100' },
+            { value: 10, label: "10" },
+            { value: 20, label: "20" },
+            { value: 50, label: "50" },
+            { value: 100, label: "100" },
           ]}
         />
       </PrefRow>

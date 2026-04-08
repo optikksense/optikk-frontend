@@ -1,4 +1,4 @@
-import { Search, X } from 'lucide-react';
+import { Search, X } from "lucide-react";
 
 interface Props {
   filter: string;
@@ -18,18 +18,18 @@ export function TopologyToolbar({
   onClearFocus,
 }: Props) {
   return (
-    <div className="flex items-center gap-3 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2">
+    <div className="flex items-center gap-3 border-[var(--border-color)] border-b bg-[var(--bg-secondary)] px-3 py-2">
       <div className="relative">
         <Search
           size={13}
-          className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+          className="-translate-y-1/2 absolute top-1/2 left-2 text-[var(--text-muted)]"
         />
         <input
           type="text"
           value={filter}
           onChange={(e) => onFilterChange(e.target.value)}
           placeholder="Filter services..."
-          className="h-7 w-56 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] pl-7 pr-2 text-[12px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none"
+          className="h-7 w-56 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] pr-2 pl-7 text-[12px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none"
         />
       </div>
 
@@ -51,21 +51,21 @@ export function TopologyToolbar({
         <span className="flex items-center gap-1">
           <span
             className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: 'var(--color-success)' }}
+            style={{ backgroundColor: "var(--color-success)" }}
           />
           healthy
         </span>
         <span className="flex items-center gap-1">
           <span
             className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: 'var(--color-warning)' }}
+            style={{ backgroundColor: "var(--color-warning)" }}
           />
           degraded
         </span>
         <span className="flex items-center gap-1">
           <span
             className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: 'var(--color-error)' }}
+            style={{ backgroundColor: "var(--color-error)" }}
           />
           unhealthy
         </span>

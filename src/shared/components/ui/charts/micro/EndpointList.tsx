@@ -1,12 +1,12 @@
-import { useRef } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { formatNumber, formatDuration } from '@shared/utils/formatters';
+import { formatDuration, formatNumber } from "@shared/utils/formatters";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useRef } from "react";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-const DEFAULT_MAX_HEIGHT = '200px';
+const DEFAULT_MAX_HEIGHT = "200px";
 
-type EndpointListType = 'requests' | 'errorRate' | 'latency';
+type EndpointListType = "requests" | "errorRate" | "latency";
 
 interface EndpointListItem {
   key?: string;
@@ -67,18 +67,18 @@ function VirtualizedEndpoints({
       ref={parentRef}
       style={{
         maxHeight,
-        overflowY: 'auto',
+        overflowY: "auto",
         paddingRight: 4,
-        scrollbarWidth: 'thin',
-        scrollbarColor: 'var(--border-color) var(--bg-secondary)',
+        scrollbarWidth: "thin",
+        scrollbarColor: "var(--border-color) var(--bg-secondary)",
       }}
     >
-      <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
+      <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
         {virtualizer.getVirtualItems().map((virtualRow) => {
           const ep = endpoints[virtualRow.index];
           const endpointKey =
             ep.key ||
-            `${ep.http_method || 'N/A'}_${ep.operation_name || ep.endpoint_name || 'Unknown'}_${ep.service_name || ''}`;
+            `${ep.http_method || "N/A"}_${ep.operation_name || ep.endpoint_name || "Unknown"}_${ep.service_name || ""}`;
           const isSelected = selectedEndpoints.includes(endpointKey);
           const isFaded = selectedEndpoints.length > 0 && !isSelected;
           const { value, formatted } = getEndpointValue(ep);
@@ -88,27 +88,27 @@ function VirtualizedEndpoints({
               key={endpointKey}
               onClick={() => onToggle?.(endpointKey)}
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: virtualRow.start,
-                width: '100%',
+                width: "100%",
                 height: virtualRow.size,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '8px 12px',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "8px 12px",
                 background: getBackgroundColor(isSelected),
                 borderRadius: 4,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
+                cursor: "pointer",
+                transition: "all 0.2s",
                 opacity: isFaded ? 0.3 : 1,
                 border: `1px solid ${getBorderColor(isSelected)}`,
-                boxSizing: 'border-box',
+                boxSizing: "border-box",
               }}
               onMouseEnter={(e) => {
                 if (!isFaded) {
                   e.currentTarget.style.background = isSelected
-                    ? getBackgroundColor(true).replace('0.2', '0.3')
-                    : 'var(--bg-tertiary)';
+                    ? getBackgroundColor(true).replace("0.2", "0.3")
+                    : "var(--bg-tertiary)";
                 }
               }}
               onMouseLeave={(e) => {
@@ -120,16 +120,16 @@ function VirtualizedEndpoints({
                   className="font-mono"
                   style={{
                     fontSize: 12,
-                    color: 'var(--text-primary)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
+                    color: "var(--text-primary)",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  {ep.http_method || 'N/A'} {ep.operation_name || ep.endpoint_name || 'Unknown'}
+                  {ep.http_method || "N/A"} {ep.operation_name || ep.endpoint_name || "Unknown"}
                 </div>
-                {ep.service && ep.service !== 'unknown' && (
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+                {ep.service && ep.service !== "unknown" && (
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
                     {ep.service}
                   </div>
                 )}
@@ -162,20 +162,20 @@ export default function EndpointList({
   endpoints = [],
   selectedEndpoints = [],
   onToggle,
-  type = 'requests', // 'requests', 'errorRate', 'latency'
+  type = "requests", // 'requests', 'errorRate', 'latency'
   maxHeight = DEFAULT_MAX_HEIGHT,
 }: EndpointListProps): JSX.Element | null {
   if (endpoints.length === 0) return null;
 
   const getEndpointValue = (endpoint: EndpointListItem): EndpointValue => {
     switch (type) {
-      case 'errorRate': {
+      case "errorRate": {
         const requestCount = endpoint.request_count || 0;
         const errorCount = endpoint.error_count || 0;
         const errorRate = requestCount > 0 ? (errorCount / requestCount) * 100 : 0;
         return { value: errorRate, formatted: `${Number(errorRate).toFixed(2)}%` };
       }
-      case 'latency': {
+      case "latency": {
         const latency = endpoint.avg_latency || endpoint.p95_latency || 0;
         return { value: latency, formatted: formatDuration(latency) };
       }
@@ -189,45 +189,45 @@ export default function EndpointList({
 
   const getValueColor = (value: number): string => {
     switch (type) {
-      case 'errorRate':
-        if (value > 5) return 'var(--color-error)';
-        if (value > 1) return 'var(--color-warning)';
-        return 'var(--color-success)';
-      case 'latency':
-        if (value > 500) return 'var(--color-error)';
-        if (value > 200) return 'var(--color-warning)';
-        return 'var(--color-success)';
+      case "errorRate":
+        if (value > 5) return "var(--color-error)";
+        if (value > 1) return "var(--color-warning)";
+        return "var(--color-success)";
+      case "latency":
+        if (value > 500) return "var(--color-error)";
+        if (value > 200) return "var(--color-warning)";
+        return "var(--color-success)";
       default:
-        return 'var(--color-primary)';
+        return "var(--color-primary)";
     }
   };
 
   const getBackgroundColor = (isSelected: boolean): string => {
     if (isSelected) {
       switch (type) {
-        case 'errorRate':
+        case "errorRate":
           return APP_COLORS.rgba_255_77_79_0p2;
-        case 'latency':
+        case "latency":
           return APP_COLORS.rgba_250_173_20_0p2;
         default:
-          return 'var(--color-primary-subtle-18)';
+          return "var(--color-primary-subtle-18)";
       }
     }
-    return 'var(--bg-secondary)';
+    return "var(--bg-secondary)";
   };
 
   const getBorderColor = (isSelected: boolean): string => {
     if (isSelected) {
       switch (type) {
-        case 'errorRate':
+        case "errorRate":
           return APP_COLORS.hex_f04438;
-        case 'latency':
+        case "latency":
           return APP_COLORS.hex_f79009;
         default:
-          return 'var(--color-primary)';
+          return "var(--color-primary)";
       }
     }
-    return 'transparent';
+    return "transparent";
   };
 
   return (
@@ -235,21 +235,21 @@ export default function EndpointList({
       style={{
         marginTop: 16,
         paddingTop: 16,
-        borderTop: '1px solid var(--border-color)',
+        borderTop: "1px solid var(--border-color)",
       }}
     >
       <div
         style={{
           fontSize: 12,
           fontWeight: 600,
-          color: 'var(--text-muted)',
+          color: "var(--text-muted)",
           marginBottom: 12,
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
         }}
       >
-        Top Endpoints by{' '}
-        {type === 'errorRate' ? 'Error Rate' : type === 'latency' ? 'Latency' : 'Requests'}
+        Top Endpoints by{" "}
+        {type === "errorRate" ? "Error Rate" : type === "latency" ? "Latency" : "Requests"}
       </div>
       <VirtualizedEndpoints
         endpoints={endpoints}

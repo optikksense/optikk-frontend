@@ -1,6 +1,6 @@
-import type { QueryParams, QueryParamValue } from '@shared/api/service-types';
+import type { QueryParamValue, QueryParams } from "@shared/api/service-types";
 
-import type { StructuredFilter } from '@shared/hooks/useURLFilters';
+import type { StructuredFilter } from "@shared/hooks/useURLFilters";
 
 /**
  *
@@ -63,7 +63,7 @@ export interface LogAggregateRow extends DomainRecord {
 export interface LogAttributeFilter {
   key: string;
   value: string;
-  op: 'eq' | 'neq' | 'contains' | 'regex';
+  op: "eq" | "neq" | "contains" | "regex";
 }
 
 /**

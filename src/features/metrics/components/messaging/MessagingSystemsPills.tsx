@@ -1,8 +1,8 @@
-import { Activity, Radio } from 'lucide-react';
+import { Activity, Radio } from "lucide-react";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-import { getMqMeta } from './messagingMeta';
+import { getMqMeta } from "./messagingMeta";
 
 interface MessagingSystemsPillsProps {
   systems: string[];
@@ -21,15 +21,15 @@ export default function MessagingSystemsPills({ systems }: MessagingSystemsPills
   return (
     <div
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        marginBottom: '16px',
-        flexWrap: 'wrap',
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        marginBottom: "16px",
+        flexWrap: "wrap",
       }}
     >
       <Activity size={14} color={APP_COLORS.hex_8e8e8e} />
-      <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '12px', fontWeight: 500 }}>
+      <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: "12px", fontWeight: 500 }}>
         Systems:
       </span>
       {systems.map((system) => {
@@ -38,12 +38,12 @@ export default function MessagingSystemsPills({ systems }: MessagingSystemsPills
           <span
             key={system}
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '3px 10px',
-              borderRadius: '12px',
-              fontSize: '11px',
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: "3px 10px",
+              borderRadius: "12px",
+              fontSize: "11px",
               fontWeight: 600,
               color: meta.badgeColor,
               background: `${meta.badgeColor}12`,

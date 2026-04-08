@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react';
+import type React from "react";
+import type { ReactNode } from "react";
 
 interface EntityExplorerLayoutProps {
   header: ReactNode;
@@ -21,7 +22,7 @@ export const EntityExplorerLayout: React.FC<EntityExplorerLayoutProps> = ({
   tabPanel,
   tableSection,
   detailSidebar,
-  className = '',
+  className = "",
 }) => {
   return (
     <div className={`explorer-layout ${className}`}>

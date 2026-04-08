@@ -1,14 +1,14 @@
-import { AlertCircle, LayoutDashboard } from 'lucide-react';
-import { useMemo } from 'react';
+import { AlertCircle, LayoutDashboard } from "lucide-react";
+import { useMemo } from "react";
 
-import { EmptyState } from '@shared/components/ui/feedback';
-import { useDashboardTabDocument } from '@shared/hooks/useDashboardTabDocument';
-import { usePageTabs } from '@shared/hooks/usePageTabs';
-import { useUrlSyncedTab } from '@shared/hooks/useUrlSyncedTab';
+import { EmptyState } from "@shared/components/ui/feedback";
+import { useDashboardTabDocument } from "@shared/hooks/useDashboardTabDocument";
+import { usePageTabs } from "@shared/hooks/usePageTabs";
+import { useUrlSyncedTab } from "@shared/hooks/useUrlSyncedTab";
 
-import { Tabs, Skeleton } from '@/components/ui';
+import { Skeleton, Tabs } from "@/components/ui";
 
-import DashboardTabContent from './DashboardTabContent';
+import DashboardTabContent from "./DashboardTabContent";
 
 interface DashboardPageProps {
   pageId: string;
@@ -25,7 +25,7 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
 
   const tabIds = useMemo(() => tabs.map((tab) => tab.id), [tabs]);
 
-  const defaultTabId = tabIds[0] ?? '';
+  const defaultTabId = tabIds[0] ?? "";
 
   const { activeTab, onTabChange } = useUrlSyncedTab({
     allowedTabs: tabIds as readonly string[],
@@ -52,7 +52,7 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
       <EmptyState
         icon={<AlertCircle size={40} className="text-[var(--color-error)]" />}
         title="Dashboard unavailable"
-        description={import.meta.env.DEV ? tabsError.message : 'Failed to load dashboard tabs.'}
+        description={import.meta.env.DEV ? tabsError.message : "Failed to load dashboard tabs."}
       />
     );
   }
@@ -82,7 +82,7 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
       <EmptyState
         icon={<AlertCircle size={40} className="text-[var(--color-error)]" />}
         title="Dashboard tab unavailable"
-        description={import.meta.env.DEV ? tabError.message : 'Failed to load dashboard tab.'}
+        description={import.meta.env.DEV ? tabError.message : "Failed to load dashboard tab."}
       />
     );
   }

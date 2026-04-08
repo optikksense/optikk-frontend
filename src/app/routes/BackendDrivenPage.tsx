@@ -1,13 +1,13 @@
-import { Navigate, useLocation } from '@tanstack/react-router';
+import { Navigate, useLocation } from "@tanstack/react-router";
 
-import { DashboardPage, PageHeader, PageShell } from '@shared/components/ui';
-import { getDashboardIcon } from '@shared/components/ui/dashboard/utils/dashboardUtils';
-import { usePagesConfig } from '@shared/hooks/usePagesConfig';
+import { DashboardPage, PageHeader, PageShell } from "@shared/components/ui";
+import { getDashboardIcon } from "@shared/components/ui/dashboard/utils/dashboardUtils";
+import { usePagesConfig } from "@shared/hooks/usePagesConfig";
 
-import { resolveDashboardPageAdapter } from '@/app/registry/domainRegistry';
-import { Skeleton } from '@/components/ui';
-import { ROUTES } from '@/shared/constants/routes';
-import type { DefaultConfigPage } from '@/types/dashboardConfig';
+import { resolveDashboardPageAdapter } from "@/app/registry/domainRegistry";
+import { Skeleton } from "@/components/ui";
+import { ROUTES } from "@/shared/constants/routes";
+import type { DefaultConfigPage } from "@/types/dashboardConfig";
 
 function matchConfiguredPage(
   pathname: string,
@@ -51,7 +51,7 @@ export default function BackendDrivenPage(): JSX.Element {
 
   const { page: matchedPage, pathParams } = matched;
 
-  if (matchedPage.renderMode !== 'dashboard') {
+  if (matchedPage.renderMode !== "dashboard") {
     return <Navigate to={matchedPage.path || pages[0]?.path || ROUTES.overview} replace />;
   }
 

@@ -1,28 +1,28 @@
-import { z } from 'zod';
-import { aiService } from '@shared/api/aiService';
-import type { AiRunsQueryParams } from '@shared/api/aiService';
-import type { RequestTime } from '@shared/api/service-types';
-import type { LLMRunFilters } from '../types';
+import { aiService } from "@shared/api/aiService";
+import type { AiRunsQueryParams } from "@shared/api/aiService";
+import type { RequestTime } from "@shared/api/service-types";
+import { z } from "zod";
+import type { LLMRunFilters } from "../types";
 
 const llmRunSchema = z.object({
   spanId: z.string(),
   traceId: z.string(),
-  parentSpanId: z.string().optional().default(''),
+  parentSpanId: z.string().optional().default(""),
   serviceName: z.string(),
   operationName: z.string(),
   model: z.string(),
-  provider: z.string().optional().default(''),
-  operationType: z.string().optional().default(''),
+  provider: z.string().optional().default(""),
+  operationType: z.string().optional().default(""),
   startTime: z.string(),
   durationMs: z.number(),
   inputTokens: z.number(),
   outputTokens: z.number(),
   totalTokens: z.number(),
   hasError: z.boolean(),
-  statusMessage: z.string().optional().default(''),
-  finishReason: z.string().optional().default(''),
-  inputPreview: z.string().optional().default(''),
-  outputPreview: z.string().optional().default(''),
+  statusMessage: z.string().optional().default(""),
+  finishReason: z.string().optional().default(""),
+  inputPreview: z.string().optional().default(""),
+  outputPreview: z.string().optional().default(""),
   spanKind: z.string(),
 });
 
@@ -40,7 +40,7 @@ const summarySchema = z.object({
 
 const modelSchema = z.object({
   model: z.string(),
-  provider: z.string().optional().default(''),
+  provider: z.string().optional().default(""),
 });
 
 const operationSchema = z.object({
@@ -49,10 +49,10 @@ const operationSchema = z.object({
 
 function filtersToParams(filters: LLMRunFilters): AiRunsQueryParams {
   const params: AiRunsQueryParams = {};
-  if (filters.models?.length) params.models = filters.models.join(',');
-  if (filters.providers?.length) params.providers = filters.providers.join(',');
-  if (filters.operations?.length) params.operations = filters.operations.join(',');
-  if (filters.services?.length) params.services = filters.services.join(',');
+  if (filters.models?.length) params.models = filters.models.join(",");
+  if (filters.providers?.length) params.providers = filters.providers.join(",");
+  if (filters.operations?.length) params.operations = filters.operations.join(",");
+  if (filters.services?.length) params.services = filters.services.join(",");
   if (filters.status) params.status = filters.status;
   if (filters.minDurationMs != null) params.minDurationMs = filters.minDurationMs;
   if (filters.maxDurationMs != null) params.maxDurationMs = filters.maxDurationMs;

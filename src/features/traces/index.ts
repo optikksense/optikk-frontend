@@ -1,34 +1,34 @@
-import { GitBranch } from 'lucide-react';
-import { lazy } from 'react';
+import { GitBranch } from "lucide-react";
+import { lazy } from "react";
 
-import type { DomainConfig } from '@/app/registry/domainRegistry';
-import { ROUTES } from '@/shared/constants/routes';
+import type { DomainConfig } from "@/app/registry/domainRegistry";
+import { ROUTES } from "@/shared/constants/routes";
 
 const TracesPage = lazy(() =>
-  import('./pages/TracesPage').then((module) => ({ default: module.default }))
+  import("./pages/TracesPage").then((module) => ({ default: module.default }))
 );
 const TraceDetailPage = lazy(() =>
-  import('./pages/TraceDetailPage').then((module) => ({ default: module.default }))
+  import("./pages/TraceDetailPage").then((module) => ({ default: module.default }))
 );
 const TraceWaterfallRenderer = lazy(() =>
-  import('./dashboard/renderers/TraceWaterfallRenderer').then((module) => ({
+  import("./dashboard/renderers/TraceWaterfallRenderer").then((module) => ({
     default: module.TraceWaterfallRenderer,
   }))
 );
 const TraceComparisonPage = lazy(() =>
-  import('./pages/TraceComparisonPage').then((module) => ({ default: module.default }))
+  import("./pages/TraceComparisonPage").then((module) => ({ default: module.default }))
 );
 
 export const tracesConfig: DomainConfig = {
-  key: 'traces',
-  label: 'Traces',
-  permissions: ['traces:read'],
+  key: "traces",
+  label: "Traces",
+  permissions: ["traces:read"],
   navigation: [
     {
       path: ROUTES.traces,
-      label: 'Traces',
+      label: "Traces",
       icon: GitBranch,
-      group: 'observe',
+      group: "observe",
     },
   ],
   routes: [
@@ -37,6 +37,6 @@ export const tracesConfig: DomainConfig = {
     { path: ROUTES.traceCompare, page: TraceComparisonPage },
   ],
   dashboardPanels: [
-    { panelType: 'trace-waterfall', kind: 'specialized', component: TraceWaterfallRenderer },
+    { panelType: "trace-waterfall", kind: "specialized", component: TraceWaterfallRenderer },
   ],
 };

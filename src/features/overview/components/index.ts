@@ -1,1 +1,1 @@
-export * from './slo';
+export * from "./slo";

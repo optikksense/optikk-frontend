@@ -1,12 +1,12 @@
-import { Brain } from 'lucide-react';
-import { useParams } from '@tanstack/react-router';
+import { useParams } from "@tanstack/react-router";
+import { Brain } from "lucide-react";
 
-import { PageHeader } from '@shared/components/ui';
-import { formatDuration, formatNumber, formatTimestamp } from '@shared/utils/formatters';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import { PageHeader } from "@shared/components/ui";
+import { formatDuration, formatNumber, formatTimestamp } from "@shared/utils/formatters";
 
-import { useAiRunDetail } from '../../hooks/useAiRunDetail';
-import type { LLMMessage, ChainSpan } from '../../types';
+import { useAiRunDetail } from "../../hooks/useAiRunDetail";
+import type { ChainSpan, LLMMessage } from "../../types";
 
 function getErrorMessage(error: { message?: string } | null | undefined, fallback: string): string {
   if (error?.message) {
@@ -17,7 +17,7 @@ function getErrorMessage(error: { message?: string } | null | undefined, fallbac
 }
 
 export default function AiRunDetailPage(): JSX.Element {
-  const { spanId = '' } = useParams({ strict: false });
+  const { spanId = "" } = useParams({ strict: false });
   const {
     detail,
     messages,
@@ -32,23 +32,23 @@ export default function AiRunDetailPage(): JSX.Element {
 
   if (isLoading || detailError || !detail) {
     return (
-      <div className="max-w-[1200px] mx-auto px-0 pb-6">
+      <div className="mx-auto max-w-[1200px] px-0 pb-6">
         <PageHeader
           title="LLM Run Detail"
           icon={<Brain size={24} />}
           breadcrumbs={[
-            { label: 'LLM Runs', path: '/ai-runs' },
-            { label: spanId.slice(0, 12) + '…' },
+            { label: "LLM Runs", path: "/ai-runs" },
+            { label: `${spanId.slice(0, 12)}…` },
           ]}
         />
         {isLoading ? (
           <div className="p-10 text-center text-[var(--text-muted)]">Loading...</div>
         ) : detailError ? (
           <div className="p-6">
-            <div className="px-4 py-3 rounded-lg bg-[var(--error-bg,rgba(240,68,56,0.08))] border border-[var(--error-border,rgba(240,68,56,0.2))] text-[var(--error-text,#f04438)]">
+            <div className="rounded-lg border border-[var(--error-border,rgba(240,68,56,0.2))] bg-[var(--error-bg,rgba(240,68,56,0.08))] px-4 py-3 text-[var(--error-text,#f04438)]">
               <strong>The LLM run detail could not be loaded.</strong>
               <div className="mt-1 text-[13px]">
-                {getErrorMessage(detailError, 'The backend request failed for this run.')}
+                {getErrorMessage(detailError, "The backend request failed for this run.")}
               </div>
             </div>
           </div>
@@ -63,26 +63,26 @@ export default function AiRunDetailPage(): JSX.Element {
   const inputPct = totalTokens > 0 ? (detail.inputTokens / totalTokens) * 100 : 50;
 
   return (
-    <div className="max-w-[1200px] mx-auto px-0 pb-6">
+    <div className="mx-auto max-w-[1200px] px-0 pb-6">
       <PageHeader
-        title={detail.model || 'LLM Run'}
+        title={detail.model || "LLM Run"}
         icon={<Brain size={24} />}
         breadcrumbs={[
-          { label: 'LLM Runs', path: '/ai-runs' },
-          { label: detail.model || spanId.slice(0, 12) + '…' },
+          { label: "LLM Runs", path: "/ai-runs" },
+          { label: detail.model || `${spanId.slice(0, 12)}…` },
         ]}
       />
 
       {/* Metadata row */}
-      <div className="grid grid-cols-3 gap-4 mb-5">
+      <div className="mb-5 grid grid-cols-3 gap-4">
         {/* Metadata card */}
-        <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-[10px] p-4">
-          <h3 className="text-[12px] font-semibold text-[var(--text-muted)] uppercase tracking-[0.5px] mt-0 mb-3">
+        <div className="rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)] p-4">
+          <h3 className="mt-0 mb-3 font-semibold text-[12px] text-[var(--text-muted)] uppercase tracking-[0.5px]">
             Metadata
           </h3>
           <RunField label="Model" value={detail.model} />
-          <RunField label="Provider" value={detail.provider || '—'} />
-          <RunField label="Operation" value={detail.operationType || '—'} />
+          <RunField label="Provider" value={detail.provider || "—"} />
+          <RunField label="Operation" value={detail.operationType || "—"} />
           <RunField
             label="Status"
             value={
@@ -93,12 +93,12 @@ export default function AiRunDetailPage(): JSX.Element {
               )
             }
           />
-          <RunField label="Finish Reason" value={detail.finishReason || '—'} />
+          <RunField label="Finish Reason" value={detail.finishReason || "—"} />
         </div>
 
         {/* Performance card */}
-        <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-[10px] p-4">
-          <h3 className="text-[12px] font-semibold text-[var(--text-muted)] uppercase tracking-[0.5px] mt-0 mb-3">
+        <div className="rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)] p-4">
+          <h3 className="mt-0 mb-3 font-semibold text-[12px] text-[var(--text-muted)] uppercase tracking-[0.5px]">
             Performance
           </h3>
           <RunField label="Duration" value={formatDuration(detail.durationMs)} />
@@ -108,15 +108,15 @@ export default function AiRunDetailPage(): JSX.Element {
         </div>
 
         {/* Tokens card */}
-        <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-[10px] p-4">
-          <h3 className="text-[12px] font-semibold text-[var(--text-muted)] uppercase tracking-[0.5px] mt-0 mb-3">
+        <div className="rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)] p-4">
+          <h3 className="mt-0 mb-3 font-semibold text-[12px] text-[var(--text-muted)] uppercase tracking-[0.5px]">
             Tokens
           </h3>
           <RunField label="Input" value={formatNumber(detail.inputTokens)} />
           <RunField label="Output" value={formatNumber(detail.outputTokens)} />
           <RunField label="Total" value={formatNumber(totalTokens)} />
           {/* Token bar */}
-          <div className="flex h-5 rounded overflow-hidden mt-2">
+          <div className="mt-2 flex h-5 overflow-hidden rounded">
             <div
               className="bg-[#3b82f6]"
               style={{ width: `${inputPct}%` }}
@@ -128,7 +128,7 @@ export default function AiRunDetailPage(): JSX.Element {
               title={`Output: ${formatNumber(detail.outputTokens)}`}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-[var(--text-muted)] mt-1">
+          <div className="mt-1 flex justify-between text-[10px] text-[var(--text-muted)]">
             <span className="text-[#3b82f6]">Input</span>
             <span className="text-[#10b981]">Output</span>
           </div>
@@ -136,22 +136,22 @@ export default function AiRunDetailPage(): JSX.Element {
       </div>
 
       {/* Messages */}
-      <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-[10px] mb-5 overflow-hidden">
-        <h3 className="text-[13px] font-semibold text-[var(--text-primary)] px-[18px] py-[14px] m-0 border-b border-[var(--border-color)]">
-          Messages {isMessagesLoading && '(loading...)'}
+      <div className="mb-5 overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+        <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
+          Messages {isMessagesLoading && "(loading...)"}
         </h3>
         {messagesError && (
           <div className="px-[18px] pt-4">
-            <div className="px-4 py-3 rounded-lg bg-[var(--error-bg,rgba(240,68,56,0.08))] border border-[var(--error-border,rgba(240,68,56,0.2))] text-[var(--error-text,#f04438)]">
+            <div className="rounded-lg border border-[var(--error-border,rgba(240,68,56,0.2))] bg-[var(--error-bg,rgba(240,68,56,0.08))] px-4 py-3 text-[var(--error-text,#f04438)]">
               <strong>Messages could not be loaded</strong>
               <div className="mt-1 text-[13px]">
-                {getErrorMessage(messagesError, 'The backend request for run messages failed.')}
+                {getErrorMessage(messagesError, "The backend request for run messages failed.")}
               </div>
             </div>
           </div>
         )}
         {messages.length === 0 && !isMessagesLoading && (
-          <div className="px-[18px] py-5 text-[var(--text-muted)] text-[12.5px]">
+          <div className="px-[18px] py-5 text-[12.5px] text-[var(--text-muted)]">
             No prompt/completion messages found. Ensure your instrumentation sends gen_ai.content
             events.
           </div>
@@ -159,20 +159,20 @@ export default function AiRunDetailPage(): JSX.Element {
         {messages.map((msg: LLMMessage, i: number) => (
           <div
             key={i}
-            className="px-[18px] py-[14px] border-b border-[var(--border-color)] last:border-b-0"
+            className="border-[var(--border-color)] border-b px-[18px] py-[14px] last:border-b-0"
           >
             <div
               className={cn(
-                'inline-flex px-2 py-0.5 rounded text-[11px] font-semibold mb-2 capitalize',
-                msg.role === 'system' && 'bg-[rgba(139,92,246,0.12)] text-[#8b5cf6]',
-                msg.role === 'user' && 'bg-[rgba(59,130,246,0.12)] text-[#3b82f6]',
-                msg.role === 'assistant' && 'bg-[rgba(16,185,129,0.12)] text-[#10b981]',
-                msg.role === 'tool' && 'bg-[rgba(245,158,11,0.12)] text-[#f59e0b]'
+                "mb-2 inline-flex rounded px-2 py-0.5 font-semibold text-[11px] capitalize",
+                msg.role === "system" && "bg-[rgba(139,92,246,0.12)] text-[#8b5cf6]",
+                msg.role === "user" && "bg-[rgba(59,130,246,0.12)] text-[#3b82f6]",
+                msg.role === "assistant" && "bg-[rgba(16,185,129,0.12)] text-[#10b981]",
+                msg.role === "tool" && "bg-[rgba(245,158,11,0.12)] text-[#f59e0b]"
               )}
             >
               {msg.role}
             </div>
-            <div className="text-[12.5px] leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap break-words font-mono">
+            <div className="whitespace-pre-wrap break-words font-mono text-[12.5px] text-[var(--text-primary)] leading-relaxed">
               {msg.content}
             </div>
           </div>
@@ -181,9 +181,9 @@ export default function AiRunDetailPage(): JSX.Element {
 
       {/* Context chain */}
       {context && (
-        <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-[10px] overflow-hidden">
-          <h3 className="text-[13px] font-semibold text-[var(--text-primary)] px-[18px] py-[14px] m-0 border-b border-[var(--border-color)]">
-            Execution Context {isContextLoading && '(loading...)'}
+        <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+          <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
+            Execution Context {isContextLoading && "(loading...)"}
           </h3>
           {context.ancestors.map((span: ChainSpan) => (
             <ContextSpanRow key={span.spanId} span={span} isCurrent={false} />
@@ -195,15 +195,15 @@ export default function AiRunDetailPage(): JSX.Element {
         </div>
       )}
       {!context && contextError && (
-        <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-[10px] overflow-hidden">
-          <h3 className="text-[13px] font-semibold text-[var(--text-primary)] px-[18px] py-[14px] m-0 border-b border-[var(--border-color)]">
+        <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+          <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
             Execution Context
           </h3>
           <div className="px-[18px] py-4">
-            <div className="px-4 py-3 rounded-lg bg-[var(--error-bg,rgba(240,68,56,0.08))] border border-[var(--error-border,rgba(240,68,56,0.2))] text-[var(--error-text,#f04438)]">
+            <div className="rounded-lg border border-[var(--error-border,rgba(240,68,56,0.2))] bg-[var(--error-bg,rgba(240,68,56,0.08))] px-4 py-3 text-[var(--error-text,#f04438)]">
               <strong>Execution context could not be loaded</strong>
               <div className="mt-1 text-[13px]">
-                {getErrorMessage(contextError, 'The backend request for execution context failed.')}
+                {getErrorMessage(contextError, "The backend request for execution context failed.")}
               </div>
             </div>
           </div>
@@ -215,9 +215,9 @@ export default function AiRunDetailPage(): JSX.Element {
 
 function RunField({ label, value }: { label: string; value: React.ReactNode }): JSX.Element {
   return (
-    <div className="flex justify-between items-center py-[5px] text-[12.5px]">
+    <div className="flex items-center justify-between py-[5px] text-[12.5px]">
       <span className="text-[var(--text-muted)]">{label}</span>
-      <span className="text-[var(--text-primary)] font-medium font-mono">{value}</span>
+      <span className="font-medium font-mono text-[var(--text-primary)]">{value}</span>
     </div>
   );
 }
@@ -226,31 +226,31 @@ function ContextSpanRow({ span, isCurrent }: { span: ChainSpan; isCurrent: boole
   return (
     <div
       className={cn(
-        'flex items-center gap-[10px] px-[18px] py-[10px] border-b border-[var(--border-color)] last:border-b-0 text-[12px]',
-        isCurrent && 'bg-[var(--color-primary-subtle-08)]'
+        "flex items-center gap-[10px] border-[var(--border-color)] border-b px-[18px] py-[10px] text-[12px] last:border-b-0",
+        isCurrent && "bg-[var(--color-primary-subtle-08)]"
       )}
     >
       <span
         className={cn(
-          'inline-flex px-[6px] py-0.5 rounded-[3px] text-[10px] font-semibold uppercase bg-[var(--glass-bg)] text-[var(--text-muted)] min-w-[60px] justify-center',
-          span.role === 'llm_call' && 'bg-[rgba(139,92,246,0.12)] text-[#8b5cf6]',
-          span.role === 'tool_call' && 'bg-[rgba(245,158,11,0.12)] text-[#f59e0b]',
-          span.role === 'retriever' && 'bg-[rgba(6,182,212,0.12)] text-[#06b6d4]',
-          (span.role === 'chain' || span.role === 'agent') &&
-            'bg-[rgba(16,185,129,0.12)] text-[#10b981]'
+          "inline-flex min-w-[60px] justify-center rounded-[3px] bg-[var(--glass-bg)] px-[6px] py-0.5 font-semibold text-[10px] text-[var(--text-muted)] uppercase",
+          span.role === "llm_call" && "bg-[rgba(139,92,246,0.12)] text-[#8b5cf6]",
+          span.role === "tool_call" && "bg-[rgba(245,158,11,0.12)] text-[#f59e0b]",
+          span.role === "retriever" && "bg-[rgba(6,182,212,0.12)] text-[#06b6d4]",
+          (span.role === "chain" || span.role === "agent") &&
+            "bg-[rgba(16,185,129,0.12)] text-[#10b981]"
         )}
       >
-        {span.role.replace('_', ' ')}
+        {span.role.replace("_", " ")}
       </span>
-      <span style={{ fontWeight: isCurrent ? 600 : 400, color: 'var(--text-primary)', flex: 1 }}>
+      <span style={{ fontWeight: isCurrent ? 600 : 400, color: "var(--text-primary)", flex: 1 }}>
         {span.operationName}
         {span.model && (
-          <span style={{ color: 'var(--text-muted)', marginLeft: 6, fontSize: 11 }}>
+          <span style={{ color: "var(--text-muted)", marginLeft: 6, fontSize: 11 }}>
             ({span.model})
           </span>
         )}
       </span>
-      <span className="text-[var(--text-muted)] text-[11px]">{span.serviceName}</span>
+      <span className="text-[11px] text-[var(--text-muted)]">{span.serviceName}</span>
       <span className="font-mono text-[11px] text-[var(--text-secondary)]">
         {formatDuration(span.durationMs)}
       </span>

@@ -1,4 +1,4 @@
-import type { ServiceBadge } from '../../types';
+import type { ServiceBadge } from "../../types";
 
 interface TopServicesPanelProps {
   serviceBadges: ServiceBadge[];

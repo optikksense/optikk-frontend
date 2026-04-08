@@ -3,8 +3,9 @@
  * Renders a colour-coded matrix of error rates bucketed by service × time.
  * Colours map to severity tokens from the design system (Fix 13).
  */
-import { Surface, Tooltip } from '@/components/ui';
-import React, { useMemo } from 'react';
+import { Surface, Tooltip } from "@/components/ui";
+import type React from "react";
+import { useMemo } from "react";
 
 interface HeatCell {
   service: string;
@@ -20,18 +21,18 @@ interface GoldenSignalsHeatmapProps {
 }
 
 function cellColor(errorRate: number): string {
-  if (errorRate >= 5) return 'var(--severity-critical)';
-  if (errorRate >= 2) return 'var(--severity-high)';
-  if (errorRate >= 0.5) return 'var(--severity-medium)';
-  if (errorRate > 0) return 'var(--severity-low)';
-  return 'var(--severity-info-subtle)';
+  if (errorRate >= 5) return "var(--severity-critical)";
+  if (errorRate >= 2) return "var(--severity-high)";
+  if (errorRate >= 0.5) return "var(--severity-medium)";
+  if (errorRate > 0) return "var(--severity-low)";
+  return "var(--severity-info-subtle)";
 }
 
 const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
   data,
   services,
   timeBuckets,
-  title = 'Error Rate Heatmap',
+  title = "Error Rate Heatmap",
 }) => {
   // Build lookup: service+time → errorRate
   const lookup = useMemo(() => {
@@ -41,17 +42,17 @@ const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
   }, [data]);
 
   return (
-    <Surface className="chart-card" padding="sm" style={{ overflow: 'auto' }}>
+    <Surface className="chart-card" padding="sm" style={{ overflow: "auto" }}>
       <div style={{ fontWeight: 600, marginBottom: 8 }}>{title}</div>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-xs)' }}>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ borderCollapse: "collapse", width: "100%", fontSize: "var(--text-xs)" }}>
           <thead>
             <tr>
               <th
                 style={{
-                  padding: '4px 8px',
-                  textAlign: 'left',
-                  color: 'var(--text-secondary)',
+                  padding: "4px 8px",
+                  textAlign: "left",
+                  color: "var(--text-secondary)",
                   minWidth: 120,
                 }}
               >
@@ -61,10 +62,10 @@ const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
                 <th
                   key={t}
                   style={{
-                    padding: '4px 6px',
-                    color: 'var(--text-muted)',
+                    padding: "4px 6px",
+                    color: "var(--text-muted)",
                     fontWeight: 400,
-                    whiteSpace: 'nowrap',
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {t}
@@ -75,7 +76,7 @@ const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
           <tbody>
             {services.map((svc) => (
               <tr key={svc}>
-                <td style={{ padding: '3px 8px', color: 'var(--text-primary)', fontWeight: 500 }}>
+                <td style={{ padding: "3px 8px", color: "var(--text-primary)", fontWeight: 500 }}>
                   {svc}
                 </td>
                 {timeBuckets.map((t) => {
@@ -90,8 +91,8 @@ const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
                             borderRadius: 3,
                             background: cellColor(rate),
                             opacity: Math.max(0.2, Math.min(1, 0.2 + rate / 5)),
-                            cursor: 'default',
-                            transition: 'opacity 0.2s',
+                            cursor: "default",
+                            transition: "opacity 0.2s",
                           }}
                         />
                       </Tooltip>
@@ -105,17 +106,17 @@ const GoldenSignalsHeatmap: React.FC<GoldenSignalsHeatmapProps> = ({
       </div>
 
       {/* Legend */}
-      <div style={{ display: 'flex', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
+      <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
         {[
-          { label: '0%', color: 'var(--severity-info-subtle)' },
-          { label: '<0.5%', color: 'var(--severity-low)' },
-          { label: '<2%', color: 'var(--severity-medium)' },
-          { label: '<5%', color: 'var(--severity-high)' },
-          { label: '≥5%', color: 'var(--severity-critical)' },
+          { label: "0%", color: "var(--severity-info-subtle)" },
+          { label: "<0.5%", color: "var(--severity-low)" },
+          { label: "<2%", color: "var(--severity-medium)" },
+          { label: "<5%", color: "var(--severity-high)" },
+          { label: "≥5%", color: "var(--severity-critical)" },
         ].map(({ label, color }) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div key={label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: color }} />
-            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>{label}</span>
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>{label}</span>
           </div>
         ))}
       </div>

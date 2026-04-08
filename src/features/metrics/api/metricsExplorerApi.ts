@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { API_CONFIG } from '@config/apiConfig';
-import api from '@/shared/api/api/client';
-import { decodeApiResponse } from '@/shared/api/utils/validate';
-import type { MetricQueryDefinition, MetricSpaceAggregation, TimeStep } from '../types';
+import api from "@/shared/api/api/client";
+import { decodeApiResponse } from "@/shared/api/utils/validate";
+import { API_CONFIG } from "@config/apiConfig";
+import type { MetricQueryDefinition, MetricSpaceAggregation, TimeStep } from "../types";
 
 export function buildExplorerQueryRequest(
   queries: MetricQueryDefinition[],
@@ -33,7 +33,7 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 const metricNameEntrySchema = z.object({
   name: z.string(),
-  type: z.enum(['gauge', 'counter', 'histogram', 'summary']),
+  type: z.enum(["gauge", "counter", "histogram", "summary"]),
   unit: z.string().optional(),
   description: z.string().optional(),
 });
@@ -113,13 +113,13 @@ export const metricsExplorerApi = {
       endTime: String(params.endTime),
     });
     if (params.search) {
-      queryParams.set('search', params.search);
+      queryParams.set("search", params.search);
     }
     const response = await api.get(`${BASE}/metrics/names?${queryParams.toString()}`);
     return decodeApiResponse(metricNamesResponseSchema, response, {
-      context: 'metric names',
-      expectedType: 'object',
-      message: 'Invalid metric names response',
+      context: "metric names",
+      expectedType: "object",
+      message: "Invalid metric names response",
     });
   },
 
@@ -129,23 +129,23 @@ export const metricsExplorerApi = {
       endTime: String(params.endTime),
     });
     if (params.tagKey) {
-      queryParams.set('tagKey', params.tagKey);
+      queryParams.set("tagKey", params.tagKey);
     }
     const encodedName = encodeURIComponent(params.metricName);
     const response = await api.get(`${BASE}/metrics/${encodedName}/tags?${queryParams.toString()}`);
     return decodeApiResponse(metricTagsResponseSchema, response, {
       context: `metric tags (${params.metricName})`,
-      expectedType: 'object',
-      message: 'Invalid metric tags response',
+      expectedType: "object",
+      message: "Invalid metric tags response",
     });
   },
 
   async query(body: MetricExplorerQueryRequest): Promise<MetricsExplorerResponse> {
     const response = await api.post(`${BASE}/metrics/explorer/query`, body);
     return decodeApiResponse(metricsExplorerResponseSchema, response, {
-      context: 'metrics explorer query',
-      expectedType: 'object',
-      message: 'Invalid metrics explorer response',
+      context: "metrics explorer query",
+      expectedType: "object",
+      message: "Invalid metrics explorer response",
     });
   },
 };

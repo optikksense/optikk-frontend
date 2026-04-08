@@ -1,18 +1,18 @@
-import { Tooltip } from '@/components/ui';
-import type { SpanKindDuration } from '../../types';
-import { formatDuration } from '@shared/utils/formatters';
+import { Tooltip } from "@/components/ui";
+import { formatDuration } from "@shared/utils/formatters";
+import type { SpanKindDuration } from "../../types";
 
 const KIND_COLORS: Record<string, string> = {
-  SERVER: '#648FFF',
-  CLIENT: '#785EF0',
-  INTERNAL: '#6b7280',
-  PRODUCER: '#06aed5',
-  CONSUMER: '#73c991',
-  UNSPECIFIED: '#9ca3af',
+  SERVER: "#648FFF",
+  CLIENT: "#785EF0",
+  INTERNAL: "#6b7280",
+  PRODUCER: "#06aed5",
+  CONSUMER: "#73c991",
+  UNSPECIFIED: "#9ca3af",
 };
 
 function kindColor(kind: string): string {
-  return KIND_COLORS[kind.toUpperCase()] ?? '#9ca3af';
+  return KIND_COLORS[kind.toUpperCase()] ?? "#9ca3af";
 }
 
 interface Props {
@@ -26,7 +26,7 @@ export default function SpanKindBreakdown({ data }: Props) {
 
   return (
     <div>
-      <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', gap: 1 }}>
+      <div style={{ display: "flex", height: 8, borderRadius: 4, overflow: "hidden", gap: 1 }}>
         {data.map((d) => (
           <Tooltip
             key={d.spanKind}
@@ -37,22 +37,22 @@ export default function SpanKindBreakdown({ data }: Props) {
                 flex: total > 0 ? d.totalDurationMs / total : 1 / data.length,
                 background: kindColor(d.spanKind),
                 minWidth: 4,
-                cursor: 'default',
+                cursor: "default",
               }}
             />
           </Tooltip>
         ))}
       </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px', marginTop: 6 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 14px", marginTop: 6 }}>
         {data.map((d) => (
           <span
             key={d.spanKind}
             style={{
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
               gap: 5,
               fontSize: 11,
-              color: 'var(--text-secondary)',
+              color: "var(--text-secondary)",
             }}
           >
             <span

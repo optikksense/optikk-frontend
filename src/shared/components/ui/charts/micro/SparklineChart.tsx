@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { CHART_COLORS } from '@config/constants';
+import { CHART_COLORS } from "@config/constants";
 
-import UPlotChart, { uLine } from '../UPlotChart';
+import UPlotChart, { uLine } from "../UPlotChart";
 
 interface SparklineChartProps {
   data?: number[];
@@ -37,13 +37,13 @@ export default function SparklineChart({
 
   const uplotData = useMemo<uPlot.AlignedData>(() => [data.map((_, i) => i), data], [data]);
 
-  const opts = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(
+  const opts = useMemo<Omit<uPlot.Options, "width" | "height">>(
     () => ({
       axes: [{ show: false }, { show: false }],
       cursor: { show: false },
       legend: { show: false },
       padding: [0, 0, 0, 0],
-      series: [{}, uLine('', color, { fill: effectiveFill, width: lineWidth })],
+      series: [{}, uLine("", color, { fill: effectiveFill, width: lineWidth })],
     }),
     [color, effectiveFill, lineWidth]
   );

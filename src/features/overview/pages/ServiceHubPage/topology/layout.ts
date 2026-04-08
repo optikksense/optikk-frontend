@@ -1,5 +1,5 @@
-import dagre from 'dagre';
-import { Position, type Edge, type Node } from '@xyflow/react';
+import { type Edge, type Node, Position } from "@xyflow/react";
+import dagre from "dagre";
 
 export const NODE_WIDTH = 200;
 export const NODE_HEIGHT = 104;
@@ -11,7 +11,7 @@ export const NODE_HEIGHT = 104;
 export function layoutTopology(nodes: Node[], edges: Edge[]): Node[] {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: 'LR', nodesep: 48, ranksep: 96, marginx: 16, marginy: 16 });
+  g.setGraph({ rankdir: "LR", nodesep: 48, ranksep: 96, marginx: 16, marginy: 16 });
 
   for (const n of nodes) {
     g.setNode(n.id, { width: NODE_WIDTH, height: NODE_HEIGHT });

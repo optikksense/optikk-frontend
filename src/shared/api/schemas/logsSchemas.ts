@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { logEntrySchema } from '@entities/log/model';
+import { logEntrySchema } from "@entities/log/model";
 
 export const logRecordSchema = logEntrySchema;
 

@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link } from '@tanstack/react-router';
-import { Breadcrumbs } from '@shared/components/primitives/ui/breadcrumb';
-import { cn } from '@/lib/utils';
-import { useBreadcrumbs } from '@shared/hooks/useBreadcrumbs';
+import { cn } from "@/lib/utils";
+import { Breadcrumbs } from "@shared/components/primitives/ui/breadcrumb";
+import { useBreadcrumbs } from "@shared/hooks/useBreadcrumbs";
+import { Link } from "@tanstack/react-router";
+import React from "react";
 
 interface PageHeaderBreadcrumb {
   label: React.ReactNode;
@@ -34,7 +34,7 @@ export default function PageHeader({
   const showAutoCrumbs = autoBreadcrumbs && breadcrumbs.length === 0 && routeCrumbs.length > 1;
 
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
+    <div className={cn("flex flex-col gap-2", className)}>
       {showAutoCrumbs && (
         <Breadcrumbs items={routeCrumbs} className="text-[11px] text-[var(--text-muted)]" />
       )}
@@ -63,11 +63,11 @@ export default function PageHeader({
             <div className="mt-0.5 flex items-center text-[var(--text-secondary)]">{icon}</div>
           )}
           <div className="min-w-0">
-            <h1 className="m-0 text-[1.625rem] font-semibold leading-[1.15] tracking-[-0.02em] text-[var(--text-primary)]">
+            <h1 className="m-0 font-semibold text-[1.625rem] text-[var(--text-primary)] leading-[1.15] tracking-[-0.02em]">
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-1 max-w-3xl text-[13px] leading-6 text-[var(--text-secondary)]">
+              <p className="mt-1 max-w-3xl text-[13px] text-[var(--text-secondary)] leading-6">
                 {subtitle}
               </p>
             )}

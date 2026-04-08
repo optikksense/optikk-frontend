@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { API_CONFIG } from '@config/apiConfig';
-import { logEntrySchema, type LogEntry } from '@entities/log/model';
-import api from '@/shared/api/api/client';
-import { decodeApiResponse } from '@/shared/api/utils/validate';
+import api from "@/shared/api/api/client";
+import { decodeApiResponse } from "@/shared/api/utils/validate";
+import { API_CONFIG } from "@config/apiConfig";
+import { type LogEntry, logEntrySchema } from "@entities/log/model";
 
-import { logsAggregateSchema } from './logsApi';
+import { logsAggregateSchema } from "./logsApi";
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 const facetSchema = z
@@ -47,7 +47,7 @@ const logsExplorerSchema = z
     facets: logsExplorerFacetsSchema,
     trend: z
       .object({
-        step: z.string().default('5m'),
+        step: z.string().default("5m"),
         buckets: z
           .array(
             z
@@ -83,12 +83,12 @@ export type LogsExplorerResponse = z.infer<typeof logsExplorerSchema>;
 function normalizeLog(raw: z.infer<typeof logEntrySchema>): LogEntry {
   return {
     ...raw,
-    level: raw.severity_text ?? raw.level ?? '',
-    message: raw.body ?? raw.message ?? '',
-    service: raw.service_name ?? raw.service ?? '',
-    service_name: raw.service_name ?? raw.service ?? '',
-    trace_id: raw.trace_id ?? '',
-    span_id: raw.span_id ?? '',
+    level: raw.severity_text ?? raw.level ?? "",
+    message: raw.body ?? raw.message ?? "",
+    service: raw.service_name ?? raw.service ?? "",
+    service_name: raw.service_name ?? raw.service ?? "",
+    trace_id: raw.trace_id ?? "",
+    span_id: raw.span_id ?? "",
   };
 }
 
@@ -105,9 +105,9 @@ export const logsExplorerApi = {
   }): Promise<LogsExplorerResponse> {
     const response = await api.post(`${BASE}/logs/explorer/query`, body);
     const parsed = decodeApiResponse(logsExplorerSchema, response, {
-      context: 'logs explorer',
-      expectedType: 'object',
-      message: 'Invalid logs explorer response',
+      context: "logs explorer",
+      expectedType: "object",
+      message: "Invalid logs explorer response",
     });
     return {
       ...parsed,

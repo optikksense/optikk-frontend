@@ -5,7 +5,7 @@
  * never crashes the application.
  */
 
-const isStorageDebugEnabled = import.meta.env.DEV && import.meta.env.MODE !== 'test';
+const isStorageDebugEnabled = import.meta.env.DEV && import.meta.env.MODE !== "test";
 
 function reportStorageError(action: string, error: unknown): void {
   if (!isStorageDebugEnabled) {

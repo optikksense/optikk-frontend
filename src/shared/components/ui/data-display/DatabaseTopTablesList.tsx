@@ -1,6 +1,6 @@
-import { formatNumber, formatDuration } from '@shared/utils/formatters';
+import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
 const CHART_COLORS = [
   APP_COLORS.hex_5e60ce,
@@ -50,7 +50,7 @@ function isDatabaseSystem(system: string): system is DatabaseSystem {
 }
 
 function getBadgeColor(system: string | undefined): string {
-  const normalizedSystem = (system ?? '').toLowerCase();
+  const normalizedSystem = (system ?? "").toLowerCase();
   if (!isDatabaseSystem(normalizedSystem)) return APP_COLORS.hex_5e60ce;
   return DB_BADGE_COLORS[normalizedSystem];
 }
@@ -71,18 +71,18 @@ export default function DatabaseTopTablesList({
     <div style={{ marginTop: 0, borderTop: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}` }}>
       <div
         style={{
-          maxHeight: '280px',
-          overflowY: 'auto',
-          scrollbarWidth: 'thin',
+          maxHeight: "280px",
+          overflowY: "auto",
+          scrollbarWidth: "thin",
           scrollbarColor: `var(--border-color, ${APP_COLORS.hex_2d2d2d}) transparent`,
         }}
       >
         <table
           style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            fontSize: '12px',
-            textAlign: 'left',
+            width: "100%",
+            borderCollapse: "collapse",
+            fontSize: "12px",
+            textAlign: "left",
           }}
         >
           <thead>
@@ -92,17 +92,17 @@ export default function DatabaseTopTablesList({
                 borderBottom: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}`,
               }}
             >
-              <th style={{ padding: '6px 8px', fontWeight: 500 }}>Table / Collection</th>
-              <th style={{ padding: '6px 8px', fontWeight: 500 }}>System</th>
-              <th style={{ padding: '6px 8px', fontWeight: 500, textAlign: 'right' }}>Queries</th>
-              <th style={{ padding: '6px 8px', fontWeight: 500, textAlign: 'right' }}>
+              <th style={{ padding: "6px 8px", fontWeight: 500 }}>Table / Collection</th>
+              <th style={{ padding: "6px 8px", fontWeight: 500 }}>System</th>
+              <th style={{ padding: "6px 8px", fontWeight: 500, textAlign: "right" }}>Queries</th>
+              <th style={{ padding: "6px 8px", fontWeight: 500, textAlign: "right" }}>
                 Avg Latency
               </th>
             </tr>
           </thead>
           <tbody>
             {tables.map((table, index) => {
-              const tableKey = table.key ?? `${table.table_name ?? 'unknown'}-${index}`;
+              const tableKey = table.key ?? `${table.table_name ?? "unknown"}-${index}`;
               const isSelected = selectedTables.includes(tableKey);
               const isFaded = selectedTables.length > 0 && !isSelected;
               const selectedBg = APP_COLORS.rgba_94_96_206_0p2;
@@ -125,9 +125,9 @@ export default function DatabaseTopTablesList({
                     onToggle?.(tableKey);
                   }}
                   style={{
-                    background: isSelected ? selectedBg : 'transparent',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s',
+                    background: isSelected ? selectedBg : "transparent",
+                    cursor: "pointer",
+                    transition: "background 0.2s",
                     opacity: isFaded ? 0.4 : 1,
                   }}
                   onMouseEnter={(event) => {
@@ -136,51 +136,51 @@ export default function DatabaseTopTablesList({
                     }
                   }}
                   onMouseLeave={(event) => {
-                    event.currentTarget.style.background = isSelected ? selectedBg : 'transparent';
+                    event.currentTarget.style.background = isSelected ? selectedBg : "transparent";
                   }}
                 >
                   <td
                     style={{
-                      padding: '5px 8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
+                      padding: "5px 8px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
                     }}
                   >
                     <div
                       style={{
-                        width: '12px',
-                        height: '12px',
-                        borderRadius: '50%',
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
                         backgroundColor: seriesColor,
                         flexShrink: 0,
                       }}
                     />
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
                       <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
-                        {table.table_name || 'unknown'}
+                        {table.table_name || "unknown"}
                       </span>
-                      {table.service_name && table.service_name !== 'unknown' && (
-                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: '11px' }}>
+                      {table.service_name && table.service_name !== "unknown" && (
+                        <span style={{ color: APP_COLORS.hex_8e8e8e, fontSize: "11px" }}>
                           {table.service_name}
                         </span>
                       )}
                     </div>
                   </td>
-                  <td style={{ padding: '5px 8px' }}>
-                    {table.db_system && table.db_system !== 'unknown' && (
+                  <td style={{ padding: "5px 8px" }}>
+                    {table.db_system && table.db_system !== "unknown" && (
                       <span
                         style={{
-                          display: 'inline-block',
-                          padding: '2px 8px',
-                          borderRadius: '10px',
-                          fontSize: '10px',
+                          display: "inline-block",
+                          padding: "2px 8px",
+                          borderRadius: "10px",
+                          fontSize: "10px",
                           fontWeight: 600,
-                          letterSpacing: '0.3px',
+                          letterSpacing: "0.3px",
                           color: badgeColor,
                           background: `${badgeColor}18`,
                           border: `1px solid ${badgeColor}33`,
-                          textTransform: 'capitalize',
+                          textTransform: "capitalize",
                         }}
                       >
                         {table.db_system}
@@ -190,8 +190,8 @@ export default function DatabaseTopTablesList({
                   <td
                     className="font-mono"
                     style={{
-                      padding: '5px 8px',
-                      textAlign: 'right',
+                      padding: "5px 8px",
+                      textAlign: "right",
                       color: APP_COLORS.hex_e0e0e0,
                     }}
                   >
@@ -200,8 +200,8 @@ export default function DatabaseTopTablesList({
                   <td
                     className="font-mono"
                     style={{
-                      padding: '5px 8px',
-                      textAlign: 'right',
+                      padding: "5px 8px",
+                      textAlign: "right",
                       color: latencyColor,
                     }}
                   >

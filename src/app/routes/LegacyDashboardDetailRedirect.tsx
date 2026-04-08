@@ -1,8 +1,8 @@
-import { Navigate, useLocation, useParams } from '@tanstack/react-router';
+import { Navigate, useLocation, useParams } from "@tanstack/react-router";
 
-import type { DashboardDrawerEntity } from '@/types/dashboardConfig';
+import type { DashboardDrawerEntity } from "@/types/dashboardConfig";
 
-import { buildLegacyDashboardDrawerSearch } from '@shared/components/ui/dashboard/utils/dashboardDrawerState';
+import { buildLegacyDashboardDrawerSearch } from "@shared/components/ui/dashboard/utils/dashboardDrawerState";
 
 interface LegacyDashboardDetailRedirectProps {
   parentPath: string;
@@ -20,23 +20,23 @@ export default function LegacyDashboardDetailRedirect({
   const location = useLocation();
   const params = useParams({ strict: false });
 
-  const rawValue = params[paramKey] ?? '';
+  const rawValue = params[paramKey] ?? "";
   const nextSearchParams = new URLSearchParams(location.search);
   if (tab) {
-    nextSearchParams.set('tab', tab);
+    nextSearchParams.set("tab", tab);
   }
   const currentSearch = nextSearchParams.toString();
 
   const search = rawValue
     ? buildLegacyDashboardDrawerSearch(
-        currentSearch ? `?${currentSearch}` : '',
+        currentSearch ? `?${currentSearch}` : "",
         drawerEntity,
         rawValue,
         rawValue
       )
     : currentSearch
       ? `?${currentSearch}`
-      : '';
+      : "";
 
   return <Navigate to={parentPath + search} replace />;
 }

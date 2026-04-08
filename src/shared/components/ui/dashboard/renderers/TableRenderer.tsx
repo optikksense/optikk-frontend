@@ -1,13 +1,13 @@
-import { SimpleTable } from '@shared/components/primitives/ui/simple-table';
-import { useMemo } from 'react';
-import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { SimpleTable } from "@shared/components/primitives/ui/simple-table";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { useMemo } from "react";
 
-import { useDashboardData } from '../hooks/useDashboardData';
-import ChartNoDataOverlay from '@shared/components/ui/feedback/ChartNoDataOverlay';
-import { buildDashboardDrawerSearch } from '../utils/dashboardDrawerState';
-import { formatDuration, formatNumber, formatPercentage } from '@shared/utils/formatters';
+import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
+import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
+import { useDashboardData } from "../hooks/useDashboardData";
+import { buildDashboardDrawerSearch } from "../utils/dashboardDrawerState";
 
-import type { DashboardPanelRendererProps } from '../dashboardPanelRegistry';
+import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
 /**
  *
@@ -28,7 +28,7 @@ export function TableRenderer({
       label: string;
       formatter?: string;
       width?: number;
-      align?: 'left' | 'center' | 'right';
+      align?: "left" | "center" | "right";
     }> = chartConfig.columns?.length
       ? chartConfig.columns
       : Object.keys(rows[0])
@@ -36,8 +36,8 @@ export function TableRenderer({
           .map((key) => ({
             key,
             label: key
-              .replace(/_/g, ' ')
-              .replace(/([A-Z])/g, ' $1')
+              .replace(/_/g, " ")
+              .replace(/([A-Z])/g, " $1")
               .trim(),
           }));
 
@@ -49,16 +49,16 @@ export function TableRenderer({
       align: column.align,
       ellipsis: true,
       render: (val: any) => {
-        if (val == null || val === '') return '—';
-        if (column.key === 'sample_trace_id' || column.key === 'trace_id') {
+        if (val == null || val === "") return "—";
+        if (column.key === "sample_trace_id" || column.key === "trace_id") {
           return (
-            <span 
+            <span
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 navigate({ to: `/traces/${val}` });
               }}
-              className="text-[var(--color-primary)] hover:underline cursor-pointer group flex items-center gap-1"
+              className="group flex cursor-pointer items-center gap-1 text-[var(--color-primary)] hover:underline"
             >
               {String(val)}
             </span>
@@ -67,14 +67,17 @@ export function TableRenderer({
 
         if (column.formatter) {
           switch (column.formatter) {
-            case 'ms': return formatDuration(val);
-            case 'number': return formatNumber(val);
-            case 'percent':
-            case 'percent2': return formatPercentage(val);
+            case "ms":
+              return formatDuration(val);
+            case "number":
+              return formatNumber(val);
+            case "percent":
+            case "percent2":
+              return formatPercentage(val);
           }
         }
 
-        if (typeof val === 'number') return Number.isInteger(val) ? val : Number(val).toFixed(2);
+        if (typeof val === "number") return Number.isInteger(val) ? val : Number(val).toFixed(2);
         return String(val);
       },
     }));
@@ -85,12 +88,12 @@ export function TableRenderer({
     return [
       ...baseColumns,
       {
-        title: 'Details',
-        key: '__details',
-        align: 'right' as const,
+        title: "Details",
+        key: "__details",
+        align: "right" as const,
         render: (_val: unknown, row: Record<string, unknown>) => {
           const search = buildDashboardDrawerSearch(location.search, chartConfig.drawerAction, row);
-          return search ? <Link to={location.pathname + search}>View</Link> : '—';
+          return search ? <Link to={location.pathname + search}>View</Link> : "—";
         },
       },
     ];

@@ -1,10 +1,10 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { API_CONFIG } from '@config/apiConfig';
-import type { AnomalyEvent } from '@shared/components/ui/calm/AiNarrationCard';
-import api from '@shared/api/api';
+import { API_CONFIG } from "@config/apiConfig";
+import api from "@shared/api/api";
+import type { AnomalyEvent } from "@shared/components/ui/calm/AiNarrationCard";
 
-import { useTeamId, useTimeRange, useRefreshKey } from '@store/appStore';
+import { useRefreshKey, useTeamId, useTimeRange } from "@store/appStore";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -18,9 +18,9 @@ export function useAnomalyNarration() {
 
   return useQuery<AnomalyEvent | null, Error>({
     queryKey: [
-      'anomaly-narration',
+      "anomaly-narration",
       selectedTeamId,
-      timeRange.kind === 'relative' ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`,
+      timeRange.kind === "relative" ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`,
       refreshKey,
     ],
     queryFn: async (): Promise<AnomalyEvent | null> => {

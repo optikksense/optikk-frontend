@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 import type {
   DashboardDataSources,
@@ -6,14 +6,14 @@ import type {
   DashboardPanelSpec,
   DashboardSectionSpec,
   DashboardTabDocument,
-} from '@/types/dashboardConfig';
+} from "@/types/dashboardConfig";
 
-import { useTeamId } from '@app/store/appStore';
+import { useTeamId } from "@app/store/appStore";
 
-import DashboardPanelGrid from './DashboardPanelGrid';
-import DashboardSection from './DashboardSection';
+import DashboardPanelGrid from "./DashboardPanelGrid";
+import DashboardSection from "./DashboardSection";
 
-import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
+import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
 
 interface ConfigurableDashboardProps {
   config: DashboardTabDocument | null;
@@ -55,7 +55,7 @@ export default function ConfigurableDashboard({
   const panelsBySection = useMemo(() => {
     const grouped = new Map<string, DashboardPanelSpec[]>();
     for (const panel of config?.panels ?? []) {
-      const sectionId = panel.sectionId ?? '__ungrouped';
+      const sectionId = panel.sectionId ?? "__ungrouped";
       const current = grouped.get(sectionId) ?? [];
       current.push(panel);
       grouped.set(sectionId, current);
@@ -81,12 +81,12 @@ export default function ConfigurableDashboard({
         }
 
         const storageKey = [
-          'dashboard-section',
-          selectedTeamId ?? 'no-team',
+          "dashboard-section",
+          selectedTeamId ?? "no-team",
           config.pageId,
           config.id,
           section.id,
-        ].join(':');
+        ].join(":");
 
         return (
           <DashboardSection key={section.id} section={section} storageKey={storageKey}>

@@ -1,5 +1,5 @@
-import { TrendingDown, TrendingUp } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { TrendingDown, TrendingUp } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface KpiCardProps {
   title: string;
@@ -34,7 +34,7 @@ export default function KpiCard({
   return (
     <div
       className="logs-kpi-card"
-      style={{ '--kpi-accent': accentColor, '--kpi-accent-bg': accentBg } as React.CSSProperties}
+      style={{ "--kpi-accent": accentColor, "--kpi-accent-bg": accentBg } as React.CSSProperties}
     >
       <div className="logs-kpi-card-header">
         <span className="logs-kpi-label">{title}</span>
@@ -45,7 +45,7 @@ export default function KpiCard({
       <div className="logs-kpi-value">{value}</div>
       {subtitle && <div className="logs-kpi-subtitle">{subtitle}</div>}
       {trend != null && trend !== 0 && (
-        <div className={`logs-kpi-pill ${trend > 0 ? 'up' : 'down'}`}>
+        <div className={`logs-kpi-pill ${trend > 0 ? "up" : "down"}`}>
           {trend > 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
           {Math.abs(trend).toFixed(1)}%
         </div>

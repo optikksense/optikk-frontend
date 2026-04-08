@@ -1,22 +1,22 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 const NODES = [
-  { id: 'gateway', label: 'API Gateway', x: 360, y: 40, color: '#6366F1' },
-  { id: 'users', label: 'Users Service', x: 160, y: 160, color: '#06B6D4' },
-  { id: 'orders', label: 'Orders Service', x: 560, y: 160, color: '#06B6D4' },
-  { id: 'postgres', label: 'PostgreSQL', x: 80, y: 300, color: '#F59E0B' },
-  { id: 'redis', label: 'Redis', x: 280, y: 300, color: '#EF4444' },
-  { id: 'kafka', label: 'Kafka', x: 480, y: 300, color: '#10B981' },
-  { id: 'payments', label: 'Payments', x: 640, y: 300, color: '#8B5CF6' },
+  { id: "gateway", label: "API Gateway", x: 360, y: 40, color: "#6366F1" },
+  { id: "users", label: "Users Service", x: 160, y: 160, color: "#06B6D4" },
+  { id: "orders", label: "Orders Service", x: 560, y: 160, color: "#06B6D4" },
+  { id: "postgres", label: "PostgreSQL", x: 80, y: 300, color: "#F59E0B" },
+  { id: "redis", label: "Redis", x: 280, y: 300, color: "#EF4444" },
+  { id: "kafka", label: "Kafka", x: 480, y: 300, color: "#10B981" },
+  { id: "payments", label: "Payments", x: 640, y: 300, color: "#8B5CF6" },
 ] as const;
 
 const EDGES: readonly { from: string; to: string }[] = [
-  { from: 'gateway', to: 'users' },
-  { from: 'gateway', to: 'orders' },
-  { from: 'users', to: 'postgres' },
-  { from: 'users', to: 'redis' },
-  { from: 'orders', to: 'kafka' },
-  { from: 'orders', to: 'payments' },
+  { from: "gateway", to: "users" },
+  { from: "gateway", to: "orders" },
+  { from: "users", to: "postgres" },
+  { from: "users", to: "redis" },
+  { from: "orders", to: "kafka" },
+  { from: "orders", to: "payments" },
 ];
 
 function getNode(id: string) {
@@ -25,8 +25,8 @@ function getNode(id: string) {
 
 export default function ServiceMap() {
   return (
-    <div className="component-card" style={{ padding: 24, overflow: 'hidden' }}>
-      <svg viewBox="0 0 760 380" width="100%" height="100%" style={{ display: 'block' }}>
+    <div className="component-card" style={{ padding: 24, overflow: "hidden" }}>
+      <svg aria-hidden="true">
         {EDGES.map((e, i) => {
           const from = getNode(e.from);
           const to = getNode(e.to);

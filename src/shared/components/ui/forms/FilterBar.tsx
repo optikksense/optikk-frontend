@@ -1,8 +1,8 @@
-import { Search } from 'lucide-react';
-import { ReactNode } from 'react';
+import { Search } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface FilterSearchConfig {
-  type: 'search';
+  type: "search";
   key: string;
   placeholder?: string;
   onSearch?: (value: string) => void;
@@ -12,7 +12,7 @@ interface FilterSearchConfig {
 }
 
 interface FilterSelectConfig {
-  type: 'select';
+  type: "select";
   key: string;
   placeholder?: string;
   options?: Array<{ label: string; value: string | number }>;
@@ -37,10 +37,10 @@ interface FilterBarProps {
  */
 export default function FilterBar({ filters = [], actions }: FilterBarProps) {
   return (
-    <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-      <div className="flex flex-wrap gap-2 items-center">
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         {filters.map((filter) => {
-          if (filter.type === 'search') {
+          if (filter.type === "search") {
             return (
               <div
                 key={filter.key}
@@ -49,32 +49,34 @@ export default function FilterBar({ filters = [], actions }: FilterBarProps) {
               >
                 <Search
                   size={16}
-                  className="absolute left-2 pointer-events-none text-[color:var(--text-secondary,#999)]"
+                  className="pointer-events-none absolute left-2 text-[color:var(--text-secondary,#999)]"
                 />
                 <input
                   type="text"
-                  placeholder={filter.placeholder || 'Search...'}
-                  value={filter.value ?? ''}
+                  placeholder={filter.placeholder || "Search..."}
+                  value={filter.value ?? ""}
                   onChange={(e) => {
                     filter.onChange?.(e);
                     filter.onSearch?.(e.target.value);
                   }}
-                  className="pl-[30px] h-8 border border-border rounded-md text-sm w-full"
+                  className="h-8 w-full rounded-md border border-border pl-[30px] text-sm"
                 />
               </div>
             );
           }
 
-          if (filter.type === 'select') {
+          if (filter.type === "select") {
             return (
               <select
                 key={filter.key}
-                value={filter.value ?? ''}
+                value={filter.value ?? ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  filter.onChange?.(val === '' ? null : isNaN(Number(val)) ? val : Number(val));
+                  filter.onChange?.(
+                    val === "" ? null : Number.isNaN(Number(val)) ? val : Number(val)
+                  );
                 }}
-                className="h-8 border border-border rounded-md text-sm px-2"
+                className="h-8 rounded-md border border-border px-2 text-sm"
                 style={{ width: filter.width || 160 }}
               >
                 {filter.placeholder && <option value="">{filter.placeholder}</option>}

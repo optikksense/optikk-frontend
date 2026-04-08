@@ -1,17 +1,17 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-import UPlotChart, { uBars } from '../UPlotChart';
+import UPlotChart, { uBars } from "../UPlotChart";
 
 const BUCKETS = [
-  { label: '0-50ms', max: 50, color: APP_COLORS.hex_73c991 },
-  { label: '50-100ms', max: 100, color: APP_COLORS.hex_73c991 },
-  { label: '100-250ms', max: 250, color: APP_COLORS.hex_06aed5 },
-  { label: '250-500ms', max: 500, color: APP_COLORS.hex_f79009 },
-  { label: '500ms-1s', max: 1000, color: APP_COLORS.hex_f79009 },
-  { label: '1s-5s', max: 5000, color: APP_COLORS.hex_f04438 },
-  { label: '5s+', max: Infinity, color: APP_COLORS.hex_f04438 },
+  { label: "0-50ms", max: 50, color: APP_COLORS.hex_73c991 },
+  { label: "50-100ms", max: 100, color: APP_COLORS.hex_73c991 },
+  { label: "100-250ms", max: 250, color: APP_COLORS.hex_06aed5 },
+  { label: "250-500ms", max: 500, color: APP_COLORS.hex_f79009 },
+  { label: "500ms-1s", max: 1000, color: APP_COLORS.hex_f79009 },
+  { label: "1s-5s", max: 5000, color: APP_COLORS.hex_f04438 },
+  { label: "5s+", max: Number.POSITIVE_INFINITY, color: APP_COLORS.hex_f04438 },
 ];
 
 interface LatencyHistogramTrace {
@@ -54,29 +54,29 @@ export default function LatencyHistogram({
 
   const uplotData = useMemo<uPlot.AlignedData>(() => [BUCKETS.map((_, i) => i), counts], [counts]);
 
-  const opts = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(
+  const opts = useMemo<Omit<uPlot.Options, "width" | "height">>(
     () => ({
       axes: [
         {
           stroke: APP_COLORS.hex_666,
           grid: { show: false },
           ticks: { show: false },
-          font: '10px inherit',
+          font: "10px inherit",
           values: (_u: uPlot, splits: number[]) =>
-            splits.map((i) => BUCKETS[Math.round(i)]?.label ?? ''),
+            splits.map((i) => BUCKETS[Math.round(i)]?.label ?? ""),
         },
         {
           stroke: APP_COLORS.hex_666,
-          grid: { stroke: 'rgba(255,255,255,0.05)', width: 1 },
+          grid: { stroke: "rgba(255,255,255,0.05)", width: 1 },
           ticks: { show: false },
-          font: '10px inherit',
+          font: "10px inherit",
           size: 40,
         },
       ],
       cursor: { show: false },
       legend: { show: false },
       scales: { x: { range: (_u, min, max) => [min - 0.5, max + 0.5] as [number, number] } },
-      series: [{}, uBars('Traces', APP_COLORS.hex_06aed5)],
+      series: [{}, uBars("Traces", APP_COLORS.hex_06aed5)],
     }),
     []
   );
@@ -85,7 +85,7 @@ export default function LatencyHistogram({
 
   return (
     <div
-      className={fillHeight ? 'h-full min-h-0' : undefined}
+      className={fillHeight ? "h-full min-h-0" : undefined}
       style={fillHeight ? undefined : { height }}
     >
       <UPlotChart options={opts} data={uplotData} height={height} fillHeight={fillHeight} />

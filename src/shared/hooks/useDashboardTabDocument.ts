@@ -1,11 +1,11 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import type { DashboardTabDocument } from '@/types/dashboardConfig';
+import type { DashboardTabDocument } from "@/types/dashboardConfig";
 
-import { defaultConfigService } from '@shared/api/defaultConfigService';
+import { defaultConfigService } from "@shared/api/defaultConfigService";
 
-import { useTeamId } from '@app/store/appStore';
+import { useTeamId } from "@app/store/appStore";
 
 interface UseDashboardTabDocumentResult {
   tab: DashboardTabDocument | null;
@@ -20,11 +20,11 @@ export function useDashboardTabDocument(
   const selectedTeamId = useTeamId();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['default-config', 'tab-document', selectedTeamId, pageId, tabId],
+    queryKey: ["default-config", "tab-document", selectedTeamId, pageId, tabId],
     queryFn: () => defaultConfigService.getDashboardTabDocument(selectedTeamId, pageId, tabId),
     enabled: !!selectedTeamId && !!pageId && !!tabId,
     staleTime: 0,
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     placeholderData: keepPreviousData,
   });
 

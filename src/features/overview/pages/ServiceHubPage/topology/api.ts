@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { API_V1_BASE } from '@config/apiConfig';
-import api from '@shared/api/api';
+import { API_V1_BASE } from "@config/apiConfig";
+import api from "@shared/api/api";
 
 const numeric = z.coerce.number().default(0);
-const str = z.string().default('');
+const str = z.string().default("");
 
 const serviceNodeSchema = z.object({
   name: str,
@@ -14,7 +14,7 @@ const serviceNodeSchema = z.object({
   p50_latency_ms: numeric,
   p95_latency_ms: numeric,
   p99_latency_ms: numeric,
-  health: z.enum(['healthy', 'degraded', 'unhealthy']).catch('healthy'),
+  health: z.enum(["healthy", "degraded", "unhealthy"]).catch("healthy"),
 });
 
 const serviceEdgeSchema = z.object({

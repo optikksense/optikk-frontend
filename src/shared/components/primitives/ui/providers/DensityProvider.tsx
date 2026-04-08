@@ -1,10 +1,10 @@
-import { createContext, use, useEffect } from 'react';
+import { createContext, use, useEffect } from "react";
 
-import { useAppStore } from '@store/appStore';
+import { useAppStore } from "@store/appStore";
 
-type Density = 'comfortable' | 'compact';
+type Density = "comfortable" | "compact";
 
-const DensityContext = createContext<Density>('comfortable');
+const DensityContext = createContext<Density>("comfortable");
 
 function useDensity() {
   return use(DensityContext);
@@ -16,16 +16,16 @@ interface DensityProviderProps {
 
 function DensityProvider({ children }: DensityProviderProps) {
   const density = useAppStore(
-    (state) => state.viewPreferences?.density ?? 'comfortable'
+    (state) => state.viewPreferences?.density ?? "comfortable"
   ) as Density;
 
   useEffect(() => {
-    if (density === 'compact') {
-      document.documentElement.setAttribute('data-density', 'compact');
+    if (density === "compact") {
+      document.documentElement.setAttribute("data-density", "compact");
       return;
     }
 
-    document.documentElement.removeAttribute('data-density');
+    document.documentElement.removeAttribute("data-density");
   }, [density]);
 
   return <DensityContext.Provider value={density}>{children}</DensityContext.Provider>;

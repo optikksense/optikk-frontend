@@ -1,4 +1,4 @@
-import type { TraceRecord } from '../types';
+import type { TraceRecord } from "../types";
 
 export interface TraceStats {
   totalSpans: number;
@@ -20,12 +20,12 @@ export const calculateTraceStats = (spans: TraceRecord[]): TraceStats => {
 
   if (spans.length === 0) return stats;
 
-  let minStart = Infinity;
-  let maxEnd = -Infinity;
+  let minStart = Number.POSITIVE_INFINITY;
+  let maxEnd = Number.NEGATIVE_INFINITY;
 
   spans.forEach((span) => {
     if (span.service_name) stats.services.add(span.service_name);
-    if (span.status === 'ERROR') stats.errors++;
+    if (span.status === "ERROR") stats.errors++;
 
     const start = span.start_time ? new Date(span.start_time).getTime() : 0;
     const end = span.end_time ? new Date(span.end_time).getTime() : 0;
@@ -34,7 +34,7 @@ export const calculateTraceStats = (spans: TraceRecord[]): TraceStats => {
     if (end && end > maxEnd) maxEnd = end;
   });
 
-  if (minStart !== Infinity && maxEnd !== -Infinity) {
+  if (minStart !== Number.POSITIVE_INFINITY && maxEnd !== Number.NEGATIVE_INFINITY) {
     stats.duration = maxEnd - minStart;
   }
 
@@ -56,7 +56,7 @@ export function normalizeSpan(span: any): TraceRecord {
     duration_ms: Number(span.duration_ms || 0),
     start_time: span.start_time,
     end_time: span.end_time,
-    status: span.status || (span.error ? 'ERROR' : 'OK'),
+    status: span.status || (span.error ? "ERROR" : "OK"),
     status_message: span.status_message,
     http_method: span.http_method,
     http_url: span.http_url,
@@ -74,7 +74,7 @@ export function normalizeTraceLog(log: any): any {
     service_name: log.service_name,
     trace_id: log.trace_id,
     span_id: log.span_id,
-    level: log.level || log.severity_text || 'INFO',
-    message: log.message || log.body || '',
+    level: log.level || log.severity_text || "INFO",
+    message: log.message || log.body || "",
   };
 }

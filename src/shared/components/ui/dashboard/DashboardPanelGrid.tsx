@@ -1,16 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Responsive } from 'react-grid-layout';
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Responsive } from "react-grid-layout";
 
 import type {
   DashboardDataSources,
   DashboardExtraContext,
   DashboardPanelSpec,
-} from '@/types/dashboardConfig';
+} from "@/types/dashboardConfig";
 
-import ConfigurableChartCard from './ConfigurableChartCard';
-import { GRID_COLS, GRID_CONTAINER_PADDING, GRID_MARGIN, GRID_ROW_HEIGHT } from './panelSizePolicy';
+import ConfigurableChartCard from "./ConfigurableChartCard";
+import { GRID_COLS, GRID_CONTAINER_PADDING, GRID_MARGIN, GRID_ROW_HEIGHT } from "./panelSizePolicy";
 
-import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
+import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
 
 interface DashboardPanelGridProps {
   panels: DashboardPanelSpec[];

@@ -1,10 +1,10 @@
-import { SimpleTable } from '@shared/components/primitives/ui/simple-table';
+import { UI_CONFIG } from "@config/constants";
+import { SimpleTable } from "@shared/components/primitives/ui/simple-table";
 import type {
   SimpleTableColumn,
   SimpleTableProps,
-} from '@shared/components/primitives/ui/simple-table';
-import { EmptyState } from '@shared/components/ui/feedback';
-import { UI_CONFIG } from '@config/constants';
+} from "@shared/components/primitives/ui/simple-table";
+import { EmptyState } from "@shared/components/ui/feedback";
 
 type TableRow = object;
 
@@ -12,7 +12,7 @@ export interface DataTableData<RowType extends TableRow = TableRow> {
   columns: SimpleTableColumn<RowType>[];
   rows: RowType[];
   loading?: boolean;
-  rowKey?: SimpleTableProps<RowType>['rowKey'];
+  rowKey?: SimpleTableProps<RowType>["rowKey"];
 }
 
 export interface DataTablePagination {
@@ -26,7 +26,7 @@ export interface DataTablePagination {
 export interface DataTableConfig<RowType extends TableRow = TableRow> {
   emptyText?: string;
   scroll?: { x?: number; y?: number };
-  onRow?: SimpleTableProps<RowType>['onRow'];
+  onRow?: SimpleTableProps<RowType>["onRow"];
 }
 
 export interface DataTableProps<RowType extends TableRow = TableRow> {
@@ -45,7 +45,7 @@ export default function DataTable<RowType extends TableRow = TableRow>({
 }: DataTableProps<RowType>): JSX.Element {
   const { columns, rows, loading = false, rowKey } = data;
   const { page, pageSize, total, onPageChange, showPagination = true } = pagination;
-  const { emptyText = 'No data found', scroll, onRow } = config;
+  const { emptyText = "No data found", scroll, onRow } = config;
 
   const paginationConfig =
     showPagination && onPageChange
@@ -61,7 +61,7 @@ export default function DataTable<RowType extends TableRow = TableRow>({
 
   if (loading) {
     return (
-      <div className="text-center py-8" style={{ color: 'var(--text-muted)' }}>
+      <div className="py-8 text-center" style={{ color: "var(--text-muted)" }}>
         Loading...
       </div>
     );

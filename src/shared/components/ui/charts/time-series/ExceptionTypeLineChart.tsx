@@ -1,10 +1,10 @@
-import { useMemo, memo } from 'react';
+import { memo, useMemo } from "react";
 
-import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
-import { tsKey, tsMs } from '@shared/utils/chartDataUtils';
-import { CHART_COLORS } from '@config/constants';
+import { CHART_COLORS } from "@config/constants";
+import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
+import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
 
-import ObservabilityChart from '../ObservabilityChart';
+import ObservabilityChart from "../ObservabilityChart";
 
 function getChartColor(index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
@@ -53,7 +53,7 @@ export default memo(function ExceptionTypeLineChart({
       // Build a lookup: aligned-bucket-key → summed count
       const tsMap: Record<string, number> = {};
       for (const row of rows) {
-        const rowTs = row.timestamp ?? row.time_bucket ?? row.timeBucket ?? '';
+        const rowTs = row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "";
         if (!rowTs) continue;
         const rowMs = tsMs(rowTs);
         if (Number.isNaN(rowMs)) continue;
@@ -93,7 +93,7 @@ export default memo(function ExceptionTypeLineChart({
   if (!hasData && timeBuckets.length === 0) {
     return (
       <div className="flex h-full min-h-0 items-center justify-center">
-        <div style={{ color: 'var(--text-muted)' }}>No exception data in selected time range</div>
+        <div style={{ color: "var(--text-muted)" }}>No exception data in selected time range</div>
       </div>
     );
   }

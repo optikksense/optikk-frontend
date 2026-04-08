@@ -1,22 +1,22 @@
-import { GitCompare } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
-import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { GitCompare } from "lucide-react";
 
-import { Button, Skeleton } from '@/components/ui';
-import { PageHeader, PageShell, PageSurface } from '@shared/components/ui';
-import { tracesService } from '@shared/api/tracesService';
+import { Button, Skeleton } from "@/components/ui";
+import { tracesService } from "@shared/api/tracesService";
+import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 
-import TraceComparisonView from '../../components/TraceComparisonView';
+import TraceComparisonView from "../../components/TraceComparisonView";
 
 export default function TraceComparisonPage(): JSX.Element {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const traceA = searchParams.get('a') ?? '';
-  const traceB = searchParams.get('b') ?? '';
+  const traceA = searchParams.get("a") ?? "";
+  const traceB = searchParams.get("b") ?? "";
 
   const comparisonQuery = useQuery({
-    queryKey: ['trace-comparison', traceA, traceB],
+    queryKey: ["trace-comparison", traceA, traceB],
     queryFn: () => tracesService.getTraceComparison(traceA, traceB),
     enabled: traceA.length > 0 && traceB.length > 0,
   });
@@ -27,9 +27,9 @@ export default function TraceComparisonPage(): JSX.Element {
         title="Trace Comparison"
         icon={<GitCompare size={22} />}
         subtitle="Compare structure, service deltas, and latency movement across two traces without leaving the traces workflow."
-        breadcrumbs={[{ label: 'Traces', path: '/traces' }, { label: 'Compare' }]}
+        breadcrumbs={[{ label: "Traces", path: "/traces" }, { label: "Compare" }]}
         actions={
-          <Button variant="ghost" size="sm" onClick={() => navigate({ to: '/traces' })}>
+          <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/traces" })}>
             Back to Traces
           </Button>
         }
@@ -37,11 +37,11 @@ export default function TraceComparisonPage(): JSX.Element {
 
       {!traceA || !traceB ? (
         <PageSurface className="space-y-3">
-          <p className="text-sm text-[var(--text-secondary)]">
+          <p className="text-[var(--text-secondary)] text-sm">
             Select exactly two traces from the explorer to compare them here.
           </p>
           <div className="flex gap-2">
-            <Button variant="secondary" size="sm" onClick={() => navigate({ to: '/traces' })}>
+            <Button variant="secondary" size="sm" onClick={() => navigate({ to: "/traces" })}>
               Open Trace Explorer
             </Button>
           </div>
@@ -52,10 +52,10 @@ export default function TraceComparisonPage(): JSX.Element {
         </PageSurface>
       ) : comparisonQuery.isError ? (
         <PageSurface className="space-y-2">
-          <p className="text-sm font-medium text-[var(--color-error)]">
+          <p className="font-medium text-[var(--color-error)] text-sm">
             Unable to load comparison data.
           </p>
-          <p className="text-sm text-[var(--text-secondary)]">
+          <p className="text-[var(--text-secondary)] text-sm">
             The traces endpoint did not return a usable comparison payload for these IDs.
           </p>
         </PageSurface>

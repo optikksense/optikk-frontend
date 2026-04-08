@@ -4,8 +4,8 @@
  * DB queries — the classic N+1 pattern.
  * Data comes from the /api/v1/spans/n1 endpoint (aggregated query counts).
  */
-import { Surface, Badge, Tooltip, SimpleTable } from '@/components/ui';
-import React from 'react';
+import { Badge, SimpleTable, Surface, Tooltip } from "@/components/ui";
+import type React from "react";
 
 /**
  *
@@ -31,56 +31,56 @@ interface N1QueryDetectorProps {
 const N1QueryDetector: React.FC<N1QueryDetectorProps> = ({
   data,
   loading = false,
-  title = 'N+1 Query Detector',
+  title = "N+1 Query Detector",
   threshold = 20,
 }) => {
   const columns = [
     {
-      title: 'Service',
-      dataIndex: 'service',
-      key: 'service',
+      title: "Service",
+      dataIndex: "service",
+      key: "service",
       width: 120,
       render: (v: any) => (
-        <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--text-primary)" }}>
           {v}
         </span>
       ),
     },
     {
-      title: 'Operation',
-      dataIndex: 'operation',
-      key: 'operation',
+      title: "Operation",
+      dataIndex: "operation",
+      key: "operation",
       width: 140,
       render: (v: any) => (
-        <code style={{ fontSize: 'var(--text-xs)', color: 'var(--color-info)' }}>{v}</code>
+        <code style={{ fontSize: "var(--text-xs)", color: "var(--color-info)" }}>{v}</code>
       ),
     },
     {
-      title: 'Query Pattern',
-      dataIndex: 'queryPattern',
-      key: 'queryPattern',
+      title: "Query Pattern",
+      dataIndex: "queryPattern",
+      key: "queryPattern",
       ellipsis: true,
       render: (v: any) => (
         <Tooltip content={v}>
-          <code style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>{v}</code>
+          <code style={{ fontSize: "var(--text-xs)", color: "var(--text-secondary)" }}>{v}</code>
         </Tooltip>
       ),
     },
     {
-      title: 'Calls',
-      dataIndex: 'callCount',
-      key: 'callCount',
+      title: "Calls",
+      dataIndex: "callCount",
+      key: "callCount",
       width: 80,
       sorter: (a: any, b: any) => b.callCount - a.callCount,
-      defaultSortOrder: 'ascend' as const,
+      defaultSortOrder: "ascend" as const,
       render: (v: any) => (
         <Badge
-          color={v >= threshold ? 'var(--severity-critical)' : 'var(--severity-medium)'}
+          color={v >= threshold ? "var(--severity-critical)" : "var(--severity-medium)"}
           style={{
             background:
-              v >= threshold ? 'var(--severity-critical-subtle)' : 'var(--severity-medium-subtle)',
-            border: `1px solid ${v >= threshold ? 'var(--severity-critical)' : 'var(--severity-medium)'}`,
-            color: v >= threshold ? 'var(--severity-critical)' : 'var(--severity-medium)',
+              v >= threshold ? "var(--severity-critical-subtle)" : "var(--severity-medium-subtle)",
+            border: `1px solid ${v >= threshold ? "var(--severity-critical)" : "var(--severity-medium)"}`,
+            color: v >= threshold ? "var(--severity-critical)" : "var(--severity-medium)",
             fontWeight: 600,
           }}
         >
@@ -89,24 +89,24 @@ const N1QueryDetector: React.FC<N1QueryDetectorProps> = ({
       ),
     },
     {
-      title: 'Callers',
-      dataIndex: 'distinctCallers',
-      key: 'distinctCallers',
+      title: "Callers",
+      dataIndex: "distinctCallers",
+      key: "distinctCallers",
       width: 80,
       render: (v: any) => (
-        <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{v}</span>
+        <span style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)" }}>{v}</span>
       ),
     },
     {
-      title: 'Avg (ms)',
-      dataIndex: 'avgLatencyMs',
-      key: 'avgLatencyMs',
+      title: "Avg (ms)",
+      dataIndex: "avgLatencyMs",
+      key: "avgLatencyMs",
       width: 90,
       render: (v: any) => (
         <span
           style={{
-            color: v > 100 ? 'var(--severity-high)' : 'var(--text-secondary)',
-            fontSize: 'var(--text-sm)',
+            color: v > 100 ? "var(--severity-high)" : "var(--text-secondary)",
+            fontSize: "var(--text-sm)",
           }}
         >
           {Number(v).toFixed(1)}
@@ -114,15 +114,15 @@ const N1QueryDetector: React.FC<N1QueryDetectorProps> = ({
       ),
     },
     {
-      title: 'p99 (ms)',
-      dataIndex: 'p99LatencyMs',
-      key: 'p99LatencyMs',
+      title: "p99 (ms)",
+      dataIndex: "p99LatencyMs",
+      key: "p99LatencyMs",
       width: 90,
       render: (v: any) => (
         <span
           style={{
-            color: v > 500 ? 'var(--severity-critical)' : 'var(--text-secondary)',
-            fontSize: 'var(--text-sm)',
+            color: v > 500 ? "var(--severity-critical)" : "var(--text-secondary)",
+            fontSize: "var(--text-sm)",
           }}
         >
           {Number(v).toFixed(1)}
@@ -135,7 +135,7 @@ const N1QueryDetector: React.FC<N1QueryDetectorProps> = ({
     <Surface className="chart-card" padding="sm">
       <div style={{ fontWeight: 600, marginBottom: 8 }}>{title}</div>
       {loading ? (
-        <div className="text-center py-8 text-[var(--text-muted)]">Loading...</div>
+        <div className="py-8 text-center text-[var(--text-muted)]">Loading...</div>
       ) : (
         <SimpleTable
           dataSource={data}

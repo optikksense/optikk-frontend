@@ -1,8 +1,8 @@
-import { Gauge } from 'lucide-react';
+import { Gauge } from "lucide-react";
 
-import { PageHeader, PageShell } from '@shared/components/ui';
-import DashboardEntityDrawer from '@shared/components/ui/dashboard/DashboardEntityDrawer';
-import DashboardPage from '@shared/components/ui/dashboard/DashboardPage';
+import { PageHeader, PageShell } from "@shared/components/ui";
+import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
+import DashboardPage from "@shared/components/ui/dashboard/DashboardPage";
 
 /**
  * SaturationHubPage — groups the Database and Messaging Queue saturation tabs.

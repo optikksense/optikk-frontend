@@ -1,7 +1,7 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const numericValue = z.coerce.number().default(0);
-const stringValue = z.string().default('');
+const stringValue = z.string().default("");
 
 export const metricNumericValueSchema = z
   .object({
@@ -101,7 +101,7 @@ export const serviceDependencyDetailSchema = z
     call_count: numericValue,
     p95_latency_ms: numericValue,
     error_rate: numericValue,
-    direction: z.enum(['upstream', 'downstream']),
+    direction: z.enum(["upstream", "downstream"]),
   })
   .strict();
 

@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react';
-import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useCallback, useMemo } from "react";
 
 /**
  *

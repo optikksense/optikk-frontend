@@ -1,10 +1,10 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import type { DefaultConfigPage } from '@/types/dashboardConfig';
+import type { DefaultConfigPage } from "@/types/dashboardConfig";
 
-import { defaultConfigService } from '@shared/api/defaultConfigService';
+import { defaultConfigService } from "@shared/api/defaultConfigService";
 
-import { useTeamId } from '@app/store/appStore';
+import { useTeamId } from "@app/store/appStore";
 
 interface UsePagesConfigResult {
   pages: DefaultConfigPage[];
@@ -19,11 +19,11 @@ export function usePagesConfig(): UsePagesConfigResult {
   const selectedTeamId = useTeamId();
 
   const { data, isLoading, error } = useQuery<DefaultConfigPage[], Error>({
-    queryKey: ['default-config', 'pages', selectedTeamId],
+    queryKey: ["default-config", "pages", selectedTeamId],
     queryFn: () => defaultConfigService.listPages(selectedTeamId),
     enabled: !!selectedTeamId,
     staleTime: 0,
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     placeholderData: keepPreviousData,
   });
 

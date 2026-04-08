@@ -2,7 +2,7 @@ import type {
   UserViewPreferenceKey,
   UserViewPreferenceValue,
   UserViewPreferences,
-} from '@shared/types/preferences';
+} from "@shared/types/preferences";
 
 /** Lightweight team summary shown in the settings team tab. */
 export interface SettingsTeamViewModel {

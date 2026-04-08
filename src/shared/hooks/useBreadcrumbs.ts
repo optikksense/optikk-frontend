@@ -1,12 +1,12 @@
-import { useLocation } from '@tanstack/react-router';
+import { useLocation } from "@tanstack/react-router";
 
-import { ROUTES } from '@/shared/constants/routes';
-import { getDomainNavigationItems } from '@/app/registry/domainRegistry';
+import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
+import { ROUTES } from "@/shared/constants/routes";
 
-import type { BreadcrumbItem } from '@/components/ui/breadcrumb';
+import type { BreadcrumbItem } from "@/components/ui/breadcrumb";
 
 function formatSegmentLabel(segment: string): string {
-  return segment.replace(/[-_]+/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+  return segment.replace(/[-_]+/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function buildDynamicCrumbs(pathname: string): BreadcrumbItem[] {
@@ -15,32 +15,32 @@ function buildDynamicCrumbs(pathname: string): BreadcrumbItem[] {
   );
 
   const rootCrumbs: BreadcrumbItem[] = [];
-  const segments = pathname.split('/').filter(Boolean);
+  const segments = pathname.split("/").filter(Boolean);
 
   if (pathname === ROUTES.traceCompare) {
     return [
-      { label: navLookup.get(ROUTES.traces) ?? 'Traces', path: ROUTES.traces },
-      { label: 'Compare' },
+      { label: navLookup.get(ROUTES.traces) ?? "Traces", path: ROUTES.traces },
+      { label: "Compare" },
     ];
   }
 
-  if (pathname.startsWith('/traces/') && segments.length === 2 && segments[1] !== 'compare') {
+  if (pathname.startsWith("/traces/") && segments.length === 2 && segments[1] !== "compare") {
     return [
-      { label: navLookup.get(ROUTES.traces) ?? 'Traces', path: ROUTES.traces },
+      { label: navLookup.get(ROUTES.traces) ?? "Traces", path: ROUTES.traces },
       { label: segments[1] },
     ];
   }
 
-  if (pathname.startsWith('/saturation/kafka/topics/') && segments.length === 4) {
+  if (pathname.startsWith("/saturation/kafka/topics/") && segments.length === 4) {
     return [
-      { label: navLookup.get(ROUTES.saturation) ?? 'Saturation', path: ROUTES.saturation },
+      { label: navLookup.get(ROUTES.saturation) ?? "Saturation", path: ROUTES.saturation },
       { label: segments[3] },
     ];
   }
 
-  if (pathname.startsWith('/saturation/kafka/groups/') && segments.length === 4) {
+  if (pathname.startsWith("/saturation/kafka/groups/") && segments.length === 4) {
     return [
-      { label: navLookup.get(ROUTES.saturation) ?? 'Saturation', path: ROUTES.saturation },
+      { label: navLookup.get(ROUTES.saturation) ?? "Saturation", path: ROUTES.saturation },
       { label: segments[3] },
     ];
   }
@@ -55,7 +55,7 @@ function buildDynamicCrumbs(pathname: string): BreadcrumbItem[] {
     return rootCrumbs;
   }
 
-  let currentPath = '';
+  let currentPath = "";
   for (const segment of segments) {
     currentPath += `/${segment}`;
     const navEntry = getDomainNavigationItems().find((entry) => entry.path === currentPath);

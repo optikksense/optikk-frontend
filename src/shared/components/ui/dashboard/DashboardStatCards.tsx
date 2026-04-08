@@ -1,10 +1,10 @@
-import type { DashboardDataSources, StatCardSpec } from '@/types/dashboardConfig';
+import type { DashboardDataSources, StatCardSpec } from "@/types/dashboardConfig";
 
-import StatCard from '@shared/components/ui/cards/StatCard';
-import { getDashboardIcon } from './utils/dashboardUtils';
-import { asDashboardRecordArray, getDashboardValue } from './utils/runtimeValue';
+import StatCard from "@shared/components/ui/cards/StatCard";
+import { getDashboardIcon } from "./utils/dashboardUtils";
+import { asDashboardRecordArray, getDashboardValue } from "./utils/runtimeValue";
 
-import { formatDuration, formatNumber } from '@shared/utils/formatters';
+import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
 interface DashboardStatCardsProps {
   statCards: StatCardSpec[];
@@ -16,27 +16,27 @@ function resolveValue(spec: StatCardSpec, dataSources: DashboardDataSources): st
   const raw = dataSources[spec.dataSource];
   const field = spec.valueField;
 
-  if (field === '_count') {
+  if (field === "_count") {
     return Array.isArray(raw) ? raw.length : 0;
   }
 
   if (Array.isArray(raw)) {
     const first = asDashboardRecordArray(raw)[0];
     const value = first?.[field];
-    return typeof value === 'string' || typeof value === 'number' ? value : 0;
+    return typeof value === "string" || typeof value === "number" ? value : 0;
   }
 
   const value = getDashboardValue(raw, field);
-  return typeof value === 'string' || typeof value === 'number' ? value : 0;
+  return typeof value === "string" || typeof value === "number" ? value : 0;
 }
 
 function applyFormatter(spec: StatCardSpec): ((v: string | number) => string | number) | undefined {
   switch (spec.formatter) {
-    case 'ms':
+    case "ms":
       return (value) => formatDuration(value);
-    case 'number':
+    case "number":
       return (value) => formatNumber(value);
-    case 'percent1':
+    case "percent1":
       return (value) => `${Number(value).toFixed(1)}%`;
     default:
       return undefined;
@@ -55,7 +55,7 @@ export default function DashboardStatCards({
   return (
     <div
       style={{
-        display: 'grid',
+        display: "grid",
         gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
         gap: 16,
         marginBottom: 16,

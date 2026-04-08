@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from "react";
 
-import { queryClient } from '@shared/api/queryClient';
+import { queryClient } from "@shared/api/queryClient";
 
-import { useAppStore } from '@store/appStore';
-import { useAuthStore } from '@store/authStore';
+import { useAppStore } from "@store/appStore";
+import { useAuthStore } from "@store/authStore";
 
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 interface QueryLifecycleBridgeProps {
   readonly children: ReactNode;
@@ -20,12 +20,12 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
     () => JSON.stringify({ selectedTeamId, selectedTeamIds }),
     [selectedTeamId, selectedTeamIds]
   );
-  
+
   const isFirstTeamScope = useRef(true);
   const previousAuthState = useRef(isAuthenticated);
 
   useEffect(() => {
-    console.log('[QueryLifecycleBridge] Team scope changed:', teamScopeKey);
+    console.log("[QueryLifecycleBridge] Team scope changed:", teamScopeKey);
     if (isFirstTeamScope.current) {
       isFirstTeamScope.current = false;
       return;
@@ -35,7 +35,7 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
   }, [teamScopeKey]);
 
   useEffect(() => {
-    console.log('[QueryLifecycleBridge] Auth state changed:', isAuthenticated);
+    console.log("[QueryLifecycleBridge] Auth state changed:", isAuthenticated);
     if (previousAuthState.current && !isAuthenticated) {
       queryClient.clear();
     }

@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 import WaterfallChart, {
   type WaterfallSpan,
-} from '@shared/components/ui/charts/specialized/WaterfallChart';
-import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
-import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+} from "@shared/components/ui/charts/specialized/WaterfallChart";
+import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 
 /**
  *
@@ -19,10 +19,10 @@ export function TraceWaterfallRenderer({
     () =>
       spans
         .map((span) => ({
-          span_id: String(span.span_id ?? ''),
+          span_id: String(span.span_id ?? ""),
           parent_span_id: span.parent_span_id == null ? null : String(span.parent_span_id),
-          start_time: String(span.start_time ?? ''),
-          end_time: String(span.end_time ?? ''),
+          start_time: String(span.start_time ?? ""),
+          end_time: String(span.end_time ?? ""),
           service_name: span.service_name == null ? undefined : String(span.service_name),
           operation_name: span.operation_name == null ? undefined : String(span.operation_name),
           status: span.status == null ? undefined : String(span.status),
@@ -36,7 +36,7 @@ export function TraceWaterfallRenderer({
 
   if (waterfallSpans.length === 0) {
     return (
-      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+      <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
         No data
       </div>
     );

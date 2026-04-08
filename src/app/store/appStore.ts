@@ -1,15 +1,15 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
-import type { TimeRange, RelativeTimeRange, AbsoluteTimeRange } from '@/types';
+import type { AbsoluteTimeRange, RelativeTimeRange, TimeRange } from "@/types";
 
-import { STORAGE_KEYS, TIME_RANGES } from '@config/constants';
-import type { ComparisonMode } from '@shared/components/ui/TimeSelector/constants';
+import { STORAGE_KEYS, TIME_RANGES } from "@config/constants";
+import type { ComparisonMode } from "@shared/components/ui/TimeSelector/constants";
 import type {
   UserViewPreferenceKey,
   UserViewPreferenceValue,
   UserViewPreferences,
-} from '@shared/types/preferences';
+} from "@shared/types/preferences";
 
 interface RecentPage {
   path: string;
@@ -81,7 +81,7 @@ function findPreset(preset: string): RelativeTimeRange | null {
 }
 
 function getDefaultTimeRange(): RelativeTimeRange {
-  return findPreset('30m') ?? TIME_RANGES[2];
+  return findPreset("30m") ?? TIME_RANGES[2];
 }
 
 /**
@@ -89,37 +89,37 @@ function getDefaultTimeRange(): RelativeTimeRange {
  * to the new discriminated union.
  */
 function migrateTimeRange(value: unknown): TimeRange {
-  if (!value || typeof value !== 'object') {
+  if (!value || typeof value !== "object") {
     return getDefaultTimeRange();
   }
 
   const raw = value as Record<string, unknown>;
 
   // Already new format
-  if (raw.kind === 'relative' && typeof raw.preset === 'string') {
+  if (raw.kind === "relative" && typeof raw.preset === "string") {
     const found = findPreset(raw.preset as string);
     return found ?? getDefaultTimeRange();
   }
-  if (raw.kind === 'absolute' && typeof raw.startMs === 'number' && typeof raw.endMs === 'number') {
+  if (raw.kind === "absolute" && typeof raw.startMs === "number" && typeof raw.endMs === "number") {
     return value as TimeRange;
   }
 
   // Legacy format: { value: '1h', minutes: 60 }
-  if (typeof raw.value === 'string' && raw.value !== 'custom') {
+  if (typeof raw.value === "string" && raw.value !== "custom") {
     const found = findPreset(raw.value as string);
     return found ?? getDefaultTimeRange();
   }
 
   // Legacy custom: { value: 'custom', startTime, endTime }
-  if (raw.value === 'custom') {
+  if (raw.value === "custom") {
     const startMs = Number(raw.startTime);
     const endMs = Number(raw.endTime);
     if (Number.isFinite(startMs) && Number.isFinite(endMs) && startMs < endMs) {
       return {
-        kind: 'absolute',
+        kind: "absolute",
         startMs,
         endMs,
-        label: typeof raw.label === 'string' ? raw.label : 'Custom range',
+        label: typeof raw.label === "string" ? raw.label : "Custom range",
       };
     }
   }
@@ -129,9 +129,9 @@ function migrateTimeRange(value: unknown): TimeRange {
 
 function pushRecentRange(existing: TimeRange[], newRange: TimeRange): TimeRange[] {
   const key =
-    newRange.kind === 'relative' ? newRange.preset : `${newRange.startMs}-${newRange.endMs}`;
+    newRange.kind === "relative" ? newRange.preset : `${newRange.startMs}-${newRange.endMs}`;
   const filtered = existing.filter((r) => {
-    const rKey = r.kind === 'relative' ? r.preset : `${r.startMs}-${r.endMs}`;
+    const rKey = r.kind === "relative" ? r.preset : `${r.startMs}-${r.endMs}`;
     return rKey !== key;
   });
   return [newRange, ...filtered].slice(0, MAX_RECENT_RANGES);
@@ -144,7 +144,7 @@ function readLegacyTeamIDs(): number[] {
   }
 
   return raw
-    .split(',')
+    .split(",")
     .map(Number)
     .filter((teamId) => Number.isFinite(teamId) && teamId > 0);
 }
@@ -162,15 +162,15 @@ function loadLegacyAppState(): PersistedAppState {
     selectedTeamIds:
       selectedTeamIds.length > 0 ? selectedTeamIds : selectedTeamId != null ? [selectedTeamId] : [],
     timeRange: migrateTimeRange(readStorage(STORAGE_KEYS.TIME_RANGE)),
-    sidebarCollapsed: readStorage(STORAGE_KEYS.SIDEBAR_COLLAPSED) === 'true',
-    autoRefreshInterval: Number(readStorage(STORAGE_KEYS.AUTO_REFRESH) ?? '10000') || 10_000,
-    theme: readStorage(STORAGE_KEYS.THEME) ?? 'dark',
-    notificationsEnabled: readStorage(STORAGE_KEYS.NOTIFICATIONS) !== 'false',
+    sidebarCollapsed: readStorage(STORAGE_KEYS.SIDEBAR_COLLAPSED) === "true",
+    autoRefreshInterval: Number(readStorage(STORAGE_KEYS.AUTO_REFRESH) ?? "10000") || 10_000,
+    theme: readStorage(STORAGE_KEYS.THEME) ?? "dark",
+    notificationsEnabled: readStorage(STORAGE_KEYS.NOTIFICATIONS) !== "false",
     viewPreferences: readLegacyJSON<UserViewPreferences>(STORAGE_KEYS.VIEW_PREFS, {}),
     recentPages: [],
     recentTimeRanges: [],
-    timezone: 'local',
-    comparisonMode: 'off',
+    timezone: "local",
+    comparisonMode: "off",
   };
 }
 
@@ -205,7 +205,7 @@ export const useAppStore = create<AppState>()(
         set((state) => {
           const isSame =
             state.timeRange.kind === range.kind &&
-            (range.kind === 'relative'
+            (range.kind === "relative"
               ? range.preset === (state.timeRange as RelativeTimeRange).preset
               : (state.timeRange as AbsoluteTimeRange).startMs === range.startMs &&
                 (state.timeRange as AbsoluteTimeRange).endMs === range.endMs);
@@ -223,17 +223,17 @@ export const useAppStore = create<AppState>()(
       setCustomTimeRange: (startMs: number, endMs: number, label?: string): void => {
         set((state) => {
           const isSame =
-            state.timeRange.kind === 'absolute' &&
+            state.timeRange.kind === "absolute" &&
             (state.timeRange as AbsoluteTimeRange).startMs === startMs &&
             (state.timeRange as AbsoluteTimeRange).endMs === endMs;
 
           if (isSame) return state;
 
           const range: TimeRange = {
-            kind: 'absolute',
+            kind: "absolute",
             startMs,
             endMs,
-            label: label ?? 'Custom range',
+            label: label ?? "Custom range",
           };
           return {
             timeRange: range,

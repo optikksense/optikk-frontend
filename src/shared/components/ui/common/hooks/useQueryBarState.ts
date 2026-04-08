@@ -1,12 +1,12 @@
 import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
   type ChangeEvent,
   type KeyboardEvent,
   type ReactNode,
-} from 'react';
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 export interface QueryOperator {
   key: string;
@@ -33,11 +33,11 @@ export interface ActiveFilter {
 }
 
 export const DEFAULT_OPERATORS: QueryOperator[] = [
-  { key: 'equals', label: 'equals', symbol: '=' },
-  { key: 'not_equals', label: 'not equals', symbol: '!=' },
-  { key: 'contains', label: 'contains', symbol: '~' },
-  { key: 'gt', label: 'greater than', symbol: '>' },
-  { key: 'lt', label: 'less than', symbol: '<' },
+  { key: "equals", label: "equals", symbol: "=" },
+  { key: "not_equals", label: "not equals", symbol: "!=" },
+  { key: "contains", label: "contains", symbol: "~" },
+  { key: "gt", label: "greater than", symbol: ">" },
+  { key: "lt", label: "less than", symbol: "<" },
 ];
 
 export interface UseQueryBarStateOptions {
@@ -60,20 +60,19 @@ export function useQueryBarState({
   const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
   const [pendingField, setPendingField] = useState<QueryField | null>(null);
   const [pendingOp, setPendingOp] = useState<QueryOperator | null>(null);
-  const [valueInput, setValueInput] = useState('');
-  const [fieldSearch, setFieldSearch] = useState('');
+  const [valueInput, setValueInput] = useState("");
+  const [fieldSearch, setFieldSearch] = useState("");
   const [showHints, setShowHints] = useState(false);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-
   const closeDropdown = useCallback((): void => {
     setStep(0);
     setPendingField(null);
     setPendingOp(null);
-    setValueInput('');
-    setFieldSearch('');
+    setValueInput("");
+    setFieldSearch("");
   }, []);
 
   useEffect(() => {
@@ -84,14 +83,14 @@ export function useQueryBarState({
       }
     };
 
-    document.addEventListener('mousedown', handleMouseDown);
-    return () => document.removeEventListener('mousedown', handleMouseDown);
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [closeDropdown]);
 
   const openDropdown = (): void => {
     if (step >= 1) return;
     setStep(1);
-    setFieldSearch('');
+    setFieldSearch("");
     window.setTimeout(() => {
       inputRef.current?.focus();
     }, 0);
@@ -105,14 +104,14 @@ export function useQueryBarState({
   const pickOperator = (operator: QueryOperator): void => {
     setPendingOp(operator);
     setStep(3);
-    setValueInput('');
+    setValueInput("");
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
   const commitFilter = (overrideValue?: string): void => {
     if (!pendingField || !pendingOp) return;
 
-    const finalValue = typeof overrideValue === 'string' ? overrideValue : valueInput;
+    const finalValue = typeof overrideValue === "string" ? overrideValue : valueInput;
     const trimmedValue = finalValue.trim();
     if (!trimmedValue) return;
 
@@ -121,7 +120,7 @@ export function useQueryBarState({
       {
         field: pendingField.key,
         fieldLabel: pendingField.label,
-        fieldGroup: pendingField.group || '',
+        fieldGroup: pendingField.group || "",
         operator: pendingOp.key,
         operatorLabel: pendingOp.label,
         operatorSymbol: pendingOp.symbol,
@@ -157,18 +156,18 @@ export function useQueryBarState({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
-    if (step === 3 && event.key === 'Enter') {
+    if (step === 3 && event.key === "Enter") {
       event.preventDefault();
       commitFilter();
     }
 
-    if (event.key === 'Escape') {
+    if (event.key === "Escape") {
       closeDropdown();
       inputRef.current?.blur();
     }
 
-    if (event.key === 'Backspace') {
-      if (step === 3 && valueInput === '') {
+    if (event.key === "Backspace") {
+      if (step === 3 && valueInput === "") {
         event.preventDefault();
         setPendingOp(null);
         setStep(2);
@@ -176,22 +175,18 @@ export function useQueryBarState({
         event.preventDefault();
         setPendingField(null);
         setStep(1);
-        setFieldSearch('');
-      } else if (step === 1 && fieldSearch === '') {
+        setFieldSearch("");
+      } else if (step === 1 && fieldSearch === "") {
         event.preventDefault();
         closeDropdown();
-      } else if (
-        step === 0 &&
-        fieldSearch === '' &&
-        filters.length > 0
-      ) {
+      } else if (step === 0 && fieldSearch === "" && filters.length > 0) {
         event.preventDefault();
         setFilters(filters.slice(0, -1));
       }
     }
 
     // Tab to autocomplete if only one field matches
-    if (step === 1 && event.key === 'Tab') {
+    if (step === 1 && event.key === "Tab") {
       const filtered = fieldSearch
         ? fields.filter(
             (field) =>

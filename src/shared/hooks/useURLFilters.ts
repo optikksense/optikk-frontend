@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParamsCompat as useSearchParams } from '@shared/hooks/useSearchParamsCompat';
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from "react";
 
 /** A structured filter chip from ObservabilityQueryBar. */
 export interface StructuredFilter {
@@ -13,7 +13,7 @@ export interface StructuredFilter {
 /**
  *
  */
-export type URLFilterType = 'string' | 'string[]' | 'number' | 'boolean';
+export type URLFilterType = "string" | "string[]" | "number" | "boolean";
 
 /**
  *
@@ -42,13 +42,13 @@ export interface URLFilterConfig {
 
 function getTypeDefault(type: URLFilterType): URLFilterValue {
   switch (type) {
-    case 'string':
-      return '';
-    case 'string[]':
+    case "string":
+      return "";
+    case "string[]":
       return [];
-    case 'number':
+    case "number":
       return 0;
-    case 'boolean':
+    case "boolean":
       return false;
   }
 }
@@ -63,16 +63,16 @@ function parseParamValue(
   }
 
   switch (type) {
-    case 'string':
+    case "string":
       return raw;
-    case 'string[]':
-      return raw ? raw.split(',').filter(Boolean) : defaultValue;
-    case 'number': {
+    case "string[]":
+      return raw ? raw.split(",").filter(Boolean) : defaultValue;
+    case "number": {
       const parsed = Number(raw);
       return Number.isFinite(parsed) ? parsed : defaultValue;
     }
-    case 'boolean':
-      return raw === 'true' || raw === '1';
+    case "boolean":
+      return raw === "true" || raw === "1";
   }
 }
 
@@ -82,14 +82,14 @@ function serialiseParamValue(value: URLFilterValue, type: URLFilterType): string
   }
 
   switch (type) {
-    case 'string':
+    case "string":
       return value ? String(value) : null;
-    case 'string[]':
-      return Array.isArray(value) && value.length > 0 ? value.join(',') : null;
-    case 'number':
+    case "string[]":
+      return Array.isArray(value) && value.length > 0 ? value.join(",") : null;
+    case "number":
       return value !== 0 ? String(value) : null;
-    case 'boolean':
-      return value ? 'true' : null;
+    case "boolean":
+      return value ? "true" : null;
   }
 }
 
@@ -99,7 +99,7 @@ function encodeStructuredFilters(filters: StructuredFilter[]): string | null {
   }
   return filters
     .map((filter) => `${filter.field}:${filter.operator}:${encodeURIComponent(filter.value)}`)
-    .join(';');
+    .join(";");
 }
 
 function decodeStructuredFilters(raw: string | null): StructuredFilter[] {
@@ -108,12 +108,12 @@ function decodeStructuredFilters(raw: string | null): StructuredFilter[] {
   }
 
   const filters: StructuredFilter[] = [];
-  for (const chunk of raw.split(';')) {
-    const [field, operator, ...rest] = chunk.split(':');
+  for (const chunk of raw.split(";")) {
+    const [field, operator, ...rest] = chunk.split(":");
     if (!field || !operator) {
       continue;
     }
-    filters.push({ field, operator, value: decodeURIComponent(rest.join(':')) });
+    filters.push({ field, operator, value: decodeURIComponent(rest.join(":")) });
   }
   return filters;
 }
@@ -148,7 +148,7 @@ export function useURLFilters(config: URLFilterConfig): {
     if (!config.syncStructuredFilters) {
       return [];
     }
-    return decodeStructuredFilters(searchParams.get('filters'));
+    return decodeStructuredFilters(searchParams.get("filters"));
     // Initial parse should run once; subsequent URL changes are managed via state updates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -190,13 +190,13 @@ export function useURLFilters(config: URLFilterConfig): {
             // Manage filters
             if (config.syncStructuredFilters) {
               const encodedFilters = encodeStructuredFilters(nextFilters);
-              const current = prevParams.get('filters');
+              const current = prevParams.get("filters");
               if (encodedFilters !== current) {
                 hasChanges = true;
                 if (encodedFilters) {
-                  nextSearchParams.set('filters', encodedFilters);
+                  nextSearchParams.set("filters", encodedFilters);
                 } else {
-                  nextSearchParams.delete('filters');
+                  nextSearchParams.delete("filters");
                 }
               }
             }
@@ -247,7 +247,7 @@ export function useURLFilters(config: URLFilterConfig): {
     }
 
     if (config.syncStructuredFilters) {
-      const urlFilters = decodeStructuredFilters(searchParams.get('filters'));
+      const urlFilters = decodeStructuredFilters(searchParams.get("filters"));
       if (JSON.stringify(urlFilters) !== JSON.stringify(structuredFilters)) {
         setStructuredFilters(urlFilters);
       }
@@ -277,7 +277,7 @@ export function useURLFilters(config: URLFilterConfig): {
       generatedSetters[param.key] = (next): void => {
         setValues((previousValues) => {
           const previousValue = previousValues[param.key];
-          const resolvedValue = typeof next === 'function' ? next(previousValue) : next;
+          const resolvedValue = typeof next === "function" ? next(previousValue) : next;
           return { ...previousValues, [param.key]: resolvedValue };
         });
       };

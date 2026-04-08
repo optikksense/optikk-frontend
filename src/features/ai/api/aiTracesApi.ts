@@ -1,10 +1,10 @@
-import { z } from 'zod';
-import { aiService } from '@shared/api/aiService';
-import type { LLMTraceSpan, LLMTraceSummary } from '../types';
+import { aiService } from "@shared/api/aiService";
+import { z } from "zod";
+import type { LLMTraceSpan, LLMTraceSummary } from "../types";
 
 const traceSpanSchema = z.object({
   spanId: z.string(),
-  parentSpanId: z.string().optional().default(''),
+  parentSpanId: z.string().optional().default(""),
   serviceName: z.string(),
   operationName: z.string(),
   startTime: z.string(),
@@ -12,7 +12,7 @@ const traceSpanSchema = z.object({
   hasError: z.boolean(),
   spanKind: z.string(),
   role: z.string(),
-  model: z.string().optional().default(''),
+  model: z.string().optional().default(""),
   inputTokens: z.number().optional().default(0),
   outputTokens: z.number().optional().default(0),
 });
