@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import DonutChart from '@shared/components/ui/charts/micro/DonutChart';
-import { getChartColor } from '@shared/utils/charting';
-import { useDashboardData } from '../hooks/useDashboardData';
-import ChartNoDataOverlay from '@shared/components/ui/feedback/ChartNoDataOverlay';
+import DonutChart from "@shared/components/ui/charts/micro/DonutChart";
+import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
+import { getChartColor } from "@shared/utils/charting";
+import { useDashboardData } from "../hooks/useDashboardData";
 
-import type { DashboardPanelRendererProps } from '../dashboardPanelRegistry';
+import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
 /**
  *
@@ -17,8 +17,8 @@ export function PieRenderer({
 }: DashboardPanelRendererProps) {
   const { data: rows } = useDashboardData(chartConfig, dataSources);
 
-  const labelKey = chartConfig.labelKey || chartConfig.groupByKey || 'label';
-  const valueKey = chartConfig.valueKey || 'value';
+  const labelKey = chartConfig.labelKey || chartConfig.groupByKey || "label";
+  const valueKey = chartConfig.valueKey || "value";
 
   const chartData = useMemo(() => {
     const filtered = rows.filter((row) => row != null);
@@ -29,13 +29,13 @@ export function PieRenderer({
       const name = String(row[labelKey] ?? `Item ${index + 1}`);
 
       let color = getChartColor(index);
-      if (name.startsWith('2xx'))
-        color = '#10b981'; // Emerald 500 (Green)
-      else if (name.startsWith('3xx'))
-        color = '#3b82f6'; // Blue 500
-      else if (name.startsWith('4xx'))
-        color = '#ef4444'; // Red 500
-      else if (name.startsWith('5xx')) color = '#eab308'; // Yellow 500
+      if (name.startsWith("2xx"))
+        color = "#10b981"; // Emerald 500 (Green)
+      else if (name.startsWith("3xx"))
+        color = "#3b82f6"; // Blue 500
+      else if (name.startsWith("4xx"))
+        color = "#ef4444"; // Red 500
+      else if (name.startsWith("5xx")) color = "#eab308"; // Yellow 500
 
       return {
         name,
@@ -85,7 +85,7 @@ export function PieRenderer({
           color: segment.color,
         }))}
         centerValue={String(chartData.total)}
-        centerLabel={chartConfig.title ?? 'Total'}
+        centerLabel={chartConfig.title ?? "Total"}
       />
     </div>
   );

@@ -1,34 +1,25 @@
-import { Navigate, matchPath, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from "@tanstack/react-router";
 
-import { DashboardPage, PageHeader, PageShell } from '@shared/components/ui';
-import { getDashboardIcon } from '@shared/components/ui/dashboard/utils/dashboardUtils';
-import { usePagesConfig } from '@shared/hooks/usePagesConfig';
+import { DashboardPage, PageHeader, PageShell } from "@shared/components/ui";
+import { getDashboardIcon } from "@shared/components/ui/dashboard/utils/dashboardUtils";
+import { usePagesConfig } from "@shared/hooks/usePagesConfig";
 
-import { resolveDashboardPageAdapter } from '@/app/registry/domainRegistry';
-import { Skeleton } from '@/components/ui';
-import { ROUTES } from '@/shared/constants/routes';
-import type { DefaultConfigPage } from '@/types/dashboardConfig';
+import { resolveDashboardPageAdapter } from "@/app/registry/domainRegistry";
+import { Skeleton } from "@/components/ui";
+import { ROUTES } from "@/shared/constants/routes";
+import type { DefaultConfigPage } from "@/types/dashboardConfig";
 
 function matchConfiguredPage(
   pathname: string,
   pages: readonly DefaultConfigPage[]
 ): { page: DefaultConfigPage; pathParams?: Record<string, string> } | null {
   for (const page of pages) {
-    const matched = matchPath({ path: page.path, end: true }, pathname);
-    if (!matched) {
+    const isMatched = pathname === page.path;
+    if (!isMatched) {
       continue;
     }
 
-    const pathParams =
-      Object.keys(matched.params).length > 0
-        ? Object.fromEntries(
-            Object.entries(matched.params).flatMap(([key, value]) =>
-              typeof value === 'string' ? [[key, value]] : []
-            )
-          )
-        : undefined;
-
-    return { page, pathParams };
+    return { page, pathParams: undefined };
   }
 
   return null;
@@ -60,7 +51,7 @@ export default function BackendDrivenPage(): JSX.Element {
 
   const { page: matchedPage, pathParams } = matched;
 
-  if (matchedPage.renderMode !== 'dashboard') {
+  if (matchedPage.renderMode !== "dashboard") {
     return <Navigate to={matchedPage.path || pages[0]?.path || ROUTES.overview} replace />;
   }
 

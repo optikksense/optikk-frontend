@@ -66,7 +66,7 @@ export interface LLMRunDetail {
 export interface LLMMessage {
   role: string;
   content: string;
-  type: 'prompt' | 'completion';
+  type: "prompt" | "completion";
 }
 
 export interface ChainSpan {

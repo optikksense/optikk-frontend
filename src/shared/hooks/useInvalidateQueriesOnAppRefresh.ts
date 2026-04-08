@@ -1,5 +1,5 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 
 /**
  * When `refreshKey` bumps (manual/auto refresh), invalidates queries under `[scope, teamId]`
@@ -8,7 +8,7 @@ import { useEffect, useRef } from 'react';
  */
 export function useInvalidateQueriesOnAppRefresh(
   refreshKey: number,
-  scope: 'component-query' | 'datasource',
+  scope: "component-query" | "datasource",
   selectedTeamId: number | null
 ): void {
   const queryClient = useQueryClient();

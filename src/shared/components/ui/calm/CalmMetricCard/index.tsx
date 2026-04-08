@@ -1,11 +1,11 @@
-import { Skeleton, Surface } from '@/components/ui';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+import { Skeleton, Surface } from "@/components/ui";
+import { TrendingDown, TrendingUp } from "lucide-react";
 
-import SparklineChart from '@shared/components/ui/charts/micro/SparklineChart';
+import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-import type { HealthStatus } from '../HealthRing';
+import type { HealthStatus } from "../HealthRing";
 
 interface CalmMetricCardProps {
   label: string;
@@ -21,12 +21,12 @@ interface CalmMetricCardProps {
 
 function TrendIndicator({ trend, inverted }: { trend: number; inverted?: boolean }) {
   const isPositive = inverted ? trend <= 0 : trend >= 0;
-  const color = isPositive ? 'var(--color-healthy)' : 'var(--color-critical)';
+  const color = isPositive ? "var(--color-healthy)" : "var(--color-critical)";
   const Icon = trend >= 0 ? TrendingUp : TrendingDown;
-  const sign = trend >= 0 ? '+' : '';
+  const sign = trend >= 0 ? "+" : "";
   return (
     <span
-      className="inline-flex items-center gap-[3px] text-[var(--text-xs,11px)] font-medium whitespace-nowrap"
+      className="inline-flex items-center gap-[3px] whitespace-nowrap font-medium text-[var(--text-xs,11px)]"
       style={{ color }}
     >
       <Icon size={11} />
@@ -48,22 +48,22 @@ export default function CalmMetricCard({
 }: CalmMetricCardProps) {
   if (loading) {
     return (
-      <Surface elevation={1} padding="sm" className="flex flex-col gap-2 h-full min-h-[100px]">
+      <Surface elevation={1} padding="sm" className="flex h-full min-h-[100px] flex-col gap-2">
         <Skeleton count={2} />
       </Surface>
     );
   }
 
   return (
-    <Surface elevation={1} padding="sm" className="flex flex-col gap-2 h-full">
-      <span className="text-[var(--label-size,11px)] font-[var(--label-weight,500)] text-[color:var(--text-label)] uppercase tracking-[0.5px]">
+    <Surface elevation={1} padding="sm" className="flex h-full flex-col gap-2">
+      <span className="font-[var(--label-weight,500)] text-[color:var(--text-label)] text-[var(--label-size,11px)] uppercase tracking-[0.5px]">
         {label}
       </span>
       <div className="flex items-baseline gap-2.5">
-        <span className="text-[var(--text-2xl,32px)] font-[var(--metric-weight,300)] text-[color:var(--text-numeric,var(--text-primary))] tabular-nums leading-[1.1]">
+        <span className="font-[var(--metric-weight,300)] text-[color:var(--text-numeric,var(--text-primary))] text-[var(--text-2xl,32px)] tabular-nums leading-[1.1]">
           {value}
           {unit && (
-            <span className="text-[var(--text-base,15px)] font-normal text-[color:var(--text-secondary)] ml-1">
+            <span className="ml-1 font-normal text-[color:var(--text-secondary)] text-[var(--text-base,15px)]">
               {unit}
             </span>
           )}
@@ -71,7 +71,7 @@ export default function CalmMetricCard({
         {trend !== undefined && <TrendIndicator trend={trend} inverted={trendInverted} />}
       </div>
       {sparkline && sparkline.length >= 2 && (
-        <div className="mt-1 w-full [&>div]:!w-full">
+        <div className="[&>div]:!w-full mt-1 w-full">
           <SparklineChart
             data={sparkline}
             color={sparklineColor}

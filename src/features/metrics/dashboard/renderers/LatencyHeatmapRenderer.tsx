@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 import LatencyHeatmapChart, {
   type LatencyHeatmapDataPoint,
-} from '@shared/components/ui/charts/specialized/LatencyHeatmapChart';
-import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
-import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+} from "@shared/components/ui/charts/specialized/LatencyHeatmapChart";
+import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 
 /**
  *
@@ -19,8 +19,8 @@ export function LatencyHeatmapRenderer({
     () =>
       data
         .map((row) => ({
-          time_bucket: String(row.time_bucket ?? row.timestamp ?? ''),
-          latency_bucket: String(row.latency_bucket ?? row.bucket ?? ''),
+          time_bucket: String(row.time_bucket ?? row.timestamp ?? ""),
+          latency_bucket: String(row.latency_bucket ?? row.bucket ?? ""),
           span_count: Number(row.span_count ?? row.value ?? 0),
         }))
         .filter((row) => row.time_bucket && row.latency_bucket),

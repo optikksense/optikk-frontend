@@ -1,9 +1,9 @@
-import { Calculator, X } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { Calculator, X } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import { QUERY_LABELS } from '../../constants';
+import { QUERY_LABELS } from "../../constants";
 
 interface FormulaRowProps {
   readonly id: string;
@@ -13,13 +13,13 @@ interface FormulaRowProps {
   readonly onRemove: () => void;
 }
 
-const FORMULA_COLOR = '#f59e0b';
+const FORMULA_COLOR = "#f59e0b";
 
 function validateExpression(expr: string, activeIds: string[]): string | null {
   if (!expr.trim()) return null;
   const activeSet = new Set(activeIds);
   const tokens = expr.match(/[a-zA-Z]+|[0-9.]+|[+\-*/()]/g);
-  if (!tokens) return 'Invalid expression';
+  if (!tokens) return "Invalid expression";
 
   for (const token of tokens) {
     if (/^[a-zA-Z]$/.test(token)) {
@@ -57,25 +57,25 @@ export function FormulaRow({
   return (
     <div
       className={cn(
-        'flex items-center gap-2 rounded-xl border px-3 py-2 min-h-[48px]',
-        'transition-colors duration-150',
+        "flex min-h-[48px] items-center gap-2 rounded-xl border px-3 py-2",
+        "transition-colors duration-150",
         focused
-          ? 'border-[rgba(245,158,11,0.45)] bg-[rgba(245,158,11,0.06)]'
-          : 'border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[rgba(148,163,184,0.25)]'
+          ? "border-[rgba(245,158,11,0.45)] bg-[rgba(245,158,11,0.06)]"
+          : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[rgba(148,163,184,0.25)]"
       )}
     >
       {/* Formula label */}
       <div
-        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-semibold text-[11px] text-white"
         style={{ backgroundColor: FORMULA_COLOR }}
       >
         <Calculator size={12} />
       </div>
 
       {/* Formula input */}
-      <div className="flex flex-1 flex-col gap-1 min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)] shrink-0">
+          <span className="shrink-0 font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
             Formula
           </span>
           <input
@@ -86,26 +86,24 @@ export function FormulaRow({
             onBlur={() => setFocused(false)}
             placeholder="e.g. a / b * 100"
             className={cn(
-              'h-7 flex-1 rounded-md border bg-[var(--bg-tertiary)] px-2',
-              'font-mono text-[12px] text-[var(--text-primary)]',
-              'placeholder:text-[var(--text-muted)] outline-none',
-              'transition-colors duration-150',
+              "h-7 flex-1 rounded-md border bg-[var(--bg-tertiary)] px-2",
+              "font-mono text-[12px] text-[var(--text-primary)]",
+              "outline-none placeholder:text-[var(--text-muted)]",
+              "transition-colors duration-150",
               error
-                ? 'border-[rgba(240,68,56,0.4)]'
-                : 'border-[var(--border-color)] focus:border-[rgba(245,158,11,0.45)]'
+                ? "border-[rgba(240,68,56,0.4)]"
+                : "border-[var(--border-color)] focus:border-[rgba(245,158,11,0.45)]"
             )}
           />
         </div>
-        {error && (
-          <span className="text-[10px] text-[var(--color-error)] pl-[52px]">{error}</span>
-        )}
+        {error && <span className="pl-[52px] text-[10px] text-[var(--color-error)]">{error}</span>}
       </div>
 
       {/* Remove button */}
       <button
         type="button"
         onClick={onRemove}
-        className="shrink-0 rounded-md p-1 opacity-50 hover:opacity-100 hover:bg-[var(--bg-hover)] transition-all duration-100"
+        className="shrink-0 rounded-md p-1 opacity-50 transition-all duration-100 hover:bg-[var(--bg-hover)] hover:opacity-100"
       >
         <X size={14} className="text-[var(--text-muted)]" />
       </button>

@@ -1,7 +1,7 @@
-import React from 'react';
-import { addMonths, subMonths, format } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CalendarMonth } from './CalendarMonth';
+import { addMonths, format, subMonths } from "date-fns";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import type React from "react";
+import { CalendarMonth } from "./CalendarMonth";
 
 interface DualCalendarProps {
   leftMonth: Date;
@@ -31,16 +31,17 @@ export function DualCalendar({
   return (
     <div className="flex gap-4 px-3 pt-3 pb-2">
       {/* Left month */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-1 flex-col">
+        <div className="mb-2 flex items-center justify-between">
           <button
+            type="button"
             onClick={prevMonth}
-            className="w-6 h-6 flex items-center justify-center rounded hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border-none bg-transparent cursor-pointer"
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-none bg-transparent text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
           >
             <ChevronLeft size={14} />
           </button>
-          <span className="text-[13px] font-semibold text-[var(--text-primary)]">
-            {format(leftMonth, 'MMMM yyyy')}
+          <span className="font-semibold text-[13px] text-[var(--text-primary)]">
+            {format(leftMonth, "MMMM yyyy")}
           </span>
           <div className="w-6" />
         </div>
@@ -56,18 +57,19 @@ export function DualCalendar({
       </div>
 
       {/* Divider */}
-      <div className="w-px bg-[var(--border-color)] self-stretch" />
+      <div className="w-px self-stretch bg-[var(--border-color)]" />
 
       {/* Right month */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-1 flex-col">
+        <div className="mb-2 flex items-center justify-between">
           <div className="w-6" />
-          <span className="text-[13px] font-semibold text-[var(--text-primary)]">
-            {format(rightMonth, 'MMMM yyyy')}
+          <span className="font-semibold text-[13px] text-[var(--text-primary)]">
+            {format(rightMonth, "MMMM yyyy")}
           </span>
           <button
+            type="button"
             onClick={nextMonth}
-            className="w-6 h-6 flex items-center justify-center rounded hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border-none bg-transparent cursor-pointer"
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-none bg-transparent text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
           >
             <ChevronRight size={14} />
           </button>

@@ -1,11 +1,11 @@
-import { Plus, X } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { Plus, X } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 
-import { Popover, Select } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { Popover, Select } from "@/components/ui";
+import { cn } from "@/lib/utils";
 
-import { useMetricTags } from '../../hooks/useMetricTags';
-import type { MetricFilterOperator, MetricTagFilter } from '../../types';
+import { useMetricTags } from "../../hooks/useMetricTags";
+import type { MetricFilterOperator, MetricTagFilter } from "../../types";
 
 interface TagFilterProps {
   readonly metricName: string;
@@ -14,11 +14,11 @@ interface TagFilterProps {
 }
 
 const OPERATOR_OPTIONS = [
-  { label: '=', value: 'eq' },
-  { label: '!=', value: 'neq' },
-  { label: 'in', value: 'in' },
-  { label: 'not in', value: 'not_in' },
-  { label: '~', value: 'wildcard' },
+  { label: "=", value: "eq" },
+  { label: "!=", value: "neq" },
+  { label: "in", value: "in" },
+  { label: "not in", value: "not_in" },
+  { label: "~", value: "wildcard" },
 ];
 
 function operatorDisplay(op: MetricFilterOperator): string {
@@ -26,23 +26,20 @@ function operatorDisplay(op: MetricFilterOperator): string {
 }
 
 function filterDisplay(f: MetricTagFilter): string {
-  const val = Array.isArray(f.value) ? f.value.join(', ') : f.value;
+  const val = Array.isArray(f.value) ? f.value.join(", ") : f.value;
   return `${f.key} ${operatorDisplay(f.operator)} ${val}`;
 }
 
 export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
   const [addOpen, setAddOpen] = useState(false);
-  const [selectedKey, setSelectedKey] = useState('');
-  const [selectedOp, setSelectedOp] = useState<MetricFilterOperator>('eq');
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedKey, setSelectedKey] = useState("");
+  const [selectedOp, setSelectedOp] = useState<MetricFilterOperator>("eq");
+  const [selectedValue, setSelectedValue] = useState("");
 
   const { data: tagsData } = useMetricTags(metricName);
   const tags = tagsData?.tags ?? [];
 
-  const tagKeyOptions = useMemo(
-    () => tags.map((t) => ({ label: t.key, value: t.key })),
-    [tags]
-  );
+  const tagKeyOptions = useMemo(() => tags.map((t) => ({ label: t.key, value: t.key })), [tags]);
 
   const tagValueOptions = useMemo(() => {
     const tag = tags.find((t) => t.key === selectedKey);
@@ -57,9 +54,9 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
       value: selectedValue,
     };
     onChange([...filters, newFilter]);
-    setSelectedKey('');
-    setSelectedOp('eq');
-    setSelectedValue('');
+    setSelectedKey("");
+    setSelectedOp("eq");
+    setSelectedValue("");
     setAddOpen(false);
   }, [selectedKey, selectedOp, selectedValue, filters, onChange]);
 
@@ -71,21 +68,21 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
   );
 
   return (
-    <div className="flex items-center gap-1 flex-wrap">
+    <div className="flex flex-wrap items-center gap-1">
       {filters.map((f, i) => (
         <span
           key={`${f.key}-${f.operator}-${i}`}
           className={cn(
-            'inline-flex items-center gap-1 rounded-2xl border px-[10px] py-[2px]',
-            'border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)]',
-            'text-[11px] text-[var(--color-primary)] animate-in fade-in-0 zoom-in-95 duration-150'
+            "inline-flex items-center gap-1 rounded-2xl border px-[10px] py-[2px]",
+            "border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)]",
+            "fade-in-0 zoom-in-95 animate-in text-[11px] text-[var(--color-primary)] duration-150"
           )}
         >
-          <span className="truncate max-w-[180px]">{filterDisplay(f)}</span>
+          <span className="max-w-[180px] truncate">{filterDisplay(f)}</span>
           <button
             type="button"
             onClick={() => handleRemove(i)}
-            className="ml-0.5 opacity-55 hover:opacity-100 transition-opacity"
+            className="ml-0.5 opacity-55 transition-opacity hover:opacity-100"
           >
             <X size={12} />
           </button>
@@ -101,10 +98,10 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
             <button
               type="button"
               className={cn(
-                'inline-flex h-6 items-center gap-1 rounded-md px-1.5',
-                'text-[11px] text-[var(--text-muted)]',
-                'hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]',
-                'transition-colors duration-100'
+                "inline-flex h-6 items-center gap-1 rounded-md px-1.5",
+                "text-[11px] text-[var(--text-muted)]",
+                "hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]",
+                "transition-colors duration-100"
               )}
             >
               <Plus size={12} />
@@ -120,7 +117,7 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
               value={selectedKey}
               onChange={(v) => {
                 setSelectedKey(v);
-                setSelectedValue('');
+                setSelectedValue("");
               }}
             />
             <Select
@@ -142,11 +139,11 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
               disabled={!selectedKey || !selectedValue}
               onClick={handleAdd}
               className={cn(
-                'h-8 rounded-[var(--card-radius)] px-3 text-[12px] font-medium',
-                'transition-colors duration-150',
+                "h-8 rounded-[var(--card-radius)] px-3 font-medium text-[12px]",
+                "transition-colors duration-150",
                 selectedKey && selectedValue
-                  ? 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]'
-                  : 'bg-[var(--bg-tertiary)] text-[var(--text-muted)] cursor-not-allowed'
+                  ? "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]"
+                  : "cursor-not-allowed bg-[var(--bg-tertiary)] text-[var(--text-muted)]"
               )}
             >
               Add filter

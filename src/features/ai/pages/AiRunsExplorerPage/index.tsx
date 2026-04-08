@@ -1,28 +1,28 @@
-import { Brain, Play } from 'lucide-react';
-import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "@tanstack/react-router";
+import { Brain, Play } from "lucide-react";
+import { useCallback, useMemo } from "react";
 
 import {
   ObservabilityDataBoard,
+  ObservabilityQueryBar,
   PageHeader,
   PageShell,
   PageSurface,
-  ObservabilityQueryBar,
-} from '@shared/components/ui';
+} from "@shared/components/ui";
 import {
-  boardHeight,
   type RenderRowContext,
-} from '@shared/components/ui/data-display/ObservabilityDataBoard';
-import { type StructuredFilter } from '@shared/hooks/useURLFilters';
-import { formatNumber } from '@shared/utils/formatters';
+  boardHeight,
+} from "@shared/components/ui/data-display/ObservabilityDataBoard";
+import type { StructuredFilter } from "@shared/hooks/useURLFilters";
+import { formatNumber } from "@shared/utils/formatters";
 
-import { Badge, Select } from '@/components/ui';
+import { Badge, Select } from "@/components/ui";
 
-import { AiRunsTableRow } from '../../components/runs/AiRunsTableRow';
-import { useAiRunsExplorer } from '../../hooks/useAiRunsExplorer';
-import { AI_RUN_COLUMNS, AI_RUN_FILTER_FIELDS } from '../../utils/aiRunsUtils';
+import { AiRunsTableRow } from "../../components/runs/AiRunsTableRow";
+import { useAiRunsExplorer } from "../../hooks/useAiRunsExplorer";
+import { AI_RUN_COLUMNS, AI_RUN_FILTER_FIELDS } from "../../utils/aiRunsUtils";
 
-import type { LLMRun } from '../../types';
+import type { LLMRun } from "../../types";
 
 function getErrorMessage(error: { message?: string } | null | undefined, fallback: string): string {
   if (error?.message) {
@@ -54,7 +54,7 @@ export default function AiRunsExplorerPage(): JSX.Element {
 
   const onRowClick = useCallback(
     (spanId: string) => {
-      navigate(`/ai-runs/${spanId}`);
+      navigate({ to: `/ai-runs/${spanId}` });
     },
     [navigate]
   );
@@ -72,11 +72,11 @@ export default function AiRunsExplorerPage(): JSX.Element {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="info">Runs Explorer</Badge>
-              <Badge variant={hasError ? 'error' : 'default'}>
+              <Badge variant={hasError ? "error" : "default"}>
                 {formatNumber(runs.length)} runs in view
               </Badge>
             </div>
-            <div className="text-xs text-[var(--text-muted)]">
+            <div className="text-[var(--text-muted)] text-xs">
               Filter by model, operation, service, status, or trace identifiers.
             </div>
           </div>
@@ -94,16 +94,16 @@ export default function AiRunsExplorerPage(): JSX.Element {
       </PageSurface>
 
       <PageSurface padding="lg" className="min-h-0">
-        <div className="mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-[rgba(255,255,255,0.06)] pb-4">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3 border-[rgba(255,255,255,0.06)] border-b pb-4">
           <div>
-            <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
+            <div className="flex items-center gap-2 font-semibold text-[var(--text-primary)] text-sm">
               <Play size={15} />
               <span>LLM Run Explorer</span>
-              <span className="inline-flex items-center rounded-full border border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.1)] px-2 py-[2px] text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--color-info)]">
+              <span className="inline-flex items-center rounded-full border border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.1)] px-2 py-[2px] font-medium text-[10px] text-[var(--color-info)] uppercase tracking-[0.08em]">
                 {formatNumber(runs.length)}
               </span>
             </div>
-            <p className="mt-1 text-xs text-[var(--text-muted)]">
+            <p className="mt-1 text-[var(--text-muted)] text-xs">
               Open a run to inspect prompts, token usage, latency, and downstream context.
             </p>
           </div>
@@ -114,30 +114,30 @@ export default function AiRunsExplorerPage(): JSX.Element {
             <strong className="text-sm">One or more LLM runs requests failed</strong>
             <div className="mt-1 text-[13px] leading-6">
               {[
-                runsError ? `Runs: ${getErrorMessage(runsError, 'Unable to load runs.')}` : null,
+                runsError ? `Runs: ${getErrorMessage(runsError, "Unable to load runs.")}` : null,
                 summaryError
-                  ? `Summary: ${getErrorMessage(summaryError, 'Unable to load summary.')}`
+                  ? `Summary: ${getErrorMessage(summaryError, "Unable to load summary.")}`
                   : null,
                 modelsError
-                  ? `Models: ${getErrorMessage(modelsError, 'Unable to load models.')}`
+                  ? `Models: ${getErrorMessage(modelsError, "Unable to load models.")}`
                   : null,
                 operationsError
-                  ? `Operations: ${getErrorMessage(operationsError, 'Unable to load operations.')}`
+                  ? `Operations: ${getErrorMessage(operationsError, "Unable to load operations.")}`
                   : null,
               ]
                 .filter(Boolean)
-                .join(' ')}
+                .join(" ")}
             </div>
           </div>
         ) : null}
 
-        <div style={{ height: boardHeight(pageSize), display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: boardHeight(pageSize), display: "flex", flexDirection: "column" }}>
           {runsError ? (
             <div className="p-6">
               <div className="rounded-xl border border-[rgba(240,68,56,0.22)] bg-[rgba(240,68,56,0.08)] px-4 py-3 text-[var(--color-error)]">
                 <strong className="text-sm">The LLM runs explorer could not load.</strong>
                 <div className="mt-1 text-[13px] leading-6">
-                  {getErrorMessage(primaryError, 'The backend request failed for this time range.')}
+                  {getErrorMessage(primaryError, "The backend request failed for this time range.")}
                 </div>
               </div>
             </div>
@@ -158,8 +158,8 @@ export default function AiRunsExplorerPage(): JSX.Element {
                     onOpenDetail={() => {}}
                   />
                 ),
-                entityName: 'LLM run',
-                storageKey: 'ai_runs_visible_cols_v1',
+                entityName: "LLM run",
+                storageKey: "ai_runs_visible_cols_v1",
                 emptyTips: [
                   {
                     num: 1,
@@ -192,12 +192,12 @@ export default function AiRunsExplorerPage(): JSX.Element {
         </div>
 
         {!isLoading && !runsError && runs.length > 0 ? (
-          <div className="mt-4 flex items-center justify-between border-t border-[rgba(255,255,255,0.06)] pt-4">
-            <span className="text-xs text-[var(--text-muted)]">
+          <div className="mt-4 flex items-center justify-between border-[rgba(255,255,255,0.06)] border-t pt-4">
+            <span className="text-[var(--text-muted)] text-xs">
               Showing {formatNumber(runs.length)} runs
             </span>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
+              <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
                 Density
               </span>
               <Select

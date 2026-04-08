@@ -1,4 +1,4 @@
-import type { ErrorInfo, ReactNode } from 'react';
+import type { ErrorInfo, ReactNode } from "react";
 
 /**
  *
@@ -33,7 +33,7 @@ export interface EmptyStateProps {
 /**
  *
  */
-export type StatusBadgeType = 'service' | 'trace';
+export type StatusBadgeType = "service" | "trace";
 
 /**
  *
@@ -57,7 +57,7 @@ export interface TrendIndicatorProps {
  */
 export interface LoadingProps {
   label?: string;
-  size?: 'small' | 'default' | 'large';
+  size?: "small" | "default" | "large";
   fullscreen?: boolean;
 }
 

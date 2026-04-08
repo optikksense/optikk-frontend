@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
-import uPlot from 'uplot';
+import { useMemo } from "react";
+import type uPlot from "uplot";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import UPlotChart, { defaultAxes, uLine } from './UPlotChart';
+import UPlotChart, { defaultAxes, uLine, uBars } from "./UPlotChart";
 
 export interface ObservabilityChartSeries {
   label: string;
@@ -18,6 +18,7 @@ export interface ObservabilityChartSeries {
 export interface ObservabilityChartProps {
   timestamps: number[];
   series: ObservabilityChartSeries[];
+  type?: "line" | "area" | "bar";
   height?: number;
   fillHeight?: boolean;
   yMin?: number;
@@ -32,6 +33,7 @@ export interface ObservabilityChartProps {
 export default function ObservabilityChart({
   timestamps,
   series,
+  type = "line",
   height = 280,
   fillHeight = false,
   yMin,
@@ -47,7 +49,7 @@ export default function ObservabilityChart({
     [timestamps, series]
   );
 
-  const options = useMemo<Omit<uPlot.Options, 'width' | 'height'>>(() => {
+  const options = useMemo<Omit<uPlot.Options, "width" | "height">>(() => {
     const axes = defaultAxes({ yAxisSize });
     axes[1] = {
       ...axes[1],
@@ -68,28 +70,31 @@ export default function ObservabilityChart({
       },
       series: [
         {},
-        ...series.map((item) =>
-          uLine(item.label, item.color, {
-            fill: item.fill,
+        ...series.map((item) => {
+          if (type === "bar") {
+            return uBars(item.label, item.color);
+          }
+          return uLine(item.label, item.color, {
+            fill: type === "area" || item.fill,
             dash: item.dash,
             width: item.width ?? 1.85,
-          })
-        ),
+          });
+        }),
       ],
     };
-  }, [legend, series, yAxisSize, yFormatter, yMin, yMax]);
+  }, [legend, series, yAxisSize, yFormatter, yMin, yMax, type]);
 
   const tooltipContent = useMemo(() => {
     const defaultXFormatter = (timestampSeconds: number) =>
       new Intl.DateTimeFormat(undefined, {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
       }).format(new Date(timestampSeconds * 1000));
 
     const valueFormatter = (value: number | null) => {
-      if (value == null || Number.isNaN(value)) return '—';
+      if (value == null || Number.isNaN(value)) return "—";
       return yFormatter ? yFormatter(value) : value.toLocaleString();
     };
 
@@ -107,7 +112,7 @@ export default function ObservabilityChart({
           color: item.color,
           order: seriesIndex,
         }))
-        .filter((item) => item.value !== '—');
+        .filter((item) => item.value !== "—");
 
       if (rows.length === 0) {
         return null;
@@ -121,7 +126,7 @@ export default function ObservabilityChart({
   }, [timestamps, series, yFormatter, xFormatter]);
 
   return (
-    <div className={cn('h-full min-h-0', className)}>
+    <div className={cn("h-full min-h-0", className)}>
       <UPlotChart
         options={options}
         data={alignedData}

@@ -1,24 +1,24 @@
-import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { tracesService } from '@shared/api/tracesService';
-import { normalizeSpan, normalizeTraceLog, calculateTraceStats } from '../utils/traceCalculations';
-import type { LogRecord } from '@/features/log/types';
+import type { LogRecord } from "@/features/log/types";
+import { tracesService } from "@shared/api/tracesService";
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
 export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: string) {
   const [searchParams] = useSearchParams();
   const [selectedSpanId, setSelectedSpanId] = useState<string | null>(
-    () => searchParams.get('span') || null
+    () => searchParams.get("span") || null
   );
 
   // Sync span from URL on mount
   useEffect(() => {
-    const spanFromUrl = searchParams.get('span');
+    const spanFromUrl = searchParams.get("span");
     if (spanFromUrl) setSelectedSpanId(spanFromUrl);
   }, [searchParams]);
 
   const { data: spansData, isLoading: spansLoading } = useQuery({
-    queryKey: ['trace-spans', selectedTeamId, traceIdParam],
+    queryKey: ["trace-spans", selectedTeamId, traceIdParam],
     queryFn: () => tracesService.getTraceSpans(selectedTeamId, traceIdParam),
     enabled: !!selectedTeamId && !!traceIdParam,
   });
@@ -33,7 +33,7 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
 
   // Fetch logs
   const { data: logsData, isLoading: logsLoading } = useQuery({
-    queryKey: ['trace-logs', selectedTeamId, resolvedTraceId],
+    queryKey: ["trace-logs", selectedTeamId, resolvedTraceId],
     queryFn: () => tracesService.getTraceLogs(selectedTeamId, resolvedTraceId),
     enabled: !!selectedTeamId && !!resolvedTraceId,
   });

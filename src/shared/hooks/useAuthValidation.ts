@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
-import { authService } from '@shared/api/auth/authService';
+import { authService } from "@shared/api/auth/authService";
 
-import { useAuthStore } from '@store/authStore';
+import { useAuthStore } from "@store/authStore";
 
-export type AuthValidationState = 'pending' | 'valid' | 'invalid';
+export type AuthValidationState = "pending" | "valid" | "invalid";
 
 /**
  * Validates the current auth session on mount.
@@ -25,14 +25,14 @@ export function useAuthValidation(): AuthValidationState {
 
   const [state, setState] = useState<AuthValidationState>(() => {
     if (!isAuthenticated) {
-      return 'invalid';
+      return "invalid";
     }
-    return 'pending';
+    return "pending";
   });
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setState('invalid');
+      setState("invalid");
       return;
     }
 
@@ -45,11 +45,11 @@ export function useAuthValidation(): AuthValidationState {
       }
 
       if (payload && applyAuthPayload(payload)) {
-        setState('valid');
+        setState("valid");
       } else {
         clearSession();
-        setState('invalid');
-        navigate('/login', { replace: true });
+        setState("invalid");
+        navigate({ to: "/login", replace: true });
       }
     })();
 

@@ -1,42 +1,42 @@
-import type { MetricExplorerResults } from '../types';
+import type { MetricExplorerResults } from "../types";
 
 type Token =
-  | { type: 'number'; value: number }
-  | { type: 'ref'; value: string }
-  | { type: 'op'; value: '+' | '-' | '*' | '/' }
-  | { type: 'lparen' }
-  | { type: 'rparen' };
+  | { type: "number"; value: number }
+  | { type: "ref"; value: string }
+  | { type: "op"; value: "+" | "-" | "*" | "/" }
+  | { type: "lparen" }
+  | { type: "rparen" };
 
 function tokenize(expr: string): Token[] {
   const tokens: Token[] = [];
   let i = 0;
   while (i < expr.length) {
     const ch = expr[i];
-    if (ch === ' ') {
+    if (ch === " ") {
       i++;
       continue;
     }
-    if (ch === '(') {
-      tokens.push({ type: 'lparen' });
+    if (ch === "(") {
+      tokens.push({ type: "lparen" });
       i++;
-    } else if (ch === ')') {
-      tokens.push({ type: 'rparen' });
+    } else if (ch === ")") {
+      tokens.push({ type: "rparen" });
       i++;
-    } else if ('+-*/'.includes(ch)) {
-      tokens.push({ type: 'op', value: ch as '+' | '-' | '*' | '/' });
+    } else if ("+-*/".includes(ch)) {
+      tokens.push({ type: "op", value: ch as "+" | "-" | "*" | "/" });
       i++;
     } else if (/[0-9.]/.test(ch)) {
-      let num = '';
+      let num = "";
       while (i < expr.length && /[0-9.]/.test(expr[i])) {
         num += expr[i++];
       }
-      tokens.push({ type: 'number', value: parseFloat(num) });
+      tokens.push({ type: "number", value: Number.parseFloat(num) });
     } else if (/[a-zA-Z]/.test(ch)) {
-      let ref = '';
+      let ref = "";
       while (i < expr.length && /[a-zA-Z]/.test(expr[i])) {
         ref += expr[i++];
       }
-      tokens.push({ type: 'ref', value: ref });
+      tokens.push({ type: "ref", value: ref });
     } else {
       i++;
     }
@@ -45,9 +45,9 @@ function tokenize(expr: string): Token[] {
 }
 
 type Expr =
-  | { kind: 'num'; value: number }
-  | { kind: 'ref'; label: string }
-  | { kind: 'binop'; op: string; left: Expr; right: Expr };
+  | { kind: "num"; value: number }
+  | { kind: "ref"; label: string }
+  | { kind: "binop"; op: string; left: Expr; right: Expr };
 
 function parse(tokens: Token[]): Expr | null {
   let pos = 0;
@@ -62,18 +62,18 @@ function parse(tokens: Token[]): Expr | null {
   function parseAtom(): Expr | null {
     const t = peek();
     if (!t) return null;
-    if (t.type === 'number') {
+    if (t.type === "number") {
       consume();
-      return { kind: 'num', value: (t as Extract<Token, { type: 'number' }>).value };
+      return { kind: "num", value: (t as Extract<Token, { type: "number" }>).value };
     }
-    if (t.type === 'ref') {
+    if (t.type === "ref") {
       consume();
-      return { kind: 'ref', label: (t as Extract<Token, { type: 'ref' }>).value };
+      return { kind: "ref", label: (t as Extract<Token, { type: "ref" }>).value };
     }
-    if (t.type === 'lparen') {
+    if (t.type === "lparen") {
       consume();
       const inner = parseAddSub();
-      if (peek()?.type === 'rparen') consume();
+      if (peek()?.type === "rparen") consume();
       return inner;
     }
     return null;
@@ -82,11 +82,11 @@ function parse(tokens: Token[]): Expr | null {
   function parseMulDiv(): Expr | null {
     let left = parseAtom();
     if (!left) return null;
-    while (isOperator(peek(), ['*', '/'])) {
-      const op = consume() as Extract<Token, { type: 'op' }>;
+    while (isOperator(peek(), ["*", "/"])) {
+      const op = consume() as Extract<Token, { type: "op" }>;
       const right = parseAtom();
       if (!right) return left;
-      left = { kind: 'binop', op: op.value, left, right };
+      left = { kind: "binop", op: op.value, left, right };
     }
     return left;
   }
@@ -94,11 +94,11 @@ function parse(tokens: Token[]): Expr | null {
   function parseAddSub(): Expr | null {
     let left = parseMulDiv();
     if (!left) return null;
-    while (isOperator(peek(), ['+', '-'])) {
-      const op = consume() as Extract<Token, { type: 'op' }>;
+    while (isOperator(peek(), ["+", "-"])) {
+      const op = consume() as Extract<Token, { type: "op" }>;
       const right = parseMulDiv();
       if (!right) return left;
-      left = { kind: 'binop', op: op.value, left, right };
+      left = { kind: "binop", op: op.value, left, right };
     }
     return left;
   }
@@ -109,32 +109,34 @@ function parse(tokens: Token[]): Expr | null {
 function isOperator(
   token: Token | undefined,
   values: string[]
-): token is Extract<Token, { type: 'op' }> {
-  if (token?.type !== 'op') return false;
+): token is Extract<Token, { type: "op" }> {
+  if (token?.type !== "op") return false;
   return values.includes(token.value);
 }
 
-function evaluate(
-  expr: Expr,
-  queryValues: Record<string, number | null>,
-): number | null {
+function evaluate(expr: Expr, queryValues: Record<string, number | null>): number | null {
   switch (expr.kind) {
-    case 'num':
+    case "num":
       return expr.value;
-    case 'ref': {
+    case "ref": {
       const v = queryValues[expr.label];
       return v ?? null;
     }
-    case 'binop': {
+    case "binop": {
       const l = evaluate(expr.left, queryValues);
       const r = evaluate(expr.right, queryValues);
       if (l === null || r === null) return null;
       switch (expr.op) {
-        case '+': return l + r;
-        case '-': return l - r;
-        case '*': return l * r;
-        case '/': return r === 0 ? null : l / r;
-        default: return null;
+        case "+":
+          return l + r;
+        case "-":
+          return l - r;
+        case "*":
+          return l * r;
+        case "/":
+          return r === 0 ? null : l / r;
+        default:
+          return null;
       }
     }
   }

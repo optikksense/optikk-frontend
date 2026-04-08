@@ -1,4 +1,4 @@
-import type { ErrorCode } from '@/shared/constants/errorCodes';
+import type { ErrorCode } from "@/shared/constants/errorCodes";
 
 /**
  *

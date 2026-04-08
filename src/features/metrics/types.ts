@@ -1,9 +1,8 @@
-
 export type DomainRecord = Record<string, unknown>;
 
 // Metrics Explorer Types
 
-export type MetricType = 'gauge' | 'counter' | 'histogram' | 'summary';
+export type MetricType = "gauge" | "counter" | "histogram" | "summary";
 
 export interface MetricNameEntry {
   readonly name: string;
@@ -17,9 +16,18 @@ export interface MetricTag {
   readonly values: string[];
 }
 
-export type MetricAggregation = 'avg' | 'sum' | 'min' | 'max' | 'count' | 'p50' | 'p95' | 'p99' | 'rate';
+export type MetricAggregation =
+  | "avg"
+  | "sum"
+  | "min"
+  | "max"
+  | "count"
+  | "p50"
+  | "p95"
+  | "p99"
+  | "rate";
 
-export type MetricFilterOperator = 'eq' | 'neq' | 'in' | 'not_in' | 'wildcard';
+export type MetricFilterOperator = "eq" | "neq" | "in" | "not_in" | "wildcard";
 
 export interface MetricTagFilter {
   readonly key: string;
@@ -27,7 +35,7 @@ export interface MetricTagFilter {
   readonly value: string | string[];
 }
 
-export type MetricSpaceAggregation = 'avg' | 'sum' | 'min' | 'max';
+export type MetricSpaceAggregation = "avg" | "sum" | "min" | "max";
 
 export interface MetricQueryDefinition {
   readonly id: string;
@@ -38,9 +46,9 @@ export interface MetricQueryDefinition {
   readonly spaceAggregation: MetricSpaceAggregation;
 }
 
-export type ChartType = 'line' | 'area' | 'bar';
+export type ChartType = "line" | "area" | "bar";
 
-export type TimeStep = '1m' | '5m' | '15m' | '1h' | '1d';
+export type TimeStep = "1m" | "5m" | "15m" | "1h" | "1d";
 
 export interface MetricSeriesData {
   readonly tags: Record<string, string>;
@@ -59,13 +67,11 @@ export interface FormulaDefinition {
   readonly expression: string;
 }
 
-
 export interface MetricsServiceOption extends DomainRecord {
   name?: string;
   service_name?: string;
   serviceName?: string;
 }
-
 
 export interface MetricSummary extends DomainRecord {
   total_requests: number;
@@ -75,7 +81,6 @@ export interface MetricSummary extends DomainRecord {
   p95_latency: number;
   p99_latency: number;
 }
-
 
 export interface MetricTimeSeriesPoint extends DomainRecord {
   timestamp: string;
@@ -87,7 +92,6 @@ export interface MetricTimeSeriesPoint extends DomainRecord {
   p99: number;
 }
 
-
 export interface ServiceMetricPoint extends DomainRecord {
   service_name: string;
   request_count: number;
@@ -98,19 +102,17 @@ export interface ServiceMetricPoint extends DomainRecord {
   p99_latency: number;
 }
 
-
 export interface EndpointMetricPoint extends ServiceMetricPoint {
   operation_name: string;
   http_method: string;
+  endpoint_name?: string;
 }
-
 
 export interface UseMetricsQueriesParams {
   selectedService: string | null;
   showErrorsOnly: boolean;
-  activeTab: 'overview' | 'latency' | 'services';
+  activeTab: "overview" | "latency" | "services";
 }
-
 
 export interface UseMetricsQueriesResult {
   servicesData: MetricsServiceOption[] | undefined;

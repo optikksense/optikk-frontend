@@ -1,4 +1,4 @@
 export /**
  *
  */
-const DOMAIN_KEY = 'ai';
+const DOMAIN_KEY = "ai";

@@ -1,7 +1,7 @@
-import { Badge, Skeleton, Surface } from '@/components/ui';
-import { ShieldCheck } from 'lucide-react';
+import { Badge, Skeleton, Surface } from "@/components/ui";
+import { ShieldCheck } from "lucide-react";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
 interface SloHealthGaugesProps {
   isLoading: boolean;
@@ -28,7 +28,7 @@ interface SloGaugeProps {
   title: string;
   value: number;
   target: number;
-  unit?: '%' | 'ms';
+  unit?: "%" | "ms";
   description?: string;
 }
 
@@ -41,10 +41,10 @@ interface SloGaugeProps {
  * @param root0.unit
  * @param root0.description
  */
-function SloGauge({ title, value, target, unit = '%', description }: SloGaugeProps) {
+function SloGauge({ title, value, target, unit = "%", description }: SloGaugeProps) {
   const percent =
-    unit === 'ms' ? Math.min(100, (target / Math.max(value, 0.001)) * 100) : Math.min(100, value);
-  const good = unit === 'ms' ? value <= target : value >= target;
+    unit === "ms" ? Math.min(100, (target / Math.max(value, 0.001)) * 100) : Math.min(100, value);
+  const good = unit === "ms" ? value <= target : value >= target;
   const strokeColor = good
     ? APP_COLORS.hex_12b76a
     : percent >= 80
@@ -54,11 +54,11 @@ function SloGauge({ title, value, target, unit = '%', description }: SloGaugePro
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         gap: 8,
-        padding: '20px 24px',
+        padding: "20px 24px",
         background: `var(--bg-tertiary, ${APP_COLORS.hex_1a1a1a_2})`,
         borderRadius: 8,
         border: `1px solid var(--border-color, ${APP_COLORS.hex_2d2d2d})`,
@@ -66,8 +66,8 @@ function SloGauge({ title, value, target, unit = '%', description }: SloGaugePro
         flex: 1,
       }}
     >
-      <div style={{ position: 'relative', width: 100, height: 100 }}>
-        <svg viewBox="0 0 100 100" width={100} height={100}>
+      <div style={{ position: "relative", width: 100, height: 100 }}>
+        <svg aria-hidden="true">
           <circle
             cx="50"
             cy="50"
@@ -95,28 +95,28 @@ function SloGauge({ title, value, target, unit = '%', description }: SloGaugePro
         </svg>
         <div
           style={{
-            position: 'absolute',
+            position: "absolute",
             inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <div style={{ fontSize: 14, fontWeight: 700, color: strokeColor }}>
-            {unit === 'ms' ? `${n(value).toFixed(0)}ms` : `${n(value).toFixed(2)}%`}
+            {unit === "ms" ? `${n(value).toFixed(0)}ms` : `${n(value).toFixed(2)}%`}
           </div>
         </div>
       </div>
       <div
-        style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)', textAlign: 'center' }}
+        style={{ fontWeight: 600, fontSize: 13, color: "var(--text-primary)", textAlign: "center" }}
       >
         {title}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
-        Target: {unit === 'ms' ? `<${target}ms` : `≥${target}%`}
+      <div style={{ fontSize: 11, color: "var(--text-muted)", textAlign: "center" }}>
+        Target: {unit === "ms" ? `<${target}ms` : `≥${target}%`}
       </div>
       <Badge
-        variant={good ? 'success' : 'error'}
+        variant={good ? "success" : "error"}
         style={{
           fontSize: 11,
           borderRadius: 12,
@@ -125,10 +125,10 @@ function SloGauge({ title, value, target, unit = '%', description }: SloGaugePro
           border: `1px solid ${good ? APP_COLORS.rgba_18_183_106_0p3 : APP_COLORS.rgba_240_68_56_0p3_2}`,
         }}
       >
-        {good ? 'Meeting SLO' : 'Breaching SLO'}
+        {good ? "Meeting SLO" : "Breaching SLO"}
       </Badge>
       {description && (
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", textAlign: "center" }}>
           {description}
         </div>
       )}
@@ -170,13 +170,13 @@ export default function SloHealthGauges({
     <div style={{ marginBottom: 16 }}>
       <Surface elevation={1} padding="md">
         <h4>
-          <ShieldCheck size={16} style={{ marginRight: 8, verticalAlign: 'middle' }} />
+          <ShieldCheck size={16} style={{ marginRight: 8, verticalAlign: "middle" }} />
           SLO Health
         </h4>
         {isLoading ? (
           <Skeleton />
         ) : (
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
             <SloGauge
               title="Availability"
               value={availabilityPct}
@@ -200,17 +200,17 @@ export default function SloHealthGauges({
             />
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
                 gap: 8,
-                padding: '20px 24px',
+                padding: "20px 24px",
                 background: `var(--bg-tertiary, ${APP_COLORS.hex_1a1a1a_2})`,
                 borderRadius: 8,
                 border: `1px solid var(--border-color, ${APP_COLORS.hex_2d2d2d})`,
                 minWidth: 160,
                 flex: 1,
-                justifyContent: 'center',
+                justifyContent: "center",
               }}
             >
               <div
@@ -222,13 +222,13 @@ export default function SloHealthGauges({
               >
                 {compliancePct}%
               </div>
-              <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>
                 Window Compliance
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
                 {timeseriesLength - breachedCount} / {timeseriesLength} windows compliant
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
                 SLO Target: {availabilityTarget}%
               </div>
             </div>

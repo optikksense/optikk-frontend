@@ -1,8 +1,8 @@
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard } from "lucide-react";
 
-import { PageHeader, PageShell } from '@shared/components/ui';
-import DashboardEntityDrawer from '@shared/components/ui/dashboard/DashboardEntityDrawer';
-import DashboardPage from '@shared/components/ui/dashboard/DashboardPage';
+import { PageHeader, PageShell } from "@shared/components/ui";
+import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
+import DashboardPage from "@shared/components/ui/dashboard/DashboardPage";
 
 export default function OverviewHubPage() {
   return (

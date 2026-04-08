@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { formatRelativeTime } from '@shared/utils/formatters';
+import { formatRelativeTime } from "@shared/utils/formatters";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface UseAutoRefreshOptions {
   autoRefreshInterval: number;

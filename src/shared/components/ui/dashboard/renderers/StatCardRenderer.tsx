@@ -1,16 +1,16 @@
-import { Surface } from '@/components/ui';
+import { Surface } from "@/components/ui";
 
-import StatCard from '@shared/components/ui/cards/StatCard';
+import StatCard from "@shared/components/ui/cards/StatCard";
 
-import { useDashboardData } from '../hooks/useDashboardData';
+import { useDashboardData } from "../hooks/useDashboardData";
 import {
   formatStatValue,
   renderStatSummary,
   resolveFieldValue,
-} from '../utils/dashboardAggregators';
-import { getDashboardIcon } from '../utils/dashboardUtils';
+} from "../utils/dashboardAggregators";
+import { getDashboardIcon } from "../utils/dashboardUtils";
 
-import type { DashboardPanelRendererProps } from '../dashboardPanelRegistry';
+import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
 export function StatCardRenderer({
   chartConfig,
@@ -20,14 +20,14 @@ export function StatCardRenderer({
   const { rawData } = useDashboardData(chartConfig, dataSources);
   const value = resolveFieldValue(rawData, chartConfig.valueField as string | undefined);
   const displayValue =
-    typeof value === 'string' || typeof value === 'number' ? value : String(value ?? '');
+    typeof value === "string" || typeof value === "number" ? value : String(value ?? "");
   const iconName = chartConfig.titleIcon ?? chartConfig.icon;
   const icon = iconName ? getDashboardIcon(String(iconName), 20) : undefined;
 
   return (
     <StatCard
       metric={{
-        title: String(chartConfig.title || ''),
+        title: String(chartConfig.title || ""),
         value: displayValue,
         formatter: (val) => formatStatValue(chartConfig.formatter as string | undefined, val),
       }}
@@ -50,7 +50,7 @@ export function StatSummaryRenderer({
 
   return (
     <Surface elevation={1} padding="sm" className="chart-card h-full">
-      <div className="chart-card__title">{String(chartConfig.title || '')}</div>
+      <div className="chart-card__title">{String(chartConfig.title || "")}</div>
       {renderStatSummary(rawData, {
         formatter: chartConfig.formatter as string | undefined,
         fields: summaryFields,

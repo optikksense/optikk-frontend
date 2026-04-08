@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { API_CONFIG } from '@config/apiConfig';
-import api from '@/shared/api/api/client';
-import { decodeApiResponse } from '@/shared/api/utils/validate';
+import api from "@/shared/api/api/client";
+import { decodeApiResponse } from "@/shared/api/utils/validate";
+import { API_CONFIG } from "@config/apiConfig";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -54,14 +54,14 @@ export type ExplorerAnalyticsResult = z.infer<typeof analyticsResultSchema>;
 
 export const explorerAnalyticsApi = {
   async query(
-    scope: 'logs' | 'traces',
+    scope: "logs" | "traces",
     body: ExplorerAnalyticsRequest
   ): Promise<ExplorerAnalyticsResult> {
     const response = await api.post(`${BASE}/explorer/${scope}/analytics`, body);
     return decodeApiResponse(analyticsResultSchema, response, {
       context: `explorer analytics (${scope})`,
-      expectedType: 'object',
-      message: 'Invalid explorer analytics response',
+      expectedType: "object",
+      message: "Invalid explorer analytics response",
     });
   },
 };

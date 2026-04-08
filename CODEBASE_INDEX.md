@@ -4,9 +4,16 @@ Orientation for **optic-frontend** (React/Vite/TypeScript). Read this file and `
 
 ## How assistants should use this document
 
-- **Before** any substantive task: read **`CODEBASE_INDEX.md`** (this file) and **`.cursor/rules/optik-frontend.mdc`**. Follow **`.cursor/rules/engineering-workflow.mdc`** for planning and quality bar.
+- **Before** any substantive task: read **`CODEBASE_INDEX.md`** (this file), **`.cursor/rules/optik-frontend.mdc`**, and **`.agent/philosophy/`** for strategic alignment. Follow **`.cursor/rules/engineering-workflow.mdc`** for planning and quality bar.
 - **Plan before code:** Produce a plan (with options where appropriate) and **do not change code until the user approves** the plan, except for trivial one-line/typo fixes.
-- **After** navigation or architecture changes (new domains, routes, registry entries, dashboard contracts): **update this file** and **`.cursor/rules/optik-frontend.mdc`** in the same change when something durable changed.
+- **Agent Philosophy**: Mandatory reading for staff-level alignment:
+  - **ADR-001**: [adr-001-modernization.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/adr-001-modernization.md)
+  - **Highest Standards**: [highest-standards.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/highest-standards.md)
+  - **Vision**: [vision-and-roadmap.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/vision-and-roadmap.md)
+  - **SLOs**: [performance-and-slos.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/performance-and-slos.md)
+  - **Design**: [design-principles.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/design-principles.md)
+- **Tooling**: This repository uses **Biome** (`biome.json`) for linting, formatting, and import organization. ESLint and Prettier have been removed.
+- **Agent Rules**: No Python scripts; conventional commits; direct imports only (no barrels); import type for TS types.
 
 ## Related repository
 
@@ -18,7 +25,7 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 
 ## Stack and commands
 
-- **Stack:** React 18, Vite 5 (8.0.3), TypeScript, TanStack Query v5, React Router 6, Zod, Tailwind 3.4, Zustand 4.5, uPlot 1.6, React Grid Layout 2.2.
+- **Stack:** React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Zod, Tailwind 3.4, Zustand 5, uPlot 1.6, React Grid Layout 2.2.
 - **Dev:** `npm run dev` (Vite dev server with API proxy + WebSocket support for live tail).
 - **Quality:** `npm run ci` (type-check, lint, build, bundle budgets).
 
@@ -28,11 +35,11 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 |------|---------|
 | `src/main.tsx` | App bootstrap |
 | `src/app/App.tsx` | Root router and providers |
-| `src/app/routes/appRoutes.tsx` | Route table (domain routes + legacy redirects + drawer routes) |
+| `src/app/routes/router.tsx` | Route table (domain routes + legacy redirects + drawer routes) |
 | `src/app/routes/BackendDrivenPage.tsx` | Backend-driven dashboard pages: matches URL → page config → domain adapter or generic `DashboardPage` |
 | `src/app/layout/MainLayout.tsx` | Shell layout |
 
-**Service dashboard:** `ROUTES.service` → `src/features/overview/pages/ServiceHubPage` — passes `serviceName` from the query string (`?serviceName=`) into `DashboardPage` as `pathParams` for panel `params` interpolation (`{serviceName}`).
+**Service page:** `ROUTES.service` → `src/features/overview/pages/ServiceHubPage` — passes `serviceName` from the query string (`?serviceName=`) into `DashboardPage` as `pathParams` for panel interpolation (`{serviceName}`). It keeps two tabs via `?view=dashboard|topology`: the backend-driven service dashboard and the existing **Topology** tab (`TopologyView.tsx` + `topology/`). Service detail is now a side drawer, not a standalone route: the overview service grid and the overview services table open `drawerEntity=service` with a frontend-owned `ServiceDetailDrawer`, which shows compact service diagnostics and links into Logs and Traces.
 
 ## Path aliases (Vite)
 
@@ -52,7 +59,7 @@ Defined in `vite.config.ts`. Common imports:
 
 All product domains are registered in **`src/app/registry/domainRegistry.ts`**. 7 domains in order:
 
-1. **overview** — Overview, Saturation, Service hub pages (3 dashboard page adapters, 6 panel renderers)
+1. **overview** — Overview, Saturation, Service detail adapter (3 dashboard page adapters, 6 panel renderers)
 2. **metrics** — Metrics Explorer, Saturation hub page, Kafka detail pages (3 panel renderers)
 3. **logs** — Log search + live tail (1 route, 1 panel renderer: `log-histogram`)
 4. **traces** — Traces explorer, detail, comparison (3 routes, 1 panel renderer: `trace-waterfall`)
@@ -84,7 +91,7 @@ Each feature's `index.ts` exports a **domain config**: navigation, explorer `rou
 | AI | `/ai-observability`, `/ai-runs`, `/ai-runs/:spanId`, `/ai-traces/:traceId`, `/ai-conversations`, `/ai-conversations/:conversationId` |
 | Settings | `/settings` |
 
-**Legacy drawer redirects** (in `appRoutes.tsx`): `/errors/:errorGroupId`, `/infrastructure/nodes/:host`, `/saturation/database/:dbSystem`, `/saturation/redis/:instance`, `/saturation/kafka/topics/:topic`, `/saturation/kafka/groups/:groupId`, `/ai-observability/models/:modelName`
+**Legacy drawer redirects** (in `router.tsx`): `/errors/:errorGroupId`, `/infrastructure/nodes/:host`, `/saturation/database/:dbSystem`, `/saturation/redis/:instance`, `/saturation/kafka/topics/:topic`, `/saturation/kafka/groups/:groupId`, `/ai-observability/models/:modelName`
 
 ## Feature folders (`src/features/<domain>/`)
 
@@ -141,6 +148,17 @@ Shared infrastructure for all data explorers (Logs, Traces, Metrics) — **not a
 | Auth | `shared/api/auth/` | Session cookies with `withCredentials: true` |
 | Entities | `shared/entities/` | Domain entity types: `log/`, `metric/`, `trace/`, `user/` |
 | Design system | `design-system/` (aliased `@optikk/design-system`) | Shared components and providers |
+| Radix primitives | `shared/components/primitives/ui/` | **Import Tabs/Tooltip/Dialog/etc. from `@shared/components/primitives/ui`, NOT `@shared/components/ui`** — the latter does not re-export Radix primitives |
+
+### Adding npm packages (React 19 peer-dep gotcha)
+
+The project is on React 19 but several deps (e.g. `lucide-react@0.316`) still pin `react@^18` in `peerDependencies`. `npm install <pkg>` fails with `EResolve`. Use:
+
+```bash
+npm install --legacy-peer-deps <pkg>
+```
+
+Applies to any new package; verified for `@xyflow/react`, `dagre`, `@types/dagre`.
 
 ### Charting Engine (`src/shared/components/ui/charts/`)
 
@@ -381,4 +399,4 @@ Use when a change spans frontend and API. Backend paths refer to **`optikk-backe
 
 ## Maintenance
 
-When you add a **new feature domain**: new folder under `src/features/<name>/`, export config from `index.ts`, register in `domainRegistry.ts`, add routes to `routes.ts` and `appRoutes.tsx` as needed. Update this index when ownership or routes change.
+When you add a **new feature domain**: new folder under `src/features/<name>/`, export config from `index.ts`, register in `domainRegistry.ts`, add routes to `routes.ts` and `router.tsx` as needed. Update this index when ownership or routes change.

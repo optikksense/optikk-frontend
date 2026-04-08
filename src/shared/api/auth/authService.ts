@@ -1,7 +1,7 @@
-import api from '@shared/api/api/client';
+import api from "@shared/api/api/client";
 
-import { API_CONFIG } from '@config/apiConfig';
-import { authPayloadSchema, type AuthPayload, type AuthTeam, type AuthUser } from './schemas';
+import { API_CONFIG } from "@config/apiConfig";
+import { type AuthPayload, type AuthTeam, type AuthUser, authPayloadSchema } from "./schemas";
 
 interface AuthEnvelope {
   readonly user?: AuthUser;
@@ -12,7 +12,7 @@ interface AuthEnvelope {
 }
 
 function asAuthEnvelope(value: unknown): AuthEnvelope | null {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== "object" || value === null) {
     return null;
   }
   return value as AuthEnvelope;
@@ -20,14 +20,14 @@ function asAuthEnvelope(value: unknown): AuthEnvelope | null {
 
 export const authService = {
   normalizeAuthPayload(response: unknown): AuthPayload | null {
-    if (!response || typeof response !== 'object') {
+    if (!response || typeof response !== "object") {
       return null;
     }
 
     const payload = response as Record<string, unknown>;
 
     // If it's a success envelope, unwrap the nested data
-    if (payload.success === true && payload.data && typeof payload.data === 'object') {
+    if (payload.success === true && payload.data && typeof payload.data === "object") {
       return authPayloadSchema.safeParse(payload.data).data ?? null;
     }
 
@@ -49,7 +49,7 @@ export const authService = {
     try {
       await api.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT);
     } catch (error: unknown) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   },
 

@@ -1,11 +1,11 @@
-import { Menu, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 function BrandIcon() {
   return (
-    <svg viewBox="0 0 32 32" fill="none" style={{ width: 28, height: 28, overflow: 'visible' }}>
+    <svg aria-hidden="true">
       <rect
         x="4"
         y="15"
@@ -61,49 +61,49 @@ export default function MarketingNav() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const links = [
-    { label: 'Features', path: '/features' },
-    { label: 'Pricing', path: '/product' },
-    { label: 'OpenTelemetry', path: '/opentelemetry' },
-    { label: 'Self-host', path: '/self-host' },
-    { label: 'Docs', path: 'https://docs.optikk.io', ext: true },
+    { label: "Features", path: "/features" },
+    { label: "Pricing", path: "/product" },
+    { label: "OpenTelemetry", path: "/opentelemetry" },
+    { label: "Self-host", path: "/self-host" },
+    { label: "Docs", path: "https://docs.optikk.io", ext: true },
   ];
 
   return (
     <>
       <nav
         style={{
-          position: 'sticky',
+          position: "sticky",
           top: 0,
           zIndex: 100,
           height: 64,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 48px',
-          transition: 'all 0.3s ease',
-          background: scrolled ? 'rgba(10, 11, 15, 0.8)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 48px",
+          transition: "all 0.3s ease",
+          background: scrolled ? "rgba(10, 11, 15, 0.8)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.05)" : "1px solid transparent",
         }}
       >
         {/* Brand */}
         <div
-          onClick={() => navigate('/')}
+          onClick={() => navigate({ to: "/" })}
           style={{
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             gap: 10,
-            cursor: 'pointer',
+            cursor: "pointer",
             fontFamily: "'DM Serif Display', serif",
             fontSize: 22,
-            color: '#F8FAFC',
-            letterSpacing: '0.5px',
+            color: "#F8FAFC",
+            letterSpacing: "0.5px",
           }}
         >
           <BrandIcon />
@@ -124,7 +124,7 @@ export default function MarketingNav() {
           .nav-cta-btn:hover { background-position: right center; box-shadow: 0 4px 16px rgba(99,102,241,0.4); }
         `}</style>
 
-        <div className="desktop-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+        <div className="desktop-links" style={{ display: "flex", alignItems: "center", gap: 32 }}>
           {links.map((lx) =>
             lx.ext ? (
               <a
@@ -137,18 +137,22 @@ export default function MarketingNav() {
                 {lx.label}
               </a>
             ) : (
-              <div key={lx.label} className="nav-link" onClick={() => navigate(lx.path)}>
+              <div
+                key={lx.label}
+                className="nav-link"
+                onClick={() => navigate({ to: lx.path as any })}
+              >
                 {lx.label}
                 {location.pathname === lx.path && (
                   <motion.div
                     layoutId="nav-indicator"
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       bottom: -6,
                       left: 0,
                       right: 0,
                       height: 2,
-                      background: '#22D3EE',
+                      background: "#22D3EE",
                       borderRadius: 2,
                     }}
                   />
@@ -161,17 +165,17 @@ export default function MarketingNav() {
             target="_blank"
             rel="noreferrer"
             className="nav-link"
-            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+            style={{ display: "flex", alignItems: "center", gap: 6 }}
           >
             GitHub
             <span
               className="font-mono"
               style={{
-                background: 'rgba(255,255,255,0.1)',
-                padding: '2px 6px',
+                background: "rgba(255,255,255,0.1)",
+                padding: "2px 6px",
                 borderRadius: 12,
                 fontSize: 10,
-                color: '#F1F5F9',
+                color: "#F1F5F9",
               }}
             >
               ★ 12.4k
@@ -180,21 +184,22 @@ export default function MarketingNav() {
         </div>
 
         {/* CTA */}
-        <div className="desktop-links" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button className="nav-cta-btn" onClick={() => navigate('/login')}>
+        <div className="desktop-links" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <button type="button" className="nav-cta-btn" onClick={() => navigate({ to: "/login" })}>
             Get Started
           </button>
         </div>
 
         {/* Mobile menu button */}
         <button
+          type="button"
           className="mobile-btn"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           style={{
-            background: 'transparent',
-            border: 'none',
-            color: '#F8FAFC',
-            cursor: 'pointer',
+            background: "transparent",
+            border: "none",
+            color: "#F8FAFC",
+            cursor: "pointer",
             padding: 4,
           }}
         >
@@ -210,17 +215,17 @@ export default function MarketingNav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20, transition: { duration: 0.15 } }}
             style={{
-              position: 'fixed',
+              position: "fixed",
               top: 64,
               left: 0,
               right: 0,
               zIndex: 99,
-              background: 'rgba(10, 11, 15, 0.95)',
-              backdropFilter: 'blur(20px)',
-              borderBottom: '1px solid rgba(255,255,255,0.05)',
-              padding: '24px 32px',
-              display: 'flex',
-              flexDirection: 'column',
+              background: "rgba(10, 11, 15, 0.95)",
+              backdropFilter: "blur(20px)",
+              borderBottom: "1px solid rgba(255,255,255,0.05)",
+              padding: "24px 32px",
+              display: "flex",
+              flexDirection: "column",
               gap: 24,
             }}
           >
@@ -228,15 +233,15 @@ export default function MarketingNav() {
               <div
                 key={lx.label}
                 style={{
-                  color: '#F8FAFC',
+                  color: "#F8FAFC",
                   fontSize: 18,
                   fontWeight: 500,
                   fontFamily: "'Inter', sans-serif",
                 }}
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  if (lx.ext) window.open(lx.path, '_blank');
-                  else navigate(lx.path);
+                  if (lx.ext) window.open(lx.path, "_blank");
+                  else navigate({ to: lx.path as any });
                 }}
               >
                 {lx.label}
@@ -244,25 +249,26 @@ export default function MarketingNav() {
             ))}
             <div
               style={{
-                color: '#F8FAFC',
+                color: "#F8FAFC",
                 fontSize: 18,
                 fontWeight: 500,
                 fontFamily: "'Inter', sans-serif",
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 gap: 8,
               }}
-              onClick={() => window.open('https://github.com/optikk-org', '_blank')}
+              onClick={() => window.open("https://github.com/optikk-org", "_blank")}
             >
-              GitHub{' '}
-              <span className="font-mono" style={{ fontSize: 12, color: '#94A3B8' }}>
+              GitHub{" "}
+              <span className="font-mono" style={{ fontSize: 12, color: "#94A3B8" }}>
                 ★ 12.4k
               </span>
             </div>
             <button
+              type="button"
               className="nav-cta-btn"
               style={{ marginTop: 8, padding: 14 }}
-              onClick={() => navigate('/login')}
+              onClick={() => navigate({ to: "/login" })}
             >
               Get Started
             </button>

@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { useAppStore } from '@app/store/appStore';
-import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
-import { aiRunDetailQueries } from '../api/queryOptions';
-import type { LLMMessage, LLMRunContext, LLMRunDetail } from '../types';
+import { useTeamId } from "@app/store/appStore";
+import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
+import { useQuery } from "@tanstack/react-query";
+import { aiRunDetailQueries } from "../api/queryOptions";
+import type { LLMMessage, LLMRunContext, LLMRunDetail } from "../types";
 
 export function useAiRunDetail(spanId: string) {
-  const { selectedTeamId } = useAppStore();
+  const selectedTeamId = useTeamId();
 
   const detailQuery = useQuery(aiRunDetailQueries.detail(selectedTeamId, spanId));
   const detail = detailQuery.data as LLMRunDetail | undefined;
@@ -17,7 +17,7 @@ export function useAiRunDetail(spanId: string) {
   const isMessagesLoading = messagesQuery.isLoading;
   const messagesError = (messagesQuery.error ?? null) as ApiErrorShape | null;
 
-  const traceId = detail?.traceId ?? '';
+  const traceId = detail?.traceId ?? "";
 
   const contextQuery = useQuery(aiRunDetailQueries.context(selectedTeamId, spanId, traceId));
   const context = contextQuery.data as LLMRunContext | undefined;

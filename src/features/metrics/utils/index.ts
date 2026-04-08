@@ -3,5 +3,5 @@ export {
   normalizeTimeSeriesPoint,
   normalizeServiceMetric,
   normalizeEndpointMetric,
-} from './metricNormalizers';
-export { calculateTrends } from './trendCalculators';
+} from "./metricNormalizers";
+export { calculateTrends } from "./trendCalculators";

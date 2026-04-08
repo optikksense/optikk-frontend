@@ -1,9 +1,9 @@
-import { QueryClientProvider as TanstackQueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider as TanstackQueryClientProvider } from "@tanstack/react-query";
 
-import type { ReactNode } from 'react';
-import { queryClient } from '@shared/api/queryClient';
+import { queryClient } from "@shared/api/queryClient";
+import type { ReactNode } from "react";
 
-import QueryLifecycleBridge from './QueryLifecycleBridge';
+import QueryLifecycleBridge from "./QueryLifecycleBridge";
 
 export { queryClient };
 

@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import LogHistogram from '@shared/components/ui/charts/distributions/LogHistogram';
-import { useDashboardData } from '@shared/components/ui/dashboard/hooks/useDashboardData';
-import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+import LogHistogram from "@shared/components/ui/charts/distributions/LogHistogram";
+import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 
 /**
  *
@@ -23,7 +23,7 @@ export function LogHistogramRenderer({
   return data.length > 0 ? (
     <LogHistogram data={data} fillHeight startTime={startTime} endTime={endTime} />
   ) : (
-    <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+    <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
       No data
     </div>
   );

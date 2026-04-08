@@ -11,7 +11,7 @@ export type TimestampValue = string | number | Date;
 /**
  *
  */
-export type StatusValue = 'healthy' | 'degraded' | 'unhealthy' | 'unknown' | string;
+export type StatusValue = "healthy" | "degraded" | "unhealthy" | "unknown" | string;
 
 /**
  *

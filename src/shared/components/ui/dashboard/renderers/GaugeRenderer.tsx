@@ -1,9 +1,9 @@
-import GaugeChart from '@shared/components/ui/charts/micro/GaugeChart';
+import GaugeChart from "@shared/components/ui/charts/micro/GaugeChart";
 
-import { useDashboardData } from '../hooks/useDashboardData';
-import ChartNoDataOverlay from '@shared/components/ui/feedback/ChartNoDataOverlay';
+import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
+import { useDashboardData } from "../hooks/useDashboardData";
 
-import type { DashboardPanelRendererProps } from '../dashboardPanelRegistry';
+import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
 /**
  *
@@ -14,7 +14,7 @@ export function GaugeRenderer({
   fillHeight: _fillHeight,
 }: DashboardPanelRendererProps) {
   const { data: rows } = useDashboardData(chartConfig, dataSources);
-  const valueKey = chartConfig.valueKey || 'value';
+  const valueKey = chartConfig.valueKey || "value";
   const groupKey = chartConfig.groupByKey;
 
   if (rows.length === 0) {
@@ -25,18 +25,18 @@ export function GaugeRenderer({
     return (
       <div
         style={{
-          height: '100%',
-          overflowX: 'hidden',
-          overflowY: 'auto',
-          padding: '8px 8px 12px',
+          height: "100%",
+          overflowX: "hidden",
+          overflowY: "auto",
+          padding: "8px 8px 12px",
         }}
       >
         <div
           style={{
-            display: 'grid',
+            display: "grid",
             gap: 16,
-            gridTemplateColumns: 'repeat(auto-fill, minmax(132px, 1fr))',
-            alignContent: 'start',
+            gridTemplateColumns: "repeat(auto-fill, minmax(132px, 1fr))",
+            alignContent: "start",
           }}
         >
           {rows.map((row: any, i: number) => {
@@ -47,7 +47,7 @@ export function GaugeRenderer({
                 key={label}
                 style={{
                   minWidth: 0,
-                  overflow: 'hidden',
+                  overflow: "hidden",
                 }}
                 title={String(label)}
               >
@@ -63,7 +63,7 @@ export function GaugeRenderer({
   const val = Number(rows[0]?.[valueKey] ?? 0);
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center">
-      <GaugeChart value={Math.round(val * 100)} label={chartConfig.title ?? ''} />
+      <GaugeChart value={Math.round(val * 100)} label={chartConfig.title ?? ""} />
     </div>
   );
 }

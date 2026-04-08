@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react';
-import { FlamegraphNode } from '@features/traces/types';
-import { useMeasure } from 'react-use';
+import type { FlamegraphNode } from "@features/traces/types";
+import { useEffect, useRef } from "react";
+import { useMeasure } from "react-use";
 
 interface FlamegraphProps {
   data: FlamegraphNode;
@@ -16,7 +16,7 @@ export default function Flamegraph({ data, onNodeClick, height = 400 }: Flamegra
     if (!canvasRef.current || !dimensions.width || !data) return;
 
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Scale for high DPI displays
@@ -38,9 +38,9 @@ export default function Flamegraph({ data, onNodeClick, height = 400 }: Flamegra
 
       // Label
       if (width > 30) {
-        ctx.fillStyle = '#fff';
-        ctx.font = '10px Inter, sans-serif';
-        ctx.textBaseline = 'middle';
+        ctx.fillStyle = "#fff";
+        ctx.font = "10px Inter, sans-serif";
+        ctx.textBaseline = "middle";
         ctx.fillText(node.name, x + 4, y + nodeHeight / 2, width - 8);
       }
 
@@ -64,15 +64,15 @@ export default function Flamegraph({ data, onNodeClick, height = 400 }: Flamegra
     <div
       ref={containerRef}
       style={{
-        width: '100%',
+        width: "100%",
         height,
-        background: 'var(--glass-bg)',
+        background: "var(--glass-bg)",
         borderRadius: 12,
-        overflow: 'hidden',
-        border: '1px solid var(--glass-border)',
+        overflow: "hidden",
+        border: "1px solid var(--glass-border)",
       }}
     >
-      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', cursor: 'pointer' }} />
+      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", cursor: "pointer" }} />
     </div>
   );
 }

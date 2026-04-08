@@ -1,26 +1,28 @@
-import { useState, useMemo, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
+import { useCallback, useMemo, useState } from "react";
 
-import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
-import { useURLFilters } from '@shared/hooks/useURLFilters';
-import { resolveTimeRangeBounds } from '@/types';
-import { useAppStore } from '@app/store/appStore';
-import { aiRunsQueries } from '../api/queryOptions';
-import type { LLMRunFilters } from '../types';
+import { resolveTimeRangeBounds } from "@/types";
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
+import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
+import { useURLFilters } from "@shared/hooks/useURLFilters";
+import { aiRunsQueries } from "../api/queryOptions";
+import type { LLMRunFilters } from "../types";
 
 const AI_RUNS_URL_FILTER_CONFIG = {
   params: [
-    { key: 'model', type: 'string' as const, defaultValue: '' },
-    { key: 'operation', type: 'string' as const, defaultValue: '' },
-    { key: 'status', type: 'string' as const, defaultValue: '' },
-    { key: 'service', type: 'string' as const, defaultValue: '' },
-    { key: 'traceId', type: 'string' as const, defaultValue: '' },
+    { key: "model", type: "string" as const, defaultValue: "" },
+    { key: "operation", type: "string" as const, defaultValue: "" },
+    { key: "status", type: "string" as const, defaultValue: "" },
+    { key: "service", type: "string" as const, defaultValue: "" },
+    { key: "traceId", type: "string" as const, defaultValue: "" },
   ],
   syncStructuredFilters: true,
 };
 
 export function useAiRunsExplorer() {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   const {
     values: urlValues,
@@ -30,17 +32,16 @@ export function useAiRunsExplorer() {
     clearAll: clearURLFilters,
   } = useURLFilters(AI_RUNS_URL_FILTER_CONFIG);
 
-  const selectedModel = typeof urlValues['model'] === 'string' ? urlValues['model'] : '';
-  const selectedOperation =
-    typeof urlValues['operation'] === 'string' ? urlValues['operation'] : '';
-  const selectedStatus = typeof urlValues['status'] === 'string' ? urlValues['status'] : '';
-  const selectedService = typeof urlValues['service'] === 'string' ? urlValues['service'] : '';
-  const traceIdFilter = typeof urlValues['traceId'] === 'string' ? urlValues['traceId'] : '';
+  const selectedModel = typeof urlValues.model === "string" ? urlValues.model : "";
+  const selectedOperation = typeof urlValues.operation === "string" ? urlValues.operation : "";
+  const selectedStatus = typeof urlValues.status === "string" ? urlValues.status : "";
+  const selectedService = typeof urlValues.service === "string" ? urlValues.service : "";
+  const traceIdFilter = typeof urlValues.traceId === "string" ? urlValues.traceId : "";
 
-  const setSelectedModel = (v: string) => urlSetters['model']?.(v);
-  const setSelectedOperation = (v: string) => urlSetters['operation']?.(v);
-  const setSelectedStatus = (v: string) => urlSetters['status']?.(v);
-  const setSelectedService = (v: string) => urlSetters['service']?.(v);
+  const setSelectedModel = (v: string) => urlSetters.model?.(v);
+  const setSelectedOperation = (v: string) => urlSetters.operation?.(v);
+  const setSelectedStatus = (v: string) => urlSetters.status?.(v);
+  const setSelectedService = (v: string) => urlSetters.service?.(v);
 
   const [pageSize, setPageSize] = useState(50);
 

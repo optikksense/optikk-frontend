@@ -1,28 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
-
+import { useEffect, useRef, useState } from "react";
 
 function Sparkline({ data, color }: { data: number[]; color: string }) {
-  const w = 96,
-    h = 28;
-  const min = Math.min(...data),
-    max = Math.max(...data);
+  const w = 96;
+  const h = 28;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
   const range = max - min || 1;
   const pts = data.map((v, i) => {
     const x = (i / (data.length - 1)) * w;
     const y = h - ((v - min) / range) * h * 0.85 - 2;
     return `${x},${y}`;
   });
-  const pathD = `M ${pts.join(' L ')}`;
-  const areaD = `M 0,${h} L ${pts.join(' L ')} L ${w},${h} Z`;
+  const pathD = `M ${pts.join(" L ")}`;
+  const areaD = `M 0,${h} L ${pts.join(" L ")} L ${w},${h} Z`;
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible' }}>
+    <svg aria-hidden="true">
       <defs>
-        <linearGradient id={`sg-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`sg-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.25" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={areaD} fill={`url(#sg-${color.replace('#', '')})`} />
+      <path d={areaD} fill={`url(#sg-${color.replace("#", "")})`} />
       <path
         d={pathD}
         stroke={color}
@@ -35,7 +34,6 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
   );
 }
 
-
 function useCountUp(target: number, duration = 1200) {
   const [val, setVal] = useState(0);
   const started = useRef(false);
@@ -45,7 +43,7 @@ function useCountUp(target: number, duration = 1200) {
     const start = performance.now();
     const tick = (now: number) => {
       const p = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
+      const eased = 1 - (1 - p) ** 3;
       setVal(Math.round(eased * target));
       if (p < 1) requestAnimationFrame(tick);
     };
@@ -53,7 +51,6 @@ function useCountUp(target: number, duration = 1200) {
   }, [target, duration]);
   return val;
 }
-
 
 function KpiCard({
   label,
@@ -71,16 +68,16 @@ function KpiCard({
   trend: string;
 }) {
   const val = useCountUp(rawVal);
-  const trendPositive = trend.startsWith('+');
+  const trendPositive = trend.startsWith("+");
   return (
     <div
       style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.07)',
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.07)",
         borderRadius: 10,
-        padding: '12px 14px',
-        display: 'flex',
-        flexDirection: 'column',
+        padding: "12px 14px",
+        display: "flex",
+        flexDirection: "column",
         gap: 4,
       }}
     >
@@ -88,9 +85,9 @@ function KpiCard({
         className="font-mono"
         style={{
           fontSize: 10,
-          color: '#64748B',
-          textTransform: 'uppercase',
-          letterSpacing: '0.8px',
+          color: "#64748B",
+          textTransform: "uppercase",
+          letterSpacing: "0.8px",
         }}
       >
         {label}
@@ -99,16 +96,16 @@ function KpiCard({
         style={{
           fontFamily: "'DM Serif Display', serif",
           fontSize: 26,
-          color: '#F1F5F9',
+          color: "#F1F5F9",
           lineHeight: 1.1,
         }}
       >
         {displayFn(val)}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span
           className="font-mono"
-          style={{ fontSize: 10, color: trendPositive ? '#10B981' : '#EF4444' }}
+          style={{ fontSize: 10, color: trendPositive ? "#10B981" : "#EF4444" }}
         >
           {trend}
         </span>
@@ -118,10 +115,9 @@ function KpiCard({
   );
 }
 
-
 function DonutRing({ label, pct, color }: { label: string; pct: number; color: string }) {
-  const r = 22,
-    circ = 2 * Math.PI * r;
+  const r = 22;
+  const circ = 2 * Math.PI * r;
   const offset = circ - (pct / 100) * circ;
   const [dash, setDash] = useState(circ);
   useEffect(() => {
@@ -129,8 +125,8 @@ function DonutRing({ label, pct, color }: { label: string; pct: number; color: s
     return () => clearTimeout(t);
   }, [offset]);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-      <svg width={56} height={56} viewBox="0 0 56 56">
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+      <svg aria-hidden="true">
         <circle cx={28} cy={28} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5} />
         <circle
           cx={28}
@@ -143,14 +139,14 @@ function DonutRing({ label, pct, color }: { label: string; pct: number; color: s
           strokeDashoffset={dash}
           strokeLinecap="round"
           transform="rotate(-90 28 28)"
-          style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)' }}
+          style={{ transition: "stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)" }}
         />
         <text
           x={28}
           y={33}
           textAnchor="middle"
           className="font-mono"
-          style={{ fontSize: 9, fill: '#F1F5F9', fontWeight: 600 }}
+          style={{ fontSize: 9, fill: "#F1F5F9", fontWeight: 600 }}
         >
           {pct}%
         </text>
@@ -159,10 +155,10 @@ function DonutRing({ label, pct, color }: { label: string; pct: number; color: s
         className="font-mono"
         style={{
           fontSize: 9,
-          color: '#64748B',
-          textAlign: 'center',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          color: "#64748B",
+          textAlign: "center",
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
         }}
       >
         {label}
@@ -170,7 +166,6 @@ function DonutRing({ label, pct, color }: { label: string; pct: number; color: s
     </div>
   );
 }
-
 
 const SidebarItem = ({
   icon,
@@ -183,19 +178,19 @@ const SidebarItem = ({
 }) => (
   <div
     style={{
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       gap: 8,
-      padding: '6px 10px',
+      padding: "6px 10px",
       borderRadius: 7,
-      cursor: 'pointer',
-      background: active ? 'rgba(99,102,241,0.15)' : 'transparent',
-      color: active ? '#818CF8' : '#64748B',
+      cursor: "pointer",
+      background: active ? "rgba(99,102,241,0.15)" : "transparent",
+      color: active ? "#818CF8" : "#64748B",
       fontSize: 11,
       fontFamily: "'Inter', sans-serif",
       fontWeight: active ? 600 : 400,
-      borderLeft: active ? '2px solid #6366F1' : '2px solid transparent',
-      transition: 'all 0.15s',
+      borderLeft: active ? "2px solid #6366F1" : "2px solid transparent",
+      transition: "all 0.15s",
     }}
   >
     <span style={{ fontSize: 12 }}>{icon}</span>
@@ -212,60 +207,60 @@ export default function DashboardMockup({ compact = false }: { compact?: boolean
   return (
     <div
       style={{
-        width: '100%',
+        width: "100%",
         borderRadius: 14,
-        overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.10)',
-        boxShadow: '0 32px 80px -20px rgba(0,0,0,0.7)',
-        background: '#0D0E14',
+        overflow: "hidden",
+        border: "1px solid rgba(255,255,255,0.10)",
+        boxShadow: "0 32px 80px -20px rgba(0,0,0,0.7)",
+        background: "#0D0E14",
         fontFamily: "'Inter', sans-serif",
       }}
     >
       {/* Browser chrome */}
       <div
         style={{
-          background: '#161720',
-          padding: '10px 16px',
-          display: 'flex',
-          alignItems: 'center',
+          background: "#161720",
+          padding: "10px 16px",
+          display: "flex",
+          alignItems: "center",
           gap: 12,
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <div style={{ display: 'flex', gap: 6 }}>
-          {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => (
-            <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+        <div style={{ display: "flex", gap: 6 }}>
+          {["#FF5F57", "#FEBC2E", "#28C840"].map((c) => (
+            <div key={c} style={{ width: 11, height: 11, borderRadius: "50%", background: c }} />
           ))}
         </div>
         <div
           style={{
             flex: 1,
-            background: 'rgba(255,255,255,0.05)',
+            background: "rgba(255,255,255,0.05)",
             borderRadius: 6,
-            padding: '3px 12px',
+            padding: "3px 12px",
             fontSize: 10,
-            color: '#475569',
-            display: 'flex',
-            alignItems: 'center',
+            color: "#475569",
+            display: "flex",
+            alignItems: "center",
             gap: 6,
           }}
           className="font-mono"
         >
-          <span style={{ color: '#10B981' }}>●</span> app.optikk.io/overview
+          <span style={{ color: "#10B981" }}>●</span> app.optikk.io/overview
         </div>
       </div>
 
       {/* App shell */}
-      <div style={{ display: 'flex', height: compact ? 280 : 360 }}>
+      <div style={{ display: "flex", height: compact ? 280 : 360 }}>
         {/* Sidebar */}
         <div
           style={{
             width: 140,
-            background: '#0F1018',
-            borderRight: '1px solid rgba(255,255,255,0.06)',
-            padding: '12px 8px',
-            display: 'flex',
-            flexDirection: 'column',
+            background: "#0F1018",
+            borderRight: "1px solid rgba(255,255,255,0.06)",
+            padding: "12px 8px",
+            display: "flex",
+            flexDirection: "column",
             gap: 2,
             flexShrink: 0,
           }}
@@ -274,10 +269,10 @@ export default function DashboardMockup({ compact = false }: { compact?: boolean
             className="font-mono"
             style={{
               fontSize: 9,
-              color: '#334155',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              padding: '0 10px',
+              color: "#334155",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              padding: "0 10px",
               marginBottom: 6,
             }}
           >
@@ -294,18 +289,18 @@ export default function DashboardMockup({ compact = false }: { compact?: boolean
         </div>
 
         {/* Main content */}
-        <div style={{ flex: 1, padding: '14px 16px', overflow: 'hidden' }}>
+        <div style={{ flex: 1, padding: "14px 16px", overflow: "hidden" }}>
           {/* Header row */}
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
               marginBottom: 12,
             }}
           >
             <div
-              style={{ fontFamily: "'DM Serif Display', serif", fontSize: 15, color: '#F1F5F9' }}
+              style={{ fontFamily: "'DM Serif Display', serif", fontSize: 15, color: "#F1F5F9" }}
             >
               Overview
             </div>
@@ -313,11 +308,11 @@ export default function DashboardMockup({ compact = false }: { compact?: boolean
               className="font-mono"
               style={{
                 fontSize: 9,
-                color: '#6366F1',
-                background: 'rgba(99,102,241,0.1)',
-                border: '1px solid rgba(99,102,241,0.25)',
+                color: "#6366F1",
+                background: "rgba(99,102,241,0.1)",
+                border: "1px solid rgba(99,102,241,0.25)",
                 borderRadius: 6,
-                padding: '3px 8px',
+                padding: "3px 8px",
               }}
             >
               Last 30m ▾
@@ -326,7 +321,7 @@ export default function DashboardMockup({ compact = false }: { compact?: boolean
 
           {/* KPI grid */}
           <div
-            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}
           >
             <KpiCard
               label="Total Requests"
@@ -366,13 +361,13 @@ export default function DashboardMockup({ compact = false }: { compact?: boolean
           {!compact && (
             <div
               style={{
-                display: 'flex',
+                display: "flex",
                 gap: 0,
-                justifyContent: 'space-around',
-                background: 'rgba(255,255,255,0.02)',
+                justifyContent: "space-around",
+                background: "rgba(255,255,255,0.02)",
                 borderRadius: 10,
-                padding: '12px 8px',
-                border: '1px solid rgba(255,255,255,0.05)',
+                padding: "12px 8px",
+                border: "1px solid rgba(255,255,255,0.05)",
               }}
             >
               <DonutRing label="Availability" pct={99.1} color="#10B981" />

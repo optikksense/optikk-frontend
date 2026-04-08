@@ -1,22 +1,22 @@
-import { keepPreviousData, useQueries, type UseQueryResult } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { type UseQueryResult, keepPreviousData, useQueries } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import { useInvalidateQueriesOnAppRefresh } from '@shared/hooks/useInvalidateQueriesOnAppRefresh';
+import { useInvalidateQueriesOnAppRefresh } from "@shared/hooks/useInvalidateQueriesOnAppRefresh";
 
 import type {
-  DashboardPanelSpec,
   DashboardDataSourceValue,
   DashboardDataSources,
-} from '@/types/dashboardConfig';
+  DashboardPanelSpec,
+} from "@/types/dashboardConfig";
 
-import { api } from '@shared/api/api/client';
-import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
-import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
-import { interpolateValue } from '@shared/utils/placeholderInterpolation';
+import { api } from "@shared/api/api/client";
+import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
+import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
+import { interpolateValue } from "@shared/utils/placeholderInterpolation";
 
-import { resolveTimeRangeBounds } from '@/types';
+import { resolveTimeRangeBounds } from "@/types";
 
-import { useAppStore } from '@store/appStore';
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 
 interface ComponentFailedRequest {
   componentIds: string[];
@@ -41,7 +41,7 @@ function buildRequestKey(
   endMs: number
 ) {
   return JSON.stringify({
-    method: component.query!.method || 'GET',
+    method: component.query?.method || "GET",
     endpoint: resolvedEndpoint,
     params: resolvedParams,
     startMs,
@@ -56,9 +56,13 @@ export function useComponentDataFetcher(
   components: DashboardPanelSpec[],
   pathParams?: Record<string, string>
 ): UseComponentDataFetcherResult {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
-  useInvalidateQueriesOnAppRefresh(refreshKey, 'component-query', selectedTeamId);
+  useInvalidateQueriesOnAppRefresh(refreshKey, "component-query", selectedTeamId);
+
+  useInvalidateQueriesOnAppRefresh(refreshKey, "component-query", selectedTeamId);
 
   const { startMs, endMs } = useMemo(() => {
     void refreshKey;
@@ -85,7 +89,7 @@ export function useComponentDataFetcher(
         component.query.params || {},
         interpolationValues
       ) as Record<string, unknown>;
-      const method = String(component.query.method || 'GET').toUpperCase();
+      const method = String(component.query.method || "GET").toUpperCase();
       const requestKey = buildRequestKey(
         component,
         resolvedEndpoint,
@@ -114,7 +118,7 @@ export function useComponentDataFetcher(
   const results = useQueries({
     queries: requestEntries.map((entry) => ({
       queryKey: [
-        'component-query',
+        "component-query",
         selectedTeamId,
         entry.method,
         entry.endpoint,

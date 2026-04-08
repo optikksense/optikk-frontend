@@ -1,10 +1,10 @@
-import { z } from 'zod';
-import { tracesService } from '@shared/api/tracesService';
-import { tracesResponseSchema } from '@entities/trace/model';
-import { spanRecordSchema } from '@shared/api/schemas/tracesSchemas';
-import type { QueryParams, RequestTime } from '@shared/api/service-types';
-import { normalizeTracesResponse } from '../utils/tracesUtils';
-import type { TraceExplorerParams } from '../types';
+import { tracesResponseSchema } from "@entities/trace/model";
+import { spanRecordSchema } from "@shared/api/schemas/tracesSchemas";
+import type { QueryParams, RequestTime } from "@shared/api/service-types";
+import { tracesService } from "@shared/api/tracesService";
+import { z } from "zod";
+import type { TraceExplorerParams } from "../types";
+import { normalizeTracesResponse } from "../utils/tracesUtils";
 
 export interface TracesBackendParams extends QueryParams, TraceExplorerParams {}
 

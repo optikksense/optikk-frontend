@@ -1,7 +1,7 @@
-import { ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 export interface BreadcrumbItem {
   label: React.ReactNode;
@@ -22,7 +22,7 @@ function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     <nav
       aria-label="Breadcrumb"
       className={cn(
-        'flex flex-wrap items-center gap-1 text-[11px] text-[var(--text-secondary)]',
+        "flex flex-wrap items-center gap-1 text-[11px] text-[var(--text-secondary)]",
         className
       )}
     >
@@ -46,19 +46,19 @@ function Breadcrumbs({ items, className }: BreadcrumbsProps) {
 }
 
 function Breadcrumb({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  return <nav className={cn('flex items-center', className)} {...props} />;
+  return <nav className={cn("flex items-center", className)} {...props} />;
 }
 
 function BreadcrumbList({ className, ...props }: React.OlHTMLAttributes<HTMLOListElement>) {
-  return <ol className={cn('flex items-center gap-1.5', className)} {...props} />;
+  return <ol className={cn("flex items-center gap-1.5", className)} {...props} />;
 }
 
 function BreadcrumbItemNode({ className, ...props }: React.LiHTMLAttributes<HTMLLIElement>) {
-  return <li className={cn('inline-flex items-center gap-1', className)} {...props} />;
+  return <li className={cn("inline-flex items-center gap-1", className)} {...props} />;
 }
 
 function BreadcrumbPage({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
-  return <span className={cn('font-medium text-foreground', className)} {...props} />;
+  return <span className={cn("font-medium text-foreground", className)} {...props} />;
 }
 
 function BreadcrumbSeparator({
@@ -67,7 +67,7 @@ function BreadcrumbSeparator({
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) {
   return (
-    <span className={cn('text-muted-foreground', className)} {...props}>
+    <span className={cn("text-muted-foreground", className)} {...props}>
       {children ?? <ChevronRight size={12} />}
     </span>
   );

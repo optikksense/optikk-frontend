@@ -1,4 +1,4 @@
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 /**
  *
  * @param value
@@ -15,7 +15,7 @@ export function n(value: any): number | null {
  */
 export function pct(value: any, decimals = 1): string {
   const num = n(value);
-  return num == null ? 'N/A' : `${num.toFixed(decimals)}%`;
+  return num == null ? "N/A" : `${num.toFixed(decimals)}%`;
 }
 
 /**
@@ -25,14 +25,14 @@ export function pct(value: any, decimals = 1): string {
  */
 export function dollar(value: any, decimals = 4): string {
   const num = n(value);
-  return num == null ? 'N/A' : `$${num.toFixed(decimals)}`;
+  return num == null ? "N/A" : `$${num.toFixed(decimals)}`;
 }
 
 /**
  *
  */
 export function naSpan() {
-  return <span style={{ color: 'var(--text-muted)' }}>N/A</span>;
+  return <span style={{ color: "var(--text-muted)" }}>N/A</span>;
 }
 
 /**

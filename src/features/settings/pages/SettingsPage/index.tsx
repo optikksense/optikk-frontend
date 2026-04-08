@@ -1,29 +1,30 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Tabs } from '@/components/ui';
-import { Palette, Settings, User, Users } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'react-hot-toast';
-import { z } from 'zod';
+import { Tabs } from "@/components/ui";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Palette, Settings, User, Users } from "lucide-react";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+import { z } from "zod";
 
-import { settingsService } from '@shared/api/settingsService';
-import { PageHeader, PageShell } from '@shared/components/ui';
-import type { UserViewPreferences } from '@shared/types/preferences';
+import { settingsService } from "@shared/api/settingsService";
+import { PageHeader, PageShell } from "@shared/components/ui";
+import type { UserViewPreferences } from "@shared/types/preferences";
 
-import { SettingsPreferencesTab, SettingsProfileTab, SettingsTeamTab } from '../../components/tabs';
+import { SettingsPreferencesTab, SettingsProfileTab, SettingsTeamTab } from "../../components/tabs";
 
+import { useAppStore } from "@store/appStore";
+import { useShallow } from "zustand/react/shallow";
 import type {
   SettingsPreferenceKey,
   SettingsPreferenceValue,
   SettingsProfileCommand,
   SettingsProfileFormValues,
   SettingsProfileViewModel,
-} from '../../types';
-import { useAppStore } from '@store/appStore';
+} from "../../types";
 
-const settingsProfileQueryKey = ['settings-profile'] as const;
+const settingsProfileQueryKey = ["settings-profile"] as const;
 
 const optionalTextSchema = z.preprocess((value) => {
-  if (typeof value !== 'string') {
+  if (typeof value !== "string") {
     return value;
   }
 
@@ -41,11 +42,11 @@ const settingsTeamSchema = z
 
 const settingsPreferencesSchema = z
   .object({
-    theme: z.enum(['light', 'dark', 'system']).optional(),
+    theme: z.enum(["light", "dark", "system"]).optional(),
     timezone: z.string().optional(),
     refreshInterval: z.number().optional(),
     sidebarCollapsed: z.boolean().optional(),
-    density: z.enum(['compact', 'comfortable']).optional(),
+    density: z.enum(["compact", "comfortable"]).optional(),
     notificationsEnabled: z.boolean().optional(),
     favorites: z.array(z.string()).optional(),
     defaultTimeRange: z.string().optional(),
@@ -65,7 +66,7 @@ const settingsProfileSchema = z
   .strict();
 
 const profileCommandSchema = z.object({
-  name: z.string().trim().min(1, 'Please enter your name'),
+  name: z.string().trim().min(1, "Please enter your name"),
   avatarUrl: optionalTextSchema,
 });
 
@@ -82,7 +83,7 @@ function getErrorMessage(error: unknown, fallback: string): string {
 function parseProfileResponse(response: unknown): SettingsProfileViewModel {
   const parsed = settingsProfileSchema.safeParse(response);
   if (!parsed.success) {
-    throw new Error('Invalid profile response');
+    throw new Error("Invalid profile response");
   }
 
   return parsed.data;
@@ -91,7 +92,7 @@ function parseProfileResponse(response: unknown): SettingsProfileViewModel {
 function toProfileCommand(values: SettingsProfileFormValues): SettingsProfileCommand | null {
   const parsed = profileCommandSchema.safeParse(values);
   if (!parsed.success) {
-    toast.error(parsed.error.issues[0]?.message ?? 'Please check the profile form');
+    toast.error(parsed.error.issues[0]?.message ?? "Please check the profile form");
     return null;
   }
 
@@ -101,9 +102,9 @@ function toProfileCommand(values: SettingsProfileFormValues): SettingsProfileCom
 /**
  * Settings page container that coordinates profile/preferences/team tabs.
  */
-export default function SettingsPage(): JSX.Element {
+export default function SettingsPage() {
   const queryClient = useQueryClient();
-  const [activeSettingsTab, setActiveSettingsTab] = useState('profile');
+  const [activeSettingsTab, setActiveSettingsTab] = useState("profile");
 
   const {
     theme,
@@ -112,7 +113,16 @@ export default function SettingsPage(): JSX.Element {
     setTheme,
     setNotificationsEnabled,
     setViewPreference,
-  } = useAppStore();
+  } = useAppStore(
+    useShallow((s) => ({
+      theme: s.theme,
+      notificationsEnabled: s.notificationsEnabled,
+      viewPreferences: s.viewPreferences,
+      setTheme: s.setTheme,
+      setNotificationsEnabled: s.setNotificationsEnabled,
+      setViewPreference: s.setViewPreference,
+    }))
+  );
 
   const { data: profileData, isLoading: profileLoading } = useQuery<SettingsProfileViewModel>({
     queryKey: settingsProfileQueryKey,
@@ -142,13 +152,13 @@ export default function SettingsPage(): JSX.Element {
         queryClient.setQueryData(settingsProfileQueryKey, context.previousProfile);
       }
 
-      toast.error(getErrorMessage(error, 'Failed to update profile'));
+      toast.error(getErrorMessage(error, "Failed to update profile"));
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: settingsProfileQueryKey });
     },
     onSuccess: () => {
-      toast.success('Profile updated successfully');
+      toast.success("Profile updated successfully");
     },
   });
 
@@ -156,7 +166,7 @@ export default function SettingsPage(): JSX.Element {
     mutationFn: (preferences: Partial<UserViewPreferences>) =>
       settingsService.updatePreferences(preferences),
     onError: (error: unknown) => {
-      toast.error(getErrorMessage(error, 'Failed to sync preferences'));
+      toast.error(getErrorMessage(error, "Failed to sync preferences"));
     },
   });
 
@@ -170,7 +180,7 @@ export default function SettingsPage(): JSX.Element {
   };
 
   const handleThemeChange = (checked: boolean): void => {
-    const newTheme: NonNullable<UserViewPreferences['theme']> = checked ? 'dark' : 'light';
+    const newTheme: NonNullable<UserViewPreferences["theme"]> = checked ? "dark" : "light";
     setTheme(newTheme);
     updatePreferencesMutation.mutate({ theme: newTheme });
     toast.success(`Switched to ${newTheme} theme`);
@@ -179,7 +189,7 @@ export default function SettingsPage(): JSX.Element {
   const handleNotificationsChange = (checked: boolean): void => {
     setNotificationsEnabled(checked);
     updatePreferencesMutation.mutate({ notificationsEnabled: checked });
-    toast.success(`Notifications ${checked ? 'enabled' : 'disabled'}`);
+    toast.success(`Notifications ${checked ? "enabled" : "disabled"}`);
   };
 
   const handlePreferenceChange = (
@@ -188,24 +198,24 @@ export default function SettingsPage(): JSX.Element {
   ): void => {
     const parsedValue = preferenceValueSchema.safeParse(value);
     if (!parsedValue.success) {
-      toast.error('Unsupported preference value');
+      toast.error("Unsupported preference value");
       return;
     }
 
     setViewPreference(key, parsedValue.data);
     updatePreferencesMutation.mutate({ [key]: parsedValue.data } as Partial<UserViewPreferences>);
-    toast.success('Preference updated');
+    toast.success("Preference updated");
   };
 
   const getInitials = (name: string): string => {
     if (!name) {
-      return 'U';
+      return "U";
     }
 
     return name
-      .split(' ')
+      .split(" ")
       .map((part) => part[0])
-      .join('')
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
@@ -219,13 +229,13 @@ export default function SettingsPage(): JSX.Element {
         onChange={setActiveSettingsTab}
         className="mt-1"
         items={[
-          { key: 'profile', label: 'Profile', icon: <User size={14} /> },
-          { key: 'preferences', label: 'Preferences', icon: <Palette size={14} /> },
-          { key: 'team', label: 'Team', icon: <Users size={14} /> },
+          { key: "profile", label: "Profile", icon: <User size={14} /> },
+          { key: "preferences", label: "Preferences", icon: <Palette size={14} /> },
+          { key: "team", label: "Team", icon: <Users size={14} /> },
         ]}
       />
 
-      {activeSettingsTab === 'profile' && (
+      {activeSettingsTab === "profile" && (
         <SettingsProfileTab
           profileLoading={profileLoading}
           profile={profile}
@@ -235,7 +245,7 @@ export default function SettingsPage(): JSX.Element {
         />
       )}
 
-      {activeSettingsTab === 'preferences' && (
+      {activeSettingsTab === "preferences" && (
         <SettingsPreferencesTab
           theme={theme}
           notificationsEnabled={notificationsEnabled}
@@ -246,7 +256,7 @@ export default function SettingsPage(): JSX.Element {
         />
       )}
 
-      {activeSettingsTab === 'team' && (
+      {activeSettingsTab === "team" && (
         <SettingsTeamTab profileLoading={profileLoading} teams={teams} />
       )}
     </PageShell>

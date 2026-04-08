@@ -1,16 +1,16 @@
-import { Brain } from 'lucide-react';
-import { useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "@tanstack/react-router";
+import { Brain } from "lucide-react";
+import { useMemo } from "react";
 
-import { PageHeader } from '@shared/components/ui';
-import { useAppStore } from '@app/store/appStore';
-import { formatDuration, formatNumber } from '@shared/utils/formatters';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import { useTeamId } from "@app/store/appStore";
+import { PageHeader } from "@shared/components/ui";
+import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
-import { aiTraceQueries } from '../../api/queryOptions';
-import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
-import type { LLMTraceSpan, LLMTraceSummary } from '../../types';
+import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
+import { aiTraceQueries } from "../../api/queryOptions";
+import type { LLMTraceSpan, LLMTraceSummary } from "../../types";
 
 function getErrorMessage(error: { message?: string } | null | undefined, fallback: string): string {
   if (error?.message) {
@@ -20,10 +20,10 @@ function getErrorMessage(error: { message?: string } | null | undefined, fallbac
   return fallback;
 }
 
-export default function AiTraceDetailPage(): JSX.Element {
-  const { traceId = '' } = useParams<{ traceId: string }>();
+export default function AiTraceDetailPage() {
+  const { traceId = "" } = useParams({ strict: false });
   const navigate = useNavigate();
-  const { selectedTeamId } = useAppStore();
+  const selectedTeamId = useTeamId();
 
   const spansQuery = useQuery(aiTraceQueries.trace(selectedTeamId, traceId));
   const spans = (spansQuery.data ?? []) as LLMTraceSpan[];
@@ -50,7 +50,7 @@ export default function AiTraceDetailPage(): JSX.Element {
     };
     for (const sp of spans) getDepth(sp.spanId);
 
-    let minStart = Infinity;
+    let minStart = Number.POSITIVE_INFINITY;
     let maxEnd = 0;
     for (const sp of spans) {
       const start = new Date(sp.startTime).getTime();
@@ -60,28 +60,28 @@ export default function AiTraceDetailPage(): JSX.Element {
     }
     return {
       depthMap: dm,
-      traceStartMs: minStart === Infinity ? 0 : minStart,
-      traceDurationMs: maxEnd - (minStart === Infinity ? 0 : minStart) || 1,
+      traceStartMs: minStart === Number.POSITIVE_INFINITY ? 0 : minStart,
+      traceDurationMs: maxEnd - (minStart === Number.POSITIVE_INFINITY ? 0 : minStart) || 1,
     };
   }, [spans]);
 
   return (
-    <div className="max-w-[1400px] mx-auto px-0 pb-6">
+    <div className="mx-auto max-w-[1400px] px-0 pb-6">
       <PageHeader
         title="LLM Trace"
         icon={<Brain size={24} />}
         breadcrumbs={[
-          { label: 'LLM Runs', path: '/ai-runs' },
-          { label: traceId.slice(0, 16) + '…' },
+          { label: "LLM Runs", path: "/ai-runs" },
+          { label: `${traceId.slice(0, 16)}…` },
         ]}
       />
 
       {spansError && (
         <div className="mb-4">
-          <div className="px-4 py-3 rounded-lg bg-[var(--error-bg,rgba(240,68,56,0.08))] border border-[var(--error-border,rgba(240,68,56,0.2))] text-[var(--error-text,#f04438)]">
+          <div className="rounded-lg border border-[var(--error-border,rgba(240,68,56,0.2))] bg-[var(--error-bg,rgba(240,68,56,0.08))] px-4 py-3 text-[var(--error-text,#f04438)]">
             <strong>The LLM trace could not be loaded.</strong>
             <div className="mt-1 text-[13px]">
-              {getErrorMessage(spansError, 'The backend request for trace spans failed.')}
+              {getErrorMessage(spansError, "The backend request for trace spans failed.")}
             </div>
           </div>
         </div>
@@ -89,17 +89,17 @@ export default function AiTraceDetailPage(): JSX.Element {
 
       {summaryError && (
         <div className="mb-4">
-          <div className="px-4 py-3 rounded-lg bg-[var(--error-bg,rgba(240,68,56,0.08))] border border-[var(--error-border,rgba(240,68,56,0.2))] text-[var(--error-text,#f04438)]">
+          <div className="rounded-lg border border-[var(--error-border,rgba(240,68,56,0.2))] bg-[var(--error-bg,rgba(240,68,56,0.08))] px-4 py-3 text-[var(--error-text,#f04438)]">
             <strong>Trace summary is unavailable</strong>
             <div className="mt-1 text-[13px]">
-              {getErrorMessage(summaryError, 'The backend request for trace summary failed.')}
+              {getErrorMessage(summaryError, "The backend request for trace summary failed.")}
             </div>
           </div>
         </div>
       )}
 
       {summary && (
-        <div className="grid grid-cols-6 gap-3 mb-5">
+        <div className="mb-5 grid grid-cols-6 gap-3">
           <SummaryCard label="Spans" value={formatNumber(summary.totalSpans)} />
           <SummaryCard label="LLM Calls" value={formatNumber(summary.llmCalls)} />
           <SummaryCard label="Tool Calls" value={formatNumber(summary.toolCalls)} />
@@ -109,8 +109,8 @@ export default function AiTraceDetailPage(): JSX.Element {
         </div>
       )}
 
-      <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-[10px] overflow-hidden">
-        <h3 className="text-[13px] font-semibold text-[var(--text-primary)] px-[18px] py-[14px] m-0 border-b border-[var(--border-color)]">
+      <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+        <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
           Trace Waterfall
         </h3>
         {isLoading && <div className="p-10 text-center text-[var(--text-muted)]">Loading...</div>}
@@ -125,7 +125,7 @@ export default function AiTraceDetailPage(): JSX.Element {
               depth={depthMap.get(span.spanId) ?? 0}
               traceStartMs={traceStartMs}
               traceDurationMs={traceDurationMs}
-              onClick={() => navigate(`/ai-runs/${span.spanId}`)}
+              onClick={() => navigate({ to: `/ai-runs/${span.spanId}` })}
             />
           ))}
       </div>
@@ -133,13 +133,13 @@ export default function AiTraceDetailPage(): JSX.Element {
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: string }): JSX.Element {
+function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-[var(--glass-bg)] border border-[var(--border-color)] rounded-lg px-[14px] py-3 text-center">
-      <div className="text-[10px] uppercase tracking-[0.5px] text-[var(--text-muted)] mb-1">
+    <div className="rounded-lg border border-[var(--border-color)] bg-[var(--glass-bg)] px-[14px] py-3 text-center">
+      <div className="mb-1 text-[10px] text-[var(--text-muted)] uppercase tracking-[0.5px]">
         {label}
       </div>
-      <div className="text-[18px] font-bold text-[var(--text-primary)] font-mono">{value}</div>
+      <div className="font-bold font-mono text-[18px] text-[var(--text-primary)]">{value}</div>
     </div>
   );
 }
@@ -156,7 +156,7 @@ function SpanRow({
   traceStartMs: number;
   traceDurationMs: number;
   onClick: () => void;
-}): JSX.Element {
+}) {
   const spanStartMs = new Date(span.startTime).getTime();
   const leftPct = ((spanStartMs - traceStartMs) / traceDurationMs) * 100;
   const widthPct = Math.max((span.durationMs / traceDurationMs) * 100, 0.5);
@@ -164,7 +164,7 @@ function SpanRow({
 
   return (
     <div
-      className="flex items-center gap-2 px-[18px] py-2 border-b border-[var(--border-color)] last:border-b-0 text-[12px] cursor-pointer transition-colors duration-100 hover:bg-[rgba(255,255,255,0.02)]"
+      className="flex cursor-pointer items-center gap-2 border-[var(--border-color)] border-b px-[18px] py-2 text-[12px] transition-colors duration-100 last:border-b-0 hover:bg-[rgba(255,255,255,0.02)]"
       onClick={onClick}
     >
       {/* Indent spacer */}
@@ -173,56 +173,56 @@ function SpanRow({
       {/* Role badge */}
       <span
         className={cn(
-          'inline-flex px-[5px] py-px rounded-[3px] text-[9px] font-semibold uppercase bg-[var(--glass-bg)] text-[var(--text-muted)] min-w-[52px] justify-center shrink-0',
-          span.role === 'llm_call' && 'bg-[rgba(139,92,246,0.12)] text-[#8b5cf6]',
-          span.role === 'tool_call' && 'bg-[rgba(245,158,11,0.12)] text-[#f59e0b]',
-          span.role === 'retriever' && 'bg-[rgba(6,182,212,0.12)] text-[#06b6d4]',
-          (span.role === 'chain' || span.role === 'agent') &&
-            'bg-[rgba(16,185,129,0.12)] text-[#10b981]'
+          "inline-flex min-w-[52px] shrink-0 justify-center rounded-[3px] bg-[var(--glass-bg)] px-[5px] py-px font-semibold text-[9px] text-[var(--text-muted)] uppercase",
+          span.role === "llm_call" && "bg-[rgba(139,92,246,0.12)] text-[#8b5cf6]",
+          span.role === "tool_call" && "bg-[rgba(245,158,11,0.12)] text-[#f59e0b]",
+          span.role === "retriever" && "bg-[rgba(6,182,212,0.12)] text-[#06b6d4]",
+          (span.role === "chain" || span.role === "agent") &&
+            "bg-[rgba(16,185,129,0.12)] text-[#10b981]"
         )}
       >
-        {span.role.replace('_', ' ')}
+        {span.role.replace("_", " ")}
       </span>
 
       {/* Span name */}
       <span
-        className="w-[220px] min-w-[220px] overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-primary)] shrink-0"
+        className="w-[220px] min-w-[220px] shrink-0 overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-primary)]"
         title={span.operationName}
       >
         {span.operationName}
       </span>
 
       {/* Waterfall bar */}
-      <div className="flex-1 h-[18px] relative min-w-[100px]">
+      <div className="relative h-[18px] min-w-[100px] flex-1">
         <div
           className={cn(
-            'absolute h-full rounded-[3px] min-w-[2px]',
-            span.role === 'llm_call' && 'bg-[rgba(139,92,246,0.7)]',
-            span.role === 'tool_call' && 'bg-[rgba(245,158,11,0.7)]',
-            span.role === 'retriever' && 'bg-[rgba(6,182,212,0.7)]',
-            (span.role === 'chain' || span.role === 'agent') && 'bg-[rgba(16,185,129,0.5)]',
-            span.role === 'other' && 'bg-[rgba(148,163,184,0.4)]'
+            "absolute h-full min-w-[2px] rounded-[3px]",
+            span.role === "llm_call" && "bg-[rgba(139,92,246,0.7)]",
+            span.role === "tool_call" && "bg-[rgba(245,158,11,0.7)]",
+            span.role === "retriever" && "bg-[rgba(6,182,212,0.7)]",
+            (span.role === "chain" || span.role === "agent") && "bg-[rgba(16,185,129,0.5)]",
+            span.role === "other" && "bg-[rgba(148,163,184,0.4)]"
           )}
           style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
         />
       </div>
 
       {/* Meta: model + tokens */}
-      <div className="flex items-center gap-1.5 min-w-[180px] justify-end">
+      <div className="flex min-w-[180px] items-center justify-end gap-1.5">
         {span.model && (
-          <span className="text-[10px] text-[#8b5cf6] bg-[rgba(139,92,246,0.1)] px-1.5 py-px rounded-[3px]">
+          <span className="rounded-[3px] bg-[rgba(139,92,246,0.1)] px-1.5 py-px text-[#8b5cf6] text-[10px]">
             {span.model}
           </span>
         )}
         {tokens > 0 && (
-          <span className="text-[10px] text-[var(--text-muted)] font-mono">
+          <span className="font-mono text-[10px] text-[var(--text-muted)]">
             {formatNumber(tokens)} tok
           </span>
         )}
       </div>
 
       {/* Duration */}
-      <span className="text-[11px] text-[var(--text-secondary)] font-mono min-w-[60px] text-right shrink-0">
+      <span className="min-w-[60px] shrink-0 text-right font-mono text-[11px] text-[var(--text-secondary)]">
         {formatDuration(span.durationMs)}
       </span>
     </div>

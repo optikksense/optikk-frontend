@@ -1,7 +1,7 @@
-import { Select } from '@/components/ui';
+import { Select } from "@/components/ui";
 
-import { AGGREGATION_OPTIONS } from '../../constants';
-import type { MetricAggregation } from '../../types';
+import { AGGREGATION_OPTIONS } from "../../constants";
+import type { MetricAggregation } from "../../types";
 
 interface AggregationPickerProps {
   readonly value: MetricAggregation;

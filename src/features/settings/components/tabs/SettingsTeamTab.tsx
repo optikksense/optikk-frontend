@@ -1,9 +1,9 @@
-import { Copy, Key, Users } from 'lucide-react';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
-import { Surface, Skeleton, IconButton } from '@/components/ui';
+import { IconButton, Skeleton, Surface } from "@/components/ui";
+import { Copy, Key, Users } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
-import type { SettingsTeamViewModel } from '../../types';
+import type { SettingsTeamViewModel } from "../../types";
 
 interface SettingsTeamTabProps {
   readonly profileLoading: boolean;
@@ -11,7 +11,7 @@ interface SettingsTeamTabProps {
 }
 
 function maskApiKey(key: string): string {
-  if (key.length <= 8) return '••••••••';
+  if (key.length <= 8) return "••••••••";
   return `••••••••••••${key.slice(-4)}`;
 }
 
@@ -45,45 +45,46 @@ export default function SettingsTeamTab({
     void navigator.clipboard
       .writeText(key)
       .then(() => {
-        toast.success('API key copied');
+        toast.success("API key copied");
       })
       .catch(() => {
-        toast.error('Unable to copy API key');
+        toast.error("Unable to copy API key");
       });
   };
 
   return (
     <Surface elevation={1} padding="lg" className="settings-card">
-      <div className="flex items-center gap-sm mb-md">
+      <div className="mb-md flex items-center gap-sm">
         <Users size={20} />
-        <h3 className="text-lg font-semibold m-0">Team Information</h3>
+        <h3 className="m-0 font-semibold text-lg">Team Information</h3>
       </div>
 
       <div className="border-t" />
 
       {teams.map((team, index) => (
-        <div key={`${team.name ?? 'team'}-${index}`} className="py-sm border-b">
-          <div className="flex justify-between items-center mb-xs">
+        <div key={`${team.name ?? "team"}-${index}`} className="border-b py-sm">
+          <div className="mb-xs flex items-center justify-between">
             <span className="font-semibold text-md">{team.name}</span>
-            <span className="text-xs text-muted uppercase tracking-wide">{team.role}</span>
+            <span className="text-muted text-xs uppercase tracking-wide">{team.role}</span>
           </div>
           {team.apiKey && (
             <div className="flex items-center gap-xs">
               <Key size={13} className="text-muted" />
-              <code className="font-mono text-xs text-secondary" style={{ wordBreak: 'break-all' }}>
+              <code className="font-mono text-secondary text-xs" style={{ wordBreak: "break-all" }}>
                 {revealedKeys.has(index) ? team.apiKey : maskApiKey(team.apiKey)}
               </code>
               <button
-                className="text-xs text-muted"
+                type="button"
+                className="text-muted text-xs"
                 onClick={() => toggleReveal(index)}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textDecoration: 'underline',
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  textDecoration: "underline",
                 }}
               >
-                {revealedKeys.has(index) ? 'Hide' : 'Reveal'}
+                {revealedKeys.has(index) ? "Hide" : "Reveal"}
               </button>
               <IconButton
                 icon={<Copy size={12} />}
@@ -97,7 +98,7 @@ export default function SettingsTeamTab({
       ))}
 
       {teams.length === 0 && (
-        <p className="text-muted py-lg" style={{ textAlign: 'center' }}>
+        <p className="py-lg text-muted" style={{ textAlign: "center" }}>
           You are not a member of any teams yet.
         </p>
       )}

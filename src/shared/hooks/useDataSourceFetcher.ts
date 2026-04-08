@@ -1,21 +1,21 @@
-import { keepPreviousData, useQueries, type UseQueryResult } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { type UseQueryResult, keepPreviousData, useQueries } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import { useInvalidateQueriesOnAppRefresh } from '@shared/hooks/useInvalidateQueriesOnAppRefresh';
+import { useInvalidateQueriesOnAppRefresh } from "@shared/hooks/useInvalidateQueriesOnAppRefresh";
 
 import type {
   DashboardDataSourceValue,
   DashboardDataSources,
   DataSourceSpec,
-} from '@/types/dashboardConfig';
+} from "@/types/dashboardConfig";
 
-import { api } from '@shared/api/api/client';
-import type { ApiErrorShape } from '@shared/api/api/interceptors/errorInterceptor';
-import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
+import { api } from "@shared/api/api/client";
+import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
+import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 
-import { resolveTimeRangeBounds } from '@/types';
+import { resolveTimeRangeBounds } from "@/types";
 
-import { useAppStore } from '@store/appStore';
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 
 interface DataSourceFailedRequest {
   dataSourceId: string;
@@ -40,9 +40,13 @@ export function useDataSourceFetcher(
   dataSources: DataSourceSpec[],
   pathParams?: Record<string, string>
 ): UseDataSourceFetcherResult {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
-  useInvalidateQueriesOnAppRefresh(refreshKey, 'datasource', selectedTeamId);
+  useInvalidateQueriesOnAppRefresh(refreshKey, "datasource", selectedTeamId);
+
+  useInvalidateQueriesOnAppRefresh(refreshKey, "datasource", selectedTeamId);
 
   const { startMs, endMs } = useMemo(() => {
     void refreshKey;
@@ -57,14 +61,7 @@ export function useDataSourceFetcher(
         : spec.endpoint;
 
       return {
-        queryKey: [
-          'datasource',
-          selectedTeamId,
-          spec.id,
-          resolvedEndpoint,
-          startMs,
-          endMs,
-        ],
+        queryKey: ["datasource", selectedTeamId, spec.id, resolvedEndpoint, startMs, endMs],
         queryFn: () =>
           api.get(resolvedEndpoint, {
             params: {
@@ -102,7 +99,7 @@ export function useDataSourceFetcher(
           endpoint: pathParams
             ? spec.endpoint.replace(/\{(\w+)\}/g, (_, key) => pathParams[key] ?? `{${key}}`)
             : spec.endpoint,
-          method: 'GET',
+          method: "GET",
           error: normalizedError,
         });
       }

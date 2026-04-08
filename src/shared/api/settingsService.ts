@@ -1,11 +1,11 @@
 /**
  * Settings Service - API calls for user profile and preferences
  */
-import { API_CONFIG } from '@config/apiConfig';
+import { API_CONFIG } from "@config/apiConfig";
 
-import api from './api';
+import api from "./api";
 
-import type { UserViewPreferences } from '@shared/types/preferences';
+import type { UserViewPreferences } from "@shared/types/preferences";
 
 export interface SettingsProfileCommand {
   readonly name: string;

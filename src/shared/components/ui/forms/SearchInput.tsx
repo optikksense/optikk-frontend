@@ -1,8 +1,8 @@
-import { Search } from 'lucide-react';
-import { useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import { Search } from "lucide-react";
+import { useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface SearchInputProps {
   placeholder?: string;
@@ -13,13 +13,13 @@ interface SearchInputProps {
 }
 
 export default function SearchInput({
-  placeholder = 'Search...',
+  placeholder = "Search...",
   onSearch,
   debounceMs = 300,
   style,
   className,
 }: SearchInputProps): JSX.Element {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
 
   const debouncedSearch = useDebouncedCallback((newValue: string) => {
     onSearch?.(newValue);
@@ -32,30 +32,31 @@ export default function SearchInput({
   };
 
   const handleClear = () => {
-    setValue('');
+    setValue("");
     debouncedSearch.cancel();
-    onSearch?.('');
+    onSearch?.("");
   };
 
   return (
-    <div className={cn('relative inline-flex items-center', className)} style={style}>
+    <div className={cn("relative inline-flex items-center", className)} style={style}>
       <Search
         size={16}
-        className="absolute left-2 pointer-events-none text-[var(--text-secondary,#999)]"
+        className="pointer-events-none absolute left-2 text-[var(--text-secondary,#999)]"
       />
       <input
         type="text"
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className="pl-[30px] h-8 border border-[var(--border-color,#d9d9d9)] rounded-md text-sm w-full"
+        className="h-8 w-full rounded-md border border-[var(--border-color,#d9d9d9)] pl-[30px] text-sm"
         style={{ paddingRight: value ? 28 : 8 }}
       />
       {value && (
         <button
+          type="button"
           onClick={handleClear}
           aria-label="Clear"
-          className="absolute right-1.5 bg-transparent border-none cursor-pointer text-sm text-[var(--text-secondary,#999)]"
+          className="absolute right-1.5 cursor-pointer border-none bg-transparent text-[var(--text-secondary,#999)] text-sm"
         >
           &times;
         </button>

@@ -1,7 +1,7 @@
-import { AxiosError, type AxiosResponse } from 'axios';
-import { z } from 'zod';
+import { AxiosError, type AxiosResponse } from "axios";
+import type { z } from "zod";
 
-import { UNKNOWN_ERROR, type ErrorCode } from '@/shared/constants/errorCodes';
+import { type ErrorCode, UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 
 interface ApiEnvelope {
   readonly success: boolean;
@@ -18,24 +18,24 @@ export interface ApiContractErrorShape {
 
 interface DecodeApiResponseOptions {
   readonly context: string;
-  readonly expectedType?: 'object' | 'array';
+  readonly expectedType?: "object" | "array";
   readonly message?: string;
 }
 
 const HTML_RESPONSE_PATTERN = /<(?:!doctype|html|head|body|title)\b/i;
-const JSON_START_CHARACTERS = new Set(['{', '[', '"']);
+const JSON_START_CHARACTERS = new Set(["{", "[", '"']);
 
 export function isApiEnvelope(value: unknown): value is ApiEnvelope {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== "object" || value === null) {
     return false;
   }
 
   const record = value as Record<string, unknown>;
-  return typeof record.success === 'boolean' && 'data' in record;
+  return typeof record.success === "boolean" && "data" in record;
 }
 
 export function buildPayloadPreview(value: unknown): string {
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     return value.slice(0, 240);
   }
 
@@ -47,7 +47,7 @@ export function buildPayloadPreview(value: unknown): string {
 }
 
 function stripBom(value: string): string {
-  return value.replace(/^\uFEFF/, '');
+  return value.replace(/^\uFEFF/, "");
 }
 
 function looksLikeJson(value: string): boolean {
@@ -55,18 +55,18 @@ function looksLikeJson(value: string): boolean {
     return false;
   }
 
-  return JSON_START_CHARACTERS.has(value[0] ?? '');
+  return JSON_START_CHARACTERS.has(value[0] ?? "");
 }
 
 export function isHtmlLikePayload(value: unknown): boolean {
-  return typeof value === 'string' && HTML_RESPONSE_PATTERN.test(value);
+  return typeof value === "string" && HTML_RESPONSE_PATTERN.test(value);
 }
 
 export function normalizeApiPayload(value: unknown): unknown {
   let current = value;
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
-    if (typeof current !== 'string') {
+    if (typeof current !== "string") {
       return current;
     }
 
@@ -108,7 +108,7 @@ export function unwrapApiPayload(value: unknown): unknown {
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function createContractError(message: string, data?: unknown): ApiContractErrorShape {
@@ -142,41 +142,41 @@ export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
   const normalized = unwrapApiPayload(value);
   const message = options.message ?? `Invalid ${options.context} response`;
 
-  if (typeof normalized === 'string') {
+  if (typeof normalized === "string") {
     if (import.meta.env.DEV) {
       console.error(`[decodeApiResponse] ${message}`, {
         context: options.context,
-        payloadType: 'string',
+        payloadType: "string",
         preview: buildPayloadPreview(normalized),
       });
     }
 
     throw createContractError(message, {
       context: options.context,
-      payloadType: 'string',
+      payloadType: "string",
       preview: buildPayloadPreview(normalized),
       looksLikeHtml: isHtmlLikePayload(normalized),
     });
   }
 
-  if (options.expectedType === 'object' && !isPlainObject(normalized)) {
+  if (options.expectedType === "object" && !isPlainObject(normalized)) {
     if (import.meta.env.DEV) {
       console.error(`[decodeApiResponse] ${message}`, {
         context: options.context,
-        payloadType: Array.isArray(normalized) ? 'array' : typeof normalized,
+        payloadType: Array.isArray(normalized) ? "array" : typeof normalized,
         preview: buildPayloadPreview(normalized),
       });
     }
 
     throw createContractError(message, {
       context: options.context,
-      expectedType: 'object',
-      receivedType: Array.isArray(normalized) ? 'array' : typeof normalized,
+      expectedType: "object",
+      receivedType: Array.isArray(normalized) ? "array" : typeof normalized,
       preview: buildPayloadPreview(normalized),
     });
   }
 
-  if (options.expectedType === 'array' && !Array.isArray(normalized)) {
+  if (options.expectedType === "array" && !Array.isArray(normalized)) {
     if (import.meta.env.DEV) {
       console.error(`[decodeApiResponse] ${message}`, {
         context: options.context,
@@ -187,7 +187,7 @@ export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
 
     throw createContractError(message, {
       context: options.context,
-      expectedType: 'array',
+      expectedType: "array",
       receivedType: typeof normalized,
       preview: buildPayloadPreview(normalized),
     });
@@ -199,7 +199,7 @@ export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
     if (import.meta.env.DEV) {
       console.error(`[decodeApiResponse] ${message}`, {
         context: options.context,
-        payloadType: Array.isArray(normalized) ? 'array' : typeof normalized,
+        payloadType: Array.isArray(normalized) ? "array" : typeof normalized,
         preview: buildPayloadPreview(normalized),
         error: result.error,
       });
@@ -209,10 +209,10 @@ export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
     const telemetry = (window as any).telemetry || {
       track: (e: string, d: any) => console.log(`[Telemetry Mock] ${e}`, d),
     };
-    telemetry.track('api_contract_violation', {
+    telemetry.track("api_contract_violation", {
       errors: result.error.flatten(),
       endpoint: options.context,
-      version: '1.0.0', // APP_VERSION mock
+      version: "1.0.0", // APP_VERSION mock
     });
 
     throw createContractError(message, {

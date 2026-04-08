@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
-import type { AxiosError, AxiosInstance } from 'axios';
+import type { AxiosError, AxiosInstance } from "axios";
 
-import { NETWORK_ERROR, UNKNOWN_ERROR } from '@/shared/constants/errorCodes';
+import { NETWORK_ERROR, UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 
-import type { ErrorCode } from '@/shared/constants/errorCodes';
+import type { ErrorCode } from "@/shared/constants/errorCodes";
 
 /**
  *
@@ -17,20 +17,20 @@ export interface ApiErrorShape {
 }
 
 function extractApiCode(data: unknown): ErrorCode {
-  if (typeof data !== 'object' || data === null) {
+  if (typeof data !== "object" || data === null) {
     return UNKNOWN_ERROR;
   }
 
   const record = data as Record<string, unknown>;
   const nestedError = record.error;
-  if (typeof nestedError === 'object' && nestedError !== null) {
+  if (typeof nestedError === "object" && nestedError !== null) {
     const nestedRecord = nestedError as Record<string, unknown>;
-    if (typeof nestedRecord.code === 'string' && nestedRecord.code.length > 0) {
+    if (typeof nestedRecord.code === "string" && nestedRecord.code.length > 0) {
       return nestedRecord.code as ErrorCode;
     }
   }
 
-  if (typeof record.code === 'string' && record.code.length > 0) {
+  if (typeof record.code === "string" && record.code.length > 0) {
     return record.code as ErrorCode;
   }
 
@@ -38,24 +38,24 @@ function extractApiCode(data: unknown): ErrorCode {
 }
 
 function extractApiMessage(data: unknown): string {
-  if (typeof data !== 'object' || data === null) {
-    return 'An error occurred';
+  if (typeof data !== "object" || data === null) {
+    return "An error occurred";
   }
 
   const record = data as Record<string, unknown>;
   const nestedError = record.error;
-  if (typeof nestedError === 'object' && nestedError !== null) {
+  if (typeof nestedError === "object" && nestedError !== null) {
     const nestedRecord = nestedError as Record<string, unknown>;
-    if (typeof nestedRecord.message === 'string' && nestedRecord.message.length > 0) {
+    if (typeof nestedRecord.message === "string" && nestedRecord.message.length > 0) {
       return nestedRecord.message;
     }
   }
 
-  if (typeof record.message === 'string' && record.message.length > 0) {
+  if (typeof record.message === "string" && record.message.length > 0) {
     return record.message;
   }
 
-  return 'An error occurred';
+  return "An error occurred";
 }
 
 function normalizeError(error: unknown): ApiErrorShape {
@@ -66,7 +66,7 @@ function normalizeError(error: unknown): ApiErrorShape {
       const data = axiosError.response.data;
 
       if (status === 401) {
-        window.dispatchEvent(new CustomEvent('auth:expired'));
+        window.dispatchEvent(new CustomEvent("auth:expired"));
       }
 
       return {
@@ -81,14 +81,14 @@ function normalizeError(error: unknown): ApiErrorShape {
       return {
         status: 0,
         code: NETWORK_ERROR,
-        message: 'Network error - please check your connection',
+        message: "Network error - please check your connection",
       };
     }
 
     return {
       status: 0,
       code: UNKNOWN_ERROR,
-      message: axiosError.message || 'An unexpected error occurred',
+      message: axiosError.message || "An unexpected error occurred",
     };
   }
 
@@ -103,7 +103,7 @@ function normalizeError(error: unknown): ApiErrorShape {
   return {
     status: 0,
     code: UNKNOWN_ERROR,
-    message: 'An unexpected error occurred',
+    message: "An unexpected error occurred",
   };
 }
 
@@ -115,7 +115,7 @@ export function attachErrorInterceptor(instance: AxiosInstance): number {
     (response) => response,
     (error: unknown) => {
       const normalized = normalizeError(error);
-      console.error('[API Error]', {
+      console.error("[API Error]", {
         status: normalized.status,
         code: normalized.code,
         message: normalized.message,

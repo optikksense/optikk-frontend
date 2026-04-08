@@ -1,19 +1,19 @@
-import type { LogAttributeFilter, LogFilterField, LogsBackendParams } from '../types';
-import type { StructuredFilter } from '@shared/hooks/useURLFilters';
+import type { StructuredFilter } from "@shared/hooks/useURLFilters";
+import type { LogAttributeFilter, LogFilterField, LogsBackendParams } from "../types";
 
 /**
  *
  */
 export function toDisplayText(value: unknown): string {
-  if (value === null || value === undefined || value === '') {
-    return '—';
+  if (value === null || value === undefined || value === "") {
+    return "—";
   }
 
   if (
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean' ||
-    typeof value === 'bigint'
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    typeof value === "bigint"
   ) {
     return String(value);
   }
@@ -30,92 +30,90 @@ export function toDisplayText(value: unknown): string {
  */
 export const LOG_FILTER_FIELDS: LogFilterField[] = [
   {
-    key: 'service_name',
-    label: 'Service',
-    icon: '⚙️',
-    group: 'Service',
+    key: "service_name",
+    label: "Service",
+    icon: "⚙️",
+    group: "Service",
     operators: [
-      { key: 'equals', label: 'equals', symbol: '=' },
-      { key: 'not_equals', label: 'not equals', symbol: '!=' },
+      { key: "equals", label: "equals", symbol: "=" },
+      { key: "not_equals", label: "not equals", symbol: "!=" },
     ],
   },
   {
-    key: 'level',
-    label: 'Level',
-    icon: '🎚️',
-    group: 'Log',
+    key: "level",
+    label: "Level",
+    icon: "🎚️",
+    group: "Log",
     operators: [
-      { key: 'equals', label: 'equals', symbol: '=' },
-      { key: 'not_equals', label: 'not equals', symbol: '!=' },
+      { key: "equals", label: "equals", symbol: "=" },
+      { key: "not_equals", label: "not equals", symbol: "!=" },
     ],
   },
   {
-    key: 'host',
-    label: 'Host',
-    icon: '🖥️',
-    group: 'Infrastructure',
+    key: "host",
+    label: "Host",
+    icon: "🖥️",
+    group: "Infrastructure",
     operators: [
-      { key: 'equals', label: 'equals', symbol: '=' },
-      { key: 'not_equals', label: 'not equals', symbol: '!=' },
+      { key: "equals", label: "equals", symbol: "=" },
+      { key: "not_equals", label: "not equals", symbol: "!=" },
     ],
   },
   {
-    key: 'pod',
-    label: 'Pod',
-    icon: '📦',
-    group: 'Infrastructure',
-    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+    key: "pod",
+    label: "Pod",
+    icon: "📦",
+    group: "Infrastructure",
+    operators: [{ key: "equals", label: "equals", symbol: "=" }],
   },
   {
-    key: 'container',
-    label: 'Container',
-    icon: '🐳',
-    group: 'Infrastructure',
-    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+    key: "container",
+    label: "Container",
+    icon: "🐳",
+    group: "Infrastructure",
+    operators: [{ key: "equals", label: "equals", symbol: "=" }],
   },
   {
-    key: 'environment',
-    label: 'Environment',
-    icon: '🌍',
-    group: 'Infrastructure',
-    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+    key: "environment",
+    label: "Environment",
+    icon: "🌍",
+    group: "Infrastructure",
+    operators: [{ key: "equals", label: "equals", symbol: "=" }],
   },
   {
-    key: 'logger',
-    label: 'Logger',
-    icon: '📝',
-    group: 'Log',
-    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+    key: "logger",
+    label: "Logger",
+    icon: "📝",
+    group: "Log",
+    operators: [{ key: "equals", label: "equals", symbol: "=" }],
   },
   {
-    key: 'trace_id',
-    label: 'Trace ID',
-    icon: '🔗',
-    group: 'Correlation',
-    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+    key: "trace_id",
+    label: "Trace ID",
+    icon: "🔗",
+    group: "Correlation",
+    operators: [{ key: "equals", label: "equals", symbol: "=" }],
   },
   {
-    key: 'span_id',
-    label: 'Span ID',
-    icon: '🔀',
-    group: 'Correlation',
-    operators: [{ key: 'equals', label: 'equals', symbol: '=' }],
+    key: "span_id",
+    label: "Span ID",
+    icon: "🔀",
+    group: "Correlation",
+    operators: [{ key: "equals", label: "equals", symbol: "=" }],
   },
   {
-    key: 'search',
-    label: 'Search',
-    icon: '🔍',
-    group: 'Log',
-    operators: [{ key: 'contains', label: 'contains', symbol: '~' }],
+    key: "search",
+    label: "Search",
+    icon: "🔍",
+    group: "Log",
+    operators: [{ key: "contains", label: "contains", symbol: "~" }],
   },
 ];
 
 export const LOGS_URL_FILTER_CONFIG = {
-  params: [
-    { key: 'errorsOnly', type: 'boolean' as const, defaultValue: false },
-  ],
+  params: [{ key: "errorsOnly", type: "boolean" as const, defaultValue: false }],
   syncStructuredFilters: true,
-  stripParams: ['view', 'search'],
+  stripParams: ["view", "search"],
 };
 
 export function compileLogsStructuredFilters(
@@ -126,16 +124,16 @@ export function compileLogsStructuredFilters(
 
   const append = (
     key:
-      | 'services'
-      | 'excludeServices'
-      | 'severities'
-      | 'excludeSeverities'
-      | 'hosts'
-      | 'excludeHosts'
-      | 'pods'
-      | 'containers'
-      | 'environments'
-      | 'loggers',
+      | "services"
+      | "excludeServices"
+      | "severities"
+      | "excludeSeverities"
+      | "hosts"
+      | "excludeHosts"
+      | "pods"
+      | "containers"
+      | "environments"
+      | "loggers",
     value: string
   ): void => {
     const current = compiled[key] ?? [];
@@ -144,38 +142,38 @@ export function compileLogsStructuredFilters(
 
   for (const filter of filters) {
     switch (filter.field) {
-      case 'service_name':
-        append(filter.operator === 'not_equals' ? 'excludeServices' : 'services', filter.value);
+      case "service_name":
+        append(filter.operator === "not_equals" ? "excludeServices" : "services", filter.value);
         break;
-      case 'level':
-        append(filter.operator === 'not_equals' ? 'excludeSeverities' : 'severities', filter.value);
+      case "level":
+        append(filter.operator === "not_equals" ? "excludeSeverities" : "severities", filter.value);
         break;
-      case 'host':
-        append(filter.operator === 'not_equals' ? 'excludeHosts' : 'hosts', filter.value);
+      case "host":
+        append(filter.operator === "not_equals" ? "excludeHosts" : "hosts", filter.value);
         break;
-      case 'pod':
-        append('pods', filter.value);
+      case "pod":
+        append("pods", filter.value);
         break;
-      case 'container':
-        append('containers', filter.value);
+      case "container":
+        append("containers", filter.value);
         break;
-      case 'environment':
-        append('environments', filter.value);
+      case "environment":
+        append("environments", filter.value);
         break;
-      case 'logger':
-        append('loggers', filter.value);
+      case "logger":
+        append("loggers", filter.value);
         break;
-      case 'trace_id':
+      case "trace_id":
         compiled.traceId = filter.value;
         break;
-      case 'span_id':
+      case "span_id":
         compiled.spanId = filter.value;
         break;
       default:
         attributeFilters.push({
           key: filter.field,
           value: filter.value,
-          op: filter.operator === 'not_equals' ? 'neq' : 'eq',
+          op: filter.operator === "not_equals" ? "neq" : "eq",
         });
     }
   }
@@ -201,7 +199,7 @@ export function upsertLogFacetFilter(
     ...withoutField,
     {
       field: nextField,
-      operator: 'equals',
+      operator: "equals",
       value: nextValue,
     },
   ];

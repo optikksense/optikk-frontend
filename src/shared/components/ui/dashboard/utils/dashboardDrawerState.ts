@@ -1,20 +1,20 @@
-import type { DashboardDrawerAction, DashboardDrawerEntity } from '@/types/dashboardConfig';
+import type { DashboardDrawerAction, DashboardDrawerEntity } from "@/types/dashboardConfig";
 
 export const DASHBOARD_DRAWER_PARAMS = {
-  entity: 'drawerEntity',
-  id: 'drawerId',
-  title: 'drawerTitle',
-  data: 'drawerData',
+  entity: "drawerEntity",
+  id: "drawerId",
+  title: "drawerTitle",
+  data: "drawerData",
 } as const;
 
 function asStringValue(value: unknown): string | null {
   if (value == null) {
     return null;
   }
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     return value;
   }
-  if (typeof value === 'number' || typeof value === 'boolean') {
+  if (typeof value === "number" || typeof value === "boolean") {
     return String(value);
   }
   return null;
@@ -53,7 +53,7 @@ export function buildDashboardDrawerSearch(
   }
 
   const search = nextSearchParams.toString();
-  return search ? `?${search}` : '';
+  return search ? `?${search}` : "";
 }
 
 export function buildLegacyDashboardDrawerSearch(
@@ -70,7 +70,7 @@ export function buildLegacyDashboardDrawerSearch(
   }
   nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.data);
   const search = nextSearchParams.toString();
-  return search ? `?${search}` : '';
+  return search ? `?${search}` : "";
 }
 
 export function clearDashboardDrawerSearch(currentSearch: string): string {
@@ -80,7 +80,7 @@ export function clearDashboardDrawerSearch(currentSearch: string): string {
   nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.title);
   nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.data);
   const search = nextSearchParams.toString();
-  return search ? `?${search}` : '';
+  return search ? `?${search}` : "";
 }
 
 export function readDashboardDrawerState(searchParams: URLSearchParams): {
@@ -111,7 +111,7 @@ function deserializeDashboardDrawerData(value: string | null): Record<string, un
   }
   try {
     const parsed: unknown = JSON.parse(value);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return null;
     }
     return parsed as Record<string, unknown>;

@@ -1,7 +1,7 @@
-import type { ExplorerAnalyticsResult } from '../api/explorerAnalyticsApi';
+import type { ExplorerAnalyticsResult } from "../api/explorerAnalyticsApi";
 
 export function cellValue(
-  row: ExplorerAnalyticsResult['rows'][0],
+  row: ExplorerAnalyticsResult["rows"][0],
   key: string
 ): string | number | null {
   const cell = row.cells.find((c) => c.key === key);
@@ -14,7 +14,7 @@ export function cellValue(
 
 export function rowToRecord(
   columns: string[],
-  row: ExplorerAnalyticsResult['rows'][0]
+  row: ExplorerAnalyticsResult["rows"][0]
 ): Record<string, string | number | null> {
   const out: Record<string, string | number | null> = {};
   for (const col of columns) {

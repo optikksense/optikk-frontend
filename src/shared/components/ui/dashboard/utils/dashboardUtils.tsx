@@ -1,44 +1,44 @@
 import {
   Activity,
   AlertCircle,
-  Bug,
-  Clock,
-  Crosshair,
-  Flame,
-  List,
-  Zap,
-  Network,
-  Layers,
-  ArrowUpRight,
-  ArrowDownRight,
   AlertTriangle,
-  Database,
-  HardDrive,
-  Cpu,
-  Radio,
-  Gauge,
-  GitPullRequest,
-  Target,
+  ArrowDownRight,
+  ArrowUpRight,
   BarChart3,
-  Server,
-  ShieldCheck,
-  TrendingDown,
   Box,
+  Brain,
+  Bug,
   CheckCircle2,
   Circle,
-  FolderOpen,
-  RefreshCw,
-  XCircle,
-  Brain,
+  Clock,
+  Cpu,
+  Crosshair,
+  Database,
   FileText,
-  LayoutDashboard,
+  Flame,
+  FolderOpen,
+  Gauge,
   GitBranch,
-  Share2,
-  TrendingUp,
+  GitPullRequest,
+  HardDrive,
+  Layers,
+  LayoutDashboard,
+  List,
   type LucideIcon,
-} from 'lucide-react';
+  Network,
+  Radio,
+  RefreshCw,
+  Server,
+  Share2,
+  ShieldCheck,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  XCircle,
+  Zap,
+} from "lucide-react";
 
-import type { DashboardPanelSpec } from '@/types/dashboardConfig';
+import type { DashboardPanelSpec } from "@/types/dashboardConfig";
 
 const ICONS: Record<string, LucideIcon> = {
   Activity,
@@ -82,7 +82,7 @@ const ICONS: Record<string, LucideIcon> = {
 /**
  *
  */
-export function getDashboardIcon(name: string, size: number = 16) {
+export function getDashboardIcon(name: string, size = 16) {
   const IconComponent = ICONS[name];
   if (!IconComponent) return null;
   return <IconComponent size={size} />;

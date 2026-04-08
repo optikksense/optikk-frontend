@@ -1,16 +1,16 @@
-import React from 'react';
+import { cn } from "@/lib/utils";
 import {
-  startOfMonth,
-  endOfMonth,
   eachDayOfInterval,
+  endOfMonth,
   format,
   getDay,
   isSameDay,
   isToday,
-} from 'date-fns';
-import { cn } from '@/lib/utils';
+  startOfMonth,
+} from "date-fns";
+import React from "react";
 
-const DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 interface CalendarMonthProps {
   currentMonth: Date;
@@ -59,9 +59,9 @@ export function CalendarMonth({
   return (
     <div>
       {/* Day headers */}
-      <div className="grid grid-cols-7 mb-1">
+      <div className="mb-1 grid grid-cols-7">
         {DAYS.map((d) => (
-          <div key={d} className="text-center text-[11px] font-medium text-[var(--text-tertiary)]">
+          <div key={d} className="text-center font-medium text-[11px] text-[var(--text-tertiary)]">
             {d}
           </div>
         ))}
@@ -80,29 +80,30 @@ export function CalendarMonth({
 
           return (
             <button
+              type="button"
               key={idx}
               onClick={() => onSelectDate(day)}
               onMouseEnter={() => onHoverDate(day)}
               onMouseLeave={() => onHoverDate(null)}
               className={cn(
-                'relative h-7 w-full text-[12px] border-none cursor-pointer flex items-center justify-center transition-colors outline-none',
+                "relative flex h-7 w-full cursor-pointer items-center justify-center border-none text-[12px] outline-none transition-colors",
                 selected
-                  ? 'bg-[var(--color-primary)] text-white font-semibold'
+                  ? "bg-[var(--color-primary)] font-semibold text-white"
                   : inRange
-                    ? 'bg-[var(--color-primary)]/15 text-[var(--text-primary)]'
-                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]',
-                selectedStart && 'rounded-l-md rounded-r-none',
-                selectedEnd && 'rounded-r-md rounded-l-none',
-                inRange && !selected && 'rounded-none',
-                !inRange && !selected && 'rounded-md'
+                    ? "bg-[var(--color-primary)]/15 text-[var(--text-primary)]"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]",
+                selectedStart && "rounded-r-none rounded-l-md",
+                selectedEnd && "rounded-r-md rounded-l-none",
+                inRange && !selected && "rounded-none",
+                !inRange && !selected && "rounded-md"
               )}
             >
-              <span className="z-[1]">{format(day, 'd')}</span>
+              <span className="z-[1]">{format(day, "d")}</span>
               {today && (
                 <span
                   className={cn(
-                    'absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full',
-                    selected ? 'bg-white' : 'bg-[var(--color-primary)]'
+                    "-translate-x-1/2 absolute bottom-0.5 left-1/2 h-1 w-1 rounded-full",
+                    selected ? "bg-white" : "bg-[var(--color-primary)]"
                   )}
                 />
               )}

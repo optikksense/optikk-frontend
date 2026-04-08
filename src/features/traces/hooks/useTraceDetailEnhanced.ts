@@ -1,15 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
-import { tracesService } from '@shared/api/tracesService';
+import { tracesService } from "@shared/api/tracesService";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import type {
   CriticalPathSpan,
   ErrorPathSpan,
+  RelatedTrace,
   SpanAttributes,
   SpanEvent,
   SpanKindDuration,
   SpanSelfTime,
-  RelatedTrace,
-} from '../types';
+} from "../types";
 
 /**
  * @param activeDetailTab - The currently active tab in SpanDetailDrawer.
@@ -23,47 +23,47 @@ export function useTraceDetailEnhanced(
   relatedContext?: { service_name?: string; operation_name?: string } | null,
   startMs?: number,
   endMs?: number,
-  activeDetailTab: string = 'attributes'
+  activeDetailTab = "attributes"
 ) {
   const enabled = !!traceId;
 
   // Critical path + error path always load — used for waterfall span highlighting
   const { data: criticalPathData } = useQuery({
-    queryKey: ['trace-critical-path', traceId],
+    queryKey: ["trace-critical-path", traceId],
     queryFn: () => tracesService.getCriticalPath(traceId),
     enabled,
   });
 
   const { data: errorPathData } = useQuery({
-    queryKey: ['trace-error-path', traceId],
+    queryKey: ["trace-error-path", traceId],
     queryFn: () => tracesService.getErrorPath(traceId),
     enabled,
   });
 
   // Span kind breakdown — only when detail drawer is open
   const { data: spanKindData } = useQuery({
-    queryKey: ['trace-span-kind-breakdown', traceId],
+    queryKey: ["trace-span-kind-breakdown", traceId],
     queryFn: () => tracesService.getSpanKindBreakdown(traceId),
     enabled: enabled && !!selectedSpanId,
   });
 
   // Events — only when events tab is active
   const { data: spanEventsData } = useQuery({
-    queryKey: ['trace-span-events', traceId],
+    queryKey: ["trace-span-events", traceId],
     queryFn: () => tracesService.getSpanEvents(traceId),
-    enabled: enabled && activeDetailTab === 'events',
+    enabled: enabled && activeDetailTab === "events",
   });
 
   // Self-times — only when self-time tab is active
   const { data: spanSelfTimesData } = useQuery({
-    queryKey: ['trace-span-self-times', traceId],
+    queryKey: ["trace-span-self-times", traceId],
     queryFn: () => tracesService.getSpanSelfTimes(traceId),
-    enabled: enabled && activeDetailTab === 'selftime',
+    enabled: enabled && activeDetailTab === "selftime",
   });
 
   const { data: relatedTracesData } = useQuery({
     queryKey: [
-      'trace-related',
+      "trace-related",
       traceId,
       relatedContext?.service_name,
       relatedContext?.operation_name,
@@ -80,7 +80,7 @@ export function useTraceDetailEnhanced(
       ),
     enabled:
       enabled &&
-      activeDetailTab === 'related' &&
+      activeDetailTab === "related" &&
       !!relatedContext?.service_name &&
       !!relatedContext?.operation_name &&
       startMs != null &&
@@ -88,7 +88,7 @@ export function useTraceDetailEnhanced(
   });
 
   const { data: spanAttributesData, isLoading: spanAttributesLoading } = useQuery({
-    queryKey: ['span-attributes', traceId, selectedSpanId],
+    queryKey: ["span-attributes", traceId, selectedSpanId],
     queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!),
     enabled: !!selectedSpanId,
   });

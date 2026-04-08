@@ -7,4 +7,4 @@ export {
   Breadcrumbs as default,
   type BreadcrumbItem as BreadcrumbConfigItem,
   type BreadcrumbsProps,
-} from '@/components/ui/breadcrumb';
+} from "@/components/ui/breadcrumb";

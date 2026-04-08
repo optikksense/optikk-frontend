@@ -1,10 +1,10 @@
-import { useMemo, memo } from 'react';
+import { memo, useMemo } from "react";
 
-import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
-import { tsKey, tsMs, firstValue } from '@shared/utils/chartDataUtils';
-import { CHART_COLORS } from '@config/constants';
+import { CHART_COLORS } from "@config/constants";
+import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
+import { firstValue, tsKey, tsMs } from "@shared/utils/chartDataUtils";
 
-import ObservabilityChart from '../ObservabilityChart';
+import ObservabilityChart from "../ObservabilityChart";
 
 interface ChartRow {
   [key: string]: unknown;
@@ -47,7 +47,7 @@ function formatAxisValue(value: any) {
   if (abs >= 1) return n.toFixed(1);
   if (abs >= 0.1) return n.toFixed(2);
   if (abs > 0) return n.toFixed(3);
-  return '0';
+  return "0";
 }
 
 /**
@@ -68,9 +68,9 @@ export default memo(function RequestChart({
   serviceTimeseriesMap = {},
   height = 280,
   fillHeight = false,
-  datasetLabel = 'Requests/min',
+  datasetLabel = "Requests/min",
   color = CHART_COLORS[0],
-  valueKey = 'request_count',
+  valueKey = "request_count",
 }: RequestChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets } = useChartTimeBuckets();
@@ -80,20 +80,20 @@ export default memo(function RequestChart({
       return serviceTimeseriesMap[seriesKey];
     }
 
-    if (!seriesKey.includes('::')) {
+    if (!seriesKey.includes("::")) {
       return [];
     }
 
-    const [queueName] = seriesKey.split('::');
+    const [queueName] = seriesKey.split("::");
     return serviceTimeseriesMap[`${queueName}::unknown`] || serviceTimeseriesMap[queueName] || [];
   };
 
   const buildServiceDatasets = (endpointList: RequestChartEndpoint[]) => {
     const targetMap: Record<string, { label: string; seriesKey: string }> = {};
     for (const ep of endpointList) {
-      const selectionKey = ep.key || firstValue(ep, ['service_name'], '');
+      const selectionKey = ep.key || firstValue(ep, ["service_name"], "");
       const seriesKey = ep.seriesKey || ep.series_key || selectionKey;
-      const label = ep.endpoint || firstValue(ep, ['service_name'], '') || seriesKey;
+      const label = ep.endpoint || firstValue(ep, ["service_name"], "") || seriesKey;
       if (!targetMap[selectionKey]) targetMap[selectionKey] = { label, seriesKey };
     }
 
@@ -107,14 +107,14 @@ export default memo(function RequestChart({
       const tsMap: Record<string, number> = {};
 
       for (const row of tsData) {
-        const rowTimestamp = firstValue(row, ['timestamp', 'time_bucket'], '');
+        const rowTimestamp = firstValue(row, ["timestamp", "time_bucket"], "");
         if (!rowTimestamp) continue;
         const rowTime = tsMs(rowTimestamp);
         if (Number.isNaN(rowTime)) continue;
         const alignedTimeMs = Math.floor(rowTime / stepMs) * stepMs;
         const bucketKey = tsKey(new Date(alignedTimeMs).toISOString());
 
-        const value = Number(firstValue(row, [valueKey, 'request_count', 'value'], 0));
+        const value = Number(firstValue(row, [valueKey, "request_count", "value"], 0));
         tsMap[bucketKey] = (tsMap[bucketKey] || 0) + (Number.isFinite(value) ? value : 0);
       }
 
@@ -140,13 +140,13 @@ export default memo(function RequestChart({
                 ep.key ||
                 (() => {
                   const method = String(
-                    firstValue(ep, ['http_method', 'httpMethod'], '')
+                    firstValue(ep, ["http_method", "httpMethod"], "")
                   ).toUpperCase();
-                  const op = String(firstValue(ep, ['operation_name', 'endpoint_name'], 'Unknown'));
-                  const cleanOp = op.startsWith(method + ' ')
+                  const op = String(firstValue(ep, ["operation_name", "endpoint_name"], "Unknown"));
+                  const cleanOp = op.startsWith(`${method} `)
                     ? op.substring(method.length + 1)
                     : op;
-                  const serviceName = firstValue(ep, ['service_name'], '');
+                  const serviceName = firstValue(ep, ["service_name"], "");
                   return `${method} ${cleanOp}_${serviceName}`;
                 })();
               return selectedEndpoints.includes(key);
@@ -157,8 +157,8 @@ export default memo(function RequestChart({
         seriesList = buildServiceDatasets(list);
       } else {
         seriesList = list.map((ep, idx) => {
-          const method = firstValue(ep, ['http_method'], 'N/A');
-          const operation = firstValue(ep, ['operation_name', 'endpoint_name'], 'Unknown');
+          const method = firstValue(ep, ["http_method"], "N/A");
+          const operation = firstValue(ep, ["operation_name", "endpoint_name"], "Unknown");
           return {
             label: `${method} ${operation}`,
             values: timeBuckets.map(() => 0),
@@ -177,13 +177,13 @@ export default memo(function RequestChart({
         .map(([svcName, rows], idx) => {
           const tsMap: Record<string, number> = {};
           for (const row of rows) {
-            const rowTimestamp = firstValue(row, ['timestamp', 'time_bucket'], '');
+            const rowTimestamp = firstValue(row, ["timestamp", "time_bucket"], "");
             if (!rowTimestamp) continue;
             const rowTime = tsMs(rowTimestamp);
             if (Number.isNaN(rowTime)) continue;
             const alignedTimeMs = Math.floor(rowTime / stepMs) * stepMs;
             const bucketKey = tsKey(new Date(alignedTimeMs).toISOString());
-            const value = Number(firstValue(row, [valueKey, 'request_count', 'value'], 0));
+            const value = Number(firstValue(row, [valueKey, "request_count", "value"], 0));
             tsMap[bucketKey] = (tsMap[bucketKey] || 0) + (Number.isFinite(value) ? value : 0);
           }
           const values = timeBuckets.map((d) => tsMap[tsKey(d)] ?? 0);
@@ -192,8 +192,8 @@ export default memo(function RequestChart({
     } else {
       const dataMap: Record<string, number> = {};
       for (const d of data) {
-        const ts = firstValue(d, ['timestamp', 'time_bucket'], '');
-        dataMap[tsKey(ts)] = Number(firstValue(d, [valueKey, 'request_count', 'value'], 0));
+        const ts = firstValue(d, ["timestamp", "time_bucket"], "");
+        dataMap[tsKey(ts)] = Number(firstValue(d, [valueKey, "request_count", "value"], 0));
       }
       seriesList = [
         {
@@ -225,7 +225,7 @@ export default memo(function RequestChart({
   if (data.length === 0 && timeBuckets.length === 0) {
     return (
       <div className="flex h-full min-h-0 items-center justify-center">
-        <div style={{ color: 'var(--text-muted)' }}>No request data in selected time range</div>
+        <div style={{ color: "var(--text-muted)" }}>No request data in selected time range</div>
       </div>
     );
   }

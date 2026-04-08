@@ -1,7 +1,7 @@
-import { Badge, Surface, SimpleTable } from '@/components/ui';
-import { format as dateFnsFormat } from 'date-fns';
+import { Badge, SimpleTable, Surface } from "@/components/ui";
+import { format as dateFnsFormat } from "date-fns";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
 interface SloComplianceTableProps {
   timeseries: any[];
@@ -32,33 +32,33 @@ export default function SloComplianceTable({
 }: SloComplianceTableProps) {
   const complianceColumns: any[] = [
     {
-      title: 'Timestamp',
-      dataIndex: 'timestamp',
-      key: 'timestamp',
+      title: "Timestamp",
+      dataIndex: "timestamp",
+      key: "timestamp",
       render: (value: any) => (
-        <span className="font-mono" style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-          {dateFnsFormat(new Date(value), 'yyyy-MM-dd HH:mm')}
+        <span className="font-mono" style={{ fontSize: 12, color: "var(--text-muted)" }}>
+          {dateFnsFormat(new Date(value), "yyyy-MM-dd HH:mm")}
         </span>
       ),
     },
     {
-      title: 'Requests',
-      dataIndex: 'request_count',
-      key: 'request_count',
-      align: 'right' as const,
+      title: "Requests",
+      dataIndex: "request_count",
+      key: "request_count",
+      align: "right" as const,
       render: (value: any) => (
         <span style={{ fontWeight: 600 }}>{Number(value || 0).toLocaleString()}</span>
       ),
     },
     {
-      title: 'Errors',
-      dataIndex: 'error_count',
-      key: 'error_count',
-      align: 'right' as const,
+      title: "Errors",
+      dataIndex: "error_count",
+      key: "error_count",
+      align: "right" as const,
       render: (value: any) => (
         <span
           style={{
-            color: Number(value) > 0 ? APP_COLORS.hex_f04438 : 'var(--text-muted)',
+            color: Number(value) > 0 ? APP_COLORS.hex_f04438 : "var(--text-muted)",
             fontWeight: 600,
           }}
         >
@@ -67,10 +67,10 @@ export default function SloComplianceTable({
       ),
     },
     {
-      title: 'Availability',
-      dataIndex: 'availability_percent',
-      key: 'availability_percent',
-      align: 'right' as const,
+      title: "Availability",
+      dataIndex: "availability_percent",
+      key: "availability_percent",
+      align: "right" as const,
       sorter: (a: any, b: any) => n(a.availability_percent) - n(b.availability_percent),
       render: (value: any) => {
         const normalized = n(value);
@@ -88,10 +88,10 @@ export default function SloComplianceTable({
       },
     },
     {
-      title: 'Avg Latency',
-      dataIndex: 'avg_latency_ms',
-      key: 'avg_latency_ms',
-      align: 'right' as const,
+      title: "Avg Latency",
+      dataIndex: "avg_latency_ms",
+      key: "avg_latency_ms",
+      align: "right" as const,
       sorter: (a: any, b: any) => n(a.avg_latency_ms) - n(b.avg_latency_ms),
       render: (value: any) => {
         const normalized = n(value);
@@ -113,14 +113,14 @@ export default function SloComplianceTable({
       },
     },
     {
-      title: 'Status',
-      key: 'status',
-      align: 'center' as const,
+      title: "Status",
+      key: "status",
+      align: "center" as const,
       render: (_value: any, record: any) => {
         const compliant = n(record.availability_percent) >= availabilityTarget;
         return (
           <Badge
-            variant={compliant ? 'success' : 'error'}
+            variant={compliant ? "success" : "error"}
             style={{
               background: compliant
                 ? APP_COLORS.rgba_18_183_106_0p12
@@ -131,7 +131,7 @@ export default function SloComplianceTable({
               fontSize: 11,
             }}
           >
-            {compliant ? 'Compliant' : 'Breached'}
+            {compliant ? "Compliant" : "Breached"}
           </Badge>
         );
       },
@@ -144,14 +144,14 @@ export default function SloComplianceTable({
         Historical Compliance
         {timeseries.length > 0 && (
           <span
-            style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 12 }}
+            style={{ fontSize: 12, fontWeight: 400, color: "var(--text-muted)", marginLeft: 12 }}
           >
             {timeseries.length} windows
           </span>
         )}
       </h4>
       {isLoading ? (
-        <div className="text-center py-8 text-[var(--text-muted)]">Loading...</div>
+        <div className="py-8 text-center text-[var(--text-muted)]">Loading...</div>
       ) : (
         <SimpleTable
           columns={complianceColumns}
@@ -163,7 +163,7 @@ export default function SloComplianceTable({
           size="small"
           pagination={{ pageSize: 20, showSizeChanger: true }}
           rowClassName={(record: any) =>
-            n(record.availability_percent) < availabilityTarget ? 'high-error-row' : ''
+            n(record.availability_percent) < availabilityTarget ? "high-error-row" : ""
           }
         />
       )}

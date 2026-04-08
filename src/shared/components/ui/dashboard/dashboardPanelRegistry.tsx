@@ -1,14 +1,14 @@
-import { createContext, useContext, useMemo, useEffect } from 'react';
+import { createContext, use, useEffect, useMemo } from "react";
 
-import type { ComponentType, PropsWithChildren } from 'react';
+import type { ComponentType, PropsWithChildren } from "react";
 
 import type {
-  DashboardPanelSpec,
-  DashboardRecord,
   DashboardDataSources,
   DashboardExtraContext,
+  DashboardPanelSpec,
   DashboardPanelType,
-} from '@/types/dashboardConfig';
+  DashboardRecord,
+} from "@/types/dashboardConfig";
 
 export interface BaseChartComponentProps {
   data?: DashboardRecord[];
@@ -35,12 +35,12 @@ export interface DashboardPanelRendererProps {
 export type SpecializedDashboardRenderer = ComponentType<DashboardPanelRendererProps>;
 export type BaseChartDashboardRenderer = ComponentType<BaseChartComponentProps>;
 
-export type DashboardPanelRendererKind = 'base-chart' | 'specialized' | 'self-contained';
+export type DashboardPanelRendererKind = "base-chart" | "specialized" | "self-contained";
 
 type DashboardRendererComponent = SpecializedDashboardRenderer | BaseChartDashboardRenderer;
 
-import type { TimeRange } from '@/types';
-import { useTimeRange } from '@/app/store/appStore';
+import { useTimeRange } from "@/app/store/appStore";
+import type { TimeRange } from "@/types";
 
 export interface DashboardPanelRegistration {
   readonly panelType: DashboardPanelType;
@@ -98,7 +98,7 @@ export function DashboardPanelRegistryProvider({
 export function useDashboardPanelRegistration(
   panelType: DashboardPanelType | null | undefined
 ): DashboardPanelRegistration | null {
-  const registry = useContext(DashboardPanelRegistryContext);
+  const registry = use(DashboardPanelRegistryContext);
   if (!panelType) {
     return null;
   }

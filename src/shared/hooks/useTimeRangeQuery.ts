@@ -1,15 +1,15 @@
 import {
-  keepPreviousData,
-  useQuery,
   type QueryKey,
   type UseQueryOptions,
   type UseQueryResult,
-} from '@tanstack/react-query';
+  keepPreviousData,
+  useQuery,
+} from "@tanstack/react-query";
 
-import type { TimeRange } from '@/types';
-import { resolveTimeRangeBounds } from '@/types';
+import type { TimeRange } from "@/types";
+import { resolveTimeRangeBounds } from "@/types";
 
-import { useAppStore } from '@store/appStore';
+import { useTimeRange as useAppStoreTimeRange, useRefreshKey, useTeamId } from "@store/appStore";
 
 type QueryTime = string | number;
 
@@ -26,7 +26,7 @@ type TimeRangeQueryFunction<TData> = (
 
 type TimeRangeQueryOptions<TData> = Omit<
   UseQueryOptions<TData, Error, TData, QueryKey>,
-  'queryKey' | 'queryFn'
+  "queryKey" | "queryFn"
 > & {
   extraKeys?: QueryKey;
 };
@@ -38,7 +38,7 @@ function getBounds(timeRange: TimeRange): TimeRangeBounds {
 
 /** Stable key for cache invalidation */
 function rangeKey(timeRange: TimeRange): string {
-  if (timeRange.kind === 'relative') return timeRange.preset;
+  if (timeRange.kind === "relative") return timeRange.preset;
   return `${timeRange.startMs}-${timeRange.endMs}`;
 }
 
@@ -50,7 +50,9 @@ export function useTimeRangeQuery<TData = unknown>(
   queryFn: TimeRangeQueryFunction<TData>,
   options: TimeRangeQueryOptions<TData> = {}
 ): UseQueryResult<TData, Error> {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useAppStoreTimeRange();
+  const refreshKey = useRefreshKey();
   const { extraKeys = [], enabled, ...queryOptions } = options;
 
   return useQuery<TData, Error>({
@@ -62,7 +64,7 @@ export function useTimeRangeQuery<TData = unknown>(
     enabled: Boolean(selectedTeamId) && enabled !== false,
     staleTime: 0,
     gcTime: 30_000,
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     placeholderData: keepPreviousData,
     ...queryOptions,
   });
@@ -77,7 +79,9 @@ export function useTimeRange(): {
   refreshKey: number;
   getTimeRange: () => TimeRangeBounds;
 } {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useAppStoreTimeRange();
+  const refreshKey = useRefreshKey();
 
   return {
     selectedTeamId,

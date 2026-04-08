@@ -1,5 +1,5 @@
-import { Tooltip } from '@/components/ui';
-import { CHART_THEME_DEFAULTS } from '@shared/utils/chartTheme';
+import { Tooltip } from "@/components/ui";
+import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
 
 export interface DonutChartSegment {
   readonly color: string;
@@ -39,7 +39,7 @@ export default function DonutChart({
       height={size}
       viewBox={`0 0 ${size} ${size}`}
       role="img"
-      aria-label={centerLabel ?? 'Donut chart'}
+      aria-label={centerLabel ?? "Donut chart"}
     >
       <circle
         cx={center}

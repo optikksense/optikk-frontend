@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 interface QueryField {
   key: string;
@@ -24,27 +24,27 @@ export default function QueryValuePicker({
 
   return (
     <>
-      <div className="flex items-center gap-1.5 px-3.5 pt-[10px] pb-2 text-[11px] text-muted-foreground border-b border-border tracking-[0.04em]">
-        <span className="text-[14px] w-5 text-center shrink-0">{pendingField.icon}</span>
+      <div className="flex items-center gap-1.5 border-border border-b px-3.5 pt-[10px] pb-2 text-[11px] text-muted-foreground tracking-[0.04em]">
+        <span className="w-5 shrink-0 text-center text-[14px]">{pendingField.icon}</span>
         <strong>{pendingField.label}</strong>
-        <span className="text-muted-foreground ml-1">— select value</span>
+        <span className="ml-1 text-muted-foreground">— select value</span>
       </div>
       {filteredHints.map((hint) => (
         <div
           key={hint}
-          className="flex items-center gap-2 px-3.5 py-[9px] cursor-pointer text-[12.5px] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-10)] first:rounded-t-[10px] last:rounded-b-[10px]"
+          className="flex cursor-pointer items-center gap-2 px-3.5 py-[9px] text-[12.5px] transition-colors duration-100 first:rounded-t-[10px] last:rounded-b-[10px] hover:bg-[var(--color-primary-subtle-10)]"
           onClick={() => onPickValue(hint)}
         >
-          <span className="text-foreground flex-1">{hint}</span>
+          <span className="flex-1 text-foreground">{hint}</span>
         </div>
       ))}
-      {filteredHints.length === 0 && valueInput !== '' && (
-        <div className="px-3.5 py-[18px] text-muted-foreground text-xs text-center">
+      {filteredHints.length === 0 && valueInput !== "" && (
+        <div className="px-3.5 py-[18px] text-center text-muted-foreground text-xs">
           No suggestions match "{valueInput}"
         </div>
       )}
-      {filteredHints.length === 0 && valueInput === '' && (
-        <div className="px-3.5 py-[18px] text-muted-foreground text-xs text-center">
+      {filteredHints.length === 0 && valueInput === "" && (
+        <div className="px-3.5 py-[18px] text-center text-muted-foreground text-xs">
           No suggestions available
         </div>
       )}

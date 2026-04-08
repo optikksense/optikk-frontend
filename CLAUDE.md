@@ -20,8 +20,8 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 
 ## Quick reference
 
-- **Stack**: React 18, Vite 5, TypeScript, TanStack Query v5, React Router 6, Zustand 4.5, Tailwind 3.4, uPlot 1.6, Zod
-- **Entry**: `src/main.tsx` → `src/app/App.tsx` → `src/app/routes/appRoutes.tsx`
+- **Stack**: React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Zustand 5, Tailwind 3.4, uPlot 1.6, Zod
+- **Entry**: `src/main.tsx` → `src/app/App.tsx` → `src/app/routes/router.tsx`
 - **Feature registry**: `src/app/registry/domainRegistry.ts` — 7 domains: overview, metrics, logs, traces, infrastructure, ai, settings
 - **Route constants**: `src/shared/constants/routes.ts`
 - **HTTP client**: `src/shared/api/api/client.ts`

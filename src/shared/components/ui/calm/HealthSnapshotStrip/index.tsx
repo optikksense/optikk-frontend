@@ -1,7 +1,7 @@
-import { Skeleton, Surface } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { Skeleton, Surface } from "@/components/ui";
+import { cn } from "@/lib/utils";
 
-import HealthRing, { type HealthStatus } from '../HealthRing';
+import HealthRing, { type HealthStatus } from "../HealthRing";
 
 /**
  *
@@ -25,16 +25,16 @@ export default function HealthSnapshotStrip({
   onServiceClick,
   loading = false,
 }: HealthSnapshotStripProps) {
-  const healthy = services.filter((s) => s.status === 'healthy').length;
-  const degraded = services.filter((s) => s.status === 'degraded').length;
-  const critical = services.filter((s) => s.status === 'critical').length;
+  const healthy = services.filter((s) => s.status === "healthy").length;
+  const degraded = services.filter((s) => s.status === "degraded").length;
+  const critical = services.filter((s) => s.status === "critical").length;
 
   if (loading) {
     return (
       <Surface
         elevation={1}
         padding="sm"
-        className="flex items-center gap-4 mb-[var(--space-section-gap,20px)] min-h-[80px]"
+        className="mb-[var(--space-section-gap,20px)] flex min-h-[80px] items-center gap-4"
       >
         <Skeleton count={1} />
       </Surface>
@@ -47,10 +47,10 @@ export default function HealthSnapshotStrip({
     <Surface
       elevation={1}
       padding="sm"
-      className="flex items-center gap-4 mb-[var(--space-section-gap,20px)]"
+      className="mb-[var(--space-section-gap,20px)] flex items-center gap-4"
     >
       {/* Rings — horizontally scrollable, hides scrollbar */}
-      <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {services.map((svc) => (
           <HealthRing
             key={svc.name}
@@ -65,19 +65,19 @@ export default function HealthSnapshotStrip({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-3 flex-shrink-0 pl-4 border-l border-[var(--border-light)]">
+      <div className="flex flex-shrink-0 items-center gap-3 border-[var(--border-light)] border-l pl-4">
         {healthy > 0 && (
-          <span className="text-[11px] font-medium whitespace-nowrap text-[color:var(--color-healthy)]">
+          <span className="whitespace-nowrap font-medium text-[11px] text-[color:var(--color-healthy)]">
             {healthy} healthy
           </span>
         )}
         {degraded > 0 && (
-          <span className="text-[11px] font-medium whitespace-nowrap text-[color:var(--color-degraded)]">
+          <span className="whitespace-nowrap font-medium text-[11px] text-[color:var(--color-degraded)]">
             {degraded} degraded
           </span>
         )}
         {critical > 0 && (
-          <span className="text-[11px] font-semibold whitespace-nowrap text-[color:var(--color-critical)]">
+          <span className="whitespace-nowrap font-semibold text-[11px] text-[color:var(--color-critical)]">
             {critical} critical
           </span>
         )}

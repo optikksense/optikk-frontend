@@ -1,9 +1,9 @@
-import { z } from 'zod';
-import type { UserId, TeamId, TraceId, SpanId } from '@shared/types/branded';
+import type { SpanId, TeamId, TraceId, UserId } from "@shared/types/branded";
+import { z } from "zod";
 
 export const teamSchema = z
   .object({
-    id: z.number().brand<'TeamId'>(),
+    id: z.number().brand<"TeamId">(),
     name: z.string().min(1),
     orgName: z.string().optional(),
   })
@@ -11,7 +11,7 @@ export const teamSchema = z
 
 export const userSchema = z
   .object({
-    id: z.union([z.string(), z.number()]).brand<'UserId'>(),
+    id: z.union([z.string(), z.number()]).brand<"UserId">(),
     email: z.string().email(),
     name: z.string().optional(),
     teams: z.array(teamSchema).optional(),

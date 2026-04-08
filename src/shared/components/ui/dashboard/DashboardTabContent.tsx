@@ -1,10 +1,10 @@
-import type { DashboardTabDocument } from '@/types/dashboardConfig';
-import { LayoutDashboard } from 'lucide-react';
+import type { DashboardTabDocument } from "@/types/dashboardConfig";
+import { LayoutDashboard } from "lucide-react";
 
-import { useComponentDataFetcher } from '@shared/hooks/useComponentDataFetcher';
-import { EmptyState } from '@shared/components/ui/feedback';
+import { EmptyState } from "@shared/components/ui/feedback";
+import { useComponentDataFetcher } from "@shared/hooks/useComponentDataFetcher";
 
-import ConfigurableDashboard from './ConfigurableDashboard';
+import ConfigurableDashboard from "./ConfigurableDashboard";
 
 interface DashboardTabContentProps {
   tab: DashboardTabDocument;

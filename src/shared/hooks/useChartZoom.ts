@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import { useAppStore } from '@store/appStore';
+import { useAppStore } from "@store/appStore";
 
 /**
  * Hook that provides an ECharts onEvents handler for chart zoom.
@@ -14,7 +14,7 @@ import { useAppStore } from '@store/appStore';
  * @param timestamps Array of timestamps (ms or ISO strings) corresponding to x-axis data points
  */
 export function useChartZoom(timestamps: (number | string)[]) {
-  const { setCustomTimeRange } = useAppStore();
+  const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
 
   const handleDataZoom = useCallback(
     (params: any) => {
@@ -29,11 +29,11 @@ export function useChartZoom(timestamps: (number | string)[]) {
       );
 
       const startTs =
-        typeof timestamps[startIdx] === 'string'
+        typeof timestamps[startIdx] === "string"
           ? new Date(timestamps[startIdx]).getTime()
           : (timestamps[startIdx] as number);
       const endTs =
-        typeof timestamps[endIdx] === 'string'
+        typeof timestamps[endIdx] === "string"
           ? new Date(timestamps[endIdx]).getTime()
           : (timestamps[endIdx] as number);
 

@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
-import type { DashboardSectionSpec } from '@/types/dashboardConfig';
+import type { DashboardSectionSpec } from "@/types/dashboardConfig";
 
-import SectionHeader from './SectionHeader';
+import SectionHeader from "./SectionHeader";
 
 interface DashboardSectionProps {
   section: DashboardSectionSpec;
@@ -13,12 +13,12 @@ interface DashboardSectionProps {
 }
 
 function readCollapsedState(storageKey: string): boolean {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return false;
   }
 
   try {
-    return window.localStorage.getItem(storageKey) === 'true';
+    return window.localStorage.getItem(storageKey) === "true";
   } catch {
     return false;
   }
@@ -29,7 +29,7 @@ export default function DashboardSection({ section, storageKey, children }: Dash
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(storageKey, collapsed ? 'true' : 'false');
+      window.localStorage.setItem(storageKey, collapsed ? "true" : "false");
     } catch {
       // Ignore storage write failures; collapse state is a view preference only.
     }

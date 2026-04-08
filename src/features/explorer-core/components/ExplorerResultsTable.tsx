@@ -1,22 +1,22 @@
-import { SimpleTable, Skeleton } from '@/components/ui';
-import { PageSurface } from '@shared/components/ui';
+import { SimpleTable, Skeleton } from "@/components/ui";
+import { PageSurface } from "@shared/components/ui";
 
-import type { SimpleTableColumn, SimpleTableProps } from '@/components/ui';
+import type { SimpleTableColumn, SimpleTableProps } from "@/components/ui";
 
 interface ExplorerResultsTableProps<RowType extends Record<string, unknown>> {
   title: string;
   subtitle?: string;
   rows: RowType[];
   columns: SimpleTableColumn<RowType>[];
-  rowKey: SimpleTableProps<RowType>['rowKey'];
+  rowKey: SimpleTableProps<RowType>["rowKey"];
   isLoading?: boolean;
   page: number;
   pageSize: number;
   total: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
-  onRow?: SimpleTableProps<RowType>['onRow'];
-  rowClassName?: SimpleTableProps<RowType>['rowClassName'];
+  onRow?: SimpleTableProps<RowType>["onRow"];
+  rowClassName?: SimpleTableProps<RowType>["rowClassName"];
   toolbar?: React.ReactNode;
   /** When false, all rows render with no pager (e.g. live tail buffer). Default true. */
   showPagination?: boolean;
@@ -40,11 +40,11 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
   showPagination = true,
 }: ExplorerResultsTableProps<RowType>): JSX.Element {
   return (
-    <PageSurface padding="lg" className="min-h-0 min-w-0 w-full">
+    <PageSurface padding="lg" className="min-h-0 w-full min-w-0">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
-          {subtitle ? <p className="mt-1 text-xs text-[var(--text-muted)]">{subtitle}</p> : null}
+          <h3 className="font-semibold text-[var(--text-primary)] text-sm">{title}</h3>
+          {subtitle ? <p className="mt-1 text-[var(--text-muted)] text-xs">{subtitle}</p> : null}
         </div>
         {toolbar}
       </div>
@@ -76,7 +76,7 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
           }
           onRow={onRow}
           rowClassName={rowClassName}
-          className="[&_td]:align-top [&_td]:py-2.5 [&_th]:py-2.5"
+          className="[&_td]:py-2.5 [&_td]:align-top [&_th]:py-2.5"
         />
       )}
     </PageSurface>

@@ -1,45 +1,43 @@
 /**
  * Metrics Service — API calls for core metrics (services, endpoints, timeseries).
  */
-import { API_CONFIG } from '@config/apiConfig';
-import { z } from 'zod';
+import { API_CONFIG } from "@config/apiConfig";
+import { z } from "zod";
 
-import api from './api';
+import api from "./api";
 import {
-  errorGroupSchema,
-  type ErrorGroupDto,
-  enrichedTopologySchema,
-  type EnrichedTopologyDto,
-  endpointMetricSchema,
   type EndpointMetricDto,
-  metricNumericValueSchema,
+  type EnrichedTopologyDto,
+  type ErrorGroupDto,
   type MetricNumericValue,
-  metricsTimeSeriesPointSchema,
   type MetricsTimeSeriesPointDto,
-  resourceUsageByInstanceRowSchema,
   type ResourceUsageByInstanceRowDto,
-  resourceUsageByServiceRowSchema,
   type ResourceUsageByServiceRowDto,
-  resourceUsageTimeSeriesPointSchema,
   type ResourceUsageTimeSeriesPointDto,
-  serviceDependencySchema,
-  type ServiceDependencyDto,
-  serviceDependencyDetailSchema,
   type ServiceDependencyDetailDto,
-  serviceDependencyGraphSchema,
   type ServiceDependencyGraphDto,
-  serviceErrorTimeSeriesSchema,
   type ServiceErrorTimeSeriesDto,
-  spanAnalysisRowSchema,
-  type SpanAnalysisRowDto,
-  serviceInfraMetricsSchema,
   type ServiceInfraMetricsDto,
-  topologyClusterSchema,
+  type SpanAnalysisRowDto,
   type TopologyClusterDto,
-} from './schemas/metricsSchemas';
+  endpointMetricSchema,
+  enrichedTopologySchema,
+  errorGroupSchema,
+  metricNumericValueSchema,
+  metricsTimeSeriesPointSchema,
+  resourceUsageByInstanceRowSchema,
+  resourceUsageByServiceRowSchema,
+  resourceUsageTimeSeriesPointSchema,
+  serviceDependencyDetailSchema,
+  serviceDependencyGraphSchema,
+  serviceErrorTimeSeriesSchema,
+  serviceInfraMetricsSchema,
+  spanAnalysisRowSchema,
+  topologyClusterSchema,
+} from "./schemas/metricsSchemas";
 const serviceSummarySchema = z
   .object({
-    service_name: z.string().default(''),
+    service_name: z.string().default(""),
     request_count: z.coerce.number().default(0),
     error_count: z.coerce.number().default(0),
     error_rate: z.coerce.number().default(0),
@@ -51,8 +49,8 @@ const serviceSummarySchema = z
   .strict();
 
 type ServiceSummary = z.infer<typeof serviceSummarySchema>;
-import type { QueryParams, RequestTime } from './service-types';
-import { validateResponse } from './utils/validate';
+import type { QueryParams, RequestTime } from "./service-types";
+import { validateResponse } from "./utils/validate";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -146,7 +144,7 @@ function normalizeServiceMetric(row: ServiceSummary): ServiceMetric {
 
 function normalizeTimeSeriesPoint(row: MetricsTimeSeriesPointDto): TimeSeriesPoint {
   return {
-    timestamp: row.timestamp || row.time_bucket || '',
+    timestamp: row.timestamp || row.time_bucket || "",
     serviceName: row.service_name,
     operationName: row.operation_name,
     httpMethod: row.http_method,
@@ -215,23 +213,12 @@ export const metricsService = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    interval = '5m'
+    interval = "5m"
   ): Promise<MetricsTimeSeriesPointDto[]> {
     return getArrayResponse(`${BASE}/services/timeseries`, metricsTimeSeriesPointSchema, {
       startTime,
       endTime,
       interval,
-    });
-  },
-
-  async getServiceDependencies(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime
-  ): Promise<ServiceDependencyDto[]> {
-    return getArrayResponse(`${BASE}/services/dependencies`, serviceDependencySchema, {
-      startTime,
-      endTime,
     });
   },
 
@@ -365,7 +352,7 @@ export const metricsService = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime,
-    interval = '5m',
+    interval = "5m",
     serviceName?: string
   ): Promise<MetricsTimeSeriesPointDto[]> {
     return getArrayResponse(`${BASE}/errors/timeseries`, metricsTimeSeriesPointSchema, {
@@ -546,7 +533,7 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-    interval = '5m'
+    interval = "5m"
   ): Promise<MetricsTimeSeriesPointDto[]> {
     return getArrayResponse(
       `${BASE}/overview/errors/service-error-rate`,
@@ -565,7 +552,7 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-    interval = '5m'
+    interval = "5m"
   ): Promise<MetricsTimeSeriesPointDto[]> {
     return getArrayResponse(`${BASE}/overview/errors/error-volume`, metricsTimeSeriesPointSchema, {
       startTime,
@@ -580,7 +567,7 @@ export const metricsService = {
     startTime: RequestTime,
     endTime: RequestTime,
     serviceName?: string,
-    interval = '5m'
+    interval = "5m"
   ): Promise<MetricsTimeSeriesPointDto[]> {
     return getArrayResponse(
       `${BASE}/overview/errors/latency-during-error-windows`,

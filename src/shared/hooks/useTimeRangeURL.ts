@@ -1,15 +1,15 @@
-import { useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useEffect, useRef } from "react";
 
-import type { TimeRange, RelativeTimeRange } from '@/types';
+import type { RelativeTimeRange, TimeRange } from "@/types";
 
-import { TIME_RANGES } from '@config/constants';
+import { TIME_RANGES } from "@config/constants";
 
-import { useAppStore } from '@store/appStore';
+import { useAppStore, useTimeRange } from "@store/appStore";
 
-const PARAM_FROM = 'from';
-const PARAM_TO = 'to';
-const PARAM_TZ = 'tz';
+const PARAM_FROM = "from";
+const PARAM_TO = "to";
+const PARAM_TZ = "tz";
 
 /** Matches "now-Xm", "now-Xh", "now-Xd" */
 const RELATIVE_RE = /^now-(\d+)(m|h|d)$/;
@@ -21,20 +21,20 @@ function presetToUrlValue(preset: string): string {
 function urlValueToPreset(val: string): RelativeTimeRange | null {
   const m = RELATIVE_RE.exec(val);
   if (!m) return null;
-  const num = parseInt(m[1], 10);
+  const num = Number.parseInt(m[1], 10);
   const unit = m[2];
   let minutes: number;
   let presetStr: string;
   switch (unit) {
-    case 'm':
+    case "m":
       minutes = num;
       presetStr = `${num}m`;
       break;
-    case 'h':
+    case "h":
       minutes = num * 60;
       presetStr = `${num}h`;
       break;
-    case 'd':
+    case "d":
       minutes = num * 1440;
       presetStr = `${num}d`;
       break;
@@ -43,14 +43,14 @@ function urlValueToPreset(val: string): RelativeTimeRange | null {
   }
   const found = TIME_RANGES.find((r) => r.preset === presetStr);
   if (found) return found;
-  return { kind: 'relative', preset: presetStr, label: `Last ${num}${unit}`, minutes };
+  return { kind: "relative", preset: presetStr, label: `Last ${num}${unit}`, minutes };
 }
 
 function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | null {
   if (!from) return null;
 
   // Relative: from=now-6h, to=now (or absent)
-  if (from.startsWith('now-') && (!to || to === 'now')) {
+  if (from.startsWith("now-") && (!to || to === "now")) {
     return urlValueToPreset(from);
   }
 
@@ -59,10 +59,10 @@ function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | 
   const endMs = Number(to);
   if (Number.isFinite(startMs) && Number.isFinite(endMs) && startMs < endMs) {
     return {
-      kind: 'absolute',
+      kind: "absolute",
       startMs,
       endMs,
-      label: 'Custom range',
+      label: "Custom range",
     };
   }
 
@@ -70,8 +70,8 @@ function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | 
 }
 
 function timeRangeToUrlParams(r: TimeRange): { from: string; to: string } {
-  if (r.kind === 'relative') {
-    return { from: presetToUrlValue(r.preset), to: 'now' };
+  if (r.kind === "relative") {
+    return { from: presetToUrlValue(r.preset), to: "now" };
   }
   return { from: String(r.startMs), to: String(r.endMs) };
 }
@@ -91,7 +91,10 @@ function timeRangeToUrlParams(r: TimeRange): { from: string; to: string } {
  */
 export function useTimeRangeURL(): void {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { timeRange, timezone, setTimeRange, setTimezone } = useAppStore();
+  const timeRange = useTimeRange();
+  const timezone = useAppStore((s) => s.timezone);
+  const setTimeRange = useAppStore((s) => s.setTimeRange);
+  const setTimezone = useAppStore((s) => s.setTimezone);
   const initializedRef = useRef(false);
   const skipNextUrlUpdateRef = useRef(false);
 
@@ -113,11 +116,18 @@ export function useTimeRangeURL(): void {
     } else {
       // No URL params — push store to URL
       const params = timeRangeToUrlParams(timeRange);
-      const next = new URLSearchParams(searchParams);
-      next.set(PARAM_FROM, params.from);
-      next.set(PARAM_TO, params.to);
-      if (timezone !== 'local') next.set(PARAM_TZ, timezone);
-      setSearchParams(next, { replace: true });
+      setSearchParams(
+        (prevSearchParams) => {
+          const next = new URLSearchParams(prevSearchParams);
+          next.set(PARAM_FROM, params.from);
+          next.set(PARAM_TO, params.to);
+          if (timezone !== "local") {
+            next.set(PARAM_TZ, timezone);
+          }
+          return next;
+        },
+        { replace: true }
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -131,15 +141,20 @@ export function useTimeRangeURL(): void {
     }
 
     const params = timeRangeToUrlParams(timeRange);
-    const next = new URLSearchParams(searchParams);
-    next.set(PARAM_FROM, params.from);
-    next.set(PARAM_TO, params.to);
-    if (timezone !== 'local') {
-      next.set(PARAM_TZ, timezone);
-    } else {
-      next.delete(PARAM_TZ);
-    }
-    setSearchParams(next, { replace: true });
+    setSearchParams(
+      (prevSearchParams) => {
+        const next = new URLSearchParams(prevSearchParams);
+        next.set(PARAM_FROM, params.from);
+        next.set(PARAM_TO, params.to);
+        if (timezone !== "local") {
+          next.set(PARAM_TZ, timezone);
+        } else {
+          next.delete(PARAM_TZ);
+        }
+        return next;
+      },
+      { replace: true }
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange, timezone]);
 
@@ -153,9 +168,10 @@ export function useTimeRangeURL(): void {
 
     if (!parsed) return;
 
-    // Check if URL differs from current store
-    const current = timeRangeToUrlParams(timeRange);
-    if (current.from === (urlFrom ?? '') && current.to === (urlTo ?? '')) return;
+    const currentParams = timeRangeToUrlParams(timeRange);
+    const parsedParams = timeRangeToUrlParams(parsed);
+
+    if (currentParams.from === parsedParams.from && currentParams.to === parsedParams.to) return;
 
     skipNextUrlUpdateRef.current = true;
     setTimeRange(parsed);

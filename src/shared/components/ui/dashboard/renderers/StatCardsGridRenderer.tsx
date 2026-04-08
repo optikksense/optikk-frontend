@@ -1,13 +1,13 @@
-import { Activity, AlertCircle, Clock, Zap } from 'lucide-react';
-import { useMemo } from 'react';
+import { Activity, AlertCircle, Clock, Zap } from "lucide-react";
+import { useMemo } from "react";
 
-import { StatCardsGrid } from '@shared/components/ui';
-import { formatDuration, formatNumber } from '@shared/utils/formatters';
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
+import { StatCardsGrid } from "@shared/components/ui";
+import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
-import { useDashboardData } from '../hooks/useDashboardData';
+import { useDashboardData } from "../hooks/useDashboardData";
 
-import type { DashboardPanelRendererProps } from '../dashboardPanelRegistry';
+import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
 export function StatCardsGridRenderer({
   chartConfig,
@@ -18,7 +18,7 @@ export function StatCardsGridRenderer({
 
   const summary = useMemo(() => {
     // If backend returns a single summary object it's often in rawData (not data array)
-    if (rawData && typeof rawData === 'object' && !Array.isArray(rawData)) {
+    if (rawData && typeof rawData === "object" && !Array.isArray(rawData)) {
       const s = rawData as any;
       const totalRequests = Number(s.total_requests ?? 0);
       const errorCount = Number(s.error_count ?? 0);
@@ -61,7 +61,7 @@ export function StatCardsGridRenderer({
         stats={[
           {
             metric: {
-              title: 'Total Requests',
+              title: "Total Requests",
               value: summary.totalRequests,
               formatter: formatNumber,
             },
@@ -69,18 +69,18 @@ export function StatCardsGridRenderer({
           },
           {
             metric: {
-              title: 'Error Rate',
+              title: "Error Rate",
               value: Number(Math.max(0, summary.errorRate).toFixed(2)),
-              suffix: '%',
+              suffix: "%",
             },
             visuals: { icon: <AlertCircle size={20} />, iconColor: APP_COLORS.hex_f04438 },
           },
           {
-            metric: { title: 'Avg Latency', value: summary.avgLatency, formatter: formatDuration },
+            metric: { title: "Avg Latency", value: summary.avgLatency, formatter: formatDuration },
             visuals: { icon: <Clock size={20} />, iconColor: APP_COLORS.hex_f79009 },
           },
           {
-            metric: { title: 'P95 Latency', value: summary.p95Latency, formatter: formatDuration },
+            metric: { title: "P95 Latency", value: summary.p95Latency, formatter: formatDuration },
             visuals: { icon: <Zap size={20} />, iconColor: APP_COLORS.hex_06aed5 },
           },
         ]}

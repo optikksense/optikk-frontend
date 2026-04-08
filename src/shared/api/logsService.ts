@@ -1,15 +1,15 @@
 /**
  * Logs Service — API calls for log ingestion and retrieval.
  */
-import { API_CONFIG } from '@config/apiConfig';
-import { z } from 'zod';
+import { API_CONFIG } from "@config/apiConfig";
+import { z } from "zod";
 
-import api from './api';
-import { validateResponse } from './utils/validate';
-import { logRecordSchema, logVolumeSchema } from './schemas/logsSchemas';
+import api from "./api";
+import { logRecordSchema, logVolumeSchema } from "./schemas/logsSchemas";
+import { validateResponse } from "./utils/validate";
 
-import type { LogRecord, LogVolume } from './schemas/logsSchemas';
-import type { QueryParams, RequestTime } from './service-types';
+import type { LogRecord, LogVolume } from "./schemas/logsSchemas";
+import type { QueryParams, RequestTime } from "./service-types";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 

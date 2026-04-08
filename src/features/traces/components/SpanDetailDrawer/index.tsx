@@ -1,18 +1,16 @@
-import { useRef, useState } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { useNavigate } from 'react-router-dom';
-import { Tabs, Badge, Input, Surface, Skeleton } from '@/components/ui';
-import { formatDuration, formatTimestamp } from '@shared/utils/formatters';
-import type { SpanAttributes, SpanEvent, SpanSelfTime, RelatedTrace } from '../../types';
-import './SpanDetailDrawer.css';
+import { Badge, Input, Skeleton, Surface, Tabs } from "@/components/ui";
+import { formatDuration, formatTimestamp } from "@shared/utils/formatters";
+import { useNavigate } from "@tanstack/react-router";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useRef, useState } from "react";
+import type { RelatedTrace, SpanAttributes, SpanEvent, SpanSelfTime } from "../../types";
+import "./SpanDetailDrawer.css";
 
-const STATUS_VARIANT: Record<string, 'success' | 'error' | 'default'> = {
-  ERROR: 'error',
-  OK: 'success',
-  UNSET: 'default',
+const STATUS_VARIANT: Record<string, "success" | "error" | "default"> = {
+  ERROR: "error",
+  OK: "success",
+  UNSET: "default",
 };
-
-
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -28,12 +26,10 @@ function KVRow({ label, value, mono }: { label: string; value?: string | null; m
   return (
     <div className="sdd-kv">
       <span className="sdd-kv__label">{label}</span>
-      <span className={`sdd-kv__value ${mono ? 'font-mono' : ''}`}>{value}</span>
+      <span className={`sdd-kv__value ${mono ? "font-mono" : ""}`}>{value}</span>
     </div>
   );
 }
-
-
 
 function VirtualizedAttrTable({ attrs }: { attrs: [string, string][] }) {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -65,9 +61,9 @@ function VirtualizedAttrTable({ attrs }: { attrs: [string, string][] }) {
       <div
         ref={parentRef}
         className="sdd-attr-table__body"
-        style={{ maxHeight: 400, overflow: 'auto' }}
+        style={{ maxHeight: 400, overflow: "auto" }}
       >
-        <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
+        <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const [k, v] = attrs[virtualRow.index];
             return (
@@ -75,14 +71,14 @@ function VirtualizedAttrTable({ attrs }: { attrs: [string, string][] }) {
                 key={k}
                 className="sdd-attr-table__row"
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: virtualRow.start,
-                  width: '100%',
+                  width: "100%",
                   height: virtualRow.size,
                 }}
               >
                 <span className="sdd-attr-table__col-key font-mono text-xs">{k}</span>
-                <span className="sdd-attr-table__col-val font-mono text-xs break-word">{v}</span>
+                <span className="sdd-attr-table__col-val break-word font-mono text-xs">{v}</span>
               </div>
             );
           })}
@@ -92,10 +88,8 @@ function VirtualizedAttrTable({ attrs }: { attrs: [string, string][] }) {
   );
 }
 
-
-
 function AttributesTab({ attrs, loading }: { attrs: SpanAttributes | null; loading: boolean }) {
-  const [attrSearch, setAttrSearch] = useState('');
+  const [attrSearch, setAttrSearch] = useState("");
   if (loading)
     return (
       <div className="sdd-center">
@@ -107,17 +101,17 @@ function AttributesTab({ attrs, loading }: { attrs: SpanAttributes | null; loadi
   const allAttrs = { ...attrs.attributes };
   const filteredAttrs = Object.entries(allAttrs).filter(
     ([k, v]) =>
-      attrSearch === '' ||
+      attrSearch === "" ||
       k.toLowerCase().includes(attrSearch.toLowerCase()) ||
-      (v ?? '').toLowerCase().includes(attrSearch.toLowerCase())
+      (v ?? "").toLowerCase().includes(attrSearch.toLowerCase())
   );
 
   const hasHTTP =
-    attrs.attributesString?.['http.method'] ||
-    attrs.attributesString?.['http.url'] ||
-    attrs.attributesString?.['http.status_code'];
+    attrs.attributesString?.["http.method"] ||
+    attrs.attributesString?.["http.url"] ||
+    attrs.attributesString?.["http.status_code"];
   const hasDB = attrs.dbSystem || attrs.dbName || attrs.dbStatement;
-  const hasRPC = attrs.attributesString?.['rpc.system'] || attrs.attributesString?.['rpc.service'];
+  const hasRPC = attrs.attributesString?.["rpc.system"] || attrs.attributesString?.["rpc.service"];
 
   return (
     <div>
@@ -140,20 +134,20 @@ function AttributesTab({ attrs, loading }: { attrs: SpanAttributes | null; loadi
 
       {hasHTTP && (
         <Section title="HTTP">
-          <KVRow label="Method" value={attrs.attributesString?.['http.method']} />
+          <KVRow label="Method" value={attrs.attributesString?.["http.method"]} />
           <KVRow
             label="URL"
-            value={attrs.attributesString?.['http.url'] || attrs.attributesString?.['url.full']}
+            value={attrs.attributesString?.["http.url"] || attrs.attributesString?.["url.full"]}
             mono
           />
           <KVRow
             label="Status Code"
             value={
-              attrs.attributesString?.['http.status_code'] ||
-              attrs.attributesString?.['http.response.status_code']
+              attrs.attributesString?.["http.status_code"] ||
+              attrs.attributesString?.["http.response.status_code"]
             }
           />
-          <KVRow label="Route" value={attrs.attributesString?.['http.route']} />
+          <KVRow label="Route" value={attrs.attributesString?.["http.route"]} />
         </Section>
       )}
 
@@ -161,7 +155,7 @@ function AttributesTab({ attrs, loading }: { attrs: SpanAttributes | null; loadi
         <Section title="Database">
           <KVRow label="System" value={attrs.dbSystem} />
           <KVRow label="Database" value={attrs.dbName} />
-          <KVRow label="Operation" value={attrs.attributesString?.['db.operation']} />
+          <KVRow label="Operation" value={attrs.attributesString?.["db.operation"]} />
           {attrs.dbStatement && (
             <div className="mt-xs">
               <div className="sdd-sublabel">Statement</div>
@@ -179,10 +173,10 @@ function AttributesTab({ attrs, loading }: { attrs: SpanAttributes | null; loadi
 
       {hasRPC && (
         <Section title="RPC">
-          <KVRow label="System" value={attrs.attributesString?.['rpc.system']} />
-          <KVRow label="Service" value={attrs.attributesString?.['rpc.service']} />
-          <KVRow label="Method" value={attrs.attributesString?.['rpc.method']} />
-          <KVRow label="gRPC Status" value={attrs.attributesString?.['rpc.grpc.status_code']} />
+          <KVRow label="System" value={attrs.attributesString?.["rpc.system"]} />
+          <KVRow label="Service" value={attrs.attributesString?.["rpc.service"]} />
+          <KVRow label="Method" value={attrs.attributesString?.["rpc.method"]} />
+          <KVRow label="gRPC Status" value={attrs.attributesString?.["rpc.grpc.status_code"]} />
         </Section>
       )}
 
@@ -208,8 +202,6 @@ function AttributesTab({ attrs, loading }: { attrs: SpanAttributes | null; loadi
   );
 }
 
-
-
 function EventsTab({
   events,
   selectedSpanId,
@@ -228,7 +220,7 @@ function EventsTab({
     <div className="flex-col gap-xs">
       {spanEvents.map((ev, idx) => {
         const key = `${ev.spanId}-${idx}`;
-        const isException = ev.eventName === 'exception';
+        const isException = ev.eventName === "exception";
         let parsed: Record<string, string> = {};
         try {
           parsed = JSON.parse(ev.attributes);
@@ -238,7 +230,7 @@ function EventsTab({
         const isExpanded = expanded.has(key);
 
         return (
-          <div key={key} className={`sdd-event ${isException ? 'sdd-event--error' : ''}`}>
+          <div key={key} className={`sdd-event ${isException ? "sdd-event--error" : ""}`}>
             <div
               className="sdd-event__header"
               onClick={() => {
@@ -254,22 +246,22 @@ function EventsTab({
                 });
               }}
             >
-              <span className="font-mono text-xs text-muted">{formatTimestamp(ev.timestamp)}</span>
-              <Badge variant={isException ? 'error' : 'default'}>{ev.eventName}</Badge>
-              {parsed['exception.type'] && (
-                <span className="text-sm text-error font-medium">{parsed['exception.type']}</span>
+              <span className="font-mono text-muted text-xs">{formatTimestamp(ev.timestamp)}</span>
+              <Badge variant={isException ? "error" : "default"}>{ev.eventName}</Badge>
+              {parsed["exception.type"] && (
+                <span className="font-medium text-error text-sm">{parsed["exception.type"]}</span>
               )}
-              {isException && <span className="sdd-event__toggle">{isExpanded ? '▲' : '▼'}</span>}
+              {isException && <span className="sdd-event__toggle">{isExpanded ? "▲" : "▼"}</span>}
             </div>
 
             {isException && isExpanded && (
               <div className="mt-xs">
-                {parsed['exception.message'] && (
-                  <div className="text-sm text-secondary mb-xs">{parsed['exception.message']}</div>
+                {parsed["exception.message"] && (
+                  <div className="mb-xs text-secondary text-sm">{parsed["exception.message"]}</div>
                 )}
-                {parsed['exception.stacktrace'] && (
+                {parsed["exception.stacktrace"] && (
                   <pre className="sdd-stacktrace sdd-stacktrace--error">
-                    {parsed['exception.stacktrace']}
+                    {parsed["exception.stacktrace"]}
                   </pre>
                 )}
               </div>
@@ -281,8 +273,6 @@ function EventsTab({
   );
 }
 
-
-
 function SelfTimeTab({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
   if (selfTimes.length === 0) {
     return <div className="sdd-center sdd-empty">No self-time data available</div>;
@@ -292,7 +282,7 @@ function SelfTimeTab({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
 
   return (
     <div>
-      <div className="flex-col gap-xs mb-md">
+      <div className="mb-md flex-col gap-xs">
         {top20.map((s) => {
           const selfPct = s.totalDurationMs > 0 ? (s.selfTimeMs / s.totalDurationMs) * 100 : 0;
           const childPct = 100 - selfPct;
@@ -300,7 +290,7 @@ function SelfTimeTab({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
           return (
             <div key={s.spanId}>
               <div className="sdd-selftime__label">
-                <span className="font-mono truncate">{s.operationName}</span>
+                <span className="truncate font-mono">{s.operationName}</span>
                 <span>{formatDuration(s.selfTimeMs)} self</span>
               </div>
               <div className="sdd-selftime__bar" style={{ width: `${barWidth * 100}%` }}>
@@ -338,7 +328,7 @@ function SelfTimeTab({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
         <div className="sdd-attr-table__body">
           {top20.map((s) => (
             <div key={s.spanId} className="sdd-attr-table__row">
-              <span className="font-mono text-xs truncate" style={{ flex: 2 }}>
+              <span className="truncate font-mono text-xs" style={{ flex: 2 }}>
                 {s.operationName}
               </span>
               <span style={{ width: 70 }}>{formatDuration(s.totalDurationMs)}</span>
@@ -347,7 +337,7 @@ function SelfTimeTab({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
               <span style={{ width: 60 }}>
                 {s.totalDurationMs > 0
                   ? `${((s.selfTimeMs / s.totalDurationMs) * 100).toFixed(1)}%`
-                  : '—'}
+                  : "—"}
               </span>
             </div>
           ))}
@@ -356,8 +346,6 @@ function SelfTimeTab({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
     </div>
   );
 }
-
-
 
 function RelatedTab({ traces }: { traces: RelatedTrace[] }) {
   const navigate = useNavigate();
@@ -377,13 +365,13 @@ function RelatedTab({ traces }: { traces: RelatedTrace[] }) {
           <div
             key={t.traceId}
             className="sdd-attr-table__row sdd-attr-table__row--clickable"
-            onClick={() => navigate(`/traces/${t.traceId}`)}
+            onClick={() => navigate({ to: `/traces/${t.traceId}` })}
           >
-            <span className="font-mono text-xs" style={{ flex: 2, color: 'var(--color-primary)' }}>
+            <span className="font-mono text-xs" style={{ flex: 2, color: "var(--color-primary)" }}>
               {t.traceId.slice(0, 16)}…
             </span>
             <span style={{ width: 80 }}>
-              <Badge variant={STATUS_VARIANT[t.status] ?? 'default'}>{t.status || 'UNSET'}</Badge>
+              <Badge variant={STATUS_VARIANT[t.status] ?? "default"}>{t.status || "UNSET"}</Badge>
             </span>
             <span style={{ width: 90 }}>{formatDuration(t.durationMs)}</span>
             <span style={{ flex: 1 }}>{formatTimestamp(t.startTime)}</span>
@@ -393,8 +381,6 @@ function RelatedTab({ traces }: { traces: RelatedTrace[] }) {
     </div>
   );
 }
-
-
 
 interface Props {
   selectedSpanId: string | null;
@@ -427,13 +413,13 @@ export default function SpanDetailDrawer({
     <Surface elevation={1} padding="md" className="span-detail-drawer">
       <div className="sdd-header">
         <div>
-          <div className="sdd-header__name">{selectedSpan?.operation_name || 'Span Detail'}</div>
+          <div className="sdd-header__name">{selectedSpan?.operation_name || "Span Detail"}</div>
           <div className="sdd-header__meta">
-            <Badge variant={STATUS_VARIANT[selectedSpan?.status ?? ''] ?? 'default'}>
-              {selectedSpan?.status || 'UNSET'}
+            <Badge variant={STATUS_VARIANT[selectedSpan?.status ?? ""] ?? "default"}>
+              {selectedSpan?.status || "UNSET"}
             </Badge>
-            <span className="text-xs text-muted">
-              {selectedSpan?.duration_ms != null ? formatDuration(selectedSpan.duration_ms) : ''}
+            <span className="text-muted text-xs">
+              {selectedSpan?.duration_ms != null ? formatDuration(selectedSpan.duration_ms) : ""}
             </span>
           </div>
         </div>
@@ -445,25 +431,25 @@ export default function SpanDetailDrawer({
         variant="compact"
         size="sm"
         items={[
-          { key: 'attributes', label: 'Attributes' },
-          { key: 'events', label: `Events${eventCount > 0 ? ` (${eventCount})` : ''}` },
-          { key: 'selftime', label: 'Self-Time' },
+          { key: "attributes", label: "Attributes" },
+          { key: "events", label: `Events${eventCount > 0 ? ` (${eventCount})` : ""}` },
+          { key: "selftime", label: "Self-Time" },
           {
-            key: 'related',
-            label: `Related${relatedTraces.length > 0 ? ` (${relatedTraces.length})` : ''}`,
+            key: "related",
+            label: `Related${relatedTraces.length > 0 ? ` (${relatedTraces.length})` : ""}`,
           },
         ]}
       />
 
       <div className="sdd-tab-content">
-        {activeTab === 'attributes' && (
+        {activeTab === "attributes" && (
           <AttributesTab attrs={spanAttributes} loading={spanAttributesLoading} />
         )}
-        {activeTab === 'events' && (
+        {activeTab === "events" && (
           <EventsTab events={spanEvents} selectedSpanId={selectedSpanId} />
         )}
-        {activeTab === 'selftime' && <SelfTimeTab selfTimes={spanSelfTimes} />}
-        {activeTab === 'related' && <RelatedTab traces={relatedTraces} />}
+        {activeTab === "selftime" && <SelfTimeTab selfTimes={spanSelfTimes} />}
+        {activeTab === "related" && <RelatedTab traces={relatedTraces} />}
       </div>
     </Surface>
   );

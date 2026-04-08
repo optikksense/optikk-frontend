@@ -1,7 +1,7 @@
-import type { DashboardRecord, DashboardRuntimeValue } from '@/types/dashboardConfig';
+import type { DashboardRecord, DashboardRuntimeValue } from "@/types/dashboardConfig";
 
 export function isDashboardRecord(value: unknown): value is DashboardRecord {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export function asDashboardRecord(value: unknown): DashboardRecord | null {

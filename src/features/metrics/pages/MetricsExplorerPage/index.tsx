@@ -1,16 +1,16 @@
-import { BarChart3, Share2 } from 'lucide-react';
-import { useCallback } from 'react';
-import toast from 'react-hot-toast';
+import { BarChart3, Share2 } from "lucide-react";
+import { useCallback } from "react";
+import toast from "react-hot-toast";
 
-import { Button } from '@/components/ui';
-import { PageHeader, PageShell, PageSurface } from '@shared/components/ui';
+import { Button } from "@shared/components/primitives/ui/button";
+import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 
-import { MetricQueryBuilder } from '../../components/MetricQueryBuilder/MetricQueryBuilder';
-import { MetricsExplorerChart } from '../../components/MetricsExplorerChart';
-import { MetricsExplorerToolbar } from '../../components/MetricsExplorerToolbar';
-import { useMetricsExplorer } from '../../hooks/useMetricsExplorer';
-import { useMetricsExplorerQuery } from '../../hooks/useMetricsExplorerQuery';
-import type { MetricExplorerResults } from '../../types';
+import { MetricQueryBuilder } from "../../components/MetricQueryBuilder/MetricQueryBuilder";
+import { MetricsExplorerChart } from "../../components/MetricsExplorerChart";
+import { MetricsExplorerToolbar } from "../../components/MetricsExplorerToolbar";
+import { useMetricsExplorer } from "../../hooks/useMetricsExplorer";
+import { useMetricsExplorerQuery } from "../../hooks/useMetricsExplorerQuery";
+import type { MetricExplorerResults } from "../../types";
 
 export default function MetricsExplorerPage() {
   const {
@@ -37,7 +37,7 @@ export default function MetricsExplorerPage() {
 
   const handleShare = useCallback(() => {
     void navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard');
+    toast.success("Link copied to clipboard");
   }, []);
 
   return (

@@ -1,6 +1,6 @@
-import type { FlamegraphFrame } from '@shared/api/schemas/tracesSchemas';
+import type { FlamegraphFrame } from "@shared/api/schemas/tracesSchemas";
 
-import type { FlamegraphNode } from '../types';
+import type { FlamegraphNode } from "../types";
 
 /**
  * Converts a depth-first list of frames (with level) from GET /traces/:id/flamegraph
@@ -53,7 +53,7 @@ export function flamegraphFramesToTree(frames: FlamegraphFrame[]): FlamegraphNod
   }
 
   const synthetic: FlamegraphNode = {
-    name: 'Trace',
+    name: "Trace",
     value: roots.reduce((acc, r) => acc + r.value, 0),
     children: roots,
   };

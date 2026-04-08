@@ -1,5 +1,5 @@
-import { cellValue } from '../../utils/analyticsResult';
-import type { ExplorerAnalyticsResult } from '../../api/explorerAnalyticsApi';
+import type { ExplorerAnalyticsResult } from "../../api/explorerAnalyticsApi";
+import { cellValue } from "../../utils/analyticsResult";
 
 interface AnalyticsPieChartProps {
   result: ExplorerAnalyticsResult;
@@ -7,14 +7,14 @@ interface AnalyticsPieChartProps {
 }
 
 const COLORS = [
-  'rgba(77,166,200,0.85)',
-  'rgba(147,112,219,0.85)',
-  'rgba(240,180,96,0.85)',
-  'rgba(96,200,140,0.85)',
-  'rgba(240,96,120,0.85)',
+  "rgba(77,166,200,0.85)",
+  "rgba(147,112,219,0.85)",
+  "rgba(240,180,96,0.85)",
+  "rgba(96,200,140,0.85)",
+  "rgba(240,96,120,0.85)",
 ];
 
-export function AnalyticsPieChart({ result, className = '' }: AnalyticsPieChartProps): JSX.Element {
+export function AnalyticsPieChart({ result, className = "" }: AnalyticsPieChartProps): JSX.Element {
   const { columns, rows } = result;
   if (columns.length < 2 || rows.length === 0) {
     return (
@@ -28,7 +28,7 @@ export function AnalyticsPieChart({ result, className = '' }: AnalyticsPieChartP
   const metric = columns[columns.length - 1];
   const slices = rows
     .map((row) => ({
-      label: String(cellValue(row, dim) ?? ''),
+      label: String(cellValue(row, dim) ?? ""),
       value: Number(cellValue(row, metric) ?? 0),
     }))
     .filter((s) => s.label);
@@ -42,7 +42,7 @@ export function AnalyticsPieChart({ result, className = '' }: AnalyticsPieChartP
       const end = acc / total;
       return `${COLORS[i % COLORS.length]} ${start * 100}% ${end * 100}%`;
     })
-    .join(', ');
+    .join(", ");
 
   return (
     <div className={`flex flex-wrap items-center gap-8 ${className}`}>
@@ -60,7 +60,7 @@ export function AnalyticsPieChart({ result, className = '' }: AnalyticsPieChartP
               />
               <span className="truncate text-[var(--text-primary)]">{s.label}</span>
             </span>
-            <span className="font-mono tabular-nums text-[var(--text-muted)]">
+            <span className="font-mono text-[var(--text-muted)] tabular-nums">
               {((s.value / total) * 100).toFixed(1)}%
             </span>
           </li>

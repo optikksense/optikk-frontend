@@ -21,11 +21,11 @@ alwaysApply: true
 
 ## Stack
 
-React 18, Vite 5, TypeScript, TanStack Query v5, React Router 6, Tailwind 3.4, Zustand 4.5, uPlot 1.6. Quality: `npm run ci`.
+React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, Zustand 5, uPlot 1.6. Quality: `npm run ci`.
 
 ## Entry points
 
-- `src/main.tsx`, `src/app/App.tsx`, `src/app/routes/appRoutes.tsx`
+- `src/main.tsx`, `src/app/App.tsx`, `src/app/routes/router.tsx`
 - Feature registry: `src/app/registry/domainRegistry.ts` — 7 domains: overview, metrics, logs, traces, infrastructure, ai, settings
 - Routes: `src/shared/constants/routes.ts` — includes **`ROUTES.service`** (`/service`) → `ServiceHubPage`; pass **`?serviceName=`** for deployment dashboard panel params (`{serviceName}` interpolation)
 
@@ -161,7 +161,7 @@ export const myConfig: DomainConfig = {
 - **TanStack Query**: all server/API state — caching, background refetch, deduplication
 - **Local state** (React `useState`): component-specific UI
 - **Never** duplicate server state in Zustand — TanStack Query is source of truth for API data
-- Selectors: `useTimeRange()`, `useTeamId()`, `useRefreshKey()`, `useTheme()`, `useTimezone()`, `useComparisonMode()`
+- Selectors: `useTimeRange()`, `useTeamId()`, `useRefreshKey()`, `useTheme()`, `useTimezone()`, `useComparisonMode()` — **Must use atomic selectors** to avoid unnecessary re-renders. (e.g. `const teamId = useTeamId()`)
 
 ### CSS theming
 

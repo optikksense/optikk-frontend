@@ -1,21 +1,21 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Check } from 'lucide-react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
-import './Product.css';
-import DashboardMockup from './DashboardMockup';
-import TraceMockup from './TraceMockup';
-import ServiceMap from './ServiceMap';
-import MarketingNav from './MarketingNav';
-import MarketingFooter from './MarketingFooter';
-import CodeTabs from './CodeTabs';
+import "./Product.css";
+import CodeTabs from "./CodeTabs";
+import DashboardMockup from "./DashboardMockup";
+import MarketingFooter from "./MarketingFooter";
+import MarketingNav from "./MarketingNav";
+import ServiceMap from "./ServiceMap";
+import TraceMockup from "./TraceMockup";
 
-const OPTIKK_TOKEN = import.meta.env['VITE_OPTIKK_TOKEN'] ?? 'YOUR_TOKEN';
+const OPTIKK_TOKEN = import.meta.env.VITE_OPTIKK_TOKEN ?? "YOUR_TOKEN";
 
 export default function ProductPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'traces' | 'map'>('overview');
+  const [activeTab, setActiveTab] = useState<"overview" | "traces" | "map">("overview");
 
   const DOCKER_CMD = `services:
   optikk:
@@ -63,14 +63,14 @@ volumes:
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.08 }}
                 >
-                  Observe{' '}
+                  Observe{" "}
                 </motion.span>
                 <motion.span
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.16 }}
                 >
-                  everything.{' '}
+                  everything.{" "}
                 </motion.span>
               </span>
               <br />
@@ -80,7 +80,7 @@ volumes:
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.24 }}
                 >
-                  Debug{' '}
+                  Debug{" "}
                 </motion.span>
                 <motion.span
                   initial={{ opacity: 0, y: 40 }}
@@ -109,12 +109,17 @@ volumes:
               transition={{ duration: 0.5, delay: 0.7 }}
               className="hero-ctas"
             >
-              <button className="btn-primary" onClick={() => navigate('/login')}>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => navigate({ to: "/login" })}
+              >
                 Deploy Now
               </button>
               <button
+                type="button"
                 className="btn-ghost"
-                onClick={() => window.open('https://youtube.com', '_blank')}
+                onClick={() => window.open("https://youtube.com", "_blank")}
               >
                 <span className="play-icon">▶</span> Watch Demo
               </button>
@@ -158,18 +163,18 @@ volumes:
         <div className="ticker-track">
           <div className="ticker-content">
             {[
-              'Stripe',
-              'Vercel',
-              'Notion',
-              'Linear',
-              'Figma',
-              'Shopify',
-              'Cloudflare',
-              'Stripe',
-              'Vercel',
-              'Notion',
-              'Linear',
-              'Figma',
+              "Stripe",
+              "Vercel",
+              "Notion",
+              "Linear",
+              "Figma",
+              "Shopify",
+              "Cloudflare",
+              "Stripe",
+              "Vercel",
+              "Notion",
+              "Linear",
+              "Figma",
             ].map((name, i) => (
               <span key={i} className="ticker-item">
                 {name}
@@ -184,7 +189,7 @@ volumes:
         className="tour-section"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-100px' }}
+        viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6 }}
       >
         <div className="section-header center">
@@ -195,17 +200,18 @@ volumes:
         </div>
 
         <div className="tour-tabs">
-          {(['overview', 'traces', 'map'] as const).map((tab) => (
+          {(["overview", "traces", "map"] as const).map((tab) => (
             <button
+              type="button"
               key={tab}
-              className={`tour-tab ${activeTab === tab ? 'active' : ''}`}
+              className={`tour-tab ${activeTab === tab ? "active" : ""}`}
               onClick={() => setActiveTab(tab)}
             >
               {activeTab === tab && (
                 <motion.div layoutId="tour-indicator" className="tour-indicator" />
               )}
-              <span style={{ position: 'relative', zIndex: 1, textTransform: 'capitalize' }}>
-                {tab === 'map' ? 'Service Map' : tab === 'overview' ? 'Overview & SLOs' : tab}
+              <span style={{ position: "relative", zIndex: 1, textTransform: "capitalize" }}>
+                {tab === "map" ? "Service Map" : tab === "overview" ? "Overview & SLOs" : tab}
               </span>
             </button>
           ))}
@@ -219,11 +225,11 @@ volumes:
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.15 } }}
               transition={{ duration: 0.4 }}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             >
-              {activeTab === 'overview' && <DashboardMockup compact />}
-              {activeTab === 'traces' && <TraceMockup />}
-              {activeTab === 'map' && <ServiceMap />}
+              {activeTab === "overview" && <DashboardMockup compact />}
+              {activeTab === "traces" && <TraceMockup />}
+              {activeTab === "map" && <ServiceMap />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -234,35 +240,35 @@ volumes:
         <div className="features-grid">
           {[
             {
-              title: 'Real-time Metrics',
-              desc: 'PromQL compatible, backend-driven dashboards, and instant service visibility.',
+              title: "Real-time Metrics",
+              desc: "PromQL compatible, backend-driven dashboards, and instant service visibility.",
             },
             {
-              title: 'Distributed Tracing',
-              desc: 'OpenTelemetry native, flame graphs, trace-to-log correlation.',
+              title: "Distributed Tracing",
+              desc: "OpenTelemetry native, flame graphs, trace-to-log correlation.",
             },
             {
-              title: 'Centralized Logs',
-              desc: 'Full-text search, structured + unstructured, live tail.',
+              title: "Centralized Logs",
+              desc: "Full-text search, structured + unstructured, live tail.",
             },
             {
-              title: 'SLOs & Reliability',
-              desc: 'Error budgets, burn-rate analysis, and service health tracking.',
+              title: "SLOs & Reliability",
+              desc: "Error budgets, burn-rate analysis, and service health tracking.",
             },
             {
-              title: 'Service Maps',
-              desc: 'Auto-discovered topology, dependency graphs, health overlays.',
+              title: "Service Maps",
+              desc: "Auto-discovered topology, dependency graphs, health overlays.",
             },
             {
-              title: 'AI Observability',
-              desc: 'LLM token usage, latency, hallucination rate tracking.',
+              title: "AI Observability",
+              desc: "LLM token usage, latency, hallucination rate tracking.",
             },
           ].map((f, i) => (
             <motion.div
               key={f.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="feature-card component-card"
             >
@@ -293,34 +299,34 @@ volumes:
               • CLIENT SDKs
             </div>
             <h2 className="section-title">Instrument in minutes, not hours</h2>
-            <p className="section-subtitle" style={{ textAlign: 'left', margin: '0 0 32px 0' }}>
+            <p className="section-subtitle" style={{ textAlign: "left", margin: "0 0 32px 0" }}>
               Optikk is built on OpenTelemetry — the industry standard. Use the official OTel SDKs
               you already know. No proprietary agents. No vendor lock-in. Your data, your way.
             </p>
             <ul className="otel-checklist">
               <li>
-                <Check size={16} className="text-cyan" />{' '}
+                <Check size={16} className="text-cyan" />{" "}
                 <span>
                   <strong>Zero-config tracing</strong> — automatic span propagation across HTTP and
                   gRPC
                 </span>
               </li>
               <li>
-                <Check size={16} className="text-cyan" />{' '}
+                <Check size={16} className="text-cyan" />{" "}
                 <span>
                   <strong>Structured log shipping</strong> — JSON logs with automatic trace
                   correlation
                 </span>
               </li>
               <li>
-                <Check size={16} className="text-cyan" />{' '}
+                <Check size={16} className="text-cyan" />{" "}
                 <span>
                   <strong>Custom metrics</strong> — counters, histograms, gauges with exemplar
                   support
                 </span>
               </li>
               <li>
-                <Check size={16} className="text-cyan" />{' '}
+                <Check size={16} className="text-cyan" />{" "}
                 <span>
                   <strong>OTLP native</strong> — drop-in replacement for any OTel-compatible backend
                 </span>
@@ -331,9 +337,9 @@ volumes:
             <CodeTabs
               tabs={[
                 {
-                  id: 'go',
-                  label: 'Go',
-                  language: 'go',
+                  id: "go",
+                  label: "Go",
+                  language: "go",
                   code: `import (
   "go.opentelemetry.io/otel"
   "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -358,9 +364,9 @@ func initTracer(ctx context.Context) {
 }`,
                 },
                 {
-                  id: 'python',
-                  label: 'Python',
-                  language: 'python',
+                  id: "python",
+                  label: "Python",
+                  language: "python",
                   code: `from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.trace import TracerProvider
@@ -376,9 +382,9 @@ trace.set_tracer_provider(provider)
 tracer = trace.get_tracer("my-service")`,
                 },
                 {
-                  id: 'java',
-                  label: 'Java',
-                  language: 'java',
+                  id: "java",
+                  label: "Java",
+                  language: "java",
                   code: `OpenTelemetrySdk.builder()
     .setTracerProvider(
         SdkTracerProvider.builder()
@@ -394,9 +400,9 @@ tracer = trace.get_tracer("my-service")`,
     .buildAndRegisterGlobal();`,
                 },
                 {
-                  id: 'node',
-                  label: 'Node.js',
-                  language: 'typescript',
+                  id: "node",
+                  label: "Node.js",
+                  language: "typescript",
                   code: `import { NodeSDK } from '@opentelemetry/sdk-node'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc'
 import { resourceFromAttributes } from '@opentelemetry/resources'
@@ -424,7 +430,7 @@ sdk.start()`,
         className="selfhost-section"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-100px' }}
+        viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6 }}
       >
         <div className="selfhost-grid">
@@ -441,7 +447,7 @@ sdk.start()`,
                 rel="noreferrer"
                 className="btn-ghost"
               >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <svg aria-hidden="true">
                   <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57" />
                 </svg>
                 View on GitHub
@@ -457,14 +463,14 @@ sdk.start()`,
             </div>
           </div>
           <div className="selfhost-code component-card" style={{ padding: 16 }}>
-            <div style={{ display: 'flex', gap: 6, marginBottom: 12, paddingLeft: 4 }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F57' }} />
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FEBC2E' }} />
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28C840' }} />
+            <div style={{ display: "flex", gap: 6, marginBottom: 12, paddingLeft: 4 }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF5F57" }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#FEBC2E" }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#28C840" }} />
             </div>
             <CodeTabs
               tabs={[
-                { id: 'yaml', label: 'docker-compose.yml', language: 'yaml', code: DOCKER_CMD },
+                { id: "yaml", label: "docker-compose.yml", language: "yaml", code: DOCKER_CMD },
               ]}
             />
           </div>

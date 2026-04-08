@@ -50,19 +50,19 @@ export default function BoardSkeleton({
   const tableMinWidth = fixedWidth + flexColumnWidth;
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 min-h-0">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       {/* scroll wrapper */}
       <div className="h-full min-w-0 overflow-auto">
-        <div className="min-w-full" style={{ width: 'max-content', minWidth: tableMinWidth }}>
+        <div className="min-w-full" style={{ width: "max-content", minWidth: tableMinWidth }}>
           {/* header */}
           <div
-            className="flex p-0 border-b border-[color:var(--glass-border)] text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground sticky top-0 bg-[rgba(255,255,255,0.02)] z-20 select-none"
-            style={{ width: 'max-content', minWidth: '100%' }}
+            className="sticky top-0 z-20 flex select-none border-[color:var(--glass-border)] border-b bg-[rgba(255,255,255,0.02)] p-0 font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.05em]"
+            style={{ width: "max-content", minWidth: "100%" }}
           >
             {fixedColumns.map((column) => (
               <div
                 key={column.key}
-                className="relative flex items-center shrink-0 border-r border-[color:var(--glass-border)] px-3 py-[9px] whitespace-nowrap overflow-hidden text-ellipsis box-border"
+                className="relative box-border flex shrink-0 items-center overflow-hidden text-ellipsis whitespace-nowrap border-[color:var(--glass-border)] border-r px-3 py-[9px]"
                 style={{ width: colWidths[column.key] }}
               >
                 {column.label}
@@ -70,7 +70,7 @@ export default function BoardSkeleton({
             ))}
             {flexColumn && (
               <div
-                className="relative flex items-center border-[color:var(--glass-border)] px-3 py-[9px] whitespace-nowrap overflow-hidden text-ellipsis box-border flex-1 border-r-0"
+                className="relative box-border flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap border-[color:var(--glass-border)] border-r-0 px-3 py-[9px]"
                 style={{ flex: `1 0 ${flexColumnWidth}px`, minWidth: flexColumnWidth }}
               >
                 {flexColumn.label}
@@ -78,27 +78,27 @@ export default function BoardSkeleton({
             )}
           </div>
           {/* rows */}
-          <div className="flex-1 flex flex-col min-w-0 min-h-0">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {Array.from({ length: rowCount }).map((_, index) => (
               <div
                 key={index}
-                className="flex items-baseline cursor-pointer border-b border-[color:var(--glass-border)] font-mono text-xs"
+                className="flex cursor-pointer items-baseline border-[color:var(--glass-border)] border-b font-mono text-xs"
                 style={{
                   minWidth: tableMinWidth,
-                  padding: '10px 12px',
+                  padding: "10px 12px",
                   gap: 16,
-                  width: 'max-content',
+                  width: "max-content",
                 }}
               >
                 {fixedColumns.map((column) => (
                   <div key={column.key} style={{ width: colWidths[column.key], flexShrink: 0 }}>
                     <div
-                      className="h-[13px] rounded animate-oboard-shimmer"
+                      className="h-[13px] animate-oboard-shimmer rounded"
                       style={{
                         width: randomWidth(skeletonBaseWidth, skeletonWidthRange),
                         background:
-                          'linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%)',
-                        backgroundSize: '1200px 100%',
+                          "linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%)",
+                        backgroundSize: "1200px 100%",
                       }}
                     />
                   </div>
@@ -106,12 +106,12 @@ export default function BoardSkeleton({
                 {flexColumn && (
                   <div style={{ flex: `1 0 ${flexColumnWidth}px`, minWidth: flexColumnWidth }}>
                     <div
-                      className="h-[13px] rounded animate-oboard-shimmer"
+                      className="h-[13px] animate-oboard-shimmer rounded"
                       style={{
                         width: randomWidth(skeletonFlexBaseWidth, skeletonFlexWidthRange),
                         background:
-                          'linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%)',
-                        backgroundSize: '1200px 100%',
+                          "linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%)",
+                        backgroundSize: "1200px 100%",
                       }}
                     />
                   </div>

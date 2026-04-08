@@ -1,20 +1,20 @@
-import { useInfiniteQuery, InfiniteData, keepPreviousData } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { type InfiniteData, keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import { logsService } from '@shared/api/logsService';
+import { logsService } from "@shared/api/logsService";
 
-import { resolveTimeRangeBounds } from '@/types';
+import { resolveTimeRangeBounds } from "@/types";
 
-import { useAppStore } from '@store/appStore';
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 
 import {
-  getLogsFromPage,
-  getHasMoreFromPage,
-  getNextCursorFromPage,
-  getTimestampMs,
   compareIdsDesc,
   extractServerTotal,
-} from '@shared/utils/logUtils';
+  getHasMoreFromPage,
+  getLogsFromPage,
+  getNextCursorFromPage,
+  getTimestampMs,
+} from "@shared/utils/logUtils";
 
 interface LogRow extends Record<string, unknown> {
   id?: string | number;
@@ -46,7 +46,9 @@ export function useInfiniteLogs({
   liveTail = false,
   pageSize = 100,
 }: UseInfiniteLogsOptions) {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
 
   // Pin the time window so all pages share the same boundaries
   const { stableStart, stableEnd } = useMemo(() => {
@@ -62,25 +64,25 @@ export function useInfiniteLogs({
     string | number | bigint | null
   >({
     queryKey: [
-      'logs-v2-infinite',
+      "logs-v2-infinite",
       selectedTeamId,
-      timeRange.kind === 'relative' ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`,
+      timeRange.kind === "relative" ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`,
       pageSize,
       backendParams,
       refreshKey,
     ],
     queryFn: ({ pageParam }) => {
       const cursor =
-        typeof pageParam === 'bigint'
+        typeof pageParam === "bigint"
           ? String(pageParam)
-          : typeof pageParam === 'string' || typeof pageParam === 'number'
+          : typeof pageParam === "string" || typeof pageParam === "number"
             ? pageParam
             : undefined;
 
       return logsService.getLogs(selectedTeamId, stableStart, stableEnd, {
         ...backendParams,
         limit: pageSize,
-        direction: 'desc',
+        direction: "desc",
         ...(cursor !== undefined ? { cursor } : {}),
       });
     },
@@ -103,15 +105,15 @@ export function useInfiniteLogs({
     const unique: LogRow[] = [];
 
     for (const rawLog of raw) {
-      const log: LogRow = typeof rawLog === 'object' && rawLog !== null ? (rawLog as LogRow) : {};
-      const id = String(log?.id ?? '').trim();
-      const traceId = log?.traceId || log?.trace_id || '';
-      const spanId = log?.spanId || log?.span_id || '';
-      const serviceName = log?.serviceName || log?.service_name || '';
+      const log: LogRow = typeof rawLog === "object" && rawLog !== null ? (rawLog as LogRow) : {};
+      const id = String(log?.id ?? "").trim();
+      const traceId = log?.traceId || log?.trace_id || "";
+      const spanId = log?.spanId || log?.span_id || "";
+      const serviceName = log?.serviceName || log?.service_name || "";
       const key =
-        id && id !== '0'
+        id && id !== "0"
           ? id
-          : `${log.timestamp}-${traceId}-${spanId}-${serviceName}-${(log.message || '').slice(0, 120)}`;
+          : `${log.timestamp}-${traceId}-${spanId}-${serviceName}-${(log.message || "").slice(0, 120)}`;
       if (!seen.has(key)) {
         seen.add(key);
         unique.push(log);

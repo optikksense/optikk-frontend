@@ -1,43 +1,43 @@
 /**
  * Traces Service — API calls for distributed tracing.
  */
-import { API_CONFIG } from '@config/apiConfig';
-import { z } from 'zod';
+import { API_CONFIG } from "@config/apiConfig";
+import { z } from "zod";
 
-import api from './api';
-import { validateResponse } from './utils/validate';
+import api from "./api";
 import {
-  traceRecordSchema,
-  spanRecordSchema,
-  tracesSummarySchema,
+  criticalPathSpanSchema,
+  errorPathSpanSchema,
   flamegraphFrameSchema,
-  traceLogsResponseSchema,
+  relatedTraceSchema,
+  spanAttributesSchema,
   spanEventSchema,
   spanKindDurationSchema,
-  criticalPathSpanSchema,
+  spanRecordSchema,
   spanSelfTimeSchema,
-  errorPathSpanSchema,
-  spanAttributesSchema,
-  relatedTraceSchema,
   traceComparisonResultSchema,
-} from './schemas/tracesSchemas';
+  traceLogsResponseSchema,
+  traceRecordSchema,
+  tracesSummarySchema,
+} from "./schemas/tracesSchemas";
+import { validateResponse } from "./utils/validate";
 
 import type {
-  TraceRecord,
-  SpanRecord,
-  TracesSummary,
+  CriticalPathSpanRecord,
+  ErrorPathSpanRecord,
   FlamegraphFrame,
-  TraceLogsResponse,
+  RelatedTraceRecord,
+  SpanAttributesRecord,
   SpanEventRecord,
   SpanKindDurationRecord,
-  CriticalPathSpanRecord,
+  SpanRecord,
   SpanSelfTimeRecord,
-  ErrorPathSpanRecord,
-  SpanAttributesRecord,
-  RelatedTraceRecord,
   TraceComparisonResultRecord,
-} from './schemas/tracesSchemas';
-import type { QueryParams, RequestTime } from './service-types';
+  TraceLogsResponse,
+  TraceRecord,
+  TracesSummary,
+} from "./schemas/tracesSchemas";
+import type { QueryParams, RequestTime } from "./service-types";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 

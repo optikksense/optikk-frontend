@@ -1,8 +1,8 @@
-import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-import type { TrendIndicatorProps } from './types';
+import type { TrendIndicatorProps } from "./types";
 
 export default function TrendIndicator({
   value,
@@ -26,8 +26,8 @@ export default function TrendIndicator({
   return (
     <span
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
+        display: "inline-flex",
+        alignItems: "center",
         gap: 4,
         marginTop: 8,
         fontSize: 12,

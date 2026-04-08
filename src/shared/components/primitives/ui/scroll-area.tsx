@@ -1,19 +1,13 @@
-import { forwardRef } from 'react';
+import { cn } from "@/lib/utils";
 
-import { cn } from '@/lib/utils';
+export interface ScrollAreaProps extends React.ComponentPropsWithRef<"div"> {}
 
-export interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {}
+function ScrollArea({ className, ref, ...props }: ScrollAreaProps) {
+  return <div ref={ref} className={cn("overflow-auto", className)} {...props} />;
+}
 
-const ScrollArea = forwardRef<HTMLDivElement, ScrollAreaProps>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('overflow-auto', className)} {...props} />
-));
-
-ScrollArea.displayName = 'ScrollArea';
-
-const ScrollBar = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => <div ref={ref} className={cn('hidden', className)} {...props} />
-);
-
-ScrollBar.displayName = 'ScrollBar';
+function ScrollBar({ className, ref, ...props }: React.ComponentPropsWithRef<"div">) {
+  return <div ref={ref} className={cn("hidden", className)} {...props} />;
+}
 
 export { ScrollArea, ScrollBar };

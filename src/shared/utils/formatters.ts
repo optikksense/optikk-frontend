@@ -1,4 +1,4 @@
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 /**
  * Utility functions for formatting data
  */
@@ -12,8 +12,8 @@ const ONE_DAY_HOURS = 24;
 const THIRTY_DAYS = 30;
 const MICROSECONDS_MULTIPLIER = 1000;
 
-const compactFormatter = new Intl.NumberFormat('en', {
-  notation: 'compact',
+const compactFormatter = new Intl.NumberFormat("en", {
+  notation: "compact",
   maximumFractionDigits: 1,
 });
 
@@ -23,7 +23,7 @@ const compactFormatter = new Intl.NumberFormat('en', {
  */
 export function formatNumber(num: number | string | null | undefined): string {
   const value = Number(num);
-  if (!Number.isFinite(value)) return '0';
+  if (!Number.isFinite(value)) return "0";
   return compactFormatter.format(value);
 }
 
@@ -34,8 +34,8 @@ export function formatNumber(num: number | string | null | undefined): string {
 export function formatDuration(ms: number | string | null | undefined): string {
   let value = Number(ms);
   value = value === 0 ? 0 : value;
-  if (!Number.isFinite(value)) return '0ms';
-  if (value === 0) return '0ms';
+  if (!Number.isFinite(value)) return "0ms";
+  if (value === 0) return "0ms";
   if (value < 1) {
     return `${(value * MICROSECONDS_MULTIPLIER).toFixed(0)}μs`;
   }
@@ -54,7 +54,7 @@ export function formatDuration(ms: number | string | null | undefined): string {
  */
 export function formatTimestamp(timestamp: number | string | Date): string {
   const date = new Date(timestamp);
-  if (isNaN(date.getTime())) return '—';
+  if (Number.isNaN(date.getTime())) return "—";
   return date.toLocaleString();
 }
 
@@ -63,14 +63,15 @@ export function formatTimestamp(timestamp: number | string | Date): string {
  * @param bytes
  */
 export function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0B';
+  if (bytes === 0) return "0B";
   const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  const val = bytes / Math.pow(k, i);
+  const val = bytes / k ** i;
   // Avoid trailing zero decimals for cleaner Datadog-level UI. Bytes (i=0) are rounded.
-  const formattedVal = i === 0 ? Math.round(val).toString() : parseFloat(val.toFixed(2)).toString();
-  return `${formattedVal}${sizes[i] ?? 'B'}`;
+  const formattedVal =
+    i === 0 ? Math.round(val).toString() : Number.parseFloat(val.toFixed(2)).toString();
+  return `${formattedVal}${sizes[i] ?? "B"}`;
 }
 
 /**
@@ -113,7 +114,7 @@ export function formatPercentage(
  */
 export function formatRelativeTime(timestamp: number | string | Date): string {
   const date = new Date(timestamp);
-  if (isNaN(date.getTime())) return '—';
+  if (Number.isNaN(date.getTime())) return "—";
   const now = Date.now();
   const diff = now - date.getTime();
 

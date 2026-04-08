@@ -1,1 +1,1 @@
-export * from './LogHistogramRenderer';
+export * from "./LogHistogramRenderer";

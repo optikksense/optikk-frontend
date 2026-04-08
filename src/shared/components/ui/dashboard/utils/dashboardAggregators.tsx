@@ -1,37 +1,37 @@
 import type {
-  DashboardPanelSpec,
   DashboardDataSources,
+  DashboardPanelSpec,
   DashboardPanelType,
   DashboardRecord,
-} from '@/types/dashboardConfig';
+} from "@/types/dashboardConfig";
 
-import { formatBytes, formatDuration, formatNumber } from '@shared/utils/formatters';
+import { formatBytes, formatDuration, formatNumber } from "@shared/utils/formatters";
 import {
   asDashboardRecord,
   asDashboardRecordArray,
   getDashboardRecordArrayField,
   getDashboardValue,
-} from './runtimeValue';
+} from "./runtimeValue";
 
 /**
  *
  */
 export function formatStatValue(formatter: string | undefined, value: unknown): string | number {
   switch (formatter) {
-    case 'ms':
-      return formatDuration(typeof value === 'string' || typeof value === 'number' ? value : 0);
-    case 'ns':
+    case "ms":
+      return formatDuration(typeof value === "string" || typeof value === "number" ? value : 0);
+    case "ns":
       return formatDuration((Number(value) || 0) / 1_000_000);
-    case 'bytes':
+    case "bytes":
       return formatBytes(Number(value) || 0);
-    case 'percent1':
+    case "percent1":
       return `${Number(value || 0).toFixed(1)}%`;
-    case 'percent2':
+    case "percent2":
       return `${Number(value || 0).toFixed(2)}%`;
-    case 'number':
+    case "number":
       return formatNumber(Number(value) || 0);
     default:
-      return typeof value === 'number' ? value : String(value ?? '0');
+      return typeof value === "number" ? value : String(value ?? "0");
   }
 }
 
@@ -58,7 +58,7 @@ export function normalizeDashboardRows(rawData: unknown, dataKey?: string): Dash
     return asDashboardRecordArray(rawData);
   }
 
-  return getDashboardRecordArrayField(rawData, 'data');
+  return getDashboardRecordArrayField(rawData, "data");
 }
 
 /**
@@ -66,7 +66,7 @@ export function normalizeDashboardRows(rawData: unknown, dataKey?: string): Dash
  */
 export function resolveFieldValue(raw: unknown, field: string | undefined): unknown {
   if (!field) return 0;
-  if (field === '_count') {
+  if (field === "_count") {
     return Array.isArray(raw) ? raw.length : 0;
   }
   if (Array.isArray(raw)) {
@@ -85,7 +85,7 @@ interface StatSummaryField {
   keys?: string[];
 }
 
-export type EndpointListType = 'requests' | 'errorRate' | 'latency' | 'count';
+export type EndpointListType = "requests" | "errorRate" | "latency" | "count";
 
 interface GroupedEndpointListRow {
   endpoint: string;
@@ -100,13 +100,13 @@ interface GroupedEndpointListRow {
 }
 
 function isEndpointListType(value: string): value is EndpointListType {
-  return value === 'requests' || value === 'errorRate' || value === 'latency' || value === 'count';
+  return value === "requests" || value === "errorRate" || value === "latency" || value === "count";
 }
 
 function splitValueUnit(str: string) {
   const match = String(str).match(/^([+-]?[\d.,]+)\s*(.*)$/);
   if (match) return { val: match[1], unit: match[2] };
-  return { val: str, unit: '' };
+  return { val: str, unit: "" };
 }
 
 export function renderStatSummary(
@@ -121,17 +121,17 @@ export function renderStatSummary(
     : asDashboardRecord(rawData);
   if (!summary) {
     return (
-      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+      <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
         No data
       </div>
     );
   }
 
   const defaultFields: StatSummaryField[] = [
-    { label: 'P50', keys: ['p50', 'p50_ms', 'p50Latency', 'p50_latency'] },
-    { label: 'P95', keys: ['p95', 'p95_ms', 'p95Latency', 'p95_latency'] },
-    { label: 'P99', keys: ['p99', 'p99_ms', 'p99Latency', 'p99_latency'] },
-    { label: 'Avg', keys: ['avg', 'avg_ms', 'avgLatency', 'avg_latency'] },
+    { label: "P50", keys: ["p50", "p50_ms", "p50Latency", "p50_latency"] },
+    { label: "P95", keys: ["p95", "p95_ms", "p95Latency", "p95_latency"] },
+    { label: "P99", keys: ["p99", "p99_ms", "p99Latency", "p99_latency"] },
+    { label: "Avg", keys: ["avg", "avg_ms", "avgLatency", "avg_latency"] },
   ];
   const fields = options?.fields && options.fields.length > 0 ? options.fields : defaultFields;
 
@@ -146,37 +146,37 @@ export function renderStatSummary(
 
   if (cells.length === 0) {
     return (
-      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+      <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
         No data
       </div>
     );
   }
 
-  const formatter = options?.formatter ?? (fields === defaultFields ? 'ms' : undefined);
+  const formatter = options?.formatter ?? (fields === defaultFields ? "ms" : undefined);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
       {cells.map((cell) => {
         const fullVal = formatStatValue(formatter, cell.value);
         const { val, unit } = splitValueUnit(String(fullVal));
         return (
-          <div key={cell.label} style={{ padding: '8px 0' }}>
+          <div key={cell.label} style={{ padding: "8px 0" }}>
             <div
               style={{
                 fontSize: 11,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                color: 'var(--text-muted)',
-                whiteSpace: 'nowrap',
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "var(--text-muted)",
+                whiteSpace: "nowrap",
                 marginBottom: 4,
               }}
             >
               {cell.label}
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 2, whiteSpace: 'nowrap' }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 2, whiteSpace: "nowrap" }}>
               <span style={{ fontSize: 18, fontWeight: 700, lineHeight: 1 }}>{val}</span>
               {unit && (
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>
                   {unit}
                 </span>
               )}
@@ -191,12 +191,12 @@ export function renderStatSummary(
 /**
  *
  */
-export function firstValue(row: unknown, keys: string[], fallback: unknown = ''): unknown {
+export function firstValue(row: unknown, keys: string[], fallback: unknown = ""): unknown {
   const record = asDashboardRecord(row);
   if (!record) return fallback;
   for (const key of keys) {
     const value = record[key];
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       return value;
     }
   }
@@ -206,7 +206,7 @@ export function firstValue(row: unknown, keys: string[], fallback: unknown = '')
 /**
  *
  */
-export function strValue(row: unknown, keys: string[], fallback: string = '') {
+export function strValue(row: unknown, keys: string[], fallback = "") {
   const value = firstValue(row, keys, fallback);
   return value == null ? fallback : String(value);
 }
@@ -214,7 +214,7 @@ export function strValue(row: unknown, keys: string[], fallback: string = '') {
 /**
  *
  */
-export function numValue(row: unknown, keys: string[], fallback: number = 0) {
+export function numValue(row: unknown, keys: string[], fallback = 0) {
   const value = firstValue(row, keys, fallback);
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -231,14 +231,14 @@ export function resolveComponentKey(chartConfig: DashboardPanelSpec): DashboardP
  *
  */
 export function buildEndpointKey(row: DashboardRecord) {
-  const method = strValue(row, ['http_method', 'httpMethod']).toUpperCase();
+  const method = strValue(row, ["http_method", "httpMethod"]).toUpperCase();
   const op = strValue(
     row,
-    ['operation_name', 'operationName', 'endpoint_name', 'endpointName'],
-    'Unknown'
+    ["operation_name", "operationName", "endpoint_name", "endpointName"],
+    "Unknown"
   );
   const cleanOp = op.startsWith(`${method} `) ? op.substring(method.length + 1) : op;
-  const serviceName = strValue(row, ['service_name', 'serviceName']);
+  const serviceName = strValue(row, ["service_name", "serviceName"]);
   return `${method} ${cleanOp}_${serviceName}`;
 }
 
@@ -251,27 +251,27 @@ export function groupTimeseries(
 ): Record<string, DashboardRecord[]> {
   const map: Record<string, DashboardRecord[]> = {};
   for (const row of rows) {
-    const serviceName = strValue(row, ['service_name', 'serviceName']);
-    const queueName = strValue(row, ['queue_name', 'queueName', 'queue'], 'unknown');
-    const tableName = strValue(row, ['table_name', 'tableName', 'table'], 'unknown');
-    const podName = strValue(row, ['pod', 'pod_name', 'podName']);
-    const exceptionType = strValue(row, ['exceptionType', 'exception_type'], 'unknown');
+    const serviceName = strValue(row, ["service_name", "serviceName"]);
+    const queueName = strValue(row, ["queue_name", "queueName", "queue"], "unknown");
+    const tableName = strValue(row, ["table_name", "tableName", "table"], "unknown");
+    const podName = strValue(row, ["pod", "pod_name", "podName"]);
+    const exceptionType = strValue(row, ["exceptionType", "exception_type"], "unknown");
     let key;
-    if (groupByKey === 'queue') {
-      key = `${queueName || 'unknown'}::${serviceName || 'unknown'}`;
-    } else if (groupByKey === 'table') {
+    if (groupByKey === "queue") {
+      key = `${queueName || "unknown"}::${serviceName || "unknown"}`;
+    } else if (groupByKey === "table") {
       key = tableName;
-    } else if (groupByKey === 'service') {
+    } else if (groupByKey === "service") {
       key = serviceName;
-    } else if (groupByKey === 'pod') {
+    } else if (groupByKey === "pod") {
       key = podName;
-    } else if (groupByKey === 'endpoint') {
+    } else if (groupByKey === "endpoint") {
       key = buildEndpointKey(row);
-    } else if (groupByKey === 'exceptionType') {
+    } else if (groupByKey === "exceptionType") {
       key = exceptionType;
     } else {
-      const directValue = strValue(row, [groupByKey], '');
-      key = directValue || serviceName || queueName || '';
+      const directValue = strValue(row, [groupByKey], "");
+      key = directValue || serviceName || queueName || "";
     }
     if (!key) continue;
     if (!map[key]) map[key] = [];
@@ -290,12 +290,12 @@ export function buildQueueEndpoints(
 ) {
   if (!Array.isArray(topQueues)) return [];
   const queueSeriesKey = (queue: any) =>
-    `${strValue(queue, ['queue_name', 'queueName'], 'unknown')}::${strValue(queue, ['service_name', 'serviceName'], 'unknown')}`;
+    `${strValue(queue, ["queue_name", "queueName"], "unknown")}::${strValue(queue, ["service_name", "serviceName"], "unknown")}`;
   return [...topQueues]
     .sort((a, b) => Number(b[sortField] || 0) - Number(a[sortField] || 0))
     .map((queue) => ({
       ...queue,
-      endpoint: strValue(queue, ['queue_name', 'queueName'], 'unknown'),
+      endpoint: strValue(queue, ["queue_name", "queueName"], "unknown"),
       seriesKey: queueSeriesKey(queue),
       key: `${scope}::${queueSeriesKey(queue)}`,
     }));
@@ -308,17 +308,17 @@ export function buildEndpointList(endpointMetrics: any[], listType: string) {
   if (!Array.isArray(endpointMetrics) || endpointMetrics.length === 0) return [];
 
   const mapped = endpointMetrics.map((endpoint) => {
-    const method = strValue(endpoint, ['http_method', 'httpMethod']).toUpperCase();
+    const method = strValue(endpoint, ["http_method", "httpMethod"]).toUpperCase();
     const op = strValue(
       endpoint,
-      ['operation_name', 'operationName', 'endpoint_name', 'endpointName'],
-      'Unknown'
+      ["operation_name", "operationName", "endpoint_name", "endpointName"],
+      "Unknown"
     );
     const cleanOp = op.startsWith(`${method} `) ? op.substring(method.length + 1) : op;
-    const serviceName = strValue(endpoint, ['service_name', 'serviceName']);
-    const requestCount = numValue(endpoint, ['request_count', 'requestCount', 'req_count']);
-    const errorCount = numValue(endpoint, ['error_count', 'errorCount']);
-    const avgLatency = numValue(endpoint, ['avg_latency', 'avgLatency']);
+    const serviceName = strValue(endpoint, ["service_name", "serviceName"]);
+    const requestCount = numValue(endpoint, ["request_count", "requestCount", "req_count"]);
+    const errorCount = numValue(endpoint, ["error_count", "errorCount"]);
+    const avgLatency = numValue(endpoint, ["avg_latency", "avgLatency"]);
     return {
       ...endpoint,
       endpoint: `${method} ${cleanOp}`,
@@ -328,18 +328,18 @@ export function buildEndpointList(endpointMetrics: any[], listType: string) {
       error_count: errorCount,
       avg_latency: avgLatency,
       latency: avgLatency,
-      key: `${method} ${cleanOp}_${serviceName || ''}`,
+      key: `${method} ${cleanOp}_${serviceName || ""}`,
       errorRate: requestCount > 0 ? (errorCount / requestCount) * 100 : 0,
     };
   });
 
-  if (listType === 'errorRate') {
+  if (listType === "errorRate") {
     return mapped
       .filter((endpoint) => endpoint.errorRate > 0)
       .sort((a, b) => b.errorRate - a.errorRate)
       .slice(0, 10);
   }
-  if (listType === 'latency') {
+  if (listType === "latency") {
     return mapped.sort((a, b) => (b.avg_latency || 0) - (a.avg_latency || 0)).slice(0, 10);
   }
   return mapped.sort((a, b) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);
@@ -353,11 +353,11 @@ export function buildServiceListFromMetrics(serviceMetrics: any[], listType: str
 
   const mapped = serviceMetrics
     .map((service) => {
-      const name = strValue(service, ['service_name', 'serviceName', 'service'], '');
+      const name = strValue(service, ["service_name", "serviceName", "service"], "");
       if (!name) return null;
-      const requestCount = numValue(service, ['request_count', 'requestCount', 'req_count']);
-      const errorCount = numValue(service, ['error_count', 'errorCount']);
-      const avgLatency = numValue(service, ['avg_latency', 'avgLatency']);
+      const requestCount = numValue(service, ["request_count", "requestCount", "req_count"]);
+      const errorCount = numValue(service, ["error_count", "errorCount"]);
+      const avgLatency = numValue(service, ["avg_latency", "avgLatency"]);
       const errorRate = requestCount > 0 ? (errorCount * 100.0) / requestCount : 0;
       return {
         ...service,
@@ -373,13 +373,13 @@ export function buildServiceListFromMetrics(serviceMetrics: any[], listType: str
     })
     .filter(Boolean);
 
-  if (listType === 'errorRate') {
+  if (listType === "errorRate") {
     return mapped
       .filter((service: any) => service.errorRate > 0)
       .sort((a: any, b: any) => b.errorRate - a.errorRate)
       .slice(0, 10);
   }
-  if (listType === 'latency') {
+  if (listType === "latency") {
     return mapped.sort((a: any, b: any) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);
   }
   return mapped
@@ -396,10 +396,10 @@ export function defaultListTypeForChart(chartConfig: DashboardPanelSpec): Endpoi
   }
 
   const componentKey = resolveComponentKey(chartConfig);
-  if (componentKey === 'error-rate') return 'errorRate';
-  if (componentKey === 'latency') return 'latency';
-  if (componentKey === 'exception-type-line') return 'count';
-  return 'requests';
+  if (componentKey === "error-rate") return "errorRate";
+  if (componentKey === "latency") return "latency";
+  if (componentKey === "exception-type-line") return "count";
+  return "requests";
 }
 
 /**
@@ -408,10 +408,10 @@ export function defaultListTypeForChart(chartConfig: DashboardPanelSpec): Endpoi
 export function defaultListTitleForChart(chartConfig: DashboardPanelSpec) {
   if (chartConfig.listTitle) return chartConfig.listTitle;
   const listType = defaultListTypeForChart(chartConfig);
-  if (listType === 'errorRate') return 'Average Error Rate';
-  if (listType === 'latency') return 'Average Latency';
-  if (listType === 'count') return 'Count';
-  if (listType === 'requests') return 'Requests';
+  if (listType === "errorRate") return "Average Error Rate";
+  if (listType === "latency") return "Average Latency";
+  if (listType === "count") return "Count";
+  if (listType === "requests") return "Requests";
   return listType;
 }
 
@@ -423,8 +423,8 @@ export function buildGroupedListFromTimeseries(
   chartConfig: DashboardPanelSpec
 ) {
   const listType = defaultListTypeForChart(chartConfig);
-  const valueKey = chartConfig.valueKey || 'request_count';
-  const groupByKey = String(chartConfig.groupByKey || 'group');
+  const valueKey = chartConfig.valueKey || "request_count";
+  const groupByKey = String(chartConfig.groupByKey || "group");
 
   const rows = Object.entries(serviceTimeseriesMap || {})
     .map<GroupedEndpointListRow | null>(([groupName, groupRows]) => {
@@ -437,14 +437,14 @@ export function buildGroupedListFromTimeseries(
       let valueTotal = 0;
 
       for (const row of groupRows) {
-        const req = numValue(row, ['request_count', 'requestCount', 'req_count']);
-        const err = numValue(row, ['error_count', 'errorCount']);
+        const req = numValue(row, ["request_count", "requestCount", "req_count"]);
+        const err = numValue(row, ["error_count", "errorCount"]);
         if (!Number.isNaN(req)) requestCount += req;
         if (!Number.isNaN(err)) errorCount += err;
 
         const latencyVal = numValue(
           row,
-          ['avg_latency', 'avgLatency', 'avg_duration_ms', 'avgDurationMs', valueKey],
+          ["avg_latency", "avgLatency", "avg_duration_ms", "avgDurationMs", valueKey],
           0
         );
         if (!Number.isNaN(latencyVal) && latencyVal > 0) {
@@ -461,7 +461,7 @@ export function buildGroupedListFromTimeseries(
 
       return {
         endpoint: groupName,
-        service: chartConfig.groupByKey === 'service' ? groupName : '',
+        service: chartConfig.groupByKey === "service" ? groupName : "",
         key: groupName,
         [groupByKey]: groupName,
         request_count: valueTotal > 0 ? valueTotal : requestCount,
@@ -473,13 +473,13 @@ export function buildGroupedListFromTimeseries(
     })
     .filter((row): row is GroupedEndpointListRow => row !== null);
 
-  if (listType === 'errorRate') {
+  if (listType === "errorRate") {
     return rows
       .filter((row) => row.errorRate > 0)
       .sort((a, b) => b.errorRate - a.errorRate)
       .slice(0, 10);
   }
-  if (listType === 'latency') {
+  if (listType === "latency") {
     return rows.sort((a, b) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);
   }
   return rows.sort((a, b) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);

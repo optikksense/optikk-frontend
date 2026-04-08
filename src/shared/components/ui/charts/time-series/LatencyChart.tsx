@@ -1,11 +1,11 @@
-import { useMemo, memo } from 'react';
+import { memo, useMemo } from "react";
 
-import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
-import { tsKey, tsMs, firstValue } from '@shared/utils/chartDataUtils';
-import { CHART_COLORS } from '@config/constants';
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
+import { CHART_COLORS } from "@config/constants";
+import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
+import { firstValue, tsKey, tsMs } from "@shared/utils/chartDataUtils";
 
-import ObservabilityChart from '../ObservabilityChart';
+import ObservabilityChart from "../ObservabilityChart";
 
 function getChartColor(index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
@@ -79,9 +79,9 @@ export default memo(function LatencyChart({
   height = 280,
   fillHeight = false,
   targetThreshold = null,
-  datasetLabel = 'Avg Latency (ms)',
+  datasetLabel = "Avg Latency (ms)",
   color = CHART_COLORS[0],
-  valueKey = 'avg_latency',
+  valueKey = "avg_latency",
 }: LatencyChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets } = useChartTimeBuckets();
@@ -89,9 +89,9 @@ export default memo(function LatencyChart({
   const buildServiceDatasets = (endpointList: EndpointData[]) => {
     const targetMap: Record<string, { label: string }> = {};
     for (const ep of endpointList) {
-      const key = ep.key || firstValue(ep, ['service_name', 'serviceName', 'service'], '');
+      const key = ep.key || firstValue(ep, ["service_name", "serviceName", "service"], "");
       const label =
-        ep.endpoint || firstValue(ep, ['service_name', 'serviceName', 'service'], '') || key;
+        ep.endpoint || firstValue(ep, ["service_name", "serviceName", "service"], "") || key;
       if (!targetMap[key]) targetMap[key] = { label };
     }
     const stepMs =
@@ -103,7 +103,7 @@ export default memo(function LatencyChart({
       const tsData = serviceTimeseriesMap[key] || [];
       const tsMap: Record<string, number> = {};
       for (const row of tsData) {
-        const rowTimestamp = firstValue(row, ['timestamp', 'time_bucket', 'timeBucket'], '');
+        const rowTimestamp = firstValue(row, ["timestamp", "time_bucket", "timeBucket"], "");
         if (!rowTimestamp) continue;
         const rowTime = new Date(rowTimestamp).getTime();
         if (!Number.isFinite(rowTime)) continue;
@@ -113,7 +113,7 @@ export default memo(function LatencyChart({
         const latency = Number(
           firstValue(
             row,
-            [valueKey, 'avg_latency', 'avgLatency', 'avg_latency_ms', 'avgLatencyMs', 'value'],
+            [valueKey, "avg_latency", "avgLatency", "avg_latency_ms", "avgLatencyMs", "value"],
             0
           )
         );
@@ -143,19 +143,19 @@ export default memo(function LatencyChart({
                 ep.key ||
                 (() => {
                   const method = String(
-                    firstValue(ep, ['http_method', 'httpMethod'], '')
+                    firstValue(ep, ["http_method", "httpMethod"], "")
                   ).toUpperCase();
                   const op = String(
                     firstValue(
                       ep,
-                      ['operation_name', 'operationName', 'endpoint_name', 'endpointName'],
-                      'Unknown'
+                      ["operation_name", "operationName", "endpoint_name", "endpointName"],
+                      "Unknown"
                     )
                   );
-                  const cleanOp = op.startsWith(method + ' ')
+                  const cleanOp = op.startsWith(`${method} `)
                     ? op.substring(method.length + 1)
                     : op;
-                  const serviceName = firstValue(ep, ['service_name', 'serviceName'], '');
+                  const serviceName = firstValue(ep, ["service_name", "serviceName"], "");
                   return `${method} ${cleanOp}_${serviceName}`;
                 })();
               return selectedEndpoints.includes(key);
@@ -166,11 +166,11 @@ export default memo(function LatencyChart({
         seriesList = buildServiceDatasets(list);
       } else {
         seriesList = list.map((ep, idx) => {
-          const method = firstValue(ep, ['http_method', 'httpMethod'], 'N/A');
+          const method = firstValue(ep, ["http_method", "httpMethod"], "N/A");
           const operation = firstValue(
             ep,
-            ['operation_name', 'operationName', 'endpoint_name', 'endpointName'],
-            'Unknown'
+            ["operation_name", "operationName", "endpoint_name", "endpointName"],
+            "Unknown"
           );
           return {
             label: `${method} ${operation}`,
@@ -190,7 +190,7 @@ export default memo(function LatencyChart({
         .map(([svcName, rows]: [string, any], idx) => {
           const tsMap: Record<string, number> = {};
           for (const row of rows as any[]) {
-            const rowTimestamp = firstValue(row, ['timestamp', 'time_bucket', 'timeBucket'], '');
+            const rowTimestamp = firstValue(row, ["timestamp", "time_bucket", "timeBucket"], "");
             if (!rowTimestamp) continue;
             const rowTime = new Date(rowTimestamp).getTime();
             if (!Number.isFinite(rowTime)) continue;
@@ -199,7 +199,7 @@ export default memo(function LatencyChart({
             const latency = Number(
               firstValue(
                 row,
-                [valueKey, 'avg_latency', 'avgLatency', 'avg_latency_ms', 'avgLatencyMs', 'value'],
+                [valueKey, "avg_latency", "avgLatency", "avg_latency_ms", "avgLatencyMs", "value"],
                 0
               )
             );
@@ -212,14 +212,14 @@ export default memo(function LatencyChart({
           return { label: svcName, values, color: getChartColor(idx), fill: false };
         });
     } else {
-      if (data.length > 0 && firstValue(data[0], ['value'], null) !== null) {
+      if (data.length > 0 && firstValue(data[0], ["value"], null) !== null) {
         const dataMap: Record<string, number> = {};
         for (const d of data as any[]) {
-          const ts = firstValue(d, ['timestamp', 'time_bucket', 'timeBucket'], '');
+          const ts = firstValue(d, ["timestamp", "time_bucket", "timeBucket"], "");
           dataMap[tsKey(ts)] = Number(
             firstValue(
               d,
-              ['value', valueKey, 'avg_latency', 'avgLatency', 'avg_latency_ms', 'avgLatencyMs'],
+              ["value", valueKey, "avg_latency", "avgLatency", "avg_latency_ms", "avgLatencyMs"],
               0
             )
           );
@@ -237,26 +237,26 @@ export default memo(function LatencyChart({
         const p95Map: Record<string, number> = {};
         const p99Map: Record<string, number> = {};
         for (const d of data as any[]) {
-          const key = tsKey(firstValue(d, ['timestamp', 'time_bucket', 'timeBucket'], ''));
-          p50Map[key] = Number(firstValue(d, ['p50_ms', 'p50', 'p50_latency', 'p50Latency'], 0));
-          p95Map[key] = Number(firstValue(d, ['p95_ms', 'p95', 'p95_latency', 'p95Latency'], 0));
-          p99Map[key] = Number(firstValue(d, ['p99_ms', 'p99', 'p99_latency', 'p99Latency'], 0));
+          const key = tsKey(firstValue(d, ["timestamp", "time_bucket", "timeBucket"], ""));
+          p50Map[key] = Number(firstValue(d, ["p50_ms", "p50", "p50_latency", "p50Latency"], 0));
+          p95Map[key] = Number(firstValue(d, ["p95_ms", "p95", "p95_latency", "p95Latency"], 0));
+          p99Map[key] = Number(firstValue(d, ["p99_ms", "p99", "p99_latency", "p99Latency"], 0));
         }
         seriesList = [
           {
-            label: 'P50',
+            label: "P50",
             values: timeBuckets.map((ts) => p50Map[tsKey(ts)] ?? 0),
             color: APP_COLORS.hex_73c991,
             fill: false,
           },
           {
-            label: 'P95',
+            label: "P95",
             values: timeBuckets.map((ts) => p95Map[tsKey(ts)] ?? 0),
             color: APP_COLORS.hex_f79009,
             fill: false,
           },
           {
-            label: 'P99',
+            label: "P99",
             values: timeBuckets.map((ts) => p99Map[tsKey(ts)] ?? 0),
             color: APP_COLORS.hex_f04438,
             fill: false,
@@ -304,7 +304,7 @@ export default memo(function LatencyChart({
   if (data.length === 0 && timeBuckets.length === 0) {
     return (
       <div className="flex h-full min-h-0 items-center justify-center">
-        <div style={{ color: 'var(--text-muted)' }}>No latency data in selected time range</div>
+        <div style={{ color: "var(--text-muted)" }}>No latency data in selected time range</div>
       </div>
     );
   }

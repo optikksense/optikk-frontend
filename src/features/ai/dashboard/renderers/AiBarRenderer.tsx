@@ -1,5 +1,5 @@
-import { BarRenderer } from '@shared/components/ui/dashboard/renderers/BarRenderer';
-import type { DashboardPanelRendererProps } from '@shared/components/ui/dashboard/dashboardPanelRegistry';
+import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
+import { BarRenderer } from "@shared/components/ui/dashboard/renderers/BarRenderer";
 
 /**
  *

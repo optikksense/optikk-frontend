@@ -1,5 +1,5 @@
-import { APP_COLORS } from '@config/colorLiterals';
-import { CHART_THEME_DEFAULTS } from '@shared/utils/chartTheme';
+import { APP_COLORS } from "@config/colorLiterals";
+import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
 
 interface GaugeChartProps {
   value?: number;
@@ -20,7 +20,7 @@ function getGaugeColor(value: number): string {
  */
 export default function GaugeChart({
   value = 0,
-  label = '',
+  label = "",
   size = 120,
 }: GaugeChartProps): JSX.Element {
   const clamped = Math.min(Math.max(value, 0), 100);
@@ -38,10 +38,10 @@ export default function GaugeChart({
     <div
       style={{
         width: size,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        margin: '0 auto',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        margin: "0 auto",
       }}
     >
       <div
@@ -49,7 +49,7 @@ export default function GaugeChart({
           width: size,
           height: size / 2 + strokeWidth / 2,
           flexShrink: 0,
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
         <svg
@@ -57,7 +57,7 @@ export default function GaugeChart({
           height={size / 2 + strokeWidth / 2}
           viewBox={`0 0 ${size} ${size / 2 + strokeWidth / 2}`}
           role="img"
-          aria-label={label || 'Gauge chart'}
+          aria-label={label || "Gauge chart"}
         >
           <circle
             cx={center}
@@ -86,14 +86,14 @@ export default function GaugeChart({
         </svg>
       </div>
 
-      <div style={{ marginTop: 10, textAlign: 'center', width: '100%' }}>
+      <div style={{ marginTop: 10, textAlign: "center", width: "100%" }}>
         <div
           style={{
             fontSize: Math.round(size * 0.24),
             fontWeight: 600,
             color,
             lineHeight: 1,
-            letterSpacing: '-0.5px',
+            letterSpacing: "-0.5px",
           }}
         >
           {clamped.toFixed(0)}
@@ -105,13 +105,13 @@ export default function GaugeChart({
               fontSize: Math.round(size * 0.1),
               color: mutedText,
               marginTop: 5,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              padding: '0 4px',
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              padding: "0 4px",
               maxWidth: size,
               fontWeight: 400,
-              letterSpacing: '0.01em',
+              letterSpacing: "0.01em",
             }}
           >
             {label}

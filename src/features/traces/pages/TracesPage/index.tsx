@@ -1,53 +1,53 @@
-import { Activity, AlertCircle, GitBranch, GitCompare, Radio, Share2 } from 'lucide-react';
+import { Activity, AlertCircle, GitBranch, GitCompare, Radio, Share2 } from "lucide-react";
 
-import { ERROR_CODE_LABELS } from '@/shared/constants/errorCodes';
-import { useMemo, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { ERROR_CODE_LABELS } from "@/shared/constants/errorCodes";
+import { useNavigate } from "@tanstack/react-router";
+import { useMemo, useRef, useState } from "react";
+import toast from "react-hot-toast";
 
-import { Badge, Button, Select, Switch } from '@/components/ui';
-import type { SelectOption, SimpleTableColumn } from '@/components/ui';
+import { Badge, Button, Select, Switch } from "@/components/ui";
+import type { SelectOption, SimpleTableColumn } from "@/components/ui";
+import { ExplorerResultsTable, FacetRail } from "@/features/explorer-core/components";
 import {
-  AnalyticsToolbar,
   type AggregationSpec,
+  AnalyticsToolbar,
   type ExplorerVizMode,
-} from '@/features/explorer-core/components/AnalyticsToolbar';
-import { ExplorerResultsTable, FacetRail } from '@/features/explorer-core/components';
+} from "@/features/explorer-core/components/AnalyticsToolbar";
 
-import { AnalyticsPieChart } from '@/features/explorer-core/components/visualizations/AnalyticsPieChart';
-import { AnalyticsTable } from '@/features/explorer-core/components/visualizations/AnalyticsTable';
-import { AnalyticsTimeseries } from '@/features/explorer-core/components/visualizations/AnalyticsTimeseries';
-import { AnalyticsTopList } from '@/features/explorer-core/components/visualizations/AnalyticsTopList';
-import { useExplorerAnalytics } from '@/features/explorer-core/hooks/useExplorerAnalytics';
-import { useLiveTailStream } from '@/features/explorer-core/hooks/useLiveTailStream';
-import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
-import { ROUTES } from '@/shared/constants/routes';
-import { useAppStore } from '@app/store/appStore';
-import { cn } from '@/lib/utils';
-import { tracesService } from '@shared/api/tracesService';
-import { toApiErrorShape } from '@shared/api/utils/errorNormalization';
+import { AnalyticsPieChart } from "@/features/explorer-core/components/visualizations/AnalyticsPieChart";
+import { AnalyticsTable } from "@/features/explorer-core/components/visualizations/AnalyticsTable";
+import { AnalyticsTimeseries } from "@/features/explorer-core/components/visualizations/AnalyticsTimeseries";
+import { AnalyticsTopList } from "@/features/explorer-core/components/visualizations/AnalyticsTopList";
+import { useExplorerAnalytics } from "@/features/explorer-core/hooks/useExplorerAnalytics";
+import { useLiveTailStream } from "@/features/explorer-core/hooks/useLiveTailStream";
+import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
+import { cn } from "@/lib/utils";
+import { ROUTES } from "@/shared/constants/routes";
+import type { StructuredFilter } from "@/shared/hooks/useURLFilters";
+import { useTimeRange } from "@app/store/appStore";
+import { tracesService } from "@shared/api/tracesService";
+import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import {
   ObservabilityDetailPanel,
   ObservabilityQueryBar,
   PageHeader,
   PageShell,
   PageSurface,
-} from '@shared/components/ui';
+} from "@shared/components/ui";
 import {
   formatDuration,
   formatNumber,
   formatRelativeTime,
   formatTimestamp,
-} from '@shared/utils/formatters';
-import type { StructuredFilter } from '@/shared/hooks/useURLFilters';
+} from "@shared/utils/formatters";
 
-import { useTraceDetailFields } from '../../hooks/useTraceDetailFields';
-import { useTracesExplorer } from '../../hooks/useTracesExplorer';
-import { TRACE_FILTER_FIELDS } from '../../utils/tracesUtils';
+import { useTraceDetailFields } from "../../hooks/useTraceDetailFields";
+import { useTracesExplorer } from "../../hooks/useTracesExplorer";
+import { TRACE_FILTER_FIELDS } from "../../utils/tracesUtils";
 
 const TRACES_LIVE_TAIL_MAX_ROWS = 20;
 
-import type { TraceRecord } from '../../types';
+import type { TraceRecord } from "../../types";
 
 const TRACE_STATUS_SORT_ORDER: Record<string, number> = {
   UNSET: 0,
@@ -56,8 +56,8 @@ const TRACE_STATUS_SORT_ORDER: Record<string, number> = {
 };
 
 function compareTraceText(left: unknown, right: unknown): number {
-  return String(left ?? '').localeCompare(String(right ?? ''), undefined, {
-    sensitivity: 'base',
+  return String(left ?? "").localeCompare(String(right ?? ""), undefined, {
+    sensitivity: "base",
   });
 }
 
@@ -65,20 +65,20 @@ function compareTraceTimestamp(left: unknown, right: unknown): number {
   return new Date(String(left ?? 0)).getTime() - new Date(String(right ?? 0)).getTime();
 }
 
-function renderTraceStatus(status: string): JSX.Element {
-  const normalized = (status || 'UNSET').toUpperCase();
-  const variant = normalized === 'ERROR' ? 'error' : normalized === 'OK' ? 'success' : 'default';
+function renderTraceStatus(status: string) {
+  const normalized = (status || "UNSET").toUpperCase();
+  const variant = normalized === "ERROR" ? "error" : normalized === "OK" ? "success" : "default";
   return <Badge variant={variant}>{normalized}</Badge>;
 }
 
 function formatLiveTailStatus(
-  status: 'idle' | 'connecting' | 'live' | 'closed' | 'error',
+  status: "idle" | "connecting" | "live" | "closed" | "error",
   lagMs: number
 ): string {
-  if (status === 'live') return `${Math.max(0, lagMs)}ms lag`;
-  if (status === 'closed') return 'session ended';
-  if (status === 'error') return 'stream error';
-  return 'connecting';
+  if (status === "live") return `${Math.max(0, lagMs)}ms lag`;
+  if (status === "closed") return "session ended";
+  if (status === "error") return "stream error";
+  return "connecting";
 }
 
 function buildTraceRecordFromLiveItem(value: unknown): TraceRecord {
@@ -88,19 +88,19 @@ function buildTraceRecordFromLiveItem(value: unknown): TraceRecord {
   const end = new Date(start.getTime() + durationMs);
 
   return {
-    span_id: String(row.spanId ?? ''),
-    trace_id: String(row.traceId ?? ''),
-    service_name: String(row.serviceName ?? ''),
-    operation_name: String(row.operationName ?? ''),
+    span_id: String(row.spanId ?? ""),
+    trace_id: String(row.traceId ?? ""),
+    service_name: String(row.serviceName ?? ""),
+    operation_name: String(row.operationName ?? ""),
     start_time: start.toISOString(),
     end_time: end.toISOString(),
     duration_ms: durationMs,
-    status: String(row.status ?? 'UNSET'),
-    span_kind: String(row.spanKind ?? ''),
-    http_method: String(row.httpMethod ?? ''),
+    status: String(row.status ?? "UNSET"),
+    span_kind: String(row.spanKind ?? ""),
+    http_method: String(row.httpMethod ?? ""),
     http_status_code: Number(row.httpStatusCode ?? 0),
-    status_message: '',
-    parent_span_id: '',
+    status_message: "",
+    parent_span_id: "",
   };
 }
 
@@ -118,20 +118,20 @@ function upsertFacetFilter(
     ...withoutField,
     {
       field: nextField,
-      operator: 'equals',
+      operator: "equals",
       value: nextValue,
     },
   ];
 }
 
 const TRACE_METRIC_FIELDS = [
-  { value: 'duration_nano', label: 'duration (ns)' },
-  { value: 'duration', label: 'duration' },
+  { value: "duration_nano", label: "duration (ns)" },
+  { value: "duration", label: "duration" },
 ];
 
-export default function TracesPage(): JSX.Element {
+export default function TracesPage() {
   const navigate = useNavigate();
-  const { timeRange } = useAppStore();
+  const timeRange = useTimeRange();
 
   const {
     isLoading,
@@ -158,20 +158,20 @@ export default function TracesPage(): JSX.Element {
     clearAll,
   } = useTracesExplorer();
 
-  const [explorerMode, setExplorerMode] = useState<'list' | 'analytics'>('list');
-  const [vizMode, setVizMode] = useState<ExplorerVizMode>('table');
-  const [groupBy, setGroupBy] = useState<string[]>(['service']);
+  const [explorerMode, setExplorerMode] = useState<"list" | "analytics">("list");
+  const [vizMode, setVizMode] = useState<ExplorerVizMode>("table");
+  const [groupBy, setGroupBy] = useState<string[]>(["service"]);
   const [aggregations, setAggregations] = useState<AggregationSpec[]>([
-    { function: 'count', alias: 'count' },
+    { function: "count", alias: "count" },
   ]);
-  const [analyticsStep, setAnalyticsStep] = useState('5m');
+  const [analyticsStep, setAnalyticsStep] = useState("5m");
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
 
   const analyticsEnabled =
-    explorerMode === 'analytics' && groupBy.length > 0 && aggregations.length > 0;
+    explorerMode === "analytics" && groupBy.length > 0 && aggregations.length > 0;
 
-  const analyticsQuery = useExplorerAnalytics('traces', {
+  const analyticsQuery = useExplorerAnalytics("traces", {
     query: explorerQuery,
     startTime,
     endTime,
@@ -179,9 +179,9 @@ export default function TracesPage(): JSX.Element {
     aggregations: aggregations.map((a) => ({
       function: a.function,
       field: a.field,
-      alias: a.alias || 'm',
+      alias: a.alias || "m",
     })),
-    vizMode: vizMode === 'list' ? 'table' : vizMode,
+    vizMode: vizMode === "list" ? "table" : vizMode,
     step: analyticsStep,
     limit: 500,
     enabled: analyticsEnabled,
@@ -198,8 +198,8 @@ export default function TracesPage(): JSX.Element {
 
   const liveTail = useLiveTailStream<TraceRecord>({
     enabled: isLiveTail,
-    subscribeEvent: 'subscribe:spans',
-    itemEvent: 'span',
+    subscribeEvent: "subscribe:spans",
+    itemEvent: "span",
     maxItems: TRACES_LIVE_TAIL_MAX_ROWS,
     params: {
       services: backendParams.services,
@@ -214,15 +214,13 @@ export default function TracesPage(): JSX.Element {
     normalizeItem: buildTraceRecordFromLiveItem,
   });
 
-  const renderedTraces = isLiveTail
-    ? liveTail.items.slice(0, TRACES_LIVE_TAIL_MAX_ROWS)
-    : traces;
+  const renderedTraces = isLiveTail ? liveTail.items.slice(0, TRACES_LIVE_TAIL_MAX_ROWS) : traces;
 
   const columns = useMemo<SimpleTableColumn<TraceRecord>[]>(
     () => [
       {
-        title: '',
-        key: 'selected',
+        title: "",
+        key: "selected",
         width: 42,
         render: (_value, row) => (
           <input
@@ -245,9 +243,9 @@ export default function TracesPage(): JSX.Element {
         ),
       },
       {
-        title: 'Trace ID',
-        key: 'trace_id',
-        dataIndex: 'trace_id',
+        title: "Trace ID",
+        key: "trace_id",
+        dataIndex: "trace_id",
         width: 170,
         ...(isLiveTail
           ? {}
@@ -259,23 +257,23 @@ export default function TracesPage(): JSX.Element {
         ),
       },
       {
-        title: 'Service',
-        key: 'service_name',
-        dataIndex: 'service_name',
+        title: "Service",
+        key: "service_name",
+        dataIndex: "service_name",
         width: 160,
         ...(isLiveTail
           ? {}
           : { sorter: (left, right) => compareTraceText(left.service_name, right.service_name) }),
         render: (value) => (
-          <span className="text-[12.5px] font-medium text-[var(--text-primary)]">
-            {String(value || 'Unknown')}
+          <span className="font-medium text-[12.5px] text-[var(--text-primary)]">
+            {String(value || "Unknown")}
           </span>
         ),
       },
       {
-        title: 'Operation',
-        key: 'operation_name',
-        dataIndex: 'operation_name',
+        title: "Operation",
+        key: "operation_name",
+        dataIndex: "operation_name",
         width: 220,
         ellipsis: true,
         ...(isLiveTail
@@ -285,33 +283,34 @@ export default function TracesPage(): JSX.Element {
             }),
         render: (value) => (
           <span className="block truncate text-[12.5px] text-[var(--text-secondary)]">
-            {String(value || 'Unknown')}
+            {String(value || "Unknown")}
           </span>
         ),
       },
       {
-        title: 'Status',
-        key: 'status',
-        dataIndex: 'status',
+        title: "Status",
+        key: "status",
+        dataIndex: "status",
         width: 110,
         ...(isLiveTail
           ? {}
           : {
               sorter: (left, right) =>
-                (TRACE_STATUS_SORT_ORDER[String(left.status ?? 'UNSET').toUpperCase()] ?? 0) -
-                (TRACE_STATUS_SORT_ORDER[String(right.status ?? 'UNSET').toUpperCase()] ?? 0),
+                (TRACE_STATUS_SORT_ORDER[String(left.status ?? "UNSET").toUpperCase()] ?? 0) -
+                (TRACE_STATUS_SORT_ORDER[String(right.status ?? "UNSET").toUpperCase()] ?? 0),
             }),
         render: (value) => renderTraceStatus(String(value)),
       },
       {
-        title: 'Duration',
-        key: 'duration_ms',
-        dataIndex: 'duration_ms',
+        title: "Duration",
+        key: "duration_ms",
+        dataIndex: "duration_ms",
         width: 120,
         ...(isLiveTail
           ? {}
           : {
-              sorter: (left, right) => Number(left.duration_ms ?? 0) - Number(right.duration_ms ?? 0),
+              sorter: (left, right) =>
+                Number(left.duration_ms ?? 0) - Number(right.duration_ms ?? 0),
             }),
         render: (value) => (
           <span className="font-medium text-[var(--text-primary)]">
@@ -320,15 +319,15 @@ export default function TracesPage(): JSX.Element {
         ),
       },
       {
-        title: 'Started',
-        key: 'start_time',
-        dataIndex: 'start_time',
+        title: "Started",
+        key: "start_time",
+        dataIndex: "start_time",
         width: 176,
         ...(isLiveTail
           ? {}
           : {
               sorter: (left, right) => compareTraceTimestamp(left.start_time, right.start_time),
-              defaultSortOrder: 'descend',
+              defaultSortOrder: "descend",
             }),
         render: (value) => (
           <div className="space-y-1">
@@ -347,17 +346,17 @@ export default function TracesPage(): JSX.Element {
 
   const facetGroups = useMemo(
     () => [
-      { key: 'service_name', label: 'Services', buckets: facets.service_name ?? [] },
-      { key: 'status', label: 'Status', buckets: facets.status ?? [] },
-      { key: 'operation_name', label: 'Operations', buckets: facets.operation_name ?? [] },
-      { key: 'span_kind', label: 'Span kind', buckets: facets.span_kind ?? [] },
-      { key: 'http_method', label: 'HTTP method', buckets: facets.http_method ?? [] },
+      { key: "service_name", label: "Services", buckets: facets.service_name ?? [] },
+      { key: "status", label: "Status", buckets: facets.status ?? [] },
+      { key: "operation_name", label: "Operations", buckets: facets.operation_name ?? [] },
+      { key: "span_kind", label: "Span kind", buckets: facets.span_kind ?? [] },
+      { key: "http_method", label: "HTTP method", buckets: facets.http_method ?? [] },
       {
-        key: 'http_status_code',
-        label: 'HTTP status',
+        key: "http_status_code",
+        label: "HTTP status",
         buckets: facets.http_status_code ?? [],
       },
-      { key: 'db_system', label: 'DB system', buckets: facets.db_system ?? [] },
+      { key: "db_system", label: "DB system", buckets: facets.db_system ?? [] },
     ],
     [
       facets.db_system,
@@ -373,20 +372,20 @@ export default function TracesPage(): JSX.Element {
   const selectedFacetState = useMemo(
     () => ({
       service_name: selectedService,
-      status: errorsOnly ? 'ERROR' : null,
-      operation_name: filters.find((filter) => filter.field === 'operation_name')?.value ?? null,
-      span_kind: filters.find((filter) => filter.field === 'span_kind')?.value ?? null,
-      http_method: filters.find((filter) => filter.field === 'http_method')?.value ?? null,
-      http_status_code: filters.find((filter) => filter.field === 'http_status')?.value ?? null,
-      db_system: filters.find((filter) => filter.field === 'db_system')?.value ?? null,
+      status: errorsOnly ? "ERROR" : null,
+      operation_name: filters.find((filter) => filter.field === "operation_name")?.value ?? null,
+      span_kind: filters.find((filter) => filter.field === "span_kind")?.value ?? null,
+      http_method: filters.find((filter) => filter.field === "http_method")?.value ?? null,
+      http_status_code: filters.find((filter) => filter.field === "http_status")?.value ?? null,
+      db_system: filters.find((filter) => filter.field === "db_system")?.value ?? null,
     }),
     [errorsOnly, filters, selectedService]
   );
 
   const modeOptions = useMemo<SelectOption[]>(
     () => [
-      { label: 'Root spans', value: 'root' },
-      { label: 'All spans', value: 'all' },
+      { label: "Root spans", value: "root" },
+      { label: "All spans", value: "all" },
     ],
     []
   );
@@ -397,21 +396,17 @@ export default function TracesPage(): JSX.Element {
         title="Traces"
         icon={<GitBranch size={22} />}
         subtitle="Search, compare, and pivot across traces without leaving the explorer workflow."
-        actions={
-          <>
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={<Share2 size={14} />}
-              onClick={async () => {
-                await navigator.clipboard.writeText(window.location.href);
-                toast.success('Share link copied');
-              }}
-            >
-              Share
-            </Button>
-          </>
-        }
+        actions=<Button
+          variant="ghost"
+          size="sm"
+          icon={<Share2 size={14} />}
+          onClick={async () => {
+            await navigator.clipboard.writeText(window.location.href);
+            toast.success("Share link copied");
+          }}
+        >
+          Share
+        </Button>
       />
 
       <PageSurface padding="lg" className="relative z-[40] overflow-visible">
@@ -425,16 +420,16 @@ export default function TracesPage(): JSX.Element {
           ) : null}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Badge variant="info">{mode === 'all' ? 'All spans' : 'Root spans'}</Badge>
+              <Badge variant="info">{mode === "all" ? "All spans" : "Root spans"}</Badge>
               {isLiveTail ? (
-                <Badge variant={liveTail.status === 'live' ? 'warning' : 'default'}>
+                <Badge variant={liveTail.status === "live" ? "warning" : "default"}>
                   {formatLiveTailStatus(liveTail.status, liveTail.lagMs)}
                 </Badge>
               ) : null}
               {isLiveTail && liveTail.droppedCount > 0 ? (
                 <Badge variant="error">{formatNumber(liveTail.droppedCount)} dropped</Badge>
               ) : null}
-              <Badge variant={errorTraces > 0 ? 'error' : 'default'}>
+              <Badge variant={errorTraces > 0 ? "error" : "default"}>
                 {formatNumber(errorTraces)} error traces
               </Badge>
             </div>
@@ -445,19 +440,21 @@ export default function TracesPage(): JSX.Element {
                   size="sm"
                   icon={<GitCompare size={14} />}
                   onClick={() =>
-                    navigate(`/traces/compare?a=${selectedTraceIds[0]}&b=${selectedTraceIds[1]}`)
+                    navigate({
+                      to: `/traces/compare?a=${selectedTraceIds[0]}&b=${selectedTraceIds[1]}`,
+                    })
                   }
                 >
                   Compare selected
                 </Button>
               ) : null}
               <Button
-                variant={isLiveTail ? 'primary' : 'secondary'}
+                variant={isLiveTail ? "primary" : "secondary"}
                 size="sm"
                 icon={<Radio size={14} />}
                 onClick={() => setIsLiveTail(!isLiveTail)}
               >
-                {isLiveTail ? 'Stop live tail' : 'Start live tail'}
+                {isLiveTail ? "Stop live tail" : "Start live tail"}
               </Button>
             </div>
           </div>
@@ -475,10 +472,10 @@ export default function TracesPage(): JSX.Element {
               rightSlot={
                 <div
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-colors',
+                    "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-colors",
                     errorsOnly
-                      ? 'border-[rgba(240,68,56,0.35)] bg-[rgba(240,68,56,0.08)] text-[var(--color-error)]'
-                      : 'border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                      ? "border-[rgba(240,68,56,0.35)] bg-[rgba(240,68,56,0.08)] text-[var(--color-error)]"
+                      : "border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)]"
                   )}
                 >
                   <Activity size={13} />
@@ -514,7 +511,9 @@ export default function TracesPage(): JSX.Element {
             onAggregationsChange={setAggregations}
             step={analyticsStep}
             onStepChange={setAnalyticsStep}
-            fieldOptions={[...TRACE_FILTER_FIELDS.map(f => ({ name: f.key, description: f.label }))]}
+            fieldOptions={[
+              ...TRACE_FILTER_FIELDS.map((f) => ({ name: f.key, description: f.label })),
+            ]}
             metricFields={TRACE_METRIC_FIELDS}
           />
         </div>
@@ -522,23 +521,23 @@ export default function TracesPage(): JSX.Element {
 
       <div
         className={cn(
-          'relative z-0 grid gap-4',
-          explorerMode === 'list' ? 'xl:grid-cols-[300px_minmax(0,1fr)]' : 'grid-cols-1'
+          "relative z-0 grid gap-4",
+          explorerMode === "list" ? "xl:grid-cols-[300px_minmax(0,1fr)]" : "grid-cols-1"
         )}
       >
-        {explorerMode === 'list' ? (
+        {explorerMode === "list" ? (
           <>
             <FacetRail
               groups={facetGroups}
               selected={selectedFacetState}
               onSelect={(groupKey, value) => {
-                if (groupKey === 'service_name') {
+                if (groupKey === "service_name") {
                   setSelectedService(value);
                   setPage(1);
                   return;
                 }
-                if (groupKey === 'status') {
-                  setErrorsOnly(value === 'ERROR');
+                if (groupKey === "status") {
+                  setErrorsOnly(value === "ERROR");
                   setPage(1);
                   return;
                 }
@@ -550,11 +549,11 @@ export default function TracesPage(): JSX.Element {
             {isError && normalizedError && (
               <div className="mb-3 flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.3)] bg-[rgba(240,68,56,0.08)] px-4 py-3 text-[var(--color-error)]">
                 <AlertCircle size={16} className="shrink-0" />
-                <span className="text-sm font-medium">
-                  {ERROR_CODE_LABELS[normalizedError.code] ?? 'Error'}
+                <span className="font-medium text-sm">
+                  {ERROR_CODE_LABELS[normalizedError.code] ?? "Error"}
                 </span>
                 <span className="text-sm opacity-80">
-                  {normalizedError.message || 'Failed to load traces'}
+                  {normalizedError.message || "Failed to load traces"}
                 </span>
               </div>
             )}
@@ -580,9 +579,9 @@ export default function TracesPage(): JSX.Element {
               })}
               rowClassName={(row) =>
                 cn(
-                  'cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]',
+                  "cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]",
                   selectedTrace?.trace_id === row.trace_id &&
-                    'bg-[rgba(10,174,214,0.12)] ring-1 ring-inset ring-[rgba(10,174,214,0.28)]'
+                    "bg-[rgba(10,174,214,0.12)] ring-1 ring-[rgba(10,174,214,0.28)] ring-inset"
                 )
               }
             />
@@ -595,14 +594,14 @@ export default function TracesPage(): JSX.Element {
               <div className="text-[13px] text-[var(--color-error)]">Analytics request failed.</div>
             ) : analyticsQuery.data ? (
               <div className="space-y-4">
-                {vizMode === 'timeseries' ? (
+                {vizMode === "timeseries" ? (
                   <AnalyticsTimeseries result={analyticsQuery.data} />
                 ) : null}
-                {vizMode === 'toplist' ? <AnalyticsTopList result={analyticsQuery.data} /> : null}
-                {vizMode === 'table' || vizMode === 'list' ? (
+                {vizMode === "toplist" ? <AnalyticsTopList result={analyticsQuery.data} /> : null}
+                {vizMode === "table" || vizMode === "list" ? (
                   <AnalyticsTable result={analyticsQuery.data} />
                 ) : null}
-                {vizMode === 'piechart' ? <AnalyticsPieChart result={analyticsQuery.data} /> : null}
+                {vizMode === "piechart" ? <AnalyticsPieChart result={analyticsQuery.data} /> : null}
               </div>
             ) : (
               <div className="text-[13px] text-[var(--text-muted)]">
@@ -621,10 +620,10 @@ export default function TracesPage(): JSX.Element {
           metaRight={formatRelativeTime(selectedTrace.start_time)}
           summaryNode={
             <div className="space-y-1">
-              <div className="text-sm font-semibold text-[var(--text-primary)]">
+              <div className="font-semibold text-[var(--text-primary)] text-sm">
                 {selectedTrace.operation_name}
               </div>
-              <div className="text-xs text-[var(--text-secondary)]">
+              <div className="text-[var(--text-secondary)] text-xs">
                 {selectedTrace.service_name} • {formatDuration(selectedTrace.duration_ms)}
               </div>
             </div>
@@ -634,7 +633,7 @@ export default function TracesPage(): JSX.Element {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => navigate(`/traces/${selectedTrace.trace_id}`)}
+                onClick={() => navigate({ to: `/traces/${selectedTrace.trace_id}` })}
               >
                 View full trace
               </Button>
@@ -642,9 +641,9 @@ export default function TracesPage(): JSX.Element {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  navigate(
-                    `${ROUTES.logs}?query=${encodeURIComponent(`trace_id:${selectedTrace.trace_id}`)}`
-                  );
+                  navigate({
+                    to: `${ROUTES.logs}?query=${encodeURIComponent(`trace_id:${selectedTrace.trace_id}`)}`,
+                  });
                 }}
               >
                 Related logs

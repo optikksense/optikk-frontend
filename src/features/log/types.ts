@@ -1,7 +1,6 @@
-import type { QueryParams, QueryParamValue } from '@shared/api/service-types';
+import type { QueryParamValue, QueryParams } from "@shared/api/service-types";
 
-import type { LogEntry } from '@entities/log/model';
-import type { StructuredFilter } from '@shared/hooks/useURLFilters';
+import type { StructuredFilter } from "@shared/hooks/useURLFilters";
 
 /**
  *
@@ -9,16 +8,9 @@ import type { StructuredFilter } from '@shared/hooks/useURLFilters';
 export type DomainRecord = Record<string, unknown>;
 
 /**
- * Log identifiers are backend strings, but some intermediate views still
- * treat them as plain keys. Keep the surface permissive while staying typed.
- */
-export type LogId = LogEntry['id'];
-
-/**
  *
  */
 export interface LogRecord extends DomainRecord {
-  id: LogId;
   timestamp: string | number; // nanosecond int from OTLP or ISO string
   // Normalized fields (set by logsApi.normalizeLog)
   level?: string;
@@ -71,7 +63,7 @@ export interface LogAggregateRow extends DomainRecord {
 export interface LogAttributeFilter {
   key: string;
   value: string;
-  op: 'eq' | 'neq' | 'contains' | 'regex';
+  op: "eq" | "neq" | "contains" | "regex";
 }
 
 /**

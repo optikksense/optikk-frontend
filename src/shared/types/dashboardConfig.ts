@@ -19,65 +19,66 @@ export type DashboardExtraContext = Record<string, DashboardRuntimeValue>;
 export const DASHBOARD_SCHEMA_VERSION = 2 as const;
 export type DashboardSchemaVersion = 1 | 2;
 
-export type DashboardRenderMode = 'dashboard' | 'explorer';
-export type DashboardColumnAlign = 'left' | 'center' | 'right';
+export type DashboardRenderMode = "dashboard" | "explorer";
+export type DashboardColumnAlign = "left" | "center" | "right";
 export type DashboardDrawerEntity =
-  | 'aiModel'
-  | 'databaseSystem'
-  | 'errorGroup'
-  | 'kafkaGroup'
-  | 'kafkaTopic'
-  | 'node'
-  | 'redisInstance';
+  | "aiModel"
+  | "databaseSystem"
+  | "errorGroup"
+  | "kafkaGroup"
+  | "kafkaTopic"
+  | "node"
+  | "redisInstance"
+  | "service";
 export const DASHBOARD_PANEL_TYPES = [
-  'ai-bar',
-  'ai-line',
-  'bar',
-  'db-systems-overview',
-  'error-hotspot-ranking',
-  'error-rate',
-  'exception-type-line',
-  'gauge',
-  'heatmap',
-  'latency',
-  'latency-heatmap',
-  'latency-histogram',
-  'log-histogram',
-  'pie',
-  'request',
-  'service-catalog',
-  'service-health-grid',
-  'service-map',
-  'slo-indicators',
-  'stat-card',
-  'stat-cards-grid',
-  'stat-summary',
-  'table',
-  'trace-waterfall',
+  "ai-bar",
+  "ai-line",
+  "bar",
+  "db-systems-overview",
+  "error-hotspot-ranking",
+  "error-rate",
+  "exception-type-line",
+  "gauge",
+  "heatmap",
+  "latency",
+  "latency-heatmap",
+  "latency-histogram",
+  "log-histogram",
+  "pie",
+  "request",
+  "service-catalog",
+  "service-health-grid",
+  "service-map",
+  "slo-indicators",
+  "stat-card",
+  "stat-cards-grid",
+  "stat-summary",
+  "table",
+  "trace-waterfall",
 ] as const;
 export type DashboardPanelType = (typeof DASHBOARD_PANEL_TYPES)[number];
 export const DASHBOARD_LAYOUT_VARIANTS = [
-  'kpi',
-  'summary',
-  'standard-chart',
-  'wide-chart',
-  'ranking',
-  'summary-table',
-  'detail-table',
-  'hero',
-  'hero-map',
-  'hero-detail',
+  "kpi",
+  "summary",
+  "standard-chart",
+  "wide-chart",
+  "ranking",
+  "summary-table",
+  "detail-table",
+  "hero",
+  "hero-map",
+  "hero-detail",
 ] as const;
 export type DashboardLayoutVariant = (typeof DASHBOARD_LAYOUT_VARIANTS)[number];
 export const DASHBOARD_SECTION_TEMPLATES = [
-  'kpi-band',
-  'summary-plus-health',
-  'two-up',
-  'three-up',
-  'stacked',
-  'hero-plus-table',
-  'chart-grid-plus-details',
-  'table-stack',
+  "kpi-band",
+  "summary-plus-health",
+  "two-up",
+  "three-up",
+  "stacked",
+  "hero-plus-table",
+  "chart-grid-plus-details",
+  "table-stack",
 ] as const;
 export type DashboardSectionTemplate = (typeof DASHBOARD_SECTION_TEMPLATES)[number];
 
@@ -205,7 +206,7 @@ export interface StatCardSpec {
   title: string;
   dataSource: string;
   valueField: string;
-  formatter?: 'ms' | 'bytes' | 'percent1' | 'number';
+  formatter?: "ms" | "bytes" | "percent1" | "number";
   icon?: string;
 }
 

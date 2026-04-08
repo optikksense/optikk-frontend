@@ -1,16 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 
-import { useAppStore } from '@app/store/appStore';
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 
-import type { LogEntry } from '@entities/log/model';
-import { useLiveTailStream } from '@/features/explorer-core/hooks/useLiveTailStream';
-import { resolveTimeBounds } from '@/features/explorer-core/utils/timeRange';
-import { getTimestampMs, rowKey as logRowKey } from '@shared/utils/logUtils';
+import { useLiveTailStream } from "@/features/explorer-core/hooks/useLiveTailStream";
+import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
+import type { LogEntry } from "@entities/log/model";
+import { getTimestampMs, rowKey as logRowKey } from "@shared/utils/logUtils";
 
-import type { StructuredFilter } from '@shared/hooks/useURLFilters';
-import { logsExplorerApi } from '../api/logsExplorerApi';
-import type { LogAggregateRow, LogFacet, LogVolumeBucket, LogsBackendParams } from '../types';
+import type { StructuredFilter } from "@shared/hooks/useURLFilters";
+import { logsExplorerApi } from "../api/logsExplorerApi";
+import type { LogAggregateRow, LogFacet, LogVolumeBucket, LogsBackendParams } from "../types";
 
 export interface UseLogsHubDataProps {
   explorerQuery: string;
@@ -21,7 +21,7 @@ export interface UseLogsHubDataProps {
   pageSize: number;
 }
 
-const DEFAULT_STEP = '5m';
+const DEFAULT_STEP = "5m";
 
 /** Live tail buffer size (must match `maxItems` on `useLiveTailStream` and any UI cap). */
 export const LOGS_LIVE_TAIL_MAX_ROWS = 20;
@@ -33,7 +33,9 @@ export function useLogsHubData({
   page,
   pageSize,
 }: UseLogsHubDataProps) {
-  const { selectedTeamId, timeRange, refreshKey } = useAppStore();
+  const selectedTeamId = useTeamId();
+  const timeRange = useTimeRange();
+  const refreshKey = useRefreshKey();
   const [liveTailEnabled, setLiveTailEnabled] = useState(false);
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
@@ -51,7 +53,7 @@ export function useLogsHubData({
   );
 
   const explorerQueryFn = useQuery({
-    queryKey: ['logs', 'explorer', selectedTeamId, explorerQueryKey, refreshKey],
+    queryKey: ["logs", "explorer", selectedTeamId, explorerQueryKey, refreshKey],
     queryFn: () =>
       logsExplorerApi.query({
         ...explorerQueryKey,
@@ -63,8 +65,8 @@ export function useLogsHubData({
 
   const liveTail = useLiveTailStream<LogEntry>({
     enabled: liveTailEnabled && Boolean(selectedTeamId),
-    subscribeEvent: 'subscribe:logs',
-    itemEvent: 'log',
+    subscribeEvent: "subscribe:logs",
+    itemEvent: "log",
     maxItems: LOGS_LIVE_TAIL_MAX_ROWS,
     params: { startMs: startTime, endMs: endTime, ...liveTailParams },
     getItemKey: (log) => logRowKey(log),
@@ -73,10 +75,10 @@ export function useLogsHubData({
       const record = value as LogEntry;
       return {
         ...record,
-        level: record.severity_text ?? record.level ?? '',
-        message: record.body ?? record.message ?? '',
-        service: record.service_name ?? record.service ?? '',
-        service_name: record.service_name ?? record.service ?? '',
+        level: record.severity_text ?? record.level ?? "",
+        message: record.body ?? record.message ?? "",
+        service: record.service_name ?? record.service ?? "",
+        service_name: record.service_name ?? record.service ?? "",
       };
     },
   });
@@ -101,7 +103,7 @@ export function useLogsHubData({
   return {
     logs,
     logsLoading: liveTailEnabled
-      ? liveTail.status === 'connecting' && liveTail.items.length === 0
+      ? liveTail.status === "connecting" && liveTail.items.length === 0
       : explorerQueryFn.isLoading,
     logsError: explorerQueryFn.isError,
     logsErrorDetail: explorerQueryFn.error,

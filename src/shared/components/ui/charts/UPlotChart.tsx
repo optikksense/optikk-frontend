@@ -1,14 +1,14 @@
-import { useEffect, useRef, useMemo, useState } from 'react';
-import uPlot from 'uplot';
-import 'uplot/dist/uPlot.min.css';
-import './uplot.css';
+import { useEffect, useMemo, useRef, useState } from "react";
+import uPlot from "uplot";
+import "uplot/dist/uPlot.min.css";
+import "./uplot.css";
 
-import { useChartTimeBuckets } from '@shared/hooks/useChartTimeBuckets';
-import { resolveThemeColor } from '@shared/utils/chartTheme';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
+import { resolveThemeColor } from "@shared/utils/chartTheme";
 
 export interface UPlotChartProps {
-  options: Omit<uPlot.Options, 'width' | 'height'>;
+  options: Omit<uPlot.Options, "width" | "height">;
   data: uPlot.AlignedData;
   height?: number;
   fillHeight?: boolean;
@@ -26,16 +26,13 @@ export interface UPlotChartProps {
 function seriesLikeLength(value: unknown): number {
   if (value == null) return 0;
   if (Array.isArray(value)) return value.length;
-  if (typeof (value as ArrayLike<number>).length === 'number') {
+  if (typeof (value as ArrayLike<number>).length === "number") {
     return (value as ArrayLike<number>).length;
   }
   return 0;
 }
 
-function isAlignedDataShapeCompatible(
-  next: uPlot.AlignedData,
-  prev: uPlot.AlignedData
-): boolean {
+function isAlignedDataShapeCompatible(next: uPlot.AlignedData, prev: uPlot.AlignedData): boolean {
   if (next.length !== prev.length) return false;
   for (let i = 0; i < next.length; i += 1) {
     if (seriesLikeLength(next[i]) !== seriesLikeLength(prev[i])) return false;
@@ -77,10 +74,10 @@ export default function UPlotChart({
         options.series?.length ?? 0,
         height,
         fillHeight ? 1 : 0,
-        syncKey?.key ?? '',
+        syncKey?.key ?? "",
         tooltipContent ? 1 : 0,
         onTimeBrush ? 1 : 0,
-      ].join(':'),
+      ].join(":"),
     [options.series?.length, height, fillHeight, syncKey, tooltipContent, onTimeBrush]
   );
 
@@ -108,8 +105,8 @@ export default function UPlotChart({
                   const left = u.select.left;
                   const width = u.select.width;
                   if (width < 10) return; // ignore tiny drags
-                  const startMs = u.posToVal(left, 'x') * 1000;
-                  const endMs = u.posToVal(left + width, 'x') * 1000;
+                  const startMs = u.posToVal(left, "x") * 1000;
+                  const endMs = u.posToVal(left + width, "x") * 1000;
                   if (startMs < endMs) onTimeBrush(startMs, endMs);
                   // Reset the selection rectangle
                   u.setSelect({ left: 0, width: 0, top: 0, height: 0 }, false);
@@ -192,10 +189,10 @@ export default function UPlotChart({
     resizeObserverRef.current = ro;
 
     const handleMouseLeave = () => setHoverState(null);
-    el.addEventListener('mouseleave', handleMouseLeave);
+    el.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      el.removeEventListener('mouseleave', handleMouseLeave);
+      el.removeEventListener("mouseleave", handleMouseLeave);
       ro.disconnect();
       resizeObserverRef.current = null;
       chartRef.current?.destroy();
@@ -217,7 +214,7 @@ export default function UPlotChart({
   return (
     <div
       ref={containerRef}
-      className={cn('uplot-shell relative w-full', fillHeight && 'h-full', className)}
+      className={cn("uplot-shell relative w-full", fillHeight && "h-full", className)}
     >
       {hoverState ? (
         <div
@@ -225,7 +222,7 @@ export default function UPlotChart({
           style={{ left: hoverState.left, top: hoverState.top }}
         >
           {hoverState.title ? (
-            <div className="mb-2 text-[11px] font-semibold text-[var(--text-secondary)]">
+            <div className="mb-2 font-semibold text-[11px] text-[var(--text-secondary)]">
               {hoverState.title}
             </div>
           ) : null}
@@ -235,7 +232,7 @@ export default function UPlotChart({
                 <div className="flex min-w-0 items-center gap-2">
                   <span
                     className="h-2 w-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: row.color ?? 'var(--text-muted)' }}
+                    style={{ backgroundColor: row.color ?? "var(--text-muted)" }}
                   />
                   <span className="truncate text-[var(--text-secondary)]">{row.label}</span>
                 </div>
@@ -249,13 +246,11 @@ export default function UPlotChart({
   );
 }
 
-
-
 /** Default axis styling matching the app's dark theme. */
 export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
-  const gridColor = resolveThemeColor('--border-light', 'rgba(255,255,255,0.08)');
-  const labelColor = resolveThemeColor('--text-secondary', '#8e96a9');
-  const font = '12px Inter, sans-serif';
+  const gridColor = resolveThemeColor("--border-light", "rgba(255,255,255,0.08)");
+  const labelColor = resolveThemeColor("--text-secondary", "#8e96a9");
+  const font = "12px Inter, sans-serif";
   const yAxisSize = config?.yAxisSize ?? 60;
 
   return [
@@ -300,7 +295,7 @@ export function uBars(label: string, color: string): uPlot.Series {
     stroke: color,
     fill: `${color}CC`,
     points: { show: false },
-    paths: uPlot.paths.bars!({ size: [0.6], radius: 2 }),
+    paths: uPlot.paths.bars?.({ size: [0.6], radius: 2 }),
   };
 }
 

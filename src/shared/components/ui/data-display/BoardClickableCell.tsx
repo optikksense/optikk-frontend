@@ -1,16 +1,16 @@
-import { Filter } from 'lucide-react';
-import type { ReactNode, CSSProperties } from 'react';
+import { Filter } from "lucide-react";
+import type { CSSProperties, ReactNode } from "react";
 
 export type BoardFilterValue = string | number | boolean;
 
 export interface BoardFilter {
   field: string;
   value: BoardFilterValue;
-  operator: 'equals';
+  operator: "equals";
 }
 
 function isFilterValue(value: unknown): value is BoardFilterValue {
-  return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean";
 }
 
 export interface BoardClickableCellProps {
@@ -33,24 +33,24 @@ export function BoardClickableCell({
   children,
   style = {},
 }: BoardClickableCellProps): JSX.Element {
-  if (!onAddFilter || !isFilterValue(value) || value === '' || value === '-') {
+  if (!onAddFilter || !isFilterValue(value) || value === "" || value === "-") {
     return <span style={style}>{children}</span>;
   }
 
   return (
     <span
-      className="group inline-flex items-center gap-1 cursor-pointer rounded-sm px-[2px] py-[1px] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-12)]"
+      className="group inline-flex cursor-pointer items-center gap-1 rounded-sm px-[2px] py-[1px] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-12)]"
       style={style}
       onClick={(event) => {
         event.stopPropagation();
-        onAddFilter({ field, value, operator: 'equals' });
+        onAddFilter({ field, value, operator: "equals" });
       }}
       title={`Filter: ${field} = "${String(value)}"`}
     >
       {children}
       <Filter
         size={10}
-        className="opacity-0 group-hover:opacity-100 text-primary shrink-0 transition-opacity duration-100"
+        className="shrink-0 text-primary opacity-0 transition-opacity duration-100 group-hover:opacity-100"
       />
     </span>
   );

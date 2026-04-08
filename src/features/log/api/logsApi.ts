@@ -1,8 +1,8 @@
-import { z } from 'zod';
-import { logsService } from '@shared/api/logsService';
-import { logEntrySchema, type LogEntry } from '@entities/log/model';
-import type { TeamId } from '@shared/types/branded';
-import type { QueryParams, RequestTime } from '@shared/api/service-types';
+import { type LogEntry, logEntrySchema } from "@entities/log/model";
+import { logsService } from "@shared/api/logsService";
+import type { QueryParams, RequestTime } from "@shared/api/service-types";
+import type { TeamId } from "@shared/types/branded";
+import { z } from "zod";
 
 /**
  * Normalized backend parameters for logs.
@@ -90,12 +90,12 @@ const logsListResponseSchema = z
 function normalizeLog(raw: z.infer<typeof logEntrySchema>): LogEntry {
   return {
     ...raw,
-    level: raw.severity_text ?? raw.level ?? '',
-    message: raw.body ?? raw.message ?? '',
-    service: raw.service_name ?? raw.service ?? '',
-    service_name: raw.service_name ?? raw.service ?? '',
-    trace_id: raw.trace_id ?? '',
-    span_id: raw.span_id ?? '',
+    level: raw.severity_text ?? raw.level ?? "",
+    message: raw.body ?? raw.message ?? "",
+    service: raw.service_name ?? raw.service ?? "",
+    service_name: raw.service_name ?? raw.service ?? "",
+    trace_id: raw.trace_id ?? "",
+    span_id: raw.span_id ?? "",
   };
 }
 

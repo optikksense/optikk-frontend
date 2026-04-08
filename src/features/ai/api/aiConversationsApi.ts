@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import { aiService } from '@shared/api/aiService';
-import type { RequestTime } from '@shared/api/service-types';
-import type { Conversation, ConversationTurn } from '../types';
+import { aiService } from "@shared/api/aiService";
+import type { RequestTime } from "@shared/api/service-types";
+import { z } from "zod";
+import type { Conversation, ConversationTurn } from "../types";
 
 const conversationSchema = z.object({
   conversationId: z.string(),
@@ -18,14 +18,14 @@ const turnSchema = z.object({
   spanId: z.string(),
   traceId: z.string(),
   model: z.string(),
-  operationType: z.string().optional().default(''),
+  operationType: z.string().optional().default(""),
   startTime: z.string(),
   durationMs: z.number(),
   inputTokens: z.number(),
   outputTokens: z.number(),
   hasError: z.boolean(),
-  inputPreview: z.string().optional().default(''),
-  outputPreview: z.string().optional().default(''),
+  inputPreview: z.string().optional().default(""),
+  outputPreview: z.string().optional().default(""),
 });
 
 export const aiConversationsApi = {

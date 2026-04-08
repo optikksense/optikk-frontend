@@ -1,5 +1,5 @@
-import type { TimeRange } from '@/types';
-import { resolveTimeRangeBounds } from '@/types';
+import type { TimeRange } from "@/types";
+import { resolveTimeRangeBounds } from "@/types";
 
 export interface ResolvedTimeBounds {
   startTime: number;

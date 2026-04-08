@@ -378,10 +378,8 @@
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --transition-colors:
-    color 150ms cubic-bezier(0.25, 0.1, 0.25, 1),
-    background-color 150ms cubic-bezier(0.25, 0.1, 0.25, 1),
-    border-color 150ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-colors: color 150ms cubic-bezier(0.25, 0.1, 0.25, 1), background-color 150ms
+    cubic-bezier(0.25, 0.1, 0.25, 1), border-color 150ms cubic-bezier(0.25, 0.1, 0.25, 1);
   --transition-shadow: box-shadow 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
   --transition-all: all 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
 
@@ -413,7 +411,7 @@
 }
 
 /* Light Theme — calm warm off-white palette */
-[data-theme='light'] {
+[data-theme="light"] {
   --bg-primary: #fafaf8;
   --bg-secondary: #f5f4f0;
   --bg-tertiary: #eae9e4;
@@ -464,7 +462,7 @@
 }
 
 /* Compact density mode */
-[data-density='compact'] {
+[data-density="compact"] {
   --space-2xs: 2px;
   --space-xs: 4px;
   --space-sm: 8px;

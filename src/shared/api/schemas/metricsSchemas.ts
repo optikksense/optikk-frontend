@@ -1,7 +1,7 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const numericValue = z.coerce.number().default(0);
-const stringValue = z.string().default('');
+const stringValue = z.string().default("");
 
 export const metricNumericValueSchema = z
   .object({
@@ -57,16 +57,6 @@ export const errorGroupSchema = z
   })
   .strict();
 
-export const serviceDependencySchema = z
-  .object({
-    source: stringValue,
-    target: stringValue,
-    call_count: numericValue,
-    avg_latency: numericValue,
-    error_rate: numericValue,
-  })
-  .strict();
-
 export const resourceUsageTimeSeriesPointSchema = z
   .object({
     timestamp: stringValue,
@@ -103,7 +93,6 @@ export type MetricNumericValue = z.infer<typeof metricNumericValueSchema>;
 export type MetricsTimeSeriesPointDto = z.infer<typeof metricsTimeSeriesPointSchema>;
 export type EndpointMetricDto = z.infer<typeof endpointMetricSchema>;
 export type ErrorGroupDto = z.infer<typeof errorGroupSchema>;
-export type ServiceDependencyDto = z.infer<typeof serviceDependencySchema>;
 
 export const serviceDependencyDetailSchema = z
   .object({
@@ -112,7 +101,7 @@ export const serviceDependencyDetailSchema = z
     call_count: numericValue,
     p95_latency_ms: numericValue,
     error_rate: numericValue,
-    direction: z.enum(['upstream', 'downstream']),
+    direction: z.enum(["upstream", "downstream"]),
   })
   .strict();
 

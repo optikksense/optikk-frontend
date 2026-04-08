@@ -1,32 +1,35 @@
-import { useMemo } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useMemo } from "react";
 
-import { DetailDrawer } from '@shared/components/ui/layout';
+import ServiceDetailDrawer from "@/features/overview/components/ServiceDetailDrawer";
+import { DetailDrawer } from "@shared/components/ui/layout";
 
-import { clearDashboardDrawerSearch, readDashboardDrawerState } from './utils/dashboardDrawerState';
+import { clearDashboardDrawerSearch, readDashboardDrawerState } from "./utils/dashboardDrawerState";
 
 const ENTITY_LABELS: Record<string, string> = {
-  aiModel: 'AI Model',
-  databaseSystem: 'Database System',
-  errorGroup: 'Error Group',
-  kafkaGroup: 'Kafka Consumer Group',
-  kafkaTopic: 'Kafka Topic',
-  node: 'Node',
-  redisInstance: 'Redis Instance',
+  aiModel: "AI Model",
+  databaseSystem: "Database System",
+  errorGroup: "Error Group",
+  kafkaGroup: "Kafka Consumer Group",
+  kafkaTopic: "Kafka Topic",
+  node: "Node",
+  redisInstance: "Redis Instance",
+  service: "Service",
 };
 
 function toFieldLabel(key: string): string {
   return key
-    .replace(/_/g, ' ')
-    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, " ")
+    .replace(/([A-Z])/g, " $1")
     .trim()
-    .replace(/\bDb\b/g, 'DB')
-    .replace(/\bAi\b/g, 'AI')
-    .replace(/\bHttp\b/g, 'HTTP')
-    .replace(/\bP95\b/g, 'P95')
-    .replace(/\bP99\b/g, 'P99')
-    .replace(/\bRss\b/g, 'RSS')
-    .replace(/\bVms\b/g, 'VMS');
+    .replace(/\bDb\b/g, "DB")
+    .replace(/\bAi\b/g, "AI")
+    .replace(/\bHttp\b/g, "HTTP")
+    .replace(/\bP95\b/g, "P95")
+    .replace(/\bP99\b/g, "P99")
+    .replace(/\bRss\b/g, "RSS")
+    .replace(/\bVms\b/g, "VMS");
 }
 
 export default function DashboardEntityDrawer(): JSX.Element | null {
@@ -51,12 +54,12 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
 
   const sections = useMemo(() => {
     const primaryFields = [
-      { label: 'Entity', key: 'entity' },
-      { label: 'Identifier', key: 'identifier' },
+      { label: "Entity", key: "entity" },
+      { label: "Identifier", key: "identifier" },
     ];
 
     const extraFields = Object.keys(drawerData)
-      .filter((key) => key !== 'entity' && key !== 'identifier')
+      .filter((key) => key !== "entity" && key !== "identifier")
       .sort((left, right) => left.localeCompare(right))
       .map((key) => ({
         label: toFieldLabel(key),
@@ -64,8 +67,8 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
       }));
 
     return [
-      { title: 'Selection', fields: primaryFields },
-      ...(extraFields.length > 0 ? [{ title: 'Context', fields: extraFields }] : []),
+      { title: "Selection", fields: primaryFields },
+      ...(extraFields.length > 0 ? [{ title: "Context", fields: extraFields }] : []),
     ];
   }, [drawerData]);
 
@@ -73,26 +76,40 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
     return null;
   }
 
+  if (drawer.entity === "service") {
+    return (
+      <ServiceDetailDrawer
+        open
+        serviceName={drawer.id ?? ""}
+        title={drawer.title}
+        initialData={drawer.data}
+        onClose={() =>
+          navigate({
+            to: (location.pathname + clearDashboardDrawerSearch(location.search)) as any,
+            replace: true,
+          })
+        }
+      />
+    );
+  }
+
   return (
     <DetailDrawer
       open
       onClose={() =>
-        navigate(
-          {
-            pathname: location.pathname,
-            search: clearDashboardDrawerSearch(location.search),
-          },
-          { replace: true }
-        )
+        navigate({
+          to: (location.pathname + clearDashboardDrawerSearch(location.search)) as any,
+          replace: true,
+        })
       }
       title={
-        drawer.title || (drawer.entity ? (ENTITY_LABELS[drawer.entity] ?? 'Details') : 'Details')
+        drawer.title || (drawer.entity ? (ENTITY_LABELS[drawer.entity] ?? "Details") : "Details")
       }
       data={drawerData}
       sections={sections}
       extra={
         !drawer.data ? (
-          <p className="text-sm text-[var(--text-secondary)]">
+          <p className="text-[var(--text-secondary)] text-sm">
             This detail view was opened from a legacy link, so only the identifier is available
             until the parent dashboard is opened from a live row selection.
           </p>

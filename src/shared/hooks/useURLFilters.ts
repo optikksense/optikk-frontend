@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from "react";
 
 /** A structured filter chip from ObservabilityQueryBar. */
 export interface StructuredFilter {
@@ -13,7 +13,7 @@ export interface StructuredFilter {
 /**
  *
  */
-export type URLFilterType = 'string' | 'string[]' | 'number' | 'boolean';
+export type URLFilterType = "string" | "string[]" | "number" | "boolean";
 
 /**
  *
@@ -42,13 +42,13 @@ export interface URLFilterConfig {
 
 function getTypeDefault(type: URLFilterType): URLFilterValue {
   switch (type) {
-    case 'string':
-      return '';
-    case 'string[]':
+    case "string":
+      return "";
+    case "string[]":
       return [];
-    case 'number':
+    case "number":
       return 0;
-    case 'boolean':
+    case "boolean":
       return false;
   }
 }
@@ -63,16 +63,16 @@ function parseParamValue(
   }
 
   switch (type) {
-    case 'string':
+    case "string":
       return raw;
-    case 'string[]':
-      return raw ? raw.split(',').filter(Boolean) : defaultValue;
-    case 'number': {
+    case "string[]":
+      return raw ? raw.split(",").filter(Boolean) : defaultValue;
+    case "number": {
       const parsed = Number(raw);
       return Number.isFinite(parsed) ? parsed : defaultValue;
     }
-    case 'boolean':
-      return raw === 'true' || raw === '1';
+    case "boolean":
+      return raw === "true" || raw === "1";
   }
 }
 
@@ -82,14 +82,14 @@ function serialiseParamValue(value: URLFilterValue, type: URLFilterType): string
   }
 
   switch (type) {
-    case 'string':
+    case "string":
       return value ? String(value) : null;
-    case 'string[]':
-      return Array.isArray(value) && value.length > 0 ? value.join(',') : null;
-    case 'number':
+    case "string[]":
+      return Array.isArray(value) && value.length > 0 ? value.join(",") : null;
+    case "number":
       return value !== 0 ? String(value) : null;
-    case 'boolean':
-      return value ? 'true' : null;
+    case "boolean":
+      return value ? "true" : null;
   }
 }
 
@@ -99,7 +99,7 @@ function encodeStructuredFilters(filters: StructuredFilter[]): string | null {
   }
   return filters
     .map((filter) => `${filter.field}:${filter.operator}:${encodeURIComponent(filter.value)}`)
-    .join(';');
+    .join(";");
 }
 
 function decodeStructuredFilters(raw: string | null): StructuredFilter[] {
@@ -108,12 +108,12 @@ function decodeStructuredFilters(raw: string | null): StructuredFilter[] {
   }
 
   const filters: StructuredFilter[] = [];
-  for (const chunk of raw.split(';')) {
-    const [field, operator, ...rest] = chunk.split(':');
+  for (const chunk of raw.split(";")) {
+    const [field, operator, ...rest] = chunk.split(":");
     if (!field || !operator) {
       continue;
     }
-    filters.push({ field, operator, value: decodeURIComponent(rest.join(':')) });
+    filters.push({ field, operator, value: decodeURIComponent(rest.join(":")) });
   }
   return filters;
 }
@@ -148,7 +148,7 @@ export function useURLFilters(config: URLFilterConfig): {
     if (!config.syncStructuredFilters) {
       return [];
     }
-    return decodeStructuredFilters(searchParams.get('filters'));
+    return decodeStructuredFilters(searchParams.get("filters"));
     // Initial parse should run once; subsequent URL changes are managed via state updates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -158,7 +158,7 @@ export function useURLFilters(config: URLFilterConfig): {
 
   const pendingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstRenderRef = useRef(true);
-
+  const isFlushingRef = useRef(false);
   const flushToURL = useCallback(
     (nextValues: URLFilterValues, nextFilters: StructuredFilter[]): void => {
       if (pendingTimerRef.current) {
@@ -166,59 +166,94 @@ export function useURLFilters(config: URLFilterConfig): {
       }
 
       pendingTimerRef.current = setTimeout(() => {
-        const nextSearchParams = new URLSearchParams();
+        setSearchParams(
+          (prevParams) => {
+            const nextSearchParams = new URLSearchParams(prevParams);
 
-        for (const [key, value] of searchParams.entries()) {
-          const isManagedKey =
-            config.params.some((param) => param.key === key) ||
-            key === 'filters' ||
-            config.stripParams?.includes(key);
-          if (!isManagedKey) {
-            nextSearchParams.set(key, value);
-          }
-        }
+            // 1. Check if we actually need to update anything
+            let hasChanges = false;
 
-        for (const param of config.params) {
-          const serialised = serialiseParamValue(nextValues[param.key], param.type);
-          if (serialised !== null) {
-            nextSearchParams.set(param.key, serialised);
-          }
-        }
+            // Manage params
+            for (const param of config.params) {
+              const serialised = serialiseParamValue(nextValues[param.key], param.type);
+              const current = prevParams.get(param.key);
+              if (serialised !== current) {
+                hasChanges = true;
+                if (serialised !== null) {
+                  nextSearchParams.set(param.key, serialised);
+                } else {
+                  nextSearchParams.delete(param.key);
+                }
+              }
+            }
 
-        if (config.syncStructuredFilters) {
-          const encodedFilters = encodeStructuredFilters(nextFilters);
-          if (encodedFilters) {
-            nextSearchParams.set('filters', encodedFilters);
-          }
-        }
+            // Manage filters
+            if (config.syncStructuredFilters) {
+              const encodedFilters = encodeStructuredFilters(nextFilters);
+              const current = prevParams.get("filters");
+              if (encodedFilters !== current) {
+                hasChanges = true;
+                if (encodedFilters) {
+                  nextSearchParams.set("filters", encodedFilters);
+                } else {
+                  nextSearchParams.delete("filters");
+                }
+              }
+            }
 
-        setSearchParams(nextSearchParams, { replace: true });
+            // Manage stripParams
+            if (config.stripParams) {
+              for (const key of config.stripParams) {
+                if (nextSearchParams.has(key)) {
+                  nextSearchParams.delete(key);
+                  hasChanges = true;
+                }
+              }
+            }
+
+            if (!hasChanges) return prevParams;
+
+            isFlushingRef.current = true;
+            return nextSearchParams;
+          },
+          { replace: true }
+        );
       }, 300);
     },
-    // searchParams is intentionally read lazily within the debounced callback.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [config.params, config.stripParams, config.syncStructuredFilters, setSearchParams]
   );
 
+  // URL -> State sync
   useEffect(() => {
-    if (!config.stripParams || config.stripParams.length === 0) {
+    if (isFlushingRef.current) {
+      isFlushingRef.current = false;
       return;
     }
 
-    const nextSearchParams = new URLSearchParams(searchParams);
-    let hasChanges = false;
+    const nextValues: URLFilterValues = {};
+    let hasValueChanges = false;
 
-    for (const key of config.stripParams) {
-      if (nextSearchParams.has(key)) {
-        nextSearchParams.delete(key);
-        hasChanges = true;
+    for (const param of config.params) {
+      const fallback = param.defaultValue ?? getTypeDefault(param.type);
+      const urlValue = parseParamValue(searchParams.get(param.key), param.type, fallback);
+      nextValues[param.key] = urlValue;
+      if (JSON.stringify(urlValue) !== JSON.stringify(values[param.key])) {
+        hasValueChanges = true;
       }
     }
 
-    if (hasChanges) {
-      setSearchParams(nextSearchParams, { replace: true });
+    if (hasValueChanges) {
+      setValues(nextValues);
     }
-  }, [config.stripParams, searchParams, setSearchParams]);
+
+    if (config.syncStructuredFilters) {
+      const urlFilters = decodeStructuredFilters(searchParams.get("filters"));
+      if (JSON.stringify(urlFilters) !== JSON.stringify(structuredFilters)) {
+        setStructuredFilters(urlFilters);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     if (isFirstRenderRef.current) {
@@ -242,7 +277,7 @@ export function useURLFilters(config: URLFilterConfig): {
       generatedSetters[param.key] = (next): void => {
         setValues((previousValues) => {
           const previousValue = previousValues[param.key];
-          const resolvedValue = typeof next === 'function' ? next(previousValue) : next;
+          const resolvedValue = typeof next === "function" ? next(previousValue) : next;
           return { ...previousValues, [param.key]: resolvedValue };
         });
       };

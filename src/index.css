@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-@import './config/themeColors.css';
-@import './shared/design-system/utilities.css';
-@import './shared/components/ui/charts/uplot.css';
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import "./config/themeColors.css";
+@import "./shared/design-system/utilities.css";
+@import "./shared/components/ui/charts/uplot.css";
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +15,6 @@
 }
 
 :root {
-
   --text-xs: 11px;
   --text-sm: 12px;
   --text-base: 13px;
@@ -35,15 +34,9 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
 
-
   --grid-gutter: 12px;
 
-  font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 13px;
   line-height: var(--leading-normal);
   font-weight: var(--font-normal);
@@ -58,8 +51,7 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text-primary);
-  background:
-    radial-gradient(circle at top left, var(--color-primary-subtle-08), transparent 30%),
+  background: radial-gradient(circle at top left, var(--color-primary-subtle-08), transparent 30%),
     radial-gradient(circle at top right, rgba(243, 139, 107, 0.05), transparent 24%),
     var(--bg-primary);
 }
@@ -89,13 +81,12 @@ body {
 
 /* Code blocks */
 code {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
   font-size: 11px;
   background: var(--bg-tertiary);
   padding: 2px 6px;
   border-radius: 6px;
 }
-
 
 .page-section {
   margin-top: var(--space-md);

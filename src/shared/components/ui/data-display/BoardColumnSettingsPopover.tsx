@@ -1,5 +1,5 @@
-import { Check, Settings2 } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { Check, Settings2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface BoardColumnSettingsPopoverProps {
   columns: Array<{ key: string; label: string }>;
@@ -26,39 +26,40 @@ export default function BoardColumnSettingsPopover({
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   return (
     <div ref={ref} className="relative inline-block">
       <button
-        className="inline-flex items-center gap-1.5 px-3 py-[5px] rounded-[7px] border border-[color:var(--glass-border)] bg-transparent text-[color:var(--text-secondary)] text-xs font-medium cursor-pointer transition-all duration-150 h-[30px] whitespace-nowrap hover:border-primary hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+        type="button"
+        className="inline-flex h-[30px] cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-[7px] border border-[color:var(--glass-border)] bg-transparent px-3 py-[5px] font-medium text-[color:var(--text-secondary)] text-xs transition-all duration-150 hover:border-primary hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
         onClick={() => setOpen((o) => !o)}
       >
         <Settings2 size={13} /> Columns
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 bg-secondary border border-border rounded-lg py-2 min-w-[180px] shadow-lg">
+        <div className="absolute top-full right-0 z-50 min-w-[180px] rounded-lg border border-border bg-secondary py-2 shadow-lg">
           <div className="px-3 pb-2 font-semibold text-[13px] text-[color:var(--text-secondary)]">
             Columns
           </div>
-          <div className="flex flex-col gap-2 py-1 px-0 max-h-[280px] overflow-y-auto">
+          <div className="flex max-h-[280px] flex-col gap-2 overflow-y-auto px-0 py-1">
             {columns.map((column) => {
               const checked = Boolean(visibleCols[column.key]);
               return (
                 <div
                   key={column.key}
-                  className={`flex items-center gap-2 px-1 py-[5px] rounded-[5px] cursor-pointer text-[12.5px] text-[color:var(--text-secondary)] transition-colors duration-100 select-none hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground ${
-                    checked ? 'text-foreground' : ''
+                  className={`flex cursor-pointer select-none items-center gap-2 rounded-[5px] px-1 py-[5px] text-[12.5px] text-[color:var(--text-secondary)] transition-colors duration-100 hover:bg-[var(--color-primary-subtle-08)] hover:text-foreground ${
+                    checked ? "text-foreground" : ""
                   }`}
                   onClick={() => onToggle(column.key)}
                 >
                   <span
-                    className={`w-[15px] h-[15px] rounded border flex items-center justify-center shrink-0 text-[9px] transition-all duration-[0.12s] ${
-                      checked ? 'bg-primary border-primary text-white' : 'border-border'
+                    className={`flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded border text-[9px] transition-all duration-[0.12s] ${
+                      checked ? "border-primary bg-primary text-white" : "border-border"
                     }`}
-                    style={{ borderWidth: '1.5px' }}
+                    style={{ borderWidth: "1.5px" }}
                   >
                     {checked ? <Check size={9} /> : null}
                   </span>

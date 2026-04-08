@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from "lucide-react";
+import { useMemo } from "react";
 
-import { CHART_COLORS } from '@config/constants';
-import ObservabilityChart from '@shared/components/ui/charts/ObservabilityChart';
+import { CHART_COLORS } from "@config/constants";
+import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
-import type { LogAggregateRow } from '../../types';
+import type { LogAggregateRow } from "../../types";
 
 interface LogsErrorRateChartProps {
   rows: LogAggregateRow[];
@@ -64,7 +64,7 @@ export default function LogsErrorRateChart({ rows, isLoading }: LogsErrorRateCha
 
   return (
     <div className="flex h-full min-h-0 flex-col rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-secondary)]">
-      <div className="flex items-center gap-1.5 border-b border-[var(--border-color)] px-3 py-2 text-[14px] font-semibold text-[var(--text-primary)]">
+      <div className="flex items-center gap-1.5 border-[var(--border-color)] border-b px-3 py-2 font-semibold text-[14px] text-[var(--text-primary)]">
         <AlertCircle size={14} />
         <span>Error Rate by Service (%)</span>
       </div>

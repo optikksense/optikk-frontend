@@ -3,7 +3,7 @@ export interface SummaryMetric {
   label: string;
   value: string;
   hint?: string;
-  tone?: 'default' | 'success' | 'warning' | 'danger' | 'accent';
+  tone?: "default" | "success" | "warning" | "danger" | "accent";
 }
 
 export interface FacetBucket {

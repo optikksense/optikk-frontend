@@ -1,9 +1,9 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 interface UnifiedMetricListColumn<ItemType> {
   key: string;
   label: string;
-  align?: 'left' | 'right' | 'center';
+  align?: "left" | "right" | "center";
   render: (item: ItemType) => ReactNode;
 }
 
@@ -31,12 +31,12 @@ export default function UnifiedMetricList<ItemType>({
   items,
   columns,
   rowKey,
-  emptyDescription = 'No data in selected time range',
-  className = '',
+  emptyDescription = "No data in selected time range",
+  className = "",
 }: UnifiedMetricListProps<ItemType>) {
   if (!items || items.length === 0) {
     return (
-      <div className="text-muted" style={{ textAlign: 'center', padding: 32 }}>
+      <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
         {emptyDescription}
       </div>
     );
@@ -45,18 +45,18 @@ export default function UnifiedMetricList<ItemType>({
   return (
     <div className={className}>
       {title && <div style={{ marginBottom: 8 }}>{title}</div>}
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
             {columns.map((column) => (
               <th
                 key={column.key}
                 style={{
-                  textAlign: column.align || 'left',
-                  padding: '8px 10px',
+                  textAlign: column.align || "left",
+                  padding: "8px 10px",
                   fontWeight: 600,
                   fontSize: 12,
-                  color: 'var(--text-muted)',
+                  color: "var(--text-muted)",
                 }}
               >
                 {column.label}
@@ -71,10 +71,10 @@ export default function UnifiedMetricList<ItemType>({
                 <td
                   key={column.key}
                   style={{
-                    textAlign: column.align || 'left',
-                    padding: '8px 10px',
+                    textAlign: column.align || "left",
+                    padding: "8px 10px",
                     fontSize: 12,
-                    borderTop: '1px solid var(--border-color)',
+                    borderTop: "1px solid var(--border-color)",
                   }}
                 >
                   {column.render(item)}

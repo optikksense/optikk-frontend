@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import type { DashboardPanelSpec, DashboardDataSources } from '@/types/dashboardConfig';
+import type { DashboardDataSources, DashboardPanelSpec } from "@/types/dashboardConfig";
 
-import { resolveDataSourceId } from '../utils/dashboardUtils';
-import { asDashboardRecordArray, getDashboardRecordArrayField } from '../utils/runtimeValue';
+import { resolveDataSourceId } from "../utils/dashboardUtils";
+import { asDashboardRecordArray, getDashboardRecordArrayField } from "../utils/runtimeValue";
 
 /**
  *
@@ -23,7 +23,7 @@ export function useDashboardData(
       return asDashboardRecordArray(rawData);
     }
 
-    return getDashboardRecordArrayField(rawData, 'data');
+    return getDashboardRecordArrayField(rawData, "data");
   }, [rawData, chartConfig.dataKey]);
 
   return { rawData, data };

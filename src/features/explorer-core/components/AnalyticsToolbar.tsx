@@ -1,11 +1,11 @@
-import { BarChart3, LayoutList, LineChart, PieChart, Table2 } from 'lucide-react';
+import { BarChart3, LayoutList, LineChart, PieChart, Table2 } from "lucide-react";
 
-import { Button } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { Button } from "@/components/ui";
+import { cn } from "@/lib/utils";
 
-import type { QueryFieldOption } from '../constants/fields';
+import type { QueryFieldOption } from "../constants/fields";
 
-export type ExplorerVizMode = 'list' | 'timeseries' | 'toplist' | 'table' | 'piechart';
+export type ExplorerVizMode = "list" | "timeseries" | "toplist" | "table" | "piechart";
 
 export interface AggregationSpec {
   function: string;
@@ -13,13 +13,13 @@ export interface AggregationSpec {
   alias: string;
 }
 
-const STEP_OPTIONS = ['1m', '5m', '15m', '1h', '1d'] as const;
+const STEP_OPTIONS = ["1m", "5m", "15m", "1h", "1d"] as const;
 
-const AGG_FUNCS = ['count', 'avg', 'sum', 'min', 'max', 'p50', 'p95', 'p99'] as const;
+const AGG_FUNCS = ["count", "avg", "sum", "min", "max", "p50", "p95", "p99"] as const;
 
 interface AnalyticsToolbarProps {
-  mode: 'list' | 'analytics';
-  onModeChange: (mode: 'list' | 'analytics') => void;
+  mode: "list" | "analytics";
+  onModeChange: (mode: "list" | "analytics") => void;
   vizMode: ExplorerVizMode;
   onVizModeChange: (v: ExplorerVizMode) => void;
   groupBy: string[];
@@ -46,7 +46,7 @@ export function AnalyticsToolbar({
   onStepChange,
   fieldOptions,
   metricFields,
-  className = '',
+  className = "",
 }: AnalyticsToolbarProps): JSX.Element {
   const setGroupAt = (index: number, value: string): void => {
     const next = [...groupBy];
@@ -56,7 +56,7 @@ export function AnalyticsToolbar({
 
   const addGroup = (): void => {
     if (groupBy.length >= 4) return;
-    onGroupByChange([...groupBy, fieldOptions[0]?.name ?? 'service']);
+    onGroupByChange([...groupBy, fieldOptions[0]?.name ?? "service"]);
   };
 
   const removeGroup = (index: number): void => {
@@ -67,7 +67,7 @@ export function AnalyticsToolbar({
     if (aggregations.length >= 8) return;
     onAggregationsChange([
       ...aggregations,
-      { function: 'count', alias: `m${aggregations.length + 1}` },
+      { function: "count", alias: `m${aggregations.length + 1}` },
     ]);
   };
 
@@ -79,40 +79,40 @@ export function AnalyticsToolbar({
   return (
     <div
       className={cn(
-        'flex flex-col gap-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-3',
+        "flex flex-col gap-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-3",
         className
       )}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+        <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
           View
         </span>
         <div className="inline-flex rounded-lg border border-[var(--border-color)] p-0.5">
           <Button
             type="button"
-            variant={mode === 'list' ? 'primary' : 'ghost'}
+            variant={mode === "list" ? "primary" : "ghost"}
             size="sm"
             className="h-8 px-3"
-            onClick={() => onModeChange('list')}
+            onClick={() => onModeChange("list")}
           >
             <LayoutList size={14} className="mr-1" /> List
           </Button>
           <Button
             type="button"
-            variant={mode === 'analytics' ? 'primary' : 'ghost'}
+            variant={mode === "analytics" ? "primary" : "ghost"}
             size="sm"
             className="h-8 px-3"
-            onClick={() => onModeChange('analytics')}
+            onClick={() => onModeChange("analytics")}
           >
             <BarChart3 size={14} className="mr-1" /> Analytics
           </Button>
         </div>
       </div>
 
-      {mode === 'analytics' ? (
+      {mode === "analytics" ? (
         <>
           <div className="flex flex-wrap items-end gap-2">
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+            <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
               Group by
             </span>
             {groupBy.map((g, i) => (
@@ -151,7 +151,7 @@ export function AnalyticsToolbar({
           </div>
 
           <div className="flex flex-wrap items-end gap-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+            <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
               Metrics
             </span>
             {aggregations.map((agg, i) => (
@@ -169,7 +169,7 @@ export function AnalyticsToolbar({
                 </select>
                 <select
                   className="h-8 max-w-[140px] rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 text-[12px]"
-                  value={agg.field ?? ''}
+                  value={agg.field ?? ""}
                   onChange={(e) => setAgg(i, { field: e.target.value || undefined })}
                 >
                   <option value="">(auto)</option>
@@ -195,16 +195,16 @@ export function AnalyticsToolbar({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+            <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
               Viz
             </span>
             {(
               [
-                ['list', LayoutList, 'List'],
-                ['timeseries', LineChart, 'Timeseries'],
-                ['toplist', BarChart3, 'Top list'],
-                ['table', Table2, 'Table'],
-                ['piechart', PieChart, 'Pie'],
+                ["list", LayoutList, "List"],
+                ["timeseries", LineChart, "Timeseries"],
+                ["toplist", BarChart3, "Top list"],
+                ["table", Table2, "Table"],
+                ["piechart", PieChart, "Pie"],
               ] as const
             ).map(([key, Icon, label]) => (
               <button
@@ -213,16 +213,16 @@ export function AnalyticsToolbar({
                 title={label}
                 onClick={() => onVizModeChange(key as ExplorerVizMode)}
                 className={cn(
-                  'flex h-9 w-9 items-center justify-center rounded-lg border transition-colors',
+                  "flex h-9 w-9 items-center justify-center rounded-lg border transition-colors",
                   vizMode === key
-                    ? 'border-[rgba(77,166,200,0.45)] bg-[rgba(77,166,200,0.14)] text-[var(--text-primary)]'
-                    : 'border-[var(--border-color)] text-[var(--text-muted)] hover:border-[var(--border-color)] hover:text-[var(--text-primary)]'
+                    ? "border-[rgba(77,166,200,0.45)] bg-[rgba(77,166,200,0.14)] text-[var(--text-primary)]"
+                    : "border-[var(--border-color)] text-[var(--text-muted)] hover:border-[var(--border-color)] hover:text-[var(--text-primary)]"
                 )}
               >
                 <Icon size={16} />
               </button>
             ))}
-            {vizMode === 'timeseries' ? (
+            {vizMode === "timeseries" ? (
               <select
                 className="ml-2 h-8 rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 text-[12px]"
                 value={step}

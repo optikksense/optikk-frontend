@@ -5,7 +5,7 @@
  * with date-fns for local time formatting.
  */
 
-import { format as dateFnsFormat } from 'date-fns';
+import { format as dateFnsFormat } from "date-fns";
 
 /**
  * Format a Date or Unix ms timestamp in the given timezone.
@@ -17,11 +17,11 @@ import { format as dateFnsFormat } from 'date-fns';
 export function formatInTimezone(
   dateOrMs: Date | number,
   tz: string,
-  fmt: 'datetime' | 'date' | 'time' | 'iso' = 'datetime'
+  fmt: "datetime" | "date" | "time" | "iso" = "datetime"
 ): string {
-  const date = typeof dateOrMs === 'number' ? new Date(dateOrMs) : dateOrMs;
+  const date = typeof dateOrMs === "number" ? new Date(dateOrMs) : dateOrMs;
 
-  if (tz === 'local') {
+  if (tz === "local") {
     return formatLocal(date, fmt);
   }
 
@@ -32,28 +32,26 @@ export function formatInTimezone(
     };
 
     switch (fmt) {
-      case 'date':
-        options.year = 'numeric';
-        options.month = '2-digit';
-        options.day = '2-digit';
+      case "date":
+        options.year = "numeric";
+        options.month = "2-digit";
+        options.day = "2-digit";
         break;
-      case 'time':
-        options.hour = '2-digit';
-        options.minute = '2-digit';
-        options.second = '2-digit';
+      case "time":
+        options.hour = "2-digit";
+        options.minute = "2-digit";
+        options.second = "2-digit";
         break;
-      case 'iso':
-      case 'datetime':
       default:
-        options.year = 'numeric';
-        options.month = '2-digit';
-        options.day = '2-digit';
-        options.hour = '2-digit';
-        options.minute = '2-digit';
+        options.year = "numeric";
+        options.month = "2-digit";
+        options.day = "2-digit";
+        options.hour = "2-digit";
+        options.minute = "2-digit";
         break;
     }
 
-    const formatter = new Intl.DateTimeFormat('sv-SE', options);
+    const formatter = new Intl.DateTimeFormat("sv-SE", options);
     return formatter.format(date);
   } catch {
     // Fallback if timezone is invalid
@@ -61,17 +59,16 @@ export function formatInTimezone(
   }
 }
 
-function formatLocal(date: Date, fmt: 'datetime' | 'date' | 'time' | 'iso'): string {
+function formatLocal(date: Date, fmt: "datetime" | "date" | "time" | "iso"): string {
   switch (fmt) {
-    case 'date':
-      return dateFnsFormat(date, 'yyyy-MM-dd');
-    case 'time':
-      return dateFnsFormat(date, 'HH:mm:ss');
-    case 'iso':
+    case "date":
+      return dateFnsFormat(date, "yyyy-MM-dd");
+    case "time":
+      return dateFnsFormat(date, "HH:mm:ss");
+    case "iso":
       return dateFnsFormat(date, "yyyy-MM-dd'T'HH:mm:ss");
-    case 'datetime':
     default:
-      return dateFnsFormat(date, 'yyyy-MM-dd HH:mm');
+      return dateFnsFormat(date, "yyyy-MM-dd HH:mm");
   }
 }
 
@@ -80,23 +77,23 @@ function formatLocal(date: Date, fmt: 'datetime' | 'date' | 'time' | 'iso'): str
  * e.g. 'EST', 'UTC', 'PST'
  */
 export function getTimezoneAbbr(tz: string): string {
-  if (tz === 'local') {
+  if (tz === "local") {
     try {
       return (
-        new Intl.DateTimeFormat('en-US', { timeZoneName: 'short' })
+        new Intl.DateTimeFormat("en-US", { timeZoneName: "short" })
           .formatToParts(new Date())
-          .find((p) => p.type === 'timeZoneName')?.value ?? 'Local'
+          .find((p) => p.type === "timeZoneName")?.value ?? "Local"
       );
     } catch {
-      return 'Local';
+      return "Local";
     }
   }
-  if (tz === 'UTC') return 'UTC';
+  if (tz === "UTC") return "UTC";
   try {
     return (
-      new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' })
+      new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "short" })
         .formatToParts(new Date())
-        .find((p) => p.type === 'timeZoneName')?.value ?? tz
+        .find((p) => p.type === "timeZoneName")?.value ?? tz
     );
   } catch {
     return tz;
@@ -107,16 +104,16 @@ export function getTimezoneAbbr(tz: string): string {
  * Common timezone options for the picker.
  */
 export const COMMON_TIMEZONES = [
-  { value: 'local', label: 'Local (Browser)' },
-  { value: 'UTC', label: 'UTC' },
-  { value: 'America/New_York', label: 'Eastern (US)' },
-  { value: 'America/Chicago', label: 'Central (US)' },
-  { value: 'America/Denver', label: 'Mountain (US)' },
-  { value: 'America/Los_Angeles', label: 'Pacific (US)' },
-  { value: 'Europe/London', label: 'London' },
-  { value: 'Europe/Berlin', label: 'Berlin' },
-  { value: 'Asia/Tokyo', label: 'Tokyo' },
-  { value: 'Asia/Shanghai', label: 'Shanghai' },
-  { value: 'Asia/Kolkata', label: 'Kolkata (IST)' },
-  { value: 'Australia/Sydney', label: 'Sydney' },
+  { value: "local", label: "Local (Browser)" },
+  { value: "UTC", label: "UTC" },
+  { value: "America/New_York", label: "Eastern (US)" },
+  { value: "America/Chicago", label: "Central (US)" },
+  { value: "America/Denver", label: "Mountain (US)" },
+  { value: "America/Los_Angeles", label: "Pacific (US)" },
+  { value: "Europe/London", label: "London" },
+  { value: "Europe/Berlin", label: "Berlin" },
+  { value: "Asia/Tokyo", label: "Tokyo" },
+  { value: "Asia/Shanghai", label: "Shanghai" },
+  { value: "Asia/Kolkata", label: "Kolkata (IST)" },
+  { value: "Australia/Sydney", label: "Sydney" },
 ];

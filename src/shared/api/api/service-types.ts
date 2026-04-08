@@ -1,1 +1,1 @@
-export type { QueryParamValue, QueryParams, RequestTime } from '../service-types';
+export type { QueryParamValue, QueryParams, RequestTime } from "../service-types";

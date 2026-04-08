@@ -1,0 +1,90 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "noDefaultExport": "off",
+        "useImportType": "error",
+        "useNodejsImportProtocol": "error",
+        "noNonNullAssertion": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
+      },
+      "suspicious": {
+        "noAssignInExpressions": "off",
+        "noImplicitAnyLet": "off",
+        "noRedeclare": "off",
+        "noArrayIndexKey": "off",
+        "noExplicitAny": "off"
+      },
+      "a11y": {
+        "noLabelWithoutControl": "off",
+        "useValidAnchor": "off",
+        "useKeyWithClickEvents": "off",
+        "useSemanticElements": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off",
+        "useHookAtTopLevel": "error"
+      },
+      "nursery": {
+        "useSortedClasses": {
+          "level": "warn",
+          "options": {
+            "attributes": ["className", "classList"],
+            "functions": ["clsx", "cva", "cn"]
+          }
+        }
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "jsxQuoteStyle": "double",
+      "trailingCommas": "es5",
+      "semicolons": "always"
+    }
+  },
+  "overrides": [
+    {
+      "include": ["src/features/**"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@features/ai": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
+                  "@features/explorer-core": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
+                  "@features/infrastructure": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
+                  "@features/log": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
+                  "@features/metrics": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
+                  "@features/overview": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
+                  "@features/settings": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
+                  "@features/traces": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

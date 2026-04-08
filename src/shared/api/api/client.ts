@@ -3,24 +3,24 @@ import axios, {
   type AxiosInstance,
   type AxiosRequestConfig,
   type AxiosResponse,
-} from 'axios';
+} from "axios";
 
-import { API_CONFIG } from '@config/apiConfig';
+import { API_CONFIG } from "@config/apiConfig";
 
-import { attachAuthInterceptor } from './interceptors/authInterceptor';
-import { attachErrorInterceptor } from './interceptors/errorInterceptor';
 import {
   createInvalidApiResponseError,
   isApiEnvelope,
   isHtmlLikePayload,
   normalizeApiPayload,
-} from '../utils/decode';
+} from "../utils/decode";
+import { attachAuthInterceptor } from "./interceptors/authInterceptor";
+import { attachErrorInterceptor } from "./interceptors/errorInterceptor";
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || API_CONFIG.BASE_URL,
   timeout: API_CONFIG.TIMEOUT,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true,
 });
@@ -29,16 +29,16 @@ attachAuthInterceptor(axiosClient);
 axiosClient.interceptors.response.use((response) => {
   const normalized = normalizeApiPayload(response.data);
 
-  if (typeof normalized === 'string' && isHtmlLikePayload(normalized)) {
+  if (typeof normalized === "string" && isHtmlLikePayload(normalized)) {
     return Promise.reject(
-      createInvalidApiResponseError(response, 'Invalid API response', normalized)
+      createInvalidApiResponseError(response, "Invalid API response", normalized)
     );
   }
 
   if (isApiEnvelope(normalized)) {
     if (!normalized.success) {
       const err = new AxiosError(
-        'Request failed',
+        "Request failed",
         AxiosError.ERR_BAD_RESPONSE,
         response.config,
         response.request,

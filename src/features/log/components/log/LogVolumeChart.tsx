@@ -1,24 +1,23 @@
-import { Tooltip } from '@/components/ui';
-import { format as dateFnsFormat } from 'date-fns';
-import { useMemo } from 'react';
+import { Tooltip } from "@/components/ui";
+import { format as dateFnsFormat } from "date-fns";
+import { useMemo } from "react";
 
-import { formatNumber } from '@shared/utils/formatters';
+import { formatNumber } from "@shared/utils/formatters";
 
-import { APP_COLORS } from '@config/colorLiterals';
+import { APP_COLORS } from "@config/colorLiterals";
 
-import type { LogVolumeBucket } from '../../types';
-
+import type { LogVolumeBucket } from "../../types";
 
 const LEVEL_COLORS: Record<
-  'errors' | 'warnings' | 'infos' | 'debugs' | 'fatals' | 'traces',
+  "errors" | "warnings" | "infos" | "debugs" | "fatals" | "traces",
   string
 > = {
-  fatals: '#6F1B1B',
-  errors: '#FF5C5C',
-  warnings: '#FFB300',
-  infos: '#2871E6',
-  debugs: '#6C737A',
-  traces: '#B0B8C4',
+  fatals: "#6F1B1B",
+  errors: "#FF5C5C",
+  warnings: "#FFB300",
+  infos: "#2871E6",
+  debugs: "#6C737A",
+  traces: "#B0B8C4",
 };
 
 export { LEVEL_COLORS };
@@ -48,7 +47,7 @@ function toCount(value: unknown): number {
 
 function getBucketTimeLabel(bucket: LogVolumeBucket): string {
   const raw = bucket.timeBucket ?? bucket.time_bucket;
-  return typeof raw === 'string' ? raw : '';
+  return typeof raw === "string" ? raw : "";
 }
 
 function getBucketLevelCount(bucket: LogVolumeBucket, key: VolumeLevelKey): number {
@@ -63,7 +62,7 @@ function parseBucketDate(raw: string): Date | null {
   if (!raw) return null;
 
   const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw)
-    ? raw.replace(' ', 'T') + 'Z'
+    ? `${raw.replace(" ", "T")}Z`
     : raw;
   const parsed = new Date(normalized);
 
@@ -73,22 +72,21 @@ function parseBucketDate(raw: string): Date | null {
 function formatBucketLabel(
   raw: string,
   step: string,
-  variant: 'axis' | 'tooltip' = 'axis'
+  variant: "axis" | "tooltip" = "axis"
 ): string {
   const parsed = parseBucketDate(raw);
   if (!parsed) return raw;
 
-  if (step === '1d') {
-    return dateFnsFormat(parsed, variant === 'tooltip' ? 'MMM d, yyyy' : 'MMM d');
+  if (step === "1d") {
+    return dateFnsFormat(parsed, variant === "tooltip" ? "MMM d, yyyy" : "MMM d");
   }
 
-  if (step === '1h') {
-    return dateFnsFormat(parsed, variant === 'tooltip' ? 'MMM d, HH:mm' : 'MMM d, HH');
+  if (step === "1h") {
+    return dateFnsFormat(parsed, variant === "tooltip" ? "MMM d, HH:mm" : "MMM d, HH");
   }
 
-  return dateFnsFormat(parsed, 'HH:mm');
+  return dateFnsFormat(parsed, "HH:mm");
 }
-
 
 interface VolumeBarProps {
   bucket: LogVolumeBucket;
@@ -102,16 +100,16 @@ function VolumeBar({ bucket, maxTotal, step }: VolumeBarProps) {
   const totalCount = getBucketTotal(bucket);
   const heightPct = totalCount > 0 ? Math.max((totalCount / maxTotal) * 100, 4) : 0;
   const rawLabel = getBucketTimeLabel(bucket);
-  const label = formatBucketLabel(rawLabel, step, 'tooltip');
+  const label = formatBucketLabel(rawLabel, step, "tooltip");
 
-  const fatals = getBucketLevelCount(bucket, 'fatals');
-  const errors = getBucketLevelCount(bucket, 'errors');
-  const warnings = getBucketLevelCount(bucket, 'warnings');
-  const infos = getBucketLevelCount(bucket, 'infos');
-  const debugs = getBucketLevelCount(bucket, 'debugs');
+  const fatals = getBucketLevelCount(bucket, "fatals");
+  const errors = getBucketLevelCount(bucket, "errors");
+  const warnings = getBucketLevelCount(bucket, "warnings");
+  const infos = getBucketLevelCount(bucket, "infos");
+  const debugs = getBucketLevelCount(bucket, "debugs");
   const hasLevels = fatals > 0 || errors > 0 || warnings > 0 || infos > 0 || debugs > 0;
   const tooltip = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       <strong>{label}</strong>
       <span>{formatNumber(totalCount)} logs</span>
       {fatals > 0 && <span>Fatal: {formatNumber(fatals)}</span>}
@@ -125,7 +123,7 @@ function VolumeBar({ bucket, maxTotal, step }: VolumeBarProps) {
   return (
     <Tooltip content={tooltip} placement="top">
       <div
-        className={`logs-volume-bar-wrapper${totalCount === 0 ? ' logs-volume-bar-wrapper--empty' : ''}`}
+        className={`logs-volume-bar-wrapper${totalCount === 0 ? " logs-volume-bar-wrapper--empty" : ""}`}
       >
         {totalCount > 0 && (
           <div className="logs-volume-bar-stack" style={{ height: `${heightPct}%` }}>
@@ -142,7 +140,6 @@ function VolumeBar({ bucket, maxTotal, step }: VolumeBarProps) {
   );
 }
 
-
 function pickTickIndices(count: number, desired = 5): number[] {
   if (count <= desired) return Array.from({ length: count }, (_, index) => index);
 
@@ -155,11 +152,9 @@ function pickTickIndices(count: number, desired = 5): number[] {
 }
 
 function getTickPosition(index: number, count: number): string {
-  if (count <= 1) return '0%';
+  if (count <= 1) return "0%";
   return `${(index / (count - 1)) * 100}%`;
 }
-
-
 
 interface LogVolumeChartProps {
   buckets: LogVolumeBucket[];
@@ -179,7 +174,7 @@ export default function LogVolumeChart({ buckets, step, isLoading }: LogVolumeCh
         index,
         label: formatBucketLabel(getBucketTimeLabel(buckets[index]), step),
         position: getTickPosition(index, buckets.length),
-        edge: index === 0 ? 'start' : index === buckets.length - 1 ? 'end' : 'middle',
+        edge: index === 0 ? "start" : index === buckets.length - 1 ? "end" : "middle",
       })),
     [buckets, step, tickIndices]
   );
@@ -207,7 +202,7 @@ export default function LogVolumeChart({ buckets, step, isLoading }: LogVolumeCh
       <div className="logs-volume-axis">
         {tickLabels.map(({ index, label, position, edge }) => {
           const justifyContent =
-            edge === 'start' ? 'flex-start' : edge === 'end' ? 'flex-end' : 'center';
+            edge === "start" ? "flex-start" : edge === "end" ? "flex-end" : "center";
 
           return (
             <div
@@ -224,33 +219,30 @@ export default function LogVolumeChart({ buckets, step, isLoading }: LogVolumeCh
   );
 }
 
-
-
 interface VolumeLegendProps {
   buckets: LogVolumeBucket[];
 }
-
 
 export function VolumeLegend({ buckets }: VolumeLegendProps) {
   if (!buckets.length) return null;
 
   const totals = buckets.reduce<VolumeLegendTotals>(
     (accumulator: VolumeLegendTotals, bucket: LogVolumeBucket) => ({
-      fatals: accumulator.fatals + getBucketLevelCount(bucket, 'fatals'),
-      errors: accumulator.errors + getBucketLevelCount(bucket, 'errors'),
-      warnings: accumulator.warnings + getBucketLevelCount(bucket, 'warnings'),
-      infos: accumulator.infos + getBucketLevelCount(bucket, 'infos'),
-      debugs: accumulator.debugs + getBucketLevelCount(bucket, 'debugs'),
+      fatals: accumulator.fatals + getBucketLevelCount(bucket, "fatals"),
+      errors: accumulator.errors + getBucketLevelCount(bucket, "errors"),
+      warnings: accumulator.warnings + getBucketLevelCount(bucket, "warnings"),
+      infos: accumulator.infos + getBucketLevelCount(bucket, "infos"),
+      debugs: accumulator.debugs + getBucketLevelCount(bucket, "debugs"),
     }),
     EMPTY_TOTALS
   );
 
   const legendItems: Array<{ key: VolumeLevelKey; label: string; color: string }> = [
-    { key: 'fatals', label: 'Fatal', color: LEVEL_COLORS.fatals },
-    { key: 'errors', label: 'Error', color: LEVEL_COLORS.errors },
-    { key: 'warnings', label: 'Warn', color: LEVEL_COLORS.warnings },
-    { key: 'infos', label: 'Info', color: LEVEL_COLORS.infos },
-    { key: 'debugs', label: 'Debug', color: LEVEL_COLORS.debugs },
+    { key: "fatals", label: "Fatal", color: LEVEL_COLORS.fatals },
+    { key: "errors", label: "Error", color: LEVEL_COLORS.errors },
+    { key: "warnings", label: "Warn", color: LEVEL_COLORS.warnings },
+    { key: "infos", label: "Info", color: LEVEL_COLORS.infos },
+    { key: "debugs", label: "Debug", color: LEVEL_COLORS.debugs },
   ];
   const items = legendItems.filter((item) => totals[item.key] > 0);
 

@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from 'react';
 import {
   type ColumnDef,
   type PaginationState,
@@ -11,13 +10,14 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
+import { useEffect, useMemo, useState } from "react";
 
-import { cn } from '@/lib/utils';
-import { useResizableColumns, type ColumnWidthMap } from '@shared/hooks/useResizableColumns';
+import { cn } from "@/lib/utils";
+import { type ColumnWidthMap, useResizableColumns } from "@shared/hooks/useResizableColumns";
 
-import { Pagination } from './pagination';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
+import { Pagination } from "./pagination";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table";
 
 type TableRowData = object;
 
@@ -30,11 +30,11 @@ export interface SimpleTableColumn<RowType extends TableRowData = TableRowData> 
   dataIndex?: keyof RowType | string;
   key?: string;
   width?: number | string;
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
   ellipsis?: boolean;
   render?: (value: unknown, record: RowType, index: number) => React.ReactNode;
   sorter?: ((left: RowType, right: RowType) => number) | boolean;
-  defaultSortOrder?: 'ascend' | 'descend';
+  defaultSortOrder?: "ascend" | "descend";
   filters?: Array<{ text: string; value: unknown }>;
   onFilter?: (value: unknown, record: RowType) => boolean;
 }
@@ -53,7 +53,7 @@ export interface SimpleTableProps<RowType extends TableRowData = TableRowData> {
   columns: SimpleTableColumn<RowType>[];
   dataSource: RowType[];
   rowKey?: keyof RowType | ((record: RowType, index?: number) => string);
-  size?: 'small' | 'middle' | 'large';
+  size?: "small" | "middle" | "large";
   pagination?: false | SimpleTablePagination;
   scroll?: { x?: number | string; y?: number | string };
   className?: string;
@@ -64,7 +64,7 @@ export interface SimpleTableProps<RowType extends TableRowData = TableRowData> {
 }
 
 interface ColumnMeta {
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
   ellipsis?: boolean;
   width?: number | string;
   columnId?: string;
@@ -73,10 +73,10 @@ interface ColumnMeta {
 type SortableRow<RowType extends TableRowData> = Row<RowType>;
 
 function createSortingFn<RowType extends TableRowData>(
-  sorter?: SimpleTableColumn<RowType>['sorter']
-): SortingFn<RowType> | 'auto' {
-  if (typeof sorter !== 'function') {
-    return 'auto';
+  sorter?: SimpleTableColumn<RowType>["sorter"]
+): SortingFn<RowType> | "auto" {
+  if (typeof sorter !== "function") {
+    return "auto";
   }
 
   return (rowA: SortableRow<RowType>, rowB: SortableRow<RowType>) =>
@@ -84,11 +84,11 @@ function createSortingFn<RowType extends TableRowData>(
 }
 
 function toColumnId<RowType extends TableRowData>(column: SimpleTableColumn<RowType>): string {
-  return String(column.key ?? column.dataIndex ?? '');
+  return String(column.key ?? column.dataIndex ?? "");
 }
 
 function resolveUpdater<T>(updater: Updater<T>, previous: T): T {
-  if (typeof updater === 'function') {
+  if (typeof updater === "function") {
     return (updater as (old: T) => T)(previous);
   }
 
@@ -99,7 +99,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
   columns: incomingColumns,
   dataSource,
   rowKey,
-  size = 'middle',
+  size = "middle",
   pagination = false,
   scroll,
   className,
@@ -114,7 +114,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
         return [
           {
             id: toColumnId(column),
-            desc: column.defaultSortOrder === 'descend',
+            desc: column.defaultSortOrder === "descend",
           },
         ];
       }
@@ -131,7 +131,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
     }
   }, [controlledSorting, initialSorting]);
 
-  const resolvedPagination = pagination && typeof pagination === 'object' ? pagination : null;
+  const resolvedPagination = pagination && typeof pagination === "object" ? pagination : null;
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex: Math.max((resolvedPagination?.current ?? 1) - 1, 0),
     pageSize: resolvedPagination?.pageSize ?? 10,
@@ -162,7 +162,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
     const widths: ColumnWidthMap = {};
     for (const col of incomingColumns) {
       const id = toColumnId(col);
-      if (id && typeof col.width === 'number') {
+      if (id && typeof col.width === "number") {
         widths[id] = col.width;
       }
     }
@@ -185,7 +185,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
           accessorFn: (row: RowType) =>
             column.dataIndex ? asRowRecord(row)[String(column.dataIndex)] : undefined,
           header: () => column.title,
-          size: typeof column.width === 'number' ? column.width : undefined,
+          size: typeof column.width === "number" ? column.width : undefined,
           enableSorting: Boolean(column.sorter),
           sortingFn: createSortingFn(column.sorter),
           cell: (info) => {
@@ -197,7 +197,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
               return column.render(value, info.row.original, info.row.index);
             }
 
-            return value ?? '-';
+            return value ?? "-";
           },
           meta: {
             align: column.align,
@@ -211,11 +211,11 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
   );
 
   const getRowId = useMemo(() => {
-    if (typeof rowKey === 'function') {
+    if (typeof rowKey === "function") {
       return (row: RowType, index: number) => rowKey(row, index);
     }
 
-    if (typeof rowKey === 'string') {
+    if (typeof rowKey === "string") {
       return (row: RowType, index: number) => String(asRowRecord(row)[rowKey] ?? index);
     }
 
@@ -263,31 +263,31 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
   });
 
   const sizeClasses = {
-    small: 'text-[12px]',
-    middle: 'text-[12px]',
-    large: 'text-[14px]',
+    small: "text-[12px]",
+    middle: "text-[12px]",
+    large: "text-[14px]",
   };
 
   const headRowClasses = {
-    small: 'h-8',
-    middle: 'h-9',
-    large: 'h-10',
+    small: "h-8",
+    middle: "h-9",
+    large: "h-10",
   };
 
   const cellPadClasses = {
-    small: 'py-1.5',
-    middle: 'py-2',
-    large: 'py-2.5',
+    small: "py-1.5",
+    middle: "py-2",
+    large: "py-2.5",
   };
 
   const rows = table.getRowModel().rows;
 
   return (
-    <div className={cn('w-full overflow-auto', className)}>
-      <div style={scroll?.y ? { maxHeight: scroll.y, overflowY: 'auto' } : undefined}>
+    <div className={cn("w-full overflow-auto", className)}>
+      <div style={scroll?.y ? { maxHeight: scroll.y, overflowY: "auto" } : undefined}>
         <Table
           className={cn(
-            'border-collapse table-fixed overflow-hidden rounded-[var(--card-radius)] bg-[var(--bg-secondary)]',
+            "table-fixed border-collapse overflow-hidden rounded-[var(--card-radius)] bg-[var(--bg-secondary)]",
             sizeClasses[size]
           )}
           style={scroll?.x ? { minWidth: scroll.x } : undefined}
@@ -304,34 +304,34 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        'relative min-w-0 overflow-hidden border-b border-[var(--border-color)] bg-[rgba(255,255,255,0.015)] text-[11px] font-medium normal-case tracking-[0.01em] text-[var(--text-secondary)]',
+                        "relative min-w-0 overflow-hidden border-[var(--border-color)] border-b bg-[rgba(255,255,255,0.015)] font-medium text-[11px] text-[var(--text-secondary)] normal-case tracking-[0.01em]",
                         headRowClasses[size],
-                        header.column.getCanSort() && 'cursor-pointer select-none'
+                        header.column.getCanSort() && "cursor-pointer select-none"
                       )}
                       style={{
                         width: resolvedWidth,
-                        textAlign: meta?.align ?? 'left',
+                        textAlign: meta?.align ?? "left",
                       }}
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       <div
                         className={cn(
-                          'min-w-0 pr-4',
+                          "min-w-0 pr-4",
                           meta?.ellipsis
-                            ? 'truncate'
-                            : 'overflow-hidden text-ellipsis whitespace-nowrap'
+                            ? "truncate"
+                            : "overflow-hidden text-ellipsis whitespace-nowrap"
                         )}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
-                          asc: ' ↑',
-                          desc: ' ↓',
-                        }[header.column.getIsSorted() as string] ?? ''}
+                          asc: " ↑",
+                          desc: " ↓",
+                        }[header.column.getIsSorted() as string] ?? ""}
                       </div>
 
                       {/* Resize handle */}
                       <div
-                        className="absolute top-0 -right-1 z-[12] h-full w-2 cursor-col-resize hover:bg-[rgba(124,127,242,0.18)]"
+                        className="-right-1 absolute top-0 z-[12] h-full w-2 cursor-col-resize hover:bg-[rgba(124,127,242,0.18)]"
                         onMouseDown={(event) => {
                           event.stopPropagation();
                           handleResizeMouseDown(event, colId);
@@ -346,9 +346,9 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
           <TableBody>
             {rows.map((row) => {
               const rowCls =
-                typeof rowClassName === 'function'
+                typeof rowClassName === "function"
                   ? rowClassName(row.original, row.index)
-                  : (rowClassName ?? '');
+                  : (rowClassName ?? "");
               const rowProps = onRow ? onRow(row.original, row.index) : {};
 
               return (
@@ -363,19 +363,19 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                         key={cell.id}
                         className={cn(
                           cellPadClasses[size],
-                          'min-w-0 overflow-hidden',
-                          meta?.ellipsis && 'max-w-0'
+                          "min-w-0 overflow-hidden",
+                          meta?.ellipsis && "max-w-0"
                         )}
                         style={{
-                          textAlign: meta?.align ?? 'left',
+                          textAlign: meta?.align ?? "left",
                           width: resolvedWidth,
                           maxWidth: resolvedWidth,
                         }}
                       >
                         <div
                           className={cn(
-                            'min-w-0',
-                            meta?.ellipsis ? 'truncate' : 'overflow-x-hidden'
+                            "min-w-0",
+                            meta?.ellipsis ? "truncate" : "overflow-x-hidden"
                           )}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -400,14 +400,14 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
         </Table>
       </div>
       {pagination ? (
-        <div className="border-t border-[var(--border-color)] px-3 py-2.5">
+        <div className="border-[var(--border-color)] border-t px-3 py-2.5">
           <Pagination
             page={table.getState().pagination.pageIndex + 1}
             pageSize={table.getState().pagination.pageSize}
             total={totalRows}
             onPageChange={(page) => table.setPageIndex(Math.max(page - 1, 0))}
             onPageSizeChange={
-              typeof pagination === 'object' && pagination.showSizeChanger
+              typeof pagination === "object" && pagination.showSizeChanger
                 ? (pageSize) => table.setPageSize(pageSize)
                 : undefined
             }

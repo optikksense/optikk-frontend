@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import type { z } from "zod";
 
-import { decodeApiResponse } from './decode';
+import { decodeApiResponse } from "./decode";
 
 export function validateResponse<TSchema extends z.ZodTypeAny>(
   schema: TSchema,
