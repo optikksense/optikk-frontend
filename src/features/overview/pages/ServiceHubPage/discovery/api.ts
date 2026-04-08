@@ -1,10 +1,17 @@
+import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
+import type { ServiceMetricPoint } from "@/features/metrics/types";
+import {
+  type ServiceLatestDeployment,
+  deploymentsApi,
+} from "@/features/overview/api/deploymentsApi";
+import type { RequestTime } from "@/shared/api/service-types";
 import type { ServiceTopologyResponse } from "../topology/api";
 import { fetchServiceTopology } from "../topology/api";
-import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
-import type { RequestTime } from "@/shared/api/service-types";
-import type { ServiceMetricPoint } from "@/features/metrics/types";
 
 export type DiscoveryHealth = "healthy" | "degraded" | "unhealthy";
+export type DeploymentRisk = "stable" | "watch" | "critical" | "unknown";
+
+const RECENT_DEPLOYMENT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 export interface DiscoveryServiceRow {
   readonly name: string;
@@ -18,6 +25,8 @@ export interface DiscoveryServiceRow {
   readonly upstreamCount: number;
   readonly downstreamCount: number;
   readonly health: DiscoveryHealth;
+  readonly latestDeployment?: ServiceLatestDeployment;
+  readonly deploymentRisk: DeploymentRisk;
 }
 
 function classifyHealth(errorRatePct: number): DiscoveryHealth {
@@ -28,7 +37,8 @@ function classifyHealth(errorRatePct: number): DiscoveryHealth {
 
 function mergeRows(
   services: ServiceMetricPoint[],
-  topology: ServiceTopologyResponse
+  topology: ServiceTopologyResponse,
+  deployments: ServiceLatestDeployment[]
 ): DiscoveryServiceRow[] {
   const upstream = new Map<string, number>();
   const downstream = new Map<string, number>();
@@ -42,12 +52,31 @@ function mergeRows(
     topoHealth.set(node.name, node.health);
   }
 
+  const deploymentByService = new Map(
+    deployments.map((deployment) => [deployment.service_name.toLowerCase(), deployment] as const)
+  );
+
+  const resolveDeploymentRisk = (
+    deployment: ServiceLatestDeployment | undefined,
+    health: DiscoveryHealth,
+    errorRate: number
+  ): DeploymentRisk => {
+    if (!deployment) return "unknown";
+    const deployedAtMs = new Date(deployment.deployed_at).getTime();
+    const isRecent =
+      Number.isFinite(deployedAtMs) && Date.now() - deployedAtMs <= RECENT_DEPLOYMENT_WINDOW_MS;
+    if (!isRecent) return "stable";
+    if (health === "unhealthy" || errorRate > 5) return "critical";
+    if (health === "degraded" || errorRate > 1) return "watch";
+    return "stable";
+  };
+
   const seen = new Set<string>();
   const rows: DiscoveryServiceRow[] = services.map((s) => {
     seen.add(s.service_name);
-    const errorRate =
-      s.request_count > 0 ? (s.error_count / s.request_count) * 100 : 0;
+    const errorRate = s.request_count > 0 ? (s.error_count / s.request_count) * 100 : 0;
     const health = topoHealth.get(s.service_name) ?? classifyHealth(errorRate);
+    const latestDeployment = deploymentByService.get(s.service_name.toLowerCase());
     return {
       name: s.service_name,
       requestCount: s.request_count,
@@ -60,12 +89,15 @@ function mergeRows(
       upstreamCount: upstream.get(s.service_name) ?? 0,
       downstreamCount: downstream.get(s.service_name) ?? 0,
       health,
+      latestDeployment,
+      deploymentRisk: resolveDeploymentRisk(latestDeployment, health, errorRate),
     };
   });
 
   // Include topology-only nodes (e.g., external dependencies) for completeness.
   for (const node of topology.nodes) {
     if (seen.has(node.name)) continue;
+    const latestDeployment = deploymentByService.get(node.name.toLowerCase());
     rows.push({
       name: node.name,
       requestCount: node.request_count,
@@ -78,6 +110,8 @@ function mergeRows(
       upstreamCount: upstream.get(node.name) ?? 0,
       downstreamCount: downstream.get(node.name) ?? 0,
       health: node.health,
+      latestDeployment,
+      deploymentRisk: resolveDeploymentRisk(latestDeployment, node.health, node.error_rate),
     });
   }
 
@@ -89,9 +123,10 @@ export async function fetchDiscoveryRows(
   startTime: RequestTime,
   endTime: RequestTime
 ): Promise<DiscoveryServiceRow[]> {
-  const [services, topology] = await Promise.all([
+  const [services, topology, deployments] = await Promise.all([
     metricsOverviewApi.getOverviewServiceMetrics(teamId, startTime, endTime),
     fetchServiceTopology({ startTime, endTime }),
+    deploymentsApi.getLatestByService().catch(() => []),
   ]);
-  return mergeRows(services, topology);
+  return mergeRows(services, topology, deployments);
 }

@@ -232,6 +232,7 @@ function ConfigurableChartCardContent({
         chartConfig={chartConfig}
         dataSources={dataSources}
         extraContext={extraContext}
+        titleContent={titleContent}
         fillHeight
       />
     );
@@ -246,6 +247,7 @@ function ConfigurableChartCardContent({
             chartConfig={chartConfig}
             dataSources={dataSources}
             extraContext={extraContext}
+            titleContent={titleContent}
             fillHeight
           />
         </div>

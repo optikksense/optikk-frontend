@@ -12,7 +12,7 @@ const ROUTES = {
   service: "/service",
   logs: "/logs",
   traces: "/traces",
-  traceDetail: "/traces/:traceId",
+  traceDetail: "/traces/$traceId",
   traceCompare: "/traces/compare",
   metrics: "/metrics",
   infrastructure: "/infrastructure",
@@ -20,10 +20,10 @@ const ROUTES = {
   saturation: "/saturation",
   aiObservability: "/ai-observability",
   aiRuns: "/ai-runs",
-  aiRunDetail: "/ai-runs/:spanId",
-  aiTraceDetail: "/ai-traces/:traceId",
+  aiRunDetail: "/ai-runs/$spanId",
+  aiTraceDetail: "/ai-traces/$traceId",
   aiConversations: "/ai-conversations",
-  aiConversationDetail: "/ai-conversations/:conversationId",
+  aiConversationDetail: "/ai-conversations/$conversationId",
   settings: "/settings",
 } as const;
 

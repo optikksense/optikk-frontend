@@ -32,6 +32,10 @@ export interface SimpleTableColumn<RowType extends TableRowData = TableRowData> 
   width?: number | string;
   align?: "left" | "center" | "right";
   ellipsis?: boolean;
+  sticky?: "left" | "right";
+  className?: string;
+  headerClassName?: string;
+  cellClassName?: string;
   render?: (value: unknown, record: RowType, index: number) => React.ReactNode;
   sorter?: ((left: RowType, right: RowType) => number) | boolean;
   defaultSortOrder?: "ascend" | "descend";
@@ -68,6 +72,11 @@ interface ColumnMeta {
   ellipsis?: boolean;
   width?: number | string;
   columnId?: string;
+  sticky?: "left" | "right";
+  stickyOffset?: number;
+  className?: string;
+  headerClassName?: string;
+  cellClassName?: string;
 }
 
 type SortableRow<RowType extends TableRowData> = Row<RowType>;
@@ -93,6 +102,16 @@ function resolveUpdater<T>(updater: Updater<T>, previous: T): T {
   }
 
   return updater;
+}
+
+function resolveColumnWidth<RowType extends TableRowData>(
+  column: SimpleTableColumn<RowType>,
+  columnWidths: ColumnWidthMap,
+  defaultWidth: number
+): number {
+  const id = toColumnId(column);
+  const width = columnWidths[id] ?? column.width;
+  return typeof width === "number" ? width : defaultWidth;
 }
 
 function SimpleTable<RowType extends TableRowData = TableRowData>({
@@ -175,6 +194,31 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
     minWidth: 60,
   });
 
+  const stickyOffsets = useMemo(() => {
+    const leftOffsets: Record<string, number> = {};
+    const rightOffsets: Record<string, number> = {};
+
+    let currentLeft = 0;
+    for (const column of incomingColumns) {
+      const id = toColumnId(column);
+      if (column.sticky === "left") {
+        leftOffsets[id] = currentLeft;
+        currentLeft += resolveColumnWidth(column, columnWidths, 160);
+      }
+    }
+
+    let currentRight = 0;
+    for (const column of [...incomingColumns].reverse()) {
+      const id = toColumnId(column);
+      if (column.sticky === "right") {
+        rightOffsets[id] = currentRight;
+        currentRight += resolveColumnWidth(column, columnWidths, 160);
+      }
+    }
+
+    return { leftOffsets, rightOffsets };
+  }, [incomingColumns, columnWidths]);
+
   const columns = useMemo<ColumnDef<RowType>[]>(
     () =>
       incomingColumns.map((column) => {
@@ -204,10 +248,20 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
             ellipsis: column.ellipsis,
             width: column.width,
             columnId: id,
+            sticky: column.sticky,
+            stickyOffset:
+              column.sticky === "left"
+                ? stickyOffsets.leftOffsets[id]
+                : column.sticky === "right"
+                  ? stickyOffsets.rightOffsets[id]
+                  : undefined,
+            className: column.className,
+            headerClassName: column.headerClassName,
+            cellClassName: column.cellClassName,
           } satisfies ColumnMeta,
         };
       }),
-    [incomingColumns]
+    [incomingColumns, stickyOffsets]
   );
 
   const getRowId = useMemo(() => {
@@ -306,11 +360,19 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                       className={cn(
                         "relative min-w-0 overflow-hidden border-[var(--border-color)] border-b bg-[rgba(255,255,255,0.015)] font-medium text-[11px] text-[var(--text-secondary)] normal-case tracking-[0.01em]",
                         headRowClasses[size],
-                        header.column.getCanSort() && "cursor-pointer select-none"
+                        header.column.getCanSort() && "cursor-pointer select-none",
+                        meta?.sticky && "z-[11] bg-[var(--bg-secondary)]",
+                        meta?.headerClassName
                       )}
                       style={{
                         width: resolvedWidth,
                         textAlign: meta?.align ?? "left",
+                        ...(meta?.sticky === "left"
+                          ? { position: "sticky", left: meta.stickyOffset ?? 0 }
+                          : {}),
+                        ...(meta?.sticky === "right"
+                          ? { position: "sticky", right: meta.stickyOffset ?? 0 }
+                          : {}),
                       }}
                       onClick={header.column.getToggleSortingHandler()}
                     >
@@ -364,12 +426,21 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                         className={cn(
                           cellPadClasses[size],
                           "min-w-0 overflow-hidden",
-                          meta?.ellipsis && "max-w-0"
+                          meta?.ellipsis && "max-w-0",
+                          meta?.sticky && "z-[6] bg-[var(--bg-secondary)]",
+                          meta?.className,
+                          meta?.cellClassName
                         )}
                         style={{
                           textAlign: meta?.align ?? "left",
                           width: resolvedWidth,
                           maxWidth: resolvedWidth,
+                          ...(meta?.sticky === "left"
+                            ? { position: "sticky", left: meta.stickyOffset ?? 0 }
+                            : {}),
+                          ...(meta?.sticky === "right"
+                            ? { position: "sticky", right: meta.stickyOffset ?? 0 }
+                            : {}),
                         }}
                       >
                         <div

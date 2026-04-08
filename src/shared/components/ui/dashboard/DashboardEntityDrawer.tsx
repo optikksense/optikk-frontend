@@ -2,6 +2,7 @@ import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearc
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 
+import DeploymentCompareDrawer from "@/features/overview/components/DeploymentCompareDrawer";
 import ServiceDetailDrawer from "@/features/overview/components/ServiceDetailDrawer";
 import { DetailDrawer } from "@shared/components/ui/layout";
 
@@ -10,6 +11,7 @@ import { clearDashboardDrawerSearch, readDashboardDrawerState } from "./utils/da
 const ENTITY_LABELS: Record<string, string> = {
   aiModel: "AI Model",
   databaseSystem: "Database System",
+  deployment: "Deployment",
   errorGroup: "Error Group",
   kafkaGroup: "Kafka Consumer Group",
   kafkaTopic: "Kafka Topic",
@@ -81,6 +83,22 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
       <ServiceDetailDrawer
         open
         serviceName={drawer.id ?? ""}
+        title={drawer.title}
+        initialData={drawer.data}
+        onClose={() =>
+          navigate({
+            to: (location.pathname + clearDashboardDrawerSearch(location.search)) as any,
+            replace: true,
+          })
+        }
+      />
+    );
+  }
+
+  if (drawer.entity === "deployment") {
+    return (
+      <DeploymentCompareDrawer
+        open
         title={drawer.title}
         initialData={drawer.data}
         onClose={() =>

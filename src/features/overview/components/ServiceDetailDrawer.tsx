@@ -21,6 +21,7 @@ import {
   fetchServiceTopology,
 } from "@/features/overview/pages/ServiceHubPage/topology/api";
 import { ROUTES } from "@/shared/constants/routes";
+import { Badge, Card } from "@shared/components/primitives/ui";
 import StatCard from "@shared/components/ui/cards/StatCard";
 import ErrorRateChart from "@shared/components/ui/charts/time-series/ErrorRateChart";
 import LatencyChart from "@shared/components/ui/charts/time-series/LatencyChart";
@@ -260,6 +261,20 @@ function buildErrorTrendSeries(points: readonly OverviewErrorRatePoint[]) {
   }));
 }
 
+function healthVariantForErrorRate(errorRate: number | undefined): "success" | "warning" | "error" {
+  const rate = Number(errorRate ?? 0);
+  if (rate > 5) return "error";
+  if (rate > 1) return "warning";
+  return "success";
+}
+
+function healthLabelForErrorRate(errorRate: number | undefined): string {
+  const rate = Number(errorRate ?? 0);
+  if (rate > 5) return "unhealthy";
+  if (rate > 1) return "degraded";
+  return "healthy";
+}
+
 function formatEndpointLabel(row: Pick<EndpointRow, "endpoint_name" | "operation_name">): string {
   const endpointName = row.endpoint_name?.trim();
   const operationName = row.operation_name.trim();
@@ -495,6 +510,18 @@ export default function ServiceDetailDrawer({
               </DrawerClose>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              {summaryMetrics ? (
+                <>
+                  <Badge variant={healthVariantForErrorRate(summaryMetrics.errorRate)}>
+                    {healthLabelForErrorRate(summaryMetrics.errorRate)}
+                  </Badge>
+                  <Badge variant="default">{formatNumber(summaryMetrics.requestCount)} req</Badge>
+                  <Badge variant="default">
+                    {formatPercentage(summaryMetrics.errorRate)} error
+                  </Badge>
+                  <Badge variant="default">{formatDuration(summaryMetrics.p95Latency)} p95</Badge>
+                </>
+              ) : null}
               <Button
                 variant="secondary"
                 size="sm"
@@ -512,43 +539,108 @@ export default function ServiceDetailDrawer({
                 Open in Logs
               </Button>
             </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {[
+                { href: "#service-drawer-overview", label: "Overview" },
+                { href: "#service-drawer-endpoints", label: "Endpoints" },
+                { href: "#service-drawer-dependencies", label: "Dependencies" },
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-full border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 py-1 text-[11px] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </div>
         </DrawerHeader>
 
         <div className="flex flex-col gap-4 px-6 py-4">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard
-              metric={{
-                title: "Requests",
-                value: summaryMetrics?.requestCount ?? 0,
-                formatter: formatNumber,
-              }}
-              visuals={{ sparklineData: requestSparkline, loading: summaryLoading }}
-            />
-            <StatCard
-              metric={{
-                title: "Error Rate",
-                value: summaryMetrics?.errorRate ?? 0,
-                formatter: (value) => formatPercentage(Number(value)),
-              }}
-              visuals={{ sparklineData: errorSparkline, loading: summaryLoading }}
-            />
-            <StatCard
-              metric={{
-                title: "Avg Latency",
-                value: summaryMetrics?.avgLatency ?? 0,
-                formatter: formatDuration,
-              }}
-              visuals={{ sparklineData: latencySparkline, loading: summaryLoading }}
-            />
-            <StatCard
-              metric={{
-                title: "P95 Latency",
-                value: summaryMetrics?.p95Latency ?? 0,
-                formatter: formatDuration,
-              }}
-              visuals={{ sparklineData: latencySparkline, loading: summaryLoading }}
-            />
+          <Card
+            padding="lg"
+            className="border-[rgba(124,127,242,0.18)] bg-[linear-gradient(180deg,rgba(124,127,242,0.1),rgba(124,127,242,0.03))]"
+          >
+            <div className="flex flex-col gap-2 xl:flex-row xl:items-end xl:justify-between">
+              <div className="max-w-2xl">
+                <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.1em]">
+                  Service cockpit
+                </div>
+                <div className="mt-2 font-semibold text-[18px] text-[var(--text-primary)]">
+                  Runtime health, tail latency, and dependency posture for {serviceLabel}.
+                </div>
+                <p className="mt-2 text-[12px] text-[var(--text-secondary)] leading-6">
+                  Use this drawer for fast diagnostics, then jump into traces or logs for the exact
+                  window you want to investigate.
+                </p>
+              </div>
+              {summaryMetrics ? (
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div>
+                    <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+                      Requests
+                    </div>
+                    <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)]">
+                      {formatNumber(summaryMetrics.requestCount)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+                      Errors
+                    </div>
+                    <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)]">
+                      {formatPercentage(summaryMetrics.errorRate)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+                      P95
+                    </div>
+                    <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)]">
+                      {formatDuration(summaryMetrics.p95Latency)}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </Card>
+
+          <div id="service-drawer-overview" className="scroll-mt-24">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <StatCard
+                metric={{
+                  title: "Requests",
+                  value: summaryMetrics?.requestCount ?? 0,
+                  formatter: formatNumber,
+                }}
+                visuals={{ sparklineData: requestSparkline, loading: summaryLoading }}
+              />
+              <StatCard
+                metric={{
+                  title: "Error Rate",
+                  value: summaryMetrics?.errorRate ?? 0,
+                  formatter: (value) => formatPercentage(Number(value)),
+                }}
+                visuals={{ sparklineData: errorSparkline, loading: summaryLoading }}
+              />
+              <StatCard
+                metric={{
+                  title: "Avg Latency",
+                  value: summaryMetrics?.avgLatency ?? 0,
+                  formatter: formatDuration,
+                }}
+                visuals={{ sparklineData: latencySparkline, loading: summaryLoading }}
+              />
+              <StatCard
+                metric={{
+                  title: "P95 Latency",
+                  value: summaryMetrics?.p95Latency ?? 0,
+                  formatter: formatDuration,
+                }}
+                visuals={{ sparklineData: latencySparkline, loading: summaryLoading }}
+              />
+            </div>
           </div>
 
           {metricsQuery.isError && !hasSummary ? (
@@ -624,149 +716,154 @@ export default function ServiceDetailDrawer({
           </div>
 
           <div className="grid gap-4 xl:grid-cols-2">
-            <DrawerSection
-              title="Top Endpoints"
-              subtitle="Most active endpoints for this service in the current window."
-            >
-              {endpointsQuery.isError ? (
-                <div className="text-[12px] text-[var(--text-muted)]">
-                  Endpoint breakdown is unavailable.
-                </div>
-              ) : endpointsLoading ? (
-                <div className="text-[12px] text-[var(--text-muted)]">Loading endpoints…</div>
-              ) : (
-                <CompactTable<EndpointRow & { id: string }>
-                  rows={endpointRows}
-                  emptyText="No endpoint activity for this service."
-                  columns={[
-                    {
-                      key: "method",
-                      label: "Method",
-                      render: (row) => (
-                        <span className="font-medium text-[var(--text-secondary)]">
-                          {row.http_method || "—"}
-                        </span>
-                      ),
-                    },
-                    {
-                      key: "operation",
-                      label: "Endpoint Detail",
-                      render: (row) => (
-                        <div className="flex flex-col gap-0.5">
-                          <span className="break-all">{formatEndpointLabel(row)}</span>
-                          {formatEndpointMeta(row) ? (
-                            <span className="text-[11px] text-[var(--text-muted)]">
-                              {formatEndpointMeta(row)}
-                            </span>
-                          ) : null}
-                        </div>
-                      ),
-                    },
-                    {
-                      key: "requests",
-                      label: "Requests",
-                      align: "right",
-                      render: (row) => formatNumber(row.request_count),
-                    },
-                    {
-                      key: "errors",
-                      label: "Err %",
-                      align: "right",
-                      render: (row) =>
-                        formatPercentage(
-                          Number(row.request_count ?? 0) > 0
-                            ? (Number(row.error_count ?? 0) * 100) / Number(row.request_count ?? 0)
-                            : 0
+            <div id="service-drawer-endpoints" className="scroll-mt-24">
+              <DrawerSection
+                title="Top Endpoints"
+                subtitle="Most active endpoints for this service in the current window."
+              >
+                {endpointsQuery.isError ? (
+                  <div className="text-[12px] text-[var(--text-muted)]">
+                    Endpoint breakdown is unavailable.
+                  </div>
+                ) : endpointsLoading ? (
+                  <div className="text-[12px] text-[var(--text-muted)]">Loading endpoints…</div>
+                ) : (
+                  <CompactTable<EndpointRow & { id: string }>
+                    rows={endpointRows}
+                    emptyText="No endpoint activity for this service."
+                    columns={[
+                      {
+                        key: "method",
+                        label: "Method",
+                        render: (row) => (
+                          <span className="font-medium text-[var(--text-secondary)]">
+                            {row.http_method || "—"}
+                          </span>
                         ),
-                    },
-                    {
-                      key: "avg",
-                      label: "Avg",
-                      align: "right",
-                      render: (row) => formatDuration(row.avg_latency),
-                    },
-                    {
-                      key: "latency",
-                      label: "p95",
-                      align: "right",
-                      render: (row) => formatDuration(row.p95_latency),
-                    },
-                  ]}
-                />
-              )}
-            </DrawerSection>
+                      },
+                      {
+                        key: "operation",
+                        label: "Endpoint Detail",
+                        render: (row) => (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="break-all">{formatEndpointLabel(row)}</span>
+                            {formatEndpointMeta(row) ? (
+                              <span className="text-[11px] text-[var(--text-muted)]">
+                                {formatEndpointMeta(row)}
+                              </span>
+                            ) : null}
+                          </div>
+                        ),
+                      },
+                      {
+                        key: "requests",
+                        label: "Requests",
+                        align: "right",
+                        render: (row) => formatNumber(row.request_count),
+                      },
+                      {
+                        key: "errors",
+                        label: "Err %",
+                        align: "right",
+                        render: (row) =>
+                          formatPercentage(
+                            Number(row.request_count ?? 0) > 0
+                              ? (Number(row.error_count ?? 0) * 100) /
+                                  Number(row.request_count ?? 0)
+                              : 0
+                          ),
+                      },
+                      {
+                        key: "avg",
+                        label: "Avg",
+                        align: "right",
+                        render: (row) => formatDuration(row.avg_latency),
+                      },
+                      {
+                        key: "latency",
+                        label: "p95",
+                        align: "right",
+                        render: (row) => formatDuration(row.p95_latency),
+                      },
+                    ]}
+                  />
+                )}
+              </DrawerSection>
+            </div>
 
-            <DrawerSection
-              title="Dependencies"
-              subtitle="Top upstream and downstream relationships for this service."
-            >
-              {dependenciesQuery.isError ? (
-                <div className="text-[12px] text-[var(--text-muted)]">
-                  Dependency map is unavailable.
-                </div>
-              ) : dependenciesLoading ? (
-                <div className="text-[12px] text-[var(--text-muted)]">Loading dependencies…</div>
-              ) : (
-                <div className="grid gap-4 lg:grid-cols-2">
-                  <div>
-                    <div className="mb-2 font-medium text-[12px] text-[var(--text-secondary)]">
-                      Upstream
-                    </div>
-                    <CompactTable
-                      rows={upstreamRows}
-                      emptyText="No upstream callers in range."
-                      columns={[
-                        {
-                          key: "service",
-                          label: "Service",
-                          render: (row) => row.serviceName || "Unknown",
-                        },
-                        {
-                          key: "calls",
-                          label: "Calls",
-                          align: "right",
-                          render: (row) => formatNumber(row.callCount),
-                        },
-                        {
-                          key: "latency",
-                          label: "p95",
-                          align: "right",
-                          render: (row) => formatDuration(row.p95LatencyMs),
-                        },
-                      ]}
-                    />
+            <div id="service-drawer-dependencies" className="scroll-mt-24">
+              <DrawerSection
+                title="Dependencies"
+                subtitle="Top upstream and downstream relationships for this service."
+              >
+                {dependenciesQuery.isError ? (
+                  <div className="text-[12px] text-[var(--text-muted)]">
+                    Dependency map is unavailable.
                   </div>
-                  <div>
-                    <div className="mb-2 font-medium text-[12px] text-[var(--text-secondary)]">
-                      Downstream
+                ) : dependenciesLoading ? (
+                  <div className="text-[12px] text-[var(--text-muted)]">Loading dependencies…</div>
+                ) : (
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <div>
+                      <div className="mb-2 font-medium text-[12px] text-[var(--text-secondary)]">
+                        Upstream
+                      </div>
+                      <CompactTable
+                        rows={upstreamRows}
+                        emptyText="No upstream callers in range."
+                        columns={[
+                          {
+                            key: "service",
+                            label: "Service",
+                            render: (row) => row.serviceName || "Unknown",
+                          },
+                          {
+                            key: "calls",
+                            label: "Calls",
+                            align: "right",
+                            render: (row) => formatNumber(row.callCount),
+                          },
+                          {
+                            key: "latency",
+                            label: "p95",
+                            align: "right",
+                            render: (row) => formatDuration(row.p95LatencyMs),
+                          },
+                        ]}
+                      />
                     </div>
-                    <CompactTable
-                      rows={downstreamRows}
-                      emptyText="No downstream dependencies in range."
-                      columns={[
-                        {
-                          key: "service",
-                          label: "Service",
-                          render: (row) => row.serviceName || "Unknown",
-                        },
-                        {
-                          key: "calls",
-                          label: "Calls",
-                          align: "right",
-                          render: (row) => formatNumber(row.callCount),
-                        },
-                        {
-                          key: "latency",
-                          label: "p95",
-                          align: "right",
-                          render: (row) => formatDuration(row.p95LatencyMs),
-                        },
-                      ]}
-                    />
+                    <div>
+                      <div className="mb-2 font-medium text-[12px] text-[var(--text-secondary)]">
+                        Downstream
+                      </div>
+                      <CompactTable
+                        rows={downstreamRows}
+                        emptyText="No downstream dependencies in range."
+                        columns={[
+                          {
+                            key: "service",
+                            label: "Service",
+                            render: (row) => row.serviceName || "Unknown",
+                          },
+                          {
+                            key: "calls",
+                            label: "Calls",
+                            align: "right",
+                            render: (row) => formatNumber(row.callCount),
+                          },
+                          {
+                            key: "latency",
+                            label: "p95",
+                            align: "right",
+                            render: (row) => formatDuration(row.p95LatencyMs),
+                          },
+                        ]}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
-            </DrawerSection>
+                )}
+              </DrawerSection>
+            </div>
           </div>
         </div>
       </DrawerContent>

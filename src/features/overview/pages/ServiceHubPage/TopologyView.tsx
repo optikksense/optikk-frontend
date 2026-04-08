@@ -137,7 +137,7 @@ function TopologyCanvas() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const focusService = searchParams.get("topologyFocus") ?? "";
-  const [filter, setFilter] = useState("");
+  const filter = searchParams.get("serviceSearch") ?? "";
 
   const query = useTimeRangeQuery(
     "services-topology",
@@ -161,6 +161,13 @@ function TopologyCanvas() {
     if (name) next.set("topologyFocus", name);
     else next.delete("topologyFocus");
     setSearchParams(next);
+  };
+
+  const setFilter = (value: string): void => {
+    const next = new URLSearchParams(searchParams);
+    if (value.trim()) next.set("serviceSearch", value);
+    else next.delete("serviceSearch");
+    setSearchParams(next, { replace: true });
   };
 
   const data = query.data ?? { nodes: [], edges: [] };

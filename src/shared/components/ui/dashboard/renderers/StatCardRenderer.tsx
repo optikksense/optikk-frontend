@@ -15,6 +15,7 @@ import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 export function StatCardRenderer({
   chartConfig,
   dataSources,
+  titleContent,
   fillHeight: _fillHeight,
 }: DashboardPanelRendererProps) {
   const { rawData } = useDashboardData(chartConfig, dataSources);
@@ -27,7 +28,7 @@ export function StatCardRenderer({
   return (
     <StatCard
       metric={{
-        title: String(chartConfig.title || ""),
+        title: titleContent || String(chartConfig.title || ""),
         value: displayValue,
         formatter: (val) => formatStatValue(chartConfig.formatter as string | undefined, val),
       }}
@@ -41,6 +42,7 @@ export function StatCardRenderer({
 export function StatSummaryRenderer({
   chartConfig,
   dataSources,
+  titleContent,
   fillHeight: _fillHeight,
 }: DashboardPanelRendererProps) {
   const { rawData } = useDashboardData(chartConfig, dataSources);
@@ -50,7 +52,7 @@ export function StatSummaryRenderer({
 
   return (
     <Surface elevation={1} padding="sm" className="chart-card h-full">
-      <div className="chart-card__title">{String(chartConfig.title || "")}</div>
+      <div className="chart-card__title">{titleContent || String(chartConfig.title || "")}</div>
       {renderStatSummary(rawData, {
         formatter: chartConfig.formatter as string | undefined,
         fields: summaryFields,

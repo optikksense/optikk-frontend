@@ -30,6 +30,7 @@ export interface DashboardPanelRendererProps {
   extraContext?: DashboardExtraContext;
   /** When true (default from shell), chart content should fill the grid tile (uPlot fillHeight, etc.). */
   fillHeight?: boolean;
+  titleContent?: React.ReactNode;
 }
 
 export type SpecializedDashboardRenderer = ComponentType<DashboardPanelRendererProps>;

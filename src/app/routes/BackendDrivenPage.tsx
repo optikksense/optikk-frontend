@@ -19,7 +19,6 @@ function matchConfiguredPage(
     if (!isMatched) {
       continue;
     }
-
     return { page, pathParams: undefined };
   }
 

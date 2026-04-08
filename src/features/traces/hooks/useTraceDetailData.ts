@@ -1,5 +1,6 @@
 import type { LogRecord } from "@/features/log/types";
 import { tracesService } from "@shared/api/tracesService";
+import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -17,7 +18,12 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     if (spanFromUrl) setSelectedSpanId(spanFromUrl);
   }, [searchParams]);
 
-  const { data: spansData, isLoading: spansLoading } = useQuery({
+  const {
+    data: spansData,
+    isLoading: spansLoading,
+    isError: spansIsError,
+    error: spansError,
+  } = useQuery({
     queryKey: ["trace-spans", selectedTeamId, traceIdParam],
     queryFn: () => tracesService.getTraceSpans(selectedTeamId, traceIdParam),
     enabled: !!selectedTeamId && !!traceIdParam,
@@ -32,7 +38,12 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
   const resolvedTraceId = spans.length > 0 ? spans[0].trace_id || traceIdParam : traceIdParam;
 
   // Fetch logs
-  const { data: logsData, isLoading: logsLoading } = useQuery({
+  const {
+    data: logsData,
+    isLoading: logsLoading,
+    isError: logsIsError,
+    error: logsError,
+  } = useQuery({
     queryKey: ["trace-logs", selectedTeamId, resolvedTraceId],
     queryFn: () => tracesService.getTraceLogs(selectedTeamId, resolvedTraceId),
     enabled: !!selectedTeamId && !!resolvedTraceId,
@@ -58,6 +69,12 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     selectedSpanId,
     setSelectedSpanId,
     isLoading: spansLoading,
+    isError: spansIsError || logsIsError,
+    error: spansIsError
+      ? toApiErrorShape(spansError)
+      : logsIsError
+        ? toApiErrorShape(logsError)
+        : null,
     logsLoading,
   };
 }

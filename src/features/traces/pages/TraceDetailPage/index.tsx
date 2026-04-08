@@ -38,6 +38,8 @@ export default function TraceDetailPage() {
     selectedSpanId,
     setSelectedSpanId,
     isLoading,
+    isError,
+    error,
     logsLoading,
   } = useTraceDetailData(selectedTeamId, traceIdParam);
 
@@ -173,6 +175,16 @@ export default function TraceDetailPage() {
       {isLoading ? (
         <PageSurface className="flex min-h-[320px] items-center justify-center">
           <div className="ok-spinner" />
+        </PageSurface>
+      ) : isError ? (
+        <PageSurface className="space-y-3 py-10 text-center">
+          <p className="font-medium text-[var(--color-error)] text-base">
+            Failed to load trace details
+          </p>
+          <p className="mx-auto max-w-xl text-[var(--text-secondary)] text-sm">
+            {error?.message ||
+              "The trace lookup request failed before we could load spans or associated logs."}
+          </p>
         </PageSurface>
       ) : (
         <>

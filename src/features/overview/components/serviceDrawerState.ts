@@ -15,6 +15,15 @@ export interface ServiceDrawerSeedData {
   readonly p99Latency?: number;
 }
 
+export interface DeploymentDrawerSeedData {
+  readonly serviceName: string;
+  readonly version: string;
+  readonly environment: string;
+  readonly deployedAt: string;
+  readonly lastSeenAt?: string;
+  readonly isActive?: boolean;
+}
+
 export function buildServiceDrawerSearch(
   currentSearch: string,
   service: string | ServiceDrawerSeedData
@@ -39,6 +48,35 @@ export function buildServiceDrawerSearch(
       { entity: "service", idField: "service_name", titleField: "service_name" },
       row
     ) ?? buildLegacyDashboardDrawerSearch(currentSearch, "service", serviceName, serviceName)
+  );
+}
+
+export function buildDeploymentCompareDrawerSearch(
+  currentSearch: string,
+  deployment: DeploymentDrawerSeedData
+): string {
+  const row = {
+    deployment_key: `${deployment.serviceName}::${deployment.version}::${deployment.environment}::${deployment.deployedAt}`,
+    service_name: deployment.serviceName,
+    version: deployment.version,
+    environment: deployment.environment,
+    deployed_at: deployment.deployedAt,
+    last_seen_at: deployment.lastSeenAt,
+    is_active: deployment.isActive ?? false,
+  };
+
+  return (
+    buildDashboardDrawerSearch(
+      currentSearch,
+      { entity: "deployment", idField: "deployment_key", titleField: "service_name" },
+      row
+    ) ??
+    buildLegacyDashboardDrawerSearch(
+      currentSearch,
+      "deployment",
+      row.deployment_key,
+      deployment.serviceName
+    )
   );
 }
 

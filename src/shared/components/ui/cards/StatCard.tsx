@@ -5,7 +5,7 @@ import React from "react";
 import SparklineChart from "../charts/micro/SparklineChart";
 
 export interface StatCardMetric {
-  title: string;
+  title: React.ReactNode;
   value: string | number;
   formatter?: (val: string | number) => string | number;
   suffix?: string;

@@ -24,6 +24,7 @@ export type DashboardColumnAlign = "left" | "center" | "right";
 export type DashboardDrawerEntity =
   | "aiModel"
   | "databaseSystem"
+  | "deployment"
   | "errorGroup"
   | "kafkaGroup"
   | "kafkaTopic"
@@ -68,6 +69,8 @@ export const DASHBOARD_LAYOUT_VARIANTS = [
   "hero",
   "hero-map",
   "hero-detail",
+  "compact",
+  "wide-compact",
 ] as const;
 export type DashboardLayoutVariant = (typeof DASHBOARD_LAYOUT_VARIANTS)[number];
 export const DASHBOARD_SECTION_TEMPLATES = [
