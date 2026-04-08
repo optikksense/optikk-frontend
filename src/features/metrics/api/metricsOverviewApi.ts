@@ -5,13 +5,7 @@ import type { QueryParams, RequestTime } from "@/shared/api/service-types";
 import { validateResponse } from "@/shared/api/utils/validate";
 import { API_CONFIG } from "@config/apiConfig";
 
-import type {
-  EndpointMetricPoint,
-  MetricSummary,
-  MetricTimeSeriesPoint,
-  MetricsServiceOption,
-  ServiceMetricPoint,
-} from "../types";
+import type { EndpointMetricPoint, ServiceMetricPoint } from "../types";
 
 export interface OverviewRequestRatePoint {
   readonly timestamp: string;
@@ -44,30 +38,6 @@ const serviceSummarySchema = z
     request_count: numericValue,
     error_count: numericValue,
     error_rate: numericValue,
-    avg_latency: numericValue,
-    p50_latency: numericValue,
-    p95_latency: numericValue,
-    p99_latency: numericValue,
-  })
-  .strict();
-
-const metricsSummarySchema = z
-  .object({
-    total_requests: numericValue,
-    error_count: numericValue,
-    error_rate: numericValue,
-    avg_latency: numericValue,
-    p95_latency: numericValue,
-    p99_latency: numericValue,
-  })
-  .strict();
-
-const metricsTimeSeriesPointSchema = z
-  .object({
-    timestamp: stringValue,
-    time_bucket: stringValue.optional(),
-    request_count: numericValue,
-    error_count: numericValue,
     avg_latency: numericValue,
     p50_latency: numericValue,
     p95_latency: numericValue,
@@ -164,39 +134,6 @@ async function getObjectResponse<TSchema extends z.ZodTypeAny>(
   return validateResponse(schema, unwrapComparisonPayload<z.infer<TSchema>>(data));
 }
 
-function normalizeServiceOption(row: z.infer<typeof serviceSummarySchema>): MetricsServiceOption {
-  return {
-    name: row.service_name,
-    service_name: row.service_name,
-    serviceName: row.service_name,
-  };
-}
-
-function normalizeMetricSummary(row: z.infer<typeof metricsSummarySchema>): MetricSummary {
-  return {
-    total_requests: row.total_requests,
-    error_count: row.error_count,
-    error_rate: row.error_rate,
-    avg_latency: row.avg_latency,
-    p95_latency: row.p95_latency,
-    p99_latency: row.p99_latency,
-  };
-}
-
-function normalizeTimeSeriesPoint(
-  row: z.infer<typeof metricsTimeSeriesPointSchema>
-): MetricTimeSeriesPoint {
-  return {
-    timestamp: row.timestamp || row.time_bucket || "",
-    request_count: row.request_count,
-    error_count: row.error_count,
-    avg_latency: row.avg_latency,
-    p50: row.p50_latency,
-    p95: row.p95_latency,
-    p99: row.p99_latency,
-  };
-}
-
 function normalizeServiceMetric(row: z.infer<typeof serviceSummarySchema>): ServiceMetricPoint {
   return {
     service_name: row.service_name,
@@ -257,18 +194,6 @@ function normalizeP95LatencyPoint(
 }
 
 export const metricsOverviewApi = {
-  async getOverviewServices(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime
-  ): Promise<MetricsServiceOption[]> {
-    const rows = await getArrayResponse(`${BASE}/overview/services`, serviceSummarySchema, {
-      startTime,
-      endTime,
-    });
-    return rows.map(normalizeServiceOption);
-  },
-
   async getOverviewServiceMetrics(
     _teamId: number | null,
     startTime: RequestTime,
@@ -279,18 +204,6 @@ export const metricsOverviewApi = {
       endTime,
     });
     return rows.map(normalizeServiceMetric);
-  },
-
-  async getMetricsSummary(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime
-  ): Promise<MetricSummary> {
-    const row = await getObjectResponse(`${BASE}/metrics/summary`, metricsSummarySchema, {
-      startTime,
-      endTime,
-    });
-    return normalizeMetricSummary(row);
   },
 
   async getOverviewRequestRate(
@@ -335,38 +248,6 @@ export const metricsOverviewApi = {
     return rows.map(normalizeP95LatencyPoint);
   },
 
-  async getMetricsTimeSeries(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime,
-    serviceName?: string,
-    interval = "5m"
-  ): Promise<MetricTimeSeriesPoint[]> {
-    const rows = await getArrayResponse(
-      `${BASE}/services/timeseries`,
-      metricsTimeSeriesPointSchema,
-      {
-        startTime,
-        endTime,
-        serviceName,
-        interval,
-      }
-    );
-    return rows.map(normalizeTimeSeriesPoint);
-  },
-
-  async getServiceMetrics(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime
-  ): Promise<ServiceMetricPoint[]> {
-    const rows = await getArrayResponse(`${BASE}/services/metrics`, serviceSummarySchema, {
-      startTime,
-      endTime,
-    });
-    return rows.map(normalizeServiceMetric);
-  },
-
   async getOverviewEndpointMetrics(
     _teamId: number | null,
     startTime: RequestTime,
@@ -383,23 +264,5 @@ export const metricsOverviewApi = {
       }
     );
     return rows.map(normalizeEndpointMetric);
-  },
-
-  async getOverviewEndpointTimeSeries(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime,
-    serviceName?: string
-  ): Promise<MetricTimeSeriesPoint[]> {
-    const rows = await getArrayResponse(
-      `${BASE}/overview/endpoints/timeseries`,
-      metricsTimeSeriesPointSchema,
-      {
-        startTime,
-        endTime,
-        serviceName,
-      }
-    );
-    return rows.map(normalizeTimeSeriesPoint);
   },
 };

@@ -39,7 +39,7 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 | `src/app/routes/BackendDrivenPage.tsx` | Backend-driven dashboard pages: matches URL → page config → domain adapter or generic `DashboardPage` |
 | `src/app/layout/MainLayout.tsx` | Shell layout |
 
-**Service page:** `ROUTES.service` → `src/features/overview/pages/ServiceHubPage` — passes `serviceName` from the query string (`?serviceName=`) into `DashboardPage` as `pathParams` for panel interpolation (`{serviceName}`). It keeps two tabs via `?view=dashboard|topology`: the backend-driven service dashboard and the existing **Topology** tab (`TopologyView.tsx` + `topology/`). Service detail is now a side drawer, not a standalone route: the overview service grid and the overview services table open `drawerEntity=service` with a frontend-owned `ServiceDetailDrawer`, which shows compact service diagnostics and links into Logs and Traces.
+**Service page:** `ROUTES.service` → `src/features/overview/pages/ServiceHubPage` — fully frontend-owned, no backend default config. Two tabs via `?view=discovery|topology` (default `discovery`): the **Discovery** tab (`discovery/` — service catalog with search, health filter, sort; fetches `/overview/services` + `/services/topology`, merges client-side for upstream/downstream dep counts and health badges) and the **Topology** tab (`TopologyView.tsx` + `topology/`). Row click on Discovery opens `drawerEntity=service` with the frontend-owned `ServiceDetailDrawer`, which shows compact service diagnostics and links into Logs and Traces.
 
 ## Path aliases (Vite)
 

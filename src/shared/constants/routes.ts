@@ -18,8 +18,6 @@ const ROUTES = {
   infrastructure: "/infrastructure",
   errors: "/errors",
   saturation: "/saturation",
-  kafkaTopicDetail: "/saturation/kafka/topics/:topic",
-  kafkaGroupDetail: "/saturation/kafka/groups/:groupId",
   aiObservability: "/ai-observability",
   aiRuns: "/ai-runs",
   aiRunDetail: "/ai-runs/:spanId",

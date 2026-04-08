@@ -16,19 +16,14 @@ import { ROUTES } from "@/shared/constants/routes";
 
 import { AppContent } from "../App";
 import MainLayout from "../layout/MainLayout";
+import BackendDrivenPage from "./BackendDrivenPage";
 import LegacyDashboardDetailRedirect from "./LegacyDashboardDetailRedirect";
 import ProtectedRoute from "./ProtectedRoute";
 
 const LoginPage = lazy(() => import("@/app/auth"));
 const ProductPage = lazy(() => import("@/app/auth/pages/Pricing"));
-const OverviewHubPage = lazy(() => import("@/features/overview/pages/OverviewHubPage"));
 const MetricsPage = lazy(() => import("@/features/metrics/pages/MetricsExplorerPage"));
-const SaturationHubPage = lazy(() => import("@/features/metrics/pages/SaturationHubPage"));
-const InfrastructureHubPage = lazy(
-  () => import("@/features/infrastructure/pages/InfrastructureHubPage")
-);
 const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPage"));
-const AiObservabilityPage = lazy(() => import("@/features/ai/pages/AiObservabilityPage"));
 
 function LegacyServicePathRedirect() {
   const params = useParams({ strict: false });
@@ -95,7 +90,7 @@ const mainLayoutRoute = createRoute({
 // Helper for dynamic paths
 function toNestedRoutePath(path: string): string {
   if (!path || path === ROUTES.home) return "";
-  return path.startsWith("/") ? path : `/${path}`;
+  return path.startsWith("/") ? path.slice(1) : path;
 }
 
 // Protected Routes mapped under mainLayoutRoute
@@ -135,12 +130,11 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
   createProtected(route.path, route.page)
 );
 
-const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
-const metricsRoute = createProtected(ROUTES.metrics, MetricsPage);
-const saturationRoute = createProtected(ROUTES.saturation, SaturationHubPage);
-const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
+const overviewRoute = createProtected(ROUTES.overview, BackendDrivenPage);
+const saturationRoute = createProtected(ROUTES.saturation, BackendDrivenPage);
+const infrastructureRoute = createProtected(ROUTES.infrastructure, BackendDrivenPage);
 const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
-const aiObservabilityRoute = createProtected(ROUTES.aiObservability, AiObservabilityPage);
+const aiObservabilityRoute = createProtected(ROUTES.aiObservability, BackendDrivenPage);
 
 // Redirects
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
@@ -222,7 +216,7 @@ const legacyRedirects = [
 
 const serviceOpsRedirect = createRoute({
   getParentRoute: () => mainLayoutRoute,
-  path: "/services/$serviceName/operations/$operationName",
+  path: "services/$serviceName/operations/$operationName",
   loader: () => {
     throw redirect({ to: ROUTES.metrics, replace: true });
   },
@@ -230,7 +224,7 @@ const serviceOpsRedirect = createRoute({
 
 const legacyServicePathRedirect = createRoute({
   getParentRoute: () => mainLayoutRoute,
-  path: "/services/$serviceName",
+  path: "services/$serviceName",
   component: LegacyServicePathRedirect,
 });
 
@@ -257,7 +251,6 @@ const routeTree = rootRoute.addChildren([
   mainLayoutRoute.addChildren([
     ...protectedExplorerRoutes,
     overviewRoute,
-    metricsRoute,
     saturationRoute,
     infrastructureRoute,
     serviceRoute,

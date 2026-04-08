@@ -1,6 +1,7 @@
-import { Navigate, useLocation } from "@tanstack/react-router";
+import { Navigate, useMatch } from "@tanstack/react-router";
 
 import { DashboardPage, PageHeader, PageShell } from "@shared/components/ui";
+import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
 import { getDashboardIcon } from "@shared/components/ui/dashboard/utils/dashboardUtils";
 import { usePagesConfig } from "@shared/hooks/usePagesConfig";
 
@@ -26,7 +27,7 @@ function matchConfiguredPage(
 }
 
 export default function BackendDrivenPage(): JSX.Element {
-  const location = useLocation();
+  const match = useMatch({ strict: false });
   const { pages, isLoading, error } = usePagesConfig();
 
   // Still fetching on first load — show skeleton.
@@ -44,7 +45,7 @@ export default function BackendDrivenPage(): JSX.Element {
     return <Navigate to={ROUTES.overview} replace />;
   }
 
-  const matched = matchConfiguredPage(location.pathname, pages);
+  const matched = matchConfiguredPage(match.pathname, pages);
   if (!matched) {
     return <Navigate to={pages[0]?.path || ROUTES.overview} replace />;
   }
@@ -69,6 +70,7 @@ export default function BackendDrivenPage(): JSX.Element {
         icon={getDashboardIcon(matchedPage.icon, 24)}
       />
       <DashboardPage pageId={matchedPage.id} pathParams={pathParams} />
+      <DashboardEntityDrawer />
     </PageShell>
   );
 }

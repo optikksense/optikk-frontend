@@ -4,14 +4,6 @@ import { lazy } from "react";
 import type { DomainConfig } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
 
-const OverviewHubPage = lazy(() =>
-  import("./pages/OverviewHubPage").then((module) => ({ default: module.default }))
-);
-const SaturationHubPage = lazy(() =>
-  import("@/features/metrics/pages/SaturationHubPage").then((module) => ({
-    default: module.default,
-  }))
-);
 const ServiceHubPage = lazy(() =>
   import("./pages/ServiceHubPage").then((module) => ({ default: module.default }))
 );
@@ -71,11 +63,7 @@ export const overviewConfig: DomainConfig = {
     },
   ],
   routes: [],
-  dashboardPages: [
-    { pageId: "overview", page: OverviewHubPage },
-    { pageId: "saturation", page: SaturationHubPage },
-    { pageId: "service", page: ServiceHubPage },
-  ],
+  dashboardPages: [{ pageId: "service", page: ServiceHubPage }],
   dashboardPanels: [
     { panelType: "service-health-grid", kind: "specialized", component: ServiceHealthGridRenderer },
     { panelType: "slo-indicators", kind: "specialized", component: SloIndicatorsRenderer },

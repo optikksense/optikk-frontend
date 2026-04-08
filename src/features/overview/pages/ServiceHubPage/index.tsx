@@ -1,28 +1,21 @@
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { Server } from "lucide-react";
-import { Suspense, lazy, useMemo } from "react";
+import { Suspense, lazy } from "react";
 
 import { Tabs } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell } from "@shared/components/ui";
 import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
-import DashboardPage from "@shared/components/ui/dashboard/DashboardPage";
 
+const DiscoveryView = lazy(() => import("./discovery"));
 const TopologyView = lazy(() => import("./TopologyView"));
 
-const TAB_DASHBOARD = "dashboard";
+const TAB_DISCOVERY = "discovery";
 const TAB_TOPOLOGY = "topology";
 
 export default function ServiceHubPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const pathParams = useMemo(
-    () => ({
-      serviceName: searchParams.get("serviceName") ?? searchParams.get("service") ?? "",
-    }),
-    [searchParams]
-  );
-
-  const activeView = searchParams.get("view") === TAB_TOPOLOGY ? TAB_TOPOLOGY : TAB_DASHBOARD;
+  const activeView = searchParams.get("view") === TAB_TOPOLOGY ? TAB_TOPOLOGY : TAB_DISCOVERY;
 
   const setActiveView = (key: string): void => {
     const next = new URLSearchParams(searchParams);
@@ -35,30 +28,26 @@ export default function ServiceHubPage() {
     <PageShell>
       <PageHeader
         title="Service"
-        subtitle="Deployments, version impact, and runtime topology"
+        subtitle="Service catalog, health, and runtime topology"
         icon={<Server size={24} />}
       />
       <Tabs
         activeKey={activeView}
         onChange={setActiveView}
         items={[
-          { key: TAB_DASHBOARD, label: "Dashboard" },
+          { key: TAB_DISCOVERY, label: "Discovery" },
           { key: TAB_TOPOLOGY, label: "Topology" },
         ]}
       />
-      {activeView === TAB_DASHBOARD ? (
-        <DashboardPage pageId="service" pathParams={pathParams} />
-      ) : (
-        <Suspense
-          fallback={
-            <div className="flex h-64 items-center justify-center text-[13px] text-[var(--text-muted)]">
-              Loading topology…
-            </div>
-          }
-        >
-          <TopologyView />
-        </Suspense>
-      )}
+      <Suspense
+        fallback={
+          <div className="flex h-64 items-center justify-center text-[13px] text-[var(--text-muted)]">
+            Loading…
+          </div>
+        }
+      >
+        {activeView === TAB_DISCOVERY ? <DiscoveryView /> : <TopologyView />}
+      </Suspense>
       <DashboardEntityDrawer />
     </PageShell>
   );

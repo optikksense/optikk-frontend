@@ -4,10 +4,6 @@ import { lazy } from "react";
 import type { DomainConfig } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
 
-const AiPage = lazy(() =>
-  import("./pages/AiObservabilityPage").then((module) => ({ default: module.default }))
-);
-
 const AiRunsPage = lazy(() =>
   import("./pages/AiRunsExplorerPage").then((module) => ({ default: module.default }))
 );
@@ -63,7 +59,6 @@ export const aiConfig: DomainConfig = {
     { path: ROUTES.aiConversations, page: AiConversationsPage },
     { path: ROUTES.aiConversationDetail, page: AiConversationDetailPage },
   ],
-  dashboardPages: [{ pageId: "ai-observability", page: AiPage }],
   dashboardPanels: [
     { panelType: "ai-line", kind: "specialized", component: AiLineRenderer },
     { panelType: "ai-bar", kind: "specialized", component: AiBarRenderer },
