@@ -2,9 +2,11 @@ import { useParams } from "@tanstack/react-router";
 import { Brain } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { PageHeader } from "@shared/components/ui";
+import { Badge } from "@shared/components/primitives/ui";
+import { PageSurface } from "@shared/components/ui";
 import { formatDuration, formatNumber, formatTimestamp } from "@shared/utils/formatters";
 
+import { AiWorkspaceLayout } from "../../components/AiWorkspaceLayout";
 import { useAiRunDetail } from "../../hooks/useAiRunDetail";
 import type { ChainSpan, LLMMessage } from "../../types";
 
@@ -32,15 +34,15 @@ export default function AiRunDetailPage(): JSX.Element {
 
   if (isLoading || detailError || !detail) {
     return (
-      <div className="mx-auto max-w-[1200px] px-0 pb-6">
-        <PageHeader
+      <AiWorkspaceLayout
           title="LLM Run Detail"
           icon={<Brain size={24} />}
+          subtitle="Inspect prompt/completion content, token usage, latency, and execution context for a single AI call."
           breadcrumbs={[
             { label: "LLM Runs", path: "/ai-runs" },
             { label: `${spanId.slice(0, 12)}…` },
           ]}
-        />
+        >
         {isLoading ? (
           <div className="p-10 text-center text-[var(--text-muted)]">Loading...</div>
         ) : detailError ? (
@@ -55,7 +57,7 @@ export default function AiRunDetailPage(): JSX.Element {
         ) : (
           <div className="p-10 text-center text-[var(--text-muted)]">Run not found</div>
         )}
-      </div>
+      </AiWorkspaceLayout>
     );
   }
 
@@ -63,20 +65,28 @@ export default function AiRunDetailPage(): JSX.Element {
   const inputPct = totalTokens > 0 ? (detail.inputTokens / totalTokens) * 100 : 50;
 
   return (
-    <div className="mx-auto max-w-[1200px] px-0 pb-6">
-      <PageHeader
+    <AiWorkspaceLayout
         title={detail.model || "LLM Run"}
         icon={<Brain size={24} />}
+        subtitle="Review metadata, prompt payloads, token breakdown, and surrounding execution context."
         breadcrumbs={[
           { label: "LLM Runs", path: "/ai-runs" },
           { label: detail.model || `${spanId.slice(0, 12)}…` },
         ]}
-      />
+        actions={
+          <div className="flex items-center gap-2">
+            <Badge variant="info">{detail.provider || "provider unknown"}</Badge>
+            <Badge variant={detail.hasError ? "error" : "success"}>
+              {detail.hasError ? "Error" : "Healthy"}
+            </Badge>
+          </div>
+        }
+      >
 
       {/* Metadata row */}
-      <div className="mb-5 grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         {/* Metadata card */}
-        <div className="rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)] p-4">
+        <PageSurface padding="lg">
           <h3 className="mt-0 mb-3 font-semibold text-[12px] text-[var(--text-muted)] uppercase tracking-[0.5px]">
             Metadata
           </h3>
@@ -94,10 +104,10 @@ export default function AiRunDetailPage(): JSX.Element {
             }
           />
           <RunField label="Finish Reason" value={detail.finishReason || "—"} />
-        </div>
+        </PageSurface>
 
         {/* Performance card */}
-        <div className="rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)] p-4">
+        <PageSurface padding="lg">
           <h3 className="mt-0 mb-3 font-semibold text-[12px] text-[var(--text-muted)] uppercase tracking-[0.5px]">
             Performance
           </h3>
@@ -105,10 +115,10 @@ export default function AiRunDetailPage(): JSX.Element {
           <RunField label="Service" value={detail.serviceName} />
           <RunField label="Span Kind" value={detail.spanKind} />
           <RunField label="Start Time" value={formatTimestamp(detail.startTime)} />
-        </div>
+        </PageSurface>
 
         {/* Tokens card */}
-        <div className="rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)] p-4">
+        <PageSurface padding="lg">
           <h3 className="mt-0 mb-3 font-semibold text-[12px] text-[var(--text-muted)] uppercase tracking-[0.5px]">
             Tokens
           </h3>
@@ -132,11 +142,11 @@ export default function AiRunDetailPage(): JSX.Element {
             <span className="text-[#3b82f6]">Input</span>
             <span className="text-[#10b981]">Output</span>
           </div>
-        </div>
+        </PageSurface>
       </div>
 
       {/* Messages */}
-      <div className="mb-5 overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+      <PageSurface padding="sm" className="overflow-hidden p-0">
         <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
           Messages {isMessagesLoading && "(loading...)"}
         </h3>
@@ -177,11 +187,11 @@ export default function AiRunDetailPage(): JSX.Element {
             </div>
           </div>
         ))}
-      </div>
+      </PageSurface>
 
       {/* Context chain */}
       {context && (
-        <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+        <PageSurface padding="sm" className="overflow-hidden p-0">
           <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
             Execution Context {isContextLoading && "(loading...)"}
           </h3>
@@ -192,10 +202,10 @@ export default function AiRunDetailPage(): JSX.Element {
           {context.children.map((span: ChainSpan) => (
             <ContextSpanRow key={span.spanId} span={span} isCurrent={false} />
           ))}
-        </div>
+        </PageSurface>
       )}
       {!context && contextError && (
-        <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+        <PageSurface padding="sm" className="overflow-hidden p-0">
           <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
             Execution Context
           </h3>
@@ -207,9 +217,9 @@ export default function AiRunDetailPage(): JSX.Element {
               </div>
             </div>
           </div>
-        </div>
+        </PageSurface>
       )}
-    </div>
+    </AiWorkspaceLayout>
   );
 }
 

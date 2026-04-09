@@ -189,74 +189,6 @@ export const relatedTraceSchema = z
   })
   .strict();
 
-export const traceComparisonResultSchema = z
-  .object({
-    traceA: z.object({
-      traceId: z.string(),
-      spanCount: z.number(),
-      durationMs: z.number(),
-      errorCount: z.number(),
-      services: z.number(),
-    }),
-    traceB: z.object({
-      traceId: z.string(),
-      spanCount: z.number(),
-      durationMs: z.number(),
-      errorCount: z.number(),
-      services: z.number(),
-    }),
-    matchedSpans: z.array(
-      z.object({
-        signature: z.object({
-          service: z.string(),
-          operation: z.string(),
-          spanKind: z.string(),
-          depth: z.number(),
-        }),
-        spanIdA: z.string(),
-        spanIdB: z.string(),
-        durationMsA: z.number(),
-        durationMsB: z.number(),
-        deltaMs: z.number(),
-        deltaPct: z.number(),
-        statusA: z.string(),
-        statusB: z.string(),
-        statusChanged: z.boolean(),
-      })
-    ),
-    onlyInA: z.array(
-      z.object({
-        spanId: z.string(),
-        service: z.string(),
-        operation: z.string(),
-        spanKind: z.string(),
-        durationMs: z.number(),
-        status: z.string(),
-      })
-    ),
-    onlyInB: z.array(
-      z.object({
-        spanId: z.string(),
-        service: z.string(),
-        operation: z.string(),
-        spanKind: z.string(),
-        durationMs: z.number(),
-        status: z.string(),
-      })
-    ),
-    serviceDeltas: z.array(
-      z.object({
-        service: z.string(),
-        totalMsA: z.number(),
-        totalMsB: z.number(),
-        deltaMs: z.number(),
-        spanCountA: z.number(),
-        spanCountB: z.number(),
-      })
-    ),
-    totalDeltaMs: z.number(),
-  })
-  .strict();
 
 export type TraceRecord = z.infer<typeof traceRecordSchema>;
 export type SpanRecord = z.infer<typeof spanRecordSchema>;
@@ -271,4 +203,3 @@ export type SpanSelfTimeRecord = z.infer<typeof spanSelfTimeSchema>;
 export type ErrorPathSpanRecord = z.infer<typeof errorPathSpanSchema>;
 export type SpanAttributesRecord = z.infer<typeof spanAttributesSchema>;
 export type RelatedTraceRecord = z.infer<typeof relatedTraceSchema>;
-export type TraceComparisonResultRecord = z.infer<typeof traceComparisonResultSchema>;

@@ -13,6 +13,7 @@ import { readDashboardDrawerState } from "@shared/components/ui/dashboard/utils/
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import {
+  formatBytes,
   formatDuration,
   formatNumber,
   formatPercentage,
@@ -33,6 +34,14 @@ const SECTION_DATASTORES = "datastores";
 const SECTION_KAFKA = "kafka";
 const KAFKA_TOPICS = "topics";
 const KAFKA_GROUPS = "groups";
+
+function formatBytesPerSecond(value: number): string {
+  return `${formatBytes(value)}/s`;
+}
+
+function formatSeconds(value: number): string {
+  return formatDuration(value * 1000);
+}
 
 function pillClass(active: boolean): string {
   return active
@@ -198,45 +207,52 @@ export default function SaturationPage(): JSX.Element {
       ),
     },
     {
-      title: "Produce/s",
-      key: "produce_rate_per_sec",
+      title: "Bytes/s",
+      key: "bytes_per_sec",
       align: "right",
-      width: 110,
-      render: (_value, row) => formatNumber(row.produce_rate_per_sec),
+      width: 120,
+      render: (_value, row) => formatBytesPerSecond(row.bytes_per_sec),
     },
     {
-      title: "Consume/s",
-      key: "consume_rate_per_sec",
+      title: "Bytes Total",
+      key: "bytes_total",
+      align: "right",
+      width: 120,
+      render: (_value, row) => formatBytes(row.bytes_total),
+    },
+    {
+      title: "Records/s",
+      key: "records_per_sec",
       align: "right",
       width: 110,
-      render: (_value, row) => formatNumber(row.consume_rate_per_sec),
+      render: (_value, row) => formatNumber(row.records_per_sec),
+    },
+    {
+      title: "Records Total",
+      key: "records_total",
+      align: "right",
+      width: 120,
+      render: (_value, row) => formatNumber(row.records_total),
     },
     {
       title: "Lag",
-      key: "max_lag",
-      align: "right",
-      width: 110,
-      render: (_value, row) => formatNumber(row.max_lag),
-    },
-    {
-      title: "E2E p95",
-      key: "e2e_p95_ms",
-      align: "right",
-      width: 120,
-      render: (_value, row) => formatDuration(row.e2e_p95_ms),
-    },
-    {
-      title: "Err Rate",
-      key: "error_rate",
-      align: "right",
-      width: 120,
-      render: (_value, row) => formatPercentage(row.error_rate),
-    },
-    {
-      title: "Groups",
-      key: "consumer_group_count",
+      key: "lag",
       align: "right",
       width: 100,
+      render: (_value, row) => formatNumber(row.lag),
+    },
+    {
+      title: "Lead",
+      key: "lead",
+      align: "right",
+      width: 100,
+      render: (_value, row) => formatNumber(row.lead),
+    },
+    {
+      title: "Consumer Groups",
+      key: "consumer_group_count",
+      align: "right",
+      width: 140,
       render: (_value, row) => formatNumber(row.consumer_group_count),
     },
   ];
@@ -253,52 +269,94 @@ export default function SaturationPage(): JSX.Element {
             {row.consumer_group}
           </span>
           <span className="text-[11px] text-[var(--text-muted)]">
-            {row.topic_count} topics • {formatNumber(row.assigned_partitions)} assigned partitions
+            Raw Kafka client-id surfaced as consumer group
           </span>
         </div>
       ),
     },
     {
-      title: "Lag",
-      key: "lag",
+      title: "Assigned",
+      key: "assigned_partitions",
       align: "right",
       width: 110,
-      render: (_value, row) => formatNumber(row.lag),
+      render: (_value, row) => formatNumber(row.assigned_partitions),
     },
     {
-      title: "Consume/s",
-      key: "consume_rate_per_sec",
+      title: "Commit Rate",
+      key: "commit_rate",
       align: "right",
       width: 120,
-      render: (_value, row) => formatNumber(row.consume_rate_per_sec),
+      render: (_value, row) => formatNumber(row.commit_rate),
     },
     {
-      title: "Process/s",
-      key: "process_rate_per_sec",
+      title: "Commit Avg",
+      key: "commit_latency_avg_ms",
       align: "right",
       width: 120,
-      render: (_value, row) => formatNumber(row.process_rate_per_sec),
+      render: (_value, row) => formatDuration(row.commit_latency_avg_ms),
     },
     {
-      title: "Process p95",
-      key: "process_p95_ms",
+      title: "Commit Max",
+      key: "commit_latency_max_ms",
       align: "right",
       width: 120,
-      render: (_value, row) => formatDuration(row.process_p95_ms),
+      render: (_value, row) => formatDuration(row.commit_latency_max_ms),
     },
     {
-      title: "Err Rate",
-      key: "error_rate",
+      title: "Fetch Rate",
+      key: "fetch_rate",
       align: "right",
       width: 110,
-      render: (_value, row) => formatPercentage(row.error_rate),
+      render: (_value, row) => formatNumber(row.fetch_rate),
     },
     {
-      title: "Rebalance",
-      key: "rebalance_rate",
+      title: "Fetch Avg",
+      key: "fetch_latency_avg_ms",
       align: "right",
       width: 110,
-      render: (_value, row) => formatNumber(row.rebalance_rate),
+      render: (_value, row) => formatDuration(row.fetch_latency_avg_ms),
+    },
+    {
+      title: "Fetch Max",
+      key: "fetch_latency_max_ms",
+      align: "right",
+      width: 110,
+      render: (_value, row) => formatDuration(row.fetch_latency_max_ms),
+    },
+    {
+      title: "Heartbeat",
+      key: "heartbeat_rate",
+      align: "right",
+      width: 110,
+      render: (_value, row) => formatNumber(row.heartbeat_rate),
+    },
+    {
+      title: "Failed Rebalance/hr",
+      key: "failed_rebalance_per_hour",
+      align: "right",
+      width: 150,
+      render: (_value, row) => formatNumber(row.failed_rebalance_per_hour),
+    },
+    {
+      title: "Poll Idle",
+      key: "poll_idle_ratio",
+      align: "right",
+      width: 110,
+      render: (_value, row) => formatPercentage(row.poll_idle_ratio),
+    },
+    {
+      title: "Last Poll",
+      key: "last_poll_seconds_ago",
+      align: "right",
+      width: 110,
+      render: (_value, row) => formatSeconds(row.last_poll_seconds_ago),
+    },
+    {
+      title: "Connections",
+      key: "connection_count",
+      align: "right",
+      width: 110,
+      render: (_value, row) => formatNumber(row.connection_count),
     },
   ];
 
@@ -354,25 +412,25 @@ export default function SaturationPage(): JSX.Element {
             <SaturationStatTile
               label="Topics"
               value={formatNumber(kafkaSummary?.topic_count ?? 0)}
-              meta={`${formatNumber(kafkaSummary?.group_count ?? 0)} consumer groups`}
+              meta={`${formatNumber(kafkaSummary?.group_count ?? 0)} consumer groups observed`}
               icon={<Waves size={16} />}
             />
             <SaturationStatTile
-              label="Publish Rate"
-              value={formatNumber(kafkaSummary?.publish_rate_per_sec ?? 0)}
-              meta={`${formatNumber(kafkaSummary?.receive_rate_per_sec ?? 0)} receive/s`}
+              label="Consumer Groups"
+              value={formatNumber(kafkaSummary?.group_count ?? 0)}
+              meta="Raw Kafka client-id values surfaced as consumer groups"
               icon={<Activity size={16} />}
             />
             <SaturationStatTile
-              label="Max Lag"
-              value={formatNumber(kafkaSummary?.max_lag ?? 0)}
-              meta={`${formatDuration(kafkaSummary?.receive_p95_ms ?? 0)} receive p95`}
+              label="Bytes/s"
+              value={formatBytesPerSecond(kafkaSummary?.bytes_per_sec ?? 0)}
+              meta="Topic traffic from Kafka consumer metrics"
               icon={<Gauge size={16} />}
             />
             <SaturationStatTile
-              label="Publish p95"
-              value={formatDuration(kafkaSummary?.publish_p95_ms ?? 0)}
-              meta="Messaging throughput and latency across the selected window"
+              label="Assigned Partitions"
+              value={formatNumber(kafkaSummary?.assigned_partitions ?? 0)}
+              meta="Current partition ownership across observed consumer groups"
               icon={<TimerReset size={16} />}
             />
           </>
@@ -487,7 +545,7 @@ export default function SaturationPage(): JSX.Element {
             columns={kafkaTopicColumns}
             rowKey={(row) => row.topic}
             pagination={{ pageSize: 12 }}
-            scroll={{ x: 980 }}
+            scroll={{ x: 1100 }}
             onRow={(row) => ({
               onClick: () =>
                 navigate({
@@ -505,7 +563,7 @@ export default function SaturationPage(): JSX.Element {
             columns={kafkaGroupColumns}
             rowKey={(row) => row.consumer_group}
             pagination={{ pageSize: 12 }}
-            scroll={{ x: 1080 }}
+            scroll={{ x: 1760 }}
             onRow={(row) => ({
               onClick: () =>
                 navigate({

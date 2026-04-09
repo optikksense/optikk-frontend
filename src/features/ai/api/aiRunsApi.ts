@@ -1,7 +1,7 @@
-import { aiService } from "@shared/api/aiService";
-import type { AiRunsQueryParams } from "@shared/api/aiService";
 import type { RequestTime } from "@shared/api/service-types";
 import { z } from "zod";
+
+import { aiTransport, type AiRunsQueryParams } from "./aiTransport";
 import type { LLMRunFilters } from "../types";
 
 const llmRunSchema = z.object({
@@ -72,7 +72,8 @@ export const aiRunsApi = {
     endTime: RequestTime,
     filters: LLMRunFilters = {}
   ) {
-    const response = await aiService.getRuns(teamId, startTime, endTime, filtersToParams(filters));
+    void teamId;
+    const response = await aiTransport.getRuns(startTime, endTime, filtersToParams(filters));
     return runsResponseSchema.parse(response);
   },
 
@@ -82,22 +83,20 @@ export const aiRunsApi = {
     endTime: RequestTime,
     filters: LLMRunFilters = {}
   ) {
-    const response = await aiService.getRunsSummary(
-      teamId,
-      startTime,
-      endTime,
-      filtersToParams(filters)
-    );
+    void teamId;
+    const response = await aiTransport.getRunsSummary(startTime, endTime, filtersToParams(filters));
     return summarySchema.parse(response);
   },
 
   async getModels(teamId: number | null, startTime: RequestTime, endTime: RequestTime) {
-    const response = await aiService.getRunsModels(teamId, startTime, endTime);
+    void teamId;
+    const response = await aiTransport.getRunsModels(startTime, endTime);
     return z.array(modelSchema).parse(response);
   },
 
   async getOperations(teamId: number | null, startTime: RequestTime, endTime: RequestTime) {
-    const response = await aiService.getRunsOperations(teamId, startTime, endTime);
+    void teamId;
+    const response = await aiTransport.getRunsOperations(startTime, endTime);
     return z.array(operationSchema).parse(response);
   },
 };

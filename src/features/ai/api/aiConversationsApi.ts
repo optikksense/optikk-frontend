@@ -1,6 +1,7 @@
-import { aiService } from "@shared/api/aiService";
 import type { RequestTime } from "@shared/api/service-types";
 import { z } from "zod";
+
+import { aiTransport } from "./aiTransport";
 import type { Conversation, ConversationTurn } from "../types";
 
 const conversationSchema = z.object({
@@ -35,7 +36,8 @@ export const aiConversationsApi = {
     endTime: RequestTime,
     limit?: number
   ): Promise<Conversation[]> {
-    const response = await aiService.getConversations(teamId, startTime, endTime, limit);
+    void teamId;
+    const response = await aiTransport.getConversations(startTime, endTime, limit);
     return z.array(conversationSchema).parse(response) as Conversation[];
   },
 
@@ -45,7 +47,8 @@ export const aiConversationsApi = {
     startTime: RequestTime,
     endTime: RequestTime
   ): Promise<ConversationTurn[]> {
-    const response = await aiService.getConversation(teamId, conversationId, startTime, endTime);
+    void teamId;
+    const response = await aiTransport.getConversation(conversationId, startTime, endTime);
     return z.array(turnSchema).parse(response) as ConversationTurn[];
   },
 };

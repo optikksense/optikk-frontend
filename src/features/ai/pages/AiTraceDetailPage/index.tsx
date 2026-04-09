@@ -5,11 +5,13 @@ import { useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 import { useTeamId } from "@app/store/appStore";
-import { PageHeader } from "@shared/components/ui";
+import { Badge } from "@shared/components/primitives/ui";
+import { PageSurface } from "@shared/components/ui";
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
 import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
 import { aiTraceQueries } from "../../api/queryOptions";
+import { AiWorkspaceLayout } from "../../components/AiWorkspaceLayout";
 import type { LLMTraceSpan, LLMTraceSummary } from "../../types";
 
 function getErrorMessage(error: { message?: string } | null | undefined, fallback: string): string {
@@ -66,15 +68,18 @@ export default function AiTraceDetailPage() {
   }, [spans]);
 
   return (
-    <div className="mx-auto max-w-[1400px] px-0 pb-6">
-      <PageHeader
+    <AiWorkspaceLayout
         title="LLM Trace"
         icon={<Brain size={24} />}
+        subtitle="Follow the full traced execution path across model calls, tools, and chained operations."
         breadcrumbs={[
           { label: "LLM Runs", path: "/ai-runs" },
           { label: `${traceId.slice(0, 16)}…` },
         ]}
-      />
+        actions={
+          summary ? <Badge variant="info">{formatNumber(summary.totalSpans)} spans</Badge> : undefined
+        }
+      >
 
       {spansError && (
         <div className="mb-4">
@@ -109,7 +114,7 @@ export default function AiTraceDetailPage() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+      <PageSurface padding="sm" className="overflow-hidden p-0">
         <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
           Trace Waterfall
         </h3>
@@ -128,8 +133,8 @@ export default function AiTraceDetailPage() {
               onClick={() => navigate({ to: `/ai-runs/${span.spanId}` })}
             />
           ))}
-      </div>
-    </div>
+      </PageSurface>
+    </AiWorkspaceLayout>
   );
 }
 

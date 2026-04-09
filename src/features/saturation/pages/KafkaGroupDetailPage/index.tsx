@@ -1,27 +1,27 @@
-import { useLocation, useNavigate, useParams } from "@tanstack/react-router";
-import { Activity, Gauge, Layers3, TimerReset, Waves } from "lucide-react";
+import { Activity, Cable, Layers3, TimerReset, Waves } from "lucide-react";
+import { useParams } from "@tanstack/react-router";
 
 import {
   Badge,
-  Button,
   SimpleTable,
   type SimpleTableColumn,
 } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
+import { formatBytes, formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
-import { ROUTES } from "@/shared/constants/routes";
-import { type KafkaPartitionRow, type KafkaTopicRow, saturationApi } from "../../api/saturationApi";
+import { type KafkaTopicRow, saturationApi } from "../../api/saturationApi";
 import { SaturationStatTile } from "../../components/SaturationStatTile";
-import {
-  buildSaturationLogsSearch,
-  buildSaturationTracesSearch,
-} from "../../components/navigation";
+
+function formatBytesPerSecond(value: number): string {
+  return `${formatBytes(value)}/s`;
+}
+
+function formatSeconds(value: number): string {
+  return formatDuration(value * 1000);
+}
 
 export default function KafkaGroupDetailPage(): JSX.Element {
-  const navigate = useNavigate();
-  const location = useLocation();
   const params = useParams({ strict: false });
   const groupId = decodeURIComponent(typeof params.groupId === "string" ? params.groupId : "");
 
@@ -37,73 +37,43 @@ export default function KafkaGroupDetailPage(): JSX.Element {
       saturationApi.getKafkaGroupTopics(groupId, teamId, startTime, endTime),
     { extraKeys: [groupId] }
   );
-  const partitionsQuery = useTimeRangeQuery(
-    "saturation-kafka-group-partitions",
-    (teamId, startTime, endTime) =>
-      saturationApi.getKafkaGroupPartitions(groupId, teamId, startTime, endTime),
-    { extraKeys: [groupId] }
-  );
-
-  const openSurface = (target: "logs" | "traces") => {
-    const filters = [
-      { field: "messaging.consumer.group.name", operator: "equals", value: groupId },
-    ];
-    navigate({
-      to: target === "logs" ? ROUTES.logs : ROUTES.traces,
-      search:
-        target === "logs"
-          ? (buildSaturationLogsSearch(location.search, filters as any) as any)
-          : (buildSaturationTracesSearch(location.search, filters as any) as any),
-    });
-  };
 
   const topicColumns: SimpleTableColumn<KafkaTopicRow>[] = [
     {
       title: "Topic",
       key: "topic",
-      width: 300,
+      width: 260,
       render: (_value, row) => (
         <span className="font-medium text-[var(--text-primary)]">{row.topic}</span>
       ),
     },
     {
-      title: "Consume/s",
-      key: "consume_rate_per_sec",
+      title: "Bytes/s",
+      key: "bytes_per_sec",
       align: "right",
-      width: 110,
-      render: (_value, row) => formatNumber(row.consume_rate_per_sec),
+      width: 120,
+      render: (_value, row) => formatBytesPerSecond(row.bytes_per_sec),
     },
     {
-      title: "Lag",
-      key: "max_lag",
+      title: "Bytes Total",
+      key: "bytes_total",
       align: "right",
-      width: 110,
-      render: (_value, row) => formatNumber(row.max_lag),
+      width: 120,
+      render: (_value, row) => formatBytes(row.bytes_total),
     },
     {
-      title: "Receive p95",
-      key: "receive_p95_ms",
+      title: "Records/s",
+      key: "records_per_sec",
       align: "right",
       width: 110,
-      render: (_value, row) => formatDuration(row.receive_p95_ms),
+      render: (_value, row) => formatNumber(row.records_per_sec),
     },
     {
-      title: "Err Rate",
-      key: "error_rate",
+      title: "Records Total",
+      key: "records_total",
       align: "right",
-      width: 110,
-      render: (_value, row) => formatPercentage(row.error_rate),
-    },
-  ];
-
-  const partitionColumns: SimpleTableColumn<KafkaPartitionRow>[] = [
-    { title: "Topic", key: "topic", width: 280, render: (_value, row) => row.topic || "—" },
-    {
-      title: "Partition",
-      key: "partition",
-      align: "right",
-      width: 100,
-      render: (_value, row) => formatNumber(row.partition),
+      width: 120,
+      render: (_value, row) => formatNumber(row.records_total),
     },
     {
       title: "Lag",
@@ -111,6 +81,13 @@ export default function KafkaGroupDetailPage(): JSX.Element {
       align: "right",
       width: 100,
       render: (_value, row) => formatNumber(row.lag),
+    },
+    {
+      title: "Lead",
+      key: "lead",
+      align: "right",
+      width: 100,
+      render: (_value, row) => formatNumber(row.lead),
     },
   ];
 
@@ -120,57 +97,52 @@ export default function KafkaGroupDetailPage(): JSX.Element {
     <PageShell>
       <PageHeader
         title={groupId}
-        subtitle="Consumer-group detail with lag, topic fan-out, partition hotspots, and rebalance pressure."
+        subtitle="Consumer-group detail backed by the raw Kafka client-id stored in ClickHouse."
         icon={<Layers3 size={24} />}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="warning">Consumer group</Badge>
-            <Button size="sm" variant="secondary" onClick={() => openSurface("logs")}>
-              Logs
-            </Button>
-            <Button size="sm" variant="secondary" onClick={() => openSurface("traces")}>
-              Traces
-            </Button>
+            <Badge variant="info">Raw Kafka client-id</Badge>
           </div>
         }
       />
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
         <SaturationStatTile
-          label="Lag"
-          value={formatNumber(overview?.lag ?? 0)}
-          meta="Largest observed lag in range"
-          icon={<Gauge size={16} />}
+          label="Assigned"
+          value={formatNumber(overview?.assigned_partitions ?? 0)}
+          meta="Current assigned partitions"
+          icon={<Layers3 size={16} />}
         />
         <SaturationStatTile
-          label="Consume/s"
-          value={formatNumber(overview?.consume_rate_per_sec ?? 0)}
-          meta="Messages received by the group"
+          label="Commit Rate"
+          value={formatNumber(overview?.commit_rate ?? 0)}
+          meta={`${formatDuration(overview?.commit_latency_avg_ms ?? 0)} avg latency`}
           icon={<Activity size={16} />}
         />
         <SaturationStatTile
-          label="Process/s"
-          value={formatNumber(overview?.process_rate_per_sec ?? 0)}
-          meta="Messages successfully processed"
-          icon={<Activity size={16} />}
-        />
-        <SaturationStatTile
-          label="Process p95"
-          value={formatDuration(overview?.process_p95_ms ?? 0)}
-          meta="Processing latency"
+          label="Fetch Rate"
+          value={formatNumber(overview?.fetch_rate ?? 0)}
+          meta={`${formatDuration(overview?.fetch_latency_max_ms ?? 0)} max latency`}
           icon={<TimerReset size={16} />}
         />
         <SaturationStatTile
-          label="Rebalance"
-          value={formatNumber(overview?.rebalance_rate ?? 0)}
-          meta={`${formatNumber(overview?.assigned_partitions ?? 0)} assigned partitions`}
+          label="Heartbeat"
+          value={formatNumber(overview?.heartbeat_rate ?? 0)}
+          meta={`${formatNumber(overview?.failed_rebalance_per_hour ?? 0)} failed rebalance/hr`}
           icon={<Waves size={16} />}
         />
         <SaturationStatTile
-          label="Topics"
-          value={formatNumber(overview?.topic_count ?? 0)}
-          meta={`${formatPercentage(overview?.error_rate ?? 0)} worst error rate`}
-          icon={<Layers3 size={16} />}
+          label="Poll Idle"
+          value={formatPercentage(overview?.poll_idle_ratio ?? 0)}
+          meta={`Last poll ${formatSeconds(overview?.last_poll_seconds_ago ?? 0)}`}
+          icon={<TimerReset size={16} />}
+        />
+        <SaturationStatTile
+          label="Connections"
+          value={formatNumber(overview?.connection_count ?? 0)}
+          meta={`${formatNumber(overview?.topic_count ?? 0)} topics observed`}
+          icon={<Cable size={16} />}
         />
       </div>
 
@@ -180,7 +152,7 @@ export default function KafkaGroupDetailPage(): JSX.Element {
             Topics
           </div>
           <div className="mt-2 font-semibold text-[18px] text-[var(--text-primary)]">
-            Topics handled by this group
+            Topics handled by this consumer group
           </div>
         </div>
         <SimpleTable
@@ -188,25 +160,7 @@ export default function KafkaGroupDetailPage(): JSX.Element {
           columns={topicColumns}
           rowKey={(row) => row.topic}
           pagination={{ pageSize: 10 }}
-          scroll={{ x: 860 }}
-        />
-      </PageSurface>
-
-      <PageSurface padding="lg">
-        <div className="mb-3">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
-            Partitions
-          </div>
-          <div className="mt-2 font-semibold text-[18px] text-[var(--text-primary)]">
-            Lag hotspots by partition
-          </div>
-        </div>
-        <SimpleTable
-          dataSource={partitionsQuery.data ?? []}
-          columns={partitionColumns}
-          rowKey={(row, index) => `${row.topic}-${row.partition}-${index}`}
-          pagination={{ pageSize: 12 }}
-          scroll={{ x: 560 }}
+          scroll={{ x: 1060 }}
         />
       </PageSurface>
     </PageShell>

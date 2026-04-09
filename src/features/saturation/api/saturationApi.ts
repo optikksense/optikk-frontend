@@ -127,26 +127,22 @@ const slowQueryPatternSchema = z
 
 const kafkaSummarySchema = z
   .object({
-    publish_rate_per_sec: numericValue,
-    receive_rate_per_sec: numericValue,
-    max_lag: numericValue,
-    publish_p95_ms: numericValue,
-    receive_p95_ms: numericValue,
     topic_count: integerValue,
     group_count: integerValue,
+    bytes_per_sec: numericValue,
+    assigned_partitions: numericValue,
   })
   .strict();
 
 const kafkaTopicRowSchema = z
   .object({
     topic: stringValue,
-    produce_rate_per_sec: numericValue,
-    consume_rate_per_sec: numericValue,
-    max_lag: numericValue,
-    e2e_p95_ms: numericValue,
-    publish_p95_ms: numericValue,
-    receive_p95_ms: numericValue,
-    error_rate: numericValue,
+    bytes_per_sec: numericValue,
+    bytes_total: numericValue,
+    records_per_sec: numericValue,
+    records_total: numericValue,
+    lag: numericValue,
+    lead: numericValue,
     consumer_group_count: integerValue,
   })
   .strict();
@@ -154,27 +150,39 @@ const kafkaTopicRowSchema = z
 const kafkaGroupRowSchema = z
   .object({
     consumer_group: stringValue,
-    lag: numericValue,
-    consume_rate_per_sec: numericValue,
-    process_rate_per_sec: numericValue,
-    process_p95_ms: numericValue,
-    error_rate: numericValue,
-    rebalance_rate: numericValue,
     assigned_partitions: numericValue,
+    commit_rate: numericValue,
+    commit_latency_avg_ms: numericValue,
+    commit_latency_max_ms: numericValue,
+    fetch_rate: numericValue,
+    fetch_latency_avg_ms: numericValue,
+    fetch_latency_max_ms: numericValue,
+    heartbeat_rate: numericValue,
+    failed_rebalance_per_hour: numericValue,
+    poll_idle_ratio: numericValue,
+    last_poll_seconds_ago: numericValue,
+    connection_count: numericValue,
     topic_count: integerValue,
+  })
+  .strict();
+
+const kafkaTopicConsumerRowSchema = z
+  .object({
+    consumer_group: stringValue,
+    bytes_per_sec: numericValue,
+    records_per_sec: numericValue,
+    lag: numericValue,
+    lead: numericValue,
   })
   .strict();
 
 const kafkaTopicTrendPointSchema = z
   .object({
     timestamp: stringValue,
-    produce_rate_per_sec: numericValue,
-    consume_rate_per_sec: numericValue,
-    publish_p95_ms: numericValue,
-    receive_p95_ms: numericValue,
-    e2e_p95_ms: numericValue,
-    max_lag: numericValue,
-    error_rate: numericValue,
+    bytes_per_sec: numericValue,
+    records_per_sec: numericValue,
+    lag: numericValue,
+    lead: numericValue,
   })
   .strict();
 
@@ -189,13 +197,14 @@ const kafkaTopicOverviewSchema = z
 const kafkaGroupTrendPointSchema = z
   .object({
     timestamp: stringValue,
-    consume_rate_per_sec: numericValue,
-    process_rate_per_sec: numericValue,
-    process_p95_ms: numericValue,
-    max_lag: numericValue,
-    error_rate: numericValue,
-    rebalance_rate: numericValue,
     assigned_partitions: numericValue,
+    commit_rate: numericValue,
+    fetch_rate: numericValue,
+    heartbeat_rate: numericValue,
+    failed_rebalance_per_hour: numericValue,
+    connection_count: numericValue,
+    poll_idle_ratio: numericValue,
+    last_poll_seconds_ago: numericValue,
   })
   .strict();
 
@@ -229,6 +238,7 @@ export type SlowQueryPattern = z.infer<typeof slowQueryPatternSchema>;
 export type KafkaSummary = z.infer<typeof kafkaSummarySchema>;
 export type KafkaTopicRow = z.infer<typeof kafkaTopicRowSchema>;
 export type KafkaGroupRow = z.infer<typeof kafkaGroupRowSchema>;
+export type KafkaTopicConsumerRow = z.infer<typeof kafkaTopicConsumerRowSchema>;
 export type KafkaTopicOverview = z.infer<typeof kafkaTopicOverviewSchema>;
 export type KafkaGroupOverview = z.infer<typeof kafkaGroupOverviewSchema>;
 export type KafkaPartitionRow = z.infer<typeof kafkaPartitionRowSchema>;
@@ -394,11 +404,11 @@ export const saturationApi = {
     _teamId: number | null,
     startTime: RequestTime,
     endTime: RequestTime
-  ): Promise<KafkaGroupRow[]> {
+  ): Promise<KafkaTopicConsumerRow[]> {
     const data = await api.get(`${BASE}/saturation/kafka/topic/groups`, {
       params: { ...rangeParams(startTime, endTime), topic },
     });
-    return validateResponse(z.array(kafkaGroupRowSchema), data);
+    return validateResponse(z.array(kafkaTopicConsumerRowSchema), data);
   },
 
   async getKafkaTopicPartitions(

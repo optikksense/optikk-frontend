@@ -6,10 +6,12 @@ import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { resolveTimeRangeBounds } from "@/types";
 import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
-import { PageHeader } from "@shared/components/ui";
+import { Badge } from "@shared/components/primitives/ui";
+import { PageSurface } from "@shared/components/ui";
 import { formatDuration, formatNumber, formatTimestamp } from "@shared/utils/formatters";
 
 import { aiConversationQueries } from "../../api/queryOptions";
+import { AiWorkspaceLayout } from "../../components/AiWorkspaceLayout";
 import type { ConversationTurn } from "../../types";
 
 export default function AiConversationDetailPage() {
@@ -28,23 +30,22 @@ export default function AiConversationDetailPage() {
   const { data: turns = [], isLoading } = useQuery(
     aiConversationQueries.detail(selectedTeamId, decodeURIComponent(conversationId), startMs, endMs)
   );
+  const readableConversationId = decodeURIComponent(conversationId);
 
   return (
-    <div className="mx-auto max-w-[900px] px-6 pb-6">
-      <PageHeader
-        title="Conversation"
-        icon={<MessageSquare size={24} />}
-        breadcrumbs={[
-          { label: "Conversations", path: "/ai-conversations" },
-          {
-            label:
-              decodeURIComponent(conversationId).slice(0, 20) +
-              (conversationId.length > 20 ? "…" : ""),
-          },
-        ]}
-      />
-
-      <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+    <AiWorkspaceLayout
+      title="Conversation"
+      icon={<MessageSquare size={24} />}
+      subtitle="Review every turn, timing, and token footprint in a single threaded conversation."
+      breadcrumbs={[
+        { label: "Conversations", path: "/ai-conversations" },
+        {
+          label: readableConversationId.slice(0, 20) + (readableConversationId.length > 20 ? "…" : ""),
+        },
+      ]}
+      actions={<Badge variant="info">{formatNumber(turns.length)} turns</Badge>}
+    >
+      <PageSurface padding="sm" className="overflow-hidden p-0">
         <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
           <MessageSquare size={14} style={{ marginRight: 6, verticalAlign: -2 }} />
           Turns
@@ -102,7 +103,7 @@ export default function AiConversationDetailPage() {
             </div>
           </div>
         ))}
-      </div>
-    </div>
+      </PageSurface>
+    </AiWorkspaceLayout>
   );
 }

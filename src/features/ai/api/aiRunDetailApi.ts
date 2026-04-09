@@ -1,5 +1,6 @@
-import { aiService } from "@shared/api/aiService";
 import { z } from "zod";
+
+import { aiTransport } from "./aiTransport";
 import type { LLMMessage, LLMRunContext, LLMRunDetail } from "../types";
 
 const runDetailSchema = z.object({
@@ -50,17 +51,20 @@ const contextSchema = z.object({
 
 export const aiRunDetailApi = {
   async getDetail(teamId: number | null, spanId: string): Promise<LLMRunDetail> {
-    const response = await aiService.getRunDetail(teamId, spanId);
+    void teamId;
+    const response = await aiTransport.getRunDetail(spanId);
     return runDetailSchema.parse(response) as LLMRunDetail;
   },
 
   async getMessages(teamId: number | null, spanId: string): Promise<LLMMessage[]> {
-    const response = await aiService.getRunMessages(teamId, spanId);
+    void teamId;
+    const response = await aiTransport.getRunMessages(spanId);
     return z.array(messageSchema).parse(response) as LLMMessage[];
   },
 
   async getContext(teamId: number | null, spanId: string, traceId: string): Promise<LLMRunContext> {
-    const response = await aiService.getRunContext(teamId, spanId, traceId);
+    void teamId;
+    const response = await aiTransport.getRunContext(spanId, traceId);
     return contextSchema.parse(response) as LLMRunContext;
   },
 };

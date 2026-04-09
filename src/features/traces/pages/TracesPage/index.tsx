@@ -434,20 +434,7 @@ export default function TracesPage() {
               </Badge>
             </div>
             <div className="flex items-center gap-2">
-              {selectedTraceIds.length === 2 ? (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  icon={<GitCompare size={14} />}
-                  onClick={() =>
-                    navigate({
-                      to: `/traces/compare?a=${selectedTraceIds[0]}&b=${selectedTraceIds[1]}`,
-                    })
-                  }
-                >
-                  Compare selected
-                </Button>
-              ) : null}
+
               <Button
                 variant={isLiveTail ? "primary" : "secondary"}
                 size="sm"

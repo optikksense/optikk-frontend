@@ -6,10 +6,12 @@ import { useMemo } from "react";
 import { resolveTimeRangeBounds } from "@/types";
 import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
-import { PageHeader } from "@shared/components/ui";
+import { Badge } from "@shared/components/primitives/ui";
+import { PageSurface } from "@shared/components/ui";
 import { formatNumber, formatRelativeTime, formatTimestamp } from "@shared/utils/formatters";
 
 import { aiConversationQueries } from "../../api/queryOptions";
+import { AiWorkspaceLayout } from "../../components/AiWorkspaceLayout";
 import type { Conversation } from "../../types";
 
 function getErrorMessage(error: { message?: string } | null | undefined, fallback: string): string {
@@ -38,10 +40,13 @@ export default function AiConversationsPage() {
   const error = (conversationsQuery.error ?? null) as ApiErrorShape | null;
 
   return (
-    <div className="mx-auto max-w-[1200px] px-6 pb-6">
-      <PageHeader title="Conversations" icon={<MessageSquare size={24} />} />
-
-      <div className="overflow-hidden rounded-[10px] border border-[var(--border-color)] bg-[var(--glass-bg)]">
+    <AiWorkspaceLayout
+      title="Conversations"
+      icon={<MessageSquare size={24} />}
+      subtitle="Track multi-turn AI threads, model usage, and recent activity from the same workspace shell as the rest of the AI platform."
+      actions={<Badge variant="info">{formatNumber(conversations.length)} conversations</Badge>}
+    >
+      <PageSurface padding="sm" className="overflow-hidden p-0">
         <h3 className="m-0 border-[var(--border-color)] border-b px-[18px] py-[14px] font-semibold text-[13px] text-[var(--text-primary)]">
           <MessageSquare size={15} style={{ marginRight: 6, verticalAlign: -2 }} />
           Conversations
@@ -120,7 +125,7 @@ export default function AiConversationsPage() {
               </span>
             </div>
           ))}
-      </div>
-    </div>
+      </PageSurface>
+    </AiWorkspaceLayout>
   );
 }

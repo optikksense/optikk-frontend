@@ -1,5 +1,6 @@
-import { aiService } from "@shared/api/aiService";
 import { z } from "zod";
+
+import { aiTransport } from "./aiTransport";
 import type { LLMTraceSpan, LLMTraceSummary } from "../types";
 
 const traceSpanSchema = z.object({
@@ -32,12 +33,14 @@ const traceSummarySchema = z.object({
 
 export const aiTracesApi = {
   async getTrace(teamId: number | null, traceId: string): Promise<LLMTraceSpan[]> {
-    const response = await aiService.getLLMTrace(teamId, traceId);
+    void teamId;
+    const response = await aiTransport.getTrace(traceId);
     return z.array(traceSpanSchema).parse(response) as LLMTraceSpan[];
   },
 
   async getSummary(teamId: number | null, traceId: string): Promise<LLMTraceSummary> {
-    const response = await aiService.getLLMTraceSummary(teamId, traceId);
+    void teamId;
+    const response = await aiTransport.getTraceSummary(traceId);
     return traceSummarySchema.parse(response) as LLMTraceSummary;
   },
 };

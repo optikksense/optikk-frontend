@@ -1,22 +1,59 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Bot, BrainCircuit, Sparkles } from "lucide-react";
+import {
+  Bot,
+  BrainCircuit,
+  Database,
+  FlaskConical,
+  MessagesSquare,
+  ScrollText,
+  Sparkles,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { ROUTES } from "@/shared/constants/routes";
 
 const CONTEXT_ITEMS = [
   {
     id: "ai-observability",
     label: "AI Observability",
-    description: "Model runs, token cost, and safety trends.",
-    href: "/ai-observability",
+    description: "Model health, spend, safety, and active incidents.",
+    href: ROUTES.aiObservability,
     icon: Bot,
   },
   {
     id: "runs",
     label: "Runs Explorer",
     description: "Jump from anomalies into individual runs.",
-    href: "/ai-runs",
+    href: ROUTES.aiRuns,
     icon: BrainCircuit,
+  },
+  {
+    id: "prompts",
+    label: "Prompts",
+    description: "Version prompt templates and inspect lineage.",
+    href: ROUTES.aiPrompts,
+    icon: ScrollText,
+  },
+  {
+    id: "datasets",
+    label: "Datasets",
+    description: "Manage evaluation datasets and replay cases.",
+    href: ROUTES.aiDatasets,
+    icon: Database,
+  },
+  {
+    id: "evals",
+    label: "Evaluations",
+    description: "Track suite runs, scores, and feedback loops.",
+    href: ROUTES.aiEvals,
+    icon: MessagesSquare,
+  },
+  {
+    id: "experiments",
+    label: "Experiments",
+    description: "Compare prompt variants and choose winners.",
+    href: ROUTES.aiExperiments,
+    icon: FlaskConical,
   },
 ];
 
@@ -40,7 +77,7 @@ export default function AiContextBar(): JSX.Element {
               key={item.id}
               to={item.href}
               className={cn(
-                "inline-flex min-w-[220px] items-center gap-3 rounded-xl border px-3 py-2 transition-colors",
+                "inline-flex min-w-[240px] items-center gap-3 rounded-xl border px-3 py-2 transition-colors",
                 active
                   ? "border-[var(--color-primary-subtle-35)] bg-[var(--color-primary-subtle-14)]"
                   : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[var(--color-primary-subtle-28)] hover:bg-[var(--color-primary-subtle-08)]"

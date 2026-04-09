@@ -79,14 +79,14 @@ body {
   left: -100px;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, var(--primary) 0%, transparent 60%);
+  background: transparent;
 }
 .hero-glow-2 {
   top: 400px;
   right: 0;
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle, var(--secondary) 0%, transparent 60%);
+  background: transparent;
   opacity: 0.08;
 }
 

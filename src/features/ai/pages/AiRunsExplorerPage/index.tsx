@@ -5,8 +5,6 @@ import { useCallback, useMemo } from "react";
 import {
   ObservabilityDataBoard,
   ObservabilityQueryBar,
-  PageHeader,
-  PageShell,
   PageSurface,
 } from "@shared/components/ui";
 import {
@@ -19,6 +17,7 @@ import { formatNumber } from "@shared/utils/formatters";
 import { Badge, Select } from "@/components/ui";
 
 import { AiRunsTableRow } from "../../components/runs/AiRunsTableRow";
+import { AiWorkspaceLayout } from "../../components/AiWorkspaceLayout";
 import { useAiRunsExplorer } from "../../hooks/useAiRunsExplorer";
 import { AI_RUN_COLUMNS, AI_RUN_FILTER_FIELDS } from "../../utils/aiRunsUtils";
 
@@ -60,13 +59,12 @@ export default function AiRunsExplorerPage(): JSX.Element {
   );
 
   return (
-    <PageShell className="ai-runs-page">
-      <PageHeader
-        title="LLM Runs"
-        icon={<Brain size={24} />}
-        subtitle="Filter, compare, and inspect individual model calls in the same dense explorer rhythm as logs and traces."
-      />
-
+    <AiWorkspaceLayout
+      className="ai-runs-page"
+      title="LLM Runs"
+      icon={<Brain size={24} />}
+      subtitle="Filter, compare, and inspect individual model calls in the same dense explorer rhythm as logs and traces."
+    >
       <PageSurface padding="lg" className="relative z-[40] overflow-visible">
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -211,6 +209,6 @@ export default function AiRunsExplorerPage(): JSX.Element {
           </div>
         ) : null}
       </PageSurface>
-    </PageShell>
+    </AiWorkspaceLayout>
   );
 }

@@ -117,7 +117,6 @@ const dashboardTableColumnSchema: z.ZodType<DashboardTableColumn> = z
 const dashboardDrawerActionSchema: z.ZodType<DashboardDrawerAction> = z
   .object({
     entity: z.enum([
-      "aiModel",
       "databaseSystem",
       "errorGroup",
       "kafkaGroup",

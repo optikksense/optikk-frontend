@@ -2,10 +2,13 @@ import {
   Activity,
   Brain,
   Columns2,
+  Database,
+  FlaskConical,
   Layers,
   Network,
   Play,
   RefreshCw,
+  ScrollText,
   Server,
   Settings,
   Sun,
@@ -59,7 +62,7 @@ export const navigationPaletteActions: PaletteAction[] = [
   },
   {
     id: "nav.ai-dashboard",
-    label: "Go to AI Dashboard",
+    label: "Go to AI Observability",
     keywords: ["ai", "llm", "observability"],
     group: "navigation",
     icon: createElement(Brain, { size: 16 }),
@@ -75,6 +78,36 @@ export const navigationPaletteActions: PaletteAction[] = [
     icon: createElement(Play, { size: 16 }),
     perform: ({ navigate }) => {
       navigate("/ai-runs");
+    },
+  },
+  {
+    id: "nav.ai-prompts",
+    label: "Go to Prompts",
+    keywords: ["ai", "prompts", "templates"],
+    group: "navigation",
+    icon: createElement(ScrollText, { size: 16 }),
+    perform: ({ navigate }) => {
+      navigate("/ai-prompts");
+    },
+  },
+  {
+    id: "nav.ai-datasets",
+    label: "Go to Datasets",
+    keywords: ["ai", "datasets", "evaluation"],
+    group: "navigation",
+    icon: createElement(Database, { size: 16 }),
+    perform: ({ navigate }) => {
+      navigate("/ai-datasets");
+    },
+  },
+  {
+    id: "nav.ai-experiments",
+    label: "Go to Experiments",
+    keywords: ["ai", "experiments", "variants", "evals"],
+    group: "navigation",
+    icon: createElement(FlaskConical, { size: 16 }),
+    perform: ({ navigate }) => {
+      navigate("/ai-experiments");
     },
   },
   {

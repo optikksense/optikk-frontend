@@ -15,7 +15,6 @@ import {
   spanKindDurationSchema,
   spanRecordSchema,
   spanSelfTimeSchema,
-  traceComparisonResultSchema,
   traceLogsResponseSchema,
   traceRecordSchema,
   tracesSummarySchema,
@@ -32,7 +31,6 @@ import type {
   SpanKindDurationRecord,
   SpanRecord,
   SpanSelfTimeRecord,
-  TraceComparisonResultRecord,
   TraceLogsResponse,
   TraceRecord,
   TracesSummary,
@@ -128,8 +126,5 @@ export const tracesService = {
     return validateResponse(z.array(flamegraphFrameSchema), data);
   },
 
-  async getTraceComparison(traceA: string, traceB: string): Promise<TraceComparisonResultRecord> {
-    const data = await api.get(`${BASE}/traces/compare`, { params: { traceA, traceB } });
-    return validateResponse(traceComparisonResultSchema, data);
-  },
+
 };
