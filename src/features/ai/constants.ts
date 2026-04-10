@@ -1,4 +1,4 @@
-export /**
- *
+/**
+ * AI Observability — Constants.
  */
-const DOMAIN_KEY = "ai";
+export const AI_FEATURE_KEY = "ai-observability" as const;

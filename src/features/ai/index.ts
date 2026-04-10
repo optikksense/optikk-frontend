@@ -1,56 +1,49 @@
-import { Brain, MessagesSquare, Play } from "lucide-react";
+import { Brain } from "lucide-react";
 import { lazy } from "react";
 
 import type { DomainConfig } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
 
-const AiRunsPage = lazy(() =>
-  import("./pages/AiRunsExplorerPage").then((module) => ({ default: module.default }))
+const AiOverviewPage = lazy(() =>
+  import("./pages/AiOverviewPage").then((module) => ({ default: module.default }))
 );
-
-const AiObservabilityPage = lazy(() =>
-  import("./pages/AiObservabilityPage").then((module) => ({ default: module.default }))
+const AiExplorerPage = lazy(() =>
+  import("./pages/AiExplorerPage").then((module) => ({ default: module.default }))
 );
-
-const AiRunDetailPage = lazy(() =>
-  import("./pages/AiRunDetailPage").then((module) => ({ default: module.default }))
+const AiSpanDetailPage = lazy(() =>
+  import("./pages/AiSpanDetailPage").then((module) => ({ default: module.default }))
 );
-
-const AiTraceDetailPage = lazy(() =>
-  import("./pages/AiTraceDetailPage").then((module) => ({ default: module.default }))
+const AiModelCatalogPage = lazy(() =>
+  import("./pages/AiModelCatalogPage").then((module) => ({ default: module.default }))
 );
-
+const AiModelDetailPage = lazy(() =>
+  import("./pages/AiModelDetailPage").then((module) => ({ default: module.default }))
+);
 const AiConversationsPage = lazy(() =>
   import("./pages/AiConversationsPage").then((module) => ({ default: module.default }))
 );
-
 const AiConversationDetailPage = lazy(() =>
   import("./pages/AiConversationDetailPage").then((module) => ({ default: module.default }))
 );
 
 export const aiConfig: DomainConfig = {
-  key: "ai",
+  key: "ai-observability",
   label: "AI Observability",
   permissions: ["ai:read"],
   navigation: [
     {
       path: ROUTES.aiObservability,
-      label: "AI Observability",
+      label: "LLM Monitoring",
       icon: Brain,
-      group: "operate",
-    },
-    {
-      path: ROUTES.aiRuns,
-      label: "LLM Runs",
-      icon: Play,
-      group: "operate",
+      group: "observe",
     },
   ],
   routes: [
-    { path: ROUTES.aiObservability, page: AiObservabilityPage },
-    { path: ROUTES.aiRuns, page: AiRunsPage },
-    { path: ROUTES.aiRunDetail, page: AiRunDetailPage },
-    { path: ROUTES.aiTraceDetail, page: AiTraceDetailPage },
+    { path: ROUTES.aiObservability, page: AiOverviewPage },
+    { path: ROUTES.aiExplorer, page: AiExplorerPage },
+    { path: ROUTES.aiSpanDetail, page: AiSpanDetailPage },
+    { path: ROUTES.aiModels, page: AiModelCatalogPage },
+    { path: ROUTES.aiModelDetail, page: AiModelDetailPage },
     { path: ROUTES.aiConversations, page: AiConversationsPage },
     { path: ROUTES.aiConversationDetail, page: AiConversationDetailPage },
   ],

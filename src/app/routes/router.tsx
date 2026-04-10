@@ -65,26 +65,7 @@ function PageTransition({ children }: { children: React.ReactNode }) {
   return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
 }
 
-function LegacyAiModelRedirect() {
-  const params = useParams({ strict: false });
-  const modelName = typeof params.modelName === "string" ? decodeURIComponent(params.modelName) : "";
 
-  return (
-    <Navigate
-      to={ROUTES.aiObservability as any}
-      search={
-        modelName
-          ? ({
-              aiEntity: "model",
-              aiEntityId: modelName,
-              model: modelName,
-            } as any)
-          : undefined
-      }
-      replace
-    />
-  );
-}
 
 export const rootRoute = createRootRoute({
   component: AppContent,
@@ -227,11 +208,7 @@ const legacyRedirects = [
   ),
 ];
 
-const legacyAiModelRedirect = createRoute({
-  getParentRoute: () => mainLayoutRoute,
-  path: toNestedRoutePath("/ai-observability/models/$modelName"),
-  component: LegacyAiModelRedirect,
-});
+
 
 const serviceOpsRedirect = createRoute({
   getParentRoute: () => mainLayoutRoute,
@@ -288,7 +265,6 @@ const routeTree = rootRoute.addChildren([
     logsTransactionsRedirect,
     errorsRedirect,
     ...legacyRedirects,
-    legacyAiModelRedirect,
     legacySaturationDatabaseRedirect,
     legacySaturationRedisRedirect,
     serviceOpsRedirect,

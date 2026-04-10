@@ -2,11 +2,8 @@ import {
   Activity,
   Brain,
   Columns2,
-  Database,
-  FlaskConical,
   Layers,
   Network,
-  Play,
   RefreshCw,
   ScrollText,
   Server,
@@ -61,9 +58,9 @@ export const navigationPaletteActions: PaletteAction[] = [
     },
   },
   {
-    id: "nav.ai-dashboard",
-    label: "Go to AI Observability",
-    keywords: ["ai", "llm", "observability"],
+    id: "nav.ai-overview",
+    label: "Go to LLM Overview",
+    keywords: ["ai", "llm", "observability", "overview", "dashboard"],
     group: "navigation",
     icon: createElement(Brain, { size: 16 }),
     perform: ({ navigate }) => {
@@ -71,43 +68,33 @@ export const navigationPaletteActions: PaletteAction[] = [
     },
   },
   {
-    id: "nav.ai-runs",
-    label: "Go to LLM Runs",
-    keywords: ["ai", "runs", "llm"],
+    id: "nav.ai-explorer",
+    label: "Go to LLM Traces Explorer",
+    keywords: ["ai", "llm", "traces", "explorer", "spans"],
     group: "navigation",
-    icon: createElement(Play, { size: 16 }),
+    icon: createElement(Layers, { size: 16 }),
     perform: ({ navigate }) => {
-      navigate("/ai-runs");
+      navigate("/ai-explorer");
     },
   },
   {
-    id: "nav.ai-prompts",
-    label: "Go to Prompts",
-    keywords: ["ai", "prompts", "templates"],
+    id: "nav.ai-models",
+    label: "Go to Model Catalog",
+    keywords: ["ai", "llm", "models", "catalog", "comparison"],
+    group: "navigation",
+    icon: createElement(Network, { size: 16 }),
+    perform: ({ navigate }) => {
+      navigate("/ai-models");
+    },
+  },
+  {
+    id: "nav.ai-conversations",
+    label: "Go to AI Conversations",
+    keywords: ["ai", "llm", "conversations", "sessions", "chat"],
     group: "navigation",
     icon: createElement(ScrollText, { size: 16 }),
     perform: ({ navigate }) => {
-      navigate("/ai-prompts");
-    },
-  },
-  {
-    id: "nav.ai-datasets",
-    label: "Go to Datasets",
-    keywords: ["ai", "datasets", "evaluation"],
-    group: "navigation",
-    icon: createElement(Database, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/ai-datasets");
-    },
-  },
-  {
-    id: "nav.ai-experiments",
-    label: "Go to Experiments",
-    keywords: ["ai", "experiments", "variants", "evals"],
-    group: "navigation",
-    icon: createElement(FlaskConical, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/ai-experiments");
+      navigate("/ai-conversations");
     },
   },
   {

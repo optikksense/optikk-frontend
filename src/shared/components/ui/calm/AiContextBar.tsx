@@ -1,12 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  Bot,
   BrainCircuit,
-  Database,
-  FlaskConical,
   MessagesSquare,
-  ScrollText,
-  Sparkles,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -14,46 +9,18 @@ import { ROUTES } from "@/shared/constants/routes";
 
 const CONTEXT_ITEMS = [
   {
-    id: "ai-observability",
-    label: "AI Observability",
-    description: "Model health, spend, safety, and active incidents.",
-    href: ROUTES.aiObservability,
-    icon: Bot,
-  },
-  {
     id: "runs",
     label: "Runs Explorer",
-    description: "Jump from anomalies into individual runs.",
+    description: "Inspect individual LLM invocations and traces.",
     href: ROUTES.aiRuns,
     icon: BrainCircuit,
   },
   {
-    id: "prompts",
-    label: "Prompts",
-    description: "Version prompt templates and inspect lineage.",
-    href: ROUTES.aiPrompts,
-    icon: ScrollText,
-  },
-  {
-    id: "datasets",
-    label: "Datasets",
-    description: "Manage evaluation datasets and replay cases.",
-    href: ROUTES.aiDatasets,
-    icon: Database,
-  },
-  {
-    id: "evals",
-    label: "Evaluations",
-    description: "Track suite runs, scores, and feedback loops.",
-    href: ROUTES.aiEvals,
+    id: "conversations",
+    label: "Conversations",
+    description: "View chat sessions and message threads.",
+    href: ROUTES.aiConversations,
     icon: MessagesSquare,
-  },
-  {
-    id: "experiments",
-    label: "Experiments",
-    description: "Compare prompt variants and choose winners.",
-    href: ROUTES.aiExperiments,
-    icon: FlaskConical,
   },
 ];
 
@@ -64,7 +31,6 @@ export default function AiContextBar(): JSX.Element {
     <div className="border-[var(--border-color)] border-b bg-[linear-gradient(90deg,var(--color-primary-subtle-10),rgba(6,174,213,0.06),transparent)] px-6 py-2.5 max-md:px-4">
       <div className="flex items-center gap-3 overflow-x-auto">
         <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-primary-subtle-30)] bg-[var(--color-primary-subtle-12)] px-3 py-1 font-semibold text-[11px] text-[var(--color-primary)] uppercase tracking-[0.08em]">
-          <Sparkles size={12} />
           AI Context
         </div>
         {CONTEXT_ITEMS.map((item) => {

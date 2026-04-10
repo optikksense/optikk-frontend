@@ -56,11 +56,11 @@ export const aiTransport = {
   },
 
   async getTrace(traceId: string) {
-    return api.get(`${BASE}/ai/traces/${traceId}`);
+    return api.get(`${BASE}/traces/${traceId}/llm-spans`);
   },
 
   async getTraceSummary(traceId: string) {
-    return api.get(`${BASE}/ai/traces/${traceId}/summary`);
+    return api.get(`${BASE}/traces/${traceId}/llm-summary`);
   },
 
   async getConversations(startTime: RequestTime, endTime: RequestTime, limit?: number) {

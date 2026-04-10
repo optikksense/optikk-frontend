@@ -1,3 +1,4 @@
+
 import { aiConfig } from "@/features/ai";
 import { alertsConfig } from "@/features/alerts";
 import { infrastructureConfig } from "@/features/infrastructure";
@@ -68,6 +69,7 @@ export const domainRegistry: readonly DomainConfig[] = [
   tracesConfig,
   infrastructureConfig,
   aiConfig,
+
   alertsConfig,
   settingsConfig,
 ] as const;
