@@ -1,6 +1,5 @@
 import axios, {
   AxiosError,
-  type AxiosInstance,
   type AxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
@@ -64,16 +63,7 @@ async function unwrapResponse<T>(request: Promise<AxiosResponse<T>>): Promise<T>
   return response.data;
 }
 
-export interface NormalizedApiClient {
-  readonly raw: AxiosInstance;
-  request<T = unknown>(config: AxiosRequestConfig): Promise<T>;
-  get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
-  post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
-  put<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
-  delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
-}
-
-const api: NormalizedApiClient = {
+const api = {
   raw: axiosClient,
   request<T = unknown>(config: AxiosRequestConfig): Promise<T> {
     return unwrapResponse(axiosClient.request<T>(config));

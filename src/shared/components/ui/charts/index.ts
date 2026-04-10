@@ -1,7 +1,6 @@
 export { default as LatencyHistogram } from "./distributions/LatencyHistogram";
 export { default as LogHistogram } from "./distributions/LogHistogram";
 export { default as DonutChart } from "./micro/DonutChart";
-export { default as EndpointList } from "./micro/EndpointList";
 export { default as SparklineChart } from "./micro/SparklineChart";
 export { default as GaugeChart } from "./micro/GaugeChart";
 export { default as ObservabilityChart } from "./ObservabilityChart";

@@ -3,11 +3,8 @@ import { Surface } from "@/components/ui";
 import StatCard from "@shared/components/ui/cards/StatCard";
 
 import { useDashboardData } from "../hooks/useDashboardData";
-import {
-  formatStatValue,
-  renderStatSummary,
-  resolveFieldValue,
-} from "../utils/dashboardAggregators";
+import { formatStatValue, resolveFieldValue } from "../utils/dashboardFormatters";
+import { renderStatSummary } from "./StatSummaryRenderer";
 import { getDashboardIcon } from "../utils/dashboardUtils";
 
 import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";

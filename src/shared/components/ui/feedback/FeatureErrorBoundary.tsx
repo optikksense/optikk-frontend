@@ -1,4 +1,4 @@
-import { Button } from "@optikk/design-system";
+import { Button } from "@/shared/components/primitives/ui";
 import { AlertCircle } from "lucide-react";
 import React from "react";
 

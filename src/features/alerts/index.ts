@@ -5,17 +5,17 @@ import type { DomainConfig } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
 
 const AlertsHubPage = lazy(() =>
-  import("@/pages/alerts/AlertsHubPage").then((module) => ({ default: module.default }))
+  import("./pages/AlertsHubPage").then((module) => ({ default: module.default }))
 );
 
 const AlertRuleBuilderPage = lazy(() =>
-  import("@/pages/alerts/AlertRuleBuilderPage").then((module) => ({
+  import("./pages/AlertRuleBuilderPage").then((module) => ({
     default: module.default,
   }))
 );
 
 const AlertRuleDetailPage = lazy(() =>
-  import("@/pages/alerts/AlertRuleDetailPage").then((module) => ({ default: module.default }))
+  import("./pages/AlertRuleDetailPage").then((module) => ({ default: module.default }))
 );
 
 export const alertsConfig: DomainConfig = {

@@ -306,9 +306,6 @@
   --color-critical: #f04438;
   --color-critical-glow: rgba(240, 68, 56, 0.2);
   --color-unknown: #6b7280;
-  --color-ai-accent: var(--color-primary);
-  --color-ai-subtle: var(--color-primary-subtle-12);
-
   /* Severity tokens */
   --severity-critical: #f04438;
   --severity-critical-subtle: rgba(240, 68, 56, 0.14);

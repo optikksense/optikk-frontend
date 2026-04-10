@@ -1,0 +1,70 @@
+{
+  "scripts": [
+    {
+      "name": "dev",
+      "command": "npm run dev",
+      "mode": "service",
+      "category": "dev"
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "mode": "command",
+      "category": "build"
+    },
+    {
+      "name": "ci:budgets",
+      "command": "npm run ci:budgets",
+      "mode": "command",
+      "category": "other"
+    },
+    {
+      "name": "ci",
+      "command": "npm run ci",
+      "mode": "command",
+      "category": "other"
+    },
+    {
+      "name": "preview",
+      "command": "npm run preview",
+      "mode": "service",
+      "category": "dev"
+    },
+    {
+      "name": "lint",
+      "command": "npm run lint",
+      "mode": "command",
+      "category": "lint"
+    },
+    {
+      "name": "lint:fix",
+      "command": "npm run lint:fix",
+      "mode": "command",
+      "category": "lint"
+    },
+    {
+      "name": "lint:colors",
+      "command": "npm run lint:colors",
+      "mode": "command",
+      "category": "lint"
+    },
+    {
+      "name": "format",
+      "command": "npm run format",
+      "mode": "command",
+      "category": "format"
+    },
+    {
+      "name": "type-check",
+      "command": "npm run type-check",
+      "mode": "command",
+      "category": "typecheck"
+    },
+    {
+      "name": "prepare",
+      "command": "npm run prepare",
+      "mode": "command",
+      "category": "other"
+    }
+  ]
+}

@@ -3,17 +3,17 @@ import type { z } from "zod";
 
 import { type ErrorCode, UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 
-interface ApiEnvelope {
-  readonly success: boolean;
-  readonly data: unknown;
-  readonly error?: unknown;
-}
-
-export interface ApiContractErrorShape {
+interface ApiContractErrorShape {
   readonly status: number;
   readonly code: ErrorCode;
   readonly message: string;
   readonly data?: unknown;
+}
+
+interface ApiEnvelope {
+  readonly success: boolean;
+  readonly data: unknown;
+  readonly error?: unknown;
 }
 
 interface DecodeApiResponseOptions {

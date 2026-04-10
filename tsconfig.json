@@ -33,7 +33,6 @@
       "@/types": ["src/shared/types/index.ts"],
       "@/types/*": ["src/shared/types/*"],
       "@app/*": ["src/app/*"],
-      "@pages/*": ["src/pages/*"],
       "@features/*": ["src/features/*"],
       "@entities/*": ["src/shared/entities/*"],
       "@shared/*": ["src/shared/*"],
@@ -46,8 +45,6 @@
       "@/components/*": ["src/shared/components/primitives/*"],
       "@/components/ui/*": ["src/shared/components/primitives/ui/*"],
       "@/hooks/*": ["src/shared/hooks/*"],
-      "@optikk/design-system": ["src/design-system/index.ts"],
-      "@optikk/design-system/*": ["src/design-system/*"]
     }
   },
   "include": ["src"],

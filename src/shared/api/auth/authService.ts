@@ -3,21 +3,6 @@ import api from "@shared/api/api/client";
 import { API_CONFIG } from "@config/apiConfig";
 import { type AuthPayload, type AuthTeam, type AuthUser, authPayloadSchema } from "./schemas";
 
-interface AuthEnvelope {
-  readonly user?: AuthUser;
-  readonly teams?: AuthTeam[];
-  readonly currentTeam?: AuthTeam | null;
-  readonly success?: boolean;
-  readonly data?: unknown;
-}
-
-function asAuthEnvelope(value: unknown): AuthEnvelope | null {
-  if (typeof value !== "object" || value === null) {
-    return null;
-  }
-  return value as AuthEnvelope;
-}
-
 export const authService = {
   normalizeAuthPayload(response: unknown): AuthPayload | null {
     if (!response || typeof response !== "object") {

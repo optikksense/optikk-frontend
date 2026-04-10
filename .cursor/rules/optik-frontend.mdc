@@ -26,7 +26,7 @@ React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, 
 ## Entry points
 
 - `src/main.tsx`, `src/app/App.tsx`, `src/app/routes/router.tsx`
-- Feature registry: `src/app/registry/domainRegistry.ts` — 7 domains: overview, metrics, logs, traces, infrastructure, ai, settings
+- Feature registry: `src/app/registry/domainRegistry.ts` — 8 domains: overview, saturation, metrics, logs, traces, infrastructure, alerts, settings
 - Routes: `src/shared/constants/routes.ts` — includes **`ROUTES.service`** (`/service`) → `ServiceHubPage`; pass **`?serviceName=`** for deployment dashboard panel params (`{serviceName}` interpolation)
 
 ## Domain overview
@@ -38,7 +38,6 @@ React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, 
 | logs | LogsHubPage | — | log-histogram |
 | traces | TracesPage, TraceDetail, TraceComparison | — | trace-waterfall |
 | infrastructure | InfrastructureHub | infrastructure | — |
-| ai | AiOverviewPage, AiExplorerPage, AiSpanDetailPage, AiModelCatalogPage, AiModelDetailPage, AiConversationsPage, AiConversationDetailPage | — | — |
 | settings | SettingsPage (3 tabs) | — | — |
 
 ## Shared / API
@@ -55,7 +54,7 @@ React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, 
 |----------|-----------|
 | Time-series (`charts/time-series/`) | RequestChart, ErrorRateChart, ExceptionTypeLineChart, LatencyChart |
 | Distributions (`charts/distributions/`) | LatencyHistogram, LogHistogram |
-| Micro (`charts/micro/`) | DonutChart, EndpointList, GaugeChart, SparklineChart |
+| Micro (`charts/micro/`) | DonutChart, GaugeChart, SparklineChart |
 | Specialized (`charts/specialized/`) | BurnRateChart, Flamegraph, GoldenSignalsHeatmap, LatencyHeatmapChart, N1QueryDetector, PodLifecycleGantt, WaterfallChart |
 
 ## Live tail streaming
@@ -71,11 +70,11 @@ React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, 
 - **Persisted state:** `selectedTeamId`, `timeRange`, `autoRefreshInterval`, `theme`, `timezone`, `comparisonMode`, `viewPreferences`, `recentPages`, `recentTimeRanges`
 - **Runtime state:** `refreshKey`
 - **TanStack Query:** Many hooks include `refreshKey` in `queryKey` to force refetch when the time window is unchanged. Use **`placeholderData: keepPreviousData`** on queries so refetches do not flash empty/loading UI.
-- **Backend-driven dashboard panels** (`useComponentDataFetcher`, `useDataSourceFetcher`): **do not** put `refreshKey` in `queryKey`. Use stable keys and **`useInvalidateQueriesOnAppRefresh`** to `invalidateQueries` when `refreshKey` changes. Treat **loading** as `isPending && data === undefined`.
+- **Backend-driven dashboard panels** (`useComponentDataFetcher`): **do not** put `refreshKey` in `queryKey`. Use stable keys and **`useInvalidateQueriesOnAppRefresh`** to `invalidateQueries` when `refreshKey` changes. Treat **loading** as `isPending && data === undefined`.
 
 ## Aliases
 
-See `vite.config.ts`: `@/`, `@features/`, `@shared/`, `@app/`, `@config/`, `@entities/`, `@store/`, `@optikk/design-system`, etc.
+See `vite.config.ts`: `@/`, `@features/`, `@shared/`, `@app/`, `@config/`, `@entities/`, `@store/`, etc.
 
 ---
 
@@ -113,12 +112,12 @@ export const myConfig: DomainConfig = {
 - `base-chart` — receives `BaseChartComponentProps` (data, height, valueKey, etc.)
 - `specialized` / `self-contained` — receives `DashboardPanelRendererProps` (chartConfig, dataSources, extraContext)
 - Built-in: 12 panels (4 base-chart, 6 specialized, 2 self-contained)
-- Domain-contributed: 10 panels across overview, metrics, logs, traces, ai
+- Domain-contributed: 10 panels across overview, metrics, logs, traces
 - Registry built via `getDashboardPanelRegistrations()` + `DashboardPanelRegistryProvider`
 - Resolve at render: `useDashboardPanelRegistration(panelType)`
 - Lifecycle hooks: `onMount`, `onUnmount`, `onGlobalTimeChange`, `onDataUpdate`
 
-**Drawer entities:** `aiModel`, `databaseSystem`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance` — rendered by `DashboardEntityDrawer.tsx`
+**Drawer entities:** `databaseSystem`, `deployment`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance`, `service` — rendered by `DashboardEntityDrawer.tsx`
 
 ### Query patterns
 

@@ -1,89 +1,6 @@
-import type {
-  DashboardDataSources,
-  DashboardPanelSpec,
-  DashboardPanelType,
-  DashboardRecord,
-} from "@/types/dashboardConfig";
+import type { DashboardPanelSpec, DashboardRecord } from "@/types/dashboardConfig";
 
-import { formatBytes, formatDuration, formatNumber } from "@shared/utils/formatters";
-import {
-  asDashboardRecord,
-  asDashboardRecordArray,
-  getDashboardRecordArrayField,
-  getDashboardValue,
-} from "./runtimeValue";
-
-/**
- *
- */
-export function formatStatValue(formatter: string | undefined, value: unknown): string | number {
-  switch (formatter) {
-    case "ms":
-      return formatDuration(typeof value === "string" || typeof value === "number" ? value : 0);
-    case "ns":
-      return formatDuration((Number(value) || 0) / 1_000_000);
-    case "bytes":
-      return formatBytes(Number(value) || 0);
-    case "percent1":
-      return `${Number(value || 0).toFixed(1)}%`;
-    case "percent2":
-      return `${Number(value || 0).toFixed(2)}%`;
-    case "number":
-      return formatNumber(Number(value) || 0);
-    default:
-      return typeof value === "number" ? value : String(value ?? "0");
-  }
-}
-
-/**
- *
- */
-export function resolveComponentData(
-  chartConfig: DashboardPanelSpec,
-  dataSources: DashboardDataSources
-) {
-  const dataSourceId = chartConfig.dataSource || chartConfig.id;
-  return dataSourceId ? dataSources?.[dataSourceId] : undefined;
-}
-
-/**
- *
- */
-export function normalizeDashboardRows(rawData: unknown, dataKey?: string): DashboardRecord[] {
-  if (dataKey) {
-    return getDashboardRecordArrayField(rawData, dataKey);
-  }
-
-  if (Array.isArray(rawData)) {
-    return asDashboardRecordArray(rawData);
-  }
-
-  return getDashboardRecordArrayField(rawData, "data");
-}
-
-/**
- *
- */
-export function resolveFieldValue(raw: unknown, field: string | undefined): unknown {
-  if (!field) return 0;
-  if (field === "_count") {
-    return Array.isArray(raw) ? raw.length : 0;
-  }
-  if (Array.isArray(raw)) {
-    const first = asDashboardRecordArray(raw)[0];
-    return first?.[field] ?? 0;
-  }
-  return getDashboardValue(raw, field) ?? 0;
-}
-
-/**
- *
- */
-interface StatSummaryField {
-  label: string;
-  field?: string;
-  keys?: string[];
-}
+import { numValue, resolveComponentKey, strValue } from "./dashboardFormatters";
 
 export type EndpointListType = "requests" | "errorRate" | "latency" | "count";
 
@@ -103,133 +20,6 @@ function isEndpointListType(value: string): value is EndpointListType {
   return value === "requests" || value === "errorRate" || value === "latency" || value === "count";
 }
 
-function splitValueUnit(str: string) {
-  const match = String(str).match(/^([+-]?[\d.,]+)\s*(.*)$/);
-  if (match) return { val: match[1], unit: match[2] };
-  return { val: str, unit: "" };
-}
-
-export function renderStatSummary(
-  rawData: unknown,
-  options?: {
-    formatter?: string;
-    fields?: StatSummaryField[];
-  }
-) {
-  const summary = Array.isArray(rawData)
-    ? asDashboardRecordArray(rawData)[0]
-    : asDashboardRecord(rawData);
-  if (!summary) {
-    return (
-      <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
-        No data
-      </div>
-    );
-  }
-
-  const defaultFields: StatSummaryField[] = [
-    { label: "P50", keys: ["p50", "p50_ms", "p50Latency", "p50_latency"] },
-    { label: "P95", keys: ["p95", "p95_ms", "p95Latency", "p95_latency"] },
-    { label: "P99", keys: ["p99", "p99_ms", "p99Latency", "p99_latency"] },
-    { label: "Avg", keys: ["avg", "avg_ms", "avgLatency", "avg_latency"] },
-  ];
-  const fields = options?.fields && options.fields.length > 0 ? options.fields : defaultFields;
-
-  const cells = fields
-    .map((field) => ({
-      label: field.label,
-      value: field.field
-        ? firstValue(summary, [field.field], null)
-        : firstValue(summary, field.keys ?? [], null),
-    }))
-    .filter((cell) => cell.value !== null && cell.value !== undefined);
-
-  if (cells.length === 0) {
-    return (
-      <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>
-        No data
-      </div>
-    );
-  }
-
-  const formatter = options?.formatter ?? (fields === defaultFields ? "ms" : undefined);
-
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-      {cells.map((cell) => {
-        const fullVal = formatStatValue(formatter, cell.value);
-        const { val, unit } = splitValueUnit(String(fullVal));
-        return (
-          <div key={cell.label} style={{ padding: "8px 0" }}>
-            <div
-              style={{
-                fontSize: 11,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: "var(--text-muted)",
-                whiteSpace: "nowrap",
-                marginBottom: 4,
-              }}
-            >
-              {cell.label}
-            </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 2, whiteSpace: "nowrap" }}>
-              <span style={{ fontSize: 18, fontWeight: 700, lineHeight: 1 }}>{val}</span>
-              {unit && (
-                <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>
-                  {unit}
-                </span>
-              )}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/**
- *
- */
-export function firstValue(row: unknown, keys: string[], fallback: unknown = ""): unknown {
-  const record = asDashboardRecord(row);
-  if (!record) return fallback;
-  for (const key of keys) {
-    const value = record[key];
-    if (value !== undefined && value !== null && value !== "") {
-      return value;
-    }
-  }
-  return fallback;
-}
-
-/**
- *
- */
-export function strValue(row: unknown, keys: string[], fallback = "") {
-  const value = firstValue(row, keys, fallback);
-  return value == null ? fallback : String(value);
-}
-
-/**
- *
- */
-export function numValue(row: unknown, keys: string[], fallback = 0) {
-  const value = firstValue(row, keys, fallback);
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-/**
- *
- */
-export function resolveComponentKey(chartConfig: DashboardPanelSpec): DashboardPanelType {
-  return chartConfig.panelType;
-}
-
-/**
- *
- */
 export function buildEndpointKey(row: DashboardRecord) {
   const method = strValue(row, ["http_method", "httpMethod"]).toUpperCase();
   const op = strValue(
@@ -242,9 +32,6 @@ export function buildEndpointKey(row: DashboardRecord) {
   return `${method} ${cleanOp}_${serviceName}`;
 }
 
-/**
- *
- */
 export function groupTimeseries(
   rows: DashboardRecord[],
   groupByKey: string
@@ -280,9 +67,6 @@ export function groupTimeseries(
   return map;
 }
 
-/**
- *
- */
 export function buildQueueEndpoints(
   topQueues: DashboardRecord[],
   sortField: string,
@@ -301,9 +85,6 @@ export function buildQueueEndpoints(
     }));
 }
 
-/**
- *
- */
 export function buildEndpointList(endpointMetrics: any[], listType: string) {
   if (!Array.isArray(endpointMetrics) || endpointMetrics.length === 0) return [];
 
@@ -345,9 +126,6 @@ export function buildEndpointList(endpointMetrics: any[], listType: string) {
   return mapped.sort((a, b) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);
 }
 
-/**
- *
- */
 export function buildServiceListFromMetrics(serviceMetrics: any[], listType: string) {
   if (!Array.isArray(serviceMetrics) || serviceMetrics.length === 0) return [];
 
@@ -387,9 +165,6 @@ export function buildServiceListFromMetrics(serviceMetrics: any[], listType: str
     .slice(0, 10);
 }
 
-/**
- *
- */
 export function defaultListTypeForChart(chartConfig: DashboardPanelSpec): EndpointListType {
   if (chartConfig.endpointListType && isEndpointListType(chartConfig.endpointListType)) {
     return chartConfig.endpointListType;
@@ -402,9 +177,6 @@ export function defaultListTypeForChart(chartConfig: DashboardPanelSpec): Endpoi
   return "requests";
 }
 
-/**
- *
- */
 export function defaultListTitleForChart(chartConfig: DashboardPanelSpec) {
   if (chartConfig.listTitle) return chartConfig.listTitle;
   const listType = defaultListTypeForChart(chartConfig);
@@ -415,9 +187,6 @@ export function defaultListTitleForChart(chartConfig: DashboardPanelSpec) {
   return listType;
 }
 
-/**
- *
- */
 export function buildGroupedListFromTimeseries(
   serviceTimeseriesMap: Record<string, DashboardRecord[]>,
   chartConfig: DashboardPanelSpec

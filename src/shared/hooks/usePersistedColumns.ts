@@ -1,10 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useLocalStorage } from "react-use";
 
-/**
- *
- */
-export type VisibleColumnsState = Record<string, boolean>;
+type VisibleColumnsState = Record<string, boolean>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;

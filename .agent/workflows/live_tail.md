@@ -31,7 +31,7 @@ Event names match the former Socket.IO emit names for minimal UI churn.
 
 ## Backend
 
-- **`internal/infra/livetailws/handler.go`**: Upgrades the connection, validates the user may access `payload.teamId`, then runs **`search.RunLogsLiveTail`** or **`livetail.RunSpansLiveTail`** (see `internal/modules/logs/search/livetail_run.go`, `internal/modules/traces/livetail/livetail_run.go`).
+- **`internal/modules/livetail/handler.go`**: Upgrades the connection, validates the user may access `payload.teamId`, then runs **`search.RunLogsLiveTail`** or **`livetail.RunSpansLiveTail`** (see `internal/modules/logs/search/livetail_run.go`, `internal/modules/traces/livetail/livetail_run.go`).
 
 ## Dev proxy
 
