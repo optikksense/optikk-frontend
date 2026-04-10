@@ -53,7 +53,6 @@ Defined in `vite.config.ts`. Common imports:
 - `@components`, `@hooks`, `@services` → shared components, hooks, API layer under `src/shared/`
 - `@entities` → `src/shared/entities/`
 - `@store` → `src/app/store/`
-- `@optikk/design-system` → `src/design-system/`
 
 ## Domain registry (feature ownership)
 
@@ -137,11 +136,10 @@ Shared infrastructure for all data explorers (Logs, Traces, Metrics) — **not a
 |------|------|--------|
 | HTTP client | `shared/api/api/client.ts` | Axios with auth interceptors; auto-unwraps `APIResponse` envelope |
 | Response decode | `shared/api/utils/decode.ts` | Zod validation boundary |
-| Default config | `shared/api/defaultConfigService.ts` | `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId` |
+| Default config | `shared/api/defaultConfigService.ts` | `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId`; Zod schemas in `shared/api/schemas/defaultConfigSchemas.ts` |
 | Dashboard UI | `shared/components/ui/dashboard/` | `ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx`, `DashboardPage.tsx`, `DashboardEntityDrawer.tsx` |
 | Auth | `shared/api/auth/` | Session cookies with `withCredentials: true` |
 | Entities | `shared/entities/` | Domain entity types: `log/`, `metric/`, `trace/`, `user/` |
-| Design system | `design-system/` (aliased `@optikk/design-system`) | Shared components and providers |
 | Radix primitives | `shared/components/primitives/ui/` | **Import Tabs/Tooltip/Dialog/etc. from `@shared/components/primitives/ui`, NOT `@shared/components/ui`** — the latter does not re-export Radix primitives |
 
 ### Adding npm packages (React 19 peer-dep gotcha)
@@ -215,13 +213,17 @@ Applies to any new package; verified for `@xyflow/react`, `dagre`, `@types/dagre
 | `DashboardEntityDrawer.tsx` | Detail drawer for entities |
 | `DashboardStatCards.tsx` | Stat cards row |
 | `panelSizePolicy.ts` | Grid sizing logic |
-| `dashboardAggregators.tsx` | Data transformation: grouping, normalization |
+| `utils/dashboardFormatters.ts` | Pure formatting: `formatStatValue`, `firstValue`, `strValue`, `numValue`, `normalizeDashboardRows`, `resolveComponentData`, `resolveFieldValue`, `resolveComponentKey`, `splitValueUnit` |
+| `utils/dashboardListBuilders.ts` | Endpoint/service list building: `groupTimeseries`, `buildEndpointList`, `buildServiceListFromMetrics`, `buildQueueEndpoints`, `buildGroupedListFromTimeseries`, `defaultListTypeForChart` |
+| `renderers/StatSummaryRenderer.tsx` | `renderStatSummary` — stat summary JSX rendering |
+| `hooks/useChartCardData.ts` | `useChartCardData` hook — data resolution, aggregation, empty-detection for chart cards; `buildFlatChartData` pure function |
 
 **Drawer entities:** `databaseSystem`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance`
 
 ## Global State & Auto-Refresh
 
-- **`src/app/store/appStore.ts`**: Unified Zustand store.
+- **`src/app/store/appStore.ts`**: Unified Zustand store (actions + selectors).
+- **`src/app/store/appStoreMigrations.ts`**: localStorage migration logic (`loadLegacyAppState`, `migrateTimeRange`, `pushRecentRange`).
 
 **Persisted state:** `selectedTeamId`, `selectedTeamIds`, `timeRange`, `sidebarCollapsed`, `autoRefreshInterval` (default 10000ms), `theme` (default 'dark'), `notificationsEnabled`, `viewPreferences`, `recentPages`, `recentTimeRanges`, `timezone` (default 'local'), `comparisonMode` (default 'off')
 
@@ -316,12 +318,8 @@ BackendDrivenPage (route match)
 | `useAutoRefresh` | Ticks `refreshKey` at configured interval; "Xs ago" label (throttled 5s) |
 | `useInvalidateQueriesOnAppRefresh` | Invalidates `[scope, teamId]` queries when `refreshKey` bumps |
 | `useComponentDataFetcher` | Batches dashboard panel data fetches; deduplicates identical requests |
-| `useDataSourceFetcher` | Fetches shared data sources for dashboard panels with path param interpolation |
 | `useSocketStream` | Core WebSocket client for `/api/v1/ws/live`: connection, dedup, lag tracking |
 | `useChartTimeBuckets` | Computes adaptive time buckets for chart x-axis |
-| `useChartZoom` | Handles zoom-to-select on time-series charts |
-| `useComparisonQuery` | Dual-period data fetch for comparison views |
-| `useInfiniteLogs` | Infinite scroll for log explorer |
 | `useTimeRangeQuery` | Time-range-aware query wrapper |
 | `useTimeRangeURL` | Bidirectional URL ↔ time range sync |
 | `useURLFilters` | Syncs filter state with URL params |
@@ -331,7 +329,6 @@ BackendDrivenPage (route match)
 | `usePagesConfig` | Fetches dashboard page configs |
 | `useDashboardTabDocument` | Resolves tab document for a page |
 | `usePageTabs` | Multi-tab page management |
-| `useQueryState` | Generic query state sync |
 | `useBreadcrumbs` | Track navigation breadcrumbs |
 | `useKeyboardShortcuts` | Global keyboard shortcuts |
 | `useAuthValidation` | Validates user session on mount |
@@ -375,14 +372,14 @@ Use when a change spans frontend and API. Backend paths refer to **`optikk-backe
 |--------------|-----------|----------------------------|
 | Registry / route wiring | `domainRegistry.ts`, feature `index.ts` | `internal/app/server/modules_manifest.go` |
 | Explorer APIs | Feature `api/` or `shared/api` | Matching `internal/modules/.../handler.go` |
-| Explorer analytics | `explorer-core/api/explorerAnalyticsApi.ts` | `internal/modules/explorer/analytics/` |
+| Explorer analytics | `explorer-core/api/explorerAnalyticsApi.ts` | `logs/explorer/` and `traces/explorer/` (shared types in `explorer/analytics/`) |
 | Metrics Explorer | `src/features/metrics` (`metricsExplorerApi.ts`) | `internal/modules/metricsexplorer` (`/metrics/names`, `/:metricName/tags`, `/explorer/query`) |
 | Dashboard panels | `dashboard/renderers/`, `dashboardPanelRegistry` | `internal/infra/dashboardcfg/`, panel types in `enums.go` |
-| Dashboard config API | `defaultConfigService.ts` | `internal/modules/dashboard/` |
-| Default pages | Dashboard page adapters | `internal/infra/dashboardcfg/defaults/{overview,service,ai_observability,infrastructure,saturation}/` |
+| Dashboard config API | `defaultConfigService.ts` | `internal/infra/dashboardcfg/` |
+| Default pages | Dashboard page adapters | `internal/infra/dashboardcfg/defaults/{overview,service,infrastructure,saturation}/` |
 | Auth | `shared/api/auth/` | `internal/modules/user/auth/` |
 
-| Logs live tail | `useSocketStream` → `useLiveTailStream` | `internal/modules/logs/search/livetail_run.go`, `internal/infra/livetailws/` |
+| Logs live tail | `useSocketStream` → `useLiveTailStream` | `internal/modules/logs/search/livetail_run.go`, `internal/modules/livetail/` |
 | Overview | `src/features/overview/` | `internal/modules/overview/{overview,errors,slo}/` |
 | Infrastructure | `src/features/infrastructure/` | `internal/modules/infrastructure/*/`, `internal/infra/dashboardcfg/defaults/infrastructure/` |
 | Saturation | `src/features/metrics/pages/SaturationHubPage` | `internal/modules/saturation/database/*/`, `saturation/kafka/` |

@@ -44,7 +44,7 @@ This skill defines the development standards and architectural patterns for the 
 
 ## Canonical Paths
 
-- **Feature Registry**: `src/app/registry/domainRegistry.ts` — 7 domains: overview, metrics, logs, traces, infrastructure, ai, settings
+- **Feature Registry**: `src/app/registry/domainRegistry.ts` — 8 domains: overview, saturation, metrics, logs, traces, infrastructure, alerts, settings
 - **Route Constants**: `src/shared/constants/routes.ts`
 - **Dashboard UI**: `src/shared/components/ui/dashboard/` (`DashboardPage.tsx`, `ConfigurableDashboard.tsx`, `DashboardEntityDrawer.tsx`)
 - **Panel Registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain-contributed panels
@@ -58,7 +58,6 @@ This skill defines the development standards and architectural patterns for the 
 - **Entities**: `src/shared/entities/` (log, metric, trace, user)
 - **Live Tail**: `src/shared/hooks/useSocketStream.ts` (core), `src/features/explorer-core/hooks/useLiveTailStream.ts` (wrapper)
 - **Explorer Core**: `src/features/explorer-core/` (shared analytics, facets, visualizations)
-- **AI Module**: `src/features/ai/` (6 pages, 2 dashboard renderers, 4 API files)
 
 ## Low-Level Design Patterns
 
@@ -84,7 +83,7 @@ export const myConfig: DomainConfig = {
 - `DashboardPanelRegistration`: `{ panelType, kind: 'base-chart'|'specialized'|'self-contained', component }`
 - Built from all domain configs via `getDashboardPanelRegistrations()` + `DashboardPanelRegistryProvider`
 - Resolve at render: `useDashboardPanelRegistration(panelType)`
-- Drawer entities: `aiModel`, `databaseSystem`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance`
+- Drawer entities: `databaseSystem`, `deployment`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance`, `service`
 
 ### Query Patterns
 

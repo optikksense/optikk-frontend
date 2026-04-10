@@ -8,13 +8,12 @@ import ChartErrorOverlay from "@shared/components/ui/feedback/ChartErrorOverlay"
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 
 import { useLocation } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import type {
   DashboardDataSources,
   DashboardExtraContext,
   DashboardPanelSpec,
-  DashboardRecord,
 } from "@/types/dashboardConfig";
 import QueueMetricsList from "@shared/components/ui/data-display/QueueMetricsList";
 import type { QueueMetricsListType } from "@shared/components/ui/data-display/QueueMetricsList";
@@ -28,25 +27,10 @@ import {
   type SpecializedDashboardRenderer,
   useDashboardPanelRegistration,
 } from "./dashboardPanelRegistry";
+import { useChartCardData } from "./hooks/useChartCardData";
+import { resolveComponentKey } from "./utils/dashboardFormatters";
+import { defaultListTitleForChart, defaultListTypeForChart } from "./utils/dashboardListBuilders";
 import { getDashboardIcon } from "./utils/dashboardUtils";
-
-import {
-  buildEndpointKey,
-  buildEndpointList,
-  buildGroupedListFromTimeseries,
-  buildQueueEndpoints,
-  buildServiceListFromMetrics,
-  defaultListTitleForChart,
-  defaultListTypeForChart,
-  firstValue,
-  groupTimeseries,
-  normalizeDashboardRows,
-  numValue,
-  resolveComponentData,
-  resolveComponentKey,
-  strValue,
-} from "./utils/dashboardAggregators";
-import { getDashboardRecordArrayField } from "./utils/runtimeValue";
 
 interface ConfigurableChartCardProps {
   componentConfig: DashboardPanelSpec;
@@ -96,17 +80,6 @@ function asQueueMetricsListType(value: string | undefined): QueueMetricsListType
   }
 }
 
-function chartConfigDataKey(chartConfig: DashboardPanelSpec): string | undefined {
-  return chartConfig.dataKey;
-}
-
-/**
- *
- * @param root0
- * @param root0.componentConfig
- * @param root0.dataSources
- * @param root0.extraContext
- */
 function ConfigurableChartCardContent({
   componentConfig,
   dataSources,
@@ -117,7 +90,6 @@ function ConfigurableChartCardContent({
 }: ConfigurableChartCardContentProps) {
   const chartConfig = componentConfig;
   const location = useLocation();
-  const panelType = resolveComponentKey(chartConfig);
   const [selectedEndpoints, setSelectedEndpoints] = useState<string[]>([]);
 
   const toggleEndpoint = (key: string) => {
@@ -126,76 +98,15 @@ function ConfigurableChartCardContent({
     );
   };
 
+  const { panelType, hasNoData, endpoints, chartProps } = useChartCardData(
+    chartConfig,
+    dataSources,
+    selectedEndpoints
+  );
+
   const panelRegistration = useDashboardPanelRegistration(panelType);
   const componentRenderer = panelRegistration?.component;
-  const rawData = resolveComponentData(chartConfig, dataSources);
   const hasRenderer = Boolean(panelRegistration && componentRenderer);
-  const hasNoData = useMemo(() => {
-    if (rawData === undefined || rawData === null) return true;
-    if (Array.isArray(rawData)) {
-      if (rawData.length === 0) return true;
-
-      // Check for zero-data: Only consider keys the panel is trying to display
-      const primaryKey = chartConfig.valueKey || chartConfig.valueField || "value";
-      const fallbacks = ["span_count", "request_count", "error_count"];
-      const metricsToCheck = [primaryKey, ...fallbacks].filter(Boolean) as string[];
-
-      if (metricsToCheck.length > 0) {
-        const hasPositiveMetric = rawData.some((row) =>
-          metricsToCheck.some((key) => {
-            const val = Number(row[key]);
-            // Non-NaN and greater than 0 is actual data we want to plot
-            return !Number.isNaN(val) && val > 0;
-          })
-        );
-        if (!hasPositiveMetric) return true;
-      }
-    }
-    return false;
-  }, [rawData, chartConfig.valueKey, chartConfig.valueField]);
-  const timeseriesData = normalizeDashboardRows(rawData, chartConfigDataKey(chartConfig));
-
-  const serviceTimeseriesMap = useMemo(() => {
-    if (chartConfig.groupByKey) {
-      return groupTimeseries(timeseriesData, chartConfig.groupByKey);
-    }
-    const endpointDataSourceId = chartConfig.endpointDataSource;
-    if (endpointDataSourceId && dataSources?.[endpointDataSourceId]) {
-      const endpointData = normalizeDashboardRows(dataSources[endpointDataSourceId]);
-      return groupTimeseries(endpointData, "endpoint");
-    }
-    return {};
-  }, [timeseriesData, dataSources, chartConfig]);
-
-  const endpoints = useMemo(() => {
-    if (chartConfig.groupByKey === "queue") {
-      const topQueues = getDashboardRecordArrayField(rawData, "topQueues");
-      return buildQueueEndpoints(
-        topQueues,
-        chartConfig.listSortField || chartConfig.valueKey || "value",
-        chartConfig.listType || "default"
-      );
-    }
-
-    const metricsSourceId = chartConfig.endpointMetricsSource;
-    if (metricsSourceId && dataSources?.[metricsSourceId]) {
-      const metricsData = normalizeDashboardRows(dataSources[metricsSourceId]);
-      const listType = defaultListTypeForChart(chartConfig);
-      const metricEndpoints =
-        chartConfig.groupByKey === "service"
-          ? buildServiceListFromMetrics(metricsData, listType)
-          : buildEndpointList(metricsData, listType);
-      if (metricEndpoints.length > 0) {
-        return metricEndpoints;
-      }
-    }
-
-    if (chartConfig.groupByKey) {
-      return buildGroupedListFromTimeseries(serviceTimeseriesMap, chartConfig);
-    }
-
-    return [];
-  }, [rawData, dataSources, serviceTimeseriesMap, chartConfig]);
 
   if (error) {
     return (
@@ -255,73 +166,6 @@ function ConfigurableChartCardContent({
     );
   }
   const ChartComponent = componentRenderer as ComponentType<BaseChartComponentProps>;
-
-  const chartProps: BaseChartComponentProps = {
-    serviceTimeseriesMap,
-    endpoints,
-    selectedEndpoints,
-    fillHeight: true,
-  };
-
-  if (chartConfig.valueKey) chartProps.valueKey = chartConfig.valueKey;
-  if (chartConfig.datasetLabel) chartProps.datasetLabel = chartConfig.datasetLabel;
-  if (chartConfig.color) chartProps.color = chartConfig.color;
-  if (chartConfig.targetThreshold != null)
-    chartProps.targetThreshold = Number(chartConfig.targetThreshold);
-
-  if (!chartConfig.groupByKey && !chartConfig.endpointDataSource) {
-    chartProps.data = timeseriesData.map((d: DashboardRecord) => ({
-      timestamp: strValue(d, ["timestamp", "time_bucket", "timeBucket"], ""),
-      value: (() => {
-        const explicit = firstValue(
-          d,
-          [chartConfig.valueField || chartConfig.valueKey || "value", "value"],
-          null
-        );
-        if (explicit !== null && explicit !== undefined && explicit !== "") {
-          const parsed = Number(explicit);
-          return Number.isFinite(parsed) ? parsed : 0;
-        }
-
-        if (panelType === "request") {
-          return numValue(d, ["request_count", "requestCount", "req_count", "value", "val"], 0);
-        }
-        if (panelType === "error-rate") {
-          const total = numValue(d, ["request_count", "requestCount", "req_count"], 0);
-          const errors = numValue(d, ["error_count", "errorCount"], 0);
-          if (total > 0) return (errors * 100.0) / total;
-          return numValue(d, ["error_rate", "errorRate"], 0);
-        }
-        if (panelType === "latency") {
-          return numValue(
-            d,
-            [
-              "avg_latency",
-              "avgLatency",
-              "avg_latency_ms",
-              "avgLatencyMs",
-              "p50_latency",
-              "p50Latency",
-              "p50",
-            ],
-            0
-          );
-        }
-        return 0;
-      })(),
-      ...(panelType === "latency"
-        ? {
-            p50: numValue(
-              d,
-              ["p50_latency", "p50Latency", "p50", "avg_latency_ms", "avgLatencyMs"],
-              0
-            ),
-            p95: numValue(d, ["p95_latency", "p95Latency", "p95", "p95_latency_ms"], 0),
-            p99: numValue(d, ["p99_latency", "p99Latency", "p99"], 0),
-          }
-        : {}),
-    }));
-  }
 
   const isQueueChart = chartConfig.groupByKey === "queue";
   const endpointListType: TopEndpointsListType | null = !isQueueChart

@@ -29,7 +29,6 @@ export default defineConfig(({ mode }) => {
         { find: "@/hooks", replacement: path.resolve(__dirname, "./src/shared/hooks") },
         { find: "@/services", replacement: path.resolve(__dirname, "./src/shared/api") },
         { find: "@app", replacement: path.resolve(__dirname, "./src/app") },
-        { find: "@pages", replacement: path.resolve(__dirname, "./src/pages") },
         { find: "@features", replacement: path.resolve(__dirname, "./src/features") },
         { find: "@entities", replacement: path.resolve(__dirname, "./src/shared/entities") },
         { find: "@shared", replacement: path.resolve(__dirname, "./src/shared") },
@@ -39,10 +38,6 @@ export default defineConfig(({ mode }) => {
         { find: "@utils", replacement: path.resolve(__dirname, "./src/shared/utils") },
         { find: "@services", replacement: path.resolve(__dirname, "./src/shared/api") },
         { find: "@store", replacement: path.resolve(__dirname, "./src/app/store") },
-        {
-          find: "@optikk/design-system",
-          replacement: path.resolve(__dirname, "./src/design-system"),
-        },
         { find: "@", replacement: path.resolve(__dirname, "./src") },
       ],
     },

@@ -1,7 +1,5 @@
 import { ChevronDown, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
-
 import { IconButton, Select, Tooltip } from "@/components/ui";
 import { AlertsBell } from "@/features/alerts/components/AlertsBell";
 import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@/types";
@@ -9,8 +7,8 @@ import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
 import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
 import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
 
-import { useAppStore, useSidebarCollapsed, useTeamId, useTeamIds, useTheme } from "@store/appStore";
-import { useAuthStore, useAuthTenant, useAuthUser } from "@store/authStore";
+import { useAppStore, useTeamIds } from "@store/appStore";
+import { useAuthUser } from "@store/authStore";
 
 import { AUTO_REFRESH_INTERVALS } from "@config/constants";
 
@@ -18,14 +16,7 @@ import { cn } from "@/lib/utils";
 
 export default function Header() {
   const user = useAuthUser();
-  const tenant = useAuthTenant();
-  const logout = useAuthStore((s) => s.logout);
-  const theme = useTheme();
-  const selectedTeamId = useTeamId();
   const selectedTeamIds = useTeamIds();
-  const sidebarCollapsed = useSidebarCollapsed();
-  const toggleSidebar = useAppStore((s) => s.toggleSidebar);
-  const setSelectedTeamId = useAppStore((s) => s.setSelectedTeamId);
   const setSelectedTeamIds = useAppStore((s) => s.setSelectedTeamIds);
   const triggerRefresh = useAppStore((s) => s.triggerRefresh);
   const autoRefreshInterval = useAppStore((s) => s.autoRefreshInterval);
