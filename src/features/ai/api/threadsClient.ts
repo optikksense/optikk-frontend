@@ -1,2 +1,0 @@
-// LEGACY NEUTRALIZED
-export {};

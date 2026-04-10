@@ -1,17 +1,17 @@
 # Optik frontend — codebase index
 
-Orientation for **optic-frontend** (React/Vite/TypeScript). Read this file and `.cursor/rules/optik-frontend.mdc` before substantive work in this repository.
+Orientation for **optikk-frontend** (React/Vite/TypeScript). Read this file and `.cursor/rules/optik-frontend.mdc` before substantive work in this repository.
 
 ## How assistants should use this document
 
 - **Before** any substantive task: read **`CODEBASE_INDEX.md`** (this file), **`.cursor/rules/optik-frontend.mdc`**, and **`.agent/philosophy/`** for strategic alignment. Follow **`.cursor/rules/engineering-workflow.mdc`** for planning and quality bar.
 - **Plan before code:** Produce a plan (with options where appropriate) and **do not change code until the user approves** the plan, except for trivial one-line/typo fixes.
 - **Agent Philosophy**: Mandatory reading for staff-level alignment:
-  - **ADR-001**: [adr-001-modernization.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/adr-001-modernization.md)
-  - **Highest Standards**: [highest-standards.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/highest-standards.md)
-  - **Vision**: [vision-and-roadmap.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/vision-and-roadmap.md)
-  - **SLOs**: [performance-and-slos.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/performance-and-slos.md)
-  - **Design**: [design-principles.md](file:///Users/ramantayal/pro/optic-frontend/.agent/philosophy/design-principles.md)
+  - **ADR-001**: [adr-001-modernization.md](file:///Users/ramantayal/pro/optikk-frontend/.agent/philosophy/adr-001-modernization.md)
+  - **Highest Standards**: [highest-standards.md](file:///Users/ramantayal/pro/optikk-frontend/.agent/philosophy/highest-standards.md)
+  - **Vision**: [vision-and-roadmap.md](file:///Users/ramantayal/pro/optikk-frontend/.agent/philosophy/vision-and-roadmap.md)
+  - **SLOs**: [performance-and-slos.md](file:///Users/ramantayal/pro/optikk-frontend/.agent/philosophy/performance-and-slos.md)
+  - **Design**: [design-principles.md](file:///Users/ramantayal/pro/optikk-frontend/.agent/philosophy/design-principles.md)
 - **Tooling**: This repository uses **Biome** (`biome.json`) for linting, formatting, and import organization. ESLint and Prettier have been removed.
 - **Agent Rules**: No Python scripts; conventional commits; direct imports only (no barrels); import type for TS types.
 
@@ -64,7 +64,7 @@ All product domains are registered in **`src/app/registry/domainRegistry.ts`**. 
 3. **logs** — Log search + live tail (1 route, 1 panel renderer: `log-histogram`)
 4. **traces** — Traces explorer, detail, comparison (3 routes, 1 panel renderer: `trace-waterfall`)
 5. **infrastructure** — Infrastructure hub page (1 dashboard page adapter)
-6. **ai** — LLM Monitoring: Overview, Explorer, Span Detail, Model Catalog, Model Detail, Conversations (7 routes). Integrated with gen_ai.* OTel attributes.
+
 7. **alerts** — Alerts & Monitors hub, rule builder, rule detail (3 routes). Header bell polls `/api/v1/alerts/incidents`; `CreateAlertButton` is the "Create alert from this view" entry point used on MetricsExplorer and ServiceHub. Command palette contributes `Create alert`, `Go to alerts`, `Mute rule`, `Ack instance`.
 8. **settings** — User/team settings (1 route)
 
@@ -90,10 +90,10 @@ Each feature's `index.ts` exports a **domain config**: navigation, explorer `rou
 | Infrastructure | `/infrastructure` |
 | Errors | `/errors` |
 | Saturation detail | `/saturation/kafka/topics/:topic`, `/saturation/kafka/groups/:groupId` |
-| AI | `/ai-observability`, `/ai-explorer`, `/ai-explorer/:spanId`, `/ai-models`, `/ai-models/:modelName`, `/ai-conversations`, `/ai-conversations/:conversationId` |
+
 | Settings | `/settings` |
 
-**Legacy drawer redirects** (in `router.tsx`): `/errors/:errorGroupId`, `/infrastructure/nodes/:host`, `/saturation/database/:dbSystem`, `/saturation/redis/:instance`, `/saturation/kafka/topics/:topic`, `/saturation/kafka/groups/:groupId`, `/ai-observability/models/:modelName`
+**Legacy drawer redirects** (in `router.tsx`): `/errors/:errorGroupId`, `/infrastructure/nodes/:host`, `/saturation/database/:dbSystem`, `/saturation/redis/:instance`, `/saturation/kafka/topics/:topic`, `/saturation/kafka/groups/:groupId`
 
 ## Feature folders (`src/features/<domain>/`)
 
@@ -114,32 +114,22 @@ Each feature's `index.ts` exports a **domain config**: navigation, explorer `rou
 | Logs | `logs` | LogsHubPage | `/logs` | — | log-histogram |
 | Traces | `traces` | TracesPage, TraceDetailPage, TraceComparisonPage | `/traces`, `/traces/:traceId`, `/traces/compare` | — | trace-waterfall |
 | Infrastructure | `infrastructure` | InfrastructureHubPage | 0 | infrastructure | — |
-| AI | `ai` | AiOverviewPage, AiExplorerPage, AiSpanDetailPage, AiModelCatalogPage, AiModelDetailPage, AiConversationsPage, AiConversationDetailPage | `/ai-observability`, `/ai-explorer`, `/ai-explorer/:spanId`, `/ai-models`, `/ai-models/:modelName`, `/ai-conversations`, `/ai-conversations/:conversationId` | — | — |
+
 | Alerts | `alerts` | AlertsHubPage, AlertRuleBuilderPage, AlertRuleDetailPage | `/alerts`, `/alerts/rules/new`, `/alerts/rules/$ruleId`, `/alerts/rules/$ruleId/edit` | — | — |
 | Settings | `settings` | SettingsPage (Profile, Team, Preferences tabs) | `/settings` | — | — |
 
 ### Explorer Core (`src/features/explorer-core/`)
 
-Shared infrastructure for all data explorers (Logs, Traces, Metrics, AI) — **not a registered domain**:
+Shared infrastructure for all data explorers (Logs, Traces, Metrics) — **not a registered domain**:
 - **Components**: `AnalyticsToolbar.tsx`, `FacetRail.tsx`, `ExplorerResultsTable.tsx`, `SummaryMetricStrip.tsx`
 - **Visualizations**: `AnalyticsTimeseries.tsx`, `AnalyticsTopList.tsx`, `AnalyticsTable.tsx`, `AnalyticsPieChart.tsx`
 - **Hooks**: `useExplorerAnalytics.ts`, `useLiveTailStream.ts` (native WebSocket `/api/v1/ws/live`)
 - **API**: `explorerAnalyticsApi.ts` — `POST /api/v1/explorer/:scope/analytics`
 - **Utils**: `urlState.ts`, `analyticsResult.ts`, `timeRange.ts`, `explorerQuery.ts`
 
-| Page | Path | Purpose |
-|------|------|---------|
-| AiOverviewPage | `/ai-observability` | LLM Monitoring Overview (Health, Throughput, Model Performance) |
-| AiExplorerPage | `/ai-explorer` | High-density LLM Run Explorer with facet filtering |
-| AiSpanDetailPage | `/ai-explorer/:spanId` | LLM Span deep dive (Parameters, Token breakdown, PII, Messages) |
-| AiModelCatalogPage | `/ai-models` | Model listing, cost tracking, and economics |
-| AiModelDetailPage | `/ai-models/:modelName` | Model-specific latencies, errors, and parameter impact |
-| AiConversationsPage | `/ai-conversations` | Conversation tracking and thread list |
-| AiConversationDetailPage | `/ai-conversations/:conversationId` | Conversation session view (turns, participants, thread summary) |
 
-**API files**: `aiService.ts` (centralized for all 37 AI endpoints)
 
-**Technical Logic**: Built on TanStack Query with `useTimeRangeQuery` integration. Displays high-density telemetry from `observability.spans` filtered by OTel `gen_ai.*` semantic attributes. Cost calculation is performant, using static multipliers from the backend price map. UI implements strict parity with Logs/Traces by using `<FacetRail>`, `<ExplorerResultsTable>`, and `@shared/components/ui/charts/UPlotChart.tsx` for inline visualizations.
+
 
 ## Shared Layer (`src/shared/`)
 
@@ -210,8 +200,7 @@ Applies to any new package; verified for `@xyflow/react`, `dagre`, `@types/dagre
 | `db-systems-overview` | metrics (registered via overview) | DbSystemsRenderer |
 | `log-histogram` | logs | LogHistogramRenderer |
 | `trace-waterfall` | traces | TraceWaterfallRenderer |
-| `ai-line` | ai | AiLineRenderer |
-| `ai-bar` | ai | AiBarRenderer |
+
 
 ### Dashboard runtime components (`shared/components/ui/dashboard/`)
 
@@ -228,7 +217,7 @@ Applies to any new package; verified for `@xyflow/react`, `dagre`, `@types/dagre
 | `panelSizePolicy.ts` | Grid sizing logic |
 | `dashboardAggregators.tsx` | Data transformation: grouping, normalization |
 
-**Drawer entities:** `aiModel`, `databaseSystem`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance`
+**Drawer entities:** `databaseSystem`, `errorGroup`, `kafkaGroup`, `kafkaTopic`, `node`, `redisInstance`
 
 ## Global State & Auto-Refresh
 
@@ -360,7 +349,7 @@ BackendDrivenPage (route match)
 | `DashboardTabDocument` | `shared/types/dashboardConfig.ts` | Tab with sections and panels |
 | `DomainConfig` | `app/registry/domainRegistry.ts` | Feature module registration: key, label, permissions, navigation, routes, dashboardPanels |
 | `DashboardPanelRegistration` | `shared/components/ui/dashboard/dashboardPanelRegistry.tsx` | Panel renderer binding: panelType, kind, component, lifecycle hooks |
-| `DrawerEntity` | `shared/types/dashboardConfig.ts` | Drawer entity types: aiModel, databaseSystem, errorGroup, kafkaGroup, kafkaTopic, node, redisInstance |
+| `DrawerEntity` | `shared/types/dashboardConfig.ts` | Drawer entities: databaseSystem, errorGroup, kafkaGroup, kafkaTopic, node, redisInstance |
 
 ## ESLint Constraints
 
@@ -392,7 +381,7 @@ Use when a change spans frontend and API. Backend paths refer to **`optikk-backe
 | Dashboard config API | `defaultConfigService.ts` | `internal/modules/dashboard/` |
 | Default pages | Dashboard page adapters | `internal/infra/dashboardcfg/defaults/{overview,service,ai_observability,infrastructure,saturation}/` |
 | Auth | `shared/api/auth/` | `internal/modules/user/auth/` |
-| AI Observability | `src/features/ai/api/aiService.ts` | `internal/modules/ai/{overview,explorer,spandetail,analytics}/` |
+
 | Logs live tail | `useSocketStream` → `useLiveTailStream` | `internal/modules/logs/search/livetail_run.go`, `internal/infra/livetailws/` |
 | Overview | `src/features/overview/` | `internal/modules/overview/{overview,errors,slo}/` |
 | Infrastructure | `src/features/infrastructure/` | `internal/modules/infrastructure/*/`, `internal/infra/dashboardcfg/defaults/infrastructure/` |

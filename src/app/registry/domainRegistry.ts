@@ -1,5 +1,5 @@
 
-import { aiConfig } from "@/features/ai";
+
 import { alertsConfig } from "@/features/alerts";
 import { infrastructureConfig } from "@/features/infrastructure";
 import { logsConfig } from "@/features/log";
@@ -68,7 +68,7 @@ export const domainRegistry: readonly DomainConfig[] = [
   logsConfig,
   tracesConfig,
   infrastructureConfig,
-  aiConfig,
+
 
   alertsConfig,
   settingsConfig,

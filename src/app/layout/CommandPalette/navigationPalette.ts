@@ -1,11 +1,7 @@
 import {
   Activity,
-  Brain,
   Columns2,
-  Layers,
-  Network,
   RefreshCw,
-  ScrollText,
   Server,
   Settings,
   Sun,
@@ -57,46 +53,7 @@ export const navigationPaletteActions: PaletteAction[] = [
       navigate("/infrastructure");
     },
   },
-  {
-    id: "nav.ai-overview",
-    label: "Go to LLM Overview",
-    keywords: ["ai", "llm", "observability", "overview", "dashboard"],
-    group: "navigation",
-    icon: createElement(Brain, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/ai-observability");
-    },
-  },
-  {
-    id: "nav.ai-explorer",
-    label: "Go to LLM Traces Explorer",
-    keywords: ["ai", "llm", "traces", "explorer", "spans"],
-    group: "navigation",
-    icon: createElement(Layers, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/ai-explorer");
-    },
-  },
-  {
-    id: "nav.ai-models",
-    label: "Go to Model Catalog",
-    keywords: ["ai", "llm", "models", "catalog", "comparison"],
-    group: "navigation",
-    icon: createElement(Network, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/ai-models");
-    },
-  },
-  {
-    id: "nav.ai-conversations",
-    label: "Go to AI Conversations",
-    keywords: ["ai", "llm", "conversations", "sessions", "chat"],
-    group: "navigation",
-    icon: createElement(ScrollText, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/ai-conversations");
-    },
-  },
+
   {
     id: "nav.settings",
     label: "Go to Settings",

@@ -26,7 +26,7 @@ The frontend is architected as a feature-based modular system designed for scala
 ## Project Structure
 
 ```text
-optic-frontend/
+optikk-frontend/
 ├── src/
 │   ├── app/                 # Routing, layout, and app-level providers
 │   ├── features/            # Feature-specific modules (Traces, Logs, Metrics, etc.)

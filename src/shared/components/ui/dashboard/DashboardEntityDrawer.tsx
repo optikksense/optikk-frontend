@@ -25,7 +25,7 @@ function toFieldLabel(key: string): string {
     .replace(/([A-Z])/g, " $1")
     .trim()
     .replace(/\bDb\b/g, "DB")
-    .replace(/\bAi\b/g, "AI")
+
     .replace(/\bHttp\b/g, "HTTP")
     .replace(/\bP95\b/g, "P95")
     .replace(/\bP99\b/g, "P99")
