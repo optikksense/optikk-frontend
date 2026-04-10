@@ -4,8 +4,8 @@ import {
   Columns2,
   Layers,
   Network,
-  Play,
   RefreshCw,
+  ScrollText,
   Server,
   Settings,
   Sun,
@@ -58,9 +58,9 @@ export const navigationPaletteActions: PaletteAction[] = [
     },
   },
   {
-    id: "nav.ai-dashboard",
-    label: "Go to AI Dashboard",
-    keywords: ["ai", "llm", "observability"],
+    id: "nav.ai-overview",
+    label: "Go to LLM Overview",
+    keywords: ["ai", "llm", "observability", "overview", "dashboard"],
     group: "navigation",
     icon: createElement(Brain, { size: 16 }),
     perform: ({ navigate }) => {
@@ -68,13 +68,33 @@ export const navigationPaletteActions: PaletteAction[] = [
     },
   },
   {
-    id: "nav.ai-runs",
-    label: "Go to LLM Runs",
-    keywords: ["ai", "runs", "llm"],
+    id: "nav.ai-explorer",
+    label: "Go to LLM Traces Explorer",
+    keywords: ["ai", "llm", "traces", "explorer", "spans"],
     group: "navigation",
-    icon: createElement(Play, { size: 16 }),
+    icon: createElement(Layers, { size: 16 }),
     perform: ({ navigate }) => {
-      navigate("/ai-runs");
+      navigate("/ai-explorer");
+    },
+  },
+  {
+    id: "nav.ai-models",
+    label: "Go to Model Catalog",
+    keywords: ["ai", "llm", "models", "catalog", "comparison"],
+    group: "navigation",
+    icon: createElement(Network, { size: 16 }),
+    perform: ({ navigate }) => {
+      navigate("/ai-models");
+    },
+  },
+  {
+    id: "nav.ai-conversations",
+    label: "Go to AI Conversations",
+    keywords: ["ai", "llm", "conversations", "sessions", "chat"],
+    group: "navigation",
+    icon: createElement(ScrollText, { size: 16 }),
+    perform: ({ navigate }) => {
+      navigate("/ai-conversations");
     },
   },
   {

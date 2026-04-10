@@ -15,9 +15,6 @@ const TraceWaterfallRenderer = lazy(() =>
     default: module.TraceWaterfallRenderer,
   }))
 );
-const TraceComparisonPage = lazy(() =>
-  import("./pages/TraceComparisonPage").then((module) => ({ default: module.default }))
-);
 
 export const tracesConfig: DomainConfig = {
   key: "traces",
@@ -34,7 +31,6 @@ export const tracesConfig: DomainConfig = {
   routes: [
     { path: ROUTES.traces, page: TracesPage },
     { path: ROUTES.traceDetail, page: TraceDetailPage },
-    { path: ROUTES.traceCompare, page: TraceComparisonPage },
   ],
   dashboardPanels: [
     { panelType: "trace-waterfall", kind: "specialized", component: TraceWaterfallRenderer },

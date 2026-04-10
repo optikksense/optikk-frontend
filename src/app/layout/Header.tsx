@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 import { IconButton, Select, Tooltip } from "@/components/ui";
+import { AlertsBell } from "@/features/alerts/components/AlertsBell";
 import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@/types";
 import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
 import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
@@ -151,6 +152,8 @@ export default function Header() {
             />
           </div>
         )}
+
+        <AlertsBell />
 
         {/* Combined refresh picker */}
         <div className="relative flex items-center" ref={pickerRef}>

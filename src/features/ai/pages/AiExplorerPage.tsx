@@ -1,2 +1,2 @@
 // REMOVED BY USER REQUEST
-export {};
+export { };

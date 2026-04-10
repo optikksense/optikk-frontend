@@ -1,4 +1,4 @@
-import { Gauge, LayoutDashboard, Server } from "lucide-react";
+import { LayoutDashboard, Server } from "lucide-react";
 import { lazy } from "react";
 
 import type { DomainConfig } from "@/app/registry/domainRegistry";
@@ -48,12 +48,6 @@ export const overviewConfig: DomainConfig = {
       label: "Overview",
       icon: LayoutDashboard,
       group: "observe",
-    },
-    {
-      path: ROUTES.saturation,
-      label: "Saturation",
-      icon: Gauge,
-      group: "operate",
     },
     {
       path: ROUTES.service,

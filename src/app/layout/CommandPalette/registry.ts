@@ -1,3 +1,4 @@
+import { alertsPaletteActions } from "@/features/alerts/palette";
 import { logsPaletteActions } from "@/features/log/palette";
 import { metricsPaletteActions } from "@/features/metrics/palette";
 import { tracePaletteActions } from "@/features/traces/palette";
@@ -8,4 +9,5 @@ export const allActions = [
   ...tracePaletteActions,
   ...metricsPaletteActions,
   ...logsPaletteActions,
+  ...alertsPaletteActions,
 ];

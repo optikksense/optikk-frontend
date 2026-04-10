@@ -9,7 +9,6 @@ import { DetailDrawer } from "@shared/components/ui/layout";
 import { clearDashboardDrawerSearch, readDashboardDrawerState } from "./utils/dashboardDrawerState";
 
 const ENTITY_LABELS: Record<string, string> = {
-  aiModel: "AI Model",
   databaseSystem: "Database System",
   deployment: "Deployment",
   errorGroup: "Error Group",

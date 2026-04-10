@@ -33,9 +33,39 @@ function LegacyServicePathRedirect() {
   );
 }
 
+function LegacySaturationDatabaseRedirect() {
+  const params = useParams({ strict: false });
+  const dbSystem = typeof params.dbSystem === "string" ? params.dbSystem : "";
+  return (
+    <Navigate
+      to={
+        ROUTES.saturationDatastoreDetail.replace(
+          "$system",
+          encodeURIComponent(dbSystem || "unknown")
+        ) as any
+      }
+      replace
+    />
+  );
+}
+
+function LegacySaturationRedisRedirect() {
+  const params = useParams({ strict: false });
+  const instance = typeof params.instance === "string" ? params.instance : "";
+  return (
+    <Navigate
+      to={ROUTES.saturationDatastoreDetail.replace("$system", "redis") as any}
+      search={instance ? ({ instance } as any) : undefined}
+      replace
+    />
+  );
+}
+
 function PageTransition({ children }: { children: React.ReactNode }) {
   return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
 }
+
+
 
 export const rootRoute = createRootRoute({
   component: AppContent,
@@ -131,10 +161,8 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
 );
 
 const overviewRoute = createProtected(ROUTES.overview, BackendDrivenPage);
-const saturationRoute = createProtected(ROUTES.saturation, BackendDrivenPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, BackendDrivenPage);
 const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
-const aiObservabilityRoute = createProtected(ROUTES.aiObservability, BackendDrivenPage);
 
 // Redirects
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
@@ -178,41 +206,9 @@ const legacyRedirects = [
     "host",
     "nodes"
   ),
-  createLegacyDetailRedirect(
-    "/saturation/database/$dbSystem",
-    ROUTES.saturation,
-    "databaseSystem",
-    "dbSystem",
-    "database"
-  ),
-  createLegacyDetailRedirect(
-    "/saturation/redis/$instance",
-    ROUTES.saturation,
-    "redisInstance",
-    "instance",
-    "redis"
-  ),
-  createLegacyDetailRedirect(
-    "/saturation/kafka/topics/$topic",
-    ROUTES.saturation,
-    "kafkaTopic",
-    "topic",
-    "queue"
-  ),
-  createLegacyDetailRedirect(
-    "/saturation/kafka/groups/$groupId",
-    ROUTES.saturation,
-    "kafkaGroup",
-    "groupId",
-    "queue"
-  ),
-  createLegacyDetailRedirect(
-    "/ai-observability/models/$modelName",
-    ROUTES.aiObservability,
-    "aiModel",
-    "modelName"
-  ),
 ];
+
+
 
 const serviceOpsRedirect = createRoute({
   getParentRoute: () => mainLayoutRoute,
@@ -220,6 +216,18 @@ const serviceOpsRedirect = createRoute({
   loader: () => {
     throw redirect({ to: ROUTES.metrics, replace: true });
   },
+});
+
+const legacySaturationDatabaseRedirect = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: "saturation/database/$dbSystem",
+  component: LegacySaturationDatabaseRedirect,
+});
+
+const legacySaturationRedisRedirect = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: "saturation/redis/$instance",
+  component: LegacySaturationRedisRedirect,
 });
 
 const legacyServicePathRedirect = createRoute({
@@ -251,14 +259,14 @@ const routeTree = rootRoute.addChildren([
   mainLayoutRoute.addChildren([
     ...protectedExplorerRoutes,
     overviewRoute,
-    saturationRoute,
     infrastructureRoute,
     serviceRoute,
-    aiObservabilityRoute,
     logsPatternsRedirect,
     logsTransactionsRedirect,
     errorsRedirect,
     ...legacyRedirects,
+    legacySaturationDatabaseRedirect,
+    legacySaturationRedisRedirect,
     serviceOpsRedirect,
     legacyServicePathRedirect,
     layoutFallback,

@@ -22,7 +22,6 @@ export type DashboardSchemaVersion = 1 | 2;
 export type DashboardRenderMode = "dashboard" | "explorer";
 export type DashboardColumnAlign = "left" | "center" | "right";
 export type DashboardDrawerEntity =
-  | "aiModel"
   | "databaseSystem"
   | "deployment"
   | "errorGroup"
@@ -32,8 +31,6 @@ export type DashboardDrawerEntity =
   | "redisInstance"
   | "service";
 export const DASHBOARD_PANEL_TYPES = [
-  "ai-bar",
-  "ai-line",
   "bar",
   "db-systems-overview",
   "error-hotspot-ranking",

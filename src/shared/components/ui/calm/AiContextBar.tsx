@@ -1,22 +1,26 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Bot, BrainCircuit, Sparkles } from "lucide-react";
+import {
+  BrainCircuit,
+  MessagesSquare,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { ROUTES } from "@/shared/constants/routes";
 
 const CONTEXT_ITEMS = [
   {
-    id: "ai-observability",
-    label: "AI Observability",
-    description: "Model runs, token cost, and safety trends.",
-    href: "/ai-observability",
-    icon: Bot,
-  },
-  {
     id: "runs",
     label: "Runs Explorer",
-    description: "Jump from anomalies into individual runs.",
-    href: "/ai-runs",
+    description: "Inspect individual LLM invocations and traces.",
+    href: ROUTES.aiRuns,
     icon: BrainCircuit,
+  },
+  {
+    id: "conversations",
+    label: "Conversations",
+    description: "View chat sessions and message threads.",
+    href: ROUTES.aiConversations,
+    icon: MessagesSquare,
   },
 ];
 
@@ -27,7 +31,6 @@ export default function AiContextBar(): JSX.Element {
     <div className="border-[var(--border-color)] border-b bg-[linear-gradient(90deg,var(--color-primary-subtle-10),rgba(6,174,213,0.06),transparent)] px-6 py-2.5 max-md:px-4">
       <div className="flex items-center gap-3 overflow-x-auto">
         <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-primary-subtle-30)] bg-[var(--color-primary-subtle-12)] px-3 py-1 font-semibold text-[11px] text-[var(--color-primary)] uppercase tracking-[0.08em]">
-          <Sparkles size={12} />
           AI Context
         </div>
         {CONTEXT_ITEMS.map((item) => {
@@ -40,7 +43,7 @@ export default function AiContextBar(): JSX.Element {
               key={item.id}
               to={item.href}
               className={cn(
-                "inline-flex min-w-[220px] items-center gap-3 rounded-xl border px-3 py-2 transition-colors",
+                "inline-flex min-w-[240px] items-center gap-3 rounded-xl border px-3 py-2 transition-colors",
                 active
                   ? "border-[var(--color-primary-subtle-35)] bg-[var(--color-primary-subtle-14)]"
                   : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[var(--color-primary-subtle-28)] hover:bg-[var(--color-primary-subtle-08)]"

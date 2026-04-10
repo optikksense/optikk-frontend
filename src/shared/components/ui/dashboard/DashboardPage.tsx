@@ -6,9 +6,30 @@ import { useDashboardTabDocument } from "@shared/hooks/useDashboardTabDocument";
 import { usePageTabs } from "@shared/hooks/usePageTabs";
 import { useUrlSyncedTab } from "@shared/hooks/useUrlSyncedTab";
 
+import { CreateAlertButton } from "@/features/alerts/components/CreateAlertButton";
+import type { AlertConditionType } from "@/features/alerts/types";
 import { Skeleton, Tabs } from "@/components/ui";
 
 import DashboardTabContent from "./DashboardTabContent";
+
+// Backend-driven dashboards don't have their own page file, so the
+// "Create alert from this view" entry point is injected here for pages
+// the plan calls out (overview errors/slo, saturation, infrastructure).
+function alertConditionForTab(
+  pageId: string,
+  tabId: string
+): { condition: AlertConditionType; groupBy: readonly string[] } | null {
+  if (pageId === "overview" && tabId === "errors") {
+    return { condition: "error_rate", groupBy: ["service.name"] };
+  }
+  if (pageId === "overview" && tabId === "slo") {
+    return { condition: "slo_burn_rate", groupBy: ["service.name"] };
+  }
+  if (pageId === "overview" && tabId === "apm") {
+    return { condition: "error_rate", groupBy: ["service.name"] };
+  }
+  return null;
+}
 
 interface DashboardPageProps {
   pageId: string;
@@ -97,6 +118,8 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
     );
   }
 
+  const alertEntry = alertConditionForTab(pageId, selectedTabId);
+
   if (tabs.length > 1) {
     const tabItems = tabs.map((tab) => ({
       key: tab.id,
@@ -106,8 +129,15 @@ export default function DashboardPage({ pageId, pathParams }: DashboardPageProps
 
     return (
       <>
-        <div className="sticky top-0 z-10 bg-[var(--bg-primary,var(--literal-hex-0a0a0a-2))] pb-1">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 bg-[var(--bg-primary,var(--literal-hex-0a0a0a-2))] pb-1">
           <Tabs activeKey={selectedTabId} onChange={onTabChange} items={tabItems} size="large" />
+          {alertEntry && (
+            <CreateAlertButton
+              condition={alertEntry.condition}
+              groupBy={alertEntry.groupBy}
+              label="Create alert from this view"
+            />
+          )}
         </div>
         <DashboardTabContent tab={tab} pathParams={pathParams} />
       </>

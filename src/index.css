@@ -51,9 +51,7 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text-primary);
-  background: radial-gradient(circle at top left, var(--color-primary-subtle-08), transparent 30%),
-    radial-gradient(circle at top right, rgba(243, 139, 107, 0.05), transparent 24%),
-    var(--bg-primary);
+  background: var(--bg-primary);
 }
 
 #root {
