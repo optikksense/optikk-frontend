@@ -34,6 +34,7 @@ function buildDynamicCrumbs(pathname: string): BreadcrumbItem[] {
   if (pathname.startsWith("/saturation/kafka/topics/") && segments.length === 4) {
     return [
       { label: navLookup.get(ROUTES.saturation) ?? "Saturation", path: ROUTES.saturation },
+      { label: "Kafka", path: ROUTES.saturation },
       { label: segments[3] },
     ];
   }
@@ -41,7 +42,17 @@ function buildDynamicCrumbs(pathname: string): BreadcrumbItem[] {
   if (pathname.startsWith("/saturation/kafka/groups/") && segments.length === 4) {
     return [
       { label: navLookup.get(ROUTES.saturation) ?? "Saturation", path: ROUTES.saturation },
+      { label: "Kafka", path: ROUTES.saturation },
+      { label: "Consumer Groups" },
       { label: segments[3] },
+    ];
+  }
+
+  if (pathname.startsWith("/saturation/datastores/") && segments.length === 3) {
+    return [
+      { label: navLookup.get(ROUTES.saturation) ?? "Saturation", path: ROUTES.saturation },
+      { label: "Data Stores", path: ROUTES.saturation },
+      { label: segments[2] },
     ];
   }
 

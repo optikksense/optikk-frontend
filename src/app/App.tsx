@@ -45,21 +45,6 @@ export function AppContent(): JSX.Element {
   return (
     <>
       <AuthExpiryListener />
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: -1,
-          background: `
-            radial-gradient(circle at 15% 50%, ${APP_COLORS.rgba_94_96_206_0p08}, transparent 25%),
-            radial-gradient(circle at 85% 30%, ${APP_COLORS.rgba_78_168_222_0p08}, transparent 25%)
-          `,
-          pointerEvents: "none",
-        }}
-      />
       <CommandPalette />
       <Outlet />
     </>

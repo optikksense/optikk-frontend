@@ -4,6 +4,8 @@ import { type ReactNode, Suspense, lazy, useMemo } from "react";
 
 import { Badge, Card, Input } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
+
+import { CreateAlertButton } from "@/features/alerts/components/CreateAlertButton";
 import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
@@ -113,6 +115,11 @@ export default function ServiceHubPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="info">{summary.totalServices} services</Badge>
             <Badge variant="warning">{summary.recentlyDeployed} recent releases</Badge>
+            <CreateAlertButton
+              condition="error_rate"
+              groupBy={["service.name"]}
+              label="Create alert for fleet"
+            />
           </div>
         }
       />

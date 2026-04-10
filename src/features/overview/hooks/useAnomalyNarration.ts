@@ -1,41 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-
-import { API_CONFIG } from "@config/apiConfig";
-import api from "@shared/api/api";
-import type { AnomalyEvent } from "@shared/components/ui/calm/AiNarrationCard";
-
-import { useRefreshKey, useTeamId, useTimeRange } from "@store/appStore";
-
-const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
-
-/**
- *
- */
+// This hook has been decommissioned as part of the AI Observability removal.
 export function useAnomalyNarration() {
-  const selectedTeamId = useTeamId();
-  const timeRange = useTimeRange();
-  const refreshKey = useRefreshKey();
-
-  return useQuery<AnomalyEvent | null, Error>({
-    queryKey: [
-      "anomaly-narration",
-      selectedTeamId,
-      timeRange.kind === "relative" ? timeRange.preset : `${timeRange.startMs}-${timeRange.endMs}`,
-      refreshKey,
-    ],
-    queryFn: async (): Promise<AnomalyEvent | null> => {
-      try {
-        const data = await api.get<AnomalyEvent>(`${BASE}/ai/anomaly-narration`);
-        return data ?? null;
-      } catch {
-        // Endpoint not yet available — degrade gracefully
-        return null;
-      }
-    },
-    enabled: Boolean(selectedTeamId),
-    staleTime: 60_000,
-    gcTime: 120_000,
-    retry: false,
-    placeholderData: keepPreviousData,
-  });
+  return { data: null, isLoading: false, error: null };
 }

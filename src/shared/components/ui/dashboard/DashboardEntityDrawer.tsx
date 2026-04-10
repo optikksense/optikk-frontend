@@ -9,7 +9,6 @@ import { DetailDrawer } from "@shared/components/ui/layout";
 import { clearDashboardDrawerSearch, readDashboardDrawerState } from "./utils/dashboardDrawerState";
 
 const ENTITY_LABELS: Record<string, string> = {
-  aiModel: "AI Model",
   databaseSystem: "Database System",
   deployment: "Deployment",
   errorGroup: "Error Group",
@@ -26,7 +25,7 @@ function toFieldLabel(key: string): string {
     .replace(/([A-Z])/g, " $1")
     .trim()
     .replace(/\bDb\b/g, "DB")
-    .replace(/\bAi\b/g, "AI")
+
     .replace(/\bHttp\b/g, "HTTP")
     .replace(/\bP95\b/g, "P95")
     .replace(/\bP99\b/g, "P99")

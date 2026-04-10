@@ -1,10 +1,6 @@
 import {
   Activity,
-  Brain,
   Columns2,
-  Layers,
-  Network,
-  Play,
   RefreshCw,
   Server,
   Settings,
@@ -57,26 +53,7 @@ export const navigationPaletteActions: PaletteAction[] = [
       navigate("/infrastructure");
     },
   },
-  {
-    id: "nav.ai-dashboard",
-    label: "Go to AI Dashboard",
-    keywords: ["ai", "llm", "observability"],
-    group: "navigation",
-    icon: createElement(Brain, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/ai-observability");
-    },
-  },
-  {
-    id: "nav.ai-runs",
-    label: "Go to LLM Runs",
-    keywords: ["ai", "runs", "llm"],
-    group: "navigation",
-    icon: createElement(Play, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/ai-runs");
-    },
-  },
+
   {
     id: "nav.settings",
     label: "Go to Settings",
