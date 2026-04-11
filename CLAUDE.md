@@ -45,7 +45,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 | overview | overview | OverviewHubPage |
 | service | overview | ServiceHubPage |
 | saturation | overview → metrics | SaturationHubPage |
-| infrastructure | infrastructure | InfrastructureHubPage |
+| infrastructure | infrastructure | InfrastructureHubPage — full frontend-owned infra UI + Datadog-style fleet controls + new panels; see `CODEBASE_INDEX.md` § Infrastructure product direction |
 
 ## Key patterns
 

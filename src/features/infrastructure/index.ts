@@ -1,7 +1,12 @@
 import { HardDrive } from "lucide-react";
+import { lazy } from "react";
 
 import type { DomainConfig } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
+
+const InfrastructureHubPage = lazy(() =>
+  import("./pages/InfrastructureHubPage").then((m) => ({ default: m.default }))
+);
 
 export const infrastructureConfig: DomainConfig = {
   key: "infrastructure",
@@ -16,4 +21,5 @@ export const infrastructureConfig: DomainConfig = {
     },
   ],
   routes: [],
+  dashboardPages: [{ pageId: "infrastructure", page: InfrastructureHubPage }],
 };

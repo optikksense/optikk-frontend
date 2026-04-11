@@ -24,7 +24,9 @@ const LoginPage = lazy(() => import("@/app/auth"));
 const ProductPage = lazy(() => import("@/app/auth/pages/Pricing"));
 const MetricsPage = lazy(() => import("@/features/metrics/pages/MetricsExplorerPage"));
 const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPage"));
-
+const InfrastructureHubPage = lazy(
+  () => import("@/features/infrastructure/pages/InfrastructureHubPage")
+);
 function LegacyServicePathRedirect() {
   const params = useParams({ strict: false });
   const serviceName = typeof params.serviceName === "string" ? params.serviceName : "";
@@ -64,8 +66,6 @@ function LegacySaturationRedisRedirect() {
 function PageTransition({ children }: { children: React.ReactNode }) {
   return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
 }
-
-
 
 export const rootRoute = createRootRoute({
   component: AppContent,
@@ -161,13 +161,14 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
 );
 
 const overviewRoute = createProtected(ROUTES.overview, BackendDrivenPage);
-const infrastructureRoute = createProtected(ROUTES.infrastructure, BackendDrivenPage);
+const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
 const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
-
 // Redirects
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
 const logsTransactionsRedirect = createProtected("/logs/transactions", () => null, ROUTES.logs);
 const errorsRedirect = createProtected("/errors", () => null, `${ROUTES.overview}?tab=errors`);
+const aiLegacyRedirect = createProtected("/ai", () => null, ROUTES.llmOverview);
+const llmRootRedirect = createProtected("/llm", () => null, ROUTES.llmOverview);
 
 // Legacy dashboard detail redirects
 function createLegacyDetailRedirect(
@@ -207,8 +208,6 @@ const legacyRedirects = [
     "nodes"
   ),
 ];
-
-
 
 const serviceOpsRedirect = createRoute({
   getParentRoute: () => mainLayoutRoute,
@@ -264,6 +263,8 @@ const routeTree = rootRoute.addChildren([
     logsPatternsRedirect,
     logsTransactionsRedirect,
     errorsRedirect,
+    aiLegacyRedirect,
+    llmRootRedirect,
     ...legacyRedirects,
     legacySaturationDatabaseRedirect,
     legacySaturationRedisRedirect,

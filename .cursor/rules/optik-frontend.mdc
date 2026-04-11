@@ -26,7 +26,7 @@ React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, 
 ## Entry points
 
 - `src/main.tsx`, `src/app/App.tsx`, `src/app/routes/router.tsx`
-- Feature registry: `src/app/registry/domainRegistry.ts` — 8 domains: overview, saturation, metrics, logs, traces, infrastructure, alerts, settings
+- Feature registry: `src/app/registry/domainRegistry.ts` — 9 domains: overview, saturation, metrics, logs, traces, infrastructure, llm, alerts, settings
 - Routes: `src/shared/constants/routes.ts` — includes **`ROUTES.service`** (`/service`) → `ServiceHubPage`; pass **`?serviceName=`** for deployment dashboard panel params (`{serviceName}` interpolation)
 
 ## Domain overview
@@ -37,7 +37,8 @@ React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, 
 | metrics | MetricsExplorer, SaturationHub, KafkaDetail | — | latency-histogram, latency-heatmap, db-systems-overview |
 | logs | LogsHubPage | — | log-histogram |
 | traces | TracesPage, TraceDetail, TraceComparison | — | trace-waterfall |
-| infrastructure | InfrastructureHub | infrastructure | — |
+| infrastructure | InfrastructureHub — **frontend-owned** infra (fleet map, Fill/Size/Group/Filter, TS dashboards, new panel types); backend JSON deprecated—see root `CODEBASE_INDEX.md` § *Infrastructure product direction* | infrastructure | infra panels (registered in domain) |
+| llm | LlmHubPage — `/llm/overview`, `/llm/generations`, `/llm/traces`, placeholders; `POST /v1/ai/explorer/query` | — | — |
 | settings | SettingsPage (3 tabs) | — | — |
 
 ## Shared / API

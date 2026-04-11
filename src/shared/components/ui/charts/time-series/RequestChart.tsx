@@ -32,6 +32,8 @@ interface RequestChartProps {
   datasetLabel?: string;
   color?: string;
   valueKey?: string;
+  yFormatter?: (value: number) => string;
+  legend?: boolean;
 }
 
 function getChartColor(index: number): string {
@@ -71,6 +73,8 @@ export default memo(function RequestChart({
   datasetLabel = "Requests/min",
   color = CHART_COLORS[0],
   valueKey = "request_count",
+  yFormatter,
+  legend = false,
 }: RequestChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets } = useChartTimeBuckets();
@@ -179,7 +183,7 @@ export default memo(function RequestChart({
           for (const row of rows) {
             const rowTimestamp = firstValue(row, ["timestamp", "time_bucket"], "");
             if (!rowTimestamp) continue;
-            const rowTime = tsMs(rowTimestamp);
+            const rowTime = tsMs(rowTimestamp) || 0;
             if (Number.isNaN(rowTime)) continue;
             const alignedTimeMs = Math.floor(rowTime / stepMs) * stepMs;
             const bucketKey = tsKey(new Date(alignedTimeMs).toISOString());
@@ -188,6 +192,10 @@ export default memo(function RequestChart({
           }
           const values = timeBuckets.map((d) => tsMap[tsKey(d)] ?? 0);
           return { label: svcName, values, color: getChartColor(idx), fill: false };
+        })
+        .filter((s) => {
+          if (selectedEndpoints.length === 0) return true;
+          return selectedEndpoints.includes(s.label);
         });
     } else {
       const dataMap: Record<string, number> = {};
@@ -237,9 +245,10 @@ export default memo(function RequestChart({
         series={chartData}
         yMin={0}
         yMax={yAxisMax}
-        yFormatter={formatAxisValue}
+        yFormatter={yFormatter || formatAxisValue}
         height={height}
         fillHeight={fillHeight}
+        legend={legend}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { BellOff, Edit, ExternalLink, Trash2 } from "lucide-react";
+import { useMemo } from "react";
 import toast from "react-hot-toast";
 
 import { Button, Card } from "@/components/ui";
@@ -16,17 +17,44 @@ import {
   useRuleAudit,
 } from "@/features/alerts/hooks/useAlerts";
 import { ROUTES } from "@/shared/constants/routes";
+import { resolveTimeRangeBounds } from "@/types";
+import { useTimeRange } from "@app/store/appStore";
+import { buildLogsHubHref } from "@shared/observability/deepLinks";
+import { formatTimestamp } from "@shared/utils/formatters";
 
 export default function AlertRuleDetailPage() {
   const navigate = useNavigate();
   const params = useParams({ strict: false }) as { ruleId?: string };
   const ruleId = params.ruleId ?? "";
+  const timeRange = useTimeRange();
+  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
   const ruleQuery = useAlertRule(ruleId);
   const auditQuery = useRuleAudit(ruleId);
   const muteMut = useMuteAlertRule();
   const deleteMut = useDeleteAlertRule();
 
   const rule = ruleQuery.data;
+
+  const auditEvents = useMemo(() => {
+    const rows = [...(auditQuery.data ?? [])];
+    rows.sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
+    return rows;
+  }, [auditQuery.data]);
+
+  const logsInvestigateHref =
+    rule?.targetRef.serviceName != null && String(rule.targetRef.serviceName).trim() !== ""
+      ? buildLogsHubHref({
+          filters: [
+            {
+              field: "service_name",
+              operator: "equals",
+              value: String(rule.targetRef.serviceName),
+            },
+          ],
+          fromMs: startTime,
+          toMs: endTime,
+        })
+      : ROUTES.logs;
 
   const onMute = async () => {
     if (!rule) return;
@@ -132,7 +160,7 @@ export default function AlertRuleDetailPage() {
                 <ExternalLink size={12} /> Traces
               </a>
               <a
-                href={`${ROUTES.logs}?service=${rule.targetRef.serviceName ?? ""}`}
+                href={logsInvestigateHref}
                 className="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
               >
                 <ExternalLink size={12} /> Logs
@@ -148,12 +176,14 @@ export default function AlertRuleDetailPage() {
           Timeline
         </div>
         <div className="flex flex-col gap-1">
-          {(auditQuery.data ?? []).map((evt, idx) => (
+          {auditEvents.map((evt, idx) => (
             <div
               key={`${evt.ts}-${idx}`}
-              className="flex items-center gap-2 text-[12px] text-[var(--text-secondary)]"
+              className="flex flex-wrap items-center gap-2 text-[12px] text-[var(--text-secondary)]"
             >
-              <span className="text-[var(--text-muted)]">{evt.ts}</span>
+              <span className="shrink-0 font-mono text-[11px] text-[var(--text-muted)]">
+                {formatTimestamp(evt.ts)}
+              </span>
               <span className="rounded bg-[var(--bg-tertiary)] px-1.5 py-0.5 font-mono text-[11px]">
                 {evt.kind}
               </span>

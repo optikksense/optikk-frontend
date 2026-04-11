@@ -71,7 +71,7 @@
               "level": "error",
               "options": {
                 "paths": {
-                  "@features/ai": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
+                  "@features/llm": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
                   "@features/explorer-core": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
                   "@features/infrastructure": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",
                   "@features/log": "Features must not import other feature internals. Move shared logic to @shared or consume an explicit public contract.",

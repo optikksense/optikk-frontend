@@ -369,6 +369,14 @@ export default function DeploymentCompareDrawer({
                 <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
                   Compare release impact across error hotspots, endpoint latency, and traffic shape.
                 </p>
+                <p className="mt-2 text-[11px] text-[var(--text-muted)] leading-relaxed">
+                  For CI or build logs, use the log explorer with attributes such as{" "}
+                  <code className="rounded bg-[var(--bg-tertiary)] px-1">optik.ci.pipeline</code> or{" "}
+                  <code className="rounded bg-[var(--bg-tertiary)] px-1">git.commit.sha</code> when
+                  your pipeline emits them (see{" "}
+                  <span className="text-[var(--text-secondary)]">docs/telemetry-contracts.md</span>
+                  ). Quick links below open service-scoped logs/traces for the selected window.
+                </p>
               </div>
               <DrawerClose
                 aria-label="Close"

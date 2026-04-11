@@ -95,6 +95,13 @@ export const LOG_FILTER_FIELDS: LogFilterField[] = [
     operators: [{ key: "equals", label: "equals", symbol: "=" }],
   },
   {
+    key: "optik.rum",
+    label: "RUM marker",
+    icon: "📱",
+    group: "Product",
+    operators: [{ key: "equals", label: "equals", symbol: "=" }],
+  },
+  {
     key: "span_id",
     label: "Span ID",
     icon: "🔀",
