@@ -8,6 +8,7 @@ export type AlertRuleState = "ok" | "no_data" | "warn" | "alert" | "muted";
 export type AlertConditionType =
   | "slo_burn_rate"
   | "error_rate"
+  | "http_check"
   | "metric_threshold"
   | "log_count"
   | "absence";
@@ -25,7 +26,14 @@ export interface AlertTargetRef {
   readonly sloId?: string;
   readonly env?: string;
   readonly metric?: string;
-  readonly [key: string]: string | number | undefined;
+  /** `http_check` synthetic target */
+  readonly url?: string;
+  readonly method?: string;
+  readonly expect_status?: number;
+  readonly timeout_ms?: number;
+  readonly follow_redirects?: boolean;
+  readonly expect_body_substring?: string;
+  readonly [key: string]: string | number | boolean | undefined;
 }
 
 export interface AlertInstance {

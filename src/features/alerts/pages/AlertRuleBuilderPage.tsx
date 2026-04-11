@@ -33,6 +33,7 @@ short={{values.short}} long={{values.long}} threshold={{threshold.critical}}
 const CONDITION_OPTIONS: Array<{ label: string; value: AlertConditionType }> = [
   { label: "SLO burn rate", value: "slo_burn_rate" },
   { label: "Error rate", value: "error_rate" },
+  { label: "HTTP check (synthetic)", value: "http_check" },
   { label: "Metric threshold (coming soon)", value: "metric_threshold" },
   { label: "Log count (coming soon)", value: "log_count" },
   { label: "Absence / no-data (coming soon)", value: "absence" },
@@ -227,11 +228,135 @@ export default function AlertRuleBuilderPage() {
           <LabeledRow label="Condition type">
             <Select
               value={payload.conditionType}
-              onChange={(v) => patch({ conditionType: v as AlertConditionType })}
+              onChange={(v) => {
+                const ct = v as AlertConditionType;
+                if (ct === "http_check") {
+                  patch({
+                    conditionType: ct,
+                    windows: [{ name: "short", secs: 60 }],
+                    operator: "gt",
+                    criticalThreshold: 0.5,
+                    recoveryThreshold: 0,
+                    warnThreshold: null,
+                    targetRef: {
+                      ...payload.targetRef,
+                      url: (payload.targetRef as { url?: string }).url ?? "https://",
+                      expect_status:
+                        (payload.targetRef as { expect_status?: number }).expect_status ?? 200,
+                      timeout_ms:
+                        (payload.targetRef as { timeout_ms?: number }).timeout_ms ?? 10_000,
+                      follow_redirects:
+                        (payload.targetRef as { follow_redirects?: boolean }).follow_redirects ??
+                        false,
+                    } as AlertTargetRef,
+                  });
+                  return;
+                }
+                patch({ conditionType: ct });
+              }}
               options={CONDITION_OPTIONS}
               size="sm"
             />
           </LabeledRow>
+          {payload.conditionType === "http_check" ? (
+            <>
+              <LabeledRow label="URL">
+                <Input
+                  value={String((payload.targetRef as { url?: string }).url ?? "")}
+                  onChange={(e) =>
+                    patch({
+                      targetRef: { ...payload.targetRef, url: e.target.value } as AlertTargetRef,
+                    })
+                  }
+                  placeholder="https://example.com/health"
+                />
+              </LabeledRow>
+              <LabeledRow label="Method">
+                <Select
+                  value={String(
+                    (payload.targetRef as { method?: string }).method ?? "GET"
+                  ).toUpperCase()}
+                  onChange={(v) =>
+                    patch({
+                      targetRef: { ...payload.targetRef, method: v } as AlertTargetRef,
+                    })
+                  }
+                  options={[
+                    { label: "GET", value: "GET" },
+                    { label: "HEAD", value: "HEAD" },
+                  ]}
+                  size="sm"
+                />
+              </LabeledRow>
+              <LabeledRow label="Expect status">
+                <Input
+                  type="number"
+                  value={String(
+                    (payload.targetRef as { expect_status?: number }).expect_status ?? 200
+                  )}
+                  onChange={(e) =>
+                    patch({
+                      targetRef: {
+                        ...payload.targetRef,
+                        expect_status: Number(e.target.value) || 200,
+                      } as AlertTargetRef,
+                    })
+                  }
+                />
+              </LabeledRow>
+              <LabeledRow label="Timeout (ms)">
+                <Input
+                  type="number"
+                  value={String(
+                    (payload.targetRef as { timeout_ms?: number }).timeout_ms ?? 10_000
+                  )}
+                  onChange={(e) =>
+                    patch({
+                      targetRef: {
+                        ...payload.targetRef,
+                        timeout_ms: Math.min(
+                          60_000,
+                          Math.max(1000, Number(e.target.value) || 10_000)
+                        ),
+                      } as AlertTargetRef,
+                    })
+                  }
+                />
+              </LabeledRow>
+              <LabeledRow label="Follow redirects">
+                <Switch
+                  checked={Boolean(
+                    (payload.targetRef as { follow_redirects?: boolean }).follow_redirects
+                  )}
+                  onChange={(e) =>
+                    patch({
+                      targetRef: {
+                        ...payload.targetRef,
+                        follow_redirects: e.target.checked,
+                      } as AlertTargetRef,
+                    })
+                  }
+                />
+              </LabeledRow>
+              <LabeledRow label="Body contains (optional)">
+                <Input
+                  value={String(
+                    (payload.targetRef as { expect_body_substring?: string })
+                      .expect_body_substring ?? ""
+                  )}
+                  onChange={(e) =>
+                    patch({
+                      targetRef: {
+                        ...payload.targetRef,
+                        expect_body_substring: e.target.value,
+                      } as AlertTargetRef,
+                    })
+                  }
+                  placeholder="Substring match on response body"
+                />
+              </LabeledRow>
+            </>
+          ) : null}
           <LabeledRow label="Target (JSON)">
             <Input
               value={JSON.stringify(payload.targetRef)}

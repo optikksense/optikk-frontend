@@ -24,6 +24,7 @@ import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/shared/constants/routes";
 import type { StructuredFilter } from "@/shared/hooks/useURLFilters";
+import { resolveTimeRangeBounds } from "@/types";
 import { useTimeRange } from "@app/store/appStore";
 import { tracesService } from "@shared/api/tracesService";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
@@ -34,6 +35,7 @@ import {
   PageShell,
   PageSurface,
 } from "@shared/components/ui";
+import { buildLogsHubHref, traceIdEqualsFilter } from "@shared/observability/deepLinks";
 import {
   formatDuration,
   formatNumber,
@@ -434,7 +436,6 @@ export default function TracesPage() {
               </Badge>
             </div>
             <div className="flex items-center gap-2">
-
               <Button
                 variant={isLiveTail ? "primary" : "secondary"}
                 size="sm"
@@ -628,8 +629,13 @@ export default function TracesPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
+                  const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
                   navigate({
-                    to: `${ROUTES.logs}?query=${encodeURIComponent(`trace_id:${selectedTrace.trace_id}`)}`,
+                    to: buildLogsHubHref({
+                      filters: [traceIdEqualsFilter(selectedTrace.trace_id)],
+                      fromMs: startTime,
+                      toMs: endTime,
+                    }) as never,
                   });
                 }}
               >

@@ -10,6 +10,8 @@ import WaterfallChart from "@shared/components/ui/charts/specialized/WaterfallCh
 import PageHeader from "@shared/components/ui/layout/PageHeader";
 
 import { APP_COLORS } from "@config/colorLiterals";
+import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
+import { buildLogsHubHref, traceIdEqualsFilter } from "@shared/observability/deepLinks";
 import { formatDuration, formatNumber, formatTimestamp } from "@shared/utils/formatters";
 import { useAppStore } from "@store/appStore";
 
@@ -25,6 +27,7 @@ export default function TraceDetailPage() {
   const { traceId } = useParams({ strict: false });
   const traceIdParam = traceId ?? "";
   const navigate = useNavigate();
+  const { getTimeRange } = useTimeRange();
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
   const [activeTab, setActiveTab] = useState<"timeline" | "flamegraph">("timeline");
   const [activeDetailTab, setActiveDetailTab] = useState("attributes");
@@ -42,6 +45,11 @@ export default function TraceDetailPage() {
     error,
     logsLoading,
   } = useTraceDetailData(selectedTeamId, traceIdParam);
+
+  const resolvedTraceId = useMemo(
+    () => (spans.length > 0 ? spans[0].trace_id || traceIdParam : traceIdParam),
+    [spans, traceIdParam]
+  );
 
   const traceTimeBounds = useMemo(() => {
     if (spans.length === 0) {
@@ -161,14 +169,35 @@ export default function TraceDetailPage() {
         icon={<GitBranch size={24} />}
         breadcrumbs={[{ label: "Traces", path: "/traces" }, { label: traceIdParam }]}
         actions={
-          <Button
-            variant="ghost"
-            size="sm"
-            icon={<ArrowLeft size={16} />}
-            onClick={() => navigate({ to: "/traces" })}
-          >
-            Back to Traces
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<FileText size={16} />}
+              onClick={() => {
+                const { startTime, endTime } = getTimeRange();
+                const fromMs = traceTimeBounds.startMs ?? Number(startTime);
+                const toMs = traceTimeBounds.endMs ?? Number(endTime);
+                navigate({
+                  to: buildLogsHubHref({
+                    filters: [traceIdEqualsFilter(resolvedTraceId)],
+                    fromMs,
+                    toMs,
+                  }) as never,
+                });
+              }}
+            >
+              Open in log explorer
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<ArrowLeft size={16} />}
+              onClick={() => navigate({ to: "/traces" })}
+            >
+              Back to Traces
+            </Button>
+          </div>
         }
       />
 

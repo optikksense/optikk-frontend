@@ -93,7 +93,8 @@ function serialiseParamValue(value: URLFilterValue, type: URLFilterType): string
   }
 }
 
-function encodeStructuredFilters(filters: StructuredFilter[]): string | null {
+/** Encodes structured explorer filters for the `filters` query param: `field:operator:urlEncodedValue` segments joined by `;`. */
+export function encodeStructuredFiltersParam(filters: StructuredFilter[]): string | null {
   if (filters.length === 0) {
     return null;
   }
@@ -102,7 +103,7 @@ function encodeStructuredFilters(filters: StructuredFilter[]): string | null {
     .join(";");
 }
 
-function decodeStructuredFilters(raw: string | null): StructuredFilter[] {
+export function decodeStructuredFiltersParam(raw: string | null): StructuredFilter[] {
   if (!raw) {
     return [];
   }
@@ -148,7 +149,7 @@ export function useURLFilters(config: URLFilterConfig): {
     if (!config.syncStructuredFilters) {
       return [];
     }
-    return decodeStructuredFilters(searchParams.get("filters"));
+    return decodeStructuredFiltersParam(searchParams.get("filters"));
     // Initial parse should run once; subsequent URL changes are managed via state updates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -189,7 +190,7 @@ export function useURLFilters(config: URLFilterConfig): {
 
             // Manage filters
             if (config.syncStructuredFilters) {
-              const encodedFilters = encodeStructuredFilters(nextFilters);
+              const encodedFilters = encodeStructuredFiltersParam(nextFilters);
               const current = prevParams.get("filters");
               if (encodedFilters !== current) {
                 hasChanges = true;
@@ -247,7 +248,7 @@ export function useURLFilters(config: URLFilterConfig): {
     }
 
     if (config.syncStructuredFilters) {
-      const urlFilters = decodeStructuredFilters(searchParams.get("filters"));
+      const urlFilters = decodeStructuredFiltersParam(searchParams.get("filters"));
       if (JSON.stringify(urlFilters) !== JSON.stringify(structuredFilters)) {
         setStructuredFilters(urlFilters);
       }

@@ -56,16 +56,34 @@ Defined in `vite.config.ts`. Common imports:
 
 ## Domain registry (feature ownership)
 
-All product domains are registered in **`src/app/registry/domainRegistry.ts`**. 7 domains in order:
+All product domains are registered in **`src/app/registry/domainRegistry.ts`**. 9 domains in order:
 
 1. **overview** — Overview, Saturation, Service detail adapter (3 dashboard page adapters, 6 panel renderers)
-2. **metrics** — Metrics Explorer, Saturation hub page, Kafka detail pages (3 panel renderers)
-3. **logs** — Log search + live tail (1 route, 1 panel renderer: `log-histogram`)
-4. **traces** — Traces explorer, detail, comparison (3 routes, 1 panel renderer: `trace-waterfall`)
-5. **infrastructure** — Infrastructure hub page (1 dashboard page adapter)
+2. **saturation** — Saturation hub and datastore/Kafka drill-down routes
+3. **metrics** — Metrics Explorer, Saturation hub page, Kafka detail pages (3 panel renderers)
+4. **logs** — Log search + live tail (1 route, 1 panel renderer: `log-histogram`)
+5. **traces** — Traces explorer, detail, comparison (3 routes, 1 panel renderer: `trace-waterfall`)
+6. **infrastructure** — Fleet-first infrastructure hub (see **Infrastructure product direction** below)
+7. **llm** — LLM hub at `/llm/*`: Overview, Generations (export JSON, **Save as dataset**, row **Trace** → trace detail), **Traces** lens (unique trace IDs from current Generations page + deep link to `/traces` with `@gen_ai.system:*`), **Sessions** (`POST /v1/ai/explorer/sessions/query`), **Scores**, **Prompts**, **Datasets**, **Settings** (`GET/PATCH /v1/ai/llm/settings` → `teams.pricing_overrides_json`, mirrored to `localStorage`). Deep links: `shared/observability/deepLinks.ts` (`buildTracesHubHref`, `genAiSystemSearchFilter`). Primary explorer API: `POST /v1/ai/explorer/query`. Client: `src/features/llm/api/llmHubApi.ts`. Sidebar **LLM** → `/llm/overview`. Legacy `/ai` → `/llm/overview`. Roadmap: `docs/llm-parity-roadmap.md`.
+8. **alerts** — Alerts & Monitors hub, rule builder, rule detail (3 routes). Header bell polls `/api/v1/alerts/incidents`; `CreateAlertButton` is the "Create alert from this view" entry point used on MetricsExplorer and ServiceHub. Command palette contributes `Create alert`, `Go to alerts`, `Mute rule`, `Ack instance`.
+9. **settings** — User/team settings (1 route)
 
-7. **alerts** — Alerts & Monitors hub, rule builder, rule detail (3 routes). Header bell polls `/api/v1/alerts/incidents`; `CreateAlertButton` is the "Create alert from this view" entry point used on MetricsExplorer and ServiceHub. Command palette contributes `Create alert`, `Go to alerts`, `Mute rule`, `Ack instance`.
-8. **settings** — User/team settings (1 route)
+### Infrastructure product direction (single approach)
+
+**Canonical model:** **`/infrastructure` is fully frontend-owned** (like `/service`): tabs, grid layout, and **all** infra charts/tables are defined and rendered in **`optikk-frontend`**—not via `default-config` JSON for this page. **No separate host-map microservice:** fleet UI and query controls live in the app against existing **`optikk-backend`** `/v1/infrastructure/*` HTTP modules (plus **new** read APIs only where responses lack tags/dimensions for grouping).
+
+**Included by design (not deferred):**
+
+1. **New infrastructure panel types** — domain-specific renderers (e.g. fleet **host/grid map**, query **toolbar**, grouped **fleet table**, wrapped time-series) registered via `features/infrastructure` → `dashboardPanels` / `dashboardPanelRegistry`. Reuse shared chart primitives (`UPlotChart`, `ObservabilityChart`, table patterns) where possible; **duplicating** chart wiring in React is acceptable when it replaces former backend panel JSON.
+2. **Datadog-style fleet controls** — **Fill by**, **Size by** (when no child layer), **Group by** (multi-level), and **Filter** (tag / text / boolean-style expressions within product limits), persisted in **URL state** (and optional local presets). Map controls to API query params and/or **client-side** grouping when payloads are small enough; add **backend aggregation endpoints** when cardinality or payload size requires it.
+3. **Parent / child resource lens** — Host ↔ Pod ↔ Container (and cluster where data exists), aligned with [Datadog Host Map](https://docs.datadoghq.com/infrastructure/hostmap/) mental model: switching “object” changes which endpoints and keys drive the map and tables.
+4. **Deep-dive tabs** — JVM, Kubernetes, resource utilization, nodes: **React-authored** tab content calling **`/v1/infrastructure/*`** APIs.
+
+**Backend:** no `defaults/infrastructure/` package—**`optikk-backend`** exposes only the **HTTP data plane** for infra; extend with DTOs/endpoints when fleet grouping or snapshots need server-side aggregation. **Pod lens:** `GET /v1/infrastructure/fleet/pods` + **Fleet** tab resource selector (host | pod) and log deep links via `src/shared/observability/deepLinks.ts`.
+
+**Telemetry contracts:** `docs/telemetry-contracts.md` — log URL `filters` encoding, RUM-as-logs markers, CI attributes, planned `http_check` rule shape.
+
+**Implementation status:** `/infrastructure` is served by **`InfrastructureHubPage`** (direct route in `router.tsx`). Fleet tab implements **Fill / Size / Group / Filter** via URL params (`infraFill`, `infraSize`, `infraGroup`, `infraFilter`, `infraLens`). Other tabs call the same `/v1/infrastructure/*` APIs. **`optikk-backend`** embeds only the **overview** default page in `defaults/defaults.go`.
 
 Each feature's `index.ts` exports a **domain config**: navigation, explorer `routes`, optional `dashboardPages` and `dashboardPanels`.
 
@@ -112,7 +130,7 @@ Each feature's `index.ts` exports a **domain config**: navigation, explorer `rou
 | Metrics | `metrics` | MetricsExplorerPage, SaturationHubPage, KafkaTopicDetailPage, KafkaGroupDetailPage | 0 | — | latency-histogram, latency-heatmap, db-systems-overview |
 | Logs | `logs` | LogsHubPage | `/logs` | — | log-histogram |
 | Traces | `traces` | TracesPage, TraceDetailPage, TraceComparisonPage | `/traces`, `/traces/:traceId`, `/traces/compare` | — | trace-waterfall |
-| Infrastructure | `infrastructure` | InfrastructureHubPage | 0 | infrastructure | — |
+| Infrastructure | `infrastructure` | InfrastructureHubPage (`pages/InfrastructureHubPage.tsx` + `pages/tabs/*`) | 0 | — (no backend default page) | — (charts composed in tabs, not `dashboardPanels`) |
 
 | Alerts | `alerts` | AlertsHubPage, AlertRuleBuilderPage, AlertRuleDetailPage | `/alerts`, `/alerts/rules/new`, `/alerts/rules/$ruleId`, `/alerts/rules/$ruleId/edit` | — | — |
 | Settings | `settings` | SettingsPage (Profile, Team, Preferences tabs) | `/settings` | — | — |
@@ -134,6 +152,8 @@ Shared infrastructure for all data explorers (Logs, Traces, Metrics) — **not a
 
 | Area | Path | Notes |
 |------|------|--------|
+| Observability deep links | `shared/observability/deepLinks.ts` | Log hub URLs with `filters`/`from`/`to`; trace and resource filter helpers |
+| Shareable view export | `shared/observability/shareableView.ts` | URL length guard + JSON snapshot (logs + infrastructure headers) |
 | HTTP client | `shared/api/api/client.ts` | Axios with auth interceptors; auto-unwraps `APIResponse` envelope |
 | Response decode | `shared/api/utils/decode.ts` | Zod validation boundary |
 | Default config | `shared/api/defaultConfigService.ts` | `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId`; Zod schemas in `shared/api/schemas/defaultConfigSchemas.ts` |
@@ -376,12 +396,12 @@ Use when a change spans frontend and API. Backend paths refer to **`optikk-backe
 | Metrics Explorer | `src/features/metrics` (`metricsExplorerApi.ts`) | `internal/modules/metricsexplorer` (`/metrics/names`, `/:metricName/tags`, `/explorer/query`) |
 | Dashboard panels | `dashboard/renderers/`, `dashboardPanelRegistry` | `internal/infra/dashboardcfg/`, panel types in `enums.go` |
 | Dashboard config API | `defaultConfigService.ts` | `internal/infra/dashboardcfg/` |
-| Default pages | Dashboard page adapters | `internal/infra/dashboardcfg/defaults/{overview,service,infrastructure,saturation}/` |
+| Default pages | Dashboard page adapters | `internal/infra/dashboardcfg/defaults/` — embedded **overview** only; infrastructure UI is frontend-owned |
 | Auth | `shared/api/auth/` | `internal/modules/user/auth/` |
 
 | Logs live tail | `useSocketStream` → `useLiveTailStream` | `internal/modules/logs/search/livetail_run.go`, `internal/modules/livetail/` |
 | Overview | `src/features/overview/` | `internal/modules/overview/{overview,errors,slo}/` |
-| Infrastructure | `src/features/infrastructure/` | `internal/modules/infrastructure/*/`, `internal/infra/dashboardcfg/defaults/infrastructure/` |
+| Infrastructure | `src/features/infrastructure/` — `InfrastructureHubPage` + tabs (§ *Infrastructure product direction*) | `internal/modules/infrastructure/*/` (APIs only); no embedded default page |
 | Saturation | `src/features/metrics/pages/SaturationHubPage` | `internal/modules/saturation/database/*/`, `saturation/kafka/` |
 | Traces | `src/features/traces/api/` | `internal/modules/traces/{query,explorer,tracedetail,redmetrics,errorfingerprint,errortracking,tracecompare}/` |
 

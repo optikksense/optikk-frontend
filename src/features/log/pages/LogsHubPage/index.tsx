@@ -1,6 +1,7 @@
 import { Activity, AlertCircle, FileText, Radio, Share2 } from "lucide-react";
 
 import { ERROR_CODE_LABELS } from "@/shared/constants/errorCodes";
+import { ROUTES } from "@/shared/constants/routes";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -33,6 +34,12 @@ import {
   PageShell,
   PageSurface,
 } from "@shared/components/ui";
+import { traceDetailHref } from "@shared/observability/deepLinks";
+import {
+  buildShareableSnapshot,
+  copyUrlOrSnapshotJson,
+  snapshotToJson,
+} from "@shared/observability/shareableView";
 import { formatNumber, formatRelativeTime } from "@shared/utils/formatters";
 import { rowKey as logRowKey, parseTimestampMs } from "@shared/utils/logUtils";
 import { tsLabel } from "@shared/utils/time";
@@ -87,6 +94,23 @@ function formatLiveTailStatus(
 export default function LogsHubPage() {
   const navigate = useNavigate();
   const timeRange = useTimeRange();
+
+  const onCopyShareLink = async (): Promise<void> => {
+    const href = window.location.href;
+    const snapshot = buildShareableSnapshot("logs", ROUTES.logs, window.location.search, timeRange);
+    const r = await copyUrlOrSnapshotJson(href, snapshot);
+    if (r.mode === "url") {
+      toast.success("Share link copied");
+    } else {
+      toast.success("URL was too long — copied view JSON instead. Share via doc or ticket.");
+    }
+  };
+
+  const onExportViewJson = async (): Promise<void> => {
+    const snapshot = buildShareableSnapshot("logs", ROUTES.logs, window.location.search, timeRange);
+    await navigator.clipboard.writeText(snapshotToJson(snapshot));
+    toast.success("View JSON copied");
+  };
 
   const {
     values: urlValues,
@@ -357,17 +381,16 @@ export default function LogsHubPage() {
         title="Logs"
         icon={<FileText size={22} />}
         subtitle="Search, filter, and pivot through dense log streams without leaving the investigative thread."
-        actions=<Button
-          variant="ghost"
-          size="sm"
-          icon={<Share2 size={14} />}
-          onClick={async () => {
-            await navigator.clipboard.writeText(window.location.href);
-            toast.success("Share link copied");
-          }}
-        >
-          Share
-        </Button>
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="ghost" size="sm" icon={<Share2 size={14} />} onClick={onCopyShareLink}>
+              Copy link
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onExportViewJson}>
+              Export JSON
+            </Button>
+          </div>
+        }
       />
 
       <PageSurface padding="lg" className="relative z-[40] overflow-visible">
@@ -380,8 +403,18 @@ export default function LogsHubPage() {
             </div>
           ) : null}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Badge variant="info">All logs</Badge>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setFilters(upsertLogFacetFilter(filters, "optik.rum", "true"));
+                  setPage(1);
+                }}
+              >
+                RUM stream
+              </Button>
               {liveTailEnabled ? (
                 <Badge variant={liveTailStatus === "live" ? "warning" : "default"}>
                   {liveTailStatus === "live" ? `${Math.max(0, liveTailLagMs)}ms lag` : "connecting"}
@@ -581,13 +614,10 @@ export default function LogsHubPage() {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() =>
-                  navigate({
-                    to: `/traces/${encodeURIComponent(
-                      selectedLog.trace_id || selectedLog.traceId || ""
-                    )}` as any,
-                  })
-                }
+                onClick={() => {
+                  const id = selectedLog.trace_id || selectedLog.traceId || "";
+                  navigate({ to: traceDetailHref(id) as never });
+                }}
               >
                 Open Trace
               </Button>
