@@ -116,8 +116,7 @@ export default function ServiceHubPage() {
             <Badge variant="info">{summary.totalServices} services</Badge>
             <Badge variant="warning">{summary.recentlyDeployed} recent releases</Badge>
             <CreateAlertButton
-              condition="error_rate"
-              groupBy={["service.name"]}
+              prefill={{ presetKind: "service_error_rate" }}
               label="Create alert for fleet"
             />
           </div>

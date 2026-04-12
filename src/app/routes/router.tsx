@@ -19,7 +19,6 @@ import type { DashboardDrawerEntity } from "@/shared/types/dashboardConfig";
 
 import { AppContent } from "../App";
 import MainLayout from "../layout/MainLayout";
-import BackendDrivenPage from "./BackendDrivenPage";
 import LegacyDashboardDetailRedirect from "./LegacyDashboardDetailRedirect";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -30,6 +29,7 @@ const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPa
 const InfrastructureHubPage = lazy(
   () => import("@/features/infrastructure/pages/InfrastructureHubPage")
 );
+const OverviewHubPage = lazy(() => import("@/features/overview/pages/OverviewHubPage/OverviewHubPage"));
 function LegacyServicePathRedirect() {
   const params = useParams({ strict: false });
   const serviceName = typeof params.serviceName === "string" ? params.serviceName : "";
@@ -158,7 +158,7 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
   createProtected(route.path, route.page)
 );
 
-const overviewRoute = createProtected(ROUTES.overview, BackendDrivenPage);
+const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
 const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
 // Redirects

@@ -50,13 +50,7 @@ export default function MetricsExplorerPage() {
         subtitle="Query, visualize, and compare metrics across your services."
         actions={
           <div className="flex items-center gap-2">
-            <CreateAlertButton
-              condition="metric_threshold"
-              target={{
-                metric: queries[0]?.metricName ?? undefined,
-              }}
-              groupBy={queries[0]?.groupBy ?? []}
-            />
+            <CreateAlertButton prefill={{ presetKind: "service_error_rate" }} label="New alert" />
             <Button variant="ghost" size="sm" icon={<Share2 size={14} />} onClick={handleShare}>
               Share
             </Button>

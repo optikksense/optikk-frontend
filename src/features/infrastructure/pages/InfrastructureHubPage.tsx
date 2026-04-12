@@ -97,7 +97,10 @@ export default function InfrastructureHubPage() {
             <Button variant="ghost" size="sm" onClick={onExportInfraJson}>
               Export JSON
             </Button>
-            <CreateAlertButton condition="error_rate" label="Create alert from infra" />
+            <CreateAlertButton
+              prefill={{ presetKind: "service_error_rate" }}
+              label="Create alert from infra"
+            />
           </div>
         }
       />

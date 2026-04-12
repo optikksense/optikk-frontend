@@ -71,22 +71,22 @@ export function AlertsBell() {
           <div className="max-h-[320px] overflow-y-auto">
             {firing.slice(0, 8).map((inc) => (
               <button
-                key={`${inc.alertId}:${inc.instanceKey}`}
+                key={`${inc.alert_id}:${inc.instance_key}`}
                 type="button"
                 className="flex w-full flex-col gap-1 border-[var(--border-color)] border-b px-3 py-2 text-left last:border-b-0 hover:bg-white/[0.04]"
                 onClick={() => {
                   setOpen(false);
                   navigate({
-                    to: ROUTES.alertRuleDetail.replace("$ruleId", inc.alertId) as never,
+                    to: ROUTES.alertRuleDetail.replace("$ruleId", inc.alert_id) as never,
                   });
                 }}
               >
                 <div className="flex items-center gap-2">
                   <RuleStateChip state={inc.state} />
-                  <span className="truncate font-semibold text-[12px]">{inc.ruleName}</span>
+                  <span className="truncate font-semibold text-[12px]">{inc.rule_name}</span>
                 </div>
                 <span className="truncate text-[11px] text-[var(--text-muted)]">
-                  {Object.entries(inc.groupValues)
+                  {Object.entries(inc.group_values ?? {})
                     .map(([k, v]) => `${k}:${v}`)
                     .join(" · ")}
                 </span>

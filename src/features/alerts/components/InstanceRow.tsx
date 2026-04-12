@@ -7,13 +7,14 @@ import type { AlertInstance } from "../types";
 import { RuleStateChip } from "./RuleStateChip";
 
 interface InstanceRowProps {
+  readonly alertId: string;
   readonly instance: AlertInstance;
 }
 
-export function InstanceRow({ instance }: InstanceRowProps) {
+export function InstanceRow({ alertId, instance }: InstanceRowProps) {
   const ackMutation = useAckAlertInstance();
   const snoozeMutation = useSnoozeAlertInstance();
-  const tags = Object.entries(instance.groupValues);
+  const tags = Object.entries(instance.group_values ?? {});
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 py-2">
       <RuleStateChip state={instance.state} />
@@ -28,17 +29,17 @@ export function InstanceRow({ instance }: InstanceRowProps) {
         ))}
         {tags.length === 0 && (
           <span className="font-mono text-[11px] text-[var(--text-muted)]">
-            {instance.instanceKey}
+            {instance.instance_key}
           </span>
         )}
       </div>
       <div className="ml-auto flex items-center gap-2">
-        {instance.firedAt && (
-          <span className="text-[11px] text-[var(--text-muted)]">Fired {instance.firedAt}</span>
+        {instance.fired_at && (
+          <span className="text-[11px] text-[var(--text-muted)]">Fired {instance.fired_at}</span>
         )}
-        {instance.ackedBy ? (
+        {instance.acked_by ? (
           <span className="text-[11px] text-[var(--color-success)]">
-            Acked by {instance.ackedBy}
+            Acked by {instance.acked_by}
           </span>
         ) : (
           <>
@@ -46,7 +47,7 @@ export function InstanceRow({ instance }: InstanceRowProps) {
               variant="ghost"
               size="sm"
               onClick={() =>
-                ackMutation.mutate({ instanceId: instance.instanceKey, until: null })
+                ackMutation.mutate({ alertId, instanceKey: instance.instance_key, until: null })
               }
               disabled={ackMutation.isPending}
             >
@@ -56,7 +57,11 @@ export function InstanceRow({ instance }: InstanceRowProps) {
               variant="ghost"
               size="sm"
               onClick={() =>
-                snoozeMutation.mutate({ instanceId: instance.instanceKey, minutes: 30 })
+                snoozeMutation.mutate({
+                  alertId,
+                  instanceKey: instance.instance_key,
+                  minutes: 30,
+                })
               }
               disabled={snoozeMutation.isPending}
             >

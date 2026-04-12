@@ -1,18 +1,15 @@
-// API client for the alerting module.
-// Routes mirror `internal/modules/alerting/handler.go` in optikk-backend
-// (see plan: jazzy-exploring-mccarthy.md → "Endpoints").
-// Backend is being built in parallel — this client is aligned with the
-// documented contract and is safe to wire against mocks in the meantime.
-
 import { api } from "@shared/api/api/client";
 
 import type {
   AlertBacktestResult,
+  AlertActivityEntry,
   AlertEvent,
   AlertIncident,
+  AlertPreview,
   AlertRule,
   AlertRulePayload,
   AlertSilence,
+  AlertSlackTestResult,
   AlertTestResult,
 } from "../types";
 
@@ -20,8 +17,6 @@ const BASE = "/api/v1/alerts";
 
 export interface ListRulesParams {
   readonly teamId?: number | null;
-  readonly state?: string;
-  readonly enabled?: boolean;
 }
 
 export interface BacktestParams {
@@ -32,11 +27,6 @@ export interface BacktestParams {
 export interface ListIncidentsParams {
   readonly state?: "firing" | "resolved" | "all";
   readonly teamId?: number | null;
-}
-
-export interface SlackCallbackPayload {
-  readonly payload: string;
-  readonly signature?: string;
 }
 
 export const alertsApi = {
@@ -60,6 +50,10 @@ export const alertsApi = {
     });
   },
 
+  previewRule(payload: AlertRulePayload): Promise<AlertPreview> {
+    return api.post<AlertPreview>(`${BASE}/rules/preview`, payload);
+  },
+
   deleteRule(id: string): Promise<void> {
     return api.delete<void>(`${BASE}/rules/${id}`);
   },
@@ -72,13 +66,12 @@ export const alertsApi = {
     return api.post<AlertTestResult>(`${BASE}/rules/${id}/test`, {});
   },
 
-  testPayload(payload: AlertRulePayload): Promise<AlertTestResult> {
-    // Convenience: lets the builder preview a rule that hasn't been saved yet.
-    return api.post<AlertTestResult>(`${BASE}/rules/test`, payload);
-  },
-
   backtestRule(id: string, params: BacktestParams): Promise<AlertBacktestResult> {
-    return api.post<AlertBacktestResult>(`${BASE}/rules/${id}/backtest`, params);
+    return api.post<AlertBacktestResult>(`${BASE}/rules/${id}/backtest`, {
+      from_ms: new Date(params.from).getTime(),
+      to_ms: new Date(params.to).getTime(),
+      step_ms: 15 * 60 * 1000,
+    });
   },
 
   ruleAudit(id: string): Promise<AlertEvent[]> {
@@ -89,43 +82,49 @@ export const alertsApi = {
     return api.get<AlertIncident[]>(`${BASE}/incidents`, { params });
   },
 
-  ackInstance(instanceId: string, until?: string | null): Promise<void> {
-    return api.post<void>(`${BASE}/instances/${instanceId}/ack`, { until });
+  listActivity(limit = 100): Promise<AlertActivityEntry[]> {
+    return api.get<AlertActivityEntry[]>(`${BASE}/activity`, { params: { limit } });
   },
 
-  snoozeInstance(instanceId: string, minutes: number): Promise<void> {
-    return api.post<void>(`${BASE}/instances/${instanceId}/snooze`, { minutes });
+  ackInstance(alertId: string, instanceKey: string, until?: string | null): Promise<void> {
+    return api.post<void>(`${BASE}/instances/${alertId}/ack`, {
+      instance_key: instanceKey,
+      until,
+    });
+  },
+
+  snoozeInstance(alertId: string, instanceKey: string, minutes: number): Promise<void> {
+    return api.post<void>(`${BASE}/instances/${alertId}/snooze`, {
+      instance_key: instanceKey,
+      minutes,
+    });
   },
 
   listSilences(): Promise<AlertSilence[]> {
     return api.get<AlertSilence[]>(`${BASE}/silences`);
   },
 
-  createSilence(silence: AlertSilence): Promise<AlertSilence> {
+  createSilence(silence: AlertSilence & { alert_id: string }): Promise<AlertSilence> {
     return api.post<AlertSilence>(`${BASE}/silences`, silence);
   },
 
-  updateSilence(id: string, silence: Partial<AlertSilence>): Promise<AlertSilence> {
+  updateSilence(
+    id: string,
+    alertId: string,
+    silence: Partial<AlertSilence>
+  ): Promise<AlertSilence> {
     return api.request<AlertSilence>({
-      url: `${BASE}/silences/${id}`,
+      url: `${BASE}/silences/${id}?alertId=${encodeURIComponent(alertId)}`,
       method: "PATCH",
       data: silence,
     });
   },
 
-  deleteSilence(id: string): Promise<void> {
-    return api.delete<void>(`${BASE}/silences/${id}`);
+  deleteSilence(id: string, alertId: string): Promise<void> {
+    return api.delete<void>(`${BASE}/silences/${id}?alertId=${encodeURIComponent(alertId)}`);
   },
 
-  // Slack action button callback — the Slack client POSTs the signed payload
-  // to this URL; exposed here for completeness and for local replay tooling.
-  slackCallback(payload: SlackCallbackPayload): Promise<void> {
-    return api.post<void>(`${BASE}/callback/slack`, payload);
-  },
-
-  testSlackWebhook(webhookUrl: string): Promise<{ delivered: boolean; error?: string }> {
-    return api.post<{ delivered: boolean; error?: string }>(`${BASE}/test-slack`, {
-      webhookUrl,
-    });
+  testSlack(rule: AlertRulePayload): Promise<AlertSlackTestResult> {
+    return api.post<AlertSlackTestResult>(`${BASE}/slack/test`, { rule });
   },
 };

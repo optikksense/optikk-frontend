@@ -5,7 +5,7 @@ export const MAX_SHAREABLE_URL_CHARS = 2000;
 
 export const SHAREABLE_VIEW_VERSION = 1 as const;
 
-export type ShareableViewKind = "logs" | "infrastructure";
+export type ShareableViewKind = "logs" | "infrastructure" | "overview";
 
 export interface ShareableViewSnapshot {
   readonly v: typeof SHAREABLE_VIEW_VERSION;

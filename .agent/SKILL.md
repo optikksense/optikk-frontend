@@ -46,12 +46,12 @@ This skill defines the development standards and architectural patterns for the 
 
 - **Feature Registry**: `src/app/registry/domainRegistry.ts` — 8 domains: overview, saturation, metrics, logs, traces, infrastructure, alerts, settings
 - **Route Constants**: `src/shared/constants/routes.ts`
-- **Dashboard UI**: `src/shared/components/ui/dashboard/` (`DashboardPage.tsx`, `ConfigurableDashboard.tsx`, `DashboardEntityDrawer.tsx`)
+- **Dashboard UI**: `src/shared/components/ui/dashboard/` (`ConfigurableDashboard.tsx`, `DashboardEntityDrawer.tsx`, `ConfigurableChartCard.tsx`)
 - **Panel Registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain-contributed panels
 - **Built-in Panels**: `src/shared/components/ui/dashboard/builtInDashboardPanels.tsx`
 - **HTTP Client**: `src/shared/api/api/client.ts`
 - **API Decode**: `src/shared/api/utils/decode.ts`
-- **Default Config API**: `src/shared/api/defaultConfigService.ts`
+- **Overview hub**: `src/features/overview/pages/OverviewHubPage/` + `src/features/overview/api/overviewHubApi.ts`
 - **Global Store**: `src/app/store/appStore.ts`
 - **Charts**: `src/shared/components/ui/charts/` (UPlotChart, ObservabilityChart, time-series/, distributions/, micro/, specialized/)
 - **Theme**: `src/config/themeColors.css`
