@@ -356,7 +356,7 @@ export default function DeploymentCompareDrawer({
         className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto z-[1100] h-auto select-text overflow-y-auto border-[var(--border-color)] border-l"
         style={{ width: "min(1120px, calc(100vw - 20px))" }}
       >
-        <DrawerHeader className="items-start border-[var(--border-color)] border-b bg-[linear-gradient(180deg,rgba(124,127,242,0.09),rgba(124,127,242,0.02))]">
+        <DrawerHeader className="items-start border-[var(--border-color)] border-b bg-[linear-gradient(180deg,var(--color-primary-subtle-15),var(--color-primary-subtle-02))]">
           <div className="flex w-full flex-col gap-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">

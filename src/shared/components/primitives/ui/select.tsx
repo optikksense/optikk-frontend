@@ -67,7 +67,7 @@ function Select({
       >
         <SelectPrimitive.Trigger
           className={cn(
-            "inline-flex w-full items-center justify-between gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] outline-none transition-[background-color,border-color,box-shadow] hover:border-[rgba(124,127,242,0.5)] focus:ring-2 focus:ring-[rgba(124,127,242,0.18)]",
+            "inline-flex w-full items-center justify-between gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] outline-none transition-[background-color,border-color,box-shadow] hover:border-[var(--color-primary-subtle-50)] focus:ring-2 focus:ring-[var(--color-primary-subtle-18)]",
             sizeClasses[size],
             !selectedLabel && "text-[var(--text-muted)]"
           )}
@@ -161,7 +161,7 @@ function MultiSelect({
         type="button"
         onClick={() => setOpen((c) => !c)}
         className={cn(
-          "inline-flex w-full items-center justify-between gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] hover:border-[rgba(124,127,242,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(124,127,242,0.18)]",
+          "inline-flex w-full items-center justify-between gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] hover:border-[var(--color-primary-subtle-50)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-subtle-18)]",
           sizeClasses[size],
           selectedLabels.length === 0 && "text-[var(--text-muted)]"
         )}

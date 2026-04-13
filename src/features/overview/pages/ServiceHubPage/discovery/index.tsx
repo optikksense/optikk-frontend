@@ -113,7 +113,7 @@ function DeploymentCell({
         event.stopPropagation();
         onOpen(row);
       }}
-      className="w-full rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015))] px-3 py-2 text-left transition-colors hover:border-[rgba(124,127,242,0.45)] hover:bg-[rgba(124,127,242,0.08)]"
+      className="w-full rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015))] px-3 py-2 text-left transition-colors hover:border-[var(--color-primary-subtle-45)] hover:bg-[var(--color-primary-subtle-08)]"
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-medium text-[var(--text-primary)]">{deployment.version}</span>

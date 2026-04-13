@@ -293,6 +293,10 @@
   --color-primary-subtle-28: rgba(59, 130, 246, 0.28);
   --color-primary-subtle-30: rgba(59, 130, 246, 0.3);
   --color-primary-subtle-35: rgba(59, 130, 246, 0.35);
+  --color-primary-subtle-45: rgba(59, 130, 246, 0.45);
+  --color-primary-subtle-50: rgba(59, 130, 246, 0.5);
+  --color-primary-subtle-05: rgba(59, 130, 246, 0.05);
+  --color-primary-subtle-02: rgba(59, 130, 246, 0.02);
   --color-success: #73c991;
   --color-warning: #f7b63a;
   --color-error: #f04438;

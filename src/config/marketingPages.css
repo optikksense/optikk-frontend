@@ -1,0 +1,172 @@
+/* Shared marketing page blocks (config dir = color lint exemption) */
+
+.mkt-page-wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 48px 96px;
+}
+
+.mkt-page-hero {
+  margin-bottom: 56px;
+}
+
+.mkt-page-kicker {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 20px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #38bdf8;
+  margin-bottom: 20px;
+}
+
+.mkt-page-title {
+  font-family: "DM Serif Display", serif;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.08;
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+}
+
+.mkt-page-lead {
+  font-size: 18px;
+  color: #94a3b8;
+  line-height: 1.65;
+  max-width: 720px;
+  margin: 0;
+}
+
+.mkt-shot-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.mkt-shot {
+  grid-column: span 6;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.55);
+}
+
+.mkt-shot--wide {
+  grid-column: span 12;
+}
+
+.mkt-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+@media (max-width: 900px) {
+  .mkt-shot {
+    grid-column: span 12;
+  }
+}
+
+.mkt-article {
+  max-width: 720px;
+  margin: 0 auto 80px;
+}
+
+.mkt-article h2 {
+  font-family: "DM Serif Display", serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #f8fafc;
+  margin: 48px 0 16px;
+}
+
+.mkt-article h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 32px 0 12px;
+}
+
+.mkt-article p,
+.mkt-article li {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #94a3b8;
+}
+
+.mkt-article ul {
+  padding-left: 1.25rem;
+  margin: 0 0 16px;
+}
+
+.mkt-article li {
+  margin-bottom: 8px;
+}
+
+.mkt-diagram {
+  margin: 32px 0;
+  padding: 28px 24px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(37, 99, 235, 0.06);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.mkt-feature-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 40px;
+}
+
+.mkt-feature-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+  padding: 22px 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.025);
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .mkt-feature-row {
+    grid-template-columns: 1fr;
+  }
+  .mkt-page-wrap {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+.mkt-feature-row h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.mkt-feature-row p {
+  margin: 0;
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.6;
+}

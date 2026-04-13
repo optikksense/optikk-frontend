@@ -561,7 +561,7 @@ export default function ServiceDetailDrawer({
         <div className="flex flex-col gap-4 px-6 py-4">
           <Card
             padding="lg"
-            className="border-[rgba(124,127,242,0.18)] bg-[linear-gradient(180deg,rgba(124,127,242,0.1),rgba(124,127,242,0.03))]"
+            className="border-[var(--color-primary-subtle-18)] bg-[linear-gradient(180deg,var(--color-primary-subtle-10),var(--color-primary-subtle-02))]"
           >
             <div className="flex flex-col gap-2 xl:flex-row xl:items-end xl:justify-between">
               <div className="max-w-2xl">

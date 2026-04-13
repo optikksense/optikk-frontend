@@ -37,7 +37,7 @@ function SummaryTile({
         : tone === "danger"
           ? "border-[rgba(240,68,56,0.2)] bg-[rgba(240,68,56,0.08)]"
           : tone === "info"
-            ? "border-[rgba(124,127,242,0.22)] bg-[rgba(124,127,242,0.1)]"
+            ? "border-[var(--color-primary-subtle-22)] bg-[var(--color-primary-subtle-10)]"
             : "border-[var(--border-color)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]";
 
   return (

@@ -73,8 +73,8 @@ const LandingPage: React.FC = () => {
         this.baseAlpha = (this.speed / 3) * 0.4;
         const isPrimary = Math.random() > 0.4;
         this.color = isPrimary
-          ? `rgba(99, 102, 241, ${this.baseAlpha})`
-          : `rgba(34, 211, 238, ${this.baseAlpha})`;
+          ? `rgba(37, 99, 235, ${this.baseAlpha})`
+          : `rgba(56, 189, 248, ${this.baseAlpha})`;
 
         this.nodes = [];
         const maxNodes = Math.floor(Math.random() * 5);
@@ -196,8 +196,8 @@ const LandingPage: React.FC = () => {
                 <svg aria-hidden="true">
                   <defs>
                     <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#6366F1" />
-                      <stop offset="100%" stopColor="#22D3EE" />
+                      <stop offset="0%" stopColor="#2563EB" />
+                      <stop offset="100%" stopColor="#38BDF8" />
                     </linearGradient>
                   </defs>
                   <rect width="32" height="32" rx="8" fill="url(#logo-grad)" />

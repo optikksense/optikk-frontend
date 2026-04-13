@@ -5,6 +5,8 @@ const ROUTES = {
   login: "/login",
   product: "/product",
   home: "/",
+  features: "/features",
+  architecture: "/architecture",
   pricing: "/pricing",
   opentelemetry: "/opentelemetry",
   selfHost: "/self-host",

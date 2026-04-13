@@ -47,12 +47,13 @@ export function timeRangeDurationMs(r: TimeRange): number {
 export interface Team {
   id: number;
   name: string;
-  orgName?: string;
+  orgName?: string | null;
 }
 
 export interface User {
   id: string | number;
   email: string;
-  name?: string;
+  name?: string | null;
+  avatarUrl?: string | null;
   teams?: Team[];
 }
