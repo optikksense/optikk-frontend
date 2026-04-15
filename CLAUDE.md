@@ -35,7 +35,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Explorer core**: `src/features/explorer-core/` — shared analytics, facets, visualizations for Logs/Traces/Metrics explorers
 - **Entities**: `src/shared/entities/` — log, metric, trace, user
 - **Theme**: `src/config/themeColors.css` → `tailwind.config.ts`
-- **Dev**: `npm run dev` | **CI**: `npm run ci`
+- **Dev**: `yarn dev` | **CI**: `yarn ci`
 - **Navigation utils**: `src/shared/utils/navigation.ts` — `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` for TanStack Router dynamic-path navigation (replaces scattered `as any` casts)
 - **Standard query**: `src/shared/hooks/useStandardQuery.ts` — `useStandardQuery(options)` with `keepPreviousData`, `staleTime: 5s`, `retry: 2`
 - **Sibling repo**: `optikk-backend` (see its `CODEBASE_INDEX.md`)

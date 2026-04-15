@@ -35,7 +35,7 @@ Event names match the former Socket.IO emit names for minimal UI churn.
 
 ## Dev proxy
 
-Vite proxies **`/api`** with **`ws: true`** so `/api/v1/ws/live` reaches the backend during `npm run dev`.
+Vite proxies **`/api`** with **`ws: true`** so `/api/v1/ws/live` reaches the backend during `yarn dev`.
 
 ## Troubleshooting
 

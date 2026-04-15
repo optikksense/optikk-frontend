@@ -25,9 +25,9 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 
 ## Stack and commands
 
-- **Stack:** React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Zod, Tailwind 3.4, Zustand 5, uPlot 1.6, React Grid Layout 2.2.
-- **Dev:** `npm run dev` (Vite dev server with API proxy + WebSocket support for live tail).
-- **Quality:** `npm run ci` (type-check, lint, build, bundle budgets).
+- **Stack:** React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Zod, Tailwind 3.4, Zustand 5, uPlot 1.6, React Grid Layout 2.2, OpenTelemetry (SDK & OTLP).
+- **Dev:** `yarn dev` (Vite dev server with API proxy + WebSocket support for live tail).
+- **Quality:** `yarn ci` (type-check, lint, build, bundle budgets).
 
 ## Entry and app shell
 
@@ -163,16 +163,17 @@ Shared infrastructure for all data explorers (Logs, Traces, Metrics) — **not a
 | Radix primitives | `shared/components/primitives/ui/` | **Import Tabs/Tooltip/Dialog/etc. from `@shared/components/primitives/ui`, NOT `@shared/components/ui`** — the latter does not re-export Radix primitives |
 | Navigation utils | `shared/utils/navigation.ts` | `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` — type-safe wrappers for TanStack Router navigation with dynamic paths; centralises the branded-string cast |
 | Standard query | `shared/hooks/useStandardQuery.ts` | `useStandardQuery(options)` — project-wide defaults: `placeholderData: keepPreviousData`, `staleTime: 5_000`, `retry: 2` |
+| Telemetry (OTel) | `shared/telemetry/browserOtel.ts` | Browser SDK initialization: OTLP export, sampling (Ratio-based), and resource attribution. |
 
-### Adding npm packages (React 19 peer-dep gotcha)
+### Adding packages (React 19 peer-dep gotcha)
 
-The project is on React 19 but several deps (e.g. `lucide-react@0.316`) still pin `react@^18` in `peerDependencies`. `npm install <pkg>` fails with `EResolve`. Use:
+The project is on React 19 but several deps still pin `react@^18` in `peerDependencies`. **`package.json`** includes **`resolutions`** (Yarn) so nested peers align with React 19 (for example `lucide-react/react`). Add packages with:
 
 ```bash
-npm install --legacy-peer-deps <pkg>
+yarn add <pkg>
 ```
 
-Applies to any new package; verified for `@xyflow/react`, `dagre`, `@types/dagre`.
+If Yarn still reports a peer conflict, extend **`resolutions`** in **`package.json`** using Yarn v1 selective resolution keys (`parent/child`, for example `some-pkg/react`), then run **`yarn install`**. Verified patterns cover `@xyflow/react`, `dagre`, `@types/dagre`.
 
 ### Charting Engine (`src/shared/components/ui/charts/`)
 
@@ -375,7 +376,7 @@ ConfigurableDashboard + ConfigurableChartCard (optional composition)
 
 - All page components and dashboard renderers use `React.lazy()` in feature `index.ts`
 - Vite `manualChunks`: `feature-${name}` per feature, `marketing-runtime`, `ui-runtime` (radix, lucide), `chart-runtime` (uplot), `data-runtime` (axios, tanstack, zod)
-- Bundle budget checks: `npm run ci:budgets` (via `scripts/check-budgets.js`)
+- Bundle budget checks: `yarn ci:budgets` (via `scripts/check-budgets.js`)
 
 ---
 

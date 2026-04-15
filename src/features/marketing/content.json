@@ -1,0 +1,46 @@
+{
+  "pages": [
+    {
+      "path": "/",
+      "title": "Observability for shipping teams",
+      "description": "Dense, fast, AI-aware observability workflows built for developers.",
+      "eyebrow": "Platform",
+      "cta": "Open Product"
+    },
+    {
+      "path": "/features",
+      "title": "A tighter surface for logs, traces, metrics, and AI systems",
+      "description": "Keep the Datadog-grade density, remove the sprawl, and make the happy path obvious.",
+      "eyebrow": "Features",
+      "cta": "See Pricing"
+    },
+    {
+      "path": "/pricing",
+      "title": "Predictable pricing for engineering teams",
+      "description": "Usage-aware pricing for infrastructure telemetry and LLM workloads.",
+      "eyebrow": "Pricing",
+      "cta": "Get Started"
+    },
+    {
+      "path": "/architecture",
+      "title": "Built around compatibility, density, and speed",
+      "description": "A frontend shaped around real observability workflows instead of generic dashboards.",
+      "eyebrow": "Architecture",
+      "cta": "Open Docs"
+    },
+    {
+      "path": "/opentelemetry",
+      "title": "OpenTelemetry in, fast insight out",
+      "description": "Adopt OTLP without losing the navigability and workflow depth engineers actually need.",
+      "eyebrow": "OpenTelemetry",
+      "cta": "Explore Product"
+    },
+    {
+      "path": "/self-host",
+      "title": "Self-host when control matters",
+      "description": "Run the platform close to your telemetry while keeping the same dense UI model.",
+      "eyebrow": "Self-host",
+      "cta": "Talk to Us"
+    }
+  ]
+}

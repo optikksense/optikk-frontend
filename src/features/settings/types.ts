@@ -17,7 +17,7 @@ export interface SettingsProfileViewModel {
   readonly email?: string | null;
   readonly avatarUrl?: string | null;
   readonly role?: string | null;
-  readonly teams?: SettingsTeamViewModel[];
+  readonly teams?: SettingsTeamViewModel[] | null;
 }
 
 /** Shared preferences stored for the current user. */

@@ -22,28 +22,32 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: yarn
+
+      - name: Enable Corepack (Yarn from packageManager)
+        run: corepack enable
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Type check
-        run: npm run type-check
+        run: yarn type-check
 
 #      - name: Lint
-#        run: npm run lint
+#        run: yarn lint
 
       - name: Build
-        run: npm run build
+        run: yarn build
 
       - name: Bundle size budgets
-        run: npm run ci:budgets
+        run: yarn ci:budgets
 
       - name: Bundle Size Diff
         if: github.event_name == 'pull_request'
         uses: preactjs/compressed-size-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          install-script: "yarn install --frozen-lockfile"
           build-script: "build"
           pattern: "./dist/assets/*.{js,css}"
           minimum-change-threshold: 100

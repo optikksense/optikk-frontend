@@ -23,7 +23,7 @@ This skill defines the development standards and architectural patterns for the 
    
    Documentation must always reflect current architecture. Always check, even for small changes.
 
-- **Biome**: Unified toolchain for linting and formatting. Use `npm run lint:fix` before completion.
+- **Biome**: Unified toolchain for linting and formatting. Use `yarn lint:fix` before completion.
 - **Conventional Commits**: Use `feat:`, `fix:`, `refactor:` prefixes for all summaries.
 - **Direct Imports**: No barrel imports. Import directly from the source file.
 - **Import Type**: Always use `import type` for TypeScript types.

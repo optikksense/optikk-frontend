@@ -21,7 +21,7 @@ alwaysApply: true
 
 ## Stack
 
-React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, Zustand 5, uPlot 1.6. Quality: `npm run ci`.
+React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, Zustand 5, uPlot 1.6. Quality: `yarn ci`.
 
 ## Entry points
 
