@@ -1,4 +1,4 @@
-import { RouteComponent, useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
 /**
@@ -61,7 +61,7 @@ export function useSearchParamsCompat(): [
 
       // We navigate to the current path but merge in the new search object
       navigate({
-        search: nextSearchObj as any,
+        search: nextSearchObj as never,
         replace: options?.replace,
       });
     },

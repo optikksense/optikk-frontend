@@ -76,7 +76,7 @@ export default function CalmMetricCard({
             data={sparkline}
             color={sparklineColor}
             fill={false}
-            width={undefined as any}
+            width={undefined}
             height={36}
           />
         </div>

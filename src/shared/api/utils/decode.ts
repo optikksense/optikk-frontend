@@ -3,6 +3,14 @@ import type { z } from "zod";
 
 import { type ErrorCode, UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 
+declare global {
+  interface Window {
+    telemetry?: {
+      track: (event: string, data: Record<string, unknown>) => void;
+    };
+  }
+}
+
 interface ApiContractErrorShape {
   readonly status: number;
   readonly code: ErrorCode;
@@ -206,8 +214,8 @@ export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
     }
 
     // Telemetry hook to capture prod drift silently
-    const telemetry = (window as any).telemetry || {
-      track: (e: string, d: any) => console.log(`[Telemetry Mock] ${e}`, d),
+    const telemetry = window.telemetry ?? {
+      track: (e: string, d: Record<string, unknown>) => console.log(`[Telemetry Mock] ${e}`, d),
     };
     telemetry.track("api_contract_violation", {
       errors: result.error.flatten(),

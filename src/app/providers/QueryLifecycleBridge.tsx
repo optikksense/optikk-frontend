@@ -25,7 +25,6 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
   const previousAuthState = useRef(isAuthenticated);
 
   useEffect(() => {
-    console.log("[QueryLifecycleBridge] Team scope changed:", teamScopeKey);
     if (isFirstTeamScope.current) {
       isFirstTeamScope.current = false;
       return;
@@ -35,7 +34,6 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
   }, [teamScopeKey]);
 
   useEffect(() => {
-    console.log("[QueryLifecycleBridge] Auth state changed:", isAuthenticated);
     if (previousAuthState.current && !isAuthenticated) {
       queryClient.clear();
     }

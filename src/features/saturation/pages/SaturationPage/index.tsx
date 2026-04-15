@@ -21,6 +21,7 @@ import {
 } from "@shared/utils/formatters";
 
 import { ROUTES } from "@/shared/constants/routes";
+import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import {
   type DatastoreSystemRow,
   type KafkaGroupRow,
@@ -72,8 +73,7 @@ export default function SaturationPage(): JSX.Element {
     const legacyTarget = resolveLegacySaturationPath(drawerState.entity, drawerState.id);
     if (!legacyTarget) return;
     navigate({
-      to: legacyTarget.to as any,
-      search: legacyTarget.search as any,
+      ...dynamicNavigateOptions(legacyTarget.to, legacyTarget.search),
       replace: true,
     });
   }, [drawerState.entity, drawerState.id, navigate]);
@@ -530,12 +530,12 @@ export default function SaturationPage(): JSX.Element {
             scroll={{ x: 960 }}
             onRow={(row) => ({
               onClick: () =>
-                navigate({
-                  to: ROUTES.saturationDatastoreDetail.replace(
+                navigate(dynamicNavigateOptions(
+                  ROUTES.saturationDatastoreDetail.replace(
                     "$system",
                     encodeURIComponent(row.system)
-                  ) as any,
-                }),
+                  )
+                )),
               className: "cursor-pointer",
             })}
           />
@@ -548,12 +548,12 @@ export default function SaturationPage(): JSX.Element {
             scroll={{ x: 1100 }}
             onRow={(row) => ({
               onClick: () =>
-                navigate({
-                  to: ROUTES.saturationKafkaTopicDetail.replace(
+                navigate(dynamicNavigateOptions(
+                  ROUTES.saturationKafkaTopicDetail.replace(
                     "$topic",
                     encodeURIComponent(row.topic)
-                  ) as any,
-                }),
+                  )
+                )),
               className: "cursor-pointer",
             })}
           />
@@ -566,12 +566,12 @@ export default function SaturationPage(): JSX.Element {
             scroll={{ x: 1760 }}
             onRow={(row) => ({
               onClick: () =>
-                navigate({
-                  to: ROUTES.saturationKafkaGroupDetail.replace(
+                navigate(dynamicNavigateOptions(
+                  ROUTES.saturationKafkaGroupDetail.replace(
                     "$groupId",
                     encodeURIComponent(row.consumer_group)
-                  ) as any,
-                }),
+                  )
+                )),
               className: "cursor-pointer",
             })}
           />

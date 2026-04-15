@@ -26,7 +26,8 @@ export function validateResponse<TSchema extends z.ZodTypeAny>(
   if (allUnrecognized && typeof value === "object" && value !== null) {
     if (import.meta.env.DEV) {
       const unknownKeys = result.error.issues.flatMap((i) =>
-        i.code === "unrecognized_keys" ? ((i as any).keys as string[]) : []
+        // Zod internal: `unrecognized_keys` issues have a `keys` property not in the base type
+        i.code === "unrecognized_keys" ? ((i as unknown as { keys: string[] }).keys) : []
       );
       console.warn(
         "[validateResponse] API contract drift — backend returned unknown keys. Stripping and retrying.",
@@ -51,7 +52,8 @@ export function validateResponse<TSchema extends z.ZodTypeAny>(
 function stripUnknownKeys(schema: z.ZodTypeAny, value: unknown): unknown {
   // Unwrap ZodArray
   if (schema.def?.type === "array" && Array.isArray(value)) {
-    const itemSchema = (schema.def as any).element as z.ZodTypeAny | undefined;
+    // Zod internal: array schemas expose `.element` on their def
+    const itemSchema = (schema.def as unknown as Record<string, unknown>).element as z.ZodTypeAny | undefined;
     if (itemSchema) {
       return value.map((item) => stripUnknownKeys(itemSchema, item));
     }
@@ -60,7 +62,8 @@ function stripUnknownKeys(schema: z.ZodTypeAny, value: unknown): unknown {
 
   // Unwrap ZodObject
   if (schema.def?.type === "object" && typeof value === "object" && value !== null) {
-    const shape = (schema.def as any).shape as Record<string, z.ZodTypeAny> | undefined;
+    // Zod internal: object schemas expose `.shape` on their def
+    const shape = (schema.def as unknown as Record<string, unknown>).shape as Record<string, z.ZodTypeAny> | undefined;
     if (shape) {
       const out: Record<string, unknown> = {};
       for (const key of Object.keys(shape)) {

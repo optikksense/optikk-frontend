@@ -138,7 +138,7 @@ export default memo(function LatencyChart({
     if (endpoints.length > 0) {
       const list =
         selectedEndpoints.length > 0
-          ? (endpoints as any[]).filter((ep) => {
+          ? endpoints.filter((ep) => {
               const key =
                 ep.key ||
                 (() => {
@@ -187,9 +187,9 @@ export default memo(function LatencyChart({
           : 60000;
       seriesList = Object.entries(serviceTimeseriesMap)
         .slice(0, 10)
-        .map(([svcName, rows]: [string, any], idx) => {
+        .map(([svcName, rows], idx) => {
           const tsMap: Record<string, number> = {};
-          for (const row of rows as any[]) {
+          for (const row of rows) {
             const rowTimestamp = firstValue(row, ["timestamp", "time_bucket", "timeBucket"], "");
             if (!rowTimestamp) continue;
             const rowTime = new Date(rowTimestamp).getTime();
@@ -214,7 +214,7 @@ export default memo(function LatencyChart({
     } else {
       if (data.length > 0 && firstValue(data[0], ["value"], null) !== null) {
         const dataMap: Record<string, number> = {};
-        for (const d of data as any[]) {
+        for (const d of data) {
           const ts = firstValue(d, ["timestamp", "time_bucket", "timeBucket"], "");
           dataMap[tsKey(ts)] = Number(
             firstValue(
@@ -236,7 +236,7 @@ export default memo(function LatencyChart({
         const p50Map: Record<string, number> = {};
         const p95Map: Record<string, number> = {};
         const p99Map: Record<string, number> = {};
-        for (const d of data as any[]) {
+        for (const d of data) {
           const key = tsKey(firstValue(d, ["timestamp", "time_bucket", "timeBucket"], ""));
           p50Map[key] = Number(firstValue(d, ["p50_ms", "p50", "p50_latency", "p50Latency"], 0));
           p95Map[key] = Number(firstValue(d, ["p95_ms", "p95", "p95_latency", "p95Latency"], 0));

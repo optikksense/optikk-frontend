@@ -98,7 +98,7 @@ export const traceLogSchema = z
     scope_name: z.string().optional(),
     scope_version: z.string().optional(),
   })
-  .passthrough();
+  .strict();
 
 export const traceLogsResponseSchema = z
   .object({

@@ -7,6 +7,7 @@ import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
 import { Tooltip } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/shared/constants/routes";
+import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
 import { useAppStore, useSidebarCollapsed, useTheme } from "@store/appStore";
 import { useAuthStore } from "@store/authStore";
@@ -56,7 +57,7 @@ export default function Sidebar() {
   const handleLogout = async () => {
     await logout();
     toast.success("Logged out successfully");
-    navigate({ to: ROUTES.login as any });
+    navigate(dynamicNavigateOptions(ROUTES.login));
   };
 
   const navItemClass = (isActive: boolean, extra?: string) =>
@@ -83,7 +84,7 @@ export default function Sidebar() {
             type="button"
             key={item.path}
             className={navItemClass(isActive)}
-            onClick={() => navigate({ to: item.path as any })}
+            onClick={() => navigate(dynamicNavigateOptions(item.path))}
             aria-current={isActive ? "page" : undefined}
           >
             <span className="inline-flex shrink-0 items-center">{item.iconNode}</span>
@@ -148,7 +149,7 @@ export default function Sidebar() {
                 "border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-subtle-18)]",
                 sidebarCollapsed && "justify-center px-1.5"
               )}
-              onClick={() => navigate({ to: ROUTES.settings as any })}
+              onClick={() => navigate(dynamicNavigateOptions(ROUTES.settings))}
             >
               <Settings size={14} />
               {!sidebarCollapsed && "Settings"}

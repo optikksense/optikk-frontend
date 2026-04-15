@@ -17,6 +17,8 @@ import {
 } from "@shared/utils/formatters";
 
 import { ROUTES } from "@/shared/constants/routes";
+import type { StructuredFilter } from "@/shared/hooks/useURLFilters";
+import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import {
   type DatastoreConnectionRow,
   type DatastoreErrorRow,
@@ -86,17 +88,18 @@ export default function DatastoreDetailPage(): JSX.Element {
   );
 
   const openSurface = (target: "logs" | "traces") => {
-    const filters =
+    const filters: StructuredFilter[] =
       target === "logs"
         ? [{ field: "db.system", operator: "equals", value: system }]
         : [{ field: "db_system", operator: "equals", value: system }];
-    navigate({
-      to: target === "logs" ? ROUTES.logs : ROUTES.traces,
-      search:
-        target === "logs"
-          ? (buildSaturationLogsSearch(location.search, filters as any) as any)
-          : (buildSaturationTracesSearch(location.search, filters as any) as any),
-    });
+    const search =
+      target === "logs"
+        ? buildSaturationLogsSearch(location.search, filters)
+        : buildSaturationTracesSearch(location.search, filters);
+    navigate(dynamicNavigateOptions(
+      target === "logs" ? ROUTES.logs : ROUTES.traces,
+      search,
+    ));
   };
 
   const serverColumns: SimpleTableColumn<DatastoreServerRow>[] = [

@@ -107,7 +107,7 @@ export type MetricsExplorerResponse = z.infer<typeof metricsExplorerResponseSche
 // API functions
 
 export const metricsExplorerApi = {
-  async fetchMetricNames(params: MetricNamesRequest): Promise<MetricNamesResponse> {
+  async getMetricNames(params: MetricNamesRequest): Promise<MetricNamesResponse> {
     const queryParams = new URLSearchParams({
       startTime: String(params.startTime),
       endTime: String(params.endTime),
@@ -123,7 +123,7 @@ export const metricsExplorerApi = {
     });
   },
 
-  async fetchMetricTags(params: MetricTagsRequest): Promise<MetricTagsResponse> {
+  async getMetricTags(params: MetricTagsRequest): Promise<MetricTagsResponse> {
     const queryParams = new URLSearchParams({
       startTime: String(params.startTime),
       endTime: String(params.endTime),

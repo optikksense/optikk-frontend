@@ -40,4 +40,4 @@ This document defines the **Staff-level** engineering standards for AI agents wo
 
 ## Toolchain
 - **Formater/Linter**: [Biome](https://biomejs.dev/)
-- **Command**: `npm run lint:fix` or `npm run format`
+- **Command**: `yarn lint:fix` or `yarn format`

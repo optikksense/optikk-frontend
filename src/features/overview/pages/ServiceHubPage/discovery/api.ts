@@ -6,7 +6,7 @@ import {
 } from "@/features/overview/api/deploymentsApi";
 import type { RequestTime } from "@/shared/api/service-types";
 import type { ServiceTopologyResponse } from "../topology/api";
-import { fetchServiceTopology } from "../topology/api";
+import { getServiceTopology } from "../topology/api";
 
 export type DiscoveryHealth = "healthy" | "degraded" | "unhealthy";
 export type DeploymentRisk = "stable" | "watch" | "critical" | "unknown";
@@ -118,14 +118,14 @@ function mergeRows(
   return rows;
 }
 
-export async function fetchDiscoveryRows(
+export async function getDiscoveryRows(
   teamId: number | null,
   startTime: RequestTime,
   endTime: RequestTime
 ): Promise<DiscoveryServiceRow[]> {
   const [services, topology, deployments] = await Promise.all([
-    metricsOverviewApi.getOverviewServiceMetrics(teamId, startTime, endTime),
-    fetchServiceTopology({ startTime, endTime }),
+    metricsOverviewApi.getOverviewServiceMetrics(teamId, startTime, endTime).catch(() => []),
+    getServiceTopology({ startTime, endTime }).catch(() => ({ nodes: [], edges: [] }) as ServiceTopologyResponse),
     deploymentsApi.getLatestByService().catch(() => []),
   ]);
   return mergeRows(services, topology, deployments);

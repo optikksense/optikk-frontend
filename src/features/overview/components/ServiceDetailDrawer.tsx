@@ -18,9 +18,10 @@ import {
 } from "@/features/metrics/api/metricsOverviewApi";
 import {
   type ServiceTopologyEdge,
-  fetchServiceTopology,
+  getServiceTopology,
 } from "@/features/overview/pages/ServiceHubPage/topology/api";
 import { ROUTES } from "@/shared/constants/routes";
+import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import { Badge, Card } from "@shared/components/primitives/ui";
 import StatCard from "@shared/components/ui/cards/StatCard";
 import ErrorRateChart from "@shared/components/ui/charts/time-series/ErrorRateChart";
@@ -358,7 +359,7 @@ export default function ServiceDetailDrawer({
   const dependenciesQuery = useTimeRangeQuery(
     "service-drawer-dependencies",
     async (_teamId, startTime, endTime) =>
-      fetchServiceTopology({ startTime, endTime, service: serviceName }),
+      getServiceTopology({ startTime, endTime, service: serviceName }),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
   );
 
@@ -449,17 +450,17 @@ export default function ServiceDetailDrawer({
   );
 
   const openTraces = (): void => {
-    navigate({
-      to: ROUTES.traces,
-      search: buildServiceTracesSearch(location.search, serviceName) as any,
-    });
+    navigate(dynamicNavigateOptions(
+      ROUTES.traces,
+      buildServiceTracesSearch(location.search, serviceName),
+    ));
   };
 
   const openLogs = (): void => {
-    navigate({
-      to: ROUTES.logs,
-      search: buildServiceLogsSearch(location.search, serviceName) as any,
-    });
+    navigate(dynamicNavigateOptions(
+      ROUTES.logs,
+      buildServiceLogsSearch(location.search, serviceName),
+    ));
   };
 
   const serviceLabel = title?.trim() || serviceName;
@@ -560,7 +561,7 @@ export default function ServiceDetailDrawer({
         <div className="flex flex-col gap-4 px-6 py-4">
           <Card
             padding="lg"
-            className="border-[rgba(124,127,242,0.18)] bg-[linear-gradient(180deg,rgba(124,127,242,0.1),rgba(124,127,242,0.03))]"
+            className="border-[var(--color-primary-subtle-18)] bg-[linear-gradient(180deg,var(--color-primary-subtle-10),var(--color-primary-subtle-02))]"
           >
             <div className="flex flex-col gap-2 xl:flex-row xl:items-end xl:justify-between">
               <div className="max-w-2xl">

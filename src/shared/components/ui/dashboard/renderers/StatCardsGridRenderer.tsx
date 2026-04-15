@@ -19,7 +19,7 @@ export function StatCardsGridRenderer({
   const summary = useMemo(() => {
     // If backend returns a single summary object it's often in rawData (not data array)
     if (rawData && typeof rawData === "object" && !Array.isArray(rawData)) {
-      const s = rawData as any;
+      const s = rawData as Record<string, unknown>;
       const totalRequests = Number(s.total_requests ?? 0);
       const errorCount = Number(s.error_count ?? 0);
       return {
@@ -41,7 +41,7 @@ export function StatCardsGridRenderer({
     let p95Max = 0;
 
     for (const s of services) {
-      const { request_count, error_count, avg_latency, p95_latency } = s as any;
+      const { request_count, error_count, avg_latency, p95_latency } = s as Record<string, unknown>;
       const req = Number(request_count ?? 0);
       totalRequests += req;
       totalErrors += Number(error_count ?? 0);

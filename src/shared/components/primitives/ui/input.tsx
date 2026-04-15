@@ -53,7 +53,7 @@ function Input({
       <input
         ref={inputRef}
         className={cn(
-          "w-full rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[rgba(124,127,242,0.18)]",
+          "w-full rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-18)]",
           sizeClasses[size],
           allowClear && value ? "pr-7" : ""
         )}

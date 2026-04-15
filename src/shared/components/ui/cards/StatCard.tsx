@@ -61,7 +61,7 @@ const StatCard = React.memo(function StatCard({ metric, trend = {}, visuals = {}
                   backgroundColor: "color-mix(in srgb, var(--bg-tertiary) 88%, transparent)",
                 }}
               >
-                {React.isValidElement(icon) ? icon : React.createElement(icon as any, { size: 20 })}
+                {React.isValidElement(icon) ? icon : React.createElement(icon as unknown as React.ComponentType<{ size: number }>, { size: 20 })}
               </span>
             )}
           </div>

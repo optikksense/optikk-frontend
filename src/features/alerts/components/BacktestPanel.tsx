@@ -12,9 +12,7 @@ interface BacktestPanelProps {
 }
 
 export function BacktestPanel({ ruleId }: BacktestPanelProps) {
-  const [from, setFrom] = useState(() =>
-    new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-  );
+  const [from, setFrom] = useState(() => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
   const [to, setTo] = useState(() => new Date().toISOString());
   const backtest = useBacktestRule(ruleId);
   const result: AlertBacktestResult | undefined = backtest.data;
@@ -58,9 +56,9 @@ export function BacktestPanel({ ruleId }: BacktestPanelProps) {
                 className="flex items-center gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 py-1 text-[12px]"
               >
                 <span className="text-[var(--text-muted)]">{evt.ts}</span>
-                {evt.fromState && <RuleStateChip state={evt.fromState} />}
+                {evt.from_state && <RuleStateChip state={evt.from_state} />}
                 <span className="text-[var(--text-muted)]">→</span>
-                {evt.toState && <RuleStateChip state={evt.toState} />}
+                {evt.to_state && <RuleStateChip state={evt.to_state} />}
                 <span className="text-[var(--text-secondary)]">{evt.message}</span>
               </div>
             ))}

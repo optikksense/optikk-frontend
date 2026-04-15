@@ -9,20 +9,20 @@ import type { UserViewPreferences } from "@shared/types/preferences";
 
 export interface SettingsProfileCommand {
   readonly name: string;
-  readonly avatarUrl?: string;
+  readonly avatarUrl?: string | null;
 }
 
 export interface SettingsProfileResponse {
-  readonly name?: string;
-  readonly email?: string;
-  readonly avatarUrl?: string;
-  readonly role?: string;
+  readonly name?: string | null;
+  readonly email?: string | null;
+  readonly avatarUrl?: string | null;
+  readonly role?: string | null;
   readonly preferences?: UserViewPreferences;
   readonly teams?: ReadonlyArray<{
-    readonly name?: string;
-    readonly apiKey?: string;
-    readonly role?: string;
-  }>;
+    readonly name?: string | null;
+    readonly apiKey?: string | null;
+    readonly role?: string | null;
+  }> | null;
 }
 
 export interface SettingsPreferencesResponse {

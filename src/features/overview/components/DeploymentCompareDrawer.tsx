@@ -15,6 +15,7 @@ import {
   deploymentsApi,
 } from "@/features/overview/api/deploymentsApi";
 import { ROUTES } from "@/shared/constants/routes";
+import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import { useAppStore, useRefreshKey, useTeamId } from "@app/store/appStore";
 import { CHART_COLORS } from "@config/constants";
 import {
@@ -282,13 +283,12 @@ export default function DeploymentCompareDrawer({
   const openSurface = (target: "logs" | "traces", startMs: number, endMs: number) => {
     if (!seed?.serviceName) return;
     setCustomTimeRange(startMs, endMs, "Deployment comparison");
-    navigate({
-      to: target === "logs" ? ROUTES.logs : ROUTES.traces,
-      search:
-        target === "logs"
-          ? (buildServiceLogsSearch(location.search, seed.serviceName) as any)
-          : (buildServiceTracesSearch(location.search, seed.serviceName) as any),
-    });
+    navigate(dynamicNavigateOptions(
+      target === "logs" ? ROUTES.logs : ROUTES.traces,
+      target === "logs"
+        ? buildServiceLogsSearch(location.search, seed.serviceName)
+        : buildServiceTracesSearch(location.search, seed.serviceName),
+    ));
   };
 
   const endpointColumns = useMemo<
@@ -356,7 +356,7 @@ export default function DeploymentCompareDrawer({
         className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto z-[1100] h-auto select-text overflow-y-auto border-[var(--border-color)] border-l"
         style={{ width: "min(1120px, calc(100vw - 20px))" }}
       >
-        <DrawerHeader className="items-start border-[var(--border-color)] border-b bg-[linear-gradient(180deg,rgba(124,127,242,0.09),rgba(124,127,242,0.02))]">
+        <DrawerHeader className="items-start border-[var(--border-color)] border-b bg-[linear-gradient(180deg,var(--color-primary-subtle-15),var(--color-primary-subtle-02))]">
           <div className="flex w-full flex-col gap-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">

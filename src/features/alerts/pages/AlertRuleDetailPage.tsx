@@ -1,13 +1,12 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { BellOff, Edit, ExternalLink, Trash2 } from "lucide-react";
+import { BellOff, Edit, ExternalLink, Send, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 
-import { Button, Card } from "@/components/ui";
+import { Badge, Button, Card } from "@/components/ui";
 import { PageHeader, PageShell } from "@shared/components/ui";
 
 import { BacktestPanel } from "@/features/alerts/components/BacktestPanel";
-import { DeployOverlay } from "@/features/alerts/components/DeployOverlay";
 import { InstanceRow } from "@/features/alerts/components/InstanceRow";
 import { RuleStateChip } from "@/features/alerts/components/RuleStateChip";
 import {
@@ -15,23 +14,23 @@ import {
   useDeleteAlertRule,
   useMuteAlertRule,
   useRuleAudit,
+  useTestSlackWebhook,
 } from "@/features/alerts/hooks/useAlerts";
 import { ROUTES } from "@/shared/constants/routes";
-import { resolveTimeRangeBounds } from "@/types";
-import { useTimeRange } from "@app/store/appStore";
-import { buildLogsHubHref } from "@shared/observability/deepLinks";
-import { formatTimestamp } from "@shared/utils/formatters";
+
+function presetLabel(kind: string): string {
+  return kind.replaceAll("_", " ").replace(/\b\w/g, (match) => match.toUpperCase());
+}
 
 export default function AlertRuleDetailPage() {
   const navigate = useNavigate();
   const params = useParams({ strict: false }) as { ruleId?: string };
   const ruleId = params.ruleId ?? "";
-  const timeRange = useTimeRange();
-  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
   const ruleQuery = useAlertRule(ruleId);
   const auditQuery = useRuleAudit(ruleId);
   const muteMut = useMuteAlertRule();
   const deleteMut = useDeleteAlertRule();
+  const slackTestMut = useTestSlackWebhook();
 
   const rule = ruleQuery.data;
 
@@ -40,21 +39,6 @@ export default function AlertRuleDetailPage() {
     rows.sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
     return rows;
   }, [auditQuery.data]);
-
-  const logsInvestigateHref =
-    rule?.targetRef.serviceName != null && String(rule.targetRef.serviceName).trim() !== ""
-      ? buildLogsHubHref({
-          filters: [
-            {
-              field: "service_name",
-              operator: "equals",
-              value: String(rule.targetRef.serviceName),
-            },
-          ],
-          fromMs: startTime,
-          toMs: endTime,
-        })
-      : ROUTES.logs;
 
   const onMute = async () => {
     if (!rule) return;
@@ -79,6 +63,25 @@ export default function AlertRuleDetailPage() {
     }
   };
 
+  const onTestSlack = async () => {
+    if (!rule) return;
+    try {
+      const result = await slackTestMut.mutateAsync({
+        name: rule.name,
+        description: rule.description,
+        preset_kind: rule.preset_kind,
+        scope: rule.scope,
+        condition: rule.condition,
+        delivery: rule.delivery,
+        enabled: rule.enabled,
+      });
+      if (result.delivered) toast.success("Slack test message sent");
+      else toast.error(result.error ?? "Slack test failed");
+    } catch {
+      toast.error("Slack test failed");
+    }
+  };
+
   if (!rule) {
     return (
       <PageShell className="min-h-screen">
@@ -90,16 +93,27 @@ export default function AlertRuleDetailPage() {
     );
   }
 
+  const serviceName = rule.scope.service_name ?? "";
+  const logsHref = serviceName
+    ? `${ROUTES.logs}?service=${encodeURIComponent(serviceName)}`
+    : ROUTES.logs;
+  const tracesHref = serviceName
+    ? `${ROUTES.traces}?service=${encodeURIComponent(serviceName)}`
+    : ROUTES.traces;
+  const serviceHref = serviceName
+    ? `${ROUTES.service}?service=${encodeURIComponent(serviceName)}`
+    : ROUTES.service;
+
   return (
     <PageShell className="min-h-screen">
       <PageHeader
         title={
           <span className="flex items-center gap-2">
-            <RuleStateChip state={rule.ruleState} size="md" />
+            <RuleStateChip state={rule.rule_state} size="md" />
             {rule.name}
           </span>
         }
-        subtitle={rule.description}
+        subtitle={rule.summary}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -113,6 +127,9 @@ export default function AlertRuleDetailPage() {
             >
               <Edit size={12} /> Edit
             </Button>
+            <Button variant="secondary" size="sm" onClick={onTestSlack}>
+              <Send size={12} /> Test Slack
+            </Button>
             <Button variant="secondary" size="sm" onClick={onMute}>
               <BellOff size={12} /> Mute 1h
             </Button>
@@ -124,87 +141,131 @@ export default function AlertRuleDetailPage() {
       />
 
       <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-3">
-        <Card className="p-3 lg:col-span-2">
-          <div className="mb-2 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
-            Instances ({rule.instances.length})
+        <Card className="p-4 lg:col-span-2">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <Badge variant="info">{presetLabel(rule.preset_kind)}</Badge>
+            <Badge variant={rule.delivery.slack_webhook_url ? "success" : "warning"}>
+              {rule.delivery.slack_webhook_url ? "Slack configured" : "Slack missing"}
+            </Badge>
+            <Badge variant="default">{rule.condition.severity ?? "p2"}</Badge>
           </div>
-          <div className="flex flex-col gap-2">
-            {rule.instances.map((inst) => (
-              <InstanceRow key={inst.instanceKey} instance={inst} />
-            ))}
-            {rule.instances.length === 0 && (
-              <div className="text-[12px] text-[var(--text-muted)]">
-                No instances. The rule is not firing.
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <InfoCard label="Description" value={rule.description || "—"} />
+            <InfoCard label="Summary" value={rule.summary} />
+            <InfoCard label="Service" value={rule.scope.service_name || "—"} />
+            <InfoCard label="SLO / URL" value={rule.scope.slo_id || rule.scope.url || "—"} />
+            <InfoCard label="Threshold" value={String(rule.condition.threshold)} />
+            <InfoCard
+              label="Window / Hold"
+              value={`${rule.condition.window_minutes ?? rule.condition.evaluation_interval_minutes ?? "—"}m / ${rule.condition.hold_minutes ?? 0}m`}
+            />
+          </div>
+          {rule.delivery.note ? (
+            <div className="mt-4 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-3 text-[12px] text-[var(--text-secondary)]">
+              <div className="mb-1 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+                Responder note
               </div>
-            )}
-          </div>
+              {rule.delivery.note}
+            </div>
+          ) : null}
         </Card>
-        <Card className="flex flex-col gap-3 p-3">
+
+        <Card className="flex flex-col gap-3 p-4">
           <div>
             <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
               Investigate
             </div>
-            <div className="mt-1 flex flex-col gap-1 text-[12px]">
-              {rule.targetRef.serviceName && (
-                <a
-                  href={`${ROUTES.service}?service=${rule.targetRef.serviceName}`}
-                  className="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
-                >
-                  <ExternalLink size={12} /> Service: {rule.targetRef.serviceName}
-                </a>
-              )}
+            <div className="mt-2 flex flex-col gap-2 text-[12px]">
               <a
-                href={`${ROUTES.traces}?service=${rule.targetRef.serviceName ?? ""}`}
+                href={serviceHref}
+                className="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
+              >
+                <ExternalLink size={12} /> Service
+              </a>
+              <a
+                href={tracesHref}
                 className="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
               >
                 <ExternalLink size={12} /> Traces
               </a>
               <a
-                href={logsInvestigateHref}
+                href={logsHref}
                 className="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
               >
                 <ExternalLink size={12} /> Logs
               </a>
             </div>
           </div>
-          <DeployOverlay deploys={[]} />
+          <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-3 text-[12px] text-[var(--text-secondary)]">
+            <div className="mb-1 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+              Slack
+            </div>
+            {rule.delivery.slack_webhook_url ? "Webhook configured" : "Webhook missing"}
+          </div>
         </Card>
       </div>
 
-      <Card className="mt-3 p-3">
+      <Card className="mt-3 p-4">
         <div className="mb-2 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
-          Timeline
+          Instances ({rule.instances.length})
+        </div>
+        <div className="flex flex-col gap-2">
+          {rule.instances.map((instance) => (
+            <InstanceRow key={instance.instance_key} alertId={rule.id} instance={instance} />
+          ))}
+          {rule.instances.length === 0 && (
+            <div className="text-[12px] text-[var(--text-muted)]">No active instances.</div>
+          )}
+        </div>
+      </Card>
+
+      <Card className="mt-3 p-4">
+        <div className="mb-2 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+          Activity timeline
         </div>
         <div className="flex flex-col gap-1">
-          {auditEvents.map((evt, idx) => (
+          {auditEvents.map((event, index) => (
             <div
-              key={`${evt.ts}-${idx}`}
-              className="flex flex-wrap items-center gap-2 text-[12px] text-[var(--text-secondary)]"
+              key={`${event.ts}-${index}`}
+              className="flex flex-wrap items-center gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 py-2 text-[12px]"
             >
-              <span className="shrink-0 font-mono text-[11px] text-[var(--text-muted)]">
-                {formatTimestamp(evt.ts)}
+              <span className="font-mono text-[11px] text-[var(--text-muted)]">{event.ts}</span>
+              <span className="rounded bg-[var(--bg-secondary)] px-1.5 py-0.5 font-mono text-[11px]">
+                {event.kind}
               </span>
-              <span className="rounded bg-[var(--bg-tertiary)] px-1.5 py-0.5 font-mono text-[11px]">
-                {evt.kind}
+              {event.from_state ? <RuleStateChip state={event.from_state} /> : null}
+              {event.from_state || event.to_state ? (
+                <span className="text-[var(--text-muted)]">→</span>
+              ) : null}
+              {event.to_state ? <RuleStateChip state={event.to_state} /> : null}
+              <span className="text-[var(--text-secondary)]">
+                {event.message || "Activity recorded"}
               </span>
-              {evt.fromState && <RuleStateChip state={evt.fromState} />}
-              <span className="text-[var(--text-muted)]">→</span>
-              {evt.toState && <RuleStateChip state={evt.toState} />}
-              <span>{evt.message}</span>
             </div>
           ))}
-          {(auditQuery.data ?? []).length === 0 && (
+          {auditEvents.length === 0 && (
             <div className="text-[12px] text-[var(--text-muted)]">No events yet.</div>
           )}
         </div>
       </Card>
 
-      <Card className="mt-3 p-3">
+      <Card className="mt-3 p-4">
         <div className="mb-2 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
           Backtest
         </div>
         <BacktestPanel ruleId={rule.id} />
       </Card>
     </PageShell>
+  );
+}
+
+function InfoCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-3">
+      <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+        {label}
+      </div>
+      <div className="mt-1 text-[13px] text-[var(--text-primary)]">{value}</div>
+    </div>
   );
 }

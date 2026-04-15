@@ -10,6 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
 import { allActions } from "./registry";
 import type { PaletteAction, PaletteActionContext } from "./types";
@@ -17,7 +18,7 @@ import type { PaletteAction, PaletteActionContext } from "./types";
 function ActionHotkey({ action }: { action: PaletteAction }) {
   const navigate = useNavigate();
   const context: PaletteActionContext = {
-    navigate: (path: string) => navigate({ to: path } as any),
+    navigate: (path: string) => navigate(dynamicNavigateOptions(path)),
   };
 
   useHotkeys(action.hotkey!, (e) => {
@@ -34,7 +35,7 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const actionContext: PaletteActionContext = {
-    navigate: (path: string) => navigate({ to: path } as any),
+    navigate: (path: string) => navigate(dynamicNavigateOptions(path)),
   };
 
   // Toggle palette with Cmd+K or Ctrl+K

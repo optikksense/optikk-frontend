@@ -1,0 +1,231 @@
+/* Marketing chrome — lives under src/config for color-lint policy. Blue-forward palette (no purple). */
+
+:root {
+  --mkt-bg-nav: rgba(10, 11, 15, 0.8);
+  --mkt-border-subtle: rgba(255, 255, 255, 0.05);
+  --mkt-text: #f8fafc;
+  --mkt-muted: #94a3b8;
+  --mkt-accent: #38bdf8;
+  --mkt-primary: #2563eb;
+  --mkt-primary-mid: #3b82f6;
+  --mkt-cta-shadow: rgba(37, 99, 235, 0.4);
+}
+
+.mkt-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  transition: all 0.3s ease;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.mkt-nav--scrolled {
+  background: var(--mkt-bg-nav);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom-color: var(--mkt-border-subtle);
+}
+
+.mkt-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: "DM Serif Display", serif;
+  font-size: 22px;
+  color: var(--mkt-text);
+  letter-spacing: 0.5px;
+}
+
+.mkt-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+@media (max-width: 1024px) {
+  .mkt-desktop-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .mkt-mobile-menu-btn {
+    display: none;
+  }
+}
+
+.mkt-nav-link {
+  color: var(--mkt-muted);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.mkt-nav-link:hover {
+  color: var(--mkt-text);
+}
+
+.mkt-nav-link--active {
+  color: var(--mkt-text);
+}
+
+.mkt-nav-indicator {
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--mkt-accent);
+  border-radius: 2px;
+}
+
+.mkt-nav-cta {
+  padding: 8px 20px;
+  background: linear-gradient(
+    90deg,
+    var(--mkt-primary) 0%,
+    var(--mkt-primary-mid) 50%,
+    var(--mkt-primary) 100%
+  );
+  background-size: 200% auto;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.mkt-nav-cta:hover {
+  background-position: right center;
+  box-shadow: 0 4px 16px var(--mkt-cta-shadow);
+}
+
+.mkt-github-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 10px;
+  color: #f1f5f9;
+  font-family: ui-monospace, monospace;
+}
+
+.mkt-mobile-panel {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: rgba(10, 11, 15, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--mkt-border-subtle);
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mkt-mobile-link {
+  color: var(--mkt-text);
+  font-size: 18px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+}
+
+.mkt-mobile-menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--mkt-text);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.mkt-footer {
+  background: #0d0e14;
+  border-top: 1px solid var(--mkt-border-subtle);
+  font-family: "Inter", sans-serif;
+  padding: 80px 48px 40px;
+}
+
+.mkt-footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .mkt-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mkt-footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mkt-footer-col-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mkt-text);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.mkt-footer-link {
+  display: block;
+  color: var(--mkt-muted);
+  font-size: 14px;
+  text-decoration: none;
+  margin-bottom: 14px;
+  transition: color 0.2s;
+}
+
+.mkt-footer-link:hover {
+  color: var(--mkt-accent);
+}
+
+.mkt-footer-bottom {
+  max-width: 1200px;
+  margin: 64px auto 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--mkt-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #64748b;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.mkt-footer-muted-link {
+  color: #64748b;
+  text-decoration: none;
+}
+
+.mkt-footer-muted-link:hover {
+  color: var(--mkt-muted);
+}

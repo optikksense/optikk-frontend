@@ -1,22 +1,9 @@
-// React Query hooks for the alerting feature.
-//
-// Queries use `refreshKey` in the key so the global auto-refresh bar also
-// ticks alerts pages; mutations invalidate the relevant scopes on success.
-
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useRefreshKey, useTeamId } from "@store/appStore";
 
 import { alertsApi } from "../api/alertsApi";
-import type {
-  AlertRule,
-  AlertRulePayload,
-} from "../types";
+import type { AlertRule, AlertRulePayload } from "../types";
 
 const ALERTS_SCOPE = "alerts";
 
@@ -28,11 +15,7 @@ export function alertRulesQueryKey(refreshKey: number, teamId: number | null) {
   return [ALERTS_SCOPE, "rules", teamId, refreshKey] as const;
 }
 
-export function alertIncidentsQueryKey(
-  refreshKey: number,
-  teamId: number | null,
-  state?: string
-) {
+export function alertIncidentsQueryKey(refreshKey: number, teamId: number | null, state?: string) {
   return [ALERTS_SCOPE, "incidents", teamId, state ?? "all", refreshKey] as const;
 }
 
@@ -46,7 +29,6 @@ export function useAlertRules() {
     staleTime: 0,
     gcTime: 30_000,
     retry: false,
-    enabled: true,
   });
 }
 
@@ -89,6 +71,19 @@ export function useRuleAudit(id: string | undefined) {
     queryKey: [ALERTS_SCOPE, "audit", id, teamId, refreshKey] as const,
     queryFn: () => alertsApi.ruleAudit(id as string),
     enabled: Boolean(id),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
+    gcTime: 30_000,
+    retry: false,
+  });
+}
+
+export function useAlertActivity(limit = 100) {
+  const refreshKey = useRefreshKey();
+  const teamId = useTeamId();
+  return useQuery({
+    queryKey: [ALERTS_SCOPE, "activity", teamId, limit, refreshKey] as const,
+    queryFn: () => alertsApi.listActivity(limit),
     placeholderData: keepPreviousData,
     staleTime: 0,
     gcTime: 30_000,
@@ -139,6 +134,12 @@ export function useDeleteAlertRule() {
   });
 }
 
+export function usePreviewAlertRule() {
+  return useMutation({
+    mutationFn: (payload: AlertRulePayload) => alertsApi.previewRule(payload),
+  });
+}
+
 export function useMuteAlertRule() {
   const qc = useQueryClient();
   return useMutation({
@@ -153,8 +154,15 @@ export function useMuteAlertRule() {
 export function useAckAlertInstance() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ instanceId, until }: { instanceId: string; until?: string | null }) =>
-      alertsApi.ackInstance(instanceId, until),
+    mutationFn: ({
+      alertId,
+      instanceKey,
+      until,
+    }: {
+      alertId: string;
+      instanceKey: string;
+      until?: string | null;
+    }) => alertsApi.ackInstance(alertId, instanceKey, until),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: [ALERTS_SCOPE] });
     },
@@ -164,8 +172,15 @@ export function useAckAlertInstance() {
 export function useSnoozeAlertInstance() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ instanceId, minutes }: { instanceId: string; minutes: number }) =>
-      alertsApi.snoozeInstance(instanceId, minutes),
+    mutationFn: ({
+      alertId,
+      instanceKey,
+      minutes,
+    }: {
+      alertId: string;
+      instanceKey: string;
+      minutes: number;
+    }) => alertsApi.snoozeInstance(alertId, instanceKey, minutes),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: [ALERTS_SCOPE] });
     },
@@ -174,7 +189,7 @@ export function useSnoozeAlertInstance() {
 
 export function useTestSlackWebhook() {
   return useMutation({
-    mutationFn: (webhookUrl: string) => alertsApi.testSlackWebhook(webhookUrl),
+    mutationFn: (payload: AlertRulePayload) => alertsApi.testSlack(payload),
   });
 }
 
@@ -182,12 +197,6 @@ export function useBacktestRule(id: string) {
   return useMutation({
     mutationFn: ({ from, to }: { from: string; to: string }) =>
       alertsApi.backtestRule(id, { from, to }),
-  });
-}
-
-export function useTestRulePayload() {
-  return useMutation({
-    mutationFn: (payload: AlertRulePayload) => alertsApi.testPayload(payload),
   });
 }
 

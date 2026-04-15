@@ -242,19 +242,19 @@ export default memo(function ErrorRateChart({
   const timestamps = useMemo(() => timeBuckets.map((t) => tsMs(t) / 1000), [timeBuckets]);
 
   const allDataValues = useMemo(() => {
-    const vals: number[] = (data as any[]).map((d) =>
+    const vals: number[] = data.map((d) =>
       Number(firstValue(d, ["value", "error_rate"], 0))
     );
     if (Object.keys(serviceTimeseriesMap).length > 0) {
-      Object.values(serviceTimeseriesMap).forEach((rows: any) => {
-        rows.forEach((r: any) => {
+      Object.values(serviceTimeseriesMap).forEach((rows) => {
+        rows.forEach((r) => {
           const total = Number(firstValue(r, ["request_count", "req_count"], 0));
           const errors = Number(firstValue(r, ["error_count"], 0));
           if (total > 0) vals.push((errors / total) * 100);
         });
       });
     }
-    (endpoints as any[]).forEach((ep) => {
+    endpoints.forEach((ep) => {
       const requestCount = Number(firstValue(ep, ["request_count", "req_count"], 0));
       const errorCount = Number(firstValue(ep, ["error_count"], 0));
       const explicitRate = firstValue(ep, ["error_rate"], null);

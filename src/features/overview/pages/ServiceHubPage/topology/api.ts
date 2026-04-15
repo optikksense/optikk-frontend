@@ -42,7 +42,7 @@ interface FetchParams {
   service?: string;
 }
 
-export async function fetchServiceTopology(params: FetchParams): Promise<ServiceTopologyResponse> {
+export async function getServiceTopology(params: FetchParams): Promise<ServiceTopologyResponse> {
   const raw = await api.get<unknown>(`${API_V1_BASE}/services/topology`, {
     params: {
       startTime: params.startTime,

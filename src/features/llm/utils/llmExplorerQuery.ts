@@ -1,13 +1,5 @@
 import type { StructuredFilter } from "@shared/hooks/useURLFilters";
-
-function escapeQueryValue(value: string): string {
-  const v = value.trim();
-  if (v === "") return '""';
-  if (/[\s"():]/.test(v)) {
-    return `"${v.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
-  }
-  return v;
-}
+import { escapeQueryValue } from "@shared/utils/queryEscaping";
 
 function uiFieldToQueryField(field: string): string {
   switch (field) {

@@ -37,7 +37,7 @@ export function TopologyToolbar({
         <button
           type="button"
           onClick={onClearFocus}
-          className="inline-flex items-center gap-1 rounded-full border border-[var(--color-primary)] bg-[rgba(124,127,242,0.12)] px-2 py-0.5 text-[11px] text-[var(--text-primary)] hover:bg-[rgba(124,127,242,0.2)]"
+          className="inline-flex items-center gap-1 rounded-full border border-[var(--color-primary)] bg-[var(--color-primary-subtle-12)] px-2 py-0.5 text-[11px] text-[var(--text-primary)] hover:bg-[var(--color-primary-subtle-20)]"
         >
           Focus: {focusService}
           <X size={11} />

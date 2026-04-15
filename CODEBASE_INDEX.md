@@ -25,9 +25,9 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 
 ## Stack and commands
 
-- **Stack:** React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Zod, Tailwind 3.4, Zustand 5, uPlot 1.6, React Grid Layout 2.2.
-- **Dev:** `npm run dev` (Vite dev server with API proxy + WebSocket support for live tail).
-- **Quality:** `npm run ci` (type-check, lint, build, bundle budgets).
+- **Stack:** React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Zod, Tailwind 3.4, Zustand 5, uPlot 1.6, React Grid Layout 2.2, OpenTelemetry (SDK & OTLP).
+- **Dev:** `yarn dev` (Vite dev server with API proxy + WebSocket support for live tail).
+- **Quality:** `yarn ci` (type-check, lint, build, bundle budgets).
 
 ## Entry and app shell
 
@@ -36,7 +36,7 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 | `src/main.tsx` | App bootstrap |
 | `src/app/App.tsx` | Root router and providers |
 | `src/app/routes/router.tsx` | Route table (domain routes + legacy redirects + drawer routes) |
-| `src/app/routes/BackendDrivenPage.tsx` | Backend-driven dashboard pages: matches URL → page config → domain adapter or generic `DashboardPage` |
+| `src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx` | First-class Overview hub: `?tab=` (summary, latency-analysis, apm, errors, http, slo), share/export, `DashboardEntityDrawer` |
 | `src/app/layout/MainLayout.tsx` | Shell layout |
 
 **Service page:** `ROUTES.service` → `src/features/overview/pages/ServiceHubPage` — fully frontend-owned, no backend default config. Two tabs via `?view=discovery|topology` (default `discovery`): the **Discovery** tab (`discovery/` — service catalog with search, health filter, sort; fetches `/overview/services` + `/services/topology`, merges client-side for upstream/downstream dep counts and health badges) and the **Topology** tab (`TopologyView.tsx` + `topology/`). Row click on Discovery opens `drawerEntity=service` with the frontend-owned `ServiceDetailDrawer`, which shows compact service diagnostics and links into Logs and Traces.
@@ -156,21 +156,24 @@ Shared infrastructure for all data explorers (Logs, Traces, Metrics) — **not a
 | Shareable view export | `shared/observability/shareableView.ts` | URL length guard + JSON snapshot (logs + infrastructure headers) |
 | HTTP client | `shared/api/api/client.ts` | Axios with auth interceptors; auto-unwraps `APIResponse` envelope |
 | Response decode | `shared/api/utils/decode.ts` | Zod validation boundary |
-| Default config | `shared/api/defaultConfigService.ts` | `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId`; Zod schemas in `shared/api/schemas/defaultConfigSchemas.ts` |
-| Dashboard UI | `shared/components/ui/dashboard/` | `ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx`, `DashboardPage.tsx`, `DashboardEntityDrawer.tsx` |
+| Overview hub | `features/overview/pages/OverviewHubPage/` (+ `api/overviewHubApi.ts`, `overviewHubConstants.ts`) | Bespoke tabs; data via `/v1/overview/*`, `/v1/spans/*`, `/v1/apm/*`, `/v1/http/*` |
+| Dashboard UI | `shared/components/ui/dashboard/` | `ConfigurableChartCard.tsx`, `dashboardPanelRegistry.tsx`, `DashboardEntityDrawer.tsx`, chart utilities (no generic `DashboardPage`) |
 | Auth | `shared/api/auth/` | Session cookies with `withCredentials: true` |
 | Entities | `shared/entities/` | Domain entity types: `log/`, `metric/`, `trace/`, `user/` |
 | Radix primitives | `shared/components/primitives/ui/` | **Import Tabs/Tooltip/Dialog/etc. from `@shared/components/primitives/ui`, NOT `@shared/components/ui`** — the latter does not re-export Radix primitives |
+| Navigation utils | `shared/utils/navigation.ts` | `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` — type-safe wrappers for TanStack Router navigation with dynamic paths; centralises the branded-string cast |
+| Standard query | `shared/hooks/useStandardQuery.ts` | `useStandardQuery(options)` — project-wide defaults: `placeholderData: keepPreviousData`, `staleTime: 5_000`, `retry: 2` |
+| Telemetry (OTel) | `shared/telemetry/browserOtel.ts` | Browser SDK initialization: OTLP export, sampling (Ratio-based), and resource attribution. |
 
-### Adding npm packages (React 19 peer-dep gotcha)
+### Adding packages (React 19 peer-dep gotcha)
 
-The project is on React 19 but several deps (e.g. `lucide-react@0.316`) still pin `react@^18` in `peerDependencies`. `npm install <pkg>` fails with `EResolve`. Use:
+The project is on React 19 but several deps still pin `react@^18` in `peerDependencies`. **`package.json`** includes **`resolutions`** (Yarn) so nested peers align with React 19 (for example `lucide-react/react`). Add packages with:
 
 ```bash
-npm install --legacy-peer-deps <pkg>
+yarn add <pkg>
 ```
 
-Applies to any new package; verified for `@xyflow/react`, `dagre`, `@types/dagre`.
+If Yarn still reports a peer conflict, extend **`resolutions`** in **`package.json`** using Yarn v1 selective resolution keys (`parent/child`, for example `some-pkg/react`), then run **`yarn install`**. Verified patterns cover `@xyflow/react`, `dagre`, `@types/dagre`.
 
 ### Charting Engine (`src/shared/components/ui/charts/`)
 
@@ -224,8 +227,6 @@ Applies to any new package; verified for `@xyflow/react`, `dagre`, `@types/dagre
 
 | Component | Purpose |
 |-----------|---------|
-| `DashboardPage.tsx` | Root page: loads tabs, handles tab switching via URL |
-| `DashboardTabContent.tsx` | Renders sections and panels for active tab |
 | `DashboardSection.tsx` | Section with collapsible header |
 | `DashboardPanelGrid.tsx` | CSS Grid container (12-column model) |
 | `ConfigurableChartCard.tsx` | Panel card wrapper with error/no-data overlays |
@@ -294,21 +295,17 @@ export const myConfig: DomainConfig = {
 
 All pages/renderers use `React.lazy()` for code splitting. Vite auto-chunks each feature into `feature-${name}` bundles.
 
-## Dashboard Panel Lifecycle (LLD)
+## Dashboard primitives (LLD)
+
+**Overview** is a **dedicated hub** (`OverviewHubPage`): each tab uses `useTimeRangeQuery` + `metricsOverviewApi` / `overviewHubApi` and shared chart components (`RequestChart`, `ErrorRateChart`, etc.).
+
+**Reusable dashboard building blocks** (for future hub-style pages or embedded panels):
 
 ```
-BackendDrivenPage (route match)
-  → matchPath against page.path patterns (supports params like /trace/:traceId)
-  → resolveDashboardPageAdapter(pageId) — domain-specific or generic DashboardPage
-  → usePagesConfig / useDashboardTabDocument (fetch page JSON from backend)
-  → ConfigurableDashboard (renders sections)
-    → react-grid-layout (uses layout.w / layout.h from panel spec, 12-column model)
-    → Each cell: useDashboardPanelRegistration(panelType) → resolve renderer
-    → useComponentDataFetcher (batch-fetches panel data, deduplicates by endpoint)
-      → queryKey: ['component-query', teamId, method, endpoint, params, startMs, endMs]
-      → placeholderData: keepPreviousData
-    → useInvalidateQueriesOnAppRefresh(refreshKey, 'component-query', teamId)
-      → invalidates matching queries on manual/auto refresh
+ConfigurableDashboard + ConfigurableChartCard (optional composition)
+  → react-grid-layout (12-column model)
+  → useDashboardPanelRegistration(panelType) → renderer
+  → useComponentDataFetcher (batch panel queries; dedupes identical endpoints)
 ```
 
 **Panel renderer kinds:**
@@ -330,6 +327,7 @@ BackendDrivenPage (route match)
 - `placeholderData: keepPreviousData` on all queries — prevents loading flash
 - Loading = `isPending && data === undefined` (not `isLoading`) — distinguishes initial load from background refresh
 - `enabled: !!selectedTeamId`, `staleTime: 0`, `gcTime: 30_000`, `retry: false`
+- Prefer `useStandardQuery` (`shared/hooks/useStandardQuery.ts`) over raw `useQuery` for consistent defaults
 
 ## Shared Hooks Reference (`src/shared/hooks/`)
 
@@ -337,7 +335,7 @@ BackendDrivenPage (route match)
 |------|---------|
 | `useAutoRefresh` | Ticks `refreshKey` at configured interval; "Xs ago" label (throttled 5s) |
 | `useInvalidateQueriesOnAppRefresh` | Invalidates `[scope, teamId]` queries when `refreshKey` bumps |
-| `useComponentDataFetcher` | Batches dashboard panel data fetches; deduplicates identical requests |
+| `useComponentDataFetcher` | Batches generic dashboard panel fetches (used by `ConfigurableDashboard` flows) |
 | `useSocketStream` | Core WebSocket client for `/api/v1/ws/live`: connection, dedup, lag tracking |
 | `useChartTimeBuckets` | Computes adaptive time buckets for chart x-axis |
 | `useTimeRangeQuery` | Time-range-aware query wrapper |
@@ -346,13 +344,11 @@ BackendDrivenPage (route match)
 | `useUrlSyncedTab` | Persists active tab in URL |
 | `usePersistedColumns` | Persists table column visibility |
 | `useResizableColumns` | Column resize state |
-| `usePagesConfig` | Fetches dashboard page configs |
-| `useDashboardTabDocument` | Resolves tab document for a page |
-| `usePageTabs` | Multi-tab page management |
 | `useBreadcrumbs` | Track navigation breadcrumbs |
 | `useKeyboardShortcuts` | Global keyboard shortcuts |
 | `useAuthValidation` | Validates user session on mount |
 | `useFeatureFlag` | Checks feature flag status |
+| `useStandardQuery` | Standard `useQuery` wrapper with `keepPreviousData`, `staleTime: 5s`, `retry: 2` defaults |
 
 ## Type System Reference
 
@@ -380,7 +376,7 @@ BackendDrivenPage (route match)
 
 - All page components and dashboard renderers use `React.lazy()` in feature `index.ts`
 - Vite `manualChunks`: `feature-${name}` per feature, `marketing-runtime`, `ui-runtime` (radix, lucide), `chart-runtime` (uplot), `data-runtime` (axios, tanstack, zod)
-- Bundle budget checks: `npm run ci:budgets` (via `scripts/check-budgets.js`)
+- Bundle budget checks: `yarn ci:budgets` (via `scripts/check-budgets.js`)
 
 ---
 
@@ -393,14 +389,13 @@ Use when a change spans frontend and API. Backend paths refer to **`optikk-backe
 | Registry / route wiring | `domainRegistry.ts`, feature `index.ts` | `internal/app/server/modules_manifest.go` |
 | Explorer APIs | Feature `api/` or `shared/api` | Matching `internal/modules/.../handler.go` |
 | Explorer analytics | `explorer-core/api/explorerAnalyticsApi.ts` | `logs/explorer/` and `traces/explorer/` (shared types in `explorer/analytics/`) |
-| Metrics Explorer | `src/features/metrics` (`metricsExplorerApi.ts`) | `internal/modules/metricsexplorer` (`/metrics/names`, `/:metricName/tags`, `/explorer/query`) |
-| Dashboard panels | `dashboard/renderers/`, `dashboardPanelRegistry` | `internal/infra/dashboardcfg/`, panel types in `enums.go` |
-| Dashboard config API | `defaultConfigService.ts` | `internal/infra/dashboardcfg/` |
-| Default pages | Dashboard page adapters | `internal/infra/dashboardcfg/defaults/` — embedded **overview** only; infrastructure UI is frontend-owned |
+| Metrics Explorer | `src/features/metrics` (`metricsExplorerApi.ts` — `getMetricNames`, `getMetricTags`, `query`) | `internal/modules/metricsexplorer` (`/metrics/names`, `/:metricName/tags`, `/explorer/query`) |
+| Dashboard panels | `dashboard/renderers/`, `dashboardPanelRegistry` | Panel types in frontend `dashboardConfig.ts`; backend serves **data** APIs only |
+| Overview hub | `OverviewHubPage/` + `overviewHubApi.ts` | `internal/modules/overview/*` (data APIs) |
 | Auth | `shared/api/auth/` | `internal/modules/user/auth/` |
 
 | Logs live tail | `useSocketStream` → `useLiveTailStream` | `internal/modules/logs/search/livetail_run.go`, `internal/modules/livetail/` |
-| Overview | `src/features/overview/` | `internal/modules/overview/{overview,errors,slo}/` |
+| Overview | `src/features/overview/` — `OverviewHubPage` + `dashboard/renderers/` | `internal/modules/overview/{overview,errors,slo,redmetrics,apm,httpmetrics}/` |
 | Infrastructure | `src/features/infrastructure/` — `InfrastructureHubPage` + tabs (§ *Infrastructure product direction*) | `internal/modules/infrastructure/*/` (APIs only); no embedded default page |
 | Saturation | `src/features/metrics/pages/SaturationHubPage` | `internal/modules/saturation/database/*/`, `saturation/kafka/` |
 | Traces | `src/features/traces/api/` | `internal/modules/traces/{query,explorer,tracedetail,redmetrics,errorfingerprint,errortracking,tracecompare}/` |

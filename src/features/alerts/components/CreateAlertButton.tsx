@@ -1,7 +1,3 @@
-// "Create alert from this view" entry point. Drops on any surface with a
-// chartable signal and deep-links into the rule builder with target_ref +
-// group_by pre-filled via URL search params.
-
 import { useNavigate } from "@tanstack/react-router";
 import { BellPlus } from "lucide-react";
 
@@ -9,44 +5,35 @@ import { Button } from "@shared/components/primitives/ui/button";
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import type { AlertConditionType, AlertTargetRef } from "../types";
+import type { AlertPrefill } from "../types";
 
 export interface CreateAlertButtonProps {
-  readonly target?: AlertTargetRef;
-  readonly groupBy?: readonly string[];
-  readonly condition?: AlertConditionType;
+  readonly prefill?: AlertPrefill;
   readonly label?: string;
   readonly size?: "sm" | "md";
   readonly variant?: "ghost" | "secondary" | "primary";
   readonly className?: string;
 }
 
-/**
- * Builds the URL search string for the alert rule builder prefill.
- */
-export function buildAlertBuilderSearch(
-  target?: AlertTargetRef,
-  groupBy?: readonly string[],
-  condition?: AlertConditionType
-): string {
+export function buildAlertBuilderSearch(prefill?: AlertPrefill): string {
   const params = new URLSearchParams();
-  if (target && Object.keys(target).length > 0) {
-    params.set("target", JSON.stringify(target));
-  }
-  if (groupBy && groupBy.length > 0) {
-    params.set("groupBy", groupBy.join(","));
-  }
-  if (condition) {
-    params.set("condition", condition);
-  }
+  if (!prefill) return "";
+
+  if (prefill.presetKind) params.set("presetKind", prefill.presetKind);
+  if (prefill.serviceName) params.set("serviceName", prefill.serviceName);
+  if (prefill.environment) params.set("environment", prefill.environment);
+  if (prefill.sloId) params.set("sloId", prefill.sloId);
+  if (prefill.url) params.set("url", prefill.url);
+  if (prefill.provider) params.set("provider", prefill.provider);
+  if (prefill.model) params.set("model", prefill.model);
+  if (prefill.promptTemplate) params.set("promptTemplate", prefill.promptTemplate);
+
   const qs = params.toString();
   return qs ? `?${qs}` : "";
 }
 
 export function CreateAlertButton({
-  target,
-  groupBy,
-  condition,
+  prefill,
   label = "Create alert",
   size = "sm",
   variant = "ghost",
@@ -60,7 +47,7 @@ export function CreateAlertButton({
       icon={<BellPlus size={14} />}
       className={className}
       onClick={() => {
-        const search = buildAlertBuilderSearch(target, groupBy, condition);
+        const search = buildAlertBuilderSearch(prefill);
         navigate({ to: `${ROUTES.alertRuleNew}${search}` as never });
       }}
     >

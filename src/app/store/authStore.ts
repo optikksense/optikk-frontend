@@ -5,6 +5,7 @@ import type { Team, User } from "@/types";
 
 import type { AuthPayload, AuthTeam } from "@shared/api/auth/authService";
 import { authService } from "@shared/api/authService";
+import { queryClient } from "@shared/api/queryClient";
 
 import { useAppStore } from "@store/appStore";
 
@@ -39,12 +40,12 @@ function getErrorMessage(error: unknown, fallback: string): string {
     const record = error as Record<string, unknown>;
 
     // Handle "hijacked" 500 responses where login succeeded but session storage failed
-    const apiData = record.data as any;
+    const apiData = record.data as Record<string, unknown> | undefined;
     if (
       record.status === 500 &&
       apiData &&
       typeof apiData === "object" &&
-      (apiData.success === true || apiData.data?.user)
+      (apiData.success === true || (apiData.data as Record<string, unknown> | undefined)?.user)
     ) {
       return "Authentication succeeded, but the session could not be saved (Redis failure). Please contact your administrator.";
     }
@@ -111,6 +112,7 @@ function clearSessionState(
   set: (partial: Partial<AuthState> | ((state: AuthState) => Partial<AuthState>)) => void
 ): void {
   useAppStore.setState({ selectedTeamId: null, selectedTeamIds: [] });
+  queryClient.clear();
   set({
     user: null,
     isAuthenticated: false,

@@ -34,9 +34,9 @@ const optionalTextSchema = z.preprocess((value) => {
 
 const settingsTeamSchema = z
   .object({
-    name: z.string().optional(),
-    apiKey: z.string().optional(),
-    role: z.string().optional(),
+    name: z.string().nullable().optional(),
+    apiKey: z.string().nullable().optional(),
+    role: z.string().nullable().optional(),
   })
   .strict();
 
@@ -56,11 +56,11 @@ const settingsPreferencesSchema = z
 
 const settingsProfileSchema = z
   .object({
-    name: z.string().optional(),
-    email: z.string().optional(),
-    avatarUrl: z.string().optional(),
-    role: z.string().optional(),
-    teams: z.array(settingsTeamSchema).optional(),
+    name: z.string().nullable().optional(),
+    email: z.string().nullable().optional(),
+    avatarUrl: z.string().nullable().optional(),
+    role: z.string().nullable().optional(),
+    teams: z.array(settingsTeamSchema).nullable().optional(),
     preferences: settingsPreferencesSchema.optional(),
   })
   .strict();

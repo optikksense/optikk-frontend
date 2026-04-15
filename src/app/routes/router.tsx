@@ -7,25 +7,37 @@ import {
   redirect,
   useParams,
 } from "@tanstack/react-router";
+import type { ComponentType, LazyExoticComponent } from "react";
 import { Suspense, lazy } from "react";
 
 import { getExplorerRoutes } from "@/app/registry/domainRegistry";
 import { buildLegacyServicePagePath } from "@/features/overview/components/serviceDrawerState";
 import { FeatureErrorBoundary, Loading } from "@/shared/components/ui/feedback";
 import { ROUTES } from "@/shared/constants/routes";
+import { dynamicTo } from "@/shared/utils/navigation";
 
+import type { DashboardDrawerEntity } from "@/shared/types/dashboardConfig";
+
+import MarketingLayout from "@/app/auth/pages/Pricing/MarketingLayout";
 import { AppContent } from "../App";
 import MainLayout from "../layout/MainLayout";
-import BackendDrivenPage from "./BackendDrivenPage";
 import LegacyDashboardDetailRedirect from "./LegacyDashboardDetailRedirect";
 import ProtectedRoute from "./ProtectedRoute";
 
 const LoginPage = lazy(() => import("@/app/auth"));
-const ProductPage = lazy(() => import("@/app/auth/pages/Pricing"));
+const MarketingHomePage = lazy(() => import("@/app/auth/pages/Pricing/HomePage"));
+const MarketingFeaturesPage = lazy(() => import("@/app/auth/pages/Pricing/FeaturesPage"));
+const MarketingPricingPage = lazy(() => import("@/app/auth/pages/Pricing/PricingPage"));
+const MarketingOpenTelemetryPage = lazy(() => import("@/app/auth/pages/Pricing/OpenTelemetryPage"));
+const MarketingSelfHostPage = lazy(() => import("@/app/auth/pages/Pricing/SelfHostPage"));
+const MarketingArchitecturePage = lazy(() => import("@/app/auth/pages/Pricing/ArchitecturePage"));
 const MetricsPage = lazy(() => import("@/features/metrics/pages/MetricsExplorerPage"));
 const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPage"));
 const InfrastructureHubPage = lazy(
   () => import("@/features/infrastructure/pages/InfrastructureHubPage")
+);
+const OverviewHubPage = lazy(
+  () => import("@/features/overview/pages/OverviewHubPage/OverviewHubPage")
 );
 function LegacyServicePathRedirect() {
   const params = useParams({ strict: false });
@@ -40,12 +52,12 @@ function LegacySaturationDatabaseRedirect() {
   const dbSystem = typeof params.dbSystem === "string" ? params.dbSystem : "";
   return (
     <Navigate
-      to={
+      to={dynamicTo(
         ROUTES.saturationDatastoreDetail.replace(
           "$system",
           encodeURIComponent(dbSystem || "unknown")
-        ) as any
-      }
+        )
+      )}
       replace
     />
   );
@@ -56,8 +68,8 @@ function LegacySaturationRedisRedirect() {
   const instance = typeof params.instance === "string" ? params.instance : "";
   return (
     <Navigate
-      to={ROUTES.saturationDatastoreDetail.replace("$system", "redis") as any}
-      search={instance ? ({ instance } as any) : undefined}
+      to={dynamicTo(ROUTES.saturationDatastoreDetail.replace("$system", "redis"))}
+      search={instance ? ({ instance } as Record<string, unknown>) : undefined}
       replace
     />
   );
@@ -71,27 +83,43 @@ export const rootRoute = createRootRoute({
   component: AppContent,
 });
 
-// Marketing Pages
-const marketingPaths = [
-  ROUTES.home,
-  ROUTES.product,
-  ROUTES.pricing,
-  ROUTES.opentelemetry,
-  ROUTES.selfHost,
-];
-const marketingRoutes = marketingPaths.map((path) =>
-  createRoute({
-    getParentRoute: () => rootRoute,
-    path: path === "/" ? "/" : path.startsWith("/") ? path : `/${path}`,
+const marketingLayoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: "marketing-layout",
+  component: MarketingLayout,
+});
+
+function marketingChild(path: string, LazyComp: LazyExoticComponent<ComponentType>) {
+  const normalized = path === ROUTES.home ? "/" : path.replace(/^\//, "");
+  return createRoute({
+    getParentRoute: () => marketingLayoutRoute,
+    path: normalized,
     component: () => (
       <Suspense fallback={<Loading fullscreen />}>
         <PageTransition>
-          <ProductPage />
+          <LazyComp />
         </PageTransition>
       </Suspense>
     ),
-  })
-);
+  });
+}
+
+const marketingRoutesGroup = [
+  marketingChild(ROUTES.home, MarketingHomePage),
+  marketingChild(ROUTES.features, MarketingFeaturesPage),
+  marketingChild(ROUTES.pricing, MarketingPricingPage),
+  marketingChild(ROUTES.opentelemetry, MarketingOpenTelemetryPage),
+  marketingChild(ROUTES.selfHost, MarketingSelfHostPage),
+  marketingChild(ROUTES.architecture, MarketingArchitecturePage),
+];
+
+const productRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "product",
+  loader: () => {
+    throw redirect({ to: ROUTES.pricing, replace: true });
+  },
+});
 
 // Login
 const loginRoute = createRoute({
@@ -142,12 +170,7 @@ function createProtected(
     getParentRoute: () => mainLayoutRoute,
     path: toNestedRoutePath(path),
     component: () => (
-      <FeatureErrorBoundary
-        featureName={`route:${path}`}
-        onError={(err, feature) => {
-          console.log(`[Telemetry Push] ${feature} failed:`, err);
-        }}
-      >
+      <FeatureErrorBoundary featureName={`route:${path}`}>
         <Suspense fallback={<Loading fullscreen />}>
           <PageComponent />
         </Suspense>
@@ -160,7 +183,7 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
   createProtected(route.path, route.page)
 );
 
-const overviewRoute = createProtected(ROUTES.overview, BackendDrivenPage);
+const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
 const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
 // Redirects
@@ -184,7 +207,7 @@ function createLegacyDetailRedirect(
     component: () => (
       <LegacyDashboardDetailRedirect
         parentPath={parentPath}
-        drawerEntity={drawerEntity as any}
+        drawerEntity={drawerEntity as DashboardDrawerEntity}
         paramKey={paramKey}
         tab={tab}
       />
@@ -253,7 +276,8 @@ const globalFallback = createRoute({
 });
 
 const routeTree = rootRoute.addChildren([
-  ...marketingRoutes,
+  marketingLayoutRoute.addChildren(marketingRoutesGroup),
+  productRedirectRoute,
   loginRoute,
   mainLayoutRoute.addChildren([
     ...protectedExplorerRoutes,

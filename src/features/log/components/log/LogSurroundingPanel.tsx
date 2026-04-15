@@ -103,8 +103,8 @@ export default function LogSurroundingPanel({ log }: LogSurroundingPanelProps) {
       if (res.before?.length) {
         setLocalBefore((prev) => [...res.before, ...prev]);
       }
-    } catch (e) {
-      console.error("Failed to load older context", e);
+    } catch {
+      // Error propagated via query state; no logging needed.
     } finally {
       setLoadingOlder(false);
     }
@@ -125,8 +125,8 @@ export default function LogSurroundingPanel({ log }: LogSurroundingPanelProps) {
       if (res.after?.length) {
         setLocalAfter((prev) => [...prev, ...res.after]);
       }
-    } catch (e) {
-      console.error("Failed to load newer context", e);
+    } catch {
+      // Error propagated via query state; no logging needed.
     } finally {
       setLoadingNewer(false);
     }

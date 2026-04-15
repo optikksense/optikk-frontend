@@ -20,7 +20,7 @@ import { buildServiceDrawerSearch } from "../../components/serviceDrawerState";
 import { ServiceTopologyEdge, type TopologyEdgeData } from "./topology/ServiceTopologyEdge";
 import { ServiceTopologyNode, type TopologyNodeData } from "./topology/ServiceTopologyNode";
 import { TopologyToolbar } from "./topology/TopologyToolbar";
-import { type ServiceTopologyResponse, fetchServiceTopology } from "./topology/api";
+import { type ServiceTopologyResponse, getServiceTopology } from "./topology/api";
 import { layoutTopology } from "./topology/layout";
 
 const nodeTypes: NodeTypes = { service: ServiceTopologyNode };
@@ -142,7 +142,7 @@ function TopologyCanvas() {
   const query = useTimeRangeQuery(
     "services-topology",
     async (_teamId, startTime, endTime) => {
-      return fetchServiceTopology({
+      return getServiceTopology({
         startTime,
         endTime,
         service: focusService || undefined,

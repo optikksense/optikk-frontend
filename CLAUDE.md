@@ -25,8 +25,8 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Feature registry**: `src/app/registry/domainRegistry.ts` — 8 domains: overview, saturation, metrics, logs, traces, infrastructure, alerts, settings
 - **Route constants**: `src/shared/constants/routes.ts`
 - **HTTP client**: `src/shared/api/api/client.ts`
-- **Default config API**: `src/shared/api/defaultConfigService.ts` — `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId`
-- **Dashboard shell**: `src/shared/components/ui/dashboard/` — `DashboardPage.tsx`, `ConfigurableDashboard.tsx`, `DashboardEntityDrawer.tsx`
+- **Overview hub**: `src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx` — bespoke `/overview` tabs; APIs via `src/features/overview/api/overviewHubApi.ts` + `metricsOverviewApi`
+- **Dashboard primitives**: `src/shared/components/ui/dashboard/` — `ConfigurableDashboard.tsx`, `ConfigurableChartCard.tsx`, `DashboardEntityDrawer.tsx`
 - **Panel registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain panels
 - **Built-in panels**: `builtInDashboardPanels.tsx` — request, error-rate, latency, exception-type-line (base-chart); table, bar, gauge, heatmap, pie, stat-cards-grid (specialized); stat-card, stat-summary (self-contained)
 - **Charts**: `src/shared/components/ui/charts/` — UPlotChart (use `setData()` for flicker-free refresh), ObservabilityChart, time-series/, distributions/, micro/, specialized/
@@ -35,7 +35,9 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Explorer core**: `src/features/explorer-core/` — shared analytics, facets, visualizations for Logs/Traces/Metrics explorers
 - **Entities**: `src/shared/entities/` — log, metric, trace, user
 - **Theme**: `src/config/themeColors.css` → `tailwind.config.ts`
-- **Dev**: `npm run dev` | **CI**: `npm run ci`
+- **Dev**: `yarn dev` | **CI**: `yarn ci`
+- **Navigation utils**: `src/shared/utils/navigation.ts` — `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` for TanStack Router dynamic-path navigation (replaces scattered `as any` casts)
+- **Standard query**: `src/shared/hooks/useStandardQuery.ts` — `useStandardQuery(options)` with `keepPreviousData`, `staleTime: 5s`, `retry: 2`
 - **Sibling repo**: `optikk-backend` (see its `CODEBASE_INDEX.md`)
 
 ## Domain → dashboard page mapping
@@ -54,6 +56,9 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Always**: `placeholderData: keepPreviousData`; loading = `isPending && data === undefined`
 - **No cross-feature imports** — ESLint enforced; move shared code to `@shared/`
 - **No TS enums** — use `as const` + union types
+- **No `as any`** — use `dynamicNavigateOptions` / `dynamicTo` for router casts, `Record<string, unknown>` for data, `unknown as { keys: ... }` for Zod internals
+- **API naming**: GET operations use `get*` prefix (not `fetch*`); `fetch*` is reserved for the Fetch API itself
+- **Prefer `useStandardQuery`** over raw `useQuery` for consistent defaults
 - **Drawer entities**: databaseSystem, deployment, errorGroup, kafkaGroup, kafkaTopic, node, redisInstance, service
 
 ## Engineering principles

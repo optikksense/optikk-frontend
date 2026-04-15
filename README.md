@@ -44,6 +44,12 @@ optikk-frontend/
 
 ### 1. Prerequisites
 
+This repo uses **Yarn Classic** (lockfile v1), pinned via **`packageManager`** in `package.json`. Enable Corepack once (ships with Node 18+), then use `yarn`:
+
+```bash
+corepack enable
+```
+
 You'll need a running Optikk Backend and infrastructure (MariaDB, ClickHouse, etc.). Use the central deployment guide:
 👉 [**Full Stack Local Deployment Guide**](../deploy/README.md)
 
@@ -51,10 +57,10 @@ You'll need a running Optikk Backend and infrastructure (MariaDB, ClickHouse, et
 
 ```bash
 # Install dependencies
-npm install
+yarn install
 
 # Start the dev server
-npm run dev
+yarn dev
 ```
 
 The dev server usually runs at `http://localhost:3000` (or `5173`). It is configured to proxy `/api/*` requests to your local backend automatically.
@@ -78,16 +84,16 @@ location /api/ {
 
 ```bash
 # Type checking
-npm run type-check
+yarn type-check
 
 # Linting
-npm run lint
+yarn lint
 
 # Production build
-npm run build
+yarn build
 
 # Preview build
-npm run preview
+yarn preview
 ```
 
 ## Key Features

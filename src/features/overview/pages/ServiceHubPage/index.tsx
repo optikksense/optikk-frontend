@@ -9,7 +9,7 @@ import { CreateAlertButton } from "@/features/alerts/components/CreateAlertButto
 import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
-import { fetchDiscoveryRows } from "./discovery/api";
+import { getDiscoveryRows } from "./discovery/api";
 
 const DiscoveryView = lazy(() => import("./discovery"));
 const TopologyView = lazy(() => import("./TopologyView"));
@@ -37,7 +37,7 @@ function SummaryTile({
         : tone === "danger"
           ? "border-[rgba(240,68,56,0.2)] bg-[rgba(240,68,56,0.08)]"
           : tone === "info"
-            ? "border-[rgba(124,127,242,0.22)] bg-[rgba(124,127,242,0.1)]"
+            ? "border-[var(--color-primary-subtle-22)] bg-[var(--color-primary-subtle-10)]"
             : "border-[var(--border-color)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]";
 
   return (
@@ -67,7 +67,7 @@ export default function ServiceHubPage() {
 
   const discoverySummaryQuery = useTimeRangeQuery(
     "services-discovery",
-    async (teamId, startTime, endTime) => fetchDiscoveryRows(teamId, startTime, endTime)
+    async (teamId, startTime, endTime) => getDiscoveryRows(teamId, startTime, endTime)
   );
 
   const summary = useMemo(() => {
@@ -116,8 +116,7 @@ export default function ServiceHubPage() {
             <Badge variant="info">{summary.totalServices} services</Badge>
             <Badge variant="warning">{summary.recentlyDeployed} recent releases</Badge>
             <CreateAlertButton
-              condition="error_rate"
-              groupBy={["service.name"]}
+              prefill={{ presetKind: "service_error_rate" }}
               label="Create alert for fleet"
             />
           </div>

@@ -21,7 +21,7 @@ alwaysApply: true
 
 ## Stack
 
-React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, Zustand 5, uPlot 1.6. Quality: `npm run ci`.
+React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, Zustand 5, uPlot 1.6. Quality: `yarn ci`.
 
 ## Entry points
 
@@ -44,8 +44,8 @@ React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Tailwind 3.4, 
 ## Shared / API
 
 - HTTP: `src/shared/api/api/client.ts` — Axios; auto-unwraps `APIResponse` envelope; decode: `src/shared/api/utils/decode.ts`
-- Default config: `src/shared/api/defaultConfigService.ts` — `GET /v1/default-config/pages`, `.../tabs`, `.../tabs/:tabId`
-- Dashboard shell: `src/shared/components/ui/dashboard/` (`DashboardPage.tsx`, `ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx`, `DashboardEntityDrawer.tsx`)
+- Overview hub: `src/features/overview/pages/OverviewHubPage/` — first-class `/overview` (tabs via `?tab=`); data via `overviewHubApi.ts` + `metricsOverviewApi`
+- Dashboard primitives: `src/shared/components/ui/dashboard/` (`ConfigurableDashboard.tsx`, `dashboardPanelRegistry.tsx`, `DashboardEntityDrawer.tsx`)
 - **uPlot:** `src/shared/components/ui/charts/UPlotChart.tsx` — on data-only updates, call **`setData`** (not destroy/recreate). Build **`options` inside `useMemo`** so the chart doesn't tear down on parent re-render.
 - Entities: `src/shared/entities/` — `log/`, `metric/`, `trace/`, `user/`
 
@@ -129,6 +129,7 @@ export const myConfig: DomainConfig = {
 | Dashboard datasource | `['datasource', teamId, endpoint, timeRange]` | **No** | `useInvalidateQueriesOnAppRefresh` |
 
 - **Always** use `placeholderData: keepPreviousData` to prevent loading flash on refetch
+- **Prefer** `useStandardQuery` (`shared/hooks/useStandardQuery.ts`) over raw `useQuery` — bundles `keepPreviousData`, `staleTime: 5s`, `retry: 2` defaults
 - **Loading state** = `isPending && data === undefined` (not `isLoading`)
 - `enabled: !!selectedTeamId` — don't fire queries without a team
 - `staleTime: 0`, `gcTime: 30_000`, `retry: false`

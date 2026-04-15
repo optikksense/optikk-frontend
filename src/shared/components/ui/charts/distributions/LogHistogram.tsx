@@ -29,17 +29,28 @@ const INTERVAL_MS: Record<string, number> = {
   "6h": 21_600_000,
 };
 
-function getBucketTimeValue(row: any) {
+interface LogVolumePoint {
+  timeBucket?: string;
+  time_bucket?: string;
+  timestamp?: string;
+  count?: number;
+  total?: number;
+  value?: number;
+  level?: string;
+  [key: string]: unknown;
+}
+
+function getBucketTimeValue(row: LogVolumePoint) {
   return row?.timeBucket || row?.time_bucket || row?.timestamp;
 }
 
-function parseBucketMs(value: any) {
+function parseBucketMs(value: string | undefined) {
   const timeStr = String(value ?? "");
   const isSqlFormat = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(timeStr);
   return new Date(isSqlFormat ? `${timeStr.replace(" ", "T")}Z` : timeStr).getTime();
 }
 
-function getPointCount(row: any) {
+function getPointCount(row: LogVolumePoint) {
   const raw = row?.count ?? row?.total ?? row?.value ?? 0;
   const n = Number(raw);
   return Number.isFinite(n) ? n : 0;
@@ -50,7 +61,7 @@ function fmtTime(ms: number) {
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
-function fmtCount(n: any) {
+function fmtCount(n: number) {
   const val = Number(n);
   if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}M`;
   if (val >= 1_000) return `${(val / 1_000).toFixed(1)}k`;
@@ -157,12 +168,13 @@ export default function LogHistogram({
       };
     }
 
-    const hasLevels = data.some((d: any) => d.level);
+    const typedData = data as LogVolumePoint[];
+    const hasLevels = typedData.some((d) => d.level);
 
     let tStart = startTime;
     let tEnd = endTime;
     if (!tStart || !tEnd) {
-      const allTs = (data as any[])
+      const allTs = typedData
         .map((d) => parseBucketMs(getBucketTimeValue(d)))
         .filter((ts) => Number.isFinite(ts));
       if (allTs.length === 0) {
@@ -178,7 +190,7 @@ export default function LogHistogram({
       const countMap: Record<number, Record<string, number>> = {};
       const stepMs = INTERVAL_MS[interval] || 60_000;
 
-      (data as any[]).forEach((d) => {
+      typedData.forEach((d) => {
         const ts = parseBucketMs(getBucketTimeValue(d));
         if (!Number.isFinite(ts)) return;
         const bucketMs = Math.round(ts / stepMs) * stepMs;
@@ -193,7 +205,7 @@ export default function LogHistogram({
       const levels = activeLevels.length > 0 ? activeLevels : ["INFO"];
       const seriesData = levels.map((lvl) => ({
         level: lvl,
-        label: (LOG_LEVELS as any)[lvl]?.label || lvl,
+        label: (LOG_LEVELS as Record<string, { label: string; color: string }>)[lvl]?.label || lvl,
         data: allBuckets.map((b) => countMap[b]?.[lvl] || 0),
       }));
 
@@ -202,7 +214,7 @@ export default function LogHistogram({
 
     const stepMs = INTERVAL_MS[interval] || 60_000;
     const countByBucket: Record<number, number> = {};
-    (data as any[]).forEach((d) => {
+    typedData.forEach((d) => {
       const ts = parseBucketMs(getBucketTimeValue(d));
       if (!Number.isFinite(ts)) return;
       const bucketMs = Math.round(ts / stepMs) * stepMs;
@@ -273,7 +285,7 @@ export default function LogHistogram({
       series: [
         {},
         ...reversedSeries.map((s) =>
-          uBars((s as any).label || s.level, LEVEL_COLORS[s.level] || APP_COLORS.hex_98a2b3)
+          uBars("label" in s ? s.label : s.level, LEVEL_COLORS[s.level] || APP_COLORS.hex_98a2b3)
         ),
       ],
     };
@@ -299,7 +311,7 @@ export default function LogHistogram({
           {legendLevels.map((lvl) => (
             <span key={lvl} className="lh-legend__item">
               <span className="lh-legend__dot" style={{ background: LEVEL_COLORS[lvl] }} />
-              {((LOG_LEVELS as any)[lvl]?.label || lvl).toLowerCase()}
+              {((LOG_LEVELS as Record<string, { label: string; color: string }>)[lvl]?.label || lvl).toLowerCase()}
             </span>
           ))}
         </div>
