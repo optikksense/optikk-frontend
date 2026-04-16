@@ -1,138 +1,33 @@
-import { Activity, AlertCircle, GitBranch, GitCompare, Radio, Share2 } from "lucide-react";
-
-import { ERROR_CODE_LABELS } from "@/shared/constants/errorCodes";
-import { useNavigate } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
-import toast from "react-hot-toast";
-
-import { Badge, Button, Select, Switch } from "@/components/ui";
-import type { SelectOption, SimpleTableColumn } from "@/components/ui";
-import { ExplorerResultsTable, FacetRail } from "@/features/explorer-core/components";
-import {
-  type AggregationSpec,
-  AnalyticsToolbar,
-  type ExplorerVizMode,
+import type { SelectOption } from "@/components/ui";
+import type {
+  AggregationSpec,
+  ExplorerVizMode,
 } from "@/features/explorer-core/components/AnalyticsToolbar";
-
-import { AnalyticsPieChart } from "@/features/explorer-core/components/visualizations/AnalyticsPieChart";
-import { AnalyticsTable } from "@/features/explorer-core/components/visualizations/AnalyticsTable";
-import { AnalyticsTimeseries } from "@/features/explorer-core/components/visualizations/AnalyticsTimeseries";
-import { AnalyticsTopList } from "@/features/explorer-core/components/visualizations/AnalyticsTopList";
 import { useExplorerAnalytics } from "@/features/explorer-core/hooks/useExplorerAnalytics";
 import { useLiveTailStream } from "@/features/explorer-core/hooks/useLiveTailStream";
 import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
 import { cn } from "@/lib/utils";
-import { ROUTES } from "@/shared/constants/routes";
-import type { StructuredFilter } from "@/shared/hooks/useURLFilters";
-import { resolveTimeRangeBounds } from "@/types";
 import { useTimeRange } from "@app/store/appStore";
-import { tracesService } from "@shared/api/tracesService";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
-import {
-  ObservabilityDetailPanel,
-  ObservabilityQueryBar,
-  PageHeader,
-  PageShell,
-  PageSurface,
-} from "@shared/components/ui";
-import { buildLogsHubHref, traceIdEqualsFilter } from "@shared/observability/deepLinks";
-import {
-  formatDuration,
-  formatNumber,
-  formatRelativeTime,
-  formatTimestamp,
-} from "@shared/utils/formatters";
+import { PageShell } from "@shared/components/ui";
 
 import { useTraceDetailFields } from "../../hooks/useTraceDetailFields";
 import { useTracesExplorer } from "../../hooks/useTracesExplorer";
-import { TRACE_FILTER_FIELDS } from "../../utils/tracesUtils";
-
-const TRACES_LIVE_TAIL_MAX_ROWS = 20;
-
 import type { TraceRecord } from "../../types";
 
-const TRACE_STATUS_SORT_ORDER: Record<string, number> = {
-  UNSET: 0,
-  OK: 1,
-  ERROR: 2,
-};
-
-function compareTraceText(left: unknown, right: unknown): number {
-  return String(left ?? "").localeCompare(String(right ?? ""), undefined, {
-    sensitivity: "base",
-  });
-}
-
-function compareTraceTimestamp(left: unknown, right: unknown): number {
-  return new Date(String(left ?? 0)).getTime() - new Date(String(right ?? 0)).getTime();
-}
-
-function renderTraceStatus(status: string) {
-  const normalized = (status || "UNSET").toUpperCase();
-  const variant = normalized === "ERROR" ? "error" : normalized === "OK" ? "success" : "default";
-  return <Badge variant={variant}>{normalized}</Badge>;
-}
-
-function formatLiveTailStatus(
-  status: "idle" | "connecting" | "live" | "closed" | "error",
-  lagMs: number
-): string {
-  if (status === "live") return `${Math.max(0, lagMs)}ms lag`;
-  if (status === "closed") return "session ended";
-  if (status === "error") return "stream error";
-  return "connecting";
-}
-
-function buildTraceRecordFromLiveItem(value: unknown): TraceRecord {
-  const row = value as Record<string, unknown>;
-  const start = new Date(String(row.timestamp ?? new Date().toISOString()));
-  const durationMs = Number(row.durationMs ?? 0);
-  const end = new Date(start.getTime() + durationMs);
-
-  return {
-    span_id: String(row.spanId ?? ""),
-    trace_id: String(row.traceId ?? ""),
-    service_name: String(row.serviceName ?? ""),
-    operation_name: String(row.operationName ?? ""),
-    start_time: start.toISOString(),
-    end_time: end.toISOString(),
-    duration_ms: durationMs,
-    status: String(row.status ?? "UNSET"),
-    span_kind: String(row.spanKind ?? ""),
-    http_method: String(row.httpMethod ?? ""),
-    http_status_code: Number(row.httpStatusCode ?? 0),
-    status_message: "",
-    parent_span_id: "",
-  };
-}
-
-function upsertFacetFilter(
-  filters: StructuredFilter[],
-  nextField: string,
-  nextValue: string | null
-): StructuredFilter[] {
-  const withoutField = filters.filter((filter) => filter.field !== nextField);
-  if (!nextValue) {
-    return withoutField;
-  }
-
-  return [
-    ...withoutField,
-    {
-      field: nextField,
-      operator: "equals",
-      value: nextValue,
-    },
-  ];
-}
-
-const TRACE_METRIC_FIELDS = [
-  { value: "duration_nano", label: "duration (ns)" },
-  { value: "duration", label: "duration" },
-];
+import { useCallback, useMemo, useRef, useState } from "react";
+import { TracesAnalyticsSection } from "./components/TracesAnalyticsSection";
+import { TracesDetailPanel } from "./components/TracesDetailPanel";
+import { TracesExplorerChrome } from "./components/TracesExplorerChrome";
+import { TracesListSection } from "./components/TracesListSection";
+import { TracesPageHeader } from "./components/TracesPageHeader";
+import { TRACES_LIVE_TAIL_MAX_ROWS } from "./constants";
+import { type TracesFacetSelectionContext, handleTracesFacetSelect } from "./facetSelection";
+import { useTracesFacetModel } from "./hooks/useTracesFacetModel";
+import { useTracesTableColumns } from "./hooks/useTracesTableColumns";
+import { buildTraceRecordFromLiveItem } from "./utils";
 
 export default function TracesPage() {
-  const navigate = useNavigate();
   const timeRange = useTimeRange();
 
   const {
@@ -218,170 +113,13 @@ export default function TracesPage() {
 
   const renderedTraces = isLiveTail ? liveTail.items.slice(0, TRACES_LIVE_TAIL_MAX_ROWS) : traces;
 
-  const columns = useMemo<SimpleTableColumn<TraceRecord>[]>(
-    () => [
-      {
-        title: "",
-        key: "selected",
-        width: 42,
-        render: (_value, row) => (
-          <input
-            type="checkbox"
-            checked={selectedTraceIdsRef.current.includes(row.trace_id)}
-            onChange={(event) => {
-              setSelectedTraceIds((previous) => {
-                if (event.target.checked) {
-                  if (previous.length >= 2) {
-                    return previous;
-                  }
-                  return [...previous, row.trace_id];
-                }
-                return previous.filter((id) => id !== row.trace_id);
-              });
-            }}
-            onClick={(event) => event.stopPropagation()}
-            className="h-4 w-4 rounded border-[var(--border-color)] bg-transparent"
-          />
-        ),
-      },
-      {
-        title: "Trace ID",
-        key: "trace_id",
-        dataIndex: "trace_id",
-        width: 170,
-        ...(isLiveTail
-          ? {}
-          : { sorter: (left, right) => compareTraceText(left.trace_id, right.trace_id) }),
-        render: (value) => (
-          <span className="font-mono text-[11px] text-[var(--text-primary)]">
-            {String(value).slice(0, 14)}
-          </span>
-        ),
-      },
-      {
-        title: "Service",
-        key: "service_name",
-        dataIndex: "service_name",
-        width: 160,
-        ...(isLiveTail
-          ? {}
-          : { sorter: (left, right) => compareTraceText(left.service_name, right.service_name) }),
-        render: (value) => (
-          <span className="font-medium text-[12.5px] text-[var(--text-primary)]">
-            {String(value || "Unknown")}
-          </span>
-        ),
-      },
-      {
-        title: "Operation",
-        key: "operation_name",
-        dataIndex: "operation_name",
-        width: 220,
-        ellipsis: true,
-        ...(isLiveTail
-          ? {}
-          : {
-              sorter: (left, right) => compareTraceText(left.operation_name, right.operation_name),
-            }),
-        render: (value) => (
-          <span className="block truncate text-[12.5px] text-[var(--text-secondary)]">
-            {String(value || "Unknown")}
-          </span>
-        ),
-      },
-      {
-        title: "Status",
-        key: "status",
-        dataIndex: "status",
-        width: 110,
-        ...(isLiveTail
-          ? {}
-          : {
-              sorter: (left, right) =>
-                (TRACE_STATUS_SORT_ORDER[String(left.status ?? "UNSET").toUpperCase()] ?? 0) -
-                (TRACE_STATUS_SORT_ORDER[String(right.status ?? "UNSET").toUpperCase()] ?? 0),
-            }),
-        render: (value) => renderTraceStatus(String(value)),
-      },
-      {
-        title: "Duration",
-        key: "duration_ms",
-        dataIndex: "duration_ms",
-        width: 120,
-        ...(isLiveTail
-          ? {}
-          : {
-              sorter: (left, right) =>
-                Number(left.duration_ms ?? 0) - Number(right.duration_ms ?? 0),
-            }),
-        render: (value) => (
-          <span className="font-medium text-[var(--text-primary)]">
-            {formatDuration(Number(value ?? 0))}
-          </span>
-        ),
-      },
-      {
-        title: "Started",
-        key: "start_time",
-        dataIndex: "start_time",
-        width: 176,
-        ...(isLiveTail
-          ? {}
-          : {
-              sorter: (left, right) => compareTraceTimestamp(left.start_time, right.start_time),
-              defaultSortOrder: "descend",
-            }),
-        render: (value) => (
-          <div className="space-y-1">
-            <div className="text-[12px] text-[var(--text-primary)]">
-              {formatTimestamp(String(value))}
-            </div>
-            <div className="text-[11px] text-[var(--text-muted)]">
-              {formatRelativeTime(String(value))}
-            </div>
-          </div>
-        ),
-      },
-    ],
-    [isLiveTail]
-  );
+  const columns = useTracesTableColumns(isLiveTail, selectedTraceIdsRef, setSelectedTraceIds);
 
-  const facetGroups = useMemo(
-    () => [
-      { key: "service_name", label: "Services", buckets: facets.service_name ?? [] },
-      { key: "status", label: "Status", buckets: facets.status ?? [] },
-      { key: "operation_name", label: "Operations", buckets: facets.operation_name ?? [] },
-      { key: "span_kind", label: "Span kind", buckets: facets.span_kind ?? [] },
-      { key: "http_method", label: "HTTP method", buckets: facets.http_method ?? [] },
-      {
-        key: "http_status_code",
-        label: "HTTP status",
-        buckets: facets.http_status_code ?? [],
-      },
-      { key: "db_system", label: "DB system", buckets: facets.db_system ?? [] },
-    ],
-    [
-      facets.db_system,
-      facets.http_method,
-      facets.http_status_code,
-      facets.operation_name,
-      facets.service_name,
-      facets.span_kind,
-      facets.status,
-    ]
-  );
-
-  const selectedFacetState = useMemo(
-    () => ({
-      service_name: selectedService,
-      status: errorsOnly ? "ERROR" : null,
-      operation_name: filters.find((filter) => filter.field === "operation_name")?.value ?? null,
-      span_kind: filters.find((filter) => filter.field === "span_kind")?.value ?? null,
-      http_method: filters.find((filter) => filter.field === "http_method")?.value ?? null,
-      http_status_code: filters.find((filter) => filter.field === "http_status")?.value ?? null,
-      db_system: filters.find((filter) => filter.field === "db_system")?.value ?? null,
-    }),
-    [errorsOnly, filters, selectedService]
+  const { facetGroups, selectedFacetState } = useTracesFacetModel(
+    facets,
+    filters,
+    errorsOnly,
+    selectedService
   );
 
   const modeOptions = useMemo<SelectOption[]>(
@@ -392,120 +130,67 @@ export default function TracesPage() {
     []
   );
 
+  const facetCtx: TracesFacetSelectionContext = useMemo(
+    () => ({
+      filters,
+      setFilters,
+      setSelectedService,
+      setErrorsOnly,
+      setPage,
+    }),
+    [filters, setFilters, setSelectedService, setErrorsOnly, setPage]
+  );
+
+  const onFacetSelect = useCallback(
+    (groupKey: string, value: string | null) => {
+      handleTracesFacetSelect(groupKey, value, facetCtx);
+    },
+    [facetCtx]
+  );
+
+  const onSelectTrace = useCallback((row: TraceRecord) => {
+    setSelectedTrace(row);
+  }, []);
+
+  const liveTailChrome = useMemo(
+    () => ({
+      status: liveTail.status,
+      lagMs: liveTail.lagMs,
+      droppedCount: liveTail.droppedCount,
+      errorMessage: liveTail.errorMessage,
+    }),
+    [liveTail.droppedCount, liveTail.errorMessage, liveTail.lagMs, liveTail.status]
+  );
+
   return (
     <PageShell>
-      <PageHeader
-        title="Traces"
-        icon={<GitBranch size={22} />}
-        subtitle="Search, compare, and pivot across traces without leaving the explorer workflow."
-        actions=<Button
-          variant="ghost"
-          size="sm"
-          icon={<Share2 size={14} />}
-          onClick={async () => {
-            await navigator.clipboard.writeText(window.location.href);
-            toast.success("Share link copied");
-          }}
-        >
-          Share
-        </Button>
+      <TracesPageHeader />
+
+      <TracesExplorerChrome
+        mode={mode}
+        modeOptions={modeOptions}
+        onModeChange={(value) => setMode(value)}
+        isLiveTail={isLiveTail}
+        liveTail={liveTailChrome}
+        errorTraces={errorTraces}
+        onToggleLiveTail={() => setIsLiveTail(!isLiveTail)}
+        filters={filters}
+        setFilters={setFilters}
+        clearAll={clearAll}
+        setPage={setPage}
+        errorsOnly={errorsOnly}
+        setErrorsOnly={setErrorsOnly}
+        explorerMode={explorerMode}
+        setExplorerMode={setExplorerMode}
+        vizMode={vizMode}
+        setVizMode={setVizMode}
+        groupBy={groupBy}
+        setGroupBy={setGroupBy}
+        aggregations={aggregations}
+        setAggregations={setAggregations}
+        analyticsStep={analyticsStep}
+        setAnalyticsStep={setAnalyticsStep}
       />
-
-      <PageSurface padding="lg" className="relative z-[40] overflow-visible">
-        <div className="flex flex-col gap-4">
-          {isLiveTail && liveTail.errorMessage ? (
-            <div className="flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.35)] bg-[rgba(240,68,56,0.08)] px-4 py-2.5 text-[13px] text-[var(--color-error)]">
-              <AlertCircle size={16} className="shrink-0" />
-              <span className="font-medium">Live tail disconnected</span>
-              <span className="opacity-90">{liveTail.errorMessage}</span>
-            </div>
-          ) : null}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Badge variant="info">{mode === "all" ? "All spans" : "Root spans"}</Badge>
-              {isLiveTail ? (
-                <Badge variant={liveTail.status === "live" ? "warning" : "default"}>
-                  {formatLiveTailStatus(liveTail.status, liveTail.lagMs)}
-                </Badge>
-              ) : null}
-              {isLiveTail && liveTail.droppedCount > 0 ? (
-                <Badge variant="error">{formatNumber(liveTail.droppedCount)} dropped</Badge>
-              ) : null}
-              <Badge variant={errorTraces > 0 ? "error" : "default"}>
-                {formatNumber(errorTraces)} error traces
-              </Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant={isLiveTail ? "primary" : "secondary"}
-                size="sm"
-                icon={<Radio size={14} />}
-                onClick={() => setIsLiveTail(!isLiveTail)}
-              >
-                {isLiveTail ? "Stop live tail" : "Start live tail"}
-              </Button>
-            </div>
-          </div>
-
-          <div className="relative z-[70] grid items-start gap-3 lg:grid-cols-[minmax(320px,1fr)_220px]">
-            <ObservabilityQueryBar
-              fields={TRACE_FILTER_FIELDS}
-              filters={filters}
-              setFilters={(nextFilters: StructuredFilter[]) => {
-                setFilters(nextFilters);
-                setPage(1);
-              }}
-              onClearAll={clearAll}
-              placeholder="service:api AND status:ERROR — or use Search filter"
-              rightSlot={
-                <div
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-colors",
-                    errorsOnly
-                      ? "border-[rgba(240,68,56,0.35)] bg-[rgba(240,68,56,0.08)] text-[var(--color-error)]"
-                      : "border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)]"
-                  )}
-                >
-                  <Activity size={13} />
-                  Errors only
-                  <Switch
-                    size="sm"
-                    checked={errorsOnly}
-                    onChange={(event) => {
-                      setErrorsOnly(event.target.checked);
-                      setPage(1);
-                    }}
-                  />
-                </div>
-              }
-            />
-            <Select
-              value={mode}
-              onChange={(value) => {
-                setMode(String(value));
-                setPage(1);
-              }}
-              options={modeOptions}
-            />
-          </div>
-          <AnalyticsToolbar
-            mode={explorerMode}
-            onModeChange={setExplorerMode}
-            vizMode={vizMode}
-            onVizModeChange={setVizMode}
-            groupBy={groupBy}
-            onGroupByChange={setGroupBy}
-            aggregations={aggregations}
-            onAggregationsChange={setAggregations}
-            step={analyticsStep}
-            onStepChange={setAnalyticsStep}
-            fieldOptions={[
-              ...TRACE_FILTER_FIELDS.map((f) => ({ name: f.key, description: f.label })),
-            ]}
-            metricFields={TRACE_METRIC_FIELDS}
-          />
-        </div>
-      </PageSurface>
 
       <div
         className={cn(
@@ -514,137 +199,36 @@ export default function TracesPage() {
         )}
       >
         {explorerMode === "list" ? (
-          <>
-            <FacetRail
-              groups={facetGroups}
-              selected={selectedFacetState}
-              onSelect={(groupKey, value) => {
-                if (groupKey === "service_name") {
-                  setSelectedService(value);
-                  setPage(1);
-                  return;
-                }
-                if (groupKey === "status") {
-                  setErrorsOnly(value === "ERROR");
-                  setPage(1);
-                  return;
-                }
-                setFilters(upsertFacetFilter(filters, groupKey, value));
-                setPage(1);
-              }}
-            />
-
-            {isError && normalizedError && (
-              <div className="mb-3 flex items-center gap-2 rounded-[var(--card-radius)] border border-[rgba(240,68,56,0.3)] bg-[rgba(240,68,56,0.08)] px-4 py-3 text-[var(--color-error)]">
-                <AlertCircle size={16} className="shrink-0" />
-                <span className="font-medium text-sm">
-                  {ERROR_CODE_LABELS[normalizedError.code] ?? "Error"}
-                </span>
-                <span className="text-sm opacity-80">
-                  {normalizedError.message || "Failed to load traces"}
-                </span>
-              </div>
-            )}
-
-            <ExplorerResultsTable
-              title="Trace Explorer"
-              subtitle={`${formatNumber(renderedTraces.length)} rows in view, ${formatNumber(totalTraces)} total traces`}
-              rows={renderedTraces}
-              columns={columns}
-              rowKey={(row) => row.trace_id}
-              isLoading={isLoading}
-              page={page}
-              pageSize={pageSize}
-              showPagination={!isLiveTail}
-              total={isLiveTail ? renderedTraces.length : totalTraces}
-              onPageChange={setPage}
-              onPageSizeChange={(size) => {
-                setPageSize(size);
-                setPage(1);
-              }}
-              onRow={(row) => ({
-                onClick: () => setSelectedTrace(row),
-              })}
-              rowClassName={(row) =>
-                cn(
-                  "cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]",
-                  selectedTrace?.trace_id === row.trace_id &&
-                    "bg-[rgba(10,174,214,0.12)] ring-1 ring-[rgba(10,174,214,0.28)] ring-inset"
-                )
-              }
-            />
-          </>
+          <TracesListSection
+            facetGroups={facetGroups}
+            selectedFacetState={selectedFacetState}
+            onFacetSelect={onFacetSelect}
+            isError={isError}
+            normalizedError={normalizedError}
+            renderedTraces={renderedTraces}
+            columns={columns}
+            isLoading={isLoading}
+            isLiveTail={isLiveTail}
+            page={page}
+            pageSize={pageSize}
+            totalTraces={totalTraces}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            selectedTrace={selectedTrace}
+            onSelectTrace={onSelectTrace}
+          />
         ) : (
-          <PageSurface padding="lg" className="min-h-[320px]">
-            {analyticsQuery.isLoading ? (
-              <div className="text-[13px] text-[var(--text-muted)]">Loading analytics…</div>
-            ) : analyticsQuery.isError ? (
-              <div className="text-[13px] text-[var(--color-error)]">Analytics request failed.</div>
-            ) : analyticsQuery.data ? (
-              <div className="space-y-4">
-                {vizMode === "timeseries" ? (
-                  <AnalyticsTimeseries result={analyticsQuery.data} />
-                ) : null}
-                {vizMode === "toplist" ? <AnalyticsTopList result={analyticsQuery.data} /> : null}
-                {vizMode === "table" || vizMode === "list" ? (
-                  <AnalyticsTable result={analyticsQuery.data} />
-                ) : null}
-                {vizMode === "piechart" ? <AnalyticsPieChart result={analyticsQuery.data} /> : null}
-              </div>
-            ) : (
-              <div className="text-[13px] text-[var(--text-muted)]">
-                Configure group by and metrics.
-              </div>
-            )}
-          </PageSurface>
+          <TracesAnalyticsSection vizMode={vizMode} analyticsQuery={analyticsQuery} />
         )}
       </div>
 
       {selectedTrace ? (
-        <ObservabilityDetailPanel
-          title="Trace Detail"
-          titleBadge={renderTraceStatus(selectedTrace.status)}
-          metaLine={formatTimestamp(selectedTrace.start_time)}
-          metaRight={formatRelativeTime(selectedTrace.start_time)}
-          summaryNode={
-            <div className="space-y-1">
-              <div className="font-semibold text-[var(--text-primary)] text-sm">
-                {selectedTrace.operation_name}
-              </div>
-              <div className="text-[var(--text-secondary)] text-xs">
-                {selectedTrace.service_name} • {formatDuration(selectedTrace.duration_ms)}
-              </div>
-            </div>
-          }
-          actions={
-            <>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => navigate({ to: `/traces/${selectedTrace.trace_id}` })}
-              >
-                View full trace
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
-                  navigate({
-                    to: buildLogsHubHref({
-                      filters: [traceIdEqualsFilter(selectedTrace.trace_id)],
-                      fromMs: startTime,
-                      toMs: endTime,
-                    }) as never,
-                  });
-                }}
-              >
-                Related logs
-              </Button>
-            </>
-          }
-          fields={detailFields}
-          rawData={selectedTrace}
+        <TracesDetailPanel
+          trace={selectedTrace}
+          detailFields={detailFields}
           onClose={() => setSelectedTrace(null)}
         />
       ) : null}

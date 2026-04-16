@@ -39,7 +39,7 @@ The HTTP API and dashboard JSON live in the sibling repo **`optikk-backend`** (s
 | `src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx` | First-class Overview hub: `?tab=` (summary, latency-analysis, apm, errors, http, slo), share/export, `DashboardEntityDrawer` |
 | `src/app/layout/MainLayout.tsx` | Shell layout |
 
-**Service page:** `ROUTES.service` → `src/features/overview/pages/ServiceHubPage` — fully frontend-owned, no backend default config. Two tabs via `?view=discovery|topology` (default `discovery`): the **Discovery** tab (`discovery/` — service catalog with search, health filter, sort; fetches `/overview/services` + `/services/topology`, merges client-side for upstream/downstream dep counts and health badges) and the **Topology** tab (`TopologyView.tsx` + `topology/`). Row click on Discovery opens `drawerEntity=service` with the frontend-owned `ServiceDetailDrawer`, which shows compact service diagnostics and links into Logs and Traces.
+**Service page:** `ROUTES.service` → `src/features/overview/pages/ServiceHubPage` — fully frontend-owned, no backend default config. Two tabs via `?view=discovery|topology` (default `discovery`): the **Discovery** tab (`discovery/` — service catalog with search, health filter, sort; fetches `/overview/services` + `/services/topology`, merges client-side for upstream/downstream dep counts and health badges) and the **Topology** tab (`TopologyView.tsx` + `topology/`). Row click on Discovery opens `drawerEntity=service` with the frontend-owned **`ServiceDetailDrawer`** (`src/features/overview/components/ServiceDetailDrawer/` — thin `index.tsx`, `hooks/useServiceDetailDrawerModel.ts`, section components), which shows compact service diagnostics and links into Logs and Traces.
 
 ## Path aliases (Vite)
 
@@ -59,7 +59,7 @@ Defined in `vite.config.ts`. Common imports:
 All product domains are registered in **`src/app/registry/domainRegistry.ts`**. 9 domains in order:
 
 1. **overview** — Overview, Saturation, Service detail adapter (3 dashboard page adapters, 6 panel renderers)
-2. **saturation** — Saturation hub and datastore/Kafka drill-down routes
+2. **saturation** — Saturation hub and datastore/Kafka drill-down routes; hub UI lives in **`src/features/saturation/pages/SaturationPage/`** (`columnDefs.tsx`, `hooks/useSaturationExplorerModel.ts`, `hooks/useSaturationLegacyRedirect.ts`, `components/*` for header, stat tiles, toolbar, tables).
 3. **metrics** — Metrics Explorer, Saturation hub page, Kafka detail pages (3 panel renderers)
 4. **logs** — Log search + live tail (1 route, 1 panel renderer: `log-histogram`)
 5. **traces** — Traces explorer, detail, comparison (3 routes, 1 panel renderer: `trace-waterfall`)
@@ -128,8 +128,8 @@ Each feature's `index.ts` exports a **domain config**: navigation, explorer `rou
 |--------|-----|-------|--------|----------------|----------------|
 | Overview | `overview` | OverviewHubPage, ServiceHubPage | 0 | overview, saturation, service | service-health-grid, slo-indicators, error-hotspot-ranking, latency-histogram, latency-heatmap, db-systems-overview |
 | Metrics | `metrics` | MetricsExplorerPage, SaturationHubPage, KafkaTopicDetailPage, KafkaGroupDetailPage | 0 | — | latency-histogram, latency-heatmap, db-systems-overview |
-| Logs | `logs` | LogsHubPage | `/logs` | — | log-histogram |
-| Traces | `traces` | TracesPage, TraceDetailPage, TraceComparisonPage | `/traces`, `/traces/:traceId`, `/traces/compare` | — | trace-waterfall |
+| Logs | `logs` | LogsHubPage (`pages/LogsHubPage/` — section components, `logColumnDefs`, facet/share hooks) | `/logs` | — | log-histogram |
+| Traces | `traces` | TracesPage (`pages/TracesPage/` — section components, `traceColumnDefs`, facet/live-tail wiring), TraceDetailPage, TraceComparisonPage | `/traces`, `/traces/:traceId`, `/traces/compare` | — | trace-waterfall |
 | Infrastructure | `infrastructure` | InfrastructureHubPage (`pages/InfrastructureHubPage.tsx` + `pages/tabs/*`) | 0 | — (no backend default page) | — (charts composed in tabs, not `dashboardPanels`) |
 
 | Alerts | `alerts` | AlertsHubPage, AlertRuleBuilderPage, AlertRuleDetailPage | `/alerts`, `/alerts/rules/new`, `/alerts/rules/$ruleId`, `/alerts/rules/$ruleId/edit` | — | — |
