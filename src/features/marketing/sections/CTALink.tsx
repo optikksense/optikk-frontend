@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router"
 
-import { Button } from "@/design-system/button"
 import { dynamicTo } from "@/shared/utils/navigation"
 
 export interface CtaLinkData {
@@ -16,18 +15,19 @@ export function CTALink({
   readonly variant?: "primary" | "secondary"
 }) {
   const isExternal = /^https?:/i.test(cta.path)
+  const className = `marketing-cta-button marketing-cta-button-${variant}`
 
   if (isExternal) {
     return (
-      <a href={cta.path} target="_blank" rel="noreferrer">
-        <Button variant={variant}>{cta.label}</Button>
+      <a className={className} href={cta.path} target="_blank" rel="noreferrer">
+        {cta.label}
       </a>
     )
   }
 
   return (
-    <Link to={dynamicTo(cta.path)}>
-      <Button variant={variant}>{cta.label}</Button>
+    <Link to={dynamicTo(cta.path)} className={className}>
+      {cta.label}
     </Link>
   )
 }
