@@ -6,7 +6,7 @@ type TabKey = "timeline" | "flamegraph";
 const TAB_ITEMS = [
   { key: "timeline", label: "Trace Timeline" },
   { key: "flamegraph", label: "Flamegraph" },
-] as const;
+];
 
 interface Props {
   activeTab: TabKey;
