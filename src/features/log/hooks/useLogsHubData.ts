@@ -24,7 +24,10 @@ export interface UseLogsHubDataProps {
 const DEFAULT_STEP = "5m";
 
 /** Live tail buffer size (must match `maxItems` on `useLiveTailStream` and any UI cap). */
-export const LOGS_LIVE_TAIL_MAX_ROWS = 20;
+// Ring-buffer size for the logs live tail. Virtualisation in
+// ExplorerResultsTable handles render cost, so the cap is chosen to
+// survive 5 s of a 50-event/s burst without evicting visible rows.
+export const LOGS_LIVE_TAIL_MAX_ROWS = 250;
 
 export function useLogsHubData({
   explorerQuery,

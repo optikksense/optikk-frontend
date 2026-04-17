@@ -191,10 +191,14 @@ export function useTracesExplorer() {
   const p95 = Number(summary.p95_duration ?? 0);
   const p99 = Number(summary.p99_duration ?? 0);
 
-  const maxDuration = useMemo(
-    () => Math.max(...traces.map((trace) => trace.duration_ms), 1),
-    [traces]
-  );
+  const maxDuration = useMemo(() => {
+    let max = 1;
+    for (const trace of traces) {
+      const d = trace.duration_ms;
+      if (typeof d === "number" && d > max) max = d;
+    }
+    return max;
+  }, [traces]);
 
   const clearAll = useCallback((): void => {
     clearURLFilters();

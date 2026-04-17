@@ -99,6 +99,9 @@ export function useSocketStream<Item>({
         try {
           msg = JSON.parse(ev.data) as ServerMessage;
         } catch {
+          // Malformed frames are counted as drops so operators can see the
+          // stream is sick even if the server never sends a droppedCount.
+          setDroppedCount((n) => n + 1);
           return;
         }
 

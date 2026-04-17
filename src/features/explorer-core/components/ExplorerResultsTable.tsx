@@ -1,5 +1,7 @@
 import { SimpleTable, Skeleton } from "@/components/ui";
 import { PageSurface } from "@shared/components/ui";
+import { FeatureErrorBoundary } from "@shared/components/ui/feedback";
+import { useCallback, useMemo } from "react";
 
 import type { SimpleTableColumn, SimpleTableProps } from "@/components/ui";
 
@@ -48,6 +50,37 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
 }: ExplorerResultsTableProps<RowType>): JSX.Element {
   const useVirtual =
     virtualized ?? (!showPagination && rows.length > VIRTUALIZE_AUTO_THRESHOLD);
+
+  // Stable handler so the SimpleTable pagination object below is reference-equal
+  // across renders when page / pageSize / total haven't changed — this prevents
+  // SimpleTable (which is wrapped in memo) from re-rendering on unrelated parent
+  // updates at 500+ rows.
+  const onPaginationChange = useCallback(
+    (nextPage: number, nextPageSize: number) => {
+      if (nextPageSize !== pageSize) {
+        onPageSizeChange(nextPageSize);
+        return;
+      }
+      onPageChange(nextPage);
+    },
+    [onPageChange, onPageSizeChange, pageSize]
+  );
+
+  const pagination = useMemo<SimpleTableProps<RowType>["pagination"]>(
+    () =>
+      showPagination
+        ? {
+            current: page,
+            pageSize,
+            total,
+            manual: true,
+            showSizeChanger: true,
+            onChange: onPaginationChange,
+          }
+        : false,
+    [showPagination, page, pageSize, total, onPaginationChange]
+  );
+
   return (
     <PageSurface padding="lg" className="min-h-0 w-full min-w-0">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -66,44 +99,29 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
         {toolbar}
       </div>
 
-      {isLoading ? (
-        <Skeleton paragraph={{ rows: 8 }} />
-      ) : useVirtual ? (
-        <VirtualizedResultsTable
-          rows={rows}
-          columns={columns}
-          rowKey={rowKey}
-          onRow={onRow}
-          rowClassName={rowClassName}
-        />
-      ) : (
-        <SimpleTable
-          columns={columns}
-          dataSource={rows}
-          rowKey={rowKey}
-          pagination={
-            showPagination
-              ? {
-                  current: page,
-                  pageSize,
-                  total,
-                  manual: true,
-                  showSizeChanger: true,
-                  onChange: (nextPage, nextPageSize) => {
-                    if (nextPageSize !== pageSize) {
-                      onPageSizeChange(nextPageSize);
-                      return;
-                    }
-                    onPageChange(nextPage);
-                  },
-                }
-              : false
-          }
-          onRow={onRow}
-          rowClassName={rowClassName}
-          className="[&_td]:py-2.5 [&_td]:align-top [&_th]:py-2.5"
-        />
-      )}
+      <FeatureErrorBoundary featureName={`explorer-results-table:${title}`}>
+        {isLoading ? (
+          <Skeleton paragraph={{ rows: 8 }} />
+        ) : useVirtual ? (
+          <VirtualizedResultsTable
+            rows={rows}
+            columns={columns}
+            rowKey={rowKey}
+            onRow={onRow}
+            rowClassName={rowClassName}
+          />
+        ) : (
+          <SimpleTable
+            columns={columns}
+            dataSource={rows}
+            rowKey={rowKey}
+            pagination={pagination}
+            onRow={onRow}
+            rowClassName={rowClassName}
+            className="[&_td]:py-2.5 [&_td]:align-top [&_th]:py-2.5"
+          />
+        )}
+      </FeatureErrorBoundary>
     </PageSurface>
   );
 }
