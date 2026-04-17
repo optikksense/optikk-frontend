@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui";
+import type { AlertPreview } from "@/features/alerts/types";
 
 interface Props {
   fallbackTitle?: string;
-  notification?: { title: string; body: string };
+  notification?: AlertPreview["notification"];
 }
 
 export function SlackPreviewCard({ fallbackTitle, notification }: Props) {

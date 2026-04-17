@@ -1,20 +1,15 @@
 import { Button, Card, Input } from "@/components/ui";
-import type { AlertRulePayload } from "@/features/alerts/types";
+import type { AlertRulePayload, AlertSlackTestResult } from "@/features/alerts/types";
 import type { UseMutationResult } from "@tanstack/react-query";
 
 import { LabeledRow } from "../components/LabeledRow";
 
 import { SlackResultCard } from "./delivery/SlackResultCard";
 
-interface SlackTestResult {
-  delivered: boolean;
-  notification: { title: string; body: string };
-}
-
 interface Props {
   payload: AlertRulePayload;
   patch: (next: Partial<AlertRulePayload>) => void;
-  slackTestMut: UseMutationResult<SlackTestResult, unknown, AlertRulePayload>;
+  slackTestMut: UseMutationResult<AlertSlackTestResult, Error, AlertRulePayload>;
   onTestSlack: () => void | Promise<void>;
 }
 

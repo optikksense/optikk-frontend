@@ -1,16 +1,9 @@
 import { Badge, Card } from "@/components/ui";
-import type { AlertRulePayload } from "@/features/alerts/types";
+import type { AlertPreview, AlertRulePayload } from "@/features/alerts/types";
 
 import { titleForPreset } from "../../constants";
 
-interface PreviewEngine {
-  condition_type: string;
-  operator: string;
-  windows: Array<{ name: string; secs: number }>;
-  critical_threshold: number;
-  for_secs: number;
-  no_data_secs: number;
-}
+type PreviewEngine = AlertPreview["engine"];
 
 function EngineDetails({ engine }: { engine: PreviewEngine }) {
   return (

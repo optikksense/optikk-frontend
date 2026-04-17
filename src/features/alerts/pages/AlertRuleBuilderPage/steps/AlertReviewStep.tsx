@@ -1,18 +1,12 @@
-import type { AlertRulePayload } from "@/features/alerts/types";
+import type { AlertPreview, AlertRulePayload } from "@/features/alerts/types";
 import type { UseMutationResult } from "@tanstack/react-query";
 
-import { type PreviewEngine, ReviewSummaryCard } from "./review/ReviewSummaryCard";
+import { ReviewSummaryCard } from "./review/ReviewSummaryCard";
 import { SlackPreviewCard } from "./review/SlackPreviewCard";
-
-interface PreviewResult {
-  summary: string;
-  engine?: PreviewEngine;
-  notification: { title: string; body: string };
-}
 
 interface Props {
   payload: AlertRulePayload;
-  previewMut: UseMutationResult<PreviewResult, unknown, AlertRulePayload>;
+  previewMut: UseMutationResult<AlertPreview, Error, AlertRulePayload>;
 }
 
 export function AlertReviewStep({ payload, previewMut }: Props) {

@@ -1,10 +1,8 @@
 import { Badge, Card } from "@/components/ui";
+import type { AlertSlackTestResult } from "@/features/alerts/types";
 
 interface Props {
-  result: {
-    delivered: boolean;
-    notification: { title: string; body: string };
-  };
+  result: AlertSlackTestResult;
 }
 
 export function SlackResultCard({ result }: Props) {
