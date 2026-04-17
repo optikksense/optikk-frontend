@@ -34,26 +34,46 @@
     {
       "path": "/",
       "title": "Observability for shipping teams",
-      "description": "Dense, fast, AI-aware observability workflows built for developers.",
+      "description": "Dense, fast, AI-aware observability workflows built for engineers who ship every day.",
       "sections": [
         {
           "kind": "hero",
           "eyebrow": "Platform",
           "title": "Observability that keeps up with you.",
-          "body": "Logs, traces, metrics, and LLM generations in one dense surface. Built around real engineer workflows, not generic dashboards.",
+          "body": "Logs, traces, metrics, and LLM generations in one dense surface. Shaped around the keyboard-first workflows engineers actually use — not screenshots of competitor dashboards.",
           "primaryCta": { "label": "Sign in", "path": "/login" },
           "secondaryCta": { "label": "See pricing", "path": "/pricing" }
+        },
+        {
+          "kind": "metrics-strip",
+          "items": [
+            { "value": "60 fps", "label": "chart panning", "caption": "uPlot at 10k points/series" },
+            { "value": "500+", "label": "rows per page", "caption": "virtualised explorers" },
+            { "value": "<5 s", "label": "staleTime default", "caption": "no loading flashes" },
+            { "value": "0", "label": "raster assets", "caption": "on marketing routes" }
+          ]
         },
         {
           "kind": "feature-grid",
           "title": "What you get",
           "items": [
-            { "icon": "logs", "title": "Logs that scale", "body": "Virtualised explorer with live tail, server-side facets, and structured filtering." },
-            { "icon": "traces", "title": "Fast traces", "body": "Flamegraphs, service maps, and span detail without waiting on re-renders." },
-            { "icon": "metrics", "title": "Metric queries", "body": "Aggregations, formulas, and time-series tuned with uPlot for 60 fps panning." },
-            { "icon": "llm", "title": "AI workflows", "body": "First-class LLM generations, sessions, prompts, and evals — not bolted on." },
-            { "icon": "alerts", "title": "Actionable alerts", "body": "Rule builder, silences, and routing that stay readable at 1,000 rules." },
-            { "icon": "otel", "title": "OTLP native", "body": "Send from anything OpenTelemetry speaks — no agents, no lock-in." }
+            { "icon": "logs", "title": "Logs that scale", "body": "Virtualised explorer with live tail, server-side facets, and boolean filters. Click a value, never leave the page." },
+            { "icon": "traces", "title": "Fast traces", "body": "Flamegraphs, service maps, and span detail without waiting on re-renders. Critical-path highlighting built in." },
+            { "icon": "metrics", "title": "Metric queries", "body": "Aggregations, formulas, and time-series tuned with uPlot. Pan a month of data without drops." },
+            { "icon": "llm", "title": "AI workflows", "body": "First-class LLM generations, sessions, prompts, datasets, and evals — not bolted on after the fact." },
+            { "icon": "alerts", "title": "Actionable alerts", "body": "Rule builder, silences, and routing that stay readable at a thousand rules and still dispatch in seconds." },
+            { "icon": "otel", "title": "OTLP native", "body": "Send from anything that speaks OpenTelemetry. No agents. No vendor SDKs. No lock-in." }
+          ]
+        },
+        {
+          "kind": "split",
+          "title": "Built to disappear",
+          "body": "A frontend that gets out of the way. Keyboard-first, dense by default, one shortcut palette for every route and entity.",
+          "highlights": [
+            "Command palette covers every route, entity, and recent page.",
+            "Every explorer shares facets, analytics, and visualisations.",
+            "Time range, team, and theme persist across sessions.",
+            "URL-shareable state — paste a link, land on the exact view."
           ]
         },
         {
@@ -67,34 +87,36 @@
     {
       "path": "/features",
       "title": "A tighter surface for logs, traces, metrics, and AI",
-      "description": "Keep the Datadog-grade density, remove the sprawl, make the happy path obvious.",
+      "description": "Keep the Datadog-grade density. Remove the sprawl. Make the happy path obvious.",
       "sections": [
         {
           "kind": "hero",
           "eyebrow": "Features",
           "title": "Dense. Fast. Navigable.",
-          "body": "Every page is shaped by real workflows — not screenshots of competitor dashboards. Shareable URLs, stable facets, and zero modal mazes.",
-          "primaryCta": { "label": "See pricing", "path": "/pricing" }
+          "body": "Every page is shaped by a real investigation — not by a design review. Shareable URLs, stable facets, and zero modal mazes.",
+          "primaryCta": { "label": "See pricing", "path": "/pricing" },
+          "secondaryCta": { "label": "OpenTelemetry quickstart", "path": "/opentelemetry" }
         },
         {
           "kind": "feature-grid",
           "items": [
-            { "icon": "logs", "title": "Structured log search", "body": "Server-side facets, regex, and boolean operators. Click a value, never leave the page." },
-            { "icon": "traces", "title": "Flamegraph + span table", "body": "Correlate a slow span with its logs in one click. Critical-path spans are highlighted." },
-            { "icon": "metrics", "title": "Formula-driven charts", "body": "Aggregate, ratio, threshold — all inline. No nested editors." },
-            { "icon": "llm", "title": "Generation explorer", "body": "Dataset runs, eval scores, and prompt revisions side-by-side." },
-            { "icon": "alerts", "title": "Silences that make sense", "body": "Scope by service, instance, or arbitrary label. Expire automatically." },
-            { "icon": "workspace", "title": "URL-shareable state", "body": "Paste a link, land on the exact view — filters, time range, drawer selection." }
+            { "icon": "search", "title": "Structured log search", "body": "Server-side facets, regex, booleans. Click a value to pivot — no second click, no modal." },
+            { "icon": "traces", "title": "Flamegraph + span table", "body": "Correlate a slow span with its logs in one click. Critical-path spans are highlighted automatically." },
+            { "icon": "metrics", "title": "Formula-driven charts", "body": "Aggregate, ratio, threshold — inline. No nested editors. No JSON spelunking." },
+            { "icon": "llm", "title": "Generation explorer", "body": "Dataset runs, eval scores, and prompt revisions side-by-side. Diff two runs in seconds." },
+            { "icon": "alerts", "title": "Silences that make sense", "body": "Scope by service, instance, or arbitrary label. Expire automatically. Audit every mute." },
+            { "icon": "link", "title": "URL-shareable state", "body": "Paste a link, land on the exact view — filters, time range, drawer selection, and all." }
           ]
         },
         {
           "kind": "split",
-          "title": "Built to disappear",
-          "body": "Frontend that gets out of the way. Keyboard-first, dense by default, one shortcut palette for everything.",
+          "title": "Keyboard-first, always",
+          "body": "The command palette is the primary surface. Every route, every entity, every recent page reachable in one shortcut.",
           "highlights": [
-            "Command palette covers every route and entity.",
-            "All explorers share facets, analytics, and visualisations.",
-            "Time range, team, and theme persist across sessions."
+            "⌘K opens the palette from anywhere.",
+            "Every table row is selectable without a mouse.",
+            "Facet rails respond to ↑/↓ and Enter.",
+            "Time range picker has keyboard shortcuts for every preset."
           ]
         }
       ]
@@ -102,33 +124,42 @@
     {
       "path": "/pricing",
       "title": "Predictable pricing for engineering teams",
-      "description": "Usage-aware pricing for infrastructure telemetry and LLM workloads.",
+      "description": "Usage-aware pricing for infrastructure telemetry and LLM workloads. No per-seat games.",
       "sections": [
         {
           "kind": "hero",
           "eyebrow": "Pricing",
           "title": "Pay for what you ingest. Nothing else.",
-          "body": "No per-seat games. No mystery add-ons. One price for telemetry volume, one for LLM generations.",
+          "body": "No per-seat games. No mystery add-ons. One price for telemetry volume, one for LLM generations. Everything else — unlimited.",
           "primaryCta": { "label": "Sign in", "path": "/login" },
           "secondaryCta": { "label": "Talk to us", "path": "/self-host" }
+        },
+        {
+          "kind": "metrics-strip",
+          "items": [
+            { "value": "2", "label": "meters", "caption": "telemetry GB, LLM generations" },
+            { "value": "∞", "label": "users per team", "caption": "roles included" },
+            { "value": "90 d", "label": "default retention", "caption": "extend per tier" }
+          ]
         },
         {
           "kind": "feature-grid",
           "title": "Two meters. That's it.",
           "items": [
-            { "icon": "metrics", "title": "Telemetry GB", "body": "Logs, traces, and metrics billed by compressed ingest. Same rate across types." },
-            { "icon": "llm", "title": "LLM generations", "body": "Per-generation billing for AI workloads, with dataset evaluations included." },
-            { "icon": "workspace", "title": "Unlimited users", "body": "Invite the whole team. Roles + audit logs in every tier." }
+            { "icon": "metrics", "title": "Telemetry GB", "body": "Logs, traces, and metrics billed by compressed ingest. Same rate across all three types — no category games." },
+            { "icon": "llm", "title": "LLM generations", "body": "Per-generation billing for AI workloads. Dataset evaluations and eval scores are included." },
+            { "icon": "workspace", "title": "Unlimited users", "body": "Invite the whole team. Roles, audit logs, and SSO in every tier from day one." }
           ]
         },
         {
           "kind": "faq",
           "title": "Pricing FAQ",
           "items": [
-            { "q": "Is there a free tier?", "a": "Yes — for evaluation workloads, with the same feature set as paid tiers." },
-            { "q": "Do you charge per seat?", "a": "No. Every tier includes unlimited users and roles." },
-            { "q": "What counts as an LLM generation?", "a": "A single completion call. Streaming partials are rolled up into one generation." },
-            { "q": "Can I self-host?", "a": "Yes — see the Self-host page for details on the license." }
+            { "q": "Is there a free tier?", "a": "Yes — for evaluation workloads, with the same feature set as paid tiers. Ingest up to 5 GB and 5k generations per month before moving to metered billing." },
+            { "q": "Do you charge per seat?", "a": "No. Every tier includes unlimited users, roles, and audit logs." },
+            { "q": "What counts as an LLM generation?", "a": "A single completion call. Streaming partials are rolled up into one generation, so streamed responses don't cost more." },
+            { "q": "Can I self-host?", "a": "Yes — see the Self-host page. Commercial license available for teams with egress, compliance, or data-residency constraints." },
+            { "q": "How is ingest measured?", "a": "Compressed bytes over the wire, calculated at the collector. Same number you'll see in your OTel export logs." }
           ]
         }
       ]
@@ -142,28 +173,31 @@
           "kind": "hero",
           "eyebrow": "Architecture",
           "title": "Density and speed aren't afterthoughts.",
-          "body": "Every layer — query defaults, virtualisation, chart primitives, WebSocket buffering — is budgeted for Datadog-scale workloads from the first commit.",
+          "body": "Every layer — query defaults, virtualisation, chart primitives, WebSocket buffering — is budgeted for Datadog-scale workloads from the first commit. Enforced in CI.",
           "primaryCta": { "label": "Read the OTel guide", "path": "/opentelemetry" }
         },
         {
           "kind": "feature-grid",
           "title": "What keeps the UI fast",
           "items": [
-            { "icon": "metrics", "title": "uPlot everywhere", "body": "No heavy chart runtime. 60 fps panning at 10k points per series." },
-            { "icon": "logs", "title": "Virtualised explorers", "body": "Live-tail and paginated views render only visible rows." },
-            { "icon": "traces", "title": "Query-standard defaults", "body": "One wrapper for staleTime, retry, and keepPreviousData — no flashing skeletons." },
-            { "icon": "workspace", "title": "Feature isolation", "body": "ESLint-enforced. No cross-feature imports. Shared code lives in @shared." }
+            { "icon": "metrics", "title": "uPlot everywhere", "body": "No heavy chart runtime. 60 fps panning at 10k points per series, with flicker-free refreshes via setData()." },
+            { "icon": "logs", "title": "Virtualised explorers", "body": "Live-tail and paginated views render only visible rows. Page sizes of 500+ without DOM pollution." },
+            { "icon": "bolt", "title": "Query-standard defaults", "body": "One wrapper for staleTime, retry, and keepPreviousData. No flashing skeletons on refresh." },
+            { "icon": "shield", "title": "Feature isolation", "body": "ESLint-enforced. No cross-feature imports. Shared code lives in @shared. Regressions caught in PR." },
+            { "icon": "grid", "title": "Module-owned dashboards", "body": "Every domain registers its own panels. Adding a panel is one TSX file, not a plumbing exercise." },
+            { "icon": "sparkle", "title": "CI architecture budgets", "body": "Bundle budgets per feature chunk. UI runtime hard-capped at 200 KB. Fails fast, never drifts." }
           ]
         },
         {
           "kind": "split",
           "title": "Budgeted from day one",
-          "body": "The frontend holds to an explicit architecture budget enforced in CI.",
+          "body": "The frontend holds to an explicit architecture budget, measured in every PR.",
           "highlights": [
             "Chunk size budgets on every feature.",
             "No TS enums. No as any. No cross-feature imports.",
             "Strict loading-state convention: isPending && data === undefined.",
-            "Zustand for UI state, TanStack Query for server state — never mixed."
+            "Zustand for UI state, TanStack Query for server state — never mixed.",
+            "Lockfile-pinned vendor versions; dependency churn tracked in CI."
           ]
         }
       ]
@@ -177,21 +211,21 @@
           "kind": "hero",
           "eyebrow": "OpenTelemetry",
           "title": "OTLP is the only contract.",
-          "body": "Point any OpenTelemetry exporter at the collector and the platform picks up traces, logs, and metrics. No agents. No vendor SDKs.",
+          "body": "Point any OpenTelemetry exporter at the collector and the platform picks up traces, logs, and metrics. No agents. No vendor SDKs. No proprietary protocols.",
           "primaryCta": { "label": "Sign in", "path": "/login" }
         },
         {
           "kind": "code-block",
           "title": "Send your first span",
           "language": "bash",
-          "body": "export OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.example.com\nexport OTEL_SERVICE_NAME=checkout\n\n# That's it. Any OTel SDK will start flowing to Optikk."
+          "body": "export OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.example.com\nexport OTEL_SERVICE_NAME=checkout\nexport OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production\n\n# That's it. Any OTel SDK (Node, Go, Python, Java, Rust, Ruby,\n# .NET, PHP) will start flowing to Optikk."
         },
         {
           "kind": "feature-grid",
           "items": [
-            { "icon": "otel", "title": "Full OTLP spec", "body": "Spans, logs, metrics — HTTP and gRPC, batched and streaming." },
-            { "icon": "traces", "title": "Semantic conventions", "body": "Service maps and instrumentation inference rely on the OTel spec directly." },
-            { "icon": "workspace", "title": "No SDK lock-in", "body": "Switch vendors tomorrow — your instrumentation is standards-based." }
+            { "icon": "otel", "title": "Full OTLP spec", "body": "Spans, logs, metrics — HTTP and gRPC, batched and streaming. No fields dropped." },
+            { "icon": "compass", "title": "Semantic conventions", "body": "Service maps and instrumentation inference rely on the OTel spec directly — your standards-based instrumentation just works." },
+            { "icon": "link", "title": "No SDK lock-in", "body": "Switch vendors tomorrow. Your instrumentation is standards-based; the platform is the replaceable piece." }
           ]
         }
       ]
@@ -205,21 +239,29 @@
           "kind": "hero",
           "eyebrow": "Self-host",
           "title": "Bring the platform to your telemetry.",
-          "body": "Run Optikk inside your VPC with the same UX as the managed tier. Same binaries, same charts, same query engine.",
+          "body": "Run Optikk inside your VPC with the same UX as the managed tier. Same binaries, same charts, same query engine, same release cadence.",
           "primaryCta": { "label": "Talk to us", "path": "/login" }
+        },
+        {
+          "kind": "metrics-strip",
+          "items": [
+            { "value": "1", "label": "binary per region", "caption": "Go, single image" },
+            { "value": "0", "label": "data leaves the VPC", "caption": "telemetry stays home" },
+            { "value": "100 %", "label": "feature parity", "caption": "with the managed tier" }
+          ]
         },
         {
           "kind": "feature-grid",
           "items": [
-            { "icon": "workspace", "title": "Single binary", "body": "One Go binary per region. Horizontal scale on commodity hardware." },
-            { "icon": "alerts", "title": "Your keys, your rules", "body": "Bring your own KMS, OIDC, and audit sink. Zero data leaves your network." },
-            { "icon": "metrics", "title": "Same UI", "body": "No feature splits between cloud and self-host — the frontend is identical." }
+            { "icon": "server", "title": "Single binary", "body": "One Go binary per region. Horizontal scale on commodity hardware. Helm chart + Terraform included." },
+            { "icon": "shield", "title": "Your keys, your rules", "body": "Bring your own KMS, OIDC, and audit sink. Zero telemetry data leaves your network perimeter." },
+            { "icon": "workspace", "title": "Same UI", "body": "No feature splits between cloud and self-host — the frontend is the exact same artifact." }
           ]
         },
         {
           "kind": "cta",
           "title": "Get the self-host pack.",
-          "body": "Helm chart, Terraform module, and a runbook.",
+          "body": "Helm chart, Terraform module, runbook, and a commercial license. We'll walk you through the first deploy.",
           "primaryCta": { "label": "Sign in", "path": "/login" }
         }
       ]
