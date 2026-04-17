@@ -36,6 +36,9 @@ jobs:
 #      - name: Lint
 #        run: yarn lint
 
+      - name: Marketing assets gate (SVG-only)
+        run: yarn ci:marketing-assets
+
       - name: Build
         run: yarn build
 
