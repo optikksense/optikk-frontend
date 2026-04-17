@@ -1,0 +1,358 @@
+/* Lightweight marketing styles — no images, no animation runtime. */
+
+.marketing-root {
+  position: relative;
+  min-height: 100vh;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  font-family: Inter, -apple-system, "Segoe UI", sans-serif;
+}
+
+.marketing-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(60% 40% at 20% 0%, rgba(10, 174, 214, 0.18), transparent 70%),
+    radial-gradient(40% 40% at 90% 10%, rgba(94, 96, 206, 0.18), transparent 70%);
+}
+
+.marketing-nav,
+.marketing-container,
+.marketing-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.marketing-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Navigation */
+.marketing-nav {
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--bg-primary) 70%, transparent);
+}
+
+.marketing-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 16px;
+  gap: 16px;
+}
+
+.marketing-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.marketing-nav-links {
+  display: none;
+  align-items: center;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .marketing-nav-links {
+    display: flex;
+  }
+}
+
+.marketing-nav-link {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.marketing-nav-link:hover {
+  color: var(--text-primary);
+}
+
+.marketing-sign-in {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 14px;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.marketing-sign-in:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-hover);
+}
+
+/* Page */
+.marketing-main {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding-block: 64px 96px;
+}
+
+.marketing-section {
+  scroll-margin-top: 80px;
+}
+
+.marketing-hero {
+  padding-top: 24px;
+  animation: marketing-fade-up 320ms ease-out both;
+}
+
+.marketing-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.marketing-h1 {
+  margin-top: 12px;
+  font-size: clamp(2rem, 4vw + 1rem, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  max-width: 56ch;
+  color: var(--text-primary);
+}
+
+.marketing-h2 {
+  font-size: clamp(1.3rem, 1.4vw + 0.8rem, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.marketing-lede {
+  margin-top: 16px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 60ch;
+}
+
+.marketing-body {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Feature cards */
+.marketing-card {
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-secondary) 60%, transparent);
+  padding: 20px;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.marketing-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 50%, var(--border-color));
+  transform: translateY(-1px);
+}
+
+.marketing-card-icon {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.marketing-card-title {
+  margin-top: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.marketing-card-body {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* Split highlights */
+.marketing-highlight {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-secondary) 60%, transparent);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.marketing-highlight-dot {
+  margin-top: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* CTA strip */
+.marketing-cta-card {
+  border-radius: 18px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  padding: 40px;
+}
+
+/* FAQ */
+.marketing-faq-item {
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-secondary) 60%, transparent);
+  padding: 16px;
+}
+
+.marketing-faq-item[open] {
+  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent);
+}
+
+.marketing-faq-summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.marketing-faq-summary::-webkit-details-marker {
+  display: none;
+}
+
+.marketing-faq-toggle {
+  display: inline-block;
+  margin-right: 10px;
+  color: var(--text-muted);
+  transition: transform 0.15s;
+}
+
+.marketing-faq-answer {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* Code block */
+.marketing-code {
+  margin-top: 20px;
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  padding: 20px;
+  font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+/* Footer */
+.marketing-footer {
+  border-top: 1px solid var(--border-color);
+  margin-top: 48px;
+}
+
+.marketing-footer-inner {
+  display: grid;
+  gap: 32px;
+  padding-block: 40px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .marketing-footer-inner {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+.marketing-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.marketing-footer-groups {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.marketing-footer-heading {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.marketing-footer-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.marketing-footer-link {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.marketing-footer-link:hover {
+  color: var(--color-primary);
+}
+
+/* Animations */
+@keyframes marketing-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-hero,
+  .marketing-card,
+  .marketing-faq-toggle {
+    animation: none;
+    transition: none;
+  }
+}

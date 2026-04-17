@@ -67,12 +67,7 @@ export default defineConfig(({ mode }) => {
               }
             }
 
-            if (
-              id.includes("/src/app/auth/pages/Pricing/") ||
-              id.includes("/node_modules/framer-motion/") ||
-              id.includes("/node_modules/motion-dom/") ||
-              id.includes("/node_modules/motion-utils/")
-            ) {
+            if (id.includes("/src/features/marketing/")) {
               return "marketing-runtime";
             }
 

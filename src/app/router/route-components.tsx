@@ -1,13 +1,13 @@
 import { Navigate, useParams } from "@tanstack/react-router"
 
 import { LlmPage } from "@/features/llm/LlmPage"
-import { MarketingPage } from "@/features/marketing/MarketingPage"
+import { MarketingShell } from "@/features/marketing/MarketingShell"
 import { SaturationDetailPage } from "@/features/saturation/SaturationDetailPage"
 import { ROUTES } from "@/platform/config/routes"
 
 export function createMarketingPage(path: string) {
   return function MarketingRouteComponent() {
-    return <MarketingPage path={path} />
+    return <MarketingShell path={path} />
   }
 }
 

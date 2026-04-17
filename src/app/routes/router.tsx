@@ -7,7 +7,7 @@ import {
   redirect,
   useParams,
 } from "@tanstack/react-router";
-import type { ComponentType, LazyExoticComponent } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { Suspense, lazy } from "react";
 
 import { getExplorerRoutes } from "@/app/registry/domainRegistry";
@@ -18,19 +18,16 @@ import { dynamicTo } from "@/shared/utils/navigation";
 
 import type { DashboardDrawerEntity } from "@/shared/types/dashboardConfig";
 
-import MarketingLayout from "@/app/auth/pages/Pricing/MarketingLayout";
 import { AppContent } from "../App";
 import MainLayout from "../layout/MainLayout";
 import LegacyDashboardDetailRedirect from "./LegacyDashboardDetailRedirect";
 import ProtectedRoute from "./ProtectedRoute";
 
 const LoginPage = lazy(() => import("@/app/auth"));
-const MarketingHomePage = lazy(() => import("@/app/auth/pages/Pricing/HomePage"));
-const MarketingFeaturesPage = lazy(() => import("@/app/auth/pages/Pricing/FeaturesPage"));
-const MarketingPricingPage = lazy(() => import("@/app/auth/pages/Pricing/PricingPage"));
-const MarketingOpenTelemetryPage = lazy(() => import("@/app/auth/pages/Pricing/OpenTelemetryPage"));
-const MarketingSelfHostPage = lazy(() => import("@/app/auth/pages/Pricing/SelfHostPage"));
-const MarketingArchitecturePage = lazy(() => import("@/app/auth/pages/Pricing/ArchitecturePage"));
+const MarketingLayout = lazy(() => import("@/features/marketing/MarketingLayout"));
+const MarketingShellLazy = lazy(() =>
+  import("@/features/marketing/MarketingShell").then((m) => ({ default: m.MarketingShell }))
+);
 const MetricsPage = lazy(() => import("@/features/metrics/pages/MetricsExplorerPage"));
 const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPage"));
 const InfrastructureHubPage = lazy(
@@ -75,7 +72,7 @@ function LegacySaturationRedisRedirect() {
   );
 }
 
-function PageTransition({ children }: { children: React.ReactNode }) {
+function PageTransition({ children }: { children: ReactNode }) {
   return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
 }
 
@@ -86,10 +83,14 @@ export const rootRoute = createRootRoute({
 const marketingLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "marketing-layout",
-  component: MarketingLayout,
+  component: () => (
+    <Suspense fallback={<Loading fullscreen />}>
+      <MarketingLayout />
+    </Suspense>
+  ),
 });
 
-function marketingChild(path: string, LazyComp: LazyExoticComponent<ComponentType>) {
+function marketingChild(path: string) {
   const normalized = path === ROUTES.home ? "/" : path.replace(/^\//, "");
   return createRoute({
     getParentRoute: () => marketingLayoutRoute,
@@ -97,7 +98,7 @@ function marketingChild(path: string, LazyComp: LazyExoticComponent<ComponentTyp
     component: () => (
       <Suspense fallback={<Loading fullscreen />}>
         <PageTransition>
-          <LazyComp />
+          <MarketingShellLazy path={path} />
         </PageTransition>
       </Suspense>
     ),
@@ -105,12 +106,12 @@ function marketingChild(path: string, LazyComp: LazyExoticComponent<ComponentTyp
 }
 
 const marketingRoutesGroup = [
-  marketingChild(ROUTES.home, MarketingHomePage),
-  marketingChild(ROUTES.features, MarketingFeaturesPage),
-  marketingChild(ROUTES.pricing, MarketingPricingPage),
-  marketingChild(ROUTES.opentelemetry, MarketingOpenTelemetryPage),
-  marketingChild(ROUTES.selfHost, MarketingSelfHostPage),
-  marketingChild(ROUTES.architecture, MarketingArchitecturePage),
+  marketingChild(ROUTES.home),
+  marketingChild(ROUTES.features),
+  marketingChild(ROUTES.pricing),
+  marketingChild(ROUTES.opentelemetry),
+  marketingChild(ROUTES.selfHost),
+  marketingChild(ROUTES.architecture),
 ];
 
 const productRedirectRoute = createRoute({
@@ -154,7 +155,8 @@ function toNestedRoutePath(path: string): string {
 // Protected Routes mapped under mainLayoutRoute
 function createProtected(
   path: string,
-  PageComponent: React.ComponentType<any>,
+  // biome-ignore lint/suspicious/noExplicitAny: router dispatch accepts heterogeneous page components
+  PageComponent: ComponentType<any>,
   fallbackPath?: string
 ) {
   if (fallbackPath) {
