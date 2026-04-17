@@ -8,7 +8,7 @@ import ChartErrorOverlay from "@shared/components/ui/feedback/ChartErrorOverlay"
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 
 import { useLocation } from "@tanstack/react-router";
-import { useState } from "react";
+import { memo, useState } from "react";
 
 import type {
   DashboardDataSources,
@@ -214,7 +214,7 @@ function ConfigurableChartCardContent({
   );
 }
 
-export default function ConfigurableChartCard(props: ConfigurableChartCardProps) {
+function ConfigurableChartCard(props: ConfigurableChartCardProps) {
   const { description } = props.componentConfig;
 
   const infoIcon = description ? (
@@ -255,3 +255,5 @@ export default function ConfigurableChartCard(props: ConfigurableChartCardProps)
     </DashboardCardErrorBoundary>
   );
 }
+
+export default memo(ConfigurableChartCard);

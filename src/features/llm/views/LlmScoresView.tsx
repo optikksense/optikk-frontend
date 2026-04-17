@@ -9,7 +9,8 @@ import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
 import { useTeamId, useTimeRange } from "@app/store/appStore";
 import { traceDetailHref } from "@shared/observability/deepLinks";
 import { formatNumber, formatRelativeTime, formatTimestamp } from "@shared/utils/formatters";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { Link, useNavigate } from "@tanstack/react-router";
 
 import { type LlmHubScore, llmHubApi } from "../api/llmHubApi";
@@ -38,7 +39,7 @@ export default function LlmScoresView() {
   const nameQ = nameFilter.trim();
   const traceQ = traceFilter.trim();
 
-  const scoresQuery = useQuery({
+  const scoresQuery = useStandardQuery({
     queryKey: ["llm", "hub", "scores", teamId, startTime, endTime, nameQ, traceQ, page, pageSize],
     queryFn: () =>
       llmHubApi.listScores({

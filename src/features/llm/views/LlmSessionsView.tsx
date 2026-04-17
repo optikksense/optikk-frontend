@@ -19,7 +19,7 @@ type SessionRow = LlmSessionRecord & Record<string, unknown>;
 
 export default function LlmSessionsView() {
   const {
-    isLoading,
+    isPending: isLoading,
     isError,
     sessions,
     total,

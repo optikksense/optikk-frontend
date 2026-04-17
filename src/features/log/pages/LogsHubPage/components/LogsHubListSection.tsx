@@ -1,5 +1,5 @@
 import { AlertCircle } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 
 import type { SimpleTableColumn } from "@/components/ui";
 import { ExplorerResultsTable, FacetRail } from "@/features/explorer-core/components";
@@ -50,6 +50,10 @@ function LogsHubListSectionComponent({
   selectedLog,
   onSelectLog,
 }: Props) {
+  const handleRow = useCallback(
+    (row: LogRecord) => ({ onClick: () => onSelectLog(row) }),
+    [onSelectLog]
+  );
   return (
     <>
       <FacetRail groups={facetGroups} selected={activeSelections} onSelect={onFacetSelect} />
@@ -84,9 +88,7 @@ function LogsHubListSectionComponent({
         showPagination={!liveTailEnabled}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        onRow={(row) => ({
-          onClick: () => onSelectLog(row),
-        })}
+        onRow={handleRow}
         rowClassName={(row) =>
           cn(
             "cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]",

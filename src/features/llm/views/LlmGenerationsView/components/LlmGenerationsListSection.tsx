@@ -1,5 +1,5 @@
 import { AlertCircle } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 
 import type { SimpleTableColumn } from "@/components/ui";
 import { ExplorerResultsTable, FacetRail } from "@/features/explorer-core/components";
@@ -44,6 +44,10 @@ function LlmGenerationsListSectionComponent({
   selectedGeneration,
   onSelectGeneration,
 }: Props) {
+  const handleRow = useCallback(
+    (row: LlmGenerationRecord) => ({ onClick: () => onSelectGeneration(row) }),
+    [onSelectGeneration]
+  );
   return (
     <>
       <FacetRail
@@ -72,9 +76,7 @@ function LlmGenerationsListSectionComponent({
         total={total}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        onRow={(row) => ({
-          onClick: () => onSelectGeneration(row),
-        })}
+        onRow={handleRow}
         rowClassName={(row) =>
           cn(
             "cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]",

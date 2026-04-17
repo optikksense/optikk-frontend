@@ -2,7 +2,7 @@ import type { LogRecord } from "@/features/log/types";
 import { tracesService } from "@shared/api/tracesService";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
-import { useQuery } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useEffect, useMemo, useState } from "react";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
@@ -20,10 +20,10 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
 
   const {
     data: spansData,
-    isLoading: spansLoading,
+    isPending: spansLoading,
     isError: spansIsError,
     error: spansError,
-  } = useQuery({
+  } = useStandardQuery({
     queryKey: ["trace-spans", selectedTeamId, traceIdParam],
     queryFn: () => tracesService.getTraceSpans(selectedTeamId, traceIdParam),
     enabled: !!selectedTeamId && !!traceIdParam,
@@ -40,10 +40,10 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
   // Fetch logs
   const {
     data: logsData,
-    isLoading: logsLoading,
+    isPending: logsLoading,
     isError: logsIsError,
     error: logsError,
-  } = useQuery({
+  } = useStandardQuery({
     queryKey: ["trace-logs", selectedTeamId, resolvedTraceId],
     queryFn: () => tracesService.getTraceLogs(selectedTeamId, resolvedTraceId),
     enabled: !!selectedTeamId && !!resolvedTraceId,
@@ -68,7 +68,7 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     selectedSpan,
     selectedSpanId,
     setSelectedSpanId,
-    isLoading: spansLoading,
+    isPending: spansLoading,
     isError: spansIsError || logsIsError,
     error: spansIsError
       ? toApiErrorShape(spansError)

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
@@ -28,6 +28,45 @@ function SaturationDataTablesComponent({
   kafkaGroupRows,
   navigate,
 }: Props) {
+  const onDatastoreRow = useCallback(
+    (row: DatastoreSystemRow) => ({
+      onClick: () =>
+        navigate(
+          dynamicNavigateOptions(
+            ROUTES.saturationDatastoreDetail.replace("$system", encodeURIComponent(row.system))
+          )
+        ),
+      className: "cursor-pointer",
+    }),
+    [navigate]
+  );
+  const onKafkaTopicRow = useCallback(
+    (row: KafkaTopicRow) => ({
+      onClick: () =>
+        navigate(
+          dynamicNavigateOptions(
+            ROUTES.saturationKafkaTopicDetail.replace("$topic", encodeURIComponent(row.topic))
+          )
+        ),
+      className: "cursor-pointer",
+    }),
+    [navigate]
+  );
+  const onKafkaGroupRow = useCallback(
+    (row: KafkaGroupRow) => ({
+      onClick: () =>
+        navigate(
+          dynamicNavigateOptions(
+            ROUTES.saturationKafkaGroupDetail.replace(
+              "$groupId",
+              encodeURIComponent(row.consumer_group)
+            )
+          )
+        ),
+      className: "cursor-pointer",
+    }),
+    [navigate]
+  );
   return (
     <PageSurface padding="lg">
       {activeSection === SECTION_DATASTORES ? (
@@ -37,18 +76,7 @@ function SaturationDataTablesComponent({
           rowKey={(row) => row.system}
           pagination={{ pageSize: 12 }}
           scroll={{ x: 960 }}
-          onRow={(row) => ({
-            onClick: () =>
-              navigate(
-                dynamicNavigateOptions(
-                  ROUTES.saturationDatastoreDetail.replace(
-                    "$system",
-                    encodeURIComponent(row.system)
-                  )
-                )
-              ),
-            className: "cursor-pointer",
-          })}
+          onRow={onDatastoreRow}
         />
       ) : kafkaView === KAFKA_TOPICS ? (
         <SimpleTable
@@ -57,15 +85,7 @@ function SaturationDataTablesComponent({
           rowKey={(row) => row.topic}
           pagination={{ pageSize: 12 }}
           scroll={{ x: 1100 }}
-          onRow={(row) => ({
-            onClick: () =>
-              navigate(
-                dynamicNavigateOptions(
-                  ROUTES.saturationKafkaTopicDetail.replace("$topic", encodeURIComponent(row.topic))
-                )
-              ),
-            className: "cursor-pointer",
-          })}
+          onRow={onKafkaTopicRow}
         />
       ) : (
         <SimpleTable
@@ -74,18 +94,7 @@ function SaturationDataTablesComponent({
           rowKey={(row) => row.consumer_group}
           pagination={{ pageSize: 12 }}
           scroll={{ x: 1760 }}
-          onRow={(row) => ({
-            onClick: () =>
-              navigate(
-                dynamicNavigateOptions(
-                  ROUTES.saturationKafkaGroupDetail.replace(
-                    "$groupId",
-                    encodeURIComponent(row.consumer_group)
-                  )
-                )
-              ),
-            className: "cursor-pointer",
-          })}
+          onRow={onKafkaGroupRow}
         />
       )}
     </PageSurface>

@@ -1,5 +1,5 @@
 import { tracesService } from "@shared/api/tracesService";
-import { useQuery } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useMemo } from "react";
 import type {
   CriticalPathSpan,
@@ -28,40 +28,40 @@ export function useTraceDetailEnhanced(
   const enabled = !!traceId;
 
   // Critical path + error path always load — used for waterfall span highlighting
-  const { data: criticalPathData } = useQuery({
+  const { data: criticalPathData } = useStandardQuery({
     queryKey: ["trace-critical-path", traceId],
     queryFn: () => tracesService.getCriticalPath(traceId),
     enabled,
   });
 
-  const { data: errorPathData } = useQuery({
+  const { data: errorPathData } = useStandardQuery({
     queryKey: ["trace-error-path", traceId],
     queryFn: () => tracesService.getErrorPath(traceId),
     enabled,
   });
 
   // Span kind breakdown — only when detail drawer is open
-  const { data: spanKindData } = useQuery({
+  const { data: spanKindData } = useStandardQuery({
     queryKey: ["trace-span-kind-breakdown", traceId],
     queryFn: () => tracesService.getSpanKindBreakdown(traceId),
     enabled: enabled && !!selectedSpanId,
   });
 
   // Events — only when events tab is active
-  const { data: spanEventsData } = useQuery({
+  const { data: spanEventsData } = useStandardQuery({
     queryKey: ["trace-span-events", traceId],
     queryFn: () => tracesService.getSpanEvents(traceId),
     enabled: enabled && activeDetailTab === "events",
   });
 
   // Self-times — only when self-time tab is active
-  const { data: spanSelfTimesData } = useQuery({
+  const { data: spanSelfTimesData } = useStandardQuery({
     queryKey: ["trace-span-self-times", traceId],
     queryFn: () => tracesService.getSpanSelfTimes(traceId),
     enabled: enabled && activeDetailTab === "selftime",
   });
 
-  const { data: relatedTracesData } = useQuery({
+  const { data: relatedTracesData } = useStandardQuery({
     queryKey: [
       "trace-related",
       traceId,
@@ -87,7 +87,7 @@ export function useTraceDetailEnhanced(
       endMs != null,
   });
 
-  const { data: spanAttributesData, isLoading: spanAttributesLoading } = useQuery({
+  const { data: spanAttributesData, isPending: spanAttributesPending } = useStandardQuery({
     queryKey: ["span-attributes", traceId, selectedSpanId],
     queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!),
     enabled: !!selectedSpanId,
@@ -196,6 +196,6 @@ export function useTraceDetailEnhanced(
     spanSelfTimes,
     relatedTraces,
     spanAttributes,
-    spanAttributesLoading,
+    spanAttributesLoading: spanAttributesPending,
   };
 }

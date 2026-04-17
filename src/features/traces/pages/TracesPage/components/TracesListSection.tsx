@@ -1,5 +1,5 @@
 import { AlertCircle } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 
 import type { SimpleTableColumn } from "@/components/ui";
 import { ExplorerResultsTable, FacetRail } from "@/features/explorer-core/components";
@@ -49,6 +49,10 @@ function TracesListSectionComponent({
   selectedTrace,
   onSelectTrace,
 }: Props) {
+  const handleRow = useCallback(
+    (row: TraceRecord) => ({ onClick: () => onSelectTrace(row) }),
+    [onSelectTrace]
+  );
   return (
     <>
       <FacetRail groups={facetGroups} selected={selectedFacetState} onSelect={onFacetSelect} />
@@ -78,9 +82,7 @@ function TracesListSectionComponent({
         total={isLiveTail ? renderedTraces.length : totalTraces}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        onRow={(row) => ({
-          onClick: () => onSelectTrace(row),
-        })}
+        onRow={handleRow}
         rowClassName={(row) =>
           cn(
             "cursor-pointer transition-colors hover:bg-[rgba(255,255,255,0.04)]",

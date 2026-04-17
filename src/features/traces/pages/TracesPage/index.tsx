@@ -31,7 +31,7 @@ export default function TracesPage() {
   const timeRange = useTimeRange();
 
   const {
-    isLoading,
+    isPending: isLoading,
     isError,
     error,
     traces,
@@ -111,7 +111,10 @@ export default function TracesPage() {
     normalizeItem: buildTraceRecordFromLiveItem,
   });
 
-  const renderedTraces = isLiveTail ? liveTail.items.slice(0, TRACES_LIVE_TAIL_MAX_ROWS) : traces;
+  const renderedTraces = useMemo(
+    () => (isLiveTail ? liveTail.items.slice(0, TRACES_LIVE_TAIL_MAX_ROWS) : traces),
+    [isLiveTail, liveTail.items, traces]
+  );
 
   const columns = useTracesTableColumns(isLiveTail, selectedTraceIdsRef, setSelectedTraceIds);
 

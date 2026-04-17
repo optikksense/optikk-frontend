@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
 
@@ -16,7 +16,8 @@ export function useExplorerAnalytics(
     queryKey: ["explorer", "analytics", scope, selectedTeamId, body, refreshKey],
     queryFn: () => explorerAnalyticsApi.query(scope, body),
     enabled: Boolean(selectedTeamId) && enabledOverride !== false,
-    placeholderData: (previous) => previous,
-    retry: false,
+    placeholderData: keepPreviousData,
+    staleTime: 5_000,
+    retry: 2,
   });
 }

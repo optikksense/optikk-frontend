@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { useTeamId } from "@app/store/appStore";
 import { ROUTES } from "@shared/constants/routes";
 import { formatNumber, formatRelativeTime, formatTimestamp } from "@shared/utils/formatters";
-import { useQuery } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { Link } from "@tanstack/react-router";
 
 import { type LlmHubDataset, llmHubApi } from "../api/llmHubApi";
@@ -31,7 +31,7 @@ export default function LlmDatasetsView() {
   const teamId = useTeamId();
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
-  const datasetsQuery = useQuery({
+  const datasetsQuery = useStandardQuery({
     queryKey: ["llm", "hub", "datasets", teamId],
     queryFn: () => llmHubApi.listDatasets(200),
     enabled: Boolean(teamId),

@@ -4,7 +4,8 @@ import toast from "react-hot-toast";
 
 import { Button, Card } from "@/components/ui";
 import { useTeamId } from "@app/store/appStore";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import { type LlmHubPricingOverrides, llmHubApi } from "../api/llmHubApi";
 import {
@@ -45,7 +46,7 @@ export default function LlmSettingsView() {
   const formId = useId();
   const [rows, setRows] = useState<Row[]>([]);
 
-  const settingsQuery = useQuery({
+  const settingsQuery = useStandardQuery({
     queryKey: ["llm", "hub", "settings", teamId],
     queryFn: () => llmHubApi.getSettings(),
     enabled: Boolean(teamId),

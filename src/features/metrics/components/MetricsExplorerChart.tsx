@@ -1,4 +1,5 @@
 import { AlertCircle, BarChart3, RefreshCw } from "lucide-react";
+import { useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@shared/components/primitives/ui/button";
@@ -18,6 +19,7 @@ import type {
 import { evaluateFormula } from "../utils/formulaEvaluator";
 
 const FORMULA_COLOR = "#f59e0b";
+const MAX_RENDERED_SERIES = 100;
 
 interface MetricsExplorerChartProps {
   readonly queries: MetricQueryDefinition[];
@@ -147,16 +149,27 @@ export function MetricsExplorerChart({
     );
   }
 
-  const { timestamps, series } = buildSeries(queries, formulas, results, chartType);
+  const { timestamps, series } = useMemo(
+    () => buildSeries(queries, formulas, results, chartType),
+    [queries, formulas, results, chartType]
+  );
+
+  const truncated = series.length > MAX_RENDERED_SERIES;
+  const renderedSeries = truncated ? series.slice(0, MAX_RENDERED_SERIES) : series;
 
   return (
     <PageSurface
       padding="lg"
       className={cn("min-h-[400px]", isLoading && "opacity-70 transition-opacity duration-200")}
     >
+      {truncated ? (
+        <div className="mb-3 rounded border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2 text-[12px] text-[var(--text-secondary)]">
+          Showing first {MAX_RENDERED_SERIES} of {series.length} series. Add a filter or group-by to narrow results.
+        </div>
+      ) : null}
       <ObservabilityChart
         timestamps={timestamps}
-        series={series}
+        series={renderedSeries}
         type={chartType}
         height={360}
         legend

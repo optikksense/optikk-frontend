@@ -11,8 +11,8 @@ import { keepPreviousData, useQuery, type UseQueryOptions } from "@tanstack/reac
  * Callers can override any default by passing the option explicitly.
  */
 export function useStandardQuery<T>(
-  options: UseQueryOptions<T, Error, T> & {
-    queryKey: unknown[];
+  options: Omit<UseQueryOptions<T, Error, T>, "queryKey" | "queryFn"> & {
+    queryKey: readonly unknown[];
     queryFn: () => Promise<T>;
   },
 ) {
@@ -21,5 +21,5 @@ export function useStandardQuery<T>(
     staleTime: 5_000,
     retry: 2,
     ...options,
-  });
+  } as UseQueryOptions<T, Error, T>);
 }

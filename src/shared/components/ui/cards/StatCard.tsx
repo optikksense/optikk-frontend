@@ -65,7 +65,11 @@ const StatCard = React.memo(function StatCard({ metric, trend = {}, visuals = {}
               </span>
             )}
           </div>
-          <div className="font-light text-foreground text-xl tabular-nums leading-[1.2]">
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="font-light text-foreground text-xl tabular-nums leading-[1.2]"
+          >
             {displayValue}
             {suffix && (
               <span className="ml-1 font-normal text-[color:var(--text-secondary)] text-base">

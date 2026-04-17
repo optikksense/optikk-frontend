@@ -1,7 +1,7 @@
 import { useTeamId } from "@app/store/appStore";
 import { logsService } from "@shared/api/logsService";
 import { tsLabel } from "@shared/utils/time";
-import { useQuery } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useEffect, useState } from "react";
 import type { LogRecord } from "../../types";
 import { LevelBadge } from "./LogRow";
@@ -65,7 +65,7 @@ export default function LogSurroundingPanel({ log }: LogSurroundingPanelProps) {
   const [loadingNewer, setLoadingNewer] = useState(false);
 
   // Avoid running this query aggressively per keystroke or without a true logId
-  const { data, isLoading, isError } = useQuery({
+  const { data, isPending: isLoading, isError } = useStandardQuery({
     queryKey: ["logs", "surrounding", logTimestamp],
     queryFn: async () => {
       if (!logTimestamp) return null;

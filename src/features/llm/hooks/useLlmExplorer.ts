@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
 import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
 import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useURLFilters } from "@shared/hooks/useURLFilters";
 
 import { llmExplorerApi } from "../api/llmExplorerApi";
@@ -68,7 +69,7 @@ export function useLlmExplorer() {
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
 
-  const { data: hubSettings } = useQuery({
+  const { data: hubSettings } = useStandardQuery({
     queryKey: ["llm", "hub", "settings", selectedTeamId],
     queryFn: () => llmHubApi.getSettings(),
     enabled: Boolean(selectedTeamId),
@@ -95,7 +96,7 @@ export function useLlmExplorer() {
     [filters, errorsOnly, selectedProvider, selectedModel, selectedSession]
   );
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isPending, isError, error } = useQuery({
     queryKey: [
       "llm",
       "explorer",
@@ -121,8 +122,9 @@ export function useLlmExplorer() {
         costCtx
       ),
     enabled: Boolean(selectedTeamId),
-    placeholderData: (previous) => previous,
-    retry: false,
+    placeholderData: keepPreviousData,
+    staleTime: 5_000,
+    retry: 2,
   });
 
   const generations = useMemo(() => data?.results ?? [], [data?.results]);
@@ -139,7 +141,7 @@ export function useLlmExplorer() {
   }, [clearURLFilters]);
 
   return {
-    isLoading,
+    isPending,
     isError,
     error,
     generations,

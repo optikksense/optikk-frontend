@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { Badge, SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 import { PageSurface } from "@shared/components/ui";
@@ -156,7 +156,7 @@ export default function DiscoveryView(): JSX.Element {
       .sort((left, right) => compareRows(sortPreset, left, right));
   }, [rows, filter, healthFilter, releaseFilter, sortPreset]);
 
-  const openService = (row: DiscoveryServiceRow): void => {
+  const openService = useCallback((row: DiscoveryServiceRow): void => {
     const nextSearch = buildServiceDrawerSearch(searchParams.toString(), {
       name: row.name,
       requestCount: row.requestCount,
@@ -167,7 +167,15 @@ export default function DiscoveryView(): JSX.Element {
       p99Latency: row.p99Latency,
     });
     setSearchParams(new URLSearchParams(nextSearch), { replace: true });
-  };
+  }, [searchParams, setSearchParams]);
+
+  const handleServiceRowClick = useCallback(
+    (record: DiscoveryServiceRow) => ({
+      onClick: () => openService(record),
+      style: { cursor: "pointer" } as const,
+    }),
+    [openService]
+  );
 
   const openDeploymentCompare = (row: DiscoveryServiceRow): void => {
     if (!row.latestDeployment) return;
@@ -392,10 +400,7 @@ export default function DiscoveryView(): JSX.Element {
               size="middle"
               pagination={false}
               scroll={{ x: 1150 }}
-              onRow={(record) => ({
-                onClick: () => openService(record),
-                style: { cursor: "pointer" },
-              })}
+              onRow={handleServiceRowClick}
             />
           )}
         </div>

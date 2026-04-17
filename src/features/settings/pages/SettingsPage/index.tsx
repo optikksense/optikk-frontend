@@ -1,5 +1,6 @@
 import { Tabs } from "@/components/ui";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { Palette, Settings, User, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -124,7 +125,7 @@ export default function SettingsPage() {
     }))
   );
 
-  const { data: profileData, isLoading: profileLoading } = useQuery<SettingsProfileViewModel>({
+  const { data: profileData, isPending: profileLoading } = useStandardQuery<SettingsProfileViewModel>({
     queryKey: settingsProfileQueryKey,
     queryFn: async () => parseProfileResponse(await settingsService.getProfile()),
   });

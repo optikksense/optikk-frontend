@@ -31,7 +31,7 @@ export default function LlmGenerationsView() {
   const explorer = useLlmExplorer();
 
   const {
-    isLoading,
+    isPending: isLoading,
     isError,
     generations,
     total,

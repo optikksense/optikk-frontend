@@ -51,12 +51,15 @@ export function AppContent(): JSX.Element {
   );
 }
 
-export default function App(): JSX.Element {
-  const dashboardPanels = [...BUILT_IN_DASHBOARD_PANELS, ...getDashboardPanelRegistrations()];
+const DASHBOARD_PANELS = [
+  ...BUILT_IN_DASHBOARD_PANELS,
+  ...getDashboardPanelRegistrations(),
+];
 
+export default function App(): JSX.Element {
   return (
     <ErrorBoundary showDetails={import.meta.env.DEV} boundaryName="app-shell">
-      <DashboardPanelRegistryProvider registrations={dashboardPanels}>
+      <DashboardPanelRegistryProvider registrations={DASHBOARD_PANELS}>
         <RouterProvider router={router} />
       </DashboardPanelRegistryProvider>
     </ErrorBoundary>

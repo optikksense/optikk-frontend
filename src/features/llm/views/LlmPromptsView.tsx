@@ -7,7 +7,8 @@ import { useTeamId } from "@app/store/appStore";
 import { ROUTES } from "@shared/constants/routes";
 import { encodeStructuredFiltersParam } from "@shared/hooks/useURLFilters";
 import { formatNumber, formatRelativeTime } from "@shared/utils/formatters";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { Link } from "@tanstack/react-router";
 
 import { type LlmHubPrompt, llmHubApi } from "../api/llmHubApi";
@@ -16,7 +17,7 @@ import { useLlmExplorer } from "../hooks/useLlmExplorer";
 export default function LlmPromptsView() {
   const teamId = useTeamId();
   const queryClient = useQueryClient();
-  const { isLoading: explorerLoading, facets } = useLlmExplorer();
+  const { isPending: explorerLoading, facets } = useLlmExplorer();
 
   const [slug, setSlug] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -27,7 +28,7 @@ export default function LlmPromptsView() {
   const [editDisplayName, setEditDisplayName] = useState("");
   const [editBody, setEditBody] = useState("");
 
-  const promptsQuery = useQuery({
+  const promptsQuery = useStandardQuery({
     queryKey: ["llm", "hub", "prompts", teamId],
     queryFn: () => llmHubApi.listPrompts(),
     enabled: Boolean(teamId),

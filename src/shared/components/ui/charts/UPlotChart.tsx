@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 import "./uplot.css";
@@ -43,7 +43,7 @@ function isAlignedDataShapeCompatible(next: uPlot.AlignedData, prev: uPlot.Align
 /**
  * Generic uPlot wrapper with auto-resize, theme-aware defaults, and cleanup.
  */
-export default function UPlotChart({
+function UPlotChart({
   options,
   data,
   height = 260,
@@ -245,6 +245,8 @@ export default function UPlotChart({
     </div>
   );
 }
+
+export default memo(UPlotChart);
 
 /** Default axis styling matching the app's dark theme. */
 export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {

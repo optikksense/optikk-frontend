@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
 import { buildTracesExplorerQuery } from "@/features/explorer-core/utils/explorerQuery";
@@ -154,7 +154,7 @@ export function useTracesExplorer() {
     return params;
   }, [errorsOnly, filters, mode, page, pageSize, selectedService]);
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isPending, isError, error } = useQuery({
     queryKey: [
       "traces",
       "explorer",
@@ -176,8 +176,9 @@ export function useTracesExplorer() {
         query: explorerQuery,
       }),
     enabled: Boolean(selectedTeamId),
-    placeholderData: (previous) => previous,
-    retry: false,
+    placeholderData: keepPreviousData,
+    staleTime: 5_000,
+    retry: 2,
   });
 
   const traces = useMemo(() => data?.results ?? [], [data?.results]);
@@ -201,7 +202,7 @@ export function useTracesExplorer() {
   }, [clearURLFilters]);
 
   return {
-    isLoading,
+    isPending,
     isError,
     error,
     traces,

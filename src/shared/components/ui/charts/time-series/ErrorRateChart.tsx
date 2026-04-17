@@ -6,6 +6,7 @@ import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
 import { firstValue, tsKey, tsMs } from "@shared/utils/chartDataUtils";
 
 import ObservabilityChart from "../ObservabilityChart";
+import { buildServiceDatasets } from "../utils/buildServiceDatasets";
 
 type ChartRow = Record<string, unknown>;
 
@@ -65,47 +66,24 @@ export default memo(function ErrorRateChart({
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
   const { timeBuckets } = useChartTimeBuckets();
 
-  const buildServiceDatasets = (endpointList: ErrorRateChartEndpoint[]) => {
-    const targetMap: Record<string, { label: string }> = {};
-    for (const ep of endpointList) {
-      const key = ep.key || firstValue(ep, ["service_name"], "");
-      const label = ep.endpoint || firstValue(ep, ["service_name"], "") || key;
-      if (!targetMap[key]) targetMap[key] = { label };
-    }
-    const stepMs =
-      timeBuckets.length >= 2
-        ? new Date(timeBuckets[1]).getTime() - new Date(timeBuckets[0]).getTime()
-        : 60000;
-
-    return Object.entries(targetMap).map(([key, info], idx) => {
-      const tsData = serviceTimeseriesMap[key] || [];
-      const tsMap: Record<string, { total: number; errors: number }> = {};
-      for (const row of tsData) {
-        const rowTimestamp = firstValue(row, ["timestamp", "time_bucket"], "");
-        if (!rowTimestamp) continue;
-        const rowTime = tsMs(rowTimestamp);
-        if (Number.isNaN(rowTime)) continue;
-        const alignedTimeMs = Math.floor(rowTime / stepMs) * stepMs;
-        const bucketKey = tsKey(new Date(alignedTimeMs).toISOString());
-
-        const total = Number(firstValue(row, ["request_count", "req_count"], 0));
-        const errors = Number(firstValue(row, ["error_count"], 0));
-
-        if (!tsMap[bucketKey]) {
-          tsMap[bucketKey] = { total: 0, errors: 0 };
-        }
-        tsMap[bucketKey].total += total;
-        tsMap[bucketKey].errors += errors;
-      }
-
-      const values = timeBuckets.map((d) => {
-        const bucket = tsMap[tsKey(d)];
-        if (!bucket || bucket.total === 0) return 0;
-        return (bucket.errors / bucket.total) * 100;
-      });
-      return { label: info.label, values, color: getChartColor(idx), fill: false };
+  const buildDatasets = (endpointList: ErrorRateChartEndpoint[]) =>
+    buildServiceDatasets<ErrorRateChartEndpoint, { total: number; errors: number }>({
+      endpoints: endpointList,
+      timeBuckets,
+      serviceTimeseriesMap,
+      getColor: getChartColor,
+      getSelectionKey: (ep) => ep.key || String(firstValue(ep, ["service_name"], "")),
+      getLabel: (ep, key) =>
+        ep.endpoint || String(firstValue(ep, ["service_name"], "") || key),
+      initialAcc: () => ({ total: 0, errors: 0 }),
+      reduceRow: (acc, row) => {
+        acc.total += Number(firstValue(row, ["request_count", "req_count"], 0));
+        acc.errors += Number(firstValue(row, ["error_count"], 0));
+        return acc;
+      },
+      computeValue: (acc) =>
+        !acc || acc.total === 0 ? 0 : (acc.errors / acc.total) * 100,
     });
-  };
 
   const chartData = useMemo(() => {
     interface SeriesEntry {
@@ -140,7 +118,7 @@ export default memo(function ErrorRateChart({
           : endpoints;
 
       if (hasServiceData) {
-        seriesList = buildServiceDatasets(list);
+        seriesList = buildDatasets(list);
       } else {
         seriesList = list.map((ep, idx) => {
           const method = firstValue(ep, ["http_method"], "N/A");

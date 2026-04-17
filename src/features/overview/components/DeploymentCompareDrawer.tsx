@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { AlertTriangle, ArrowUpRight, GitBranch, GitCompare, Radar } from "lucide-react";
 import { useMemo } from "react";
+
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import {
   Drawer,
@@ -231,7 +232,7 @@ export default function DeploymentCompareDrawer({
 
   const seed = useMemo(() => parseDeploymentSeed(initialData), [initialData]);
 
-  const compareQuery = useQuery({
+  const compareQuery = useStandardQuery({
     queryKey: [
       "deployment-compare",
       teamId,
@@ -251,7 +252,7 @@ export default function DeploymentCompareDrawer({
     enabled: Boolean(teamId && seed?.serviceName && seed?.version && seed?.deployedAtMs),
   });
 
-  const timelineQuery = useQuery({
+  const timelineQuery = useStandardQuery({
     queryKey: [
       "deployment-compare-timeline",
       teamId,

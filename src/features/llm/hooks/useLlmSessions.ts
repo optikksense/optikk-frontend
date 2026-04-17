@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
 import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
@@ -77,7 +77,7 @@ export function useLlmSessions() {
     [filters, errorsOnly, selectedProvider, selectedModel, selectedSession]
   );
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isPending, isError, error } = useQuery({
     queryKey: [
       "llm",
       "sessions",
@@ -98,8 +98,9 @@ export function useLlmSessions() {
         query: explorerQuery,
       }),
     enabled: Boolean(selectedTeamId),
-    placeholderData: (previous) => previous,
-    retry: false,
+    placeholderData: keepPreviousData,
+    staleTime: 5_000,
+    retry: 2,
   });
 
   const sessions = useMemo(() => data?.results ?? [], [data?.results]);
@@ -111,7 +112,7 @@ export function useLlmSessions() {
   }, [clearURLFilters]);
 
   return {
-    isLoading,
+    isPending,
     isError,
     error,
     sessions,

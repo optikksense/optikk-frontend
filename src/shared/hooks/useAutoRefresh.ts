@@ -32,19 +32,60 @@ export function useAutoRefresh({
   }, []);
 
   // Update "Xs ago" label periodically without re-rendering every second (avoids header flicker).
+  // Skip ticks when the tab is hidden to save CPU / battery.
   useEffect(() => {
-    const timerId = window.setInterval(() => setNow(Date.now()), 5_000);
-    return () => window.clearInterval(timerId);
+    let timerId: number | null = null;
+    const start = () => {
+      if (timerId != null) return;
+      timerId = window.setInterval(() => setNow(Date.now()), 5_000);
+    };
+    const stop = () => {
+      if (timerId != null) {
+        window.clearInterval(timerId);
+        timerId = null;
+      }
+    };
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else {
+        setNow(Date.now());
+        start();
+      }
+    };
+    if (!document.hidden) start();
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, []);
 
   useEffect(() => {
     if (!autoRefreshInterval) return;
-
-    const timerId = window.setInterval(() => {
-      refreshRef.current();
-      setLastRefreshAt(Date.now());
-    }, autoRefreshInterval);
-    return () => window.clearInterval(timerId);
+    let timerId: number | null = null;
+    const start = () => {
+      if (timerId != null) return;
+      timerId = window.setInterval(() => {
+        refreshRef.current();
+        setLastRefreshAt(Date.now());
+      }, autoRefreshInterval);
+    };
+    const stop = () => {
+      if (timerId != null) {
+        window.clearInterval(timerId);
+        timerId = null;
+      }
+    };
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+    if (!document.hidden) start();
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [autoRefreshInterval]);
 
   const refreshLabel = useMemo(

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
 import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
@@ -59,8 +59,9 @@ export function useLogsHubData({
         ...explorerQueryKey,
       }),
     enabled: Boolean(selectedTeamId),
-    placeholderData: (previous) => previous,
-    retry: false,
+    placeholderData: keepPreviousData,
+    staleTime: 5_000,
+    retry: 2,
   });
 
   const liveTail = useLiveTailStream<LogEntry>({
@@ -104,13 +105,13 @@ export function useLogsHubData({
     logs,
     logsLoading: liveTailEnabled
       ? liveTail.status === "connecting" && liveTail.items.length === 0
-      : explorerQueryFn.isLoading,
+      : explorerQueryFn.isPending,
     logsError: explorerQueryFn.isError,
     logsErrorDetail: explorerQueryFn.error,
     total,
     volumeBuckets: (results?.trend.buckets ?? []) as LogVolumeBucket[],
     volumeStep: results?.trend.step ?? DEFAULT_STEP,
-    volumeLoading: explorerQueryFn.isLoading,
+    volumeLoading: explorerQueryFn.isPending,
     errorCount: Number(results?.summary.error_logs ?? 0),
     warnCount: Number(results?.summary.warn_logs ?? 0),
     totalCount: Number(results?.summary.total_logs ?? total),
@@ -121,9 +122,9 @@ export function useLogsHubData({
     containerFacets,
     environmentFacets,
     scopeNameFacets,
-    statsLoading: explorerQueryFn.isLoading,
+    statsLoading: explorerQueryFn.isPending,
     aggregateRows,
-    aggregateLoading: explorerQueryFn.isLoading,
+    aggregateLoading: explorerQueryFn.isPending,
     liveTailEnabled,
     setLiveTailEnabled,
     liveTailStatus: liveTail.status,

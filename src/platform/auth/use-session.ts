@@ -1,10 +1,10 @@
-import { useQuery } from "@tanstack/react-query"
-
 import { authClient } from "@/platform/auth/auth-client"
+import { useStandardQuery } from "@shared/hooks/useStandardQuery"
 
 export function useSession() {
-  return useQuery({
+  return useStandardQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),
+    staleTime: 60_000,
   })
 }

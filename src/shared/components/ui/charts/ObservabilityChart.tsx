@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import type uPlot from "uplot";
 
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ export interface ObservabilityChartProps {
   className?: string;
 }
 
-export default function ObservabilityChart({
+function ObservabilityChart({
   timestamps,
   series,
   type = "line",
@@ -137,3 +137,5 @@ export default function ObservabilityChart({
     </div>
   );
 }
+
+export default memo(ObservabilityChart);

@@ -25,7 +25,7 @@ export default function LlmTracesView() {
   const navigate = useNavigate();
   const timeRange = useTimeRange();
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
-  const { generations, isLoading } = useLlmExplorer();
+  const { generations, isPending: isLoading } = useLlmExplorer();
 
   const genAiTracesHref = useMemo(
     () =>
