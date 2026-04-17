@@ -124,15 +124,23 @@ export function useSocketStream<Item>({
               const key = getItemKey(nextItem);
               const time = getItemTimestamp(nextItem);
 
-              const filtered = previous.filter((p) => getItemKey(p) !== key);
-              const insertIdx = filtered.findIndex((p) => getItemTimestamp(p) <= time);
-
-              if (insertIdx === -1) {
-                filtered.push(nextItem);
-              } else {
-                filtered.splice(insertIdx, 0, nextItem);
+              // Single pass: skip duplicate by key, insert at first position where existing time <= new time.
+              const next: Item[] = new Array(Math.min(previous.length + 1, cap));
+              let inserted = false;
+              let out = 0;
+              for (let i = 0; i < previous.length && out < cap; i += 1) {
+                const p = previous[i];
+                if (getItemKey(p) === key) continue;
+                if (!inserted && getItemTimestamp(p) <= time) {
+                  next[out++] = nextItem;
+                  inserted = true;
+                  if (out >= cap) break;
+                }
+                next[out++] = p;
               }
-              return filtered.slice(0, cap);
+              if (!inserted && out < cap) next[out++] = nextItem;
+              next.length = out;
+              return next;
             }
 
             return [nextItem, ...previous].slice(0, cap);
