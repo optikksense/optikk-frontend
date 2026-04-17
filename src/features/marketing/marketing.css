@@ -98,6 +98,44 @@
   background: var(--bg-hover);
 }
 
+/* CTA buttons */
+.marketing-cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+.marketing-cta-button-primary {
+  background: var(--color-primary);
+  color: var(--bg-primary);
+  border-color: var(--color-primary);
+}
+
+.marketing-cta-button-primary:hover {
+  background: var(--color-primary-hover, var(--color-primary));
+  transform: translateY(-1px);
+}
+
+.marketing-cta-button-secondary {
+  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.marketing-cta-button-secondary:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-hover);
+}
+
 /* Page */
 .marketing-main {
   display: flex;
