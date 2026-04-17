@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { CHART_COLORS } from "@config/constants";
 
 interface Props {
@@ -12,12 +14,14 @@ function serviceColor(name: string): string {
 }
 
 export default function ServicePills({ spans, activeService, onSelect }: Props) {
-  const counts: Record<string, number> = {};
-  spans.forEach((s) => {
-    const svc = s.service_name || "unknown";
-    counts[svc] = (counts[svc] || 0) + 1;
-  });
-  const services = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const services = useMemo(() => {
+    const counts: Record<string, number> = {};
+    spans.forEach((s) => {
+      const svc = s.service_name || "unknown";
+      counts[svc] = (counts[svc] || 0) + 1;
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, [spans]);
 
   if (services.length === 0) return null;
 
