@@ -34,7 +34,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Image tag = semver from repo-root VERSION (bump for 1.0.1, etc.). Commit this file with deploy.yml.
+      # Image tags:
+      #   latest                       — always moves with main (rolling)
+      #   <VERSION>                    — semver from repo-root VERSION (rolling; bump the file for 1.0.1, etc.)
+      #   <VERSION>-<shortSha>         — immutable per-commit tag (every push is uniquely addressable)
+      #   sha-<shortSha>               — explicit commit tag (convenient for git-sha-based deploys)
       - name: Resolve image version
         id: version
         run: |
@@ -47,7 +51,10 @@ jobs:
             echo "::error::VERSION must be MAJOR.MINOR.PATCH (e.g. 1.0.1), got: $VERSION"
             exit 1
           fi
+          SHORT_SHA="${GITHUB_SHA::7}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          echo "version_sha=${VERSION}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -57,8 +64,25 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version_sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ steps.version.outputs.short_sha }}
           labels: |
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
             org.opencontainers.image.revision=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Summary
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          VERSION_SHA: ${{ steps.version.outputs.version_sha }}
+          SHORT_SHA: ${{ steps.version.outputs.short_sha }}
+        run: |
+          {
+            echo "### Published tags"
+            echo ""
+            echo "- \`${REGISTRY}/${IMAGE_NAME}:latest\` (rolling)"
+            echo "- \`${REGISTRY}/${IMAGE_NAME}:${VERSION}\` (rolling semver)"
+            echo "- \`${REGISTRY}/${IMAGE_NAME}:${VERSION_SHA}\` (immutable per-commit)"
+            echo "- \`${REGISTRY}/${IMAGE_NAME}:sha-${SHORT_SHA}\` (commit tag)"
+          } >> "$GITHUB_STEP_SUMMARY"
