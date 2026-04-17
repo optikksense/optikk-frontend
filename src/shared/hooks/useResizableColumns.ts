@@ -45,16 +45,27 @@ export function useResizableColumns({
 
       const startX = event.clientX;
       const startWidth = columnWidths[columnKey] ?? defaultWidth;
+      let nextWidth = startWidth;
+      let rafId: number | null = null;
+
+      const flush = () => {
+        rafId = null;
+        setColumnWidths((previous) =>
+          previous[columnKey] === nextWidth ? previous : { ...previous, [columnKey]: nextWidth }
+        );
+      };
 
       const onMove = (moveEvent: MouseEvent): void => {
         const widthDelta = moveEvent.clientX - startX;
-        setColumnWidths((previous) => ({
-          ...previous,
-          [columnKey]: Math.max(minWidth, startWidth + widthDelta),
-        }));
+        nextWidth = Math.max(minWidth, startWidth + widthDelta);
+        if (rafId == null) rafId = window.requestAnimationFrame(flush);
       };
 
       const onUp = (): void => {
+        if (rafId != null) {
+          window.cancelAnimationFrame(rafId);
+          flush();
+        }
         document.removeEventListener("mousemove", onMove);
         document.removeEventListener("mouseup", onUp);
         document.body.style.cursor = "";

@@ -62,8 +62,6 @@ export function useComponentDataFetcher(
 
   useInvalidateQueriesOnAppRefresh(refreshKey, "component-query", selectedTeamId);
 
-  useInvalidateQueriesOnAppRefresh(refreshKey, "component-query", selectedTeamId);
-
   const { startMs, endMs } = useMemo(() => {
     void refreshKey;
     const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
