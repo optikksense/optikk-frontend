@@ -1,6 +1,12 @@
 import type { SVGProps } from "react"
 
-const STROKE = { strokeWidth: 1.5, stroke: "currentColor", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const }
+const STROKE = {
+  strokeWidth: 1.5,
+  stroke: "currentColor",
+  fill: "none",
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+}
 
 const glyphs = {
   logs: (
@@ -48,6 +54,61 @@ const glyphs = {
       <path d="M3 10h18" />
       <path d="M8 20h8" />
       <path d="M12 16v4" />
+    </g>
+  ),
+  bolt: (
+    <g {...STROKE}>
+      <path d="M13 3 5 14h6l-1 7 8-11h-6z" fill="currentColor" fillOpacity="0.1" />
+    </g>
+  ),
+  shield: (
+    <g {...STROKE}>
+      <path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" />
+      <path d="M9 12l2 2 4-4" />
+    </g>
+  ),
+  clock: (
+    <g {...STROKE}>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 8v4l3 2" />
+    </g>
+  ),
+  compass: (
+    <g {...STROKE}>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M15 9l-2 5-4 1 2-5z" fill="currentColor" fillOpacity="0.12" />
+    </g>
+  ),
+  link: (
+    <g {...STROKE}>
+      <path d="M10 14a4 4 0 0 1 0-5.7l2.3-2.3a4 4 0 0 1 5.7 5.7l-1.3 1.3" />
+      <path d="M14 10a4 4 0 0 1 0 5.7l-2.3 2.3a4 4 0 1 1-5.7-5.7l1.3-1.3" />
+    </g>
+  ),
+  grid: (
+    <g {...STROKE}>
+      <rect x="4" y="4" width="7" height="7" rx="1" />
+      <rect x="13" y="4" width="7" height="7" rx="1" />
+      <rect x="4" y="13" width="7" height="7" rx="1" />
+      <rect x="13" y="13" width="7" height="7" rx="1" />
+    </g>
+  ),
+  sparkle: (
+    <g {...STROKE}>
+      <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6" />
+    </g>
+  ),
+  server: (
+    <g {...STROKE}>
+      <rect x="4" y="4" width="16" height="6" rx="1" />
+      <rect x="4" y="14" width="16" height="6" rx="1" />
+      <path d="M8 7h.01M8 17h.01" />
+    </g>
+  ),
+  search: (
+    <g {...STROKE}>
+      <circle cx="11" cy="11" r="6" />
+      <path d="m16 16 4 4" />
     </g>
   ),
 } as const

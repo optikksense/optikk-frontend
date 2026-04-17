@@ -8,6 +8,7 @@ import {
   FeatureGrid,
   Hero,
   type MarketingSection,
+  MetricsStrip,
   Split,
 } from "./sections"
 
@@ -35,6 +36,8 @@ function renderSection(section: MarketingSection, index: number) {
       return <FAQ key={key} {...section} />
     case "code-block":
       return <CodeBlock key={key} {...section} />
+    case "metrics-strip":
+      return <MetricsStrip key={key} {...section} />
     default:
       return null
   }
