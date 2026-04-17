@@ -1,14 +1,11 @@
-import { Badge, Surface, Tabs } from "@/components/ui";
-import { formatDuration } from "@shared/utils/formatters";
+import { Surface, Tabs } from "@/components/ui";
 
 import type { RelatedTrace, SpanAttributes, SpanEvent, SpanSelfTime } from "../../types";
 
+import { DrawerHeader } from "./DrawerHeader";
 import "./SpanDetailDrawer.css";
-import { STATUS_VARIANT } from "./statusVariant";
-import { AttributesTab } from "./tabs/AttributesTab";
-import { EventsTab } from "./tabs/EventsTab";
-import { RelatedTab } from "./tabs/RelatedTab";
-import { SelfTimeTab } from "./tabs/SelfTimeTab";
+import { TabBody } from "./TabBody";
+import { useTabItems } from "./useTabItems";
 
 interface Props {
   selectedSpanId: string | null;
@@ -33,51 +30,29 @@ export default function SpanDetailDrawer({
   activeTab,
   onActiveTabChange,
 }: Props) {
+  const tabItems = useTabItems(selectedSpanId, spanEvents, relatedTraces);
   if (!selectedSpanId) return null;
-
-  const eventCount = spanEvents.filter((e) => e.spanId === selectedSpanId).length;
 
   return (
     <Surface elevation={1} padding="md" className="span-detail-drawer">
-      <div className="sdd-header">
-        <div>
-          <div className="sdd-header__name">{selectedSpan?.operation_name || "Span Detail"}</div>
-          <div className="sdd-header__meta">
-            <Badge variant={STATUS_VARIANT[selectedSpan?.status ?? ""] ?? "default"}>
-              {selectedSpan?.status || "UNSET"}
-            </Badge>
-            <span className="text-muted text-xs">
-              {selectedSpan?.duration_ms != null ? formatDuration(selectedSpan.duration_ms) : ""}
-            </span>
-          </div>
-        </div>
-      </div>
-
+      <DrawerHeader selectedSpan={selectedSpan} />
       <Tabs
         activeKey={activeTab}
         onChange={onActiveTabChange}
         variant="compact"
         size="sm"
-        items={[
-          { key: "attributes", label: "Attributes" },
-          { key: "events", label: `Events${eventCount > 0 ? ` (${eventCount})` : ""}` },
-          { key: "selftime", label: "Self-Time" },
-          {
-            key: "related",
-            label: `Related${relatedTraces.length > 0 ? ` (${relatedTraces.length})` : ""}`,
-          },
-        ]}
+        items={tabItems}
       />
-
       <div className="sdd-tab-content">
-        {activeTab === "attributes" && (
-          <AttributesTab attrs={spanAttributes} loading={spanAttributesLoading} />
-        )}
-        {activeTab === "events" && (
-          <EventsTab events={spanEvents} selectedSpanId={selectedSpanId} />
-        )}
-        {activeTab === "selftime" && <SelfTimeTab selfTimes={spanSelfTimes} />}
-        {activeTab === "related" && <RelatedTab traces={relatedTraces} />}
+        <TabBody
+          activeTab={activeTab}
+          selectedSpanId={selectedSpanId}
+          spanAttributes={spanAttributes}
+          spanAttributesLoading={spanAttributesLoading}
+          spanEvents={spanEvents}
+          spanSelfTimes={spanSelfTimes}
+          relatedTraces={relatedTraces}
+        />
       </div>
     </Surface>
   );

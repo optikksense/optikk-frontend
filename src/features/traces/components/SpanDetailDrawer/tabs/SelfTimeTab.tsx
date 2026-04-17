@@ -1,7 +1,9 @@
-import { formatDuration } from "@shared/utils/formatters";
 import { memo, useMemo } from "react";
 
 import type { SpanSelfTime } from "../../../types";
+
+import { SelfTimeBar } from "./selftime/SelfTimeBar";
+import { SelfTimeTable } from "./selftime/SelfTimeTable";
 
 const TOP_N = 20;
 
@@ -24,29 +26,9 @@ function SelfTimeTabComponent({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
   return (
     <div>
       <div className="mb-md flex-col gap-xs">
-        {top.map((s) => {
-          const selfPct = s.totalDurationMs > 0 ? (s.selfTimeMs / s.totalDurationMs) * 100 : 0;
-          const childPct = 100 - selfPct;
-          const barWidth = s.totalDurationMs / maxTotal;
-          return (
-            <div key={s.spanId}>
-              <div className="sdd-selftime__label">
-                <span className="truncate font-mono">{s.operationName}</span>
-                <span>{formatDuration(s.selfTimeMs)} self</span>
-              </div>
-              <div className="sdd-selftime__bar" style={{ width: `${barWidth * 100}%` }}>
-                <div
-                  className="sdd-selftime__self"
-                  style={{ flex: selfPct, minWidth: selfPct > 0 ? 2 : 0 }}
-                />
-                <div
-                  className="sdd-selftime__child"
-                  style={{ flex: childPct, minWidth: childPct > 0 ? 2 : 0 }}
-                />
-              </div>
-            </div>
-          );
-        })}
+        {top.map((entry) => (
+          <SelfTimeBar key={entry.spanId} entry={entry} maxTotal={maxTotal} />
+        ))}
       </div>
       <div className="sdd-selftime__legend">
         <span>
@@ -58,32 +40,7 @@ function SelfTimeTabComponent({ selfTimes }: { selfTimes: SpanSelfTime[] }) {
           Child time
         </span>
       </div>
-      <div className="sdd-attr-table mt-sm">
-        <div className="sdd-attr-table__header">
-          <span style={{ flex: 2 }}>Operation</span>
-          <span style={{ width: 70 }}>Total</span>
-          <span style={{ width: 70 }}>Self</span>
-          <span style={{ width: 70 }}>Children</span>
-          <span style={{ width: 60 }}>Self %</span>
-        </div>
-        <div className="sdd-attr-table__body">
-          {top.map((s) => (
-            <div key={s.spanId} className="sdd-attr-table__row">
-              <span className="truncate font-mono text-xs" style={{ flex: 2 }}>
-                {s.operationName}
-              </span>
-              <span style={{ width: 70 }}>{formatDuration(s.totalDurationMs)}</span>
-              <span style={{ width: 70 }}>{formatDuration(s.selfTimeMs)}</span>
-              <span style={{ width: 70 }}>{formatDuration(s.childTimeMs)}</span>
-              <span style={{ width: 60 }}>
-                {s.totalDurationMs > 0
-                  ? `${((s.selfTimeMs / s.totalDurationMs) * 100).toFixed(1)}%`
-                  : "—"}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <SelfTimeTable rows={top} />
     </div>
   );
 }

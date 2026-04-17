@@ -1,8 +1,8 @@
-import { Badge } from "@/components/ui";
-import { formatTimestamp } from "@shared/utils/formatters";
 import { memo, useCallback, useMemo, useState } from "react";
 
 import type { SpanEvent } from "../../../types";
+
+import { EventItem } from "./EventItem";
 
 interface Props {
   events: SpanEvent[];
@@ -34,44 +34,13 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
     <div className="flex-col gap-xs">
       {spanEvents.map((ev, idx) => {
         const key = `${ev.spanId}-${idx}`;
-        const isException = ev.eventName === "exception";
-        let parsed: Record<string, string> = {};
-        try {
-          parsed = JSON.parse(ev.attributes);
-        } catch {
-          /* empty */
-        }
-        const isExpanded = expanded.has(key);
-
         return (
-          <div key={key} className={`sdd-event ${isException ? "sdd-event--error" : ""}`}>
-            <div
-              className="sdd-event__header"
-              onClick={() => {
-                if (isException) toggle(key);
-              }}
-            >
-              <span className="font-mono text-muted text-xs">{formatTimestamp(ev.timestamp)}</span>
-              <Badge variant={isException ? "error" : "default"}>{ev.eventName}</Badge>
-              {parsed["exception.type"] && (
-                <span className="font-medium text-error text-sm">{parsed["exception.type"]}</span>
-              )}
-              {isException && <span className="sdd-event__toggle">{isExpanded ? "▲" : "▼"}</span>}
-            </div>
-
-            {isException && isExpanded && (
-              <div className="mt-xs">
-                {parsed["exception.message"] && (
-                  <div className="mb-xs text-secondary text-sm">{parsed["exception.message"]}</div>
-                )}
-                {parsed["exception.stacktrace"] && (
-                  <pre className="sdd-stacktrace sdd-stacktrace--error">
-                    {parsed["exception.stacktrace"]}
-                  </pre>
-                )}
-              </div>
-            )}
-          </div>
+          <EventItem
+            key={key}
+            event={ev}
+            expanded={expanded.has(key)}
+            onToggle={() => toggle(key)}
+          />
         );
       })}
     </div>
