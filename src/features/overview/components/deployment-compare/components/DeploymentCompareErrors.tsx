@@ -2,10 +2,9 @@ import { AlertTriangle } from "lucide-react";
 import { memo } from "react";
 
 import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
-import { Badge, Card } from "@shared/components/primitives/ui";
-import { formatNumber } from "@shared/utils/formatters";
+import { Card } from "@shared/components/primitives/ui";
 
-import { DeltaPill } from "./DeltaPill";
+import { ErrorRowItem } from "./ErrorRowItem";
 
 interface Props {
   compare: DeploymentCompareResponse;
@@ -26,38 +25,8 @@ function DeploymentCompareErrorsComponent({ compare }: Props) {
         </div>
       ) : (
         <div className="space-y-3">
-          {compare.top_errors.map((errorRow) => (
-            <div
-              key={errorRow.group_id}
-              className="rounded-[var(--card-radius)] border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-3"
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge
-                  variant={
-                    errorRow.severity === "critical"
-                      ? "error"
-                      : errorRow.severity === "warning"
-                        ? "warning"
-                        : "default"
-                  }
-                >
-                  {errorRow.http_status_code || "error"}
-                </Badge>
-                <DeltaPill delta={errorRow.delta_count} formatter={formatNumber} />
-              </div>
-              <div className="mt-2 font-medium text-[var(--text-primary)]">
-                {errorRow.status_message || errorRow.operation_name || "Unhandled error"}
-              </div>
-              <div className="mt-1 text-[12px] text-[var(--text-secondary)]">
-                {errorRow.operation_name} • before {formatNumber(errorRow.before_count)} • after{" "}
-                {formatNumber(errorRow.after_count)}
-              </div>
-              {errorRow.sample_trace_id ? (
-                <div className="mt-1 text-[11px] text-[var(--text-muted)]">
-                  sample trace {errorRow.sample_trace_id.slice(0, 12)}
-                </div>
-              ) : null}
-            </div>
+          {compare.top_errors.map((row) => (
+            <ErrorRowItem key={row.group_id} row={row} />
           ))}
         </div>
       )}
