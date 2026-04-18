@@ -13,6 +13,7 @@ import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverla
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber, formatPercentage } from "@shared/utils/formatters";
 
+import ServiceHealthGrid from "../components/ServiceHealthGrid";
 import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
 import { mapErrorRateRows, mapP95Rows, mapRequestRateRows, num } from "../chartMappers";
@@ -225,6 +226,15 @@ export default function SummaryTab() {
             </Suspense>
           </HubChartCard>
         </div>
+      </HubSection>
+
+      <HubSection
+        title="Service health"
+        description="Top services ranked by traffic, color-coded by error rate. Click a tile to open the service drawer."
+      >
+        <Surface elevation={1} padding="sm">
+          <ServiceHealthGrid services={sortedServices} />
+        </Surface>
       </HubSection>
 
       <HubSection

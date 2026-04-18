@@ -25,10 +25,12 @@ function matcher(filter: string): (name: string) => boolean {
   return (name) => name.toLowerCase().includes(needle);
 }
 
+const NOOP_OPEN: (name: string) => void = () => undefined;
+
 function toNode(
   row: ServiceTopologyResponse["nodes"][number],
   matches: (name: string) => boolean,
-  onOpen: BuildGraphArgs["onOpen"]
+  onOpen: (name: string) => void
 ): Node {
   const data: TopologyNodeData = { ...row, dimmed: !matches(row.name), onOpen };
   return {
@@ -68,8 +70,9 @@ function toEdge(
 
 export function buildTopologyGraph({ data, filter = "", onOpen }: BuildGraphArgs): BuiltGraph {
   const matches = matcher(filter);
+  const handleOpen = onOpen ?? NOOP_OPEN;
   const maxCallCount = data.edges.reduce((acc, edge) => Math.max(acc, edge.call_count), 1);
-  const rawNodes = data.nodes.map((row) => toNode(row, matches, onOpen));
+  const rawNodes = data.nodes.map((row) => toNode(row, matches, handleOpen));
   const edges = data.edges.map((row) => toEdge(row, matches, maxCallCount));
   return { nodes: layoutTopology(rawNodes, edges), edges };
 }
