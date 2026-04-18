@@ -11,6 +11,7 @@ import type { TimelineSeries } from "../types";
 
 import { DeploymentCompareAdjacentNav } from "./DeploymentCompareAdjacentNav";
 import { DeploymentCompareBaselinePicker } from "./DeploymentCompareBaselinePicker";
+import { DeploymentCompareCommitMeta } from "./DeploymentCompareCommitMeta";
 import { DeploymentCompareEndpointHeatmap } from "./DeploymentCompareEndpointHeatmap";
 import { DeploymentCompareEndpoints } from "./DeploymentCompareEndpoints";
 import { DeploymentCompareErrors } from "./DeploymentCompareErrors";
@@ -79,6 +80,7 @@ function DeploymentCompareBodyComponent({
         deployments={deployments}
       />
       <DeploymentCompareHealthScore compare={compare} />
+      <DeploymentCompareCommitMeta compare={compare} />
       <DeploymentCompareSummary compare={compare} />
       <DeploymentCompareWindow compare={compare} onOpen={onOpen} />
       <DeploymentCompareTimeline

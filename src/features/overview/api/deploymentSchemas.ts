@@ -12,6 +12,10 @@ export const latestDeploymentSchema = z
     deployed_at: stringValue,
     last_seen_at: stringValue,
     is_active: booleanValue,
+    commit_sha: stringValue.optional(),
+    commit_author: stringValue.optional(),
+    repo_url: stringValue.optional(),
+    pr_url: stringValue.optional(),
   })
   .strict();
 
