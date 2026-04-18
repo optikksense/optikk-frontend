@@ -87,13 +87,21 @@ export default function DashboardPanelGrid({
 
   useEffect(() => {
     if (!containerRef.current) return;
+    let rafId = 0;
+    let pending = 0;
     const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setWidth(entry.contentRect.width);
-      }
+      for (const entry of entries) pending = entry.contentRect.width;
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0;
+        setWidth((prev) => (Math.abs(prev - pending) >= 1 ? pending : prev));
+      });
     });
     observer.observe(containerRef.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const orderedPanels = useMemo(() => sortPanels(panels), [panels]);
