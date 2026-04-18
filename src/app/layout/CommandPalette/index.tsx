@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import {
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/command";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
-import { allActions } from "./registry";
 import type { PaletteAction, PaletteActionContext } from "./types";
 
 function ActionHotkey({ action }: { action: PaletteAction }) {
@@ -33,6 +32,7 @@ function ActionHotkey({ action }: { action: PaletteAction }) {
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
+  const [allActions, setAllActions] = useState<PaletteAction[]>([]);
   const navigate = useNavigate();
   const actionContext: PaletteActionContext = {
     navigate: (path: string) => navigate(dynamicNavigateOptions(path)),
@@ -43,6 +43,16 @@ export function CommandPalette() {
     e.preventDefault();
     setOpen((o) => !o);
   });
+
+  useEffect(() => {
+    const load = () => {
+      void import("./registry").then((m) => setAllActions(m.allActions));
+    };
+    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void) => number })
+      .requestIdleCallback;
+    if (idle) idle(load);
+    else window.setTimeout(load, 0);
+  }, []);
 
   const handleSelect = (action: PaletteAction) => {
     action.perform(actionContext);

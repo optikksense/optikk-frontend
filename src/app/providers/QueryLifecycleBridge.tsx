@@ -30,7 +30,8 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
       return;
     }
 
-    void queryClient.invalidateQueries();
+    void queryClient.invalidateQueries({ queryKey: ["component-query"] });
+    void queryClient.invalidateQueries({ queryKey: ["datasource"] });
   }, [teamScopeKey]);
 
   useEffect(() => {

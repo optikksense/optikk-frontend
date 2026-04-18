@@ -8,7 +8,7 @@ import ChartErrorOverlay from "@shared/components/ui/feedback/ChartErrorOverlay"
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 
 import { useLocation } from "@tanstack/react-router";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
 import type {
   DashboardDataSources,
@@ -215,34 +215,36 @@ function ConfigurableChartCardContent({
 }
 
 function ConfigurableChartCard(props: ConfigurableChartCardProps) {
-  const { description } = props.componentConfig;
+  const { description, title, id, titleIcon } = props.componentConfig;
 
-  const infoIcon = description ? (
-    <Tooltip content={description}>
-      <span className="chart-card__info-icon">
-        <Info size={14} />
-      </span>
-    </Tooltip>
-  ) : null;
+  const titleContent = useMemo(() => {
+    const infoIcon = description ? (
+      <Tooltip content={description}>
+        <span className="chart-card__info-icon">
+          <Info size={14} />
+        </span>
+      </Tooltip>
+    ) : null;
 
-  const titleContent = props.componentConfig.titleIcon ? (
-    <span className="chart-card__title-content">
-      <span className="chart-card__title-icon">
-        {getDashboardIcon(props.componentConfig.titleIcon, 16)}
+    const label = title ?? id;
+
+    if (titleIcon) {
+      return (
+        <span className="chart-card__title-content">
+          <span className="chart-card__title-icon">{getDashboardIcon(titleIcon, 16)}</span>
+          <span className="chart-card__title-text">{label}</span>
+          {infoIcon}
+        </span>
+      );
+    }
+
+    return (
+      <span className="chart-card__title-content">
+        <span className="chart-card__title-text">{label}</span>
+        {infoIcon}
       </span>
-      <span className="chart-card__title-text">
-        {props.componentConfig.title ?? props.componentConfig.id}
-      </span>
-      {infoIcon}
-    </span>
-  ) : (
-    <span className="chart-card__title-content">
-      <span className="chart-card__title-text">
-        {props.componentConfig.title ?? props.componentConfig.id}
-      </span>
-      {infoIcon}
-    </span>
-  );
+    );
+  }, [description, title, id, titleIcon]);
 
   return (
     <DashboardCardErrorBoundary

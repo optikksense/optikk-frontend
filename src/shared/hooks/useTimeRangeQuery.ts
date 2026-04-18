@@ -10,6 +10,7 @@ import type { TimeRange } from "@/types";
 import { resolveTimeRangeBounds } from "@/types";
 
 import { useTimeRange as useAppStoreTimeRange, useRefreshKey, useTeamId } from "@store/appStore";
+import { useInvalidateQueriesOnAppRefresh } from "./useInvalidateQueriesOnAppRefresh";
 
 type QueryTime = string | number;
 
@@ -55,16 +56,16 @@ export function useTimeRangeQuery<TData = unknown>(
   const refreshKey = useRefreshKey();
   const { extraKeys = [], enabled, ...queryOptions } = options;
 
+  useInvalidateQueriesOnAppRefresh(refreshKey, "component-query", selectedTeamId);
+
   return useQuery<TData, Error>({
-    queryKey: [key, selectedTeamId, rangeKey(timeRange), refreshKey, ...extraKeys],
+    queryKey: ["component-query", selectedTeamId, key, rangeKey(timeRange), ...extraKeys],
     queryFn: async (): Promise<TData> => {
       const { startTime, endTime } = getBounds(timeRange);
       return queryFn(selectedTeamId, startTime, endTime);
     },
     enabled: Boolean(selectedTeamId) && enabled !== false,
-    staleTime: 0,
-    gcTime: 30_000,
-    refetchOnMount: "always",
+    staleTime: 30_000,
     placeholderData: keepPreviousData,
     ...queryOptions,
   });

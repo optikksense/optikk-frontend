@@ -64,18 +64,41 @@ export function HeatmapRenderer({
     );
   }, [xValues]);
 
-  const { yValues, lookup, maxVal } = useMemo(() => {
-    const yVals = Array.from(new Set(rows.map((r: any) => String(r[yKey] ?? ""))));
+  const { yValues, lookup, maxVal, yOverflow } = useMemo(() => {
+    const Y_CAP = 50;
+    const allYVals = Array.from(new Set(rows.map((r: any) => String(r[yKey] ?? ""))));
+    const yVals = allYVals.slice(0, Y_CAP);
+    const yVisible = new Set(yVals);
     const lkp: Record<string, Record<string, number>> = {};
+    let max = 1;
     for (const row of rows) {
-      const x = String(row[xKey] ?? "");
       const y = String(row[yKey] ?? "");
+      if (!yVisible.has(y)) continue;
+      const x = String(row[xKey] ?? "");
+      const v = Number(row[valueKey]) || 0;
       if (!lkp[y]) lkp[y] = {};
-      lkp[y][x] = Number(row[valueKey]) || 0;
+      lkp[y][x] = v;
+      if (v > max) max = v;
     }
-    const max = Math.max(...rows.map((r: any) => Number(r[valueKey]) || 0), 1);
-    return { yValues: yVals, lookup: lkp, maxVal: max };
+    return {
+      yValues: yVals,
+      lookup: lkp,
+      maxVal: max,
+      yOverflow: Math.max(0, allYVals.length - yVals.length),
+    };
   }, [rows, xKey, yKey, valueKey]);
+
+  const formattedValues = useMemo(() => {
+    const out: Record<string, Record<string, string>> = {};
+    for (const y of yValues) {
+      out[y] = {};
+      for (const x of xValues) {
+        const val = lookup[y]?.[x] ?? 0;
+        out[y]![x] = val > 0 ? (val < 1 ? val.toFixed(2) : val.toFixed(0)) : "";
+      }
+    }
+    return out;
+  }, [yValues, xValues, lookup]);
 
   // Conditional return AFTER all hooks
   if (rows.length === 0) {
@@ -128,7 +151,7 @@ export function HeatmapRenderer({
                       color: intensity > 0.5 ? "#fff" : "inherit",
                     }}
                   >
-                    {val > 0 ? (val < 1 ? val.toFixed(2) : val.toFixed(0)) : ""}
+                    {formattedValues[y]?.[x]}
                   </td>
                 );
               })}
@@ -136,6 +159,14 @@ export function HeatmapRenderer({
           ))}
         </tbody>
       </table>
+      {yOverflow > 0 ? (
+        <div
+          className="text-muted"
+          style={{ textAlign: "center", padding: "8px 12px", fontSize: 11 }}
+        >
+          +{yOverflow} more rows hidden
+        </div>
+      ) : null}
     </div>
   );
 }
