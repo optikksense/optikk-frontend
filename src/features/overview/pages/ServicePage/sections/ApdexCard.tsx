@@ -30,14 +30,9 @@ export default function ApdexCard({ serviceName }: ApdexCardProps) {
 
   return (
     <Surface elevation={1} padding="sm" className="flex h-full flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
-          Apdex score
-        </span>
-        {summary && !summary.isServiceScoped ? (
-          <span className="text-[10px] text-[var(--text-muted)]">fleet-wide</span>
-        ) : null}
-      </div>
+      <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        Apdex score
+      </span>
       <div className={`font-semibold text-[28px] leading-none ${apdexTone(apdex)}`}>{display}</div>
       <div className="mt-1 flex flex-col gap-1">
         <BreakdownLine label="Satisfied" value={summary?.satisfied ?? 0} />

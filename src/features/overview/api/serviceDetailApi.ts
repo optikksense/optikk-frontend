@@ -53,7 +53,18 @@ export interface Http5xxRoutePoint {
 export interface FingerprintTrendPoint {
   readonly timestamp?: string;
   readonly count?: number;
-  readonly group_id?: string;
+}
+
+export interface ErrorFingerprint {
+  readonly fingerprint: string;
+  readonly serviceName: string;
+  readonly operationName: string;
+  readonly exceptionType: string;
+  readonly statusMessage: string;
+  readonly firstSeen: string;
+  readonly lastSeen: string;
+  readonly count: number;
+  readonly sampleTraceId: string;
 }
 
 export interface LatencyDuringErrorPoint {
@@ -85,6 +96,18 @@ export const serviceDetailApi = {
     serviceName?: string
   ): Promise<Http5xxRoutePoint[]> {
     return getJson("/spans/http-5xx-by-route", buildParams(startTime, endTime, serviceName));
+  },
+
+  listFingerprints(
+    startTime: RequestTime,
+    endTime: RequestTime,
+    serviceName: string,
+    limit = 20
+  ): Promise<ErrorFingerprint[]> {
+    return getJson(
+      "/errors/fingerprints",
+      buildParams(startTime, endTime, serviceName, { limit })
+    );
   },
 
   getFingerprintTrends(

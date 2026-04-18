@@ -1,6 +1,7 @@
 import DependenciesSection from "./DependenciesSection";
 import DeploymentsSection from "./DeploymentsSection";
 import ErrorsSection from "./ErrorsSection";
+import FingerprintsSection from "./FingerprintsSection";
 import GoldenSignalsSection from "./GoldenSignalsSection";
 import LogsSection from "./LogsSection";
 import ResourcesSection from "./ResourcesSection";
@@ -19,6 +20,7 @@ export default function ServicePageSections({ serviceName }: ServicePageSections
       <DependenciesSection serviceName={serviceName} />
       <ResourcesSection serviceName={serviceName} />
       <ErrorsSection serviceName={serviceName} />
+      <FingerprintsSection serviceName={serviceName} />
       <SloSection serviceName={serviceName} />
       <TracesSection serviceName={serviceName} />
       <LogsSection serviceName={serviceName} />
