@@ -23,10 +23,11 @@ type Props = {
   columns: SimpleTableColumn<LogRecord>[];
   logsLoading: boolean;
   liveTailEnabled: boolean;
-  page: number;
   pageSize: number;
-  total: number;
-  onPageChange: (p: number) => void;
+  hasMore: boolean;
+  hasPrev: boolean;
+  onNext: () => void;
+  onPrev: () => void;
   onPageSizeChange: (size: number) => void;
   selectedLog: LogRecord | null;
   onSelectLog: (row: LogRecord) => void;
@@ -42,10 +43,11 @@ function LogsHubListSectionComponent({
   columns,
   logsLoading,
   liveTailEnabled,
-  page,
   pageSize,
-  total,
-  onPageChange,
+  hasMore,
+  hasPrev,
+  onNext,
+  onPrev,
   onPageSizeChange,
   selectedLog,
   onSelectLog,
@@ -76,18 +78,24 @@ function LogsHubListSectionComponent({
         subtitle={
           liveTailEnabled
             ? `${formatNumber(logs.length)} live tail rows`
-            : `${formatNumber(logs.length)} rows in view, ${formatNumber(total)} total matches`
+            : `${formatNumber(logs.length)} rows in view${hasMore ? " — more available" : ""}`
         }
         rows={logs}
         columns={columns}
         rowKey={(row) => logRowKey(row)}
         isLoading={logsLoading}
-        page={page}
-        pageSize={pageSize}
-        total={liveTailEnabled ? logs.length : total}
-        showPagination={!liveTailEnabled}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
+        pagination={
+          liveTailEnabled
+            ? undefined
+            : {
+                hasMore,
+                hasPrev,
+                onNext,
+                onPrev,
+                pageSize,
+                onPageSizeChange,
+              }
+        }
         onRow={handleRow}
         rowClassName={(row) =>
           cn(

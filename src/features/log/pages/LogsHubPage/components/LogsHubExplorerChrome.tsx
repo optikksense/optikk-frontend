@@ -30,7 +30,7 @@ type Props = {
   filters: StructuredFilter[];
   setFilters: (next: StructuredFilter[]) => void;
   clearURLFilters: () => void;
-  setPage: (p: number) => void;
+  resetPage: () => void;
   errorsOnly: boolean;
   setErrorsOnly: (v: boolean) => void;
   explorerMode: ExplorerMode;
@@ -56,7 +56,7 @@ function LogsHubExplorerChromeComponent({
   filters,
   setFilters,
   clearURLFilters,
-  setPage,
+  resetPage,
   errorsOnly,
   setErrorsOnly,
   explorerMode,
@@ -88,7 +88,7 @@ function LogsHubExplorerChromeComponent({
               size="sm"
               onClick={() => {
                 setFilters(upsertLogFacetFilter(filters, "optik.rum", "true"));
-                setPage(1);
+                resetPage();
               }}
             >
               RUM stream
@@ -119,7 +119,7 @@ function LogsHubExplorerChromeComponent({
               size="sm"
               onClick={() => {
                 clearURLFilters();
-                setPage(1);
+                resetPage();
               }}
             >
               Reset
@@ -133,11 +133,11 @@ function LogsHubExplorerChromeComponent({
             filters={filters}
             setFilters={(nextFilters: StructuredFilter[]) => {
               setFilters(nextFilters);
-              setPage(1);
+              resetPage();
             }}
             onClearAll={() => {
               clearURLFilters();
-              setPage(1);
+              resetPage();
             }}
             placeholder="service:web AND status:error — or use Search filter"
             rightSlot={
@@ -156,7 +156,7 @@ function LogsHubExplorerChromeComponent({
                   checked={errorsOnly}
                   onChange={(event) => {
                     setErrorsOnly(event.target.checked);
-                    setPage(1);
+                    resetPage();
                   }}
                 />
               </div>

@@ -71,9 +71,9 @@ const llmExplorerResponseSchema = z.object({
   facets: llmExplorerFacetsSchema,
   trend: z.array(llmTrendBucketSchema).default([]),
   pageInfo: z.object({
-    total: z.number().default(0),
-    offset: z.number().default(0),
     limit: z.number().default(50),
+    hasMore: z.boolean().default(false),
+    nextCursor: z.string().optional(),
   }),
 });
 
@@ -93,9 +93,9 @@ const llmSessionRowSchema = z.object({
 const llmSessionsResponseSchema = z.object({
   results: z.array(llmSessionRowSchema).default([]),
   pageInfo: z.object({
-    total: z.number().default(0),
-    offset: z.number().default(0),
     limit: z.number().default(50),
+    hasMore: z.boolean().default(false),
+    nextCursor: z.string().optional(),
   }),
 });
 
@@ -105,7 +105,7 @@ export const llmExplorerApi = {
       startTime: number;
       endTime: number;
       limit: number;
-      offset: number;
+      cursor?: string;
       step: string;
       query: string;
     },
@@ -130,7 +130,7 @@ export const llmExplorerApi = {
     startTime: number;
     endTime: number;
     limit: number;
-    offset: number;
+    cursor?: string;
     query: string;
   }): Promise<LlmSessionsResponse> {
     const response = await api.post(`${BASE}/ai/explorer/sessions/query`, body);

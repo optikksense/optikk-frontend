@@ -62,10 +62,8 @@ const tracesExplorerSchema = z
     trend: z.array(trendBucketSchema).default([]),
     pageInfo: z
       .object({
-        total: z.number().default(0),
         hasMore: z.boolean().default(false),
         nextCursor: z.string().optional(),
-        offset: z.number().default(0),
         limit: z.number().default(50),
       })
       .strict(),
@@ -80,7 +78,6 @@ export const tracesExplorerApi = {
     startTime: number;
     endTime: number;
     limit: number;
-    offset: number;
     step: string;
     query: string;
     cursor?: string;

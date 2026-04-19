@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
   AggregationSpec,
   ExplorerVizMode,
 } from "@/features/explorer-core/components/AnalyticsToolbar";
+import { useCursorPagination } from "@/features/explorer-core/hooks/useCursorPagination";
 import { useExplorerAnalytics } from "@/features/explorer-core/hooks/useExplorerAnalytics";
 import { buildLogsExplorerQuery } from "@/features/explorer-core/utils/explorerQuery";
 import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
@@ -46,7 +47,8 @@ export default function LogsHubPage() {
     urlSetters.errorsOnly?.(value);
   };
 
-  const [page, setPage] = useState(1);
+  const cursorState = useCursorPagination();
+  const { cursor, goNext, goPrev, reset: resetCursor, hasPrev } = cursorState;
   const [pageSize, setPageSize] = useState(20);
   const [selectedLog, setSelectedLog] = useState<LogRecord | null>(null);
 
@@ -75,6 +77,11 @@ export default function LogsHubPage() {
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
 
+  // Reset the cursor stack whenever a filter that invalidates it changes.
+  useEffect(() => {
+    resetCursor();
+  }, [explorerQuery, startTime, endTime, pageSize, resetCursor]);
+
   const analyticsEnabled =
     explorerMode === "analytics" && groupBy.length > 0 && aggregations.length > 0;
 
@@ -99,7 +106,8 @@ export default function LogsHubPage() {
     logsLoading,
     logsError,
     logsErrorDetail,
-    total,
+    hasMore,
+    nextCursor,
     serviceFacets,
     levelFacets,
     hostFacets,
@@ -118,7 +126,7 @@ export default function LogsHubPage() {
     explorerQuery,
     filters,
     liveTailParams,
-    page,
+    cursor,
     pageSize,
   });
 
@@ -149,9 +157,9 @@ export default function LogsHubPage() {
       filters,
       setFilters,
       setErrorsOnly,
-      setPage,
+      resetPage: resetCursor,
     }),
-    [filters, setFilters, setErrorsOnly, setPage]
+    [filters, setFilters, setErrorsOnly, resetCursor]
   );
 
   const onFacetSelect = useCallback(
@@ -176,7 +184,7 @@ export default function LogsHubPage() {
         filters={filters}
         setFilters={setFilters}
         clearURLFilters={clearURLFilters}
-        setPage={setPage}
+        resetPage={resetCursor}
         errorsOnly={errorsOnly}
         setErrorsOnly={setErrorsOnly}
         explorerMode={explorerMode}
@@ -208,13 +216,14 @@ export default function LogsHubPage() {
             columns={columns}
             logsLoading={logsLoading}
             liveTailEnabled={liveTailEnabled}
-            page={page}
             pageSize={pageSize}
-            total={total}
-            onPageChange={setPage}
+            hasMore={hasMore}
+            hasPrev={hasPrev}
+            onNext={() => goNext(nextCursor)}
+            onPrev={goPrev}
             onPageSizeChange={(size) => {
               setPageSize(size);
-              setPage(1);
+              resetCursor();
             }}
             selectedLog={selectedLog}
             onSelectLog={onSelectLog}

@@ -34,7 +34,6 @@ export default function LlmGenerationsView() {
     isPending: isLoading,
     isError,
     generations,
-    total,
     summary,
     facets,
     trend,
@@ -42,16 +41,19 @@ export default function LlmGenerationsView() {
     selectedModel,
     selectedSession,
     errorsOnly,
-    page,
     pageSize,
+    hasMore,
+    hasPrev,
+    onNext,
+    onPrev,
     filters,
     explorerQuery,
     setSelectedProvider,
     setSelectedModel,
     setSelectedSession,
     setErrorsOnly,
-    setPage,
     setPageSize,
+    resetCursor,
     setFilters,
     clearAll,
     startTime,
@@ -125,46 +127,38 @@ export default function LlmGenerationsView() {
       setSelectedProvider,
       setSelectedModel,
       setErrorsOnly,
-      setPage,
+      resetPage: resetCursor,
     }),
-    [filters, setFilters, setSelectedProvider, setSelectedModel, setErrorsOnly, setPage]
+    [filters, setFilters, setSelectedProvider, setSelectedModel, setErrorsOnly, resetCursor]
   );
 
   const onStructuredFiltersChange = useCallback(
     (nextFilters: StructuredFilter[]) => {
       setFilters(nextFilters);
-      setPage(1);
+      resetCursor();
     },
-    [setFilters, setPage]
+    [setFilters, resetCursor]
   );
 
   const onErrorsOnlyChange = useCallback(
     (checked: boolean) => {
       setErrorsOnly(checked);
-      setPage(1);
+      resetCursor();
     },
-    [setErrorsOnly, setPage]
+    [setErrorsOnly, resetCursor]
   );
 
   const onClearSessionFilter = useCallback(() => {
     setSelectedSession(null);
-    setPage(1);
-  }, [setSelectedSession, setPage]);
+    resetCursor();
+  }, [setSelectedSession, resetCursor]);
 
   const onToggleTopModel = useCallback(
     (model: string) => {
       setSelectedModel(selectedModel === model ? null : model);
-      setPage(1);
+      resetCursor();
     },
-    [selectedModel, setSelectedModel, setPage]
-  );
-
-  const onPageSizeChange = useCallback(
-    (size: number) => {
-      setPageSize(size);
-      setPage(1);
-    },
-    [setPage, setPageSize]
+    [selectedModel, setSelectedModel, resetCursor]
   );
 
   const closeDatasetModal = useCallback(() => {
@@ -202,7 +196,6 @@ export default function LlmGenerationsView() {
         trend={trend}
         isLoading={isLoading}
         summary={summary}
-        total={total}
         selectedSession={selectedSession}
         onClearSession={onClearSessionFilter}
         filters={filters}
@@ -242,11 +235,12 @@ export default function LlmGenerationsView() {
             generations={generations}
             columns={columns}
             isLoading={isLoading}
-            page={page}
             pageSize={pageSize}
-            total={total}
-            onPageChange={setPage}
-            onPageSizeChange={onPageSizeChange}
+            hasMore={hasMore}
+            hasPrev={hasPrev}
+            onNext={onNext}
+            onPrev={onPrev}
+            onPageSizeChange={setPageSize}
             selectedGeneration={selectedGeneration}
             onSelectGeneration={setSelectedGeneration}
           />

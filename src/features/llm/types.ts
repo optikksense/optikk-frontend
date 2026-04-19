@@ -64,9 +64,9 @@ export interface LlmExplorerResponse {
   facets: LlmExplorerFacets;
   trend: LlmTrendBucket[];
   pageInfo: {
-    total: number;
-    offset: number;
     limit: number;
+    hasMore: boolean;
+    nextCursor?: string;
   };
 }
 
@@ -87,8 +87,8 @@ export interface LlmSessionRecord {
 export interface LlmSessionsResponse {
   results: LlmSessionRecord[];
   pageInfo: {
-    total: number;
-    offset: number;
     limit: number;
+    hasMore: boolean;
+    nextCursor?: string;
   };
 }

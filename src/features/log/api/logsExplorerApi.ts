@@ -67,10 +67,8 @@ const logsExplorerSchema = z
       .strict(),
     pageInfo: z
       .object({
-        total: z.number().default(0),
         hasMore: z.boolean().default(false),
         nextCursor: z.string().optional(),
-        offset: z.number().default(0),
         limit: z.number().default(50),
       })
       .strict(),
@@ -97,7 +95,6 @@ export const logsExplorerApi = {
     startTime: number;
     endTime: number;
     limit: number;
-    offset: number;
     step: string;
     query: string;
     cursor?: string;

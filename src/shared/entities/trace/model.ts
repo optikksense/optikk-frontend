@@ -51,7 +51,9 @@ export type TraceSummary = z.infer<typeof traceSummarySchema>;
 export const tracesResponseSchema = z
   .object({
     traces: z.array(traceRecordSchema),
-    total: z.number(),
+    has_more: z.boolean().optional(),
+    next_cursor: z.string().optional(),
+    limit: z.number().optional(),
     summary: traceSummarySchema.optional(),
   })
   .strict();

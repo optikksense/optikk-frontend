@@ -6,7 +6,7 @@ export type LogsFacetSelectionContext = {
   filters: StructuredFilter[];
   setFilters: (next: StructuredFilter[]) => void;
   setErrorsOnly: (value: boolean) => void;
-  setPage: (page: number) => void;
+  resetPage: () => void;
 };
 
 export function handleLogsFacetSelect(
@@ -19,9 +19,9 @@ export function handleLogsFacetSelect(
   }
   if (groupKey === "scope_name") {
     ctx.setFilters(upsertLogFacetFilter(ctx.filters, "logger", value));
-    ctx.setPage(1);
+    ctx.resetPage();
     return;
   }
   ctx.setFilters(upsertLogFacetFilter(ctx.filters, groupKey, value));
-  ctx.setPage(1);
+  ctx.resetPage();
 }

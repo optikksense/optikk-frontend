@@ -22,7 +22,6 @@ type Props = {
   trend: LlmTrendBucket[];
   isLoading: boolean;
   summary: LlmSummary;
-  total: number;
   selectedSession: string | null;
   onClearSession: () => void;
   filters: StructuredFilter[];
@@ -49,7 +48,6 @@ function LlmGenerationsExplorerChromeComponent({
   trend,
   isLoading,
   summary,
-  total,
   selectedSession,
   onClearSession,
   filters,
@@ -85,9 +83,6 @@ function LlmGenerationsExplorerChromeComponent({
             <Badge variant={summary.error_calls > 0 ? "error" : "default"}>
               {formatNumber(summary.error_calls)} errors
             </Badge>
-            <span className="text-[11px] text-[var(--text-muted)]">
-              {formatNumber(total)} total
-            </span>
             {selectedSession ? (
               <Badge variant="info" className="gap-1 text-[10px]">
                 Session
