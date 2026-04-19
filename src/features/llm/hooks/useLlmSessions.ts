@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useCursorPagination } from "@/features/explorer-core/hooks/useCursorPagination";
 import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
 import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 import { useURLFilters } from "@shared/hooks/useURLFilters";
@@ -60,7 +61,7 @@ export function useLlmSessions() {
     urlSetters.errorsOnly?.(value);
   };
 
-  const [page, setPage] = useState(1);
+  const { cursor, goNext, goPrev, reset: resetCursor, hasPrev } = useCursorPagination();
   const [pageSize, setPageSize] = useState(20);
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
@@ -77,6 +78,10 @@ export function useLlmSessions() {
     [filters, errorsOnly, selectedProvider, selectedModel, selectedSession]
   );
 
+  useEffect(() => {
+    resetCursor();
+  }, [explorerQuery, startTime, endTime, pageSize, selectedTeamId, resetCursor]);
+
   const { data, isPending, isError, error } = useQuery({
     queryKey: [
       "llm",
@@ -84,7 +89,7 @@ export function useLlmSessions() {
       selectedTeamId,
       startTime,
       endTime,
-      page,
+      cursor,
       pageSize,
       explorerQuery,
       refreshKey,
@@ -94,7 +99,7 @@ export function useLlmSessions() {
         startTime,
         endTime,
         limit: pageSize,
-        offset: (page - 1) * pageSize,
+        cursor: cursor || undefined,
         query: explorerQuery,
       }),
     enabled: Boolean(selectedTeamId),
@@ -104,25 +109,31 @@ export function useLlmSessions() {
   });
 
   const sessions = useMemo(() => data?.results ?? [], [data?.results]);
-  const total = Number(data?.pageInfo?.total ?? 0);
 
   const clearAll = useCallback((): void => {
     clearURLFilters();
-    setPage(1);
-  }, [clearURLFilters]);
+    resetCursor();
+  }, [clearURLFilters, resetCursor]);
+
+  const onNext = useCallback(
+    () => goNext(data?.pageInfo?.nextCursor ?? ""),
+    [goNext, data?.pageInfo?.nextCursor]
+  );
 
   return {
     isPending,
     isError,
     error,
     sessions,
-    total,
     selectedProvider,
     selectedModel,
     selectedSession,
     errorsOnly,
-    page,
     pageSize,
+    hasMore: Boolean(data?.pageInfo?.hasMore),
+    hasPrev,
+    onNext,
+    onPrev: goPrev,
     filters,
     startTime,
     endTime,
@@ -131,8 +142,11 @@ export function useLlmSessions() {
     setSelectedModel,
     setSelectedSession,
     setErrorsOnly,
-    setPage,
-    setPageSize,
+    setPageSize: (size: number) => {
+      setPageSize(size);
+      resetCursor();
+    },
+    resetCursor,
     setFilters,
     clearAll,
   };

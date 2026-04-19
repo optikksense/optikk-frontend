@@ -17,13 +17,13 @@ export interface UseLogsHubDataProps {
   filters: StructuredFilter[];
   /** Params derived for live tail (legacy socket payload shape). */
   liveTailParams: LogsBackendParams;
-  page: number;
+  /** Cursor for the current page; empty string = first page. */
+  cursor: string;
   pageSize: number;
 }
 
 const DEFAULT_STEP = "5m";
 
-/** Live tail buffer size (must match `maxItems` on `useLiveTailStream` and any UI cap). */
 // Ring-buffer size for the logs live tail. Virtualisation in
 // ExplorerResultsTable handles render cost, so the cap is chosen to
 // survive 5 s of a 50-event/s burst without evicting visible rows.
@@ -31,9 +31,9 @@ export const LOGS_LIVE_TAIL_MAX_ROWS = 250;
 
 export function useLogsHubData({
   explorerQuery,
-  filters,
+  filters: _filters,
   liveTailParams,
-  page,
+  cursor,
   pageSize,
 }: UseLogsHubDataProps) {
   const selectedTeamId = useTeamId();
@@ -48,19 +48,16 @@ export function useLogsHubData({
       startTime,
       endTime,
       limit: pageSize,
-      offset: (page - 1) * pageSize,
       step: DEFAULT_STEP,
       query: explorerQuery,
+      cursor,
     }),
-    [startTime, endTime, page, pageSize, explorerQuery]
+    [startTime, endTime, pageSize, explorerQuery, cursor]
   );
 
   const explorerQueryFn = useQuery({
     queryKey: ["logs", "explorer", selectedTeamId, explorerQueryKey, refreshKey],
-    queryFn: () =>
-      logsExplorerApi.query({
-        ...explorerQueryKey,
-      }),
+    queryFn: () => logsExplorerApi.query(explorerQueryKey),
     enabled: Boolean(selectedTeamId),
     placeholderData: keepPreviousData,
     staleTime: 5_000,
@@ -92,7 +89,6 @@ export function useLogsHubData({
     if (!liveTailEnabled) return results?.results ?? [];
     return liveTail.items.slice(0, LOGS_LIVE_TAIL_MAX_ROWS);
   }, [liveTailEnabled, results?.results, liveTail.items]);
-  const total = liveTailEnabled ? logs.length : Number(results?.pageInfo.total ?? 0);
   const serviceFacets = (results?.facets.service_name ?? []) as LogFacet[];
   const levelFacets = (results?.facets.level ?? []) as LogFacet[];
   const hostFacets = (results?.facets.host ?? []) as LogFacet[];
@@ -111,13 +107,14 @@ export function useLogsHubData({
       : explorerQueryFn.isPending,
     logsError: explorerQueryFn.isError,
     logsErrorDetail: explorerQueryFn.error,
-    total,
+    hasMore: Boolean(results?.pageInfo.hasMore),
+    nextCursor: results?.pageInfo.nextCursor ?? "",
     volumeBuckets: (results?.trend.buckets ?? []) as LogVolumeBucket[],
     volumeStep: results?.trend.step ?? DEFAULT_STEP,
     volumeLoading: explorerQueryFn.isPending,
     errorCount: Number(results?.summary.error_logs ?? 0),
     warnCount: Number(results?.summary.warn_logs ?? 0),
-    totalCount: Number(results?.summary.total_logs ?? total),
+    totalCount: Number(results?.summary.total_logs ?? 0),
     serviceFacets,
     levelFacets,
     hostFacets,

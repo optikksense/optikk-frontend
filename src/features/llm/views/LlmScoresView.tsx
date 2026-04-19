@@ -1,10 +1,11 @@
 import { ClipboardList, ExternalLink, List, RotateCcw } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 import { Badge, Button, Card } from "@/components/ui";
 import type { SimpleTableColumn } from "@/components/ui";
 import { ExplorerResultsTable } from "@/features/explorer-core/components";
+import { useCursorPagination } from "@/features/explorer-core/hooks/useCursorPagination";
 import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
 import { useTeamId, useTimeRange } from "@app/store/appStore";
 import { traceDetailHref } from "@shared/observability/deepLinks";
@@ -27,7 +28,7 @@ export default function LlmScoresView() {
 
   const [nameFilter, setNameFilter] = useState("");
   const [traceFilter, setTraceFilter] = useState("");
-  const [page, setPage] = useState(1);
+  const { cursor, goNext, goPrev, reset: resetCursor, hasPrev } = useCursorPagination();
   const [pageSize, setPageSize] = useState(25);
 
   const [formName, setFormName] = useState("quality");
@@ -39,14 +40,18 @@ export default function LlmScoresView() {
   const nameQ = nameFilter.trim();
   const traceQ = traceFilter.trim();
 
+  useEffect(() => {
+    resetCursor();
+  }, [nameQ, traceQ, startTime, endTime, pageSize, resetCursor]);
+
   const scoresQuery = useStandardQuery({
-    queryKey: ["llm", "hub", "scores", teamId, startTime, endTime, nameQ, traceQ, page, pageSize],
+    queryKey: ["llm", "hub", "scores", teamId, startTime, endTime, nameQ, traceQ, cursor, pageSize],
     queryFn: () =>
       llmHubApi.listScores({
         startTime,
         endTime,
         limit: pageSize,
-        offset: (page - 1) * pageSize,
+        cursor: cursor || undefined,
         name: nameQ || undefined,
         traceId: traceQ || undefined,
       }),
@@ -170,12 +175,13 @@ export default function LlmScoresView() {
     () => (scoresQuery.data?.results ?? []) as ScoreRow[],
     [scoresQuery.data?.results]
   );
-  const total = Number(scoresQuery.data?.pageInfo?.total ?? 0);
+  const hasMore = Boolean(scoresQuery.data?.pageInfo?.hasMore);
+  const nextCursor = scoresQuery.data?.pageInfo?.nextCursor ?? "";
 
   const resetFilters = () => {
     setNameFilter("");
     setTraceFilter("");
-    setPage(1);
+    resetCursor();
   };
 
   return (
@@ -293,10 +299,7 @@ export default function LlmScoresView() {
             <input
               className="rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 py-1.5 text-[12px] text-[var(--text-primary)]"
               value={nameFilter}
-              onChange={(ev) => {
-                setNameFilter(ev.target.value);
-                setPage(1);
-              }}
+              onChange={(ev) => setNameFilter(ev.target.value)}
               placeholder="e.g. quality"
             />
           </label>
@@ -305,16 +308,13 @@ export default function LlmScoresView() {
             <input
               className="rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 py-1.5 font-mono text-[11px] text-[var(--text-primary)]"
               value={traceFilter}
-              onChange={(ev) => {
-                setTraceFilter(ev.target.value);
-                setPage(1);
-              }}
+              onChange={(ev) => setTraceFilter(ev.target.value)}
             />
           </label>
         </div>
         <p className="mt-2 text-[11px] text-[var(--text-muted)]">
           Range: {formatTimestamp(new Date(startTime).toISOString())} —{" "}
-          {formatTimestamp(new Date(endTime).toISOString())} · {formatNumber(total)} scores
+          {formatTimestamp(new Date(endTime).toISOString())}
         </p>
       </Card>
 
@@ -326,19 +326,18 @@ export default function LlmScoresView() {
 
       <ExplorerResultsTable
         title="Scores in range"
-        subtitle={`${formatNumber(rows.length)} rows · ${formatNumber(total)} total`}
+        subtitle={`${formatNumber(rows.length)} rows${hasMore ? " — more available" : ""}`}
         rows={rows}
         columns={columns}
         rowKey={(row) => String(row.id)}
         isLoading={scoresQuery.isLoading}
-        page={page}
-        pageSize={pageSize}
-        showPagination
-        total={total}
-        onPageChange={setPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setPage(1);
+        pagination={{
+          hasMore,
+          hasPrev,
+          onNext: () => goNext(nextCursor),
+          onPrev: goPrev,
+          pageSize,
+          onPageSizeChange: setPageSize,
         }}
       />
     </div>

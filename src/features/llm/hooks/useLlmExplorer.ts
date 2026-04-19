@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useCursorPagination } from "@/features/explorer-core/hooks/useCursorPagination";
 import { resolveTimeBounds } from "@/features/explorer-core/utils/timeRange";
 import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
@@ -64,7 +65,7 @@ export function useLlmExplorer() {
     urlSetters.errorsOnly?.(value);
   };
 
-  const [page, setPage] = useState(1);
+  const { cursor, goNext, goPrev, reset: resetCursor, hasPrev } = useCursorPagination();
   const [pageSize, setPageSize] = useState(20);
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
@@ -96,6 +97,10 @@ export function useLlmExplorer() {
     [filters, errorsOnly, selectedProvider, selectedModel, selectedSession]
   );
 
+  useEffect(() => {
+    resetCursor();
+  }, [explorerQuery, startTime, endTime, pageSize, selectedTeamId, resetCursor]);
+
   const { data, isPending, isError, error } = useQuery({
     queryKey: [
       "llm",
@@ -103,7 +108,7 @@ export function useLlmExplorer() {
       selectedTeamId,
       startTime,
       endTime,
-      page,
+      cursor,
       pageSize,
       explorerQuery,
       refreshKey,
@@ -115,7 +120,7 @@ export function useLlmExplorer() {
           startTime,
           endTime,
           limit: pageSize,
-          offset: (page - 1) * pageSize,
+          cursor: cursor || undefined,
           step: "5m",
           query: explorerQuery,
         },
@@ -128,7 +133,6 @@ export function useLlmExplorer() {
   });
 
   const generations = useMemo(() => data?.results ?? [], [data?.results]);
-  const total = Number(data?.pageInfo?.total ?? 0);
   const summary: LlmSummary = data?.summary ?? EMPTY_LLM_SUMMARY;
   const facets: LlmExplorerFacets = data?.facets ?? EMPTY_LLM_FACETS;
   const trend = data?.trend ?? [];
@@ -137,15 +141,19 @@ export function useLlmExplorer() {
 
   const clearAll = useCallback((): void => {
     clearURLFilters();
-    setPage(1);
-  }, [clearURLFilters]);
+    resetCursor();
+  }, [clearURLFilters, resetCursor]);
+
+  const onNext = useCallback(
+    () => goNext(data?.pageInfo?.nextCursor ?? ""),
+    [goNext, data?.pageInfo?.nextCursor]
+  );
 
   return {
     isPending,
     isError,
     error,
     generations,
-    total,
     summary,
     facets,
     trend,
@@ -154,8 +162,11 @@ export function useLlmExplorer() {
     selectedModel,
     selectedSession,
     errorsOnly,
-    page,
     pageSize,
+    hasMore: Boolean(data?.pageInfo?.hasMore),
+    hasPrev,
+    onNext,
+    onPrev: goPrev,
     filters,
     startTime,
     endTime,
@@ -164,8 +175,11 @@ export function useLlmExplorer() {
     setSelectedModel,
     setSelectedSession,
     setErrorsOnly,
-    setPage,
-    setPageSize,
+    setPageSize: (size: number) => {
+      setPageSize(size);
+      resetCursor();
+    },
+    resetCursor,
     setFilters,
     clearAll,
   };

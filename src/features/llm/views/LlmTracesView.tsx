@@ -170,12 +170,6 @@ export default function LlmTracesView() {
         columns={columns}
         rowKey={(row) => row.traceId}
         isLoading={isLoading}
-        page={1}
-        pageSize={Math.max(rows.length, 1)}
-        total={rows.length}
-        onPageChange={() => {}}
-        onPageSizeChange={() => {}}
-        showPagination={false}
       />
     </div>
   );

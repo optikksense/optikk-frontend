@@ -23,9 +23,9 @@ const scoreSchema = z.object({
 const listScoresSchema = z.object({
   results: z.array(scoreSchema),
   pageInfo: z.object({
-    total: z.number(),
-    offset: z.number(),
     limit: z.number(),
+    hasMore: z.boolean().default(false),
+    nextCursor: z.string().optional(),
   }),
 });
 
@@ -82,7 +82,7 @@ export const llmHubApi = {
     startTime: number;
     endTime: number;
     limit?: number;
-    offset?: number;
+    cursor?: string;
     name?: string;
     traceId?: string;
   }): Promise<z.infer<typeof listScoresSchema>> {
@@ -91,7 +91,7 @@ export const llmHubApi = {
         startTime: params.startTime,
         endTime: params.endTime,
         limit: params.limit,
-        offset: params.offset,
+        cursor: params.cursor,
         name: params.name,
         traceId: params.traceId,
       },

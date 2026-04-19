@@ -38,7 +38,7 @@ type Props = {
   filters: StructuredFilter[];
   setFilters: (next: StructuredFilter[]) => void;
   clearAll: () => void;
-  setPage: (p: number) => void;
+  resetPage: () => void;
   errorsOnly: boolean;
   setErrorsOnly: (v: boolean) => void;
   explorerMode: ExplorerMode;
@@ -64,7 +64,7 @@ function TracesExplorerChromeComponent({
   filters,
   setFilters,
   clearAll,
-  setPage,
+  resetPage,
   errorsOnly,
   setErrorsOnly,
   explorerMode,
@@ -121,7 +121,7 @@ function TracesExplorerChromeComponent({
             filters={filters}
             setFilters={(nextFilters: StructuredFilter[]) => {
               setFilters(nextFilters);
-              setPage(1);
+              resetPage();
             }}
             onClearAll={clearAll}
             placeholder="service:api AND status:ERROR — or use Search filter"
@@ -141,7 +141,7 @@ function TracesExplorerChromeComponent({
                   checked={errorsOnly}
                   onChange={(event) => {
                     setErrorsOnly(event.target.checked);
-                    setPage(1);
+                    resetPage();
                   }}
                 />
               </div>
@@ -151,7 +151,7 @@ function TracesExplorerChromeComponent({
             value={mode}
             onChange={(value) => {
               onModeChange(String(value));
-              setPage(1);
+              resetPage();
             }}
             options={modeOptions}
           />

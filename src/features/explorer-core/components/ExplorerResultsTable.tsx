@@ -1,11 +1,19 @@
-import { SimpleTable, Skeleton } from "@/components/ui";
+import { CursorPagination, SimpleTable, Skeleton } from "@/components/ui";
 import { PageSurface } from "@shared/components/ui";
 import { FeatureErrorBoundary } from "@shared/components/ui/feedback";
-import { useCallback, useMemo } from "react";
 
 import type { SimpleTableColumn, SimpleTableProps } from "@/components/ui";
 
 import { VirtualizedResultsTable } from "./VirtualizedResultsTable";
+
+export interface CursorPaginationConfig {
+  hasMore: boolean;
+  hasPrev: boolean;
+  onNext: () => void;
+  onPrev: () => void;
+  pageSize: number;
+  onPageSizeChange?: (size: number) => void;
+}
 
 interface ExplorerResultsTableProps<RowType extends Record<string, unknown>> {
   title: string;
@@ -14,17 +22,12 @@ interface ExplorerResultsTableProps<RowType extends Record<string, unknown>> {
   columns: SimpleTableColumn<RowType>[];
   rowKey: SimpleTableProps<RowType>["rowKey"];
   isLoading?: boolean;
-  page: number;
-  pageSize: number;
-  total: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (pageSize: number) => void;
+  /** Cursor pagination config. Omit to disable the pager (e.g. live tail buffer). */
+  pagination?: CursorPaginationConfig;
   onRow?: SimpleTableProps<RowType>["onRow"];
   rowClassName?: SimpleTableProps<RowType>["rowClassName"];
   toolbar?: React.ReactNode;
-  /** When false, all rows render with no pager (e.g. live tail buffer). Default true. */
-  showPagination?: boolean;
-  /** Opt-in virtualization. Automatic for live-tail (showPagination=false) when rows exceed the threshold. */
+  /** Opt-in virtualization. Automatic when pager is omitted and rows exceed the threshold. */
   virtualized?: boolean;
 }
 
@@ -37,49 +40,13 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
   columns,
   rowKey,
   isLoading,
-  page,
-  pageSize,
-  total,
-  onPageChange,
-  onPageSizeChange,
+  pagination,
   onRow,
   rowClassName,
   toolbar,
-  showPagination = true,
   virtualized,
 }: ExplorerResultsTableProps<RowType>): JSX.Element {
-  const useVirtual =
-    virtualized ?? (!showPagination && rows.length > VIRTUALIZE_AUTO_THRESHOLD);
-
-  // Stable handler so the SimpleTable pagination object below is reference-equal
-  // across renders when page / pageSize / total haven't changed — this prevents
-  // SimpleTable (which is wrapped in memo) from re-rendering on unrelated parent
-  // updates at 500+ rows.
-  const onPaginationChange = useCallback(
-    (nextPage: number, nextPageSize: number) => {
-      if (nextPageSize !== pageSize) {
-        onPageSizeChange(nextPageSize);
-        return;
-      }
-      onPageChange(nextPage);
-    },
-    [onPageChange, onPageSizeChange, pageSize]
-  );
-
-  const pagination = useMemo<SimpleTableProps<RowType>["pagination"]>(
-    () =>
-      showPagination
-        ? {
-            current: page,
-            pageSize,
-            total,
-            manual: true,
-            showSizeChanger: true,
-            onChange: onPaginationChange,
-          }
-        : false,
-    [showPagination, page, pageSize, total, onPaginationChange]
-  );
+  const useVirtual = virtualized ?? (!pagination && rows.length > VIRTUALIZE_AUTO_THRESHOLD);
 
   return (
     <PageSurface padding="lg" className="min-h-0 w-full min-w-0">
@@ -88,7 +55,7 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
           <h3 className="font-semibold text-[var(--text-primary)] text-sm">{title}</h3>
           {subtitle ? (
             <p
-              aria-live={showPagination ? undefined : "polite"}
+              aria-live={pagination ? undefined : "polite"}
               aria-atomic="true"
               className="mt-1 text-[var(--text-muted)] text-xs"
             >
@@ -115,13 +82,26 @@ export function ExplorerResultsTable<RowType extends Record<string, unknown>>({
             columns={columns}
             dataSource={rows}
             rowKey={rowKey}
-            pagination={pagination}
+            pagination={false}
             onRow={onRow}
             rowClassName={rowClassName}
             className="[&_td]:py-2.5 [&_td]:align-top [&_th]:py-2.5"
           />
         )}
       </FeatureErrorBoundary>
+
+      {pagination ? (
+        <div className="mt-3 border-[var(--border-color)] border-t px-1 pt-3">
+          <CursorPagination
+            hasMore={pagination.hasMore}
+            hasPrev={pagination.hasPrev}
+            onNext={pagination.onNext}
+            onPrev={pagination.onPrev}
+            pageSize={pagination.pageSize}
+            onPageSizeChange={pagination.onPageSizeChange}
+          />
+        </div>
+      ) : null}
     </PageSurface>
   );
 }

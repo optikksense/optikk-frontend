@@ -19,10 +19,11 @@ type Props = {
   generations: LlmGenerationRecord[];
   columns: SimpleTableColumn<LlmGenerationRecord>[];
   isLoading: boolean;
-  page: number;
   pageSize: number;
-  total: number;
-  onPageChange: (p: number) => void;
+  hasMore: boolean;
+  hasPrev: boolean;
+  onNext: () => void;
+  onPrev: () => void;
   onPageSizeChange: (size: number) => void;
   selectedGeneration: LlmGenerationRecord | null;
   onSelectGeneration: (row: LlmGenerationRecord) => void;
@@ -36,10 +37,11 @@ function LlmGenerationsListSectionComponent({
   generations,
   columns,
   isLoading,
-  page,
   pageSize,
-  total,
-  onPageChange,
+  hasMore,
+  hasPrev,
+  onNext,
+  onPrev,
   onPageSizeChange,
   selectedGeneration,
   onSelectGeneration,
@@ -65,17 +67,19 @@ function LlmGenerationsListSectionComponent({
 
       <ExplorerResultsTable
         title="LLM Generations"
-        subtitle={`${formatNumber(generations.length)} rows in view, ${formatNumber(total)} total`}
+        subtitle={`${formatNumber(generations.length)} rows in view${hasMore ? " — more available" : ""}`}
         rows={generations}
         columns={columns}
         rowKey={(row) => `${row.trace_id}-${row.span_id}`}
         isLoading={isLoading}
-        page={page}
-        pageSize={pageSize}
-        showPagination
-        total={total}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
+        pagination={{
+          hasMore,
+          hasPrev,
+          onNext,
+          onPrev,
+          pageSize,
+          onPageSizeChange,
+        }}
         onRow={handleRow}
         rowClassName={(row) =>
           cn(

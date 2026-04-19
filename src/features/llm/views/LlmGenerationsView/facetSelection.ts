@@ -8,11 +8,11 @@ export type LlmFacetSelectionHandlers = {
   setSelectedProvider: (value: string | null) => void;
   setSelectedModel: (value: string | null) => void;
   setErrorsOnly: (value: boolean) => void;
-  setPage: (page: number) => void;
+  resetPage: () => void;
 };
 
 function resetPage(h: LlmFacetSelectionHandlers) {
-  h.setPage(1);
+  h.resetPage();
 }
 
 export function handleFacetSelect(

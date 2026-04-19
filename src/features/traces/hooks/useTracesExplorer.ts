@@ -1,7 +1,8 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { buildTracesExplorerQuery } from "@/features/explorer-core/utils/explorerQuery";
+import { useCursorPagination } from "@/features/explorer-core/hooks/useCursorPagination";
 import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 import { useURLFilters } from "@shared/hooks/useURLFilters";
 
@@ -120,7 +121,8 @@ export function useTracesExplorer() {
     urlSetters.mode?.(value);
   };
 
-  const [page, setPage] = useState(1);
+  const cursorState = useCursorPagination();
+  const { cursor, goNext, goPrev, reset: resetCursor, hasPrev } = cursorState;
   const [pageSize, setPageSize] = useState(20);
 
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
@@ -135,11 +137,14 @@ export function useTracesExplorer() {
     [filters, errorsOnly, selectedService]
   );
 
+  useEffect(() => {
+    resetCursor();
+  }, [explorerQuery, startTime, endTime, pageSize, selectedTeamId, resetCursor]);
+
   /** Params for live tail socket (legacy shape). */
   const backendParams = useMemo((): TracesBackendParams & { mode?: string } => {
     const params: TracesBackendParams & { mode?: string } = {
       limit: pageSize,
-      offset: (page - 1) * pageSize,
       mode,
       ...compileStructuredFilters(filters),
     };
@@ -152,7 +157,7 @@ export function useTracesExplorer() {
     }
 
     return params;
-  }, [errorsOnly, filters, mode, page, pageSize, selectedService]);
+  }, [errorsOnly, filters, mode, pageSize, selectedService]);
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: [
@@ -161,7 +166,7 @@ export function useTracesExplorer() {
       selectedTeamId,
       startTime,
       endTime,
-      page,
+      cursor,
       pageSize,
       explorerQuery,
       refreshKey,
@@ -171,9 +176,9 @@ export function useTracesExplorer() {
         startTime,
         endTime,
         limit: pageSize,
-        offset: (page - 1) * pageSize,
         step: "5m",
         query: explorerQuery,
+        cursor: cursor || undefined,
       }),
     enabled: Boolean(selectedTeamId),
     placeholderData: keepPreviousData,
@@ -182,9 +187,9 @@ export function useTracesExplorer() {
   });
 
   const traces = useMemo(() => data?.results ?? [], [data?.results]);
-  const totalTraces = Number(data?.pageInfo?.total ?? data?.summary?.total_traces ?? 0);
   const summary = data?.summary ?? EMPTY_TRACE_SUMMARY;
 
+  const totalTraces = Number(summary.total_traces ?? 0);
   const errorTraces = Number(summary.error_traces ?? 0);
   const errorRate = totalTraces > 0 ? (errorTraces * 100) / totalTraces : 0;
   const p50 = Number(summary.p50_duration ?? 0);
@@ -202,15 +207,19 @@ export function useTracesExplorer() {
 
   const clearAll = useCallback((): void => {
     clearURLFilters();
-    setPage(1);
-  }, [clearURLFilters]);
+    resetCursor();
+  }, [clearURLFilters, resetCursor]);
+
+  const onNext = useCallback(
+    () => goNext(data?.pageInfo?.nextCursor ?? ""),
+    [goNext, data?.pageInfo?.nextCursor]
+  );
 
   return {
     isPending,
     isError,
     error,
     traces,
-    total: totalTraces,
     totalTraces,
     summary,
     errorTraces,
@@ -224,8 +233,11 @@ export function useTracesExplorer() {
     selectedService,
     errorsOnly,
     mode,
-    page,
     pageSize,
+    hasMore: Boolean(data?.pageInfo?.hasMore),
+    hasPrev,
+    onNext,
+    onPrev: goPrev,
     filters,
     startTime,
     endTime,
@@ -234,8 +246,11 @@ export function useTracesExplorer() {
     setSelectedService,
     setErrorsOnly,
     setMode,
-    setPage,
-    setPageSize,
+    setPageSize: (size: number) => {
+      setPageSize(size);
+      resetCursor();
+    },
+    resetCursor,
     setFilters,
     clearAll,
   };

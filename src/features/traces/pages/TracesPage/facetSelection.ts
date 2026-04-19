@@ -7,7 +7,7 @@ export type TracesFacetSelectionContext = {
   setFilters: (next: StructuredFilter[]) => void;
   setSelectedService: (value: string | null) => void;
   setErrorsOnly: (value: boolean) => void;
-  setPage: (page: number) => void;
+  resetPage: () => void;
 };
 
 export function handleTracesFacetSelect(
@@ -17,14 +17,14 @@ export function handleTracesFacetSelect(
 ): void {
   if (groupKey === "service_name") {
     ctx.setSelectedService(value);
-    ctx.setPage(1);
+    ctx.resetPage();
     return;
   }
   if (groupKey === "status") {
     ctx.setErrorsOnly(value === "ERROR");
-    ctx.setPage(1);
+    ctx.resetPage();
     return;
   }
   ctx.setFilters(upsertFacetFilter(ctx.filters, groupKey, value));
-  ctx.setPage(1);
+  ctx.resetPage();
 }

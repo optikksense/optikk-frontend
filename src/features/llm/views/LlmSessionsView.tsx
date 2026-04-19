@@ -22,15 +22,17 @@ export default function LlmSessionsView() {
     isPending: isLoading,
     isError,
     sessions,
-    total,
     errorsOnly,
-    page,
     pageSize,
+    hasMore,
+    hasPrev,
+    onNext,
+    onPrev,
     filters,
     setFilters,
     setErrorsOnly,
-    setPage,
     setPageSize,
+    resetCursor,
     clearAll,
   } = useLlmSessions();
 
@@ -142,7 +144,7 @@ export default function LlmSessionsView() {
             filters={filters}
             setFilters={(nextFilters: StructuredFilter[]) => {
               setFilters(nextFilters);
-              setPage(1);
+              resetCursor();
             }}
             onClearAll={clearAll}
             placeholder="Filter sessions: provider:openai AND model:gpt-4o"
@@ -162,7 +164,7 @@ export default function LlmSessionsView() {
                   checked={errorsOnly}
                   onChange={(event) => {
                     setErrorsOnly(event.target.checked);
-                    setPage(1);
+                    resetCursor();
                   }}
                 />
               </div>
@@ -179,19 +181,18 @@ export default function LlmSessionsView() {
 
       <ExplorerResultsTable
         title="Sessions in range"
-        subtitle={`${formatNumber(rows.length)} rows, ${formatNumber(total)} total sessions`}
+        subtitle={`${formatNumber(rows.length)} rows${hasMore ? " — more available" : ""}`}
         rows={rows}
         columns={columns}
         rowKey={(row) => row.session_id}
         isLoading={isLoading}
-        page={page}
-        pageSize={pageSize}
-        showPagination
-        total={total}
-        onPageChange={setPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setPage(1);
+        pagination={{
+          hasMore,
+          hasPrev,
+          onNext,
+          onPrev,
+          pageSize,
+          onPageSizeChange: setPageSize,
         }}
       />
     </div>

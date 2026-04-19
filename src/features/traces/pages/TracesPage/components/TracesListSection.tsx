@@ -22,10 +22,11 @@ type Props = {
   columns: SimpleTableColumn<TraceRecord>[];
   isLoading: boolean;
   isLiveTail: boolean;
-  page: number;
   pageSize: number;
-  totalTraces: number;
-  onPageChange: (p: number) => void;
+  hasMore: boolean;
+  hasPrev: boolean;
+  onNext: () => void;
+  onPrev: () => void;
   onPageSizeChange: (size: number) => void;
   selectedTrace: TraceRecord | null;
   onSelectTrace: (row: TraceRecord) => void;
@@ -41,10 +42,11 @@ function TracesListSectionComponent({
   columns,
   isLoading,
   isLiveTail,
-  page,
   pageSize,
-  totalTraces,
-  onPageChange,
+  hasMore,
+  hasPrev,
+  onNext,
+  onPrev,
   onPageSizeChange,
   selectedTrace,
   onSelectTrace,
@@ -71,17 +73,23 @@ function TracesListSectionComponent({
 
       <ExplorerResultsTable
         title="Trace Explorer"
-        subtitle={`${formatNumber(renderedTraces.length)} rows in view, ${formatNumber(totalTraces)} total traces`}
+        subtitle={`${formatNumber(renderedTraces.length)} rows in view${hasMore ? " — more available" : ""}`}
         rows={renderedTraces}
         columns={columns}
         rowKey={(row) => row.trace_id}
         isLoading={isLoading}
-        page={page}
-        pageSize={pageSize}
-        showPagination={!isLiveTail}
-        total={isLiveTail ? renderedTraces.length : totalTraces}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
+        pagination={
+          isLiveTail
+            ? undefined
+            : {
+                hasMore,
+                hasPrev,
+                onNext,
+                onPrev,
+                pageSize,
+                onPageSizeChange,
+              }
+        }
         onRow={handleRow}
         rowClassName={(row) =>
           cn(

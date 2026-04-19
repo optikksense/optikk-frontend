@@ -35,22 +35,24 @@ export default function TracesPage() {
     isError,
     error,
     traces,
-    totalTraces,
     errorTraces,
     facets,
     explorerQuery,
     selectedService,
     errorsOnly,
     mode,
-    page,
     pageSize,
+    hasMore,
+    hasPrev,
+    onNext,
+    onPrev,
     filters,
     backendParams,
     setSelectedService,
     setErrorsOnly,
     setMode,
-    setPage,
     setPageSize,
+    resetCursor,
     setFilters,
     clearAll,
   } = useTracesExplorer();
@@ -139,9 +141,9 @@ export default function TracesPage() {
       setFilters,
       setSelectedService,
       setErrorsOnly,
-      setPage,
+      resetPage: resetCursor,
     }),
-    [filters, setFilters, setSelectedService, setErrorsOnly, setPage]
+    [filters, setFilters, setSelectedService, setErrorsOnly, resetCursor]
   );
 
   const onFacetSelect = useCallback(
@@ -180,7 +182,7 @@ export default function TracesPage() {
         filters={filters}
         setFilters={setFilters}
         clearAll={clearAll}
-        setPage={setPage}
+        resetPage={resetCursor}
         errorsOnly={errorsOnly}
         setErrorsOnly={setErrorsOnly}
         explorerMode={explorerMode}
@@ -212,14 +214,12 @@ export default function TracesPage() {
             columns={columns}
             isLoading={isLoading}
             isLiveTail={isLiveTail}
-            page={page}
             pageSize={pageSize}
-            totalTraces={totalTraces}
-            onPageChange={setPage}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setPage(1);
-            }}
+            hasMore={hasMore}
+            hasPrev={hasPrev}
+            onNext={onNext}
+            onPrev={onPrev}
+            onPageSizeChange={setPageSize}
             selectedTrace={selectedTrace}
             onSelectTrace={onSelectTrace}
           />

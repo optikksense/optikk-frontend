@@ -178,12 +178,6 @@ export default function LlmDatasetsView() {
         columns={columns}
         rowKey={(row) => String(row.id)}
         isLoading={datasetsQuery.isLoading}
-        page={1}
-        pageSize={Math.max(rows.length, 1)}
-        total={rows.length}
-        onPageChange={() => {}}
-        onPageSizeChange={() => {}}
-        showPagination={false}
       />
 
       {rows.length === 0 && !datasetsQuery.isLoading ? (

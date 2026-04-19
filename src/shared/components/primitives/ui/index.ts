@@ -60,6 +60,7 @@ export {
 export { IconButton, type IconButtonProps } from "./icon-button";
 export { Input, type InputProps } from "./input";
 export { Pagination, type PaginationProps } from "./pagination";
+export { CursorPagination, type CursorPaginationProps } from "./cursor-pagination";
 export { Popover, PopoverContent, PopoverTrigger, type PopoverProps } from "./popover";
 export { ScrollArea, ScrollBar, type ScrollAreaProps } from "./scroll-area";
 export { Select, type SelectOption, type SelectProps } from "./select";
