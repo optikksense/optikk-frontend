@@ -1,7 +1,3 @@
-import { Skeleton } from "@/components/ui";
-import { Suspense } from "react";
-
-import { APP_COLORS } from "@config/colorLiterals";
 import { BUILT_IN_DASHBOARD_PANELS } from "@shared/components/ui/dashboard/builtInDashboardPanels";
 import { DashboardPanelRegistryProvider } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
 import { useAuthValidation } from "@shared/hooks/useAuthValidation";
@@ -13,34 +9,15 @@ import AuthExpiryListener from "./providers/AuthExpiryListener";
 import { getDashboardPanelRegistrations } from "./registry/domainRegistry";
 import { router } from "./routes/router";
 
-function PageLoader(): JSX.Element {
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 24,
-      }}
-    >
-      <div style={{ width: "min(720px, 92vw)" }}>
-        <Skeleton active paragraph={{ rows: 6 }} />
-      </div>
-    </div>
-  );
-}
-
 /**
  * Inner component rendered inside BrowserRouter so that useNavigate works.
- * Probes the backend session once on mount; shows a loader while in-flight.
+ * Kicks off a background re-validation of the persisted session (see
+ * useAuthValidation) but does NOT gate the initial render on it — protected
+ * API calls independently validate the cookie, so rendering the shell
+ * optimistically is safe and shaves a 200-400ms RTT off every page load.
  */
 export function AppContent(): JSX.Element {
-  const authState = useAuthValidation();
-
-  if (authState === "pending") {
-    return <PageLoader />;
-  }
+  useAuthValidation();
 
   return (
     <>
