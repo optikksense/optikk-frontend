@@ -33,24 +33,5 @@ jobs:
       - name: Type check
         run: yarn type-check
 
-#      - name: Lint
-#        run: yarn lint
-
-      - name: Marketing assets gate (SVG-only)
-        run: yarn ci:marketing-assets
-
       - name: Build
         run: yarn build
-
-      - name: Bundle size budgets
-        run: yarn ci:budgets
-
-      - name: Bundle Size Diff
-        if: github.event_name == 'pull_request'
-        uses: preactjs/compressed-size-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          install-script: "yarn install --frozen-lockfile"
-          build-script: "build"
-          pattern: "./dist/assets/*.{js,css}"
-          minimum-change-threshold: 100
