@@ -2,6 +2,7 @@ import { Suspense, lazy, useMemo } from "react";
 
 import { Skeleton, Surface } from "@/components/ui";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
+import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
@@ -23,15 +24,20 @@ function chartFallback() {
 }
 
 export default function ApmTab() {
-  const rpcRateQ = useTimeRangeQuery("overview-apm-rpc-rr", (_t, s, e) =>
-    overviewHubApi.getApmRpcRequestRate(s, e)
+  const opts = { staleTime: OVERVIEW_QUERY_STALE_MS };
+  const rpcRateQ = useTimeRangeQuery(
+    "overview-apm-rpc-rr",
+    (_t, s, e) => overviewHubApi.getApmRpcRequestRate(s, e),
+    opts
   );
-  const rpcDurQ = useTimeRangeQuery("overview-apm-rpc-dur", (_t, s, e) =>
-    overviewHubApi.getApmRpcDuration(s, e)
+  const rpcDurQ = useTimeRangeQuery(
+    "overview-apm-rpc-dur",
+    (_t, s, e) => overviewHubApi.getApmRpcDuration(s, e),
+    opts
   );
-  const cpuQ = useTimeRangeQuery("overview-apm-cpu", (_t, s, e) => overviewHubApi.getApmProcessCpu(s, e));
-  const memQ = useTimeRangeQuery("overview-apm-mem", (_t, s, e) => overviewHubApi.getApmProcessMemory(s, e));
-  const fdsQ = useTimeRangeQuery("overview-apm-fds", (_t, s, e) => overviewHubApi.getApmOpenFds(s, e));
+  const cpuQ = useTimeRangeQuery("overview-apm-cpu", (_t, s, e) => overviewHubApi.getApmProcessCpu(s, e), opts);
+  const memQ = useTimeRangeQuery("overview-apm-mem", (_t, s, e) => overviewHubApi.getApmProcessMemory(s, e), opts);
+  const fdsQ = useTimeRangeQuery("overview-apm-fds", (_t, s, e) => overviewHubApi.getApmOpenFds(s, e), opts);
 
   const rpcRows = useMemo(() => mapApmTimeBucketRows(rpcRateQ.data ?? []), [rpcRateQ.data]);
   const rpcFlat = useMemo(() => {

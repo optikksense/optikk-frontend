@@ -3,6 +3,7 @@ import { Suspense, lazy, useMemo } from "react";
 import { Skeleton, Surface } from "@/components/ui";
 import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
+import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import { SloIndicatorsRenderer } from "@/features/overview/dashboard/renderers/SloIndicatorsRenderer";
 import type { DashboardPanelSpec } from "@/types/dashboardConfig";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
@@ -35,9 +36,22 @@ function chartFallback() {
 }
 
 export default function SloTab() {
-  const servicesQ = useTimeRangeQuery("overview-slo-svc", metricsOverviewApi.getOverviewServiceMetrics);
-  const burnRateQ = useTimeRangeQuery("overview-slo-br", (_t, s, e) => overviewHubApi.getSloBurnRate(s, e));
-  const burnDownQ = useTimeRangeQuery("overview-slo-bd", (_t, s, e) => overviewHubApi.getSloBurnDown(s, e));
+  // Reuse Summary's cache key so Summary → SLO gets a hit instead of refetching the same endpoint.
+  const servicesQ = useTimeRangeQuery(
+    "overview-hub-services",
+    metricsOverviewApi.getOverviewServiceMetrics,
+    { staleTime: OVERVIEW_QUERY_STALE_MS }
+  );
+  const burnRateQ = useTimeRangeQuery(
+    "overview-slo-br",
+    (_t, s, e) => overviewHubApi.getSloBurnRate(s, e),
+    { staleTime: OVERVIEW_QUERY_STALE_MS }
+  );
+  const burnDownQ = useTimeRangeQuery(
+    "overview-slo-bd",
+    (_t, s, e) => overviewHubApi.getSloBurnDown(s, e),
+    { staleTime: OVERVIEW_QUERY_STALE_MS }
+  );
 
   const sloSources = useMemo(() => {
     const rows = (servicesQ.data ?? []).map((s) => ({

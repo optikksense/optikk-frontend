@@ -7,9 +7,11 @@ import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
 import type { ServiceMetricPoint } from "@/features/metrics/types";
 import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
+import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
 import StatCard from "@shared/components/ui/cards/StatCard";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
+import { useInView } from "@shared/hooks/useInView";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber, formatPercentage } from "@shared/utils/formatters";
 
@@ -42,18 +44,23 @@ export default function SummaryTab() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const summaryQ = useTimeRangeQuery("overview-hub-summary", (_team, start, end) =>
-    overviewHubApi.getOverviewSummary(start, end)
+  // Batch the above-the-fold data (KPI summary + per-service metrics) into one
+  // request. Server fans out via errgroup; response time = max(child) not sum.
+  const batchQ = useTimeRangeQuery(
+    "overview-hub-batch",
+    (_team, start, end) => overviewHubApi.getBatchSummary(start, end),
+    { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
-  const servicesQ = useTimeRangeQuery<ServiceMetricPoint[]>(
-    "overview-hub-services",
-    metricsOverviewApi.getOverviewServiceMetrics
-  );
-  const rrQ = useTimeRangeQuery("overview-hub-rr", metricsOverviewApi.getOverviewRequestRate);
-  const erQ = useTimeRangeQuery("overview-hub-er", metricsOverviewApi.getOverviewErrorRate);
-  const p95Q = useTimeRangeQuery("overview-hub-p95", metricsOverviewApi.getOverviewP95Latency);
 
-  const summary = summaryQ.data;
+  // Defer the three chart timeseries until the chart section scrolls into view.
+  // Saves 3 requests + bundle-parse cost from the critical path; KPI cards paint first.
+  const { ref: chartsRef, inView: chartsInView } = useInView<HTMLDivElement>();
+  const chartOpts = { staleTime: OVERVIEW_QUERY_STALE_MS, enabled: chartsInView };
+  const rrQ = useTimeRangeQuery("overview-hub-rr", metricsOverviewApi.getOverviewRequestRate, chartOpts);
+  const erQ = useTimeRangeQuery("overview-hub-er", metricsOverviewApi.getOverviewErrorRate, chartOpts);
+  const p95Q = useTimeRangeQuery("overview-hub-p95", metricsOverviewApi.getOverviewP95Latency, chartOpts);
+
+  const summary = batchQ.data?.summary;
   const totalReq = num(summary?.total_requests);
   const errCount = num(summary?.error_count);
   const errPct = totalReq > 0 ? (errCount / totalReq) * 100 : 0;
@@ -69,7 +76,7 @@ export default function SummaryTab() {
   const [sortKey, setSortKey] = useState<SortKey>("request_count");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
-  const serviceList = servicesQ.data ?? [];
+  const serviceList = batchQ.data?.services ?? [];
 
   const sortedServices = useMemo(() => {
     const rows = serviceList;
@@ -114,7 +121,7 @@ export default function SummaryTab() {
     }
   };
 
-  const loadingKpi = summaryQ.isPending && !summaryQ.data;
+  const loadingKpi = batchQ.isPending && !batchQ.data;
 
   return (
     <div className="page-section">
@@ -177,7 +184,7 @@ export default function SummaryTab() {
       </HubSection>
 
       <HubSection title="Traffic & latency" description="Per-service series (top lists follow chart conventions).">
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        <div ref={chartsRef} className="grid grid-cols-1 gap-3 lg:grid-cols-3">
           <HubChartCard title="Request rate">
             <Suspense fallback={chartFallback()}>
               {rrRows.length === 0 && !rrQ.isPending ? (
@@ -242,7 +249,7 @@ export default function SummaryTab() {
         description="Sortable inventory with traffic, error share, and tail latency—click a row to open the service drawer from the shell."
       >
         <Surface elevation={1} padding="sm" className="overflow-x-auto">
-          {servicesQ.isPending && serviceList.length === 0 ? (
+          {batchQ.isPending && serviceList.length === 0 ? (
             <Skeleton active paragraph={{ rows: 6 }} />
           ) : sortedServices.length === 0 ? (
             <div className="py-10 text-center text-[13px] text-[var(--text-muted)]">No service metrics in range</div>

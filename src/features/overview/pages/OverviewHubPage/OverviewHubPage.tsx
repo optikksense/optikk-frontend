@@ -21,12 +21,29 @@ import {
 import { ROUTES } from "@/shared/constants/routes";
 import { useTimeRange } from "@app/store/appStore";
 
+// Module chunks are shared across the lazy() consumer and prefetchTab() — the
+// bundler dedupes, so invoking the factory on hover warms the same chunk that
+// React.lazy will resolve on click.
 const SummaryTab = lazy(() => import("./tabs/SummaryTab"));
 const LatencyRedTab = lazy(() => import("./tabs/LatencyRedTab"));
 const ApmTab = lazy(() => import("./tabs/ApmTab"));
 const ErrorsTab = lazy(() => import("./tabs/ErrorsTab"));
 const HttpTab = lazy(() => import("./tabs/HttpTab"));
 const SloTab = lazy(() => import("./tabs/SloTab"));
+
+const TAB_LOADERS: Record<OverviewHubTabId, () => Promise<unknown>> = {
+  [OVERVIEW_HUB_TAB.summary]: () => import("./tabs/SummaryTab"),
+  [OVERVIEW_HUB_TAB.latencyAnalysis]: () => import("./tabs/LatencyRedTab"),
+  [OVERVIEW_HUB_TAB.apm]: () => import("./tabs/ApmTab"),
+  [OVERVIEW_HUB_TAB.errors]: () => import("./tabs/ErrorsTab"),
+  [OVERVIEW_HUB_TAB.http]: () => import("./tabs/HttpTab"),
+  [OVERVIEW_HUB_TAB.slo]: () => import("./tabs/SloTab"),
+};
+
+/** Fire-and-forget chunk warm-up; errors are swallowed since this is a hint. */
+function prefetchTab(tabId: OverviewHubTabId): void {
+  TAB_LOADERS[tabId]?.().catch(() => {});
+}
 
 const TAB_ITEMS: { id: OverviewHubTabId; label: string }[] = [
   { id: OVERVIEW_HUB_TAB.summary, label: "Summary" },
@@ -130,6 +147,8 @@ export default function OverviewHubPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setTab(tab.id)}
+                onMouseEnter={() => prefetchTab(tab.id)}
+                onFocus={() => prefetchTab(tab.id)}
                 className={`rounded-[calc(var(--card-radius)+1px)] px-4 py-2 font-medium text-[12px] transition-colors ${
                   active
                     ? "bg-[var(--color-primary)] text-white shadow-[var(--shadow-sm)]"

@@ -2,6 +2,7 @@ import { Suspense, lazy, useMemo } from "react";
 
 import { Skeleton, Surface } from "@/components/ui";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
+import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import LatencyHistogram from "@shared/components/ui/charts/distributions/LatencyHistogram";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
@@ -37,14 +38,17 @@ function chartFallback() {
 }
 
 export default function LatencyRedTab() {
-  const summaryQ = useTimeRangeQuery("overview-red-summary", (_t, s, e) => overviewHubApi.getRedSummary(s, e));
-  const p95Q = useTimeRangeQuery("overview-red-p95", (_t, s, e) => overviewHubApi.getRedP95Series(s, e));
-  const rrQ = useTimeRangeQuery("overview-red-rr", (_t, s, e) => overviewHubApi.getRedRequestRateSeries(s, e));
-  const erQ = useTimeRangeQuery("overview-red-er", (_t, s, e) => overviewHubApi.getRedErrorRateSeries(s, e));
-  const breakdownQ = useTimeRangeQuery("overview-red-breakdown", (_t, s, e) =>
-    overviewHubApi.getLatencyBreakdown(s, e)
+  const opts = { staleTime: OVERVIEW_QUERY_STALE_MS };
+  const summaryQ = useTimeRangeQuery("overview-red-summary", (_t, s, e) => overviewHubApi.getRedSummary(s, e), opts);
+  const p95Q = useTimeRangeQuery("overview-red-p95", (_t, s, e) => overviewHubApi.getRedP95Series(s, e), opts);
+  const rrQ = useTimeRangeQuery("overview-red-rr", (_t, s, e) => overviewHubApi.getRedRequestRateSeries(s, e), opts);
+  const erQ = useTimeRangeQuery("overview-red-er", (_t, s, e) => overviewHubApi.getRedErrorRateSeries(s, e), opts);
+  const breakdownQ = useTimeRangeQuery(
+    "overview-red-breakdown",
+    (_t, s, e) => overviewHubApi.getLatencyBreakdown(s, e),
+    opts
   );
-  const slowQ = useTimeRangeQuery("overview-red-slow", (_t, s, e) => overviewHubApi.getTopSlowOperations(s, e));
+  const slowQ = useTimeRangeQuery("overview-red-slow", (_t, s, e) => overviewHubApi.getTopSlowOperations(s, e), opts);
 
   const red = summaryQ.data;
 

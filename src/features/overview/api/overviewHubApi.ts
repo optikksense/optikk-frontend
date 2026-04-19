@@ -1,6 +1,7 @@
 import api from "@/shared/api/api/client";
 import type { RequestTime } from "@shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
+import type { ServiceMetricPoint } from "@/features/metrics/types";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -77,9 +78,22 @@ export type BurnRate = {
   budget_remaining_pct?: number;
 };
 
+export type OverviewBatchSummary = {
+  summary: OverviewGlobalSummary;
+  services: ServiceMetricPoint[];
+};
+
 export const overviewHubApi = {
   getOverviewSummary(startTime: RequestTime, endTime: RequestTime): Promise<OverviewGlobalSummary> {
     return getJson("/overview/summary", startTime, endTime);
+  },
+
+  /**
+   * Single-request alternative to the five Summary-tab queries. Backend fans out
+   * concurrently via errgroup; response time ≈ max(child) instead of sum.
+   */
+  getBatchSummary(startTime: RequestTime, endTime: RequestTime): Promise<OverviewBatchSummary> {
+    return getJson("/overview/batch-summary", startTime, endTime);
   },
 
   getRedSummary(startTime: RequestTime, endTime: RequestTime): Promise<RedSummary> {

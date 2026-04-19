@@ -2,6 +2,7 @@ import { Suspense, lazy, useMemo } from "react";
 
 import { Skeleton, Surface } from "@/components/ui";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
+import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
@@ -26,13 +27,22 @@ function chartFallback() {
 }
 
 export default function HttpTab() {
-  const rrQ = useTimeRangeQuery("overview-http-rr", (_t, s, e) => overviewHubApi.getHttpRequestRate(s, e));
-  const durQ = useTimeRangeQuery("overview-http-dur", (_t, s, e) => overviewHubApi.getHttpRequestDuration(s, e));
-  const distQ = useTimeRangeQuery("overview-http-dist", (_t, s, e) =>
-    overviewHubApi.getHttpStatusDistribution(s, e)
+  const opts = { staleTime: OVERVIEW_QUERY_STALE_MS };
+  const rrQ = useTimeRangeQuery("overview-http-rr", (_t, s, e) => overviewHubApi.getHttpRequestRate(s, e), opts);
+  const durQ = useTimeRangeQuery(
+    "overview-http-dur",
+    (_t, s, e) => overviewHubApi.getHttpRequestDuration(s, e),
+    opts
   );
-  const errQ = useTimeRangeQuery("overview-http-err", (_t, s, e) =>
-    overviewHubApi.getHttpErrorTimeseries(s, e)
+  const distQ = useTimeRangeQuery(
+    "overview-http-dist",
+    (_t, s, e) => overviewHubApi.getHttpStatusDistribution(s, e),
+    opts
+  );
+  const errQ = useTimeRangeQuery(
+    "overview-http-err",
+    (_t, s, e) => overviewHubApi.getHttpErrorTimeseries(s, e),
+    opts
   );
 
   const rrRows = useMemo(() => mapHttpStatusRateRows(rrQ.data ?? []), [rrQ.data]);

@@ -3,6 +3,7 @@ import { Suspense, lazy, useMemo } from "react";
 
 import { Skeleton, Surface } from "@/components/ui";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
+import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import type { DashboardDataSources, DashboardPanelSpec } from "@/types/dashboardConfig";
 import { ErrorHotspotRankingRenderer } from "@/features/overview/dashboard/renderers/ErrorHotspotRankingRenderer";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
@@ -53,15 +54,24 @@ export default function ErrorsTab() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const serQ = useTimeRangeQuery("overview-err-ser", (_t, s, e) =>
-    overviewHubApi.getErrorsServiceErrorRate(s, e)
+  const opts = { staleTime: OVERVIEW_QUERY_STALE_MS };
+  const serQ = useTimeRangeQuery(
+    "overview-err-ser",
+    (_t, s, e) => overviewHubApi.getErrorsServiceErrorRate(s, e),
+    opts
   );
-  const volQ = useTimeRangeQuery("overview-err-vol", (_t, s, e) => overviewHubApi.getErrorsVolume(s, e));
-  const exQ = useTimeRangeQuery("overview-err-ex", (_t, s, e) =>
-    overviewHubApi.getExceptionRateByType(s, e)
+  const volQ = useTimeRangeQuery("overview-err-vol", (_t, s, e) => overviewHubApi.getErrorsVolume(s, e), opts);
+  const exQ = useTimeRangeQuery(
+    "overview-err-ex",
+    (_t, s, e) => overviewHubApi.getExceptionRateByType(s, e),
+    opts
   );
-  const hotQ = useTimeRangeQuery("overview-err-hot", (_t, s, e) => overviewHubApi.getErrorHotspot(s, e));
-  const groupsQ = useTimeRangeQuery("overview-err-groups", (_t, s, e) => overviewHubApi.getErrorGroups(s, e));
+  const hotQ = useTimeRangeQuery("overview-err-hot", (_t, s, e) => overviewHubApi.getErrorHotspot(s, e), opts);
+  const groupsQ = useTimeRangeQuery(
+    "overview-err-groups",
+    (_t, s, e) => overviewHubApi.getErrorGroups(s, e),
+    opts
+  );
 
   const serRows = useMemo(() => mapErrorRateRows(serQ.data ?? []), [serQ.data]);
   const volRows = useMemo(() => mapRequestRateRows(volQ.data ?? []), [volQ.data]);
