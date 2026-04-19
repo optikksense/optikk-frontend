@@ -61,7 +61,7 @@ export default function DemoTimeseriesChart({
     let max = 0;
     for (const s of series) {
       for (const v of s.values) {
-        if (v > max) max = v;
+        if (v != null && v > max) max = v;
       }
     }
     return Math.max(1, Math.ceil(max * 1.2));
