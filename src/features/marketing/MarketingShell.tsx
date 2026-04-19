@@ -9,6 +9,7 @@ import {
   Hero,
   type MarketingSection,
   MetricsStrip,
+  ProductDemo,
   Split,
 } from "./sections"
 
@@ -38,6 +39,8 @@ function renderSection(section: MarketingSection, index: number) {
       return <CodeBlock key={key} {...section} />
     case "metrics-strip":
       return <MetricsStrip key={key} {...section} />
+    case "product-demo":
+      return <ProductDemo key={key} {...section} />
     default:
       return null
   }

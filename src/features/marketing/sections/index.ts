@@ -4,6 +4,7 @@ import type { FaqSection } from "./FAQ"
 import type { FeatureGridSection } from "./FeatureGrid"
 import type { HeroSection } from "./Hero"
 import type { MetricsStripSection } from "./MetricsStrip"
+import type { ProductDemoSection } from "./ProductDemo"
 import type { SplitSection } from "./Split"
 
 export { CTA } from "./CTA"
@@ -12,6 +13,7 @@ export { FAQ } from "./FAQ"
 export { FeatureGrid } from "./FeatureGrid"
 export { Hero } from "./Hero"
 export { MetricsStrip } from "./MetricsStrip"
+export { ProductDemo } from "./ProductDemo"
 export { Split } from "./Split"
 
 export type MarketingSection =
@@ -22,3 +24,4 @@ export type MarketingSection =
   | FaqSection
   | CodeBlockSection
   | MetricsStripSection
+  | ProductDemoSection

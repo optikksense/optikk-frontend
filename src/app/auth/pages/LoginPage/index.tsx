@@ -9,6 +9,11 @@ import { useAppStore, useTimeRange } from "@store/appStore";
 import { useAuthError, useAuthIsLoading, useAuthStore, useIsAuthenticated } from "@store/authStore";
 
 import { APP_COLORS } from "@config/colorLiterals";
+import {
+  DemoKpiStrip,
+  DemoServicesGrid,
+  DemoTimeseriesChart,
+} from "@shared/demo";
 
 import "./LoginPage.css";
 
@@ -79,27 +84,18 @@ export default function LoginPage() {
             Monitor, analyze, and optimize your distributed systems with real-time insights.
           </p>
 
-          <div className="branding-features">
-            <div className="feature-item">
-              <div className="feature-icon">📊</div>
-              <div>
-                <div className="feature-title">Real-time Metrics</div>
-                <div className="feature-desc">Track performance and health</div>
-              </div>
+          <div className="login-preview">
+            <DemoKpiStrip variant="compact" />
+            <div className="login-preview-card">
+              <div className="login-preview-card-title">Requests per service</div>
+              <DemoTimeseriesChart variant="requests" height={140} legend={false} />
             </div>
-            <div className="feature-item">
-              <div className="feature-icon">🔍</div>
-              <div>
-                <div className="feature-title">Distributed Tracing</div>
-                <div className="feature-desc">Debug across microservices</div>
-              </div>
+            <div className="login-preview-card">
+              <div className="login-preview-card-title">Service health</div>
+              <DemoServicesGrid limit={3} columns={3} />
             </div>
-            <div className="feature-item">
-              <div className="feature-icon">📝</div>
-              <div>
-                <div className="feature-title">Centralized Logs</div>
-                <div className="feature-desc">Search and analyze logs</div>
-              </div>
+            <div className="login-preview-footnote">
+              Preview — frozen snapshot of the live product.
             </div>
           </div>
         </div>

@@ -336,6 +336,31 @@
   color: var(--text-muted);
 }
 
+/* Product demo */
+.marketing-product-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.marketing-product-demo-header {
+  max-width: 720px;
+}
+
+.marketing-product-demo-tabs {
+  border-bottom: none;
+}
+
+.marketing-product-demo-body {
+  min-height: 420px;
+}
+
+.marketing-product-demo-footnote {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
 /* CTA strip */
 .marketing-cta-card {
   border-radius: 18px;

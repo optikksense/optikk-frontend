@@ -45,6 +45,12 @@
           "secondaryCta": { "label": "See pricing", "path": "/pricing" }
         },
         {
+          "kind": "product-demo",
+          "eyebrow": "A peek inside",
+          "title": "The real UI, with a frozen snapshot.",
+          "body": "Every widget below ships in the product — same StatCards, same uPlot charts, same flamegraph. Toggle a tab to explore; numbers are static so the page stays fast."
+        },
+        {
           "kind": "metrics-strip",
           "items": [
             { "value": "60 fps", "label": "chart panning", "caption": "uPlot at 10k points/series" },

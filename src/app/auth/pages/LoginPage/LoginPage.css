@@ -40,40 +40,33 @@
   color: var(--literal-hex-fff);
 }
 
-.branding-features {
-  margin-top: 48px;
+.login-preview {
+  margin-top: 40px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 14px;
 }
 
-.feature-item {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.feature-icon {
-  font-size: 24px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.login-preview-card {
+  border: 1px solid var(--literal-hex-2d2d2d);
+  border-radius: 12px;
   background: var(--literal-rgba-94-96-206-0p1);
-  border-radius: 8px;
+  padding: 12px 14px;
 }
 
-.feature-title {
-  font-size: 16px;
+.login-preview-card-title {
+  font-size: 11px;
   font-weight: 600;
-  color: var(--literal-hex-fff);
-  margin-bottom: 4px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--literal-rgba-255-255-255-0p6);
+  margin-bottom: 10px;
 }
 
-.feature-desc {
-  font-size: 14px;
+.login-preview-footnote {
+  font-size: 11px;
   color: var(--literal-rgba-255-255-255-0p6);
+  letter-spacing: 0.02em;
 }
 
 .login-form-section {
