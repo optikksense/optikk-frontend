@@ -4,29 +4,15 @@ import { lazy } from "react";
 import type { DomainConfig } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
 
-const LogsHubPage = lazy(() =>
-  import("./pages/LogsHubPage").then((module) => ({ default: module.default }))
-);
-const LogHistogramRenderer = lazy(() =>
-  import("./dashboard/renderers/LogHistogramRenderer").then((module) => ({
-    default: module.LogHistogramRenderer,
-  }))
-);
+const LogsExplorerPage = lazy(() => import("./pages/LogsExplorerPage"));
 
 export const logsConfig: DomainConfig = {
   key: "logs",
   label: "Logs",
   permissions: ["logs:read"],
   navigation: [
-    {
-      path: ROUTES.logs,
-      label: "Logs",
-      icon: FileText,
-      group: "observe",
-    },
+    { path: ROUTES.logs, label: "Logs", icon: FileText, group: "observe" },
   ],
-  routes: [{ path: ROUTES.logs, page: LogsHubPage }],
-  dashboardPanels: [
-    { panelType: "log-histogram", kind: "specialized", component: LogHistogramRenderer },
-  ],
+  routes: [{ path: ROUTES.logs, page: LogsExplorerPage }],
+  dashboardPanels: [],
 };

@@ -1,33 +1,31 @@
-import { logsService } from "@shared/api/logsService";
-import type { LogRecord } from "@shared/api/schemas/logsSchemas";
+import { queryLogs } from "@features/log/api/logsExplorerApi";
+import type { LogRecord } from "@features/log/types/log";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-interface LogsResponse {
-  readonly logs: LogRecord[];
-  readonly total: number;
-  readonly cursor?: string;
-}
-
-export function useCorrelatedErrorLogs(serviceName: string, limit = 20): {
+export function useCorrelatedErrorLogs(
+  serviceName: string,
+  limit = 20,
+): {
   logs: readonly LogRecord[];
   loading: boolean;
 } {
   const enabled = Boolean(serviceName);
-  const query = useTimeRangeQuery<LogsResponse>(
+  const query = useTimeRangeQuery<{ results: LogRecord[] }>(
     "service-page-correlated-error-logs",
-    (teamId, startTime, endTime) =>
-      logsService.getLogs(teamId, startTime, endTime, {
-        services: [serviceName],
-        severities: ["ERROR", "FATAL"],
+    (_teamId, startTime, endTime) =>
+      queryLogs({
+        startTime,
+        endTime,
+        filters: [
+          { field: "service_name", op: "eq", value: serviceName },
+          { field: "severity_bucket", op: "gte", value: 4 },
+        ],
         limit,
-        offset: 0,
+        include: [],
       }),
-    { extraKeys: [serviceName, limit], enabled }
+    { extraKeys: [serviceName, limit], enabled },
   );
 
-  const logs = query.data?.logs ?? [];
-  return {
-    logs,
-    loading: query.isLoading && logs.length === 0,
-  };
+  const logs = query.data?.results ?? [];
+  return { logs, loading: query.isLoading && logs.length === 0 };
 }

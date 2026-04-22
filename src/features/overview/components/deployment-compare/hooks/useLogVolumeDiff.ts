@@ -1,7 +1,6 @@
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
-import { logsService } from "@shared/api/logsService";
-import type { LogVolume } from "@shared/api/schemas/logsSchemas";
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
+import { queryLogs } from "@features/log/api/logsExplorerApi";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 export interface WindowVolume {
   readonly total: number;
@@ -16,18 +15,34 @@ export interface LogVolumeDiff {
   readonly loading: boolean;
 }
 
-function sumBuckets(volume: LogVolume | undefined | null): WindowVolume {
+interface TrendBucket {
+  total: number;
+  errors: number;
+  warnings: number;
+}
+
+function sumBuckets(buckets: TrendBucket[] | undefined): WindowVolume {
   const base: WindowVolume = { total: 0, errors: 0, fatals: 0, warnings: 0 };
-  if (!volume) return base;
-  return volume.buckets.reduce<WindowVolume>(
-    (acc, bucket) => ({
-      total: acc.total + bucket.total,
-      errors: acc.errors + bucket.errors,
-      fatals: acc.fatals + bucket.fatals,
-      warnings: acc.warnings + bucket.warnings,
+  if (!buckets) return base;
+  return buckets.reduce<WindowVolume>(
+    (acc, b) => ({
+      total: acc.total + b.total,
+      errors: acc.errors + b.errors,
+      fatals: acc.fatals,
+      warnings: acc.warnings + b.warnings,
     }),
-    base
+    base,
   );
+}
+
+function fetchTrend(serviceName: string, start: number, end: number) {
+  return queryLogs({
+    startTime: start,
+    endTime: end,
+    filters: [{ field: "service_name", op: "eq", value: serviceName }],
+    limit: 0,
+    include: ["trend"],
+  }).then((r) => r.trend ?? []);
 }
 
 export function useLogVolumeDiff(
@@ -35,25 +50,35 @@ export function useLogVolumeDiff(
   beforeStart: number | undefined,
   beforeEnd: number | undefined,
   afterStart: number,
-  afterEnd: number
+  afterEnd: number,
 ): LogVolumeDiff {
   const teamId = useTeamId();
   const refreshKey = useRefreshKey();
   const enabled = Boolean(teamId && serviceName && afterEnd > afterStart);
 
-  const afterQ = useStandardQuery<LogVolume>({
-    queryKey: ["deploy-compare-log-volume-after", teamId, refreshKey, serviceName, afterStart, afterEnd],
-    queryFn: () =>
-      logsService.getLogVolume(teamId, afterStart, afterEnd, undefined, { services: [serviceName] }),
+  const afterQ = useStandardQuery<TrendBucket[]>({
+    queryKey: [
+      "deploy-compare-log-volume-after",
+      teamId,
+      refreshKey,
+      serviceName,
+      afterStart,
+      afterEnd,
+    ],
+    queryFn: () => fetchTrend(serviceName, afterStart, afterEnd),
     enabled,
   });
 
-  const beforeQ = useStandardQuery<LogVolume>({
-    queryKey: ["deploy-compare-log-volume-before", teamId, refreshKey, serviceName, beforeStart, beforeEnd],
-    queryFn: () =>
-      logsService.getLogVolume(teamId, beforeStart ?? 0, beforeEnd ?? 0, undefined, {
-        services: [serviceName],
-      }),
+  const beforeQ = useStandardQuery<TrendBucket[]>({
+    queryKey: [
+      "deploy-compare-log-volume-before",
+      teamId,
+      refreshKey,
+      serviceName,
+      beforeStart,
+      beforeEnd,
+    ],
+    queryFn: () => fetchTrend(serviceName, beforeStart ?? 0, beforeEnd ?? 0),
     enabled: enabled && Boolean(beforeStart && beforeEnd),
   });
 

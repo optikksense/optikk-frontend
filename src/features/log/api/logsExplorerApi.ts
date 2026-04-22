@@ -1,114 +1,93 @@
 import { z } from "zod";
 
-import api from "@/shared/api/api/client";
-import { decodeApiResponse } from "@/shared/api/utils/validate";
-import { API_CONFIG } from "@config/apiConfig";
-import { type LogEntry, logEntrySchema } from "@entities/log/model";
+import { api } from "@shared/api/api/client";
+import { validateResponse } from "@shared/api/utils/validate";
 
-import { logsAggregateSchema } from "./logsApi";
-const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
+import type {
+  LogRecord,
+  LogsAnalyticsRequest,
+  LogsAnalyticsResponse,
+  LogsGetByIdResponse,
+  LogsQueryRequest,
+  LogsQueryResponse,
+} from "../types/log";
 
-const facetSchema = z
-  .object({
-    value: z.string(),
-    count: z.number(),
-  })
-  .strict();
+/**
+ * Thin client for the logs explorer endpoints. All responses are Zod-validated
+ * so contract drift surfaces as a console warning (see `validateResponse`),
+ * and the UI never silently renders a stale shape.
+ *
+ * Endpoints (backend: `internal/modules/logs/explorer/handler.go`):
+ *   POST /api/v1/logs/query
+ *   POST /api/v1/logs/analytics
+ *   GET  /api/v1/logs/:id
+ */
 
-const logsExplorerFacetsSchema = z
-  .object({
-    level: z.array(facetSchema).default([]),
-    service_name: z.array(facetSchema).default([]),
-    host: z.array(facetSchema).default([]),
-    pod: z.array(facetSchema).default([]),
-    container: z.array(facetSchema).default([]),
-    environment: z.array(facetSchema).default([]),
-    scope_name: z.array(facetSchema).default([]),
-  })
-  .strict();
+const warningSchema = z.object({ code: z.string(), message: z.string() });
 
-const logsExplorerCorrelationsSchema = z
-  .object({
-    serviceErrorRate: logsAggregateSchema.optional(),
-  })
-  .strict();
+const facetBucketSchema = z.object({ value: z.string(), count: z.number() });
 
-const logsExplorerSchema = z
-  .object({
-    results: z.array(logEntrySchema).default([]),
-    summary: z
-      .object({
-        total_logs: z.number().default(0),
-        error_logs: z.number().default(0),
-        warn_logs: z.number().default(0),
-        service_count: z.number().default(0),
-      })
-      .strict(),
-    facets: logsExplorerFacetsSchema,
-    trend: z
-      .object({
-        step: z.string().default("5m"),
-        buckets: z
-          .array(
-            z
-              .object({
-                time_bucket: z.string(),
-                total: z.number().default(0),
-                errors: z.number().default(0),
-                warnings: z.number().default(0),
-                infos: z.number().default(0),
-                debugs: z.number().default(0),
-                fatals: z.number().default(0),
-              })
-              .strict()
-          )
-          .default([]),
-      })
-      .strict(),
-    pageInfo: z
-      .object({
-        hasMore: z.boolean().default(false),
-        nextCursor: z.string().optional(),
-        limit: z.number().default(50),
-      })
-      .strict(),
-    correlations: logsExplorerCorrelationsSchema.optional(),
-  })
-  .strict();
+const trendBucketSchema = z.object({
+  time_bucket: z.string(),
+  total: z.number(),
+  errors: z.number(),
+  warnings: z.number(),
+});
 
-export type LogsExplorerResponse = z.infer<typeof logsExplorerSchema>;
+const summarySchema = z.object({ total: z.number(), errors: z.number() });
 
-function normalizeLog(raw: z.infer<typeof logEntrySchema>): LogEntry {
-  return {
-    ...raw,
-    level: raw.severity_text ?? raw.level ?? "",
-    message: raw.body ?? raw.message ?? "",
-    service: raw.service_name ?? raw.service ?? "",
-    service_name: raw.service_name ?? raw.service ?? "",
-    trace_id: raw.trace_id ?? "",
-    span_id: raw.span_id ?? "",
-  };
+const logRecordSchema = z.object({
+  id: z.string(),
+  timestamp: z.string(),
+  observed_timestamp: z.string().optional(),
+  service_name: z.string(),
+  severity_text: z.string().optional(),
+  severity_bucket: z.number(),
+  body: z.string(),
+  host: z.string().optional(),
+  pod: z.string().optional(),
+  container: z.string().optional(),
+  environment: z.string().optional(),
+  scope_name: z.string().optional(),
+  scope_version: z.string().optional(),
+  trace_id: z.string().optional(),
+  span_id: z.string().optional(),
+  attributes_string: z.record(z.string(), z.string()).optional(),
+  attributes_number: z.record(z.string(), z.number()).optional(),
+  attributes_bool: z.record(z.string(), z.boolean()).optional(),
+  resource: z.record(z.string(), z.unknown()).optional(),
+});
+
+const queryResponseSchema = z.object({
+  results: z.array(logRecordSchema),
+  cursor: z.string().optional(),
+  facets: z.record(z.string(), z.array(facetBucketSchema)).optional(),
+  trend: z.array(trendBucketSchema).optional(),
+  summary: summarySchema.optional(),
+  warnings: z.array(warningSchema).optional(),
+});
+
+const analyticsResponseSchema = z.object({
+  columns: z.array(z.object({ name: z.string(), type: z.enum(["string", "number", "time"]) })),
+  rows: z.array(z.array(z.union([z.string(), z.number()]))),
+  warnings: z.array(warningSchema).optional(),
+});
+
+const getByIdSchema = z.object({ log: logRecordSchema });
+
+export async function queryLogs(body: LogsQueryRequest): Promise<LogsQueryResponse> {
+  const raw = await api.post<unknown>("/v1/logs/query", body);
+  return validateResponse(queryResponseSchema, raw) as LogsQueryResponse;
 }
 
-export const logsExplorerApi = {
-  async query(body: {
-    startTime: number;
-    endTime: number;
-    limit: number;
-    step: string;
-    query: string;
-    cursor?: string;
-    direction?: string;
-  }): Promise<LogsExplorerResponse> {
-    const response = await api.post(`${BASE}/logs/query`, body);
-    const parsed = decodeApiResponse(logsExplorerSchema, response, {
-      context: "logs query",
-      expectedType: "object",
-      message: "Invalid logs query response",
-    });
-    return {
-      ...parsed,
-      results: parsed.results.map(normalizeLog),
-    };
-  },
-};
+export async function analyticsLogs(body: LogsAnalyticsRequest): Promise<LogsAnalyticsResponse> {
+  const raw = await api.post<unknown>("/v1/logs/analytics", body);
+  return validateResponse(analyticsResponseSchema, raw) as LogsAnalyticsResponse;
+}
+
+export async function getLogById(id: string): Promise<LogsGetByIdResponse> {
+  const raw = await api.get<unknown>(`/v1/logs/${encodeURIComponent(id)}`);
+  return validateResponse(getByIdSchema, raw) as LogsGetByIdResponse;
+}
+
+export type { LogRecord };
