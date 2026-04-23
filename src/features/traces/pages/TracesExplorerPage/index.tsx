@@ -11,6 +11,7 @@ import { TrendHistogramStrip } from "@/features/explorer/components/trend/TrendH
 import { useExplorerColumns } from "@/features/explorer/hooks/useExplorerColumns";
 import type { ExplorerFilter, ExplorerMode } from "@/features/explorer/types/filters";
 import { TRACE_TREND_SERIES, toTrendBuckets } from "@/features/explorer/utils/trend";
+import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 
 import { DEFAULT_TRACE_COLUMNS } from "../../config/columns";
 import { useTracesExplorer } from "../../hooks/useTracesExplorer";
@@ -60,6 +61,8 @@ export default function TracesExplorerPage() {
 
   const filterKey = useMemo(() => JSON.stringify(state.filters), [state.filters]);
 
+  const queryError = query.isError ? formatErrorForDisplay(query.error) : null;
+
   return (
     <div className="flex h-full flex-col bg-[var(--bg-primary)]">
       <ExplorerHeader
@@ -96,6 +99,10 @@ export default function TracesExplorerPage() {
               onRowClick={onRowClick}
               resetKey={filterKey}
               loading={query.isPending}
+              queryError={queryError}
+              onRetry={() => {
+                void query.refetch();
+              }}
               emptyTitle="No traces"
               emptyDescription="Adjust filters or broaden the time range."
             />

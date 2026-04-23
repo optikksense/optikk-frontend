@@ -1,24 +1,24 @@
-import { lazy, Suspense, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
 import { ExplorerHeader } from "@/features/explorer/components/chrome/ExplorerHeader";
-import { SummaryStrip, type SummaryKPI } from "@/features/explorer/components/chrome/SummaryStrip";
+import { type SummaryKPI, SummaryStrip } from "@/features/explorer/components/chrome/SummaryStrip";
 import { DetailDrawer } from "@/features/explorer/components/detail/DetailDrawer";
-import { FacetRail } from "@/features/explorer/components/facets/FacetRail";
 import type { FacetGroupModel } from "@/features/explorer/components/facets/FacetGroup";
+import { FacetRail } from "@/features/explorer/components/facets/FacetRail";
 import { ResultsArea } from "@/features/explorer/components/list/ResultsArea";
 import { TrendHistogramStrip } from "@/features/explorer/components/trend/TrendHistogramStrip";
 import { useExplorerColumns } from "@/features/explorer/hooks/useExplorerColumns";
 import type { ExplorerFilter, ExplorerMode } from "@/features/explorer/types/filters";
 import { LOG_TREND_SERIES, toTrendBuckets } from "@/features/explorer/utils/trend";
+import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 
+import LogDetailDrawer from "../../components/LogDetailDrawer";
 import { DEFAULT_LOG_COLUMNS } from "../../config/columns";
 import { useLogsExplorer } from "../../hooks/useLogsExplorer";
 import type { LogRecord } from "../../types/log";
-import { LOG_COLUMN_DEFS, getLogRowId } from "./logsColumns";
 import { LogsAnalyticsSection } from "./LogsAnalyticsSection";
-
-const LogDetailDrawerBody = lazy(() => import("../../components/LogDetailDrawer"));
+import { LOG_COLUMN_DEFS } from "./logsColumns";
 
 /**
  * Three-zone Datadog-classic layout for the logs explorer:
@@ -34,12 +34,12 @@ export default function LogsExplorerPage() {
 
   const results: readonly LogRecord[] = useMemo(
     () => query.data?.results ?? [],
-    [query.data?.results],
+    [query.data?.results]
   );
 
   const facetGroups = useMemo<FacetGroupModel[]>(
     () => facetsToGroups(query.data?.facets),
-    [query.data?.facets],
+    [query.data?.facets]
   );
 
   const kpis = useMemo<SummaryKPI[]>(() => buildKPIs(query.data?.summary), [query.data?.summary]);
@@ -49,25 +49,24 @@ export default function LogsExplorerPage() {
   const timeRange = useTimeRange();
   const onTimeRangeChange = useCallback(
     (fromMs: number, toMs: number) => setCustomTimeRange(fromMs, toMs, "Brush"),
-    [setCustomTimeRange],
+    [setCustomTimeRange]
   );
 
   const onInclude = useCallback(
     (field: string, value: string) =>
       state.setFilters([...state.filters, { field, op: "eq", value }]),
-    [state],
+    [state]
   );
   const onExclude = useCallback(
     (field: string, value: string) =>
       state.setFilters([...state.filters, { field, op: "neq", value }]),
-    [state],
+    [state]
   );
-  const onRowClick = useCallback(
-    (row: LogRecord) => state.setDetail(getLogRowId(row)),
-    [state],
-  );
+  const onRowClick = useCallback((row: LogRecord) => state.setDetail(row.id), [state]);
 
   const filterKey = useMemo(() => JSON.stringify(state.filters), [state.filters]);
+
+  const queryError = query.isError ? formatErrorForDisplay(query.error) : null;
 
   return (
     <div className="flex h-full flex-col bg-[var(--bg-primary)]">
@@ -101,11 +100,15 @@ export default function LogsExplorerPage() {
               columns={LOG_COLUMN_DEFS}
               config={columnConfig}
               onConfigChange={setColumns}
-              getRowId={getLogRowId}
+              getRowId={(row) => row.id}
               onRowClick={onRowClick}
               selectedId={state.detail}
               resetKey={filterKey}
               loading={query.isPending}
+              queryError={queryError}
+              onRetry={() => {
+                void query.refetch();
+              }}
               emptyTitle="No logs"
               emptyDescription="Adjust filters or broaden the time range."
             />
@@ -116,11 +119,10 @@ export default function LogsExplorerPage() {
         open={Boolean(state.detail)}
         onOpenChange={(o) => (o ? null : state.setDetail(null))}
         title="Log detail"
+        widthPx={720}
       >
         {state.detail ? (
-          <Suspense fallback={<div className="p-4 text-sm">Loading…</div>}>
-            <LogDetailDrawerBody logId={state.detail} onClose={() => state.setDetail(null)} />
-          </Suspense>
+          <LogDetailDrawer logId={state.detail} onClose={() => state.setDetail(null)} />
         ) : null}
       </DetailDrawer>
     </div>
@@ -128,7 +130,7 @@ export default function LogsExplorerPage() {
 }
 
 function facetsToGroups(
-  facets: Record<string, Array<{ value: string; count: number }>> | undefined,
+  facets: Record<string, Array<{ value: string; count: number }>> | undefined
 ): FacetGroupModel[] {
   if (!facets) return [];
   return Object.entries(facets).map(([field, buckets]) => ({
@@ -149,8 +151,16 @@ function buildKPIs(summary: { total: number; errors: number } | undefined): Summ
   const errorRate = summary.total > 0 ? (summary.errors / summary.total) * 100 : 0;
   return [
     { label: "Logs", value: formatCompact(summary.total) },
-    { label: "Errors", value: formatCompact(summary.errors), tone: summary.errors > 0 ? "error" : "default" },
-    { label: "Error rate", value: `${errorRate.toFixed(2)}%`, tone: errorRate > 5 ? "error" : "default" },
+    {
+      label: "Errors",
+      value: formatCompact(summary.errors),
+      tone: summary.errors > 0 ? "error" : "default",
+    },
+    {
+      label: "Error rate",
+      value: `${errorRate.toFixed(2)}%`,
+      tone: errorRate > 5 ? "error" : "default",
+    },
   ];
 }
 

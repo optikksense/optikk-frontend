@@ -1,4 +1,5 @@
-import { Columns3 } from "lucide-react";
+import { Button } from "@shared/components/primitives/ui";
+import { AlertCircle, Columns3 } from "lucide-react";
 import { memo } from "react";
 
 import type { ColumnConfig, ColumnDef } from "../../types/results";
@@ -20,6 +21,9 @@ interface Props<Row> {
   readonly loading?: boolean;
   readonly emptyTitle?: string;
   readonly emptyDescription?: string;
+  /** When set (e.g. React Query error), show an error panel instead of the generic empty state. */
+  readonly queryError?: string | null;
+  readonly onRetry?: () => void;
 }
 
 /**
@@ -41,6 +45,8 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
     loading,
     emptyTitle,
     emptyDescription,
+    queryError,
+    onRetry,
   } = props;
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -64,7 +70,22 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
           />
         }
       />
-      {loading && rows.length === 0 ? (
+      {queryError && !loading && rows.length === 0 ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4 py-8 text-center">
+          <AlertCircle className="text-[var(--color-error,#ef4444)]" size={28} />
+          <span className="font-medium text-[13px] text-[var(--color-error,#ef4444)]">
+            Could not load results
+          </span>
+          <span className="max-w-lg whitespace-pre-wrap break-words font-mono text-[11px] text-[var(--text-muted)]">
+            {queryError}
+          </span>
+          {onRetry ? (
+            <Button type="button" variant="secondary" onClick={onRetry}>
+              Retry
+            </Button>
+          ) : null}
+        </div>
+      ) : loading && rows.length === 0 ? (
         <ResultsLoadingRows />
       ) : rows.length === 0 ? (
         <ResultsEmptyState title={emptyTitle} description={emptyDescription} />
@@ -83,6 +104,4 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
   );
 }
 
-export const ResultsArea = memo(ResultsAreaImpl) as <Row>(
-  props: Props<Row>,
-) => JSX.Element;
+export const ResultsArea = memo(ResultsAreaImpl) as <Row>(props: Props<Row>) => JSX.Element;

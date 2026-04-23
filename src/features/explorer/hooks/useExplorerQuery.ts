@@ -23,6 +23,11 @@ interface UseExplorerQueryArgs<TResponse> {
  *   - `include` flag passthrough (facets/trend/summary)
  *
  * Callers (useLogsExplorer, useTracesExplorer) stay under 200 LOC.
+ *
+ * Explorer reads are scoped by the session tenant on the server; `teamId` is
+ * kept in the query key for cache separation when the workspace picker
+ * changes, but we do not gate `enabled` on it — a null primary team id should
+ * not block fetches (see auth + persist merge in appStore).
  */
 export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse>) {
   const teamId = useTeamId();
@@ -47,7 +52,7 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
       args.scope,
       "explorer",
       "query",
-      teamId,
+      teamId ?? "none",
       refreshKey,
       startTime,
       endTime,
@@ -57,7 +62,7 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
       args.include.join(","),
     ],
     queryFn: () => args.fetcher(body),
-    enabled: (args.enabled ?? true) && Boolean(teamId),
+    enabled: args.enabled ?? true,
   });
 
   return { ...query, startTime, endTime, teamId, refreshKey };

@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@/features/explorer/types/results";
 
-import { severityColor, severityStyle } from "../../utils/severity";
 import type { LogRecord } from "../../types/log";
+import { severityColor, severityStyle } from "../../utils/severity";
 
 /** Converts the typed LogRecord registry into ColumnDef cells. Keys match
  *  the `key` used in DEFAULT_LOG_COLUMNS and ALL_LOG_COLUMNS so toggling via
@@ -12,7 +12,9 @@ export const LOG_COLUMN_DEFS: readonly ColumnDef<LogRecord>[] = [
     label: "Time",
     width: 180,
     render: (row) => (
-      <span className="font-mono text-xs text-[var(--text-secondary)]">{formatTs(row.timestamp)}</span>
+      <span className="font-mono text-xs text-[var(--text-secondary)]">
+        {formatTs(row.timestamp)}
+      </span>
     ),
   },
   {
@@ -97,9 +99,4 @@ function formatTs(ts: string): string {
   } catch {
     return ts;
   }
-}
-
-/** getRowId stable across refetches — composite of timestamp+trace+span. */
-export function getLogRowId(row: LogRecord): string {
-  return `${row.timestamp}|${row.trace_id ?? ""}|${row.span_id ?? ""}`;
 }

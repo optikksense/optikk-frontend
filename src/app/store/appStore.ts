@@ -182,12 +182,18 @@ export const useAppStore = create<AppState>()(
           return current;
         }
 
+        const selectedTeamIds = snapshot.selectedTeamIds ?? current.selectedTeamIds;
+        let selectedTeamId = snapshot.selectedTeamId ?? current.selectedTeamId;
+        if (selectedTeamId == null && selectedTeamIds.length > 0) {
+          selectedTeamId = selectedTeamIds[0] ?? null;
+        }
+
         return {
           ...current,
           ...snapshot,
           timeRange: migrateTimeRange(snapshot.timeRange),
-          selectedTeamIds: snapshot.selectedTeamIds ?? current.selectedTeamIds,
-          selectedTeamId: snapshot.selectedTeamId ?? current.selectedTeamId,
+          selectedTeamIds,
+          selectedTeamId,
           viewPreferences: snapshot.viewPreferences ?? current.viewPreferences,
           recentPages: snapshot.recentPages ?? current.recentPages,
           recentTimeRanges: snapshot.recentTimeRanges ?? current.recentTimeRanges,

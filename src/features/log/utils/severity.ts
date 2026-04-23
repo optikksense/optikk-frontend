@@ -2,7 +2,7 @@
  * Severity bucket ↔ label ↔ color mapping.
  *
  * Buckets mirror the backend's `severity_bucket UInt8` column (0..5) per
- * the logs_v2 schema (`db/clickhouse/31_logs_v2.sql`). Keep the tuples
+ * the observability.logs schema (`db/clickhouse/02_logs.sql`). Keep the tuples
  * ordered so callers can iterate legends deterministically.
  */
 

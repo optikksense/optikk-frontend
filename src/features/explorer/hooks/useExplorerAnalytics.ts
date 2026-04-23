@@ -21,6 +21,9 @@ interface UseExplorerAnalyticsArgs {
 /**
  * Keyed per viz so switching Timeseries → TopN re-issues a fresh request.
  * URL sync of these args lives in page-level state, not here.
+ *
+ * Same as useExplorerQuery: tenant is enforced server-side; do not disable
+ * the query when `selectedTeamId` is null.
  */
 export function useExplorerAnalytics(args: UseExplorerAnalyticsArgs) {
   const teamId = useTeamId();
@@ -56,7 +59,7 @@ export function useExplorerAnalytics(args: UseExplorerAnalyticsArgs) {
       args.scope,
       "explorer",
       "analytics",
-      teamId,
+      teamId ?? "none",
       refreshKey,
       startTime,
       endTime,
@@ -68,6 +71,6 @@ export function useExplorerAnalytics(args: UseExplorerAnalyticsArgs) {
       args.limit,
     ],
     queryFn: () => args.fetcher(body),
-    enabled: (args.enabled ?? true) && Boolean(teamId),
+    enabled: args.enabled ?? true,
   });
 }

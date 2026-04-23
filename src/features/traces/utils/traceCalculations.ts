@@ -43,20 +43,44 @@ export const calculateTraceStats = (spans: TraceRecord[]): TraceStats => {
 
 /**
  * Normalize span data from raw API response.
+ *
+ * Supports the compact `SpanListItem` from GET /traces/:id/spans (`start_ns`,
+ * `kind`, `status_code`, `has_error`) and the legacy full span row shape.
  */
 export function normalizeSpan(span: any): TraceRecord {
+  const durationMs = Number(span.duration_ms ?? 0);
+  const startNsRaw = span.start_ns;
+  const startNs = typeof startNsRaw === "number" && Number.isFinite(startNsRaw) ? startNsRaw : null;
+
+  let start_time = span.start_time ?? "";
+  let end_time = span.end_time ?? "";
+  if (startNs != null && startNs > 0) {
+    const startMs = startNs / 1_000_000;
+    const endMs = startMs + durationMs;
+    start_time = new Date(startMs).toISOString();
+    end_time = new Date(endMs).toISOString();
+  }
+
+  const span_kind = span.span_kind ?? span.kind ?? "";
+  const statusFromWire =
+    span.has_error === true
+      ? "ERROR"
+      : typeof span.status_code === "string" && span.status_code.toUpperCase().includes("ERROR")
+        ? "ERROR"
+        : span.status_code || span.status;
+
   return {
     ...span,
     span_id: span.span_id,
     trace_id: span.trace_id,
-    service_name: span.service_name,
-    operation_name: span.operation_name,
+    service_name: span.service_name ?? "",
+    operation_name: span.operation_name ?? "",
     parent_span_id: span.parent_span_id,
-    span_kind: span.span_kind,
-    duration_ms: Number(span.duration_ms || 0),
-    start_time: span.start_time,
-    end_time: span.end_time,
-    status: span.status || (span.error ? "ERROR" : "OK"),
+    span_kind,
+    duration_ms: durationMs,
+    start_time,
+    end_time,
+    status: statusFromWire || "OK",
     status_message: span.status_message,
     http_method: span.http_method,
     http_url: span.http_url,

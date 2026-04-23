@@ -6,7 +6,7 @@ import { LogsBody } from "./logs/LogsBody";
 import { LogsHeader } from "./logs/LogsHeader";
 
 interface Props {
-  traceLogs: Array<Record<string, unknown> & { timestamp?: string | number; service_name?: string }>;
+  traceLogs: Array<{ readonly [key: string]: unknown; timestamp?: string | number; service_name?: string }>;
   traceLogsIsSpeculative: boolean;
   logsLoading: boolean;
 }

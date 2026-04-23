@@ -11,7 +11,7 @@ import type {
 /**
  * `LogRecord` is the canonical row returned by `POST /api/v1/logs/query`.
  * Backend source: `internal/modules/logs/explorer/models.go` (post-rewrite).
- * Attributes land as typed maps per the `logs_v2` schema; we keep them loose
+ * Attributes land as typed maps per the ClickHouse logs schema; we keep them loose
  * here so the UI can surface them without a hot-coupling ceremony.
  */
 export interface LogRecord {

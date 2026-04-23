@@ -1,4 +1,3 @@
-import type { LogRecord } from "@/features/log/types";
 import { tracesService } from "@shared/api/tracesService";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
@@ -44,13 +43,13 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     isError: logsIsError,
     error: logsError,
   } = useStandardQuery({
-    queryKey: ["trace-logs", selectedTeamId, resolvedTraceId],
+    queryKey: ["trace-logs", selectedTeamId, traceIdParam],
     queryFn: () => tracesService.getTraceLogs(selectedTeamId, resolvedTraceId),
-    enabled: !!selectedTeamId && !!resolvedTraceId,
+    enabled: !!selectedTeamId && !!traceIdParam,
   });
 
   const traceLogs = useMemo(
-    () => (logsData?.logs ?? []).map((log) => normalizeTraceLog(log) as LogRecord),
+    () => (logsData?.logs ?? []).map(normalizeTraceLog),
     [logsData]
   );
 

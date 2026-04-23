@@ -1,6 +1,7 @@
 import { UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 import type { ErrorCode } from "@/shared/constants/errorCodes";
 import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
+import { ZodError } from "zod";
 
 /**
  * Normalizes an unknown error value into a consistent ApiErrorShape.
@@ -35,4 +36,35 @@ export function toApiErrorShape(error: unknown): ApiErrorShape {
     code: "UNKNOWN_ERROR",
     message: "An unexpected error occurred",
   };
+}
+
+/**
+ * Human-readable error text for UI (drawers, banners). Handles Axios-normalized
+ * `ApiErrorShape` objects (plain objects, not `Error` instances), Zod issues,
+ * and standard `Error` subclasses.
+ */
+export function formatErrorForDisplay(error: unknown): string {
+  if (error instanceof ZodError) {
+    return error.issues
+      .map((i) => `${i.path.length > 0 ? i.path.join(".") : "root"}: ${i.message}`)
+      .join("\n");
+  }
+
+  const shape = toApiErrorShape(error);
+  const lines: string[] = [];
+  if (shape.status > 0) {
+    lines.push(`HTTP ${shape.status} (${shape.code})`);
+  }
+  lines.push(shape.message);
+  const generic =
+    shape.message === "An error occurred" || shape.message === "An unexpected error occurred";
+  if (generic && shape.data !== undefined) {
+    try {
+      const extra = JSON.stringify(shape.data, null, 2);
+      lines.push(extra.length > 2000 ? `${extra.slice(0, 2000)}…` : extra);
+    } catch {
+      /* ignore */
+    }
+  }
+  return lines.join("\n\n");
 }

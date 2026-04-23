@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { useExplorerQuery } from "@features/explorer/hooks/useExplorerQuery";
 import { useExplorerState } from "@features/explorer/hooks/useExplorerState";
 import type { ExplorerIncludeFlag } from "@features/explorer/types";
@@ -22,10 +24,16 @@ interface UseLogsExplorerArgs {
  *
  * Analytics + facets have their own hooks (keyed separately) so switching
  * between list / analytics tabs doesn't trash the list cache.
+ *
+ * Return shape matches `useTracesExplorer` (`{ state, query }`) so explorer
+ * pages can share the same consumption pattern.
  */
 export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const state = useExplorerState();
-  const include = args.include ?? (["trend", "summary"] as const);
+  const include = useMemo<readonly ExplorerIncludeFlag[]>(
+    () => args.include ?? (["trend", "summary"] as const),
+    [args.include],
+  );
 
   const query = useExplorerQuery<LogsQueryResponse>({
     scope: "logs",
@@ -37,10 +45,7 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
     fetcher: queryLogs,
   });
 
-  return {
-    ...state,
-    query,
-  };
+  return { state, query };
 }
 
 export type UseLogsExplorerReturn = ReturnType<typeof useLogsExplorer>;
