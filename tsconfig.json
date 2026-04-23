@@ -44,6 +44,7 @@
       "@components/*": ["src/shared/components/*"],
       "@/components/*": ["src/shared/components/primitives/*"],
       "@/components/ui/*": ["src/shared/components/primitives/ui/*"],
+      "@/features/explorer-core/*": ["src/features/explorer/*"],
       "@/hooks/*": ["src/shared/hooks/*"],
     }
   },

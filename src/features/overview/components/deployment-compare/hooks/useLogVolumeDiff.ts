@@ -16,12 +16,12 @@ export interface LogVolumeDiff {
 }
 
 interface TrendBucket {
-  total: number;
-  errors: number;
-  warnings: number;
+  readonly total: number;
+  readonly errors: number;
+  readonly warnings: number;
 }
 
-function sumBuckets(buckets: TrendBucket[] | undefined): WindowVolume {
+function sumBuckets(buckets: readonly TrendBucket[] | undefined): WindowVolume {
   const base: WindowVolume = { total: 0, errors: 0, fatals: 0, warnings: 0 };
   if (!buckets) return base;
   return buckets.reduce<WindowVolume>(
@@ -56,7 +56,7 @@ export function useLogVolumeDiff(
   const refreshKey = useRefreshKey();
   const enabled = Boolean(teamId && serviceName && afterEnd > afterStart);
 
-  const afterQ = useStandardQuery<TrendBucket[]>({
+  const afterQ = useStandardQuery<readonly TrendBucket[]>({
     queryKey: [
       "deploy-compare-log-volume-after",
       teamId,
@@ -69,7 +69,7 @@ export function useLogVolumeDiff(
     enabled,
   });
 
-  const beforeQ = useStandardQuery<TrendBucket[]>({
+  const beforeQ = useStandardQuery<readonly TrendBucket[]>({
     queryKey: [
       "deploy-compare-log-volume-before",
       teamId,

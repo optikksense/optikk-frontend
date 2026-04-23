@@ -130,13 +130,13 @@ export default function LogsExplorerPage() {
 }
 
 function facetsToGroups(
-  facets: Record<string, Array<{ value: string; count: number }>> | undefined
+  facets: Readonly<Record<string, readonly any[]>> | undefined,
 ): FacetGroupModel[] {
   if (!facets) return [];
   return Object.entries(facets).map(([field, buckets]) => ({
     field,
     label: humanLabel(field),
-    buckets,
+    buckets: buckets as any[],
   }));
 }
 

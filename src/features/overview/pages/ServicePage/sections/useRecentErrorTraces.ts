@@ -11,7 +11,7 @@ export function useRecentErrorTraces(serviceName: string, limit = 10): {
   const query = useTimeRangeQuery<TracesResponse>(
     "service-page-recent-error-traces",
     (teamId, startTime, endTime) =>
-      tracesApi.getTraces(teamId, startTime, endTime, {
+      tracesApi.getTraces(teamId, Number(startTime), Number(endTime), {
         services: [serviceName],
         status: "ERROR",
         limit,

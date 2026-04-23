@@ -10,15 +10,15 @@ export function useCorrelatedErrorLogs(
   loading: boolean;
 } {
   const enabled = Boolean(serviceName);
-  const query = useTimeRangeQuery<{ results: LogRecord[] }>(
+  const query = useTimeRangeQuery<LogsQueryResponse>(
     "service-page-correlated-error-logs",
     (_teamId, startTime, endTime) =>
       queryLogs({
-        startTime,
-        endTime,
+        startTime: Number(startTime),
+        endTime: Number(endTime),
         filters: [
           { field: "service_name", op: "eq", value: serviceName },
-          { field: "severity_bucket", op: "gte", value: 4 },
+          { field: "severity_bucket", op: "gte", value: "4" },
         ],
         limit,
         include: [],
