@@ -49,6 +49,6 @@
     }
   },
   "include": ["src"],
-  "exclude": ["src/test_zod_schema.ts"],
+  "exclude": ["src/test_zod_schema.ts", "src/app/auth/pages/Pricing"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

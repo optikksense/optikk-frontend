@@ -31,3 +31,11 @@ export function decodeFilters(raw: string | null | undefined): ExplorerFilter[] 
 export function parseMode(raw: string | null | undefined): ExplorerMode {
   return raw === "analytics" ? "analytics" : "list";
 }
+
+export function serializeStateSnapshot(value: unknown): string {
+  return encodeBase64(value);
+}
+
+export function deserializeStateSnapshot<T>(raw: string | null | undefined, fallback: T): T {
+  return decodeBase64(raw, fallback);
+}

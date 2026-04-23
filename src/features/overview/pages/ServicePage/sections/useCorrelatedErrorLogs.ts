@@ -1,5 +1,5 @@
 import { queryLogs } from "@features/log/api/logsExplorerApi";
-import type { LogRecord } from "@features/log/types/log";
+import type { LogRecord, LogsQueryResponse } from "@features/log/types/log";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 export function useCorrelatedErrorLogs(
