@@ -113,6 +113,29 @@ export const tracesService = {
     return validateResponse(z.array(spanKindDurationSchema), data);
   },
 
+  async getTraceBundle(traceId: string): Promise<{
+    spans: unknown[];
+    logs: unknown[];
+    critical_path: CriticalPathSpanRecord[];
+    error_path: ErrorPathSpanRecord[];
+    span_kind_breakdown: SpanKindDurationRecord[];
+  }> {
+    const data = await api.get<{
+      spans: unknown[];
+      logs: unknown[];
+      critical_path: unknown;
+      error_path: unknown;
+      span_kind_breakdown: unknown;
+    }>(`${BASE}/traces/${traceId}/bundle`);
+    return {
+      spans: Array.isArray(data?.spans) ? data.spans : [],
+      logs: Array.isArray(data?.logs) ? data.logs : [],
+      critical_path: validateResponse(z.array(criticalPathSpanSchema), data?.critical_path ?? []),
+      error_path: validateResponse(z.array(errorPathSpanSchema), data?.error_path ?? []),
+      span_kind_breakdown: validateResponse(z.array(spanKindDurationSchema), data?.span_kind_breakdown ?? []),
+    };
+  },
+
   async getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
     const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
     return validateResponse(z.array(criticalPathSpanSchema), data);

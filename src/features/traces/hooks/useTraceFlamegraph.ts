@@ -1,5 +1,5 @@
 import { tracesService } from "@shared/api/tracesService";
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 
 import { flamegraphFramesToTree } from "../utils/flamegraphFromFrames";
 
