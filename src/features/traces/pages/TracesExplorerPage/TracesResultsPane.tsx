@@ -1,5 +1,6 @@
 import type { ColumnConfig, ColumnDef } from "@/features/explorer/types/results";
 import { ResultsArea } from "@/features/explorer/components/list/ResultsArea";
+import { useCallback } from "react";
 import { TrendHistogramStrip } from "@/features/explorer/components/trend/TrendHistogramStrip";
 import type { TrendBucket } from "@/features/explorer/components/trend/TrendHistogramStrip";
 import { TRACE_TREND_SERIES } from "@/features/explorer/utils/trend";
@@ -28,8 +29,15 @@ interface Props {
   readonly onRetry: () => void;
 }
 
+function getTraceRowClassName(row: TraceSummary): string {
+  return row.has_error
+    ? "border-l-2 border-red-500 bg-red-500/[0.03]"
+    : "border-l-2 border-transparent";
+}
+
 /** Right pane for the traces explorer: trend, latency overlay, sort, result list. */
 export function TracesResultsPane(props: Props) {
+  const getRowClassName = useCallback(getTraceRowClassName, []);
   return (
     <>
       {props.trendBuckets.length > 0 ? (
@@ -53,6 +61,7 @@ export function TracesResultsPane(props: Props) {
         loading={props.loading}
         queryError={props.queryError}
         onRetry={props.onRetry}
+        getRowClassName={getRowClassName}
         emptyTitle="No traces"
         emptyDescription="Adjust filters or broaden the time range."
       />

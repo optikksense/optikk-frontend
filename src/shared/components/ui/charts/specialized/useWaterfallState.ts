@@ -9,7 +9,7 @@ const EMPTY_SET: ReadonlySet<string> = new Set();
 
 export interface WaterfallStateInput {
   readonly spans: readonly WaterfallSpan[];
-  readonly parentRef: RefObject<HTMLDivElement>;
+  readonly parentRef: RefObject<HTMLDivElement | null>;
   readonly searchProp?: string;
   readonly errorsOnlyProp?: boolean;
   readonly collapsedSpanIds?: ReadonlySet<string>;

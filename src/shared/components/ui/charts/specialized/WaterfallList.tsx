@@ -5,10 +5,10 @@ import type { useVirtualizer } from "@tanstack/react-virtual";
 import { WaterfallRow } from "./WaterfallRow";
 import type { WaterfallSpan, WaterfallTreeSpan } from "./waterfallTypes";
 
-type Virtualizer = ReturnType<typeof useVirtualizer>;
+type Virtualizer = any;
 
 export interface WaterfallListProps {
-  readonly parentRef: RefObject<HTMLDivElement>;
+  readonly parentRef: RefObject<HTMLDivElement | null>;
   readonly virtualizer: Virtualizer;
   readonly visibleTree: readonly WaterfallTreeSpan[];
   readonly selectedSpanId?: string | null;

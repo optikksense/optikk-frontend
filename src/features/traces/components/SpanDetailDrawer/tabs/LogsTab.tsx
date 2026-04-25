@@ -72,6 +72,6 @@ function severityColor(sev: string): string {
   return "#4e9fdd";
 }
 
-function formatTs(ts: number): string {
+function formatTs(ts: number | string): string {
   return new Date(Number(ts) / 1_000_000).toISOString().slice(11, 23);
 }

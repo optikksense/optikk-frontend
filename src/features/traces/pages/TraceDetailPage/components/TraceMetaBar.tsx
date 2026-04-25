@@ -15,7 +15,7 @@ interface Props {
   readonly stats: Stats;
   readonly criticalPathCount: number;
   readonly linkedLogsCount: number;
-  readonly startMs: number;
+  readonly startMs?: number;
   readonly rootService?: string;
   readonly rootOperation?: string;
 }
@@ -44,15 +44,15 @@ function TraceMetaBarComponent(props: Props) {
       />
       <MetaItem label="Critical path" value={String(criticalPathCount)} />
       <MetaItem label="Linked logs" value={String(linkedLogsCount)} />
-      {startMs > 0 ? <MetaItem label="Start" value={new Date(startMs).toISOString().replace("T", " ").slice(0, 19)} /> : null}
+      {startMs && startMs > 0 ? <MetaItem label="Start" value={new Date(startMs).toISOString().replace("T", " ").slice(0, 19)} /> : null}
       <RetentionWarning startMs={startMs} />
     </div>
   );
 }
 
 /** Shows a warning when the trace is approaching the 30-day retention horizon. */
-function RetentionWarning({ startMs }: { startMs: number }) {
-  if (startMs <= 0) return null;
+function RetentionWarning({ startMs }: { startMs?: number }) {
+  if (!startMs || startMs <= 0) return null;
   const ageDays = Math.floor((Date.now() - startMs) / (1000 * 60 * 60 * 24));
   if (ageDays < 25) return null;
   const tone = ageDays >= 30 ? "#e8494d" : "#e0b400";

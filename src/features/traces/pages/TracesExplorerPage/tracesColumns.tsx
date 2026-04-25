@@ -1,6 +1,9 @@
+import { Tooltip } from "@shared/components/primitives/ui";
+
 import type { ColumnDef } from "@/features/explorer/types/results";
 
 import type { TraceSummary } from "../../types/trace";
+import { getServiceColor } from "../../utils/serviceColor";
 
 export interface TraceColumnContext {
   /** Population percentiles (ms) used by the duration distribution cell. Null while loading. */
@@ -15,10 +18,10 @@ export function buildTraceColumns(ctx: TraceColumnContext): readonly ColumnDef<T
   return [
     { key: "start", label: "Start", width: 170, render: renderStart },
     { key: "duration", label: "Duration", width: 180, render: (row) => <DurationCell row={row} overall={ctx.overall} /> },
-    { key: "service", label: "Service", width: 160, render: (row) => <span className="truncate text-sm">{row.root_service}</span> },
-    { key: "operation", label: "Operation", render: (row) => <span className="truncate text-sm">{row.root_operation}</span> },
+    { key: "service", label: "Service", width: 160, render: renderService },
+    { key: "operation", label: "Operation", render: renderOperation },
     { key: "endpoint", label: "Endpoint", width: 200, render: (row) => <span className="truncate text-xs">{row.root_endpoint ?? ""}</span> },
-    { key: "status", label: "Status", width: 96, render: (row) => <StatusBadge status={row.root_status} hasError={row.has_error} /> },
+    { key: "status", label: "Status", width: 80, render: (row) => <StatusDot status={row.root_status} hasError={row.has_error} /> },
     { key: "http_method", label: "Method", width: 80, render: (row) => <span className="font-mono text-xs uppercase">{row.root_http_method ?? ""}</span> },
     { key: "root_http_status", label: "HTTP", width: 80, render: (row) => <span className="font-mono text-xs">{row.root_http_status ?? ""}</span> },
     { key: "span_count", label: "Spans", width: 80, render: (row) => <span className="font-mono text-xs">{row.span_count}</span> },
@@ -32,6 +35,29 @@ function renderStart(row: TraceSummary) {
     <span className="font-mono text-xs text-[var(--text-secondary)]">
       {new Date(row.start_ms).toISOString().slice(11, 23).replace("T", "")}
     </span>
+  );
+}
+
+function renderService(row: TraceSummary) {
+  const color = getServiceColor(row.root_service);
+  return (
+    <span className="flex min-w-0 items-center gap-1.5 truncate">
+      <span
+        className="inline-block size-2 shrink-0 rounded-full"
+        style={{ backgroundColor: color }}
+        aria-hidden
+      />
+      <span className="truncate text-sm">{row.root_service}</span>
+    </span>
+  );
+}
+
+function renderOperation(row: TraceSummary) {
+  const text = row.root_operation;
+  return (
+    <Tooltip content={text} placement="bottom">
+      <span className="block truncate text-sm">{text}</span>
+    </Tooltip>
   );
 }
 
@@ -55,22 +81,43 @@ function DistributionTick({ ms, overall, hasError }: { ms: number; overall: Trac
   const p95Pct = Math.min(100, (overall.p95Ms / maxScale) * 100);
   const tickColor = hasError ? "#e8494d" : ms > overall.p95Ms ? "#e0b400" : "#4e9fdd";
   return (
-    <span className="relative inline-block h-2 flex-1 min-w-[60px] rounded bg-[var(--bg-secondary)]" title={`p50 ${formatMs(overall.p50Ms)} · p95 ${formatMs(overall.p95Ms)}`}>
-      <span className="absolute top-0 h-full w-px bg-[var(--text-muted)] opacity-50" style={{ left: `${p50Pct}%` }} />
-      <span className="absolute top-0 h-full w-px bg-[var(--text-muted)] opacity-70" style={{ left: `${p95Pct}%` }} />
-      <span className="absolute top-0 h-full w-1 rounded" style={{ left: `calc(${pct}% - 2px)`, backgroundColor: tickColor }} />
+    <span
+      className="relative inline-block h-1.5 min-w-[60px] flex-1 overflow-hidden rounded-full bg-white/[0.06]"
+      title={`p50 ${formatMs(overall.p50Ms)} · p95 ${formatMs(overall.p95Ms)}`}
+    >
+      <span className="absolute top-0 h-full w-px bg-[var(--text-muted)] opacity-40" style={{ left: `${p50Pct}%` }} />
+      <span className="absolute top-0 h-full w-px bg-[var(--text-muted)] opacity-60" style={{ left: `${p95Pct}%` }} />
+      <span className="absolute top-0 h-full w-1.5 rounded-full" style={{ left: `calc(${pct}% - 3px)`, backgroundColor: tickColor }} />
     </span>
   );
 }
 
-function StatusBadge({ status, hasError }: { status: string | undefined; hasError: boolean }) {
-  const color = hasError ? "#e8494d" : status === "OK" ? "#73bf69" : "#7e8ea0";
-  const label = hasError ? "ERROR" : status || "UNSET";
+function StatusDot({ status, hasError }: { status: string | undefined; hasError: boolean }) {
+  let dotColor: string;
+  let label: string;
+  let textColor: string;
+
+  if (hasError || status?.toUpperCase() === "ERROR") {
+    dotColor = "#e8494d";
+    label = "Error";
+    textColor = "text-red-400";
+  } else if (!status || status.toUpperCase() === "UNSET") {
+    dotColor = "#7e8ea0";
+    label = "Unset";
+    textColor = "text-slate-400";
+  } else {
+    dotColor = "#73bf69";
+    label = "OK";
+    textColor = "text-emerald-400";
+  }
+
   return (
-    <span
-      className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase"
-      style={{ backgroundColor: `${color}22`, color }}
-    >
+    <span className={`inline-flex items-center gap-1 text-[11px] font-medium ${textColor}`}>
+      <span
+        className="inline-block size-1.5 shrink-0 rounded-full"
+        style={{ backgroundColor: dotColor }}
+        aria-hidden
+      />
       {label}
     </span>
   );
