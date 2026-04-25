@@ -12,6 +12,15 @@ type State = {
   setSelectedSpanId: ReturnType<typeof useTraceDetailData>["setSelectedSpanId"];
 };
 
+/** Writes `?span=<id>` to the URL so deep-links round-trip (B16). */
+function writeSpanQueryParam(spanId: string | null) {
+  if (typeof window === "undefined") return;
+  const url = new URL(window.location.href);
+  if (spanId) url.searchParams.set("span", spanId);
+  else url.searchParams.delete("span");
+  window.history.replaceState(window.history.state, "", url.toString());
+}
+
 export function useTraceDetailActions({
   resolvedTraceId,
   traceTimeBounds,
@@ -21,8 +30,12 @@ export function useTraceDetailActions({
   const { getTimeRange } = useTimeRange();
 
   const handleSpanClick = useCallback(
-    (span: { span_id?: string }) => setSelectedSpanId(span.span_id ?? null),
-    [setSelectedSpanId]
+    (span: { span_id?: string }) => {
+      const id = span.span_id ?? null;
+      setSelectedSpanId(id);
+      writeSpanQueryParam(id);
+    },
+    [setSelectedSpanId],
   );
 
   const openInLogs = useCallback(() => {

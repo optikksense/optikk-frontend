@@ -16,6 +16,7 @@ interface Props<Row> {
   /** Key that changes whenever the filter set changes; scrolls back to 0. */
   readonly resetKey?: string;
   readonly onNearEnd?: () => void;
+  readonly getRowClassName?: (row: Row) => string;
 }
 
 function ResultsVirtualListImpl<Row>(props: Props<Row>) {
@@ -30,6 +31,7 @@ function ResultsVirtualListImpl<Row>(props: Props<Row>) {
     onRowClick,
     resetKey,
     onNearEnd,
+    getRowClassName,
   } = props;
   const parentRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
@@ -74,6 +76,7 @@ function ResultsVirtualListImpl<Row>(props: Props<Row>) {
                 config={config}
                 onClick={onRowClick}
                 selected={selectedId === id}
+                extraClassName={getRowClassName?.(row)}
               />
             </div>
           );

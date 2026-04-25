@@ -24,6 +24,7 @@ interface Props<Row> {
   /** When set (e.g. React Query error), show an error panel instead of the generic empty state. */
   readonly queryError?: string | null;
   readonly onRetry?: () => void;
+  readonly getRowClassName?: (row: Row) => string;
 }
 
 /**
@@ -47,6 +48,7 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
     emptyDescription,
     queryError,
     onRetry,
+    getRowClassName,
   } = props;
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -98,6 +100,7 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
           selectedId={selectedId}
           onRowClick={onRowClick}
           resetKey={resetKey}
+          getRowClassName={getRowClassName}
         />
       )}
     </div>

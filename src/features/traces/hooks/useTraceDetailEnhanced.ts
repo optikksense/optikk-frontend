@@ -1,5 +1,5 @@
 import { tracesService } from "@shared/api/tracesService";
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useMemo } from "react";
 import type {
   CriticalPathSpan,
@@ -185,6 +185,12 @@ export function useTraceDetailEnhanced(
       dbStatement: spanAttributesData.db_statement,
       dbStatementNormalized: spanAttributesData.db_statement_normalized,
       attributes: spanAttributesData.attributes,
+      links: spanAttributesData.links?.map((l) => ({
+        traceId: l.trace_id,
+        spanId: l.span_id,
+        traceState: l.trace_state,
+        attributes: l.attributes,
+      })),
     };
   }, [spanAttributesData]);
 

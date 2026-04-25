@@ -15,7 +15,7 @@ export interface TabsProps {
   className?: string;
   size?: "sm" | "md" | "lg" | "large";
   variant?: "page" | "compact";
-  items: TabItem[];
+  items: readonly TabItem[];
   tabBarStyle?: React.CSSProperties;
 }
 

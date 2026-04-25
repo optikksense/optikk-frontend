@@ -9,8 +9,9 @@ export const DEFAULT_TRACE_COLUMNS: readonly ColumnConfig[] = [
   { key: "duration", visible: true, width: 140 },
   { key: "service", visible: true, width: 160 },
   { key: "operation", visible: true },
-  { key: "status", visible: true, width: 96 },
+  { key: "status", visible: true, width: 80 },
   { key: "http_method", visible: true, width: 80 },
+  { key: "environment", visible: true, width: 120 },
 ];
 
 /**

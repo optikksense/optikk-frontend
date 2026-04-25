@@ -10,11 +10,13 @@ import {
   errorPathSpanSchema,
   flamegraphFrameSchema,
   relatedTraceSchema,
+  serviceMapResponseSchema,
   spanAttributesSchema,
   spanEventSchema,
   spanKindDurationSchema,
   spanRecordSchema,
   spanSelfTimeSchema,
+  traceErrorGroupSchema,
   traceLogsResponseSchema,
   traceRecordSchema,
   tracesSummarySchema,
@@ -26,11 +28,13 @@ import type {
   ErrorPathSpanRecord,
   FlamegraphFrame,
   RelatedTraceRecord,
+  ServiceMapResponse,
   SpanAttributesRecord,
   SpanEventRecord,
   SpanKindDurationRecord,
   SpanRecord,
   SpanSelfTimeRecord,
+  TraceErrorGroup,
   TraceLogsResponse,
   TraceRecord,
   TracesSummary,
@@ -109,6 +113,29 @@ export const tracesService = {
     return validateResponse(z.array(spanKindDurationSchema), data);
   },
 
+  async getTraceBundle(traceId: string): Promise<{
+    spans: unknown[];
+    logs: unknown[];
+    critical_path: CriticalPathSpanRecord[];
+    error_path: ErrorPathSpanRecord[];
+    span_kind_breakdown: SpanKindDurationRecord[];
+  }> {
+    const data = await api.get<{
+      spans: unknown[];
+      logs: unknown[];
+      critical_path: unknown;
+      error_path: unknown;
+      span_kind_breakdown: unknown;
+    }>(`${BASE}/traces/${traceId}/bundle`);
+    return {
+      spans: Array.isArray(data?.spans) ? data.spans : [],
+      logs: Array.isArray(data?.logs) ? data.logs : [],
+      critical_path: validateResponse(z.array(criticalPathSpanSchema), data?.critical_path ?? []),
+      error_path: validateResponse(z.array(errorPathSpanSchema), data?.error_path ?? []),
+      span_kind_breakdown: validateResponse(z.array(spanKindDurationSchema), data?.span_kind_breakdown ?? []),
+    };
+  },
+
   async getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
     const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
     return validateResponse(z.array(criticalPathSpanSchema), data);
@@ -150,6 +177,21 @@ export const tracesService = {
   async getFlamegraphData(traceId: string): Promise<FlamegraphFrame[]> {
     const data = await api.get(`${BASE}/traces/${traceId}/flamegraph`);
     return validateResponse(z.array(flamegraphFrameSchema), data);
+  },
+
+  async getServiceMap(traceId: string): Promise<ServiceMapResponse> {
+    const data = await api.get(`${BASE}/traces/${traceId}/service-map`);
+    return validateResponse(serviceMapResponseSchema, data);
+  },
+
+  async getTraceErrors(traceId: string): Promise<TraceErrorGroup[]> {
+    const data = await api.get(`${BASE}/traces/${traceId}/errors`);
+    return validateResponse(z.array(traceErrorGroupSchema), data);
+  },
+
+  async getSpanLogs(traceId: string, spanId: string): Promise<TraceLogsResponse> {
+    const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/logs`);
+    return validateResponse(traceLogsResponseSchema, data);
   },
 
 

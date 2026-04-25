@@ -1,7 +1,7 @@
 import { tracesService } from "@shared/api/tracesService";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useEffect, useMemo, useState } from "react";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
@@ -33,10 +33,9 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     [spansData]
   );
 
-  // Resolve actual trace_id
-  const resolvedTraceId = spans.length > 0 ? spans[0].trace_id || traceIdParam : traceIdParam;
-
-  // Fetch logs
+  // Fetch logs in parallel with spans — both key off traceIdParam, not the
+  // resolved id. The backend tolerates either form (see traceidmatch helper).
+  // Fixes the spans→logs waterfall that was costing one full RTT on every mount.
   const {
     data: logsData,
     isPending: logsLoading,
@@ -44,7 +43,7 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     error: logsError,
   } = useStandardQuery({
     queryKey: ["trace-logs", selectedTeamId, traceIdParam],
-    queryFn: () => tracesService.getTraceLogs(selectedTeamId, resolvedTraceId),
+    queryFn: () => tracesService.getTraceLogs(selectedTeamId, traceIdParam),
     enabled: !!selectedTeamId && !!traceIdParam,
   });
 

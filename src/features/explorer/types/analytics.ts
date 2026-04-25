@@ -1,6 +1,6 @@
 import type { ExplorerFilter } from "./filters";
 
-export type AnalyticsVizMode = "timeseries" | "topN" | "table" | "pie";
+export type AnalyticsVizMode = "timeseries" | "topN" | "table" | "pie" | "heatmap" | "treemap";
 
 export type AnalyticsAggFn = "count" | "sum" | "avg" | "min" | "max" | "p50" | "p95" | "p99";
 

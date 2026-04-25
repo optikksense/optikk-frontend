@@ -46,6 +46,14 @@ export interface SpanAttributes {
   readonly dbStatement?: string;
   readonly dbStatementNormalized?: string;
   readonly attributes: Record<string, string>;
+  readonly links?: readonly SpanLink[];
+}
+
+export interface SpanLink {
+  readonly traceId: string;
+  readonly spanId: string;
+  readonly traceState?: string;
+  readonly attributes?: Record<string, string>;
 }
 
 export interface RelatedTrace {

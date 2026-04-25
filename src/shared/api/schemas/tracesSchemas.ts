@@ -158,6 +158,15 @@ export const errorPathSpanSchema = z
   })
   .strict();
 
+export const spanLinkSchema = z
+  .object({
+    trace_id: z.string(),
+    span_id: z.string(),
+    trace_state: z.string().optional(),
+    attributes: z.record(z.string(), z.string()).optional(),
+  })
+  .strict();
+
 export const spanAttributesSchema = z
   .object({
     span_id: z.string(),
@@ -166,6 +175,7 @@ export const spanAttributesSchema = z
     service_name: z.string(),
     attributes_string: z.record(z.string(), z.string()).default({}),
     resource_attributes: z.record(z.string(), z.string()).default({}),
+    links: z.array(spanLinkSchema).optional(),
     exception_type: z.string().optional(),
     exception_message: z.string().optional(),
     exception_stacktrace: z.string().optional(),
@@ -203,3 +213,55 @@ export type SpanSelfTimeRecord = z.infer<typeof spanSelfTimeSchema>;
 export type ErrorPathSpanRecord = z.infer<typeof errorPathSpanSchema>;
 export type SpanAttributesRecord = z.infer<typeof spanAttributesSchema>;
 export type RelatedTraceRecord = z.infer<typeof relatedTraceSchema>;
+export type SpanLinkRecord = z.infer<typeof spanLinkSchema>;
+
+export const serviceMapNodeSchema = z
+  .object({
+    service: z.string(),
+    span_count: z.coerce.number(),
+    error_count: z.coerce.number(),
+    total_ms: z.coerce.number(),
+  })
+  .strict();
+
+export const serviceMapEdgeSchema = z
+  .object({
+    from: z.string(),
+    to: z.string(),
+    call_count: z.coerce.number(),
+    error_count: z.coerce.number(),
+    total_ms: z.coerce.number(),
+  })
+  .strict();
+
+export const serviceMapResponseSchema = z
+  .object({
+    nodes: z.union([z.array(serviceMapNodeSchema), z.null()]).transform((v) => v ?? []),
+    edges: z.union([z.array(serviceMapEdgeSchema), z.null()]).transform((v) => v ?? []),
+  })
+  .strict();
+
+export const traceErrorSpanSchema = z
+  .object({
+    span_id: z.string(),
+    service_name: z.string(),
+    operation_name: z.string(),
+    exception_message: z.string().optional(),
+    status_message: z.string().optional(),
+    start_time: z.string(),
+    duration_ms: z.coerce.number(),
+  })
+  .strict();
+
+export const traceErrorGroupSchema = z
+  .object({
+    exception_type: z.string(),
+    count: z.coerce.number(),
+    spans: z.array(traceErrorSpanSchema),
+  })
+  .strict();
+
+export type ServiceMapNode = z.infer<typeof serviceMapNodeSchema>;
+export type ServiceMapEdge = z.infer<typeof serviceMapEdgeSchema>;
+export type ServiceMapResponse = z.infer<typeof serviceMapResponseSchema>;
+export type TraceErrorGroup = z.infer<typeof traceErrorGroupSchema>;

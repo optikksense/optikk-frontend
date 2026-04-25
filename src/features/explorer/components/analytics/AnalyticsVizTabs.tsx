@@ -12,6 +12,8 @@ const TABS: ReadonlyArray<{ key: AnalyticsVizMode; label: string }> = [
   { key: "topN", label: "Top N" },
   { key: "table", label: "Table" },
   { key: "pie", label: "Pie" },
+  { key: "heatmap", label: "Heatmap" },
+  { key: "treemap", label: "Treemap" },
 ];
 
 function AnalyticsVizTabsComponent({ value, onChange }: Props) {

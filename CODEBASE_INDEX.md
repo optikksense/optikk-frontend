@@ -35,8 +35,8 @@ Current registered product domains:
 
 Unregistered but important feature areas:
 
-- `marketing`
-- `explorer-core`
+- `marketing` — public-facing site, rendered via `MarketingShell`; not a domain
+- `explorer` (`src/features/explorer/`) — shared DSL search, facets, analytics, and visualization primitives used by Logs, Traces, and Metrics explorers; not a domain, no routes of its own
 
 ## Current route model
 
@@ -78,7 +78,7 @@ The current frontend owns significant page composition and interaction logic dir
 | Infrastructure | `src/features/infrastructure/` | Frontend-owned infrastructure hub, APIs, fleet and tab content |
 | Settings | `src/features/settings/` | Profile, team, and preferences pages |
 | Marketing | `src/features/marketing/` | Public-facing site content and shell |
-| Explorer Core | `src/features/explorer-core/` | Shared explorer primitives across logs/traces/metrics |
+| Explorer | `src/features/explorer/` | Shared explorer primitives across logs/traces/metrics (DSL search, facets, analytics, trend) |
 
 ## Shared layer map
 
@@ -114,8 +114,13 @@ From [package.json](/Users/ramantayal/Desktop/pro/optikk-frontend/package.json):
 - `yarn preview`
 - `yarn ci`
 
+## Deprecated / empty directories
+
+- `src/platform/` — 8 subdirs (`api`, `auth`, `config`, `query`, `state`, `stream`, `url`, `utils`) are all empty. Treat as deprecated legacy scaffold; do not add new code here.
+
 ## Cross-repo docs
 
 - Frontend overview: [README.md](/Users/ramantayal/Desktop/pro/optikk-frontend/README.md)
 - Backend overview: [../optikk-backend/README.md](/Users/ramantayal/Desktop/pro/optikk-backend/README.md)
 - Telemetry contracts: [docs/telemetry-contracts.md](/Users/ramantayal/Desktop/pro/optikk-frontend/docs/telemetry-contracts.md)
+- Flow diagrams: [docs/flows/](/Users/ramantayal/Desktop/pro/optikk-frontend/docs/flows/) — frontend-data-flow

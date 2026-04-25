@@ -10,11 +10,16 @@ type Actions = ReturnType<typeof useTraceDetailActions>;
  * unit-testable in isolation.
  */
 export function buildBodyProps(state: State, actions: Actions) {
+  const rootSpan = state.data.spans[0];
   return {
-    stats: {
+    meta: {
+      traceId: state.resolvedTraceId,
       stats: state.data.stats,
       criticalPathCount: state.enhanced.criticalPathSpanIds.size,
       linkedLogsCount: state.data.traceLogs.length,
+      startMs: state.traceTimeBounds.startMs,
+      rootService: rootSpan?.service_name,
+      rootOperation: rootSpan?.operation_name,
     },
     serviceBar: {
       spans: state.data.spans,
@@ -33,6 +38,7 @@ export function buildBodyProps(state: State, actions: Actions) {
       flamegraphError: state.flamegraph.isError,
     },
     drawer: {
+      traceId: state.resolvedTraceId,
       selectedSpanId: state.data.selectedSpanId,
       selectedSpan: state.data.selectedSpan ?? null,
       spanAttributes: state.enhanced.spanAttributes,

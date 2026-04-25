@@ -8,8 +8,9 @@ import { TabBody } from "./TabBody";
 import { useTabItems } from "./useTabItems";
 
 interface Props {
+  traceId: string;
   selectedSpanId: string | null;
-  selectedSpan: { operation_name?: string; status?: string; duration_ms?: number } | null;
+  selectedSpan: { operation_name?: string; service_name?: string; status?: string; duration_ms?: number; start_time?: string; end_time?: string } | null;
   spanAttributes: SpanAttributes | null;
   spanAttributesLoading: boolean;
   spanEvents: SpanEvent[];
@@ -19,20 +20,10 @@ interface Props {
   onActiveTabChange: (nextTab: string) => void;
 }
 
-export default function SpanDetailDrawer({
-  selectedSpanId,
-  selectedSpan,
-  spanAttributes,
-  spanAttributesLoading,
-  spanEvents,
-  spanSelfTimes,
-  relatedTraces,
-  activeTab,
-  onActiveTabChange,
-}: Props) {
-  const tabItems = useTabItems(selectedSpanId, spanEvents, relatedTraces);
+export default function SpanDetailDrawer(props: Props) {
+  const { selectedSpanId, selectedSpan, spanAttributes, activeTab, onActiveTabChange } = props;
+  const tabItems = useTabItems(selectedSpanId, props.spanEvents, props.relatedTraces, spanAttributes);
   if (!selectedSpanId) return null;
-
   return (
     <Surface elevation={1} padding="md" className="span-detail-drawer">
       <DrawerHeader selectedSpan={selectedSpan} />
@@ -46,12 +37,14 @@ export default function SpanDetailDrawer({
       <div className="sdd-tab-content">
         <TabBody
           activeTab={activeTab}
+          traceId={props.traceId}
           selectedSpanId={selectedSpanId}
+          selectedSpan={selectedSpan}
           spanAttributes={spanAttributes}
-          spanAttributesLoading={spanAttributesLoading}
-          spanEvents={spanEvents}
-          spanSelfTimes={spanSelfTimes}
-          relatedTraces={relatedTraces}
+          spanAttributesLoading={props.spanAttributesLoading}
+          spanEvents={props.spanEvents}
+          spanSelfTimes={props.spanSelfTimes}
+          relatedTraces={props.relatedTraces}
         />
       </div>
     </Surface>
