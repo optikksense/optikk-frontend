@@ -218,5 +218,5 @@ function handleAttribute(key: string, op: string, value: string, ctx: DispatchCt
 
 function appendArr(body: LogsFiltersBody, key: keyof LogsFiltersBody, value: string): void {
   const current = (body[key] as string[] | undefined) ?? [];
-  (body as Record<string, unknown>)[key] = [...current, value];
+  (body as unknown as Record<string, unknown>)[key as string] = [...current, value];
 }

@@ -2,7 +2,7 @@ import { useParams } from "@tanstack/react-router";
 import { Server } from "lucide-react";
 
 import { Card, SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
-import { PageHeader, PageShell, PageSurface, Surface } from "@shared/components/ui";
+import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
 
@@ -97,14 +97,14 @@ export default function HostDetailPage(): JSX.Element {
         icon={<Server size={24} />}
       />
 
-      <Surface elevation={1} padding="md">
+      <PageSurface elevation={1} padding="md">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <StatTile label="Services" value={formatNumber(services.length)} />
           <StatTile label="Requests" value={formatNumber(totalReq)} />
           <StatTile label="Errors" value={formatNumber(totalErr)} />
           <StatTile label="Error %" value={`${errRate.toFixed(2)}%`} />
         </div>
-      </Surface>
+      </PageSurface>
 
       <PageSurface padding="lg">
         <div className="mb-3 text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-[0.06em]">

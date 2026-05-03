@@ -5,6 +5,7 @@ import type { SlowQueryPatternRow } from "../../api/databaseSlowQueriesApi";
 interface Props {
   readonly rows: readonly SlowQueryPatternRow[];
   readonly onSelect: (row: SlowQueryPatternRow) => void;
+  readonly loading?: boolean;
 }
 
 function fmtMs(v: number | null | undefined): string {
@@ -91,7 +92,6 @@ export function QueryListTable({ rows, loading, onSelect }: Props) {
       columns={columns}
       dataSource={rows as SlowQueryPatternRow[]}
       rowKey={(r: SlowQueryPatternRow) => `${r.collection_name}::${r.query_text}`}
-      loading={loading}
       onRow={(record: SlowQueryPatternRow) => ({
         onClick: () => onSelect(record),
         style: { cursor: "pointer" },

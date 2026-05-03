@@ -46,10 +46,14 @@ function SaveCurrentRow({ onSave }: { onSave: (name: string) => void }) {
 
 export function SavedViewsDropdown({ scope, onLoad }: Props) {
   const { views, create, remove } = useSavedViews(scope);
+  const [open, setOpen] = useState(false);
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu
+      open={open}
+      onOpenChange={setOpen}
+      className="min-w-[280px]"
+      trigger={
         <button
           type="button"
           className="flex items-center gap-1 rounded-md border border-[var(--border-color)] bg-[var(--bg-elevated)] px-2 py-1 text-[12px] text-[var(--text-primary)] hover:bg-[var(--bg-hover)]"
@@ -60,8 +64,8 @@ export function SavedViewsDropdown({ scope, onLoad }: Props) {
             <span className="ml-1 text-[11px] text-[var(--text-muted)]">{views.length}</span>
           ) : null}
         </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[280px]">
+      }
+    >
         <DropdownMenuLabel>Save current view</DropdownMenuLabel>
         <SaveCurrentRow
           onSave={(name) =>
@@ -97,7 +101,6 @@ export function SavedViewsDropdown({ scope, onLoad }: Props) {
             </DropdownMenuItem>
           ))
         )}
-      </DropdownMenuContent>
     </DropdownMenu>
   );
 }

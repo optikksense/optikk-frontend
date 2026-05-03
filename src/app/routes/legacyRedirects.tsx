@@ -63,7 +63,8 @@ function createLegacyDetailRedirect(
   });
 }
 
-export function buildLegacyRedirects(mainLayoutRoute: ReturnType<typeof createRoute>) {
+// biome-ignore lint/suspicious/noExplicitAny: tanstack router heterogeneous parent
+export function buildLegacyRedirects(mainLayoutRoute: any) {
   const parent = () => mainLayoutRoute;
   return [
     createLegacyDetailRedirect(

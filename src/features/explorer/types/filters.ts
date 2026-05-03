@@ -24,6 +24,6 @@ export type ExplorerFilterOp =
   | "exists"
   | "not_exists";
 
-export type ExplorerMode = "list";
+export type ExplorerMode = "list" | "analytics";
 
 export type ExplorerScope = "logs" | "traces";

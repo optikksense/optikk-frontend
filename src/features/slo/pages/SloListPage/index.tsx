@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Target } from "lucide-react";
 
-import { PageHeader, PageShell, PageSurface, Surface } from "@shared/components/ui";
+import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getSlo } from "../../api/sloApi";
@@ -47,7 +47,7 @@ export default function SloListPage(): JSX.Element {
         </div>
       ) : null}
 
-      <Surface elevation={1} padding="md">
+      <PageSurface elevation={1} padding="md">
         <div className="flex items-start gap-6">
           <div>
             <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
@@ -83,7 +83,7 @@ export default function SloListPage(): JSX.Element {
             </div>
           </div>
         </div>
-      </Surface>
+      </PageSurface>
 
       <PageSurface padding="lg">
         <div className="text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-[0.06em]">

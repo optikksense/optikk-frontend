@@ -1,7 +1,7 @@
 import { Network } from "lucide-react";
 import { useMemo } from "react";
 
-import { PageHeader, PageShell, PageSurface, Surface } from "@shared/components/ui";
+import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
 
@@ -109,7 +109,7 @@ export default function ServiceMapPage(): JSX.Element {
         icon={<Network size={24} />}
       />
 
-      <Surface elevation={1} padding="md">
+      <PageSurface elevation={1} padding="md">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <div>
             <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
@@ -144,7 +144,7 @@ export default function ServiceMapPage(): JSX.Element {
             </div>
           </div>
         </div>
-      </Surface>
+      </PageSurface>
 
       <PageSurface padding="lg">
         <div className="mb-2 text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-[0.06em]">

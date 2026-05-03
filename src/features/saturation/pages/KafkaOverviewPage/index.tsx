@@ -1,4 +1,4 @@
-import { Waves } from "lucide-react";
+import { Activity, Waves } from "lucide-react";
 
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
@@ -52,26 +52,31 @@ export default function KafkaOverviewPage(): JSX.Element {
           label="Publish rate"
           value={`${formatNumber(s?.publish_rate_per_sec ?? 0)}/s`}
           meta="Across all topics"
+          icon={<Activity size={16} />}
         />
         <SaturationStatTile
           label="Receive rate"
           value={`${formatNumber(s?.receive_rate_per_sec ?? 0)}/s`}
           meta="Across all groups"
+          icon={<Activity size={16} />}
         />
         <SaturationStatTile
           label="Max lag"
           value={formatNumber(s?.max_lag ?? 0)}
           meta="Worst consumer-group lag"
+          icon={<Activity size={16} />}
         />
         <SaturationStatTile
           label="Publish p95"
           value={fmtMs(s?.publish_p95_ms ?? 0)}
           meta="Producer-side latency"
+          icon={<Activity size={16} />}
         />
         <SaturationStatTile
           label="Receive p95"
           value={fmtMs(s?.receive_p95_ms ?? 0)}
           meta="Consumer-side latency"
+          icon={<Activity size={16} />}
         />
       </div>
 

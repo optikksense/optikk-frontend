@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Server } from "lucide-react";
 import { useState } from "react";
 
-import { PageHeader, PageShell, PageSurface, Surface } from "@shared/components/ui";
+import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
 
@@ -56,7 +56,7 @@ function SummaryStrip({
   totalPods: number;
 }) {
   return (
-    <Surface elevation={1} padding="md">
+    <PageSurface elevation={1} padding="md">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <div>
           <div className="text-[11px] text-emerald-400 uppercase tracking-[0.08em]">Healthy</div>
@@ -85,7 +85,7 @@ function SummaryStrip({
           </div>
         </div>
       </div>
-    </Surface>
+    </PageSurface>
   );
 }
 

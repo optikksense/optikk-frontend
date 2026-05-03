@@ -1,7 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { Target } from "lucide-react";
 
-import { PageHeader, PageShell, PageSurface, Surface } from "@shared/components/ui";
+import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getBurnDown, getBurnRate, getSloStats } from "../../api/sloApi";
@@ -81,7 +81,7 @@ export default function SloDetailPage(): JSX.Element {
         icon={<Target size={24} />}
       />
 
-      <Surface elevation={1} padding="md">
+      <PageSurface elevation={1} padding="md">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <StatTile label="Availability" value={pct(stats?.status.availability_percent)} />
           <StatTile
@@ -91,7 +91,7 @@ export default function SloDetailPage(): JSX.Element {
           <StatTile label="p95 latency" value={fmtMs(stats?.status.p95_latency_ms)} />
           <StatTile label="Avg latency" value={fmtMs(stats?.summary.avg_latency_ms)} />
         </div>
-      </Surface>
+      </PageSurface>
 
       <PageSurface padding="lg">
         <div className="mb-2 text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-[0.06em]">
