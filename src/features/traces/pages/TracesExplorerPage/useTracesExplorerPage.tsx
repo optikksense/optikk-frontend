@@ -33,7 +33,7 @@ import { buildTraceColumns } from "./tracesColumns";
  * component is a thin renderer over the returned model.
  */
 export function useTracesExplorerPage() {
-  const { state, query, traces } = useTracesExplorer({ include: ["summary", "facets", "trend"] });
+  const { state, query, facetsQuery, trendQuery, traces, facets, summary, trend } = useTracesExplorer({ include: ["summary", "facets", "trend"] });
   const navigate = useNavigate();
   const { columns: columnConfig, setColumns } = useExplorerColumns("traces", DEFAULT_TRACE_COLUMNS);
   const [sortMode, setSortMode] = useState<TraceSortMode>("recent");
@@ -44,11 +44,11 @@ export function useTracesExplorerPage() {
   const timeRange = useTimeRange();
 
   const facetGroups = useMemo<FacetGroupModel[]>(
-    () => facetsToGroups(query.data?.facets),
-    [query.data?.facets]
+    () => facetsToGroups(facets),
+    [facets]
   );
-  const kpis = useMemo<SummaryKPI[]>(() => buildKPIs(query.data?.summary), [query.data?.summary]);
-  const trendBuckets = useMemo(() => toTrendBuckets(query.data?.trend), [query.data?.trend]);
+  const kpis = useMemo<SummaryKPI[]>(() => buildKPIs(summary), [summary]);
+  const trendBuckets = useMemo(() => toTrendBuckets(trend), [trend]);
   const columnDefs = useMemo(() => buildTraceColumns(), []);
   const sortedTraces = useMemo(() => sortTraces(traces, sortMode), [traces, sortMode]);
   const filterKey = useMemo(() => JSON.stringify(state.filters), [state.filters]);
@@ -81,7 +81,9 @@ export function useTracesExplorerPage() {
   );
   const onRetry = useCallback(() => {
     void query.refetch();
-  }, [query]);
+    if (facetsQuery) void facetsQuery.refetch();
+    if (trendQuery) void trendQuery.refetch();
+  }, [query, facetsQuery, trendQuery]);
   const onClearFilters = useCallback(() => state.setFilters([]), [state]);
   const onLoadSavedView = useCallback(
     (url: string) => {

@@ -57,9 +57,9 @@ export function aggregateSeverityTrend(
  * a subset when a scope only tracks totals + errors (e.g. traces).
  */
 export const LOG_TREND_SERIES: readonly TrendLegendItem[] = [
-  { key: "total", label: "Total", color: "#4e9fdd" },
-  { key: "warnings", label: "Warnings", color: "#e0b400" },
-  { key: "errors", label: "Errors", color: "#e8494d" },
+  { key: "total", label: "Total", color: "#8B7FFF" },
+  { key: "warnings", label: "Warnings", color: "#F2C14E" },
+  { key: "errors", label: "Errors", color: "#F04438" },
 ];
 
 export const TRACE_TREND_SERIES: readonly TrendLegendItem[] = [

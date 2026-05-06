@@ -14,8 +14,8 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
   return [
     {
       key: "timestamp",
-      label: "Time",
-      width: 180,
+      label: "TIMESTAMP",
+      width: 220,
       render: (row) => (
         <span className="font-mono text-xs text-[var(--text-secondary)]">
           {formatTs(row.timestamp)}
@@ -24,13 +24,13 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
     },
     {
       key: "service",
-      label: "Service",
+      label: "SERVICE",
       width: 160,
       render: (row) => <span className="truncate text-sm">{row.service_name}</span>,
     },
     {
       key: "severity",
-      label: "Severity",
+      label: "SEVERITY",
       width: 84,
       render: (row) => <SeverityBadge bucket={row.severity_bucket} />,
     },
@@ -46,7 +46,7 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
     },
     {
       key: "host",
-      label: "Host",
+      label: "HOST",
       width: 160,
       render: (row) => <span className="truncate text-xs">{row.host ?? ""}</span>,
     },
@@ -70,7 +70,7 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
     },
     {
       key: "body",
-      label: "Body",
+      label: "MESSAGE",
       render: (row) => (
         <HighlightedText className="truncate text-sm" text={row.body} match={searchTerm} />
       ),
@@ -90,12 +90,15 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
 
 function SeverityBadge({ bucket }: { bucket: number }) {
   const style = severityStyle(bucket);
+  // Solid background badge — high visibility, matching reference design.
+  // Warn/Error/Fatal get white text; Trace/Debug/Info get dark text.
+  const textColor = bucket >= 3 ? "#fff" : "#111";
   return (
     <span
-      className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase"
-      style={{ backgroundColor: `${severityColor(bucket)}22`, color: severityColor(bucket) }}
+      className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold"
+      style={{ backgroundColor: severityColor(bucket), color: textColor }}
     >
-      {style.shortLabel}
+      [{style.shortLabel}]
     </span>
   );
 }
@@ -104,7 +107,9 @@ function formatTs(ts: string): string {
   try {
     const d = new Date(ts);
     if (Number.isNaN(d.getTime())) return ts;
-    return d.toISOString().slice(11, 23).replace("T", "");
+    // Full datetime: YYYY-MM-DD HH:mm:ss.SSS
+    const iso = d.toISOString();
+    return `${iso.slice(0, 10)} ${iso.slice(11, 23)}`;
   } catch {
     return ts;
   }

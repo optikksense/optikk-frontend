@@ -21,7 +21,6 @@ import type { LogsFacets, LogsSummary } from "../../api/logsAnalyticsApi";
 import { DEFAULT_LOG_COLUMNS } from "../../config/columns";
 import { useLogsExplorer } from "../../hooks/useLogsExplorer";
 import type { LogRecord } from "../../types/log";
-import { severityColor } from "../../utils/severity";
 import { buildLogColumns } from "./logsColumns";
 
 /**
@@ -103,11 +102,11 @@ export function useLogsExplorerPage() {
   );
 
   const getRowStyle = useCallback(
-    (row: LogRecord) => ({ borderLeft: `3px solid ${severityColor(row.severity_bucket)}` }),
+    (_row: LogRecord) => undefined,
     []
   );
   const getRowClassName = useCallback(
-    (row: LogRecord) => (row.severity_bucket >= 4 ? "bg-[var(--color-error-subtle)]" : ""),
+    (_row: LogRecord) => "",
     []
   );
 

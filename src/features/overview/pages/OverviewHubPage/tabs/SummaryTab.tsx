@@ -17,7 +17,7 @@ import { formatNumber, formatPercentage } from "@shared/utils/formatters";
 import ServiceHealthGrid from "../components/ServiceHealthGrid";
 import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
-import { mapErrorRateRows, mapP95Rows, mapRequestRateRows, num } from "../chartMappers";
+import { mapRedErrorPctRows, mapP95Rows, mapRedRequestRateRows, num } from "../chartMappers";
 
 const RequestChart = lazy(() =>
   import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({ default: m.default }))
@@ -43,34 +43,37 @@ export default function SummaryTab() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Batch the above-the-fold data (KPI summary + per-service metrics) into one
-  // request. Server fans out via errgroup; response time = max(child) not sum.
-  const batchQ = useTimeRangeQuery(
-    "overview-hub-batch",
-    (_team, start, end) => overviewHubApi.getBatchSummary(start, end),
+  // Batch the above-the-fold data (KPI summary + per-service metrics) into one request.
+  const summaryQ = useTimeRangeQuery(
+    "overview-hub-summary",
+    (_team, start, end) => overviewHubApi.getRedSummary(start, end),
     { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
 
   // Defer the combined chart timeseries until the chart section scrolls into view.
-  // One request replaces the former rr/er/p95 trio — backend returns all three
-  // metrics per (time_bucket, service) in one rollup scan.
   const { ref: chartsRef, inView: chartsInView } = useInView<HTMLDivElement>();
   const chartOpts = { staleTime: OVERVIEW_QUERY_STALE_MS, enabled: chartsInView };
   const chartQ = useTimeRangeQuery(
     "overview-hub-charts",
-    (_team, start, end) => overviewHubApi.getChartMetrics(start, end),
+    async (team, start, end) => {
+      const [rr, er, p95] = await Promise.all([
+        overviewHubApi.getRedRequestRateSeries(start, end),
+        overviewHubApi.getRedErrorRateSeries(start, end),
+        overviewHubApi.getRedP95Series(start, end),
+      ]);
+      return { rr, er, p95 };
+    },
     chartOpts
   );
 
-  const summary = batchQ.data?.summary;
-  const totalReq = num(summary?.total_requests);
-  const errCount = num(summary?.error_count);
-  const errPct = totalReq > 0 ? (errCount / totalReq) * 100 : 0;
+  const summary = summaryQ.data;
+  const totalReq = num(summary?.total_span_count);
+  const errCount = num(summary?.total_errors);
+  const errPct = num(summary?.avg_error_pct);
 
-  const chartData = chartQ.data ?? [];
-  const rrRows = useMemo(() => mapRequestRateRows(chartData), [chartData]);
-  const erRows = useMemo(() => mapErrorRateRows(chartData), [chartData]);
-  const p95Rows = useMemo(() => mapP95Rows(chartData), [chartData]);
+  const rrRows = useMemo(() => mapRedRequestRateRows(chartQ.data?.rr ?? []), [chartQ.data?.rr]);
+  const erRows = useMemo(() => mapRedErrorPctRows(chartQ.data?.er ?? []), [chartQ.data?.er]);
+  const p95Rows = useMemo(() => mapP95Rows(chartQ.data?.p95 ?? []), [chartQ.data?.p95]);
 
   const rrMap = useMemo(() => groupTimeseries(rrRows, "service_name"), [rrRows]);
   const erMap = useMemo(() => groupTimeseries(erRows, "service_name"), [erRows]);
@@ -79,7 +82,7 @@ export default function SummaryTab() {
   const [sortKey, setSortKey] = useState<SortKey>("request_count");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
-  const serviceList = batchQ.data?.services ?? [];
+  const serviceList = summaryQ.data?.services ?? [];
 
   const sortedServices = useMemo(() => {
     const rows = serviceList;
@@ -124,7 +127,7 @@ export default function SummaryTab() {
     }
   };
 
-  const loadingKpi = batchQ.isPending && !batchQ.data;
+  const loadingKpi = summaryQ.isPending && !summaryQ.data;
 
   return (
     <div className="page-section">
@@ -165,21 +168,21 @@ export default function SummaryTab() {
           <StatCard
             metric={{
               title: "Avg latency",
-              value: loadingKpi ? "—" : `${num(summary?.avg_latency).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : `${num(summary?.avg_p50_ms).toFixed(1)} ms`,
             }}
             visuals={{ loading: loadingKpi }}
           />
           <StatCard
             metric={{
               title: "P95 latency",
-              value: loadingKpi ? "—" : `${num(summary?.p95_latency).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : `${num(summary?.avg_p95_ms).toFixed(1)} ms`,
             }}
             visuals={{ loading: loadingKpi }}
           />
           <StatCard
             metric={{
               title: "P99 latency",
-              value: loadingKpi ? "—" : `${num(summary?.p99_latency).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : `${num(summary?.avg_p99_ms).toFixed(1)} ms`,
             }}
             visuals={{ loading: loadingKpi, icon: <LayoutDashboard size={18} />, iconColor: "var(--text-muted)" }}
           />
@@ -253,7 +256,7 @@ export default function SummaryTab() {
         description="Sortable inventory with traffic, error share, and tail latency—click a row to open the service drawer from the shell."
       >
         <Surface elevation={1} padding="sm" className="overflow-x-auto">
-          {batchQ.isPending && serviceList.length === 0 ? (
+          {summaryQ.isPending && serviceList.length === 0 ? (
             <Skeleton active paragraph={{ rows: 6 }} />
           ) : sortedServices.length === 0 ? (
             <div className="py-10 text-center text-[13px] text-[var(--text-muted)]">No service metrics in range</div>

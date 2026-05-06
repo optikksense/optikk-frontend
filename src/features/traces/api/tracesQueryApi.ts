@@ -162,17 +162,39 @@ function logDevSnippet(raw: unknown, err: unknown) {
 }
 
 export async function query(body: TracesQueryRequest): Promise<TracesQueryResponse> {
-  const raw = await api.post<unknown>(`${BASE}/traces/query`, body);
+  const { include: _ignore, ...reqBody } = body;
+  const raw = await api.post<unknown>(`${BASE}/traces/query`, reqBody);
+
   if (import.meta.env.DEV && body.startTime > 0 && body.endTime > body.startTime && body.endTime < 1e12) {
     console.warn(
       "[traces/query] startTime/endTime look like seconds, not ms — queries may return no rows.",
       { startTime: body.startTime, endTime: body.endTime }
     );
   }
+  
   try {
     return validateResponse(tracesQueryResponseSchema, raw);
   } catch (err) {
     logDevSnippet(raw, err);
     throw err;
   }
+}
+
+export async function queryFacets(body: TracesQueryRequest) {
+  const { include: _ignore, ...reqBody } = body;
+  const raw = await api.post<unknown>(`${BASE}/traces/facets`, reqBody);
+  const validated = validateResponse(rawFacetsSchema, raw);
+  return normalizeFacets(validated);
+}
+
+export async function queryTrend(body: TracesQueryRequest) {
+  const { include: _ignore, ...reqBody } = body;
+  const raw = await api.post<unknown>(`${BASE}/traces/trend`, reqBody);
+  const validated = validateResponse(z.union([z.array(rawTrendRowSchema), z.null()]), raw) ?? [];
+  return validated.map((b) => ({
+    time_bucket: b.time_bucket,
+    total: b.total,
+    errors: b.errors,
+    warnings: 0,
+  }));
 }

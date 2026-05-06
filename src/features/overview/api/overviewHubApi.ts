@@ -43,21 +43,11 @@ import {
   getTopSlowOperations,
 } from "./overviewRedApi";
 import { getSloBurnDown, getSloBurnRate } from "./overviewSloApi";
-import {
-  getBatchSummary,
-  getChartMetrics,
-  getOverviewSummary,
-} from "./overviewSummaryApi";
-
-export type { OverviewGlobalSummary, OverviewBatchSummary, ChartMetricsPoint } from "./overviewSummaryApi";
 export type { RedSummary } from "./overviewRedApi";
 export type { HistogramSummary } from "./overviewApmApi";
 export type { BurnRate } from "./overviewSloApi";
 
 export const overviewHubApi = {
-  getOverviewSummary,
-  getBatchSummary,
-  getChartMetrics,
   getRedSummary,
   getLatencyBreakdown,
   getRedP95Series,

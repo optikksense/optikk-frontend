@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 import type uPlot from "uplot";
 
-import UPlotChart from "@shared/components/ui/charts/UPlotChart";
+import UPlotChart, { defaultAxes } from "@shared/components/ui/charts/UPlotChart";
 
 import { TrendLegend, type TrendLegendItem } from "./TrendLegend";
 
@@ -34,8 +34,7 @@ function toSeriesOptions(series: readonly TrendLegendItem[]): uPlot.Series[] {
     ...series.map<uPlot.Series>((entry) => ({
       label: entry.label,
       stroke: entry.color,
-      fill: `${entry.color}55`,
-      width: 1,
+      width: 2,
       points: { show: false },
     })),
   ];
@@ -47,32 +46,45 @@ function toSeriesOptions(series: readonly TrendLegendItem[]): uPlot.Series[] {
  * via the `series` prop.
  */
 function TrendHistogramStripComponent(props: Props) {
-  const { buckets, series, height = 120, zoomed, onTimeRangeChange, onResetZoom } = props;
+  const { buckets, series, height = 160, zoomed, onTimeRangeChange, onResetZoom } = props;
   const data = useMemo(() => toAlignedData(buckets, series), [buckets, series]);
   const options = useMemo<Omit<uPlot.Options, "width" | "height">>(
-    () => ({
-      series: toSeriesOptions(series),
-      legend: { show: false },
-      cursor: { drag: { x: true, y: false } },
-      scales: { x: { time: true } },
-      axes: [
-        { stroke: "var(--text-muted)" },
-        { stroke: "var(--text-muted)" },
-      ],
-    }),
+    () => {
+      const axes = defaultAxes();
+      // Add compact y-axis formatter (e.g. 40k instead of 40000)
+      axes[1] = {
+        ...axes[1],
+        values: (_u: uPlot, vals: number[]) =>
+          vals.map((v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v))),
+      };
+      return {
+        series: toSeriesOptions(series),
+        legend: { show: false },
+        cursor: { drag: { x: true, y: false } },
+        scales: { x: { time: true } },
+        axes,
+      };
+    },
     [series]
   );
   return (
     <div className="flex flex-col border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+      {/* Title bar with legend positioned top-right */}
+      <div className="flex items-center justify-between px-4 pt-3 pb-1">
+        <span className="text-[13px] font-semibold text-[var(--text-primary)]">
+          Log Volume Over Time
+        </span>
+        <TrendLegend items={series} zoomed={zoomed} onResetZoom={onResetZoom} />
+      </div>
       <UPlotChart
         options={options}
         data={data}
         height={height}
         onTimeBrush={onTimeRangeChange}
       />
-      <TrendLegend items={series} zoomed={zoomed} onResetZoom={onResetZoom} />
     </div>
   );
 }
 
 export const TrendHistogramStrip = memo(TrendHistogramStripComponent);
+

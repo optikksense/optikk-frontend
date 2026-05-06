@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import { useExplorerQuery } from "@/features/explorer/hooks/useExplorerQuery";
 import { useExplorerState } from "@/features/explorer/hooks/useExplorerState";
@@ -33,12 +34,40 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     fetcher: tracesExplorerApi.query,
   });
 
+  const { startTime, endTime, teamId, refreshKey } = query;
+
+  const needsFacets = include.includes("facets");
+  const facetsQuery = useStandardQuery({
+    queryKey: ["traces", "explorer", "facets", teamId ?? "none", refreshKey, startTime, endTime, JSON.stringify(state.filters)],
+    queryFn: () => tracesExplorerApi.queryFacets({ startTime, endTime, filters: state.filters, limit: 0 }),
+    enabled: (args.enabled ?? true) && needsFacets,
+  });
+
+  const needsTrend = include.includes("trend") || include.includes("summary");
+  const trendQuery = useStandardQuery({
+    queryKey: ["traces", "explorer", "trend", teamId ?? "none", refreshKey, startTime, endTime, JSON.stringify(state.filters)],
+    queryFn: () => tracesExplorerApi.queryTrend({ startTime, endTime, filters: state.filters, limit: 0 }),
+    enabled: (args.enabled ?? true) && needsTrend,
+  });
+
+  const summary = useMemo(() => {
+    if (!trendQuery.data) return undefined;
+    const total = trendQuery.data.reduce((sum, b) => sum + (Number(b.total) || 0), 0);
+    const errors = trendQuery.data.reduce((sum, b) => sum + (Number(b.errors) || 0), 0);
+    // ExplorerSummary expects { total: number, errors: number }
+    return { total, errors };
+  }, [trendQuery.data]);
+
   return {
     state,
     query,
+    facetsQuery,
+    trendQuery,
     traces: query.data?.traces ?? [],
     nextCursor: query.data?.nextCursor ?? null,
-    summary: query.data?.summary,
+    summary,
+    facets: facetsQuery.data,
+    trend: trendQuery.data,
     warnings: query.data?.warnings ?? [],
   };
 }

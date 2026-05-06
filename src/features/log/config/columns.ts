@@ -7,7 +7,7 @@ import type { ColumnConfig } from "@features/explorer/types";
  * column picker (`ResultsColumnPicker` from the explorer foundation).
  */
 export const DEFAULT_LOG_COLUMNS: readonly ColumnConfig[] = [
-  { key: "timestamp", visible: true, width: 180 },
+  { key: "timestamp", visible: true, width: 220 },
   { key: "service", visible: true, width: 160 },
   { key: "severity", visible: true, width: 84 },
   { key: "host", visible: true, width: 160 },

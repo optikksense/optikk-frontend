@@ -5,11 +5,13 @@ import { getJson, getJsonWithParams } from "./overviewClient";
 export interface RedSummary {
   service_count?: number;
   total_span_count?: number;
+  total_errors?: number;
   total_rps?: number;
   avg_error_pct?: number;
   avg_p50_ms?: number;
   avg_p95_ms?: number;
   avg_p99_ms?: number;
+  services?: any[];
 }
 
 export function getRedSummary(startTime: RequestTime, endTime: RequestTime): Promise<RedSummary> {
