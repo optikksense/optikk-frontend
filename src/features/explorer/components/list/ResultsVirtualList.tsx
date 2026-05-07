@@ -71,6 +71,7 @@ function ResultsVirtualListImpl<Row>(props: Props<Row>) {
                 top: 0,
                 left: 0,
                 width: "100%",
+                height: item.size,
                 transform: `translateY(${item.start}px)`,
               }}
             >
@@ -83,6 +84,7 @@ function ResultsVirtualListImpl<Row>(props: Props<Row>) {
                 selected={selectedId === id}
                 extraClassName={getRowClassName?.(row)}
                 extraStyle={getRowStyle?.(row)}
+                heightPx={rowHeight}
               />
             </div>
           );

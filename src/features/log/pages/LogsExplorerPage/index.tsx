@@ -22,17 +22,23 @@ export default function LogsExplorerPage() {
     <div className="flex h-full flex-col bg-[var(--bg-primary)]">
       <ExplorerHeader
         ref={p.searchInputRef}
+        variant="dsl"
+        scope="logs"
         filters={p.state.filters}
         onChangeFilters={(f: readonly ExplorerFilter[]) => p.state.setFilters(f)}
         onSubmitFreeText={p.handlers.onSubmitFreeText}
         actions={<SavedViewsDropdown scope="logs" onLoad={p.handlers.onLoadSavedView} />}
         kpiStrip={p.kpis.length > 0 ? <SummaryStrip kpis={p.kpis} /> : null}
+        searchPlaceholder='Search logs or filter: service_name:checkout severity_text:ERROR "timeout"'
+        valueSuggestions={p.filterValueSuggestions}
       />
       <div className="flex flex-1 overflow-hidden">
         <FacetRail
           groups={p.facetGroups}
           onInclude={p.handlers.onInclude}
           onExclude={p.handlers.onExclude}
+          activeFilterCount={p.state.filters.length}
+          onClearAll={p.handlers.onClearFilters}
         />
         <div className="flex flex-1 flex-col overflow-hidden">
           {p.trendBuckets.length > 0 ? (
@@ -44,7 +50,7 @@ export default function LogsExplorerPage() {
             />
           ) : null}
           <ResultsArea<LogRecord>
-            rows={p.list.results}
+            rows={p.pagedResults}
             columns={p.columnDefs}
             config={p.columnConfig}
             onConfigChange={p.setColumns}
@@ -57,9 +63,9 @@ export default function LogsExplorerPage() {
             getRowClassName={p.getRowClassName}
             getRowStyle={p.getRowStyle}
             onRetry={p.handlers.onRetry}
-            onLoadMore={p.list.loadMore}
             getContextMenuItems={p.getContextMenuItems}
             footer={p.footer}
+            rowHeight={36}
             emptyTitle="No logs"
             emptyDescription="Adjust filters or broaden the time range."
           />

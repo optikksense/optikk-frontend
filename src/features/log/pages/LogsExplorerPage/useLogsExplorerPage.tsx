@@ -1,9 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Copy, ExternalLink, Network } from "lucide-react";
-import { type ReactNode, useCallback, useMemo, useRef } from "react";
+import { ChevronLeft, ChevronRight, Copy, ExternalLink, Network } from "lucide-react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
-import { type SummaryKPI } from "@/features/explorer/components/chrome/SummaryStrip";
+import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
+import type { SummaryKPI } from "@/features/explorer/components/chrome/SummaryStrip";
 import type { FacetGroupModel } from "@/features/explorer/components/facets/FacetGroup";
 import type { ContextMenuEntry } from "@/features/explorer/components/list/RowContextMenu";
 import {
@@ -21,6 +22,7 @@ import type { LogsFacets, LogsSummary } from "../../api/logsAnalyticsApi";
 import { DEFAULT_LOG_COLUMNS } from "../../config/columns";
 import { useLogsExplorer } from "../../hooks/useLogsExplorer";
 import type { LogRecord } from "../../types/log";
+import { SEVERITY_STYLES, severityColor } from "../../utils/severity";
 import { buildLogColumns } from "./logsColumns";
 
 /**
@@ -33,6 +35,7 @@ export function useLogsExplorerPage() {
   const navigate = useNavigate();
   const { state, list, summary, trend, facets } = useLogsExplorer();
   const { columns: columnConfig, setColumns } = useExplorerColumns("logs", DEFAULT_LOG_COLUMNS);
+  const [pageIndex, setPageIndex] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
@@ -48,6 +51,22 @@ export function useLogsExplorerPage() {
   const queryError = list.isError ? formatErrorForDisplay(list.error) : null;
   const searchTerm = useMemo(() => extractSearchTerm(state.filters), [state.filters]);
   const columnDefs = useMemo(() => buildLogColumns(searchTerm), [searchTerm]);
+  const pageCount = list.pages.length;
+  const pagedResults = list.pages[pageIndex]?.results ?? [];
+  const filterValueSuggestions = useMemo(
+    () => buildLogValueSuggestions(facets.data),
+    [facets.data]
+  );
+
+  useEffect(() => {
+    setPageIndex(0);
+  }, [filterKey, timeRange]);
+
+  useEffect(() => {
+    if (pageIndex >= pageCount && pageCount > 0) {
+      setPageIndex(pageCount - 1);
+    }
+  }, [pageIndex, pageCount]);
 
   const onTimeRangeChange = useCallback(
     (fromMs: number, toMs: number) => setCustomTimeRange(fromMs, toMs, "Brush"),
@@ -63,6 +82,7 @@ export function useLogsExplorerPage() {
       state.setFilters([...state.filters, { field, op: "neq", value }]),
     [state]
   );
+  const onClearFilters = useCallback(() => state.setFilters([]), [state]);
   const onRowClick = useCallback((row: LogRecord) => state.setDetail(row.id), [state]);
   const onSubmitFreeText = useCallback(
     (text: string) => {
@@ -81,6 +101,19 @@ export function useLogsExplorerPage() {
   const onRetry = useCallback(() => {
     void list.refetch();
   }, [list]);
+  const onPreviousPage = useCallback(() => {
+    setPageIndex((current) => Math.max(0, current - 1));
+  }, []);
+  const onNextPage = useCallback(() => {
+    if (pageIndex + 1 < pageCount) {
+      setPageIndex(pageIndex + 1);
+      return;
+    }
+    if (list.hasMore && !list.isFetchingMore) {
+      const nextIndex = pageIndex + 1;
+      void list.loadMore().then(() => setPageIndex(nextIndex));
+    }
+  }, [pageIndex, pageCount, list]);
 
   const openTraceDetail = useCallback(
     (traceId: string) => {
@@ -102,33 +135,47 @@ export function useLogsExplorerPage() {
   );
 
   const getRowStyle = useCallback(
-    (_row: LogRecord) => undefined,
+    (row: LogRecord) => ({ borderLeft: `3px solid ${severityColor(row.severity_bucket)}` }),
     []
   );
-  const getRowClassName = useCallback(
-    (_row: LogRecord) => "",
-    []
-  );
+  const getRowClassName = useCallback((row: LogRecord) => logRowClassName(row.severity_bucket), []);
 
   useExplorerKeyboard({
     onSearchFocus: () => searchInputRef.current?.focus(),
-    onNavNext: () => navigateRow(list.results, state.detail, +1, state.setDetail),
-    onNavPrev: () => navigateRow(list.results, state.detail, -1, state.setDetail),
+    onNavNext: () => navigateRow(pagedResults, state.detail, +1, state.setDetail),
+    onNavPrev: () => navigateRow(pagedResults, state.detail, -1, state.setDetail),
     onClose: () => state.setDetail(null),
   });
 
   const footer = useMemo<ReactNode>(() => {
-    if (list.isFetchingMore) return "Loading more…";
-    if (!list.hasMore && list.results.length > 0) {
-      const n = list.results.length;
-      return `End of results · ${n.toLocaleString()} log${n === 1 ? "" : "s"}`;
-    }
-    return null;
-  }, [list.isFetchingMore, list.hasMore, list.results.length]);
+    if (list.results.length === 0 && !list.hasMore) return null;
+    return (
+      <PaginationFooter
+        pageIndex={pageIndex}
+        pageCount={pageCount}
+        pageRows={pagedResults.length}
+        loadedRows={list.results.length}
+        hasMore={list.hasMore}
+        loadingNext={list.isFetchingMore}
+        onPrevious={onPreviousPage}
+        onNext={onNextPage}
+      />
+    );
+  }, [
+    list.results.length,
+    list.hasMore,
+    list.isFetchingMore,
+    pageIndex,
+    pageCount,
+    pagedResults.length,
+    onPreviousPage,
+    onNextPage,
+  ]);
 
   return {
     state,
     list,
+    pagedResults,
     columnConfig,
     setColumns,
     columnDefs,
@@ -139,10 +186,12 @@ export function useLogsExplorerPage() {
     queryError,
     timeRange,
     searchInputRef,
+    filterValueSuggestions,
     handlers: {
       onTimeRangeChange,
       onInclude,
       onExclude,
+      onClearFilters,
       onRowClick,
       onSubmitFreeText,
       onLoadSavedView,
@@ -161,8 +210,7 @@ export type UseLogsExplorerPageReturn = ReturnType<typeof useLogsExplorerPage>;
 
 function extractSearchTerm(filters: readonly ExplorerFilter[]): string | undefined {
   const f = filters.find(
-    (x) =>
-      (x.field === "body" || x.field === "search") && (x.op === "contains" || x.op === "eq")
+    (x) => (x.field === "body" || x.field === "search") && (x.op === "contains" || x.op === "eq")
   );
   return f?.value || undefined;
 }
@@ -226,6 +274,104 @@ function buildKPIs(s: LogsSummary | undefined): SummaryKPI[] {
       tone: errorRate > 5 ? "error" : "default",
     },
   ];
+}
+
+function logRowClassName(bucket: number): string {
+  if (bucket === 5) {
+    return "bg-[rgba(184,119,217,0.06)] hover:bg-[rgba(184,119,217,0.12)]";
+  }
+  if (bucket >= 4) {
+    return "bg-[rgba(242,73,92,0.055)] hover:bg-[rgba(242,73,92,0.11)]";
+  }
+  if (bucket === 3) {
+    return "bg-[rgba(242,204,12,0.04)] hover:bg-[rgba(242,204,12,0.09)]";
+  }
+  return "border-l-transparent";
+}
+
+function buildLogValueSuggestions(
+  facets: LogsFacets | undefined
+): Readonly<Record<string, readonly SuggestionOption[]>> {
+  const suggestions: Record<string, readonly SuggestionOption[]> = {
+    severity_text: buildSeveritySuggestions(facets),
+  };
+  if (facets?.service.length) suggestions.service_name = facetOptions(facets.service);
+  if (facets?.host?.length) suggestions.host = facetOptions(facets.host);
+  if (facets?.pod?.length) suggestions.pod = facetOptions(facets.pod);
+  if (facets?.environment?.length) suggestions.environment = facetOptions(facets.environment);
+  return suggestions;
+}
+
+function buildSeveritySuggestions(facets: LogsFacets | undefined): readonly SuggestionOption[] {
+  if (facets?.severity_bucket.length) {
+    return facets.severity_bucket.map((value) => ({ value, label: value }));
+  }
+  return SEVERITY_STYLES.map((style) => ({
+    value: style.label.toUpperCase(),
+    label: style.label.toUpperCase(),
+    hint: style.shortLabel,
+  }));
+}
+
+function facetOptions(
+  values: readonly { value: string; count: number }[]
+): readonly SuggestionOption[] {
+  return values.map((item) => ({
+    value: item.value,
+    label: item.value,
+    hint: item.count.toLocaleString(),
+  }));
+}
+
+function PaginationFooter({
+  pageIndex,
+  pageCount,
+  pageRows,
+  loadedRows,
+  hasMore,
+  loadingNext,
+  onPrevious,
+  onNext,
+}: {
+  readonly pageIndex: number;
+  readonly pageCount: number;
+  readonly pageRows: number;
+  readonly loadedRows: number;
+  readonly hasMore: boolean;
+  readonly loadingNext: boolean;
+  readonly onPrevious: () => void;
+  readonly onNext: () => void;
+}) {
+  const displayPageCount = hasMore ? `${pageCount}+` : String(Math.max(pageCount, 1));
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="font-mono text-[11px] text-[var(--text-secondary)]">
+        Page {pageIndex + 1} of {displayPageCount} · {pageRows.toLocaleString()} rows on page ·{" "}
+        {loadedRows.toLocaleString()} loaded
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          aria-label="Previous logs page"
+          onClick={onPrevious}
+          disabled={pageIndex === 0}
+          className="inline-flex h-7 w-7 items-center justify-center rounded border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] disabled:pointer-events-none disabled:opacity-45"
+        >
+          <ChevronLeft size={14} />
+        </button>
+        <button
+          type="button"
+          aria-label="Next logs page"
+          onClick={onNext}
+          disabled={loadingNext || (!hasMore && pageIndex + 1 >= pageCount)}
+          className="inline-flex h-7 items-center gap-1 rounded border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 font-medium text-[11px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] disabled:pointer-events-none disabled:opacity-45"
+        >
+          {loadingNext ? "Loading" : "Next"}
+          <ChevronRight size={14} />
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function formatCompact(n: number): string {

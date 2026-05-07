@@ -2,7 +2,7 @@ import type { ColumnDef } from "@/features/explorer/types/results";
 import { HighlightedText } from "@shared/components/primitives/HighlightedText";
 
 import type { LogRecord } from "../../types/log";
-import { severityColor, severityStyle } from "../../utils/severity";
+import { severityStyle } from "../../utils/severity";
 
 /**
  * Factory for the typed log column defs. Pass the active free-text search
@@ -15,9 +15,9 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
     {
       key: "timestamp",
       label: "TIMESTAMP",
-      width: 220,
+      width: 210,
       render: (row) => (
-        <span className="font-mono text-xs text-[var(--text-secondary)]">
+        <span className="font-mono text-[12px] text-[var(--text-secondary)] leading-5">
           {formatTs(row.timestamp)}
         </span>
       ),
@@ -25,8 +25,12 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
     {
       key: "service",
       label: "SERVICE",
-      width: 160,
-      render: (row) => <span className="truncate text-sm">{row.service_name}</span>,
+      width: 150,
+      render: (row) => (
+        <span className="truncate font-medium text-[13px] text-[var(--text-primary)]">
+          {row.service_name}
+        </span>
+      ),
     },
     {
       key: "severity",
@@ -39,7 +43,7 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
       label: "Severity #",
       width: 90,
       render: (row) => (
-        <span className="font-mono text-xs text-[var(--text-secondary)]">
+        <span className="font-mono text-[var(--text-secondary)] text-xs">
           {row.severity_bucket}
         </span>
       ),
@@ -47,32 +51,40 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
     {
       key: "host",
       label: "HOST",
-      width: 160,
-      render: (row) => <span className="truncate text-xs">{row.host ?? ""}</span>,
+      width: 140,
+      render: (row) => (
+        <span className="truncate font-mono text-[12px] text-[var(--text-secondary)]">
+          {row.host ?? ""}
+        </span>
+      ),
     },
     {
       key: "pod",
       label: "Pod",
       width: 160,
-      render: (row) => <span className="truncate text-xs">{row.pod ?? ""}</span>,
+      render: (row) => <span className="truncate text-[12px]">{row.pod ?? ""}</span>,
     },
     {
       key: "container",
       label: "Container",
       width: 140,
-      render: (row) => <span className="truncate text-xs">{row.container ?? ""}</span>,
+      render: (row) => <span className="truncate text-[12px]">{row.container ?? ""}</span>,
     },
     {
       key: "environment",
       label: "Env",
       width: 100,
-      render: (row) => <span className="truncate text-xs">{row.environment ?? ""}</span>,
+      render: (row) => <span className="truncate text-[12px]">{row.environment ?? ""}</span>,
     },
     {
       key: "body",
       label: "MESSAGE",
       render: (row) => (
-        <HighlightedText className="truncate text-sm" text={row.body} match={searchTerm} />
+        <HighlightedText
+          className="truncate font-mono text-[13px] text-[var(--text-primary)] leading-5"
+          text={row.body}
+          match={searchTerm}
+        />
       ),
     },
     {
@@ -80,7 +92,7 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
       label: "Trace",
       width: 140,
       render: (row) => (
-        <span className="truncate font-mono text-xs text-[var(--text-tertiary)]">
+        <span className="truncate font-mono text-[12px] text-[var(--text-muted)]">
           {(row.trace_id ?? "").slice(0, 12)}
         </span>
       ),
@@ -90,15 +102,18 @@ export function buildLogColumns(searchTerm: string | undefined): readonly Column
 
 function SeverityBadge({ bucket }: { bucket: number }) {
   const style = severityStyle(bucket);
-  // Solid background badge — high visibility, matching reference design.
-  // Warn/Error/Fatal get white text; Trace/Debug/Info get dark text.
-  const textColor = bucket >= 3 ? "#fff" : "#111";
   return (
     <span
-      className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold"
-      style={{ backgroundColor: severityColor(bucket), color: textColor }}
+      className="inline-flex h-5 items-center gap-1.5 rounded-sm px-1.5 font-mono font-semibold text-[11px] uppercase leading-5"
+      style={{
+        backgroundColor: `${style.color}18`,
+        border: `1px solid ${style.color}55`,
+        color: style.color,
+      }}
+      title={style.label}
     >
-      [{style.shortLabel}]
+      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: style.color }} />
+      {style.shortLabel}
     </span>
   );
 }

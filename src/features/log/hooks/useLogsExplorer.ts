@@ -2,18 +2,18 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 
 import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
-import { resolveTimeBounds } from "@features/explorer/utils/timeRange";
 import { useExplorerState } from "@features/explorer/hooks/useExplorerState";
+import { resolveTimeBounds } from "@features/explorer/utils/timeRange";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import {
-  getLogsFacets,
-  getLogsSummary,
-  getLogsTrend,
   type LogsAnalyticsArgs,
   type LogsFacets,
   type LogsSummary,
   type LogsTrendBucket,
+  getLogsFacets,
+  getLogsSummary,
+  getLogsTrend,
 } from "../api/logsAnalyticsApi";
 import { queryLogs } from "../api/logsQueryApi";
 import type { LogRecord, LogsQueryResponse } from "../types/log";
@@ -28,9 +28,9 @@ interface UseLogsExplorerArgs {
 /**
  * Logs explorer foundation — URL state + four parallel reads.
  *
- * - `list` uses `useInfiniteQuery` so the virtualized list can append new
- *   pages on near-end-scroll (Datadog parity). Pages flatten into a single
- *   `results` array; `loadMore`/`hasMore` are exposed for the page.
+ * - `list` uses `useInfiniteQuery` so the page can move through cursor-backed
+ *   pages without losing already-loaded results. Pages flatten into `results`
+ *   for aggregate helpers, while `pages` keeps the cursor pagination boundary.
  * - The peer endpoints (summary / trend / facets) intentionally stay
  *   independent so KPI strip / histogram / facet rail render as soon as
  *   each lands — bundling would gate the fastest by the slowest.
@@ -69,20 +69,23 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
     () => listQuery.data?.pages.flatMap((p) => p.results) ?? [],
     [listQuery.data?.pages]
   );
+  const pages = useMemo(() => listQuery.data?.pages ?? [], [listQuery.data?.pages]);
 
-  const loadMore = useCallback(() => {
+  const loadMore = useCallback(async () => {
     if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
-      void listQuery.fetchNextPage();
+      await listQuery.fetchNextPage();
     }
   }, [listQuery]);
 
   const list = {
     results: flatResults,
+    pages,
     isPending: listQuery.isPending,
     isError: listQuery.isError,
     error: listQuery.error,
     isFetchingMore: listQuery.isFetchingNextPage,
     hasMore: listQuery.hasNextPage ?? false,
+    pageSize: limit,
     refetch: () => listQuery.refetch(),
     loadMore,
   };

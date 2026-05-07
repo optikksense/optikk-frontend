@@ -1,6 +1,6 @@
-import type { ExplorerTrendBucket } from "../types/queries";
 import type { TrendBucket } from "../components/trend/TrendHistogramStrip";
 import type { TrendLegendItem } from "../components/trend/TrendLegend";
+import type { ExplorerTrendBucket } from "../types/queries";
 
 /**
  * Converts the backend ExplorerTrendBucket shape into the
@@ -9,7 +9,7 @@ import type { TrendLegendItem } from "../components/trend/TrendLegend";
  * when the string is malformed so the chart still renders.
  */
 export function toTrendBuckets(
-  backend: readonly ExplorerTrendBucket[] | undefined,
+  backend: readonly ExplorerTrendBucket[] | undefined
 ): readonly TrendBucket[] {
   if (!backend || backend.length === 0) return [];
   return backend.map((bucket, idx) => ({
@@ -32,7 +32,7 @@ export function toTrendBuckets(
  *   ≥4 → ERROR/FATAL ; 3 → WARN ; everything else → other.
  */
 export function aggregateSeverityTrend(
-  rows: ReadonlyArray<{ time_bucket: string; severity_bucket: number; count: number }> | undefined,
+  rows: ReadonlyArray<{ time_bucket: string; severity_bucket: number; count: number }> | undefined
 ): readonly ExplorerTrendBucket[] {
   if (!rows || rows.length === 0) return [];
   const map = new Map<string, { total: number; errors: number; warnings: number }>();
@@ -57,9 +57,9 @@ export function aggregateSeverityTrend(
  * a subset when a scope only tracks totals + errors (e.g. traces).
  */
 export const LOG_TREND_SERIES: readonly TrendLegendItem[] = [
-  { key: "total", label: "Total", color: "#8B7FFF" },
-  { key: "warnings", label: "Warnings", color: "#F2C14E" },
-  { key: "errors", label: "Errors", color: "#F04438" },
+  { key: "total", label: "Total", color: "#8e96a9" },
+  { key: "warnings", label: "Warnings", color: "#f2cc0c" },
+  { key: "errors", label: "Errors", color: "#f2495c" },
 ];
 
 export const TRACE_TREND_SERIES: readonly TrendLegendItem[] = [

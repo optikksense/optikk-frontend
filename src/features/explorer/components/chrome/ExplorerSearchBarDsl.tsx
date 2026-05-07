@@ -1,14 +1,16 @@
-import { forwardRef, memo, useCallback, useEffect, useState, type KeyboardEvent } from "react";
+import { type KeyboardEvent, forwardRef, memo, useCallback, useEffect, useState } from "react";
 
 import { useDslSearchBar } from "../../hooks/useDslSearchBar";
 import { formatDsl } from "../../search/formatDsl";
-import type { ExplorerFilter } from "../../types/filters";
+import type { ExplorerFilter, ExplorerScope } from "../../types/filters";
 import { QuerySuggestions, type SuggestionOption } from "./QuerySuggestions";
 
 interface Props {
   readonly filters: readonly ExplorerFilter[];
   readonly onApply: (filters: readonly ExplorerFilter[], raw: string) => void;
   readonly placeholder?: string;
+  readonly scope?: ExplorerScope;
+  readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
 }
 
 /**
@@ -19,16 +21,26 @@ interface Props {
 function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputElement>) {
   const seed = formatDsl(props.filters);
   const [showPopover, setShowPopover] = useState(false);
-  const s = useDslSearchBar({ initial: seed });
+  const s = useDslSearchBar({
+    initial: seed,
+    scope: props.scope,
+    valueSuggestions: props.valueSuggestions,
+  });
   useSyncSeedOnExternalChange(seed, s.input, s.setInput, s.setCaret);
   const activeOpt = s.suggestions[s.activeIdx];
-  const onSelect = useCallback((opt: SuggestionOption) => {
-    s.acceptSuggestion(opt);
-    setShowPopover(true);
-  }, [s]);
-  const onKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
-    handleKeyDown(e, showPopover, setShowPopover, s, props.onApply, activeOpt);
-  }, [showPopover, s, props.onApply, activeOpt]);
+  const onSelect = useCallback(
+    (opt: SuggestionOption) => {
+      s.acceptSuggestion(opt);
+      setShowPopover(true);
+    },
+    [s]
+  );
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      handleKeyDown(e, showPopover, setShowPopover, s, props.onApply, activeOpt);
+    },
+    [showPopover, s, props.onApply, activeOpt]
+  );
   return (
     <DslBarLayout
       inputRef={ref}
@@ -60,8 +72,11 @@ function DslBarLayout(p: LayoutProps) {
         ref={p.inputRef}
         type="text"
         value={s.input}
-        placeholder={p.placeholder ?? "service:foo -env:prod @http.status_code:>=500 \"timeout\""}
-        onChange={(e) => { s.onChange(e.target.value, e.target.selectionStart ?? e.target.value.length); p.setShowPopover(true); }}
+        placeholder={p.placeholder ?? 'service:foo -env:prod @http.status_code:>=500 "timeout"'}
+        onChange={(e) => {
+          s.onChange(e.target.value, e.target.selectionStart ?? e.target.value.length);
+          p.setShowPopover(true);
+        }}
         onSelect={(e) => s.setCaret((e.target as HTMLInputElement).selectionStart ?? 0)}
         onFocus={() => p.setShowPopover(true)}
         onBlur={() => setTimeout(() => p.setShowPopover(false), 150)}
@@ -81,14 +96,15 @@ function DslBarLayout(p: LayoutProps) {
         />
       ) : null}
       {s.parsed.errors.length > 0 ? (
-        <div className="mt-1 text-[10px] text-[#e8494d]">{s.parsed.errors[0].message}</div>
+        <div className="mt-1 text-[#e8494d] text-[10px]">{s.parsed.errors[0].message}</div>
       ) : null}
     </div>
   );
 }
 
 function inputClass(hasError: boolean): string {
-  const base = "w-full rounded border px-2 py-1 font-mono text-[13px] outline-none focus:border-[var(--accent)]";
+  const base =
+    "w-full rounded border px-2 py-1 font-mono text-[13px] outline-none focus:border-[var(--accent)]";
   return hasError
     ? `${base} border-[#e8494d] bg-[var(--bg-primary)]`
     : `${base} border-[var(--border-color)] bg-[var(--bg-primary)]`;
@@ -106,7 +122,7 @@ function handleKeyDown(
   setShowPopover: (v: boolean) => void,
   s: ReturnType<typeof useDslSearchBar>,
   onApply: Props["onApply"],
-  activeOpt: SuggestionOption | undefined,
+  activeOpt: SuggestionOption | undefined
 ) {
   if (e.key === "Escape") {
     setShowPopover(false);
@@ -147,7 +163,7 @@ function useSyncSeedOnExternalChange(
   seed: string,
   current: string,
   setInput: (v: string) => void,
-  setCaret: (v: number) => void,
+  setCaret: (v: number) => void
 ) {
   const [lastSeed, setLastSeed] = useState(seed);
   useEffect(() => {

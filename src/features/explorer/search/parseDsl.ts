@@ -1,7 +1,7 @@
 import type { ExplorerFilter, ExplorerFilterOp } from "../types/filters";
 
-import { findKnownField } from "./knownFields";
-import { tokenizeDsl, type Token } from "./tokenizeDsl";
+import { KNOWN_FIELDS, type KnownField, findKnownField } from "./knownFields";
+import { type Token, tokenizeDsl } from "./tokenizeDsl";
 
 export interface ParseError {
   readonly offset: number;
@@ -15,13 +15,13 @@ export interface ParseResult {
 }
 
 /** Parse a Datadog-style DSL string into explorer filters (best-effort). */
-export function parseDsl(input: string): ParseResult {
+export function parseDsl(input: string, fields: readonly KnownField[] = KNOWN_FIELDS): ParseResult {
   const filters: ExplorerFilter[] = [];
   const errors: ParseError[] = [];
   for (const tok of tokenizeDsl(input)) {
     if (tok.kind === "bare") handleBare(tok, filters);
     else if (tok.kind === "quoted") handleQuoted(tok, filters);
-    else if (tok.kind === "kv") handleKv(tok, filters, errors);
+    else if (tok.kind === "kv") handleKv(tok, filters, errors, fields);
   }
   return { filters, errors };
 }
@@ -37,7 +37,12 @@ function handleQuoted(tok: Token, out: ExplorerFilter[]) {
   out.push({ field: "search", op: "contains", value });
 }
 
-function handleKv(tok: Token, out: ExplorerFilter[], errors: ParseError[]) {
+function handleKv(
+  tok: Token,
+  out: ExplorerFilter[],
+  errors: ParseError[],
+  fields: readonly KnownField[]
+) {
   const keyRaw = tok.key ?? "";
   const valueRaw = tok.value ?? "";
   const negate = keyRaw.startsWith("-");
@@ -46,7 +51,7 @@ function handleKv(tok: Token, out: ExplorerFilter[], errors: ParseError[]) {
     errors.push({ offset: tok.offset, length: tok.length, message: "Empty field or value" });
     return;
   }
-  if (!isValidField(key)) {
+  if (!isValidField(key, fields)) {
     errors.push({ offset: tok.offset, length: tok.length, message: `Unknown field "${key}"` });
     return;
   }
@@ -68,7 +73,10 @@ function parseValue(raw: string): ParsedValue | null {
   if (cmp) return cmp;
   if (raw.startsWith("(") && raw.endsWith(")")) {
     const inner = raw.slice(1, -1);
-    const parts = inner.split(/\s+OR\s+/i).map((p) => p.trim()).filter(Boolean);
+    const parts = inner
+      .split(/\s+OR\s+/i)
+      .map((p) => p.trim())
+      .filter(Boolean);
     if (parts.length === 0) return null;
     return { op: "in", value: parts.join(",") };
   }
@@ -91,7 +99,7 @@ function effectiveOp(op: ExplorerFilterOp, negate: boolean): ExplorerFilterOp {
   return op;
 }
 
-function isValidField(key: string): boolean {
+function isValidField(key: string, fields: readonly KnownField[]): boolean {
   if (key.startsWith("@")) return key.length > 1;
-  return findKnownField(key) !== undefined;
+  return findKnownField(key, fields) !== undefined;
 }

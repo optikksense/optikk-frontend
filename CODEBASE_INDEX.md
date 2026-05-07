@@ -73,12 +73,19 @@ The current frontend owns significant page composition and interaction logic dir
 | Overview | `src/features/overview/` | Overview hub, service hub, service detail, overview dashboard/renderers |
 | Saturation | `src/features/saturation/` | Saturation hub and datastore drill-downs |
 | Metrics | `src/features/metrics/` | Metrics explorer, charts, store, API hooks |
-| Logs | `src/features/log/` | Logs hub, search state, histogram renderer, helpers |
+| Logs | `src/features/log/` | Logs explorer, cursor-paginated results, scoped DSL search suggestions, severity styling |
 | Traces | `src/features/traces/` | Trace explorer, detail, comparison, waterfall rendering |
 | Infrastructure | `src/features/infrastructure/` | Frontend-owned infrastructure hub, APIs, fleet and tab content |
 | Settings | `src/features/settings/` | Profile, team, and preferences pages |
 | Marketing | `src/features/marketing/` | Public-facing site content and shell |
 | Explorer | `src/features/explorer/` | Shared explorer primitives across logs/traces/metrics (DSL search, facets, analytics, trend) |
+
+## Explorer conventions
+
+- Logs and traces use the shared `ExplorerHeader` DSL search path. Pass `scope="logs"` or `scope="traces"` so `parseDsl` validates against the correct field catalog from `src/features/explorer/search/knownFields.ts`.
+- Logs value suggestions are fed from the logs facets response into `ExplorerHeader.valueSuggestions`; traces continue to use the backend `/traces/suggest` path.
+- Logs results use cursor-backed pages from `useLogsExplorer().list.pages` and render one page at a time with footer navigation. Do not reintroduce near-end infinite append for the logs page unless the product direction changes.
+- `ResultsArea` accepts an optional `rowHeight` for denser or more readable explorer rows while keeping the shared virtual list implementation.
 
 ## Shared layer map
 

@@ -8,7 +8,7 @@ import { ResultsEmptyState } from "./ResultsEmptyState";
 import { ResultsHeader } from "./ResultsHeader";
 import { ResultsLoadingRows } from "./ResultsLoadingRows";
 import { ResultsVirtualList } from "./ResultsVirtualList";
-import { RowContextMenu, type ContextMenuEntry } from "./RowContextMenu";
+import { type ContextMenuEntry, RowContextMenu } from "./RowContextMenu";
 
 interface Props<Row> {
   readonly rows: readonly Row[];
@@ -31,6 +31,8 @@ interface Props<Row> {
   readonly onLoadMore?: () => void;
   /** Optional footer status (e.g. "Loading more…", "End of results"). */
   readonly footer?: React.ReactNode;
+  /** Fixed virtual row height. Defaults to the compact explorer density. */
+  readonly rowHeight?: number;
   /** When set, right-click on a row opens a Datadog-style context menu with these items. */
   readonly getContextMenuItems?: (row: Row) => readonly ContextMenuEntry[];
 }
@@ -60,6 +62,7 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
     getRowStyle,
     onLoadMore,
     footer,
+    rowHeight,
     getContextMenuItems,
   } = props;
   const [menu, setMenu] = useState<{ x: number; y: number; row: Row } | null>(null);
@@ -123,6 +126,7 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
             getRowClassName={getRowClassName}
             getRowStyle={getRowStyle}
             onNearEnd={onLoadMore}
+            rowHeight={rowHeight}
           />
           {footer ? (
             <div className="border-[var(--border-color)] border-t bg-[var(--bg-secondary)] px-4 py-1.5 text-center text-[11px] text-[var(--text-muted)]">

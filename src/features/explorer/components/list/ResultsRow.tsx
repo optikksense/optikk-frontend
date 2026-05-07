@@ -1,4 +1,4 @@
-import { memo, type ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 import type { ColumnConfig, ColumnDef } from "../../types/results";
 
@@ -11,6 +11,7 @@ interface Props<Row> {
   readonly selected?: boolean;
   readonly extraClassName?: string;
   readonly extraStyle?: React.CSSProperties;
+  readonly heightPx?: number;
 }
 
 function cellContent<Row>(column: ColumnDef<Row> | undefined, row: Row): ReactNode {
@@ -27,6 +28,7 @@ function ResultsRowImpl<Row>({
   selected,
   extraClassName,
   extraStyle,
+  heightPx,
 }: Props<Row>) {
   const visibleConfig = config.filter((entry) => entry.visible);
   const columnByKey = new Map(columns.map((column) => [column.key, column]));
@@ -51,8 +53,8 @@ function ResultsRowImpl<Row>({
           : undefined
       }
       tabIndex={onClick ? 0 : -1}
-      style={extraStyle}
-      className={`flex h-7 cursor-pointer items-center gap-2 border-b border-[var(--border-color)] px-3 text-[12px] hover:bg-[rgba(255,255,255,0.04)] ${
+      style={{ ...extraStyle, ...(heightPx ? { height: heightPx } : undefined) }}
+      className={`flex h-7 cursor-pointer items-center gap-2 border-[var(--border-color)] border-b px-3 text-[12px] hover:bg-[rgba(255,255,255,0.04)] ${
         selected ? "bg-[var(--color-primary-subtle-12)]" : ""
       } ${extraClassName ?? ""}`}
     >

@@ -53,8 +53,11 @@ function stripNegation(token: string): string {
 }
 
 /** Top-K field keys matching a prefix (case-insensitive), for the field dropdown. */
-export function matchingFields(prefix: string): readonly KnownField[] {
-  if (prefix === "") return KNOWN_FIELDS;
+export function matchingFields(
+  prefix: string,
+  fields: readonly KnownField[] = KNOWN_FIELDS
+): readonly KnownField[] {
+  if (prefix === "") return fields;
   const lower = prefix.toLowerCase();
-  return KNOWN_FIELDS.filter((f) => f.key.toLowerCase().includes(lower));
+  return fields.filter((f) => f.key.toLowerCase().includes(lower));
 }
