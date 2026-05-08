@@ -1,6 +1,6 @@
 import { Button } from "@shared/components/primitives/ui";
 import { AlertCircle, Columns3 } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
 
 import type { ColumnConfig, ColumnDef } from "../../types/results";
 import { ResultsColumnPicker } from "./ResultsColumnPicker";
@@ -8,6 +8,7 @@ import { ResultsEmptyState } from "./ResultsEmptyState";
 import { ResultsHeader } from "./ResultsHeader";
 import { ResultsLoadingRows } from "./ResultsLoadingRows";
 import { ResultsVirtualList } from "./ResultsVirtualList";
+import { type ContextMenuEntry, RowContextMenu } from "./RowContextMenu";
 
 interface Props<Row> {
   readonly rows: readonly Row[];
@@ -25,6 +26,15 @@ interface Props<Row> {
   readonly queryError?: string | null;
   readonly onRetry?: () => void;
   readonly getRowClassName?: (row: Row) => string;
+  readonly getRowStyle?: (row: Row) => React.CSSProperties | undefined;
+  /** Called when the user scrolls within ~4 rows of the end. Wire to a `loadMore`. */
+  readonly onLoadMore?: () => void;
+  /** Optional footer status (e.g. "Loading more…", "End of results"). */
+  readonly footer?: React.ReactNode;
+  /** Fixed virtual row height. Defaults to the compact explorer density. */
+  readonly rowHeight?: number;
+  /** When set, right-click on a row opens a Datadog-style context menu with these items. */
+  readonly getContextMenuItems?: (row: Row) => readonly ContextMenuEntry[];
 }
 
 /**
@@ -49,7 +59,18 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
     queryError,
     onRetry,
     getRowClassName,
+    getRowStyle,
+    onLoadMore,
+    footer,
+    rowHeight,
+    getContextMenuItems,
   } = props;
+  const [menu, setMenu] = useState<{ x: number; y: number; row: Row } | null>(null);
+  const onRowContextMenu = useCallback(
+    (row: Row, x: number, y: number) => setMenu({ row, x, y }),
+    []
+  );
+  const closeMenu = useCallback(() => setMenu(null), []);
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <ResultsHeader
@@ -92,17 +113,36 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
       ) : rows.length === 0 ? (
         <ResultsEmptyState title={emptyTitle} description={emptyDescription} />
       ) : (
-        <ResultsVirtualList<Row>
-          rows={rows}
-          columns={columns}
-          config={config}
-          getRowId={getRowId}
-          selectedId={selectedId}
-          onRowClick={onRowClick}
-          resetKey={resetKey}
-          getRowClassName={getRowClassName}
-        />
+        <>
+          <ResultsVirtualList<Row>
+            rows={rows}
+            columns={columns}
+            config={config}
+            getRowId={getRowId}
+            selectedId={selectedId}
+            onRowClick={onRowClick}
+            onRowContextMenu={getContextMenuItems ? onRowContextMenu : undefined}
+            resetKey={resetKey}
+            getRowClassName={getRowClassName}
+            getRowStyle={getRowStyle}
+            onNearEnd={onLoadMore}
+            rowHeight={rowHeight}
+          />
+          {footer ? (
+            <div className="border-[var(--border-color)] border-t bg-[var(--bg-secondary)] px-4 py-1.5 text-center text-[11px] text-[var(--text-muted)]">
+              {footer}
+            </div>
+          ) : null}
+        </>
       )}
+      {menu && getContextMenuItems ? (
+        <RowContextMenu
+          x={menu.x}
+          y={menu.y}
+          items={getContextMenuItems(menu.row)}
+          onClose={closeMenu}
+        />
+      ) : null}
     </div>
   );
 }

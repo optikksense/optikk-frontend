@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 
-import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
+import {
+  getErrorRateTimeseries,
+  getP95LatencyTimeseries,
+  getRequestRateTimeseries,
+} from "@/features/overview/api/serviceMetricsApi";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 interface SeriesPoint {
@@ -28,21 +32,19 @@ export function useGoldenSignals(serviceName: string) {
 
   const requestQ = useTimeRangeQuery(
     "service-page-request-rate",
-    (teamId, start, end) =>
-      metricsOverviewApi.getOverviewRequestRate(teamId, start, end, serviceName),
+    (_teamId, start, end) => getRequestRateTimeseries(start, end, serviceName),
     { extraKeys: [serviceName], enabled }
   );
 
   const errorQ = useTimeRangeQuery(
     "service-page-error-rate",
-    (teamId, start, end) => metricsOverviewApi.getOverviewErrorRate(teamId, start, end, serviceName),
+    (_teamId, start, end) => getErrorRateTimeseries(start, end, serviceName),
     { extraKeys: [serviceName], enabled }
   );
 
   const latencyQ = useTimeRangeQuery(
     "service-page-p95",
-    (teamId, start, end) =>
-      metricsOverviewApi.getOverviewP95Latency(teamId, start, end, serviceName),
+    (_teamId, start, end) => getP95LatencyTimeseries(start, end, serviceName),
     { extraKeys: [serviceName], enabled }
   );
 

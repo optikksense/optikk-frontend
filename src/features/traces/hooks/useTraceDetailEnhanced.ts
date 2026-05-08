@@ -54,13 +54,6 @@ export function useTraceDetailEnhanced(
     enabled: enabled && activeDetailTab === "events",
   });
 
-  // Self-times — only when self-time tab is active
-  const { data: spanSelfTimesData } = useStandardQuery({
-    queryKey: ["trace-span-self-times", traceId],
-    queryFn: () => tracesService.getSpanSelfTimes(traceId),
-    enabled: enabled && activeDetailTab === "selftime",
-  });
-
   const { data: relatedTracesData } = useStandardQuery({
     queryKey: [
       "trace-related",
@@ -142,17 +135,7 @@ export function useTraceDetailEnhanced(
     [spanEventsData]
   );
 
-  const spanSelfTimes = useMemo<SpanSelfTime[]>(
-    () =>
-      spanSelfTimesData?.map((item) => ({
-        spanId: item.span_id,
-        operationName: item.operation_name,
-        totalDurationMs: item.total_duration_ms,
-        selfTimeMs: item.self_time_ms,
-        childTimeMs: item.child_time_ms,
-      })) ?? [],
-    [spanSelfTimesData]
-  );
+  const spanSelfTimes: SpanSelfTime[] = [];
 
   const relatedTraces = useMemo<RelatedTrace[]>(
     () =>

@@ -7,6 +7,10 @@ import { cn } from "@/lib/utils";
 import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
 import { resolveThemeColor } from "@shared/utils/chartTheme";
 
+import { buildMarkerDrawHook, type ChartMarker } from "./chartMarkers";
+
+export type { ChartMarker } from "./chartMarkers";
+
 export interface UPlotChartProps {
   options: Omit<uPlot.Options, "width" | "height">;
   data: uPlot.AlignedData;
@@ -17,6 +21,8 @@ export interface UPlotChartProps {
   syncKey?: uPlot.SyncPubSub;
   /** Called when user drag-selects a time range on the chart */
   onTimeBrush?: (startMs: number, endMs: number) => void;
+  /** Vertical dashed lines (deployment markers, incidents, annotations). */
+  markers?: readonly ChartMarker[];
   tooltipContent?: (params: { u: uPlot; idx: number; data: uPlot.AlignedData }) => {
     title?: string;
     rows: Array<{ label: string; value: string; color?: string }>;
@@ -51,6 +57,7 @@ function UPlotChart({
   className,
   syncKey,
   onTimeBrush,
+  markers,
   tooltipContent,
 }: UPlotChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,14 +84,17 @@ function UPlotChart({
         syncKey?.key ?? "",
         tooltipContent ? 1 : 0,
         onTimeBrush ? 1 : 0,
+        markers?.length ?? 0,
       ].join(":"),
-    [options.series?.length, height, fillHeight, syncKey, tooltipContent, onTimeBrush]
+    [options.series?.length, height, fillHeight, syncKey, tooltipContent, onTimeBrush, markers]
   );
 
   // Memoize the merged options to avoid unnecessary re-renders
   const mergedOptions = useMemo(() => {
     const existingHooks = options.hooks ?? {};
     const setCursorHooks = existingHooks.setCursor ?? [];
+    const drawHooks = existingHooks.draw ?? [];
+    const markerDraw = markers && markers.length > 0 ? [buildMarkerDrawHook(markers)] : [];
 
     return {
       ...options,
@@ -97,6 +107,7 @@ function UPlotChart({
       },
       hooks: {
         ...existingHooks,
+        draw: [...drawHooks, ...markerDraw],
         setSelect: [
           ...(existingHooks.setSelect ?? []),
           ...(onTimeBrush
@@ -152,7 +163,7 @@ function UPlotChart({
         ],
       },
     };
-  }, [options, height, fillHeight, tooltipContent, syncKey, onTimeBrush]);
+  }, [options, height, fillHeight, tooltipContent, syncKey, onTimeBrush, markers]);
 
   /** Bumps when `data` series shape changes so the structural effect rebuilds the chart. */
   const [dataLayoutVersion, setDataLayoutVersion] = useState(0);
@@ -250,9 +261,9 @@ export default memo(UPlotChart);
 
 /** Default axis styling matching the app's dark theme. */
 export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
-  const gridColor = resolveThemeColor("--border-light", "rgba(255,255,255,0.08)");
-  const labelColor = resolveThemeColor("--text-secondary", "#8e96a9");
-  const font = "12px Inter, sans-serif";
+  const gridColor = resolveThemeColor("--chart-grid", "rgba(255,255,255,0.06)");
+  const labelColor = resolveThemeColor("--chart-axis", "#8e96a9");
+  const font = "11px Inter, sans-serif";
   const yAxisSize = config?.yAxisSize ?? 60;
 
   return [
@@ -261,7 +272,7 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
       grid: { stroke: gridColor, width: 1 },
       ticks: { show: false },
       font,
-      gap: 10,
+      gap: 8,
     },
     {
       stroke: labelColor,
@@ -269,24 +280,45 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
       ticks: { show: false },
       font,
       size: yAxisSize,
-      gap: 10,
+      gap: 8,
     },
   ];
 }
 
-/** Build a line series config for uPlot. */
+/** Build a line series config for uPlot. Default fill alpha is `--chart-area-alpha` (8%). */
 export function uLine(
   label: string,
   color: string,
-  opts?: { fill?: boolean; dash?: number[]; width?: number }
+  opts?: { fill?: boolean; dash?: number[]; width?: number; fillAlphaHex?: string }
 ): uPlot.Series {
+  const alpha = opts?.fillAlphaHex ?? "14"; // 0x14 ≈ 8% — matches --chart-area-alpha
   return {
     label,
     stroke: color,
     width: opts?.width ?? 1.85,
-    fill: opts?.fill ? `${color}14` : undefined,
+    fill: opts?.fill ? `${color}${alpha}` : undefined,
     dash: opts?.dash,
     points: { show: false },
+  };
+}
+
+/** Comparison series — dotted, lower opacity, used for "compare to previous period". */
+export function uComparisonLine(label: string, color: string): uPlot.Series {
+  return {
+    label,
+    stroke: color,
+    width: 1.5,
+    dash: [4, 4],
+    points: { show: false },
+  };
+}
+
+/** Crosshair cursor preset — dashed, primary color. Pair with `cursor: { ...ddCrosshair() }`. */
+export function ddCrosshair(): Pick<uPlot.Cursor, "points" | "x" | "y"> {
+  return {
+    points: { show: false },
+    x: true,
+    y: false,
   };
 }
 

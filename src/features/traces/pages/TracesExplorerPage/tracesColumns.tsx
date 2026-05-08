@@ -5,19 +5,14 @@ import type { ColumnDef } from "@/features/explorer/types/results";
 import type { TraceSummary } from "../../types/trace";
 import { getServiceColor } from "../../utils/serviceColor";
 
-export interface TraceColumnContext {
-  /** Population percentiles (ms) used by the duration distribution cell. Null while loading. */
-  readonly overall: { readonly p50Ms: number; readonly p95Ms: number } | null;
-}
-
 /**
  * ColumnDef factory for the traces list. Keys line up with `DEFAULT_TRACE_COLUMNS`
  * (features/traces/config/columns.ts) so `useExplorerColumns` can toggle them.
  */
-export function buildTraceColumns(ctx: TraceColumnContext): readonly ColumnDef<TraceSummary>[] {
+export function buildTraceColumns(): readonly ColumnDef<TraceSummary>[] {
   return [
     { key: "start", label: "Start", width: 170, render: renderStart },
-    { key: "duration", label: "Duration", width: 180, render: (row) => <DurationCell row={row} overall={ctx.overall} /> },
+    { key: "duration", label: "Duration", width: 180, render: (row) => <DurationCell row={row} /> },
     { key: "service", label: "Service", width: 160, render: renderService },
     { key: "operation", label: "Operation", render: renderOperation },
     { key: "endpoint", label: "Endpoint", width: 200, render: (row) => <span className="truncate text-xs">{row.root_endpoint ?? ""}</span> },
@@ -61,34 +56,11 @@ function renderOperation(row: TraceSummary) {
   );
 }
 
-function DurationCell({ row, overall }: { row: TraceSummary; overall: TraceColumnContext["overall"] }) {
+function DurationCell({ row }: { row: TraceSummary }) {
   const ms = row.duration_ns / 1e6;
-  const label = formatMs(ms);
   const color = row.has_error ? "#e8494d" : undefined;
   return (
-    <div className="flex items-center gap-2">
-      <span className="font-mono text-xs" style={{ color }}>{label}</span>
-      <DistributionTick ms={ms} overall={overall} hasError={row.has_error} />
-    </div>
-  );
-}
-
-function DistributionTick({ ms, overall, hasError }: { ms: number; overall: TraceColumnContext["overall"]; hasError: boolean }) {
-  if (!overall || overall.p95Ms <= 0) return null;
-  const maxScale = Math.max(overall.p95Ms * 1.5, ms);
-  const pct = Math.min(100, (ms / maxScale) * 100);
-  const p50Pct = Math.min(100, (overall.p50Ms / maxScale) * 100);
-  const p95Pct = Math.min(100, (overall.p95Ms / maxScale) * 100);
-  const tickColor = hasError ? "#e8494d" : ms > overall.p95Ms ? "#e0b400" : "#4e9fdd";
-  return (
-    <span
-      className="relative inline-block h-1.5 min-w-[60px] flex-1 overflow-hidden rounded-full bg-white/[0.06]"
-      title={`p50 ${formatMs(overall.p50Ms)} · p95 ${formatMs(overall.p95Ms)}`}
-    >
-      <span className="absolute top-0 h-full w-px bg-[var(--text-muted)] opacity-40" style={{ left: `${p50Pct}%` }} />
-      <span className="absolute top-0 h-full w-px bg-[var(--text-muted)] opacity-60" style={{ left: `${p95Pct}%` }} />
-      <span className="absolute top-0 h-full w-1.5 rounded-full" style={{ left: `calc(${pct}% - 3px)`, backgroundColor: tickColor }} />
-    </span>
+    <span className="font-mono text-xs" style={{ color }}>{formatMs(ms)}</span>
   );
 }
 

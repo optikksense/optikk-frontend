@@ -1,9 +1,9 @@
-import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
 import type { ServiceMetricPoint } from "@/features/metrics/types";
 import {
   type ServiceLatestDeployment,
   deploymentsApi,
 } from "@/features/overview/api/deploymentsApi";
+import { getServiceMetrics } from "@/features/overview/api/serviceMetricsApi";
 import type { RequestTime } from "@/shared/api/service-types";
 import type { ServiceTopologyResponse } from "../topology/api";
 import { getServiceTopology } from "../topology/api";
@@ -119,13 +119,15 @@ function mergeRows(
 }
 
 export async function getDiscoveryRows(
-  teamId: number | null,
+  _teamId: number | null,
   startTime: RequestTime,
   endTime: RequestTime
 ): Promise<DiscoveryServiceRow[]> {
   const [services, topology, deployments] = await Promise.all([
-    metricsOverviewApi.getOverviewServiceMetrics(teamId, startTime, endTime).catch(() => []),
-    getServiceTopology({ startTime, endTime }).catch(() => ({ nodes: [], edges: [] }) as ServiceTopologyResponse),
+    getServiceMetrics(startTime, endTime).catch(() => [] as ServiceMetricPoint[]),
+    getServiceTopology({ startTime, endTime }).catch(
+      () => ({ nodes: [], edges: [] }) as ServiceTopologyResponse
+    ),
     deploymentsApi.getLatestByService().catch(() => []),
   ]);
   return mergeRows(services, topology, deployments);

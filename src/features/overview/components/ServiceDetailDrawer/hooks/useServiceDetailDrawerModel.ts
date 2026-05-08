@@ -1,11 +1,8 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
-import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
-import { getServiceTopology } from "@/features/overview/pages/ServiceHubPage/topology/api";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions, dynamicTo } from "@/shared/utils/navigation";
-import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { buildServiceLogsSearch, buildServiceTracesSearch } from "../../serviceDrawerState";
 import type { ServiceSummarySnapshot } from "../types";
@@ -17,6 +14,7 @@ import {
   buildRequestTrendSeries,
   normalizeServiceKey,
 } from "../utils";
+import { useServiceDrawerQueries } from "./useServiceDrawerQueries";
 
 export function useServiceDetailDrawerModel(
   serviceName: string,
@@ -27,47 +25,14 @@ export function useServiceDetailDrawerModel(
   const location = useLocation();
   const normalizedServiceName = normalizeServiceKey(serviceName);
 
-  const metricsQuery = useTimeRangeQuery(
-    "service-drawer-metrics",
-    async (teamId, startTime, endTime) =>
-      metricsOverviewApi.getOverviewServiceMetrics(teamId, startTime, endTime),
-    { extraKeys: [serviceName], enabled: Boolean(serviceName) }
-  );
-
-  const requestTrendQuery = useTimeRangeQuery(
-    "service-drawer-request-trend",
-    async (teamId, startTime, endTime) =>
-      metricsOverviewApi.getOverviewRequestRate(teamId, startTime, endTime, serviceName),
-    { extraKeys: [serviceName], enabled: Boolean(serviceName) }
-  );
-
-  const errorTrendQuery = useTimeRangeQuery(
-    "service-drawer-error-trend",
-    async (teamId, startTime, endTime) =>
-      metricsOverviewApi.getOverviewErrorRate(teamId, startTime, endTime, serviceName),
-    { extraKeys: [serviceName], enabled: Boolean(serviceName) }
-  );
-
-  const latencyTrendQuery = useTimeRangeQuery(
-    "service-drawer-latency-trend",
-    async (teamId, startTime, endTime) =>
-      metricsOverviewApi.getOverviewP95Latency(teamId, startTime, endTime, serviceName),
-    { extraKeys: [serviceName], enabled: Boolean(serviceName) }
-  );
-
-  const endpointsQuery = useTimeRangeQuery(
-    "service-drawer-endpoints",
-    async (teamId, startTime, endTime) =>
-      metricsOverviewApi.getOverviewEndpointMetrics(teamId, startTime, endTime, serviceName),
-    { extraKeys: [serviceName], enabled: Boolean(serviceName) }
-  );
-
-  const dependenciesQuery = useTimeRangeQuery(
-    "service-drawer-dependencies",
-    async (_teamId, startTime, endTime) =>
-      getServiceTopology({ startTime, endTime, service: serviceName }),
-    { extraKeys: [serviceName], enabled: Boolean(serviceName) }
-  );
+  const {
+    metricsQuery,
+    requestTrendQuery,
+    errorTrendQuery,
+    latencyTrendQuery,
+    endpointsQuery,
+    dependenciesQuery,
+  } = useServiceDrawerQueries(serviceName);
 
   const initialSummary = useMemo(() => buildInitialSummary(initialData), [initialData]);
 

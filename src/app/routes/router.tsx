@@ -1,136 +1,43 @@
-import {
-  Navigate,
-  Outlet,
-  createRootRoute,
-  createRoute,
-  createRouter,
-  redirect,
-  useParams,
-} from "@tanstack/react-router";
-import type { ComponentType, ReactNode } from "react";
+import { createRootRoute, createRoute, createRouter, redirect } from "@tanstack/react-router";
+import type { ComponentType } from "react";
 import { Suspense, lazy } from "react";
 
 import { getExplorerRoutes } from "@/app/registry/domainRegistry";
 import { FeatureErrorBoundary, Loading } from "@/shared/components/ui/feedback";
 import { ROUTES } from "@/shared/constants/routes";
-import { dynamicTo } from "@/shared/utils/navigation";
-
-import type { DashboardDrawerEntity } from "@/shared/types/dashboardConfig";
 
 import { AppContent } from "../App";
 import MainLayout from "../layout/MainLayout";
-import LegacyDashboardDetailRedirect from "./LegacyDashboardDetailRedirect";
+import { buildLegacyRedirects } from "./legacyRedirects";
+import { buildMarketingRoutes } from "./marketingRoutes";
 import ProtectedRoute from "./ProtectedRoute";
 
-const LoginPage = lazy(() => import("@/app/auth"));
-const MarketingLayout = lazy(() => import("@/features/marketing/MarketingLayout"));
-const MarketingShellLazy = lazy(() =>
-  import("@/features/marketing/MarketingShell").then((m) => ({ default: m.MarketingShell }))
-);
-const MetricsPage = lazy(() => import("@/features/metrics/pages/MetricsExplorerPage"));
 const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPage"));
-const ServicePage = lazy(
-  () => import("@/features/overview/pages/ServicePage/ServicePage")
-);
+const ServicePage = lazy(() => import("@/features/overview/pages/ServicePage/ServicePage"));
 const InfrastructureHubPage = lazy(
   () => import("@/features/infrastructure/pages/InfrastructureHubPage")
 );
 const OverviewHubPage = lazy(
   () => import("@/features/overview/pages/OverviewHubPage/OverviewHubPage")
 );
+const DatabaseQueriesPage = lazy(() => import("@/features/saturation/pages/DatabaseQueriesPage"));
+const KafkaOverviewPage = lazy(() => import("@/features/saturation/pages/KafkaOverviewPage"));
+const ErrorTrackingPage = lazy(() => import("@/features/errors/pages/ErrorTrackingPage"));
+const ErrorGroupDetailPage = lazy(
+  () => import("@/features/errors/pages/ErrorGroupDetailPage")
+);
+const SloListPage = lazy(() => import("@/features/slo/pages/SloListPage"));
+const SloDetailPage = lazy(() => import("@/features/slo/pages/SloDetailPage"));
+const ServiceCatalogPage = lazy(
+  () => import("@/features/services/pages/ServiceCatalogPage")
+);
+const ServiceMapPage = lazy(() => import("@/features/services/pages/ServiceMapPage"));
+const DeploymentsPage = lazy(() => import("@/features/services/pages/DeploymentsPage"));
+const HostMapPage = lazy(() => import("@/features/infrastructure/pages/HostMapPage"));
+const HostDetailPage = lazy(() => import("@/features/infrastructure/pages/HostDetailPage"));
 
-function LegacySaturationDatabaseRedirect() {
-  const params = useParams({ strict: false });
-  const dbSystem = typeof params.dbSystem === "string" ? params.dbSystem : "";
-  return (
-    <Navigate
-      to={dynamicTo(
-        ROUTES.saturationDatastoreDetail.replace(
-          "$system",
-          encodeURIComponent(dbSystem || "unknown")
-        )
-      )}
-      replace
-    />
-  );
-}
+export const rootRoute = createRootRoute({ component: AppContent });
 
-function LegacySaturationRedisRedirect() {
-  const params = useParams({ strict: false });
-  const instance = typeof params.instance === "string" ? params.instance : "";
-  return (
-    <Navigate
-      to={dynamicTo(ROUTES.saturationDatastoreDetail.replace("$system", "redis"))}
-      search={instance ? ({ instance } as Record<string, unknown>) : undefined}
-      replace
-    />
-  );
-}
-
-function PageTransition({ children }: { children: ReactNode }) {
-  return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
-}
-
-export const rootRoute = createRootRoute({
-  component: AppContent,
-});
-
-const marketingLayoutRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  id: "marketing-layout",
-  component: () => (
-    <Suspense fallback={<Loading fullscreen />}>
-      <MarketingLayout />
-    </Suspense>
-  ),
-});
-
-function marketingChild(path: string) {
-  const normalized = path === ROUTES.home ? "/" : path.replace(/^\//, "");
-  return createRoute({
-    getParentRoute: () => marketingLayoutRoute,
-    path: normalized,
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <MarketingShellLazy path={path} />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
-const marketingRoutesGroup = [
-  marketingChild(ROUTES.home),
-  marketingChild(ROUTES.features),
-  marketingChild(ROUTES.pricing),
-  marketingChild(ROUTES.opentelemetry),
-  marketingChild(ROUTES.selfHost),
-  marketingChild(ROUTES.architecture),
-];
-
-const productRedirectRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "product",
-  loader: () => {
-    throw redirect({ to: ROUTES.pricing, replace: true });
-  },
-});
-
-// Login
-const loginRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: ROUTES.login,
-  component: () => (
-    <Suspense fallback={<Loading fullscreen />}>
-      <PageTransition>
-        <LoginPage />
-      </PageTransition>
-    </Suspense>
-  ),
-});
-
-// Authed Layout
 const mainLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "main-layout",
@@ -141,13 +48,11 @@ const mainLayoutRoute = createRoute({
   ),
 });
 
-// Helper for dynamic paths
 function toNestedRoutePath(path: string): string {
   if (!path || path === ROUTES.home) return "";
   return path.startsWith("/") ? path.slice(1) : path;
 }
 
-// Protected Routes mapped under mainLayoutRoute
 function createProtected(
   path: string,
   // biome-ignore lint/suspicious/noExplicitAny: router dispatch accepts heterogeneous page components
@@ -184,71 +89,24 @@ const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
 const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
 const serviceDetailRoute = createProtected(ROUTES.serviceDetail, ServicePage);
-// Redirects
+const databaseQueriesRoute = createProtected(
+  ROUTES.saturationDatabaseQueries,
+  DatabaseQueriesPage
+);
+const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, KafkaOverviewPage);
+const errorTrackingRoute = createProtected(ROUTES.errors, ErrorTrackingPage);
+const errorGroupDetailRoute = createProtected(ROUTES.errorGroupDetail, ErrorGroupDetailPage);
+const sloListRoute = createProtected(ROUTES.slos, SloListPage);
+const sloDetailRoute = createProtected(ROUTES.sloDetail, SloDetailPage);
+const servicesCatalogRoute = createProtected(ROUTES.services, ServiceCatalogPage);
+const serviceMapRoute = createProtected(ROUTES.serviceMap, ServiceMapPage);
+const deploymentsRoute = createProtected(ROUTES.deployments, DeploymentsPage);
+const hostsRoute = createProtected(ROUTES.hosts, HostMapPage);
+const hostDetailRoute = createProtected(ROUTES.hostDetail, HostDetailPage);
+
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
 const logsTransactionsRedirect = createProtected("/logs/transactions", () => null, ROUTES.logs);
-const errorsRedirect = createProtected("/errors", () => null, `${ROUTES.overview}?tab=errors`);
 
-// Legacy dashboard detail redirects
-function createLegacyDetailRedirect(
-  path: string,
-  parentPath: string,
-  drawerEntity: string,
-  paramKey: string,
-  tab?: string
-) {
-  return createRoute({
-    getParentRoute: () => mainLayoutRoute,
-    path: toNestedRoutePath(path),
-    component: () => (
-      <LegacyDashboardDetailRedirect
-        parentPath={parentPath}
-        drawerEntity={drawerEntity as DashboardDrawerEntity}
-        paramKey={paramKey}
-        tab={tab}
-      />
-    ),
-  });
-}
-
-const legacyRedirects = [
-  createLegacyDetailRedirect(
-    "/errors/$errorGroupId",
-    ROUTES.overview,
-    "errorGroup",
-    "errorGroupId",
-    "errors"
-  ),
-  createLegacyDetailRedirect(
-    "/infrastructure/nodes/$host",
-    ROUTES.infrastructure,
-    "node",
-    "host",
-    "nodes"
-  ),
-];
-
-const serviceOpsRedirect = createRoute({
-  getParentRoute: () => mainLayoutRoute,
-  path: "services/$serviceName/operations/$operationName",
-  loader: () => {
-    throw redirect({ to: ROUTES.metrics, replace: true });
-  },
-});
-
-const legacySaturationDatabaseRedirect = createRoute({
-  getParentRoute: () => mainLayoutRoute,
-  path: "saturation/database/$dbSystem",
-  component: LegacySaturationDatabaseRedirect,
-});
-
-const legacySaturationRedisRedirect = createRoute({
-  getParentRoute: () => mainLayoutRoute,
-  path: "saturation/redis/$instance",
-  component: LegacySaturationRedisRedirect,
-});
-
-// Fallbacks
 const layoutFallback = createRoute({
   getParentRoute: () => mainLayoutRoute,
   path: "$",
@@ -265,8 +123,10 @@ const globalFallback = createRoute({
   },
 });
 
+const { marketingTree, productRedirectRoute, loginRoute } = buildMarketingRoutes(() => rootRoute);
+
 const routeTree = rootRoute.addChildren([
-  marketingLayoutRoute.addChildren(marketingRoutesGroup),
+  marketingTree,
   productRedirectRoute,
   loginRoute,
   mainLayoutRoute.addChildren([
@@ -275,13 +135,20 @@ const routeTree = rootRoute.addChildren([
     infrastructureRoute,
     serviceRoute,
     serviceDetailRoute,
+    databaseQueriesRoute,
+    kafkaOverviewRoute,
+    errorTrackingRoute,
+    errorGroupDetailRoute,
+    sloListRoute,
+    sloDetailRoute,
+    servicesCatalogRoute,
+    serviceMapRoute,
+    deploymentsRoute,
+    hostsRoute,
+    hostDetailRoute,
     logsPatternsRedirect,
     logsTransactionsRedirect,
-    errorsRedirect,
-    ...legacyRedirects,
-    legacySaturationDatabaseRedirect,
-    legacySaturationRedisRedirect,
-    serviceOpsRedirect,
+    ...buildLegacyRedirects(mainLayoutRoute),
     layoutFallback,
   ]),
   globalFallback,

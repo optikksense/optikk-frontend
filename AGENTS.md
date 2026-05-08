@@ -33,6 +33,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Global store**: `src/app/store/appStore.ts` — `triggerRefresh()` increments `refreshKey`; persisted: timeRange, teamId, theme, timezone, comparisonMode, viewPreferences, recentPages
 - **Live tail**: `src/shared/hooks/useSocketStream.ts` (core WebSocket), `src/features/explorer-core/hooks/useLiveTailStream.ts` (wrapper with teamId)
 - **Explorer core**: `src/features/explorer-core/` — shared analytics, facets, visualizations for Logs/Traces/Metrics explorers
+- **Logs explorer**: `src/features/log/pages/LogsExplorerPage/` — scoped DSL search (`scope="logs"`), facet-backed filter suggestions, cursor-paginated result pages, Grafana-style severity colors
 - **Entities**: `src/shared/entities/` — log, metric, trace, user
 - **Theme**: `src/config/themeColors.css` → `tailwind.config.ts`
 - **Dev**: `yarn dev` | **CI**: `yarn ci`
@@ -53,6 +54,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 
 - **Dashboard queries**: stable keys (no `refreshKey`), use `useInvalidateQueriesOnAppRefresh`
 - **Explorer queries**: include `refreshKey` in `queryKey`
+- **Logs results**: keep cursor pages explicit (`list.pages` + footer controls), not infinite-scroll append
 - **Always**: `placeholderData: keepPreviousData`; loading = `isPending && data === undefined`
 - **No cross-feature imports** — ESLint enforced; move shared code to `@shared/`
 - **No TS enums** — use `as const` + union types

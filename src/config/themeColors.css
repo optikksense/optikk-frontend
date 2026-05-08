@@ -278,29 +278,40 @@
   --text-label: #8e96a9;
   --text-caption: rgba(142, 150, 169, 0.82);
 
-  /* Brand / semantic tokens */
-  --color-primary: #3b82f6;
-  --color-primary-hover: #2563eb;
-  --color-primary-subtle-08: rgba(59, 130, 246, 0.08);
-  --color-primary-subtle-10: rgba(59, 130, 246, 0.1);
-  --color-primary-subtle-12: rgba(59, 130, 246, 0.12);
-  --color-primary-subtle-14: rgba(59, 130, 246, 0.14);
-  --color-primary-subtle-15: rgba(59, 130, 246, 0.15);
-  --color-primary-subtle-18: rgba(59, 130, 246, 0.18);
-  --color-primary-subtle-20: rgba(59, 130, 246, 0.2);
-  --color-primary-subtle-22: rgba(59, 130, 246, 0.22);
-  --color-primary-subtle-25: rgba(59, 130, 246, 0.25);
-  --color-primary-subtle-28: rgba(59, 130, 246, 0.28);
-  --color-primary-subtle-30: rgba(59, 130, 246, 0.3);
-  --color-primary-subtle-35: rgba(59, 130, 246, 0.35);
-  --color-primary-subtle-45: rgba(59, 130, 246, 0.45);
-  --color-primary-subtle-50: rgba(59, 130, 246, 0.5);
-  --color-primary-subtle-05: rgba(59, 130, 246, 0.05);
-  --color-primary-subtle-02: rgba(59, 130, 246, 0.02);
-  --color-success: #73c991;
-  --color-warning: #f7b63a;
-  --color-error: #f04438;
-  --color-info: #67b7c9;
+  /* Brand / semantic tokens — Optikk blue family
+   * Primary action: blue-600 (#2563eb) — richer than default Tailwind blue-500.
+   * Chart-blue is intentionally distinct (#5ea9ff) so CTAs don't blend into chart series.
+   * Stream/live indicator uses cyan-400 to differentiate from static UI.
+   */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-active: #1e40af;
+  --color-primary-on-bg: #ffffff;
+  --color-primary-subtle-02: rgba(37, 99, 235, 0.02);
+  --color-primary-subtle-05: rgba(37, 99, 235, 0.05);
+  --color-primary-subtle-08: rgba(37, 99, 235, 0.08);
+  --color-primary-subtle-10: rgba(37, 99, 235, 0.1);
+  --color-primary-subtle-12: rgba(37, 99, 235, 0.12);
+  --color-primary-subtle-14: rgba(37, 99, 235, 0.14);
+  --color-primary-subtle-15: rgba(37, 99, 235, 0.15);
+  --color-primary-subtle-18: rgba(37, 99, 235, 0.18);
+  --color-primary-subtle-20: rgba(37, 99, 235, 0.2);
+  --color-primary-subtle-22: rgba(37, 99, 235, 0.22);
+  --color-primary-subtle-25: rgba(37, 99, 235, 0.25);
+  --color-primary-subtle-28: rgba(37, 99, 235, 0.28);
+  --color-primary-subtle-30: rgba(37, 99, 235, 0.3);
+  --color-primary-subtle-35: rgba(37, 99, 235, 0.35);
+  --color-primary-subtle-45: rgba(37, 99, 235, 0.45);
+  --color-primary-subtle-50: rgba(37, 99, 235, 0.5);
+  --color-success: #22c55e;
+  --color-success-subtle: rgba(34, 197, 94, 0.14);
+  --color-warning: #f59e0b;
+  --color-warning-subtle: rgba(245, 158, 11, 0.14);
+  --color-error: #ef4444;
+  --color-error-subtle: rgba(239, 68, 68, 0.14);
+  --color-info: #38bdf8;
+  --color-info-subtle: rgba(56, 189, 248, 0.14);
+  --color-stream: #38bdf8;
 
   /* Calm-tech status tokens */
   --color-healthy: #73c991;
@@ -322,15 +333,22 @@
   --severity-info: #67b7c9;
   --severity-info-subtle: rgba(103, 183, 201, 0.16);
 
-  /* Datadog-inspired chart palette */
-  --chart-1: var(--color-primary);
+  /* Chart palette — flagship blue + diverse hues
+   * chart-1 is intentionally lighter than --color-primary so single-series charts
+   * don't look like a button. Multi-series gets full spectral coverage.
+   */
+  --chart-1: #5ea9ff;
   --chart-2: #f38b6b;
-  --chart-3: #66c2a5;
-  --chart-4: #f2c14e;
-  --chart-5: #d978ff;
-  --chart-6: #6bb6ff;
-  --chart-7: #ef6f98;
-  --chart-8: #8cd6c5;
+  --chart-3: #34d399;
+  --chart-4: #facc15;
+  --chart-5: #c084fc;
+  --chart-6: #22d3ee;
+  --chart-7: #f472b6;
+  --chart-8: #a3e635;
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-axis: var(--text-muted);
+  --chart-area-alpha: 0.08;
+  --chart-comparison: rgba(94, 169, 255, 0.45);
 
   /* Card / surface tokens */
   --card-radius: 8px;
@@ -396,10 +414,14 @@
   --space-4xl: 44px;
   --space-page: 16px;
 
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #7c7ff2 0%, #5e9ed6 100%);
+  /* Gradients — blue-forward */
+  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   --gradient-text: linear-gradient(to right, rgba(230, 237, 243, 0.95), rgba(230, 237, 243, 0.6));
-  --gradient-text-accent: linear-gradient(135deg, #9396f8, #7cc4e8);
+  --gradient-text-accent: linear-gradient(135deg, #5ea9ff, #38bdf8);
+
+  /* Tab strip / page-tabs underline */
+  --tab-underline: var(--color-primary);
+  --tab-underline-hover: var(--color-primary-subtle-50);
 
   /* Theme-driven toast tokens */
   --toast-bg: #1c2128;

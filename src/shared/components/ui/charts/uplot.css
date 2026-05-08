@@ -20,7 +20,8 @@
 
 .uplot-shell .u-cursor-x,
 .uplot-shell .u-cursor-y {
-  border-color: rgba(255, 255, 255, 0.24) !important;
+  border-color: var(--color-primary-subtle-50) !important;
+  border-style: dashed !important;
 }
 
 .uplot-shell .u-select {

@@ -1,5 +1,6 @@
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
-import { queryLogs } from "@features/log/api/logsExplorerApi";
+import { getLogsTrend } from "@features/log/api/logsAnalyticsApi";
+import { aggregateSeverityTrend } from "@features/explorer/utils/trend";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 export interface WindowVolume {
@@ -35,14 +36,17 @@ function sumBuckets(buckets: readonly TrendBucket[] | undefined): WindowVolume {
   );
 }
 
-function fetchTrend(serviceName: string, start: number, end: number) {
-  return queryLogs({
+async function fetchTrend(
+  serviceName: string,
+  start: number,
+  end: number
+): Promise<readonly TrendBucket[]> {
+  const rows = await getLogsTrend({
     startTime: start,
     endTime: end,
     filters: [{ field: "service_name", op: "eq", value: serviceName }],
-    limit: 0,
-    include: ["trend"],
-  }).then((r) => r.trend ?? []);
+  });
+  return aggregateSeverityTrend(rows);
 }
 
 export function useLogVolumeDiff(

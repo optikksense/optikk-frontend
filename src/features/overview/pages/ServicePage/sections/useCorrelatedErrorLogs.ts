@@ -18,10 +18,10 @@ export function useCorrelatedErrorLogs(
         endTime: Number(endTime),
         filters: [
           { field: "service_name", op: "eq", value: serviceName },
-          { field: "severity_bucket", op: "gte", value: "4" },
+          { field: "severity_text", op: "eq", value: "ERROR" },
+          { field: "severity_text", op: "eq", value: "FATAL" },
         ],
         limit,
-        include: [],
       }),
     { extraKeys: [serviceName, limit], enabled },
   );

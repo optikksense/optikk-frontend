@@ -75,29 +75,35 @@ function ScalarCard({
 
 export function InfraResourceSummaryStrip() {
   return (
-    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
       <ScalarCard
         label="Avg CPU"
         queryKey="infra-avg-cpu"
-        endpoint="/v1/infrastructure/resource-utilisation/avg-cpu"
+        endpoint="/v1/infrastructure/cpu/avg"
         format="percent"
       />
       <ScalarCard
         label="Avg memory"
         queryKey="infra-avg-mem"
-        endpoint="/v1/infrastructure/resource-utilisation/avg-memory"
+        endpoint="/v1/infrastructure/memory/avg"
+        format="percent"
+      />
+      <ScalarCard
+        label="Avg disk"
+        queryKey="infra-avg-disk"
+        endpoint="/v1/infrastructure/disk/avg"
         format="percent"
       />
       <ScalarCard
         label="Avg network"
         queryKey="infra-avg-net"
-        endpoint="/v1/infrastructure/resource-utilisation/avg-network"
+        endpoint="/v1/infrastructure/network/avg"
         format="percent"
       />
       <ScalarCard
         label="Avg conn pool"
         queryKey="infra-avg-pool"
-        endpoint="/v1/infrastructure/resource-utilisation/avg-conn-pool"
+        endpoint="/v1/infrastructure/connpool/avg"
         format="percent"
       />
       <InfraLoadAverageCard />

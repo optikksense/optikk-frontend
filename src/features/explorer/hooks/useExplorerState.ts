@@ -33,7 +33,6 @@ function setOrDelete(params: URLSearchParams, key: string, value: string | null)
 
 /**
  * Canonical URL state: `filters` (base64 JSON), `mode`, `cursor`, `detail`.
- * Analytics sub-params (groupBy/aggs/step/viz) are owned by useExplorerAnalytics.
  */
 export function useExplorerState(): ExplorerStateApi {
   const [params, setParams] = useSearchParamsCompat();

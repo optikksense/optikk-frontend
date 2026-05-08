@@ -3,6 +3,7 @@ import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useEffect, useMemo, useState } from "react";
+import { getTraceLogs } from "@/features/log/api/traceLogsApi";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
 export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: string) {
@@ -43,7 +44,7 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     error: logsError,
   } = useStandardQuery({
     queryKey: ["trace-logs", selectedTeamId, traceIdParam],
-    queryFn: () => tracesService.getTraceLogs(selectedTeamId, traceIdParam),
+    queryFn: () => getTraceLogs(traceIdParam),
     enabled: !!selectedTeamId && !!traceIdParam,
   });
 

@@ -28,8 +28,8 @@ export function decodeFilters(raw: string | null | undefined): ExplorerFilter[] 
   return decodeBase64<ExplorerFilter[]>(raw, []);
 }
 
-export function parseMode(raw: string | null | undefined): ExplorerMode {
-  return raw === "analytics" ? "analytics" : "list";
+export function parseMode(_raw: string | null | undefined): ExplorerMode {
+  return "list";
 }
 
 export function serializeStateSnapshot(value: unknown): string {

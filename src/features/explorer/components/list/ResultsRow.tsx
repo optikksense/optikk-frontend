@@ -1,4 +1,4 @@
-import { memo, type ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 import type { ColumnConfig, ColumnDef } from "../../types/results";
 
@@ -7,8 +7,11 @@ interface Props<Row> {
   readonly columns: readonly ColumnDef<Row>[];
   readonly config: readonly ColumnConfig[];
   readonly onClick?: (row: Row) => void;
+  readonly onContextMenu?: (row: Row, x: number, y: number) => void;
   readonly selected?: boolean;
   readonly extraClassName?: string;
+  readonly extraStyle?: React.CSSProperties;
+  readonly heightPx?: number;
 }
 
 function cellContent<Row>(column: ColumnDef<Row> | undefined, row: Row): ReactNode {
@@ -16,7 +19,17 @@ function cellContent<Row>(column: ColumnDef<Row> | undefined, row: Row): ReactNo
   return column.render(row);
 }
 
-function ResultsRowImpl<Row>({ row, columns, config, onClick, selected, extraClassName }: Props<Row>) {
+function ResultsRowImpl<Row>({
+  row,
+  columns,
+  config,
+  onClick,
+  onContextMenu,
+  selected,
+  extraClassName,
+  extraStyle,
+  heightPx,
+}: Props<Row>) {
   const visibleConfig = config.filter((entry) => entry.visible);
   const columnByKey = new Map(columns.map((column) => [column.key, column]));
   return (
@@ -24,6 +37,14 @@ function ResultsRowImpl<Row>({ row, columns, config, onClick, selected, extraCla
       role="row"
       aria-selected={selected}
       onClick={onClick ? () => onClick(row) : undefined}
+      onContextMenu={
+        onContextMenu
+          ? (event) => {
+              event.preventDefault();
+              onContextMenu(row, event.clientX, event.clientY);
+            }
+          : undefined
+      }
       onKeyDown={
         onClick
           ? (event) => {
@@ -32,8 +53,9 @@ function ResultsRowImpl<Row>({ row, columns, config, onClick, selected, extraCla
           : undefined
       }
       tabIndex={onClick ? 0 : -1}
-      className={`flex h-8 cursor-pointer items-center gap-2 border-b border-[var(--border-color)] px-3 text-[12px] hover:bg-[rgba(255,255,255,0.04)] ${
-        selected ? "bg-[rgba(99,102,241,0.10)]" : ""
+      style={{ ...extraStyle, ...(heightPx ? { height: heightPx } : undefined) }}
+      className={`flex h-7 cursor-pointer items-center gap-2 border-[var(--border-color)] border-b px-3 text-[12px] hover:bg-[rgba(255,255,255,0.04)] ${
+        selected ? "bg-[var(--color-primary-subtle-12)]" : ""
       } ${extraClassName ?? ""}`}
     >
       {visibleConfig.map((entry) => {

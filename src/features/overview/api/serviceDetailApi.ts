@@ -134,7 +134,7 @@ export const serviceDetailApi = {
     serviceName?: string
   ): Promise<LatencyDuringErrorPoint[]> {
     return getJson(
-      "/overview/errors/latency-during-error-windows",
+      "/errors/latency-during-error-windows",
       buildParams(startTime, endTime, serviceName)
     );
   },
@@ -144,6 +144,6 @@ export const serviceDetailApi = {
     endTime: RequestTime,
     serviceName?: string
   ): Promise<SloStats> {
-    return getJson("/overview/slo/stats", buildParams(startTime, endTime, serviceName));
+    return getJson("/slo/stats", buildParams(startTime, endTime, serviceName));
   },
 };

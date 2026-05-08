@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
-import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
 import { deploymentsApi } from "@/features/overview/api/deploymentsApi";
+import { getServiceMetrics } from "@/features/overview/api/serviceMetricsApi";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 export interface ServiceSummaryMetrics {
@@ -23,8 +23,7 @@ export function useServiceSummary(serviceName: string) {
 
   const metricsQuery = useTimeRangeQuery(
     "service-page-metrics",
-    async (teamId, startTime, endTime) =>
-      metricsOverviewApi.getOverviewServiceMetrics(teamId, startTime, endTime),
+    async (_teamId, startTime, endTime) => getServiceMetrics(startTime, endTime),
     { extraKeys: [serviceName], enabled }
   );
 

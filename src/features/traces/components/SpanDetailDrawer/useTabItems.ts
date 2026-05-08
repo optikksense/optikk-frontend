@@ -47,7 +47,6 @@ function buildItems(flags: TabFlags, eventCount: number, relatedCount: number): 
   if (flags.hasErrors) items.push({ key: "errors", label: "Errors" });
   items.push({ key: "events", label: `Events${eventCount > 0 ? ` (${eventCount})` : ""}` });
   items.push({ key: "logs", label: "Logs" });
-  items.push({ key: "metrics", label: "Metrics" });
   if (flags.hasHost) items.push({ key: "host", label: "Host" });
   if (flags.hasNetwork) items.push({ key: "network", label: "Network" });
   if (flags.hasCode) items.push({ key: "code", label: "Code" });

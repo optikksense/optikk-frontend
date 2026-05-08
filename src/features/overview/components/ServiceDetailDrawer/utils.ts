@@ -1,8 +1,8 @@
 import type {
-  OverviewErrorRatePoint,
-  OverviewP95LatencyPoint,
-  OverviewRequestRatePoint,
-} from "@/features/metrics/api/metricsOverviewApi";
+  ErrorRatePoint,
+  P95LatencyPoint,
+  RequestRatePoint,
+} from "@/features/overview/api/serviceMetricsApi";
 import type { ServiceTopologyEdge } from "@/features/overview/pages/ServiceHubPage/topology/api";
 
 import type { DependencyRow, EndpointRow, ServiceSummarySnapshot } from "./types";
@@ -66,21 +66,21 @@ export function buildDependencyRows(
     }));
 }
 
-export function buildLatencyTrendSeries(points: readonly OverviewP95LatencyPoint[]) {
+export function buildLatencyTrendSeries(points: readonly P95LatencyPoint[]) {
   return points.map((point) => ({
     timestamp: point.timestamp,
     p95: point.p95,
   }));
 }
 
-export function buildRequestTrendSeries(points: readonly OverviewRequestRatePoint[]) {
+export function buildRequestTrendSeries(points: readonly RequestRatePoint[]) {
   return points.map((point) => ({
     timestamp: point.timestamp,
     request_count: point.requestCount,
   }));
 }
 
-export function buildErrorTrendSeries(points: readonly OverviewErrorRatePoint[]) {
+export function buildErrorTrendSeries(points: readonly ErrorRatePoint[]) {
   return points.map((point) => ({
     timestamp: point.timestamp,
     request_count: point.requestCount,

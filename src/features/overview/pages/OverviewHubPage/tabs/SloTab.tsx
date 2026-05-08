@@ -1,7 +1,7 @@
 import { Suspense, lazy, useMemo } from "react";
 
 import { Skeleton, Surface } from "@/components/ui";
-import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
+import { getServiceMetrics } from "@/features/overview/api/serviceMetricsApi";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import { SloIndicatorsRenderer } from "@/features/overview/dashboard/renderers/SloIndicatorsRenderer";
@@ -23,7 +23,7 @@ const SLO_PANEL: DashboardPanelSpec = {
   layoutVariant: "hero",
   sectionId: "hub-slo",
   order: 0,
-  query: { method: "GET", endpoint: "/v1/overview/services" },
+  query: { method: "GET", endpoint: "/v1/spans/red/summary" },
   layout: { x: 0, y: 0, w: 12, h: 4 },
 };
 
@@ -39,7 +39,7 @@ export default function SloTab() {
   // Reuse Summary's cache key so Summary → SLO gets a hit instead of refetching the same endpoint.
   const servicesQ = useTimeRangeQuery(
     "overview-hub-services",
-    metricsOverviewApi.getOverviewServiceMetrics,
+    (_t, s, e) => getServiceMetrics(s, e),
     { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
   const burnRateQ = useTimeRangeQuery(

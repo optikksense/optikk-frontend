@@ -7,19 +7,19 @@ const CHART_THEME_FALLBACKS = {
   bgTertiary: "#1c212c",
   borderColor: "#2b3140",
   borderLight: "rgba(255,255,255,0.08)",
-  colorPrimary: "#3b82f6",
-  colorInfo: "#67b7c9",
+  colorPrimary: "#2563eb",
+  colorInfo: "#38bdf8",
 } as const;
 
 const CHART_PALETTE_TOKENS = [
-  ["--chart-1", "#3b82f6"],
+  ["--chart-1", "#5ea9ff"],
   ["--chart-2", "#f38b6b"],
-  ["--chart-3", "#66c2a5"],
-  ["--chart-4", "#f2c14e"],
-  ["--chart-5", "#d978ff"],
-  ["--chart-6", "#6bb6ff"],
-  ["--chart-7", "#ef6f98"],
-  ["--chart-8", "#8cd6c5"],
+  ["--chart-3", "#34d399"],
+  ["--chart-4", "#facc15"],
+  ["--chart-5", "#c084fc"],
+  ["--chart-6", "#22d3ee"],
+  ["--chart-7", "#f472b6"],
+  ["--chart-8", "#a3e635"],
 ] as const;
 
 function readCssVariable(variableName: string, fallback: string): string {

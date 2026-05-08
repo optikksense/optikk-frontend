@@ -110,6 +110,16 @@ export default function JvmTab() {
             valueField="memory_usage"
           />
         </Card>
+        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+          <InfraMultiSeriesChart
+            queryKey="infra-jvm-classes"
+            endpoint="/v1/infrastructure/jvm/classes"
+            title="Loaded classes"
+            groupByField="state"
+            valueField="value"
+            formatType="number"
+          />
+        </Card>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
+import { getServiceMetrics } from "@/features/overview/api/serviceMetricsApi";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
@@ -19,8 +19,8 @@ export default function ServiceSwitcher({ currentServiceName }: ServiceSwitcherP
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
-  const servicesQuery = useTimeRangeQuery("service-rail-services", (teamId, start, end) =>
-    metricsOverviewApi.getOverviewServiceMetrics(teamId, start, end)
+  const servicesQuery = useTimeRangeQuery("service-rail-services", (_teamId, start, end) =>
+    getServiceMetrics(start, end)
   );
 
   const matches = useMemo(() => {

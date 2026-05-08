@@ -12,6 +12,8 @@ import {
 import { ROUTES } from "@/shared/constants/routes";
 import { useTimeRange } from "@app/store/appStore";
 
+import { HttpDetailSection } from "@/features/services/components/HttpDetailSection";
+
 import LeftRail from "./LeftRail/LeftRail";
 import ServiceKpiStrip from "./ServiceKpiStrip";
 import ServicePageHeader from "./ServicePageHeader";
@@ -85,6 +87,7 @@ function ServicePageBody({ serviceName }: ServicePageBodyProps) {
         />
         <ServiceKpiStrip summary={summary} loading={summaryLoading} />
         <ServicePageSections serviceName={serviceName} />
+        <HttpDetailSection serviceName={serviceName} />
       </div>
     </div>
   );

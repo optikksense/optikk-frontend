@@ -85,3 +85,7 @@ export {
 } from "./table";
 export { Tabs, type TabItem, type TabsProps } from "./tabs";
 export { Tooltip, type TooltipProps } from "./tooltip";
+export { Pill, type PillProps, type PillVariant } from "./pill";
+export { TableSparkline, type TableSparklineProps } from "./table-sparkline";
+export { EmptyState, type EmptyStateProps } from "./empty-state";
+export { PageTabs, type PageTabItem, type PageTabsProps } from "./page-tabs";

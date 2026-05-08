@@ -1,4 +1,4 @@
-import type { ExplorerFilterOp } from "../types/filters";
+import type { ExplorerFilterOp, ExplorerScope } from "../types/filters";
 
 export type FieldType = "string" | "number" | "bool";
 
@@ -9,12 +9,19 @@ export interface KnownField {
   readonly ops: readonly ExplorerFilterOp[];
 }
 
-const STRING_OPS: readonly ExplorerFilterOp[] = ["eq", "neq", "contains", "not_contains", "in", "not_in"];
+const STRING_OPS: readonly ExplorerFilterOp[] = [
+  "eq",
+  "neq",
+  "contains",
+  "not_contains",
+  "in",
+  "not_in",
+];
 const NUMBER_OPS: readonly ExplorerFilterOp[] = ["eq", "neq", "gt", "gte", "lt", "lte"];
 const BOOL_OPS: readonly ExplorerFilterOp[] = ["eq", "neq"];
 
 /** Mirrors the scalar fields understood by backend querycompiler/structured.go. */
-export const KNOWN_FIELDS: readonly KnownField[] = [
+export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
   { key: "service", label: "Service", type: "string", ops: STRING_OPS },
   { key: "operation", label: "Operation", type: "string", ops: STRING_OPS },
   { key: "span_kind", label: "Span kind", type: "string", ops: STRING_OPS },
@@ -28,11 +35,38 @@ export const KNOWN_FIELDS: readonly KnownField[] = [
   { key: "has_error", label: "Has error", type: "bool", ops: BOOL_OPS },
 ];
 
-export function findKnownField(key: string): KnownField | undefined {
-  return KNOWN_FIELDS.find((f) => f.key === key);
+export const LOG_KNOWN_FIELDS: readonly KnownField[] = [
+  { key: "service_name", label: "Service", type: "string", ops: STRING_OPS },
+  { key: "severity_text", label: "Severity", type: "string", ops: STRING_OPS },
+  { key: "host", label: "Host", type: "string", ops: STRING_OPS },
+  { key: "pod", label: "Pod", type: "string", ops: STRING_OPS },
+  { key: "container", label: "Container", type: "string", ops: STRING_OPS },
+  { key: "environment", label: "Environment", type: "string", ops: STRING_OPS },
+  { key: "trace_id", label: "Trace ID", type: "string", ops: STRING_OPS },
+  { key: "span_id", label: "Span ID", type: "string", ops: STRING_OPS },
+  { key: "body", label: "Message", type: "string", ops: STRING_OPS },
+  { key: "search", label: "Search text", type: "string", ops: STRING_OPS },
+];
+
+export const KNOWN_FIELDS: readonly KnownField[] = TRACE_KNOWN_FIELDS;
+
+export function knownFieldsForScope(scope: ExplorerScope | undefined): readonly KnownField[] {
+  return scope === "logs" ? LOG_KNOWN_FIELDS : TRACE_KNOWN_FIELDS;
+}
+
+export function findKnownField(
+  key: string,
+  fields: readonly KnownField[] = KNOWN_FIELDS
+): KnownField | undefined {
+  return fields.find((f) => f.key === key);
 }
 
 /** Fields with backend-backed value suggestions (BE trace_suggest scalar path). */
 export const SUGGESTABLE_SCALAR_FIELDS = new Set([
-  "service", "operation", "http_method", "http_status", "status", "environment",
+  "service",
+  "operation",
+  "http_method",
+  "http_status",
+  "status",
+  "environment",
 ]);

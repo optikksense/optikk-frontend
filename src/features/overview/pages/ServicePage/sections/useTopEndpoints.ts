@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
-import { metricsOverviewApi } from "@/features/metrics/api/metricsOverviewApi";
 import type { EndpointMetricPoint } from "@/features/metrics/types";
+import { getTopEndpoints } from "@/features/overview/api/serviceMetricsApi";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 function sortByRequests(rows: readonly EndpointMetricPoint[]): EndpointMetricPoint[] {
@@ -17,9 +17,8 @@ export function useTopEndpoints(serviceName: string, limit = 10): {
   const enabled = Boolean(serviceName);
   const query = useTimeRangeQuery(
     "service-page-endpoints",
-    (teamId, start, end) =>
-      metricsOverviewApi.getOverviewEndpointMetrics(teamId, start, end, serviceName),
-    { extraKeys: [serviceName], enabled }
+    (_teamId, start, end) => getTopEndpoints(start, end, serviceName, limit),
+    { extraKeys: [serviceName, limit], enabled }
   );
 
   const endpoints = useMemo(

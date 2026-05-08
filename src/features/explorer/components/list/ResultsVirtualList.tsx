@@ -13,10 +13,12 @@ interface Props<Row> {
   readonly getRowId: (row: Row) => string;
   readonly selectedId?: string | null;
   readonly onRowClick?: (row: Row) => void;
+  readonly onRowContextMenu?: (row: Row, x: number, y: number) => void;
   /** Key that changes whenever the filter set changes; scrolls back to 0. */
   readonly resetKey?: string;
   readonly onNearEnd?: () => void;
   readonly getRowClassName?: (row: Row) => string;
+  readonly getRowStyle?: (row: Row) => React.CSSProperties | undefined;
 }
 
 function ResultsVirtualListImpl<Row>(props: Props<Row>) {
@@ -24,14 +26,16 @@ function ResultsVirtualListImpl<Row>(props: Props<Row>) {
     rows,
     columns,
     config,
-    rowHeight = 32,
+    rowHeight = 28,
     overscan = 12,
     getRowId,
     selectedId,
     onRowClick,
+    onRowContextMenu,
     resetKey,
     onNearEnd,
     getRowClassName,
+    getRowStyle,
   } = props;
   const parentRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
@@ -67,6 +71,7 @@ function ResultsVirtualListImpl<Row>(props: Props<Row>) {
                 top: 0,
                 left: 0,
                 width: "100%",
+                height: item.size,
                 transform: `translateY(${item.start}px)`,
               }}
             >
@@ -75,8 +80,11 @@ function ResultsVirtualListImpl<Row>(props: Props<Row>) {
                 columns={columns}
                 config={config}
                 onClick={onRowClick}
+                onContextMenu={onRowContextMenu}
                 selected={selectedId === id}
                 extraClassName={getRowClassName?.(row)}
+                extraStyle={getRowStyle?.(row)}
+                heightPx={rowHeight}
               />
             </div>
           );

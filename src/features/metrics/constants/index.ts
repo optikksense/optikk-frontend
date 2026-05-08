@@ -11,7 +11,7 @@ export const DOMAIN_KEY = "metrics";
 export const QUERY_LABELS = ["a", "b", "c", "d", "e", "f"] as const;
 
 export const QUERY_LABEL_COLORS: Record<string, string> = {
-  a: "#3b82f6",
+  a: "#5ea9ff",
   b: "#22c55e",
   c: "#f97316",
   d: "#a855f7",

@@ -25,6 +25,7 @@ interface InfraMultiSeriesChartProps {
   readonly height?: number;
   readonly datasetLabel?: string;
   readonly formatType?: "bytes" | "percentage" | "duration" | "number";
+  readonly extraParams?: Record<string, string | number | undefined>;
 }
 
 function buildSeriesMap(rows: ChartRow[], groupByField: string): Record<string, ChartRow[]> {
@@ -48,6 +49,7 @@ export default memo(function InfraMultiSeriesChart({
   height = 260,
   datasetLabel = "Value",
   formatType = "number",
+  extraParams,
 }: InfraMultiSeriesChartProps) {
   const { timeBuckets } = useChartTimeBuckets();
   const [selectedSeries, setSelectedSeries] = useState<string[]>([]);
@@ -58,11 +60,21 @@ export default memo(function InfraMultiSeriesChart({
     );
   };
 
-  const q = useTimeRangeQuery<ChartRow[]>(queryKey, async (teamId, start, end) => {
-    if (!teamId) return [];
-    const data = await infraGet<ChartRow[]>(endpoint, teamId, Number(start), Number(end));
-    return Array.isArray(data) ? data : [];
-  });
+  const extraParamsKey = JSON.stringify(extraParams ?? {});
+  const q = useTimeRangeQuery<ChartRow[]>(
+    `${queryKey}|${extraParamsKey}`,
+    async (teamId, start, end) => {
+      if (!teamId) return [];
+      const data = await infraGet<ChartRow[]>(
+        endpoint,
+        teamId,
+        Number(start),
+        Number(end),
+        extraParams
+      );
+      return Array.isArray(data) ? data : [];
+    }
+  );
 
   const serviceTimeseriesMap = useMemo(
     () => buildSeriesMap(q.data ?? [], groupByField),

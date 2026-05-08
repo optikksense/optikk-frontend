@@ -1,209 +1,74 @@
-import api from "@/shared/api/api/client";
-import type { RequestTime } from "@shared/api/service-types";
-import { API_CONFIG } from "@config/apiConfig";
-import type { ServiceMetricPoint } from "@/features/metrics/types";
+/**
+ * Overview Hub API barrel — preserves the legacy `overviewHubApi.<method>`
+ * call surface used by every tab in OverviewHubPage. Internals are split
+ * along the backend module boundary so each file stays ≤200 lines and
+ * canonical-vs-phantom changes are easy to track per BE module:
+ *
+ *   overviewSummaryApi   → `/overview/summary` family   (Phase 0 stubs)
+ *   overviewRedApi       → `/spans/red/*` + `/spans/latency-breakdown`
+ *   overviewErrorsApi    → `/errors/*` + `/spans/exception-rate-by-type`
+ *                          + `/spans/error-hotspot`
+ *   overviewApmApi       → `/apm/*`
+ *   overviewHttpApi      → `/http/*`
+ *   overviewSloApi       → `/slo/*`
+ */
 
-const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
-
-function rangeParams(startTime: RequestTime, endTime: RequestTime): Record<string, RequestTime> {
-  return { startTime, endTime };
-}
-
-function unwrapComparisonPayload<T>(value: unknown): T {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    return value as T;
-  }
-
-  const record = value as Record<string, unknown>;
-  if (!("data" in record)) {
-    return value as T;
-  }
-
-  const keys = Object.keys(record);
-  if (keys.length <= 2 && (keys.length === 1 || "comparison" in record)) {
-    return record.data as T;
-  }
-
-  return value as T;
-}
-
-async function getJson<T>(path: string, startTime: RequestTime, endTime: RequestTime): Promise<T> {
-  const raw = await api.get<unknown>(`${V1}${path}`, { params: rangeParams(startTime, endTime) });
-  return unwrapComparisonPayload<T>(raw);
-}
-
-async function getJsonWithParams<T>(
-  path: string,
-  startTime: RequestTime,
-  endTime: RequestTime,
-  extra: Record<string, string | number | undefined>
-): Promise<T> {
-  const params: Record<string, RequestTime | string | number | undefined> = {
-    ...rangeParams(startTime, endTime),
-    ...extra,
-  };
-  const raw = await api.get<unknown>(`${V1}${path}`, { params });
-  return unwrapComparisonPayload<T>(raw);
-}
-
-export type OverviewGlobalSummary = {
-  total_requests?: number;
-  error_count?: number;
-  avg_latency?: number;
-  p50_latency?: number;
-  p95_latency?: number;
-  p99_latency?: number;
-};
-
-export type RedSummary = {
-  service_count?: number;
-  total_span_count?: number;
-  total_rps?: number;
-  avg_error_pct?: number;
-  avg_p50_ms?: number;
-  avg_p95_ms?: number;
-  avg_p99_ms?: number;
-};
-
-export type HistogramSummary = {
-  p50?: number;
-  p95?: number;
-  p99?: number;
-  avg?: number;
-};
-
-export type BurnRate = {
-  fast_burn_rate?: number;
-  slow_burn_rate?: number;
-  budget_remaining_pct?: number;
-};
-
-export type OverviewBatchSummary = {
-  summary: OverviewGlobalSummary;
-  services: ServiceMetricPoint[];
-};
-
-export type ChartMetricsPoint = {
-  timestamp: string;
-  service_name?: string;
-  request_count: number;
-  error_count: number;
-  error_rate: number;
-  p95: number;
-};
+import {
+  getApmOpenFds,
+  getApmProcessCpu,
+  getApmProcessMemory,
+  getApmRpcDuration,
+  getApmRpcRequestRate,
+} from "./overviewApmApi";
+import {
+  getErrorGroups,
+  getErrorHotspot,
+  getErrorsServiceErrorRate,
+  getErrorsVolume,
+  getExceptionRateByType,
+} from "./overviewErrorsApi";
+import {
+  getHttpErrorTimeseries,
+  getHttpRequestDuration,
+  getHttpRequestRate,
+  getHttpStatusDistribution,
+} from "./overviewHttpApi";
+import {
+  getLatencyBreakdown,
+  getRedErrorRateSeries,
+  getRedP95Series,
+  getRedRequestRateSeries,
+  getRedSummary,
+  getTopErrorOperations,
+  getTopSlowOperations,
+} from "./overviewRedApi";
+import { getSloBurnDown, getSloBurnRate } from "./overviewSloApi";
+export type { RedSummary } from "./overviewRedApi";
+export type { HistogramSummary } from "./overviewApmApi";
+export type { BurnRate } from "./overviewSloApi";
 
 export const overviewHubApi = {
-  getOverviewSummary(startTime: RequestTime, endTime: RequestTime): Promise<OverviewGlobalSummary> {
-    return getJson("/overview/summary", startTime, endTime);
-  },
-
-  /**
-   * Single-request alternative to the five Summary-tab queries. Backend fans out
-   * concurrently via errgroup; response time ≈ max(child) instead of sum.
-   */
-  getBatchSummary(startTime: RequestTime, endTime: RequestTime): Promise<OverviewBatchSummary> {
-    return getJson("/overview/batch-summary", startTime, endTime);
-  },
-
-  /**
-   * Combined below-fold chart payload: request rate + error rate + p95 latency
-   * per (time_bucket, service_name) in one response. Replaces three separate
-   * endpoints that each ran their own ClickHouse query against the same
-   * spans_rollup scan.
-   */
-  getChartMetrics(startTime: RequestTime, endTime: RequestTime): Promise<ChartMetricsPoint[]> {
-    return getJson("/overview/chart-metrics", startTime, endTime);
-  },
-
-  getRedSummary(startTime: RequestTime, endTime: RequestTime): Promise<RedSummary> {
-    return getJson("/spans/red/summary", startTime, endTime);
-  },
-
-  getLatencyBreakdown(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/spans/latency-breakdown", startTime, endTime);
-  },
-
-  getRedP95Series(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/spans/red/p95-latency", startTime, endTime);
-  },
-
-  getRedRequestRateSeries(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/spans/red/request-rate", startTime, endTime);
-  },
-
-  getRedErrorRateSeries(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/spans/red/error-rate", startTime, endTime);
-  },
-
-  getTopSlowOperations(startTime: RequestTime, endTime: RequestTime, limit = 25): Promise<unknown[]> {
-    return getJsonWithParams("/spans/red/top-slow-operations", startTime, endTime, { limit });
-  },
-
-  getTopErrorOperations(startTime: RequestTime, endTime: RequestTime, limit = 25): Promise<unknown[]> {
-    return getJsonWithParams("/spans/red/top-error-operations", startTime, endTime, { limit });
-  },
-
-  getApmRpcRequestRate(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/apm/rpc-request-rate", startTime, endTime);
-  },
-
-  getApmRpcDuration(startTime: RequestTime, endTime: RequestTime): Promise<HistogramSummary> {
-    return getJson("/apm/rpc-duration", startTime, endTime);
-  },
-
-  getApmProcessCpu(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/apm/process-cpu", startTime, endTime);
-  },
-
-  getApmProcessMemory(startTime: RequestTime, endTime: RequestTime): Promise<{ rss?: number; vms?: number }> {
-    return getJson("/apm/process-memory", startTime, endTime);
-  },
-
-  getApmOpenFds(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/apm/open-fds", startTime, endTime);
-  },
-
-  getErrorsServiceErrorRate(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/overview/errors/service-error-rate", startTime, endTime);
-  },
-
-  getErrorsVolume(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/overview/errors/error-volume", startTime, endTime);
-  },
-
-  getExceptionRateByType(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/spans/exception-rate-by-type", startTime, endTime);
-  },
-
-  getErrorHotspot(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/spans/error-hotspot", startTime, endTime);
-  },
-
-  getErrorGroups(startTime: RequestTime, endTime: RequestTime, limit = 100): Promise<unknown[]> {
-    return getJsonWithParams("/overview/errors/groups", startTime, endTime, { limit });
-  },
-
-  getHttpRequestRate(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/http/request-rate", startTime, endTime);
-  },
-
-  getHttpRequestDuration(startTime: RequestTime, endTime: RequestTime): Promise<HistogramSummary> {
-    return getJson("/http/request-duration", startTime, endTime);
-  },
-
-  getHttpStatusDistribution(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/http/status-distribution", startTime, endTime);
-  },
-
-  getHttpErrorTimeseries(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/http/error-timeseries", startTime, endTime);
-  },
-
-  getSloBurnRate(startTime: RequestTime, endTime: RequestTime): Promise<BurnRate> {
-    return getJson("/overview/slo/burn-rate", startTime, endTime);
-  },
-
-  getSloBurnDown(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-    return getJson("/overview/slo/burn-down", startTime, endTime);
-  },
+  getRedSummary,
+  getLatencyBreakdown,
+  getRedP95Series,
+  getRedRequestRateSeries,
+  getRedErrorRateSeries,
+  getTopSlowOperations,
+  getTopErrorOperations,
+  getApmRpcRequestRate,
+  getApmRpcDuration,
+  getApmProcessCpu,
+  getApmProcessMemory,
+  getApmOpenFds,
+  getErrorsServiceErrorRate,
+  getErrorsVolume,
+  getExceptionRateByType,
+  getErrorHotspot,
+  getErrorGroups,
+  getHttpRequestRate,
+  getHttpRequestDuration,
+  getHttpStatusDistribution,
+  getHttpErrorTimeseries,
+  getSloBurnRate,
+  getSloBurnDown,
 };

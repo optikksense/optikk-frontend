@@ -39,7 +39,6 @@ export default function SpanDetailDrawer(props: Props) {
           activeTab={activeTab}
           traceId={props.traceId}
           selectedSpanId={selectedSpanId}
-          selectedSpan={selectedSpan}
           spanAttributes={spanAttributes}
           spanAttributesLoading={props.spanAttributesLoading}
           spanEvents={props.spanEvents}

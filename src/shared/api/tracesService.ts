@@ -15,11 +15,8 @@ import {
   spanEventSchema,
   spanKindDurationSchema,
   spanRecordSchema,
-  spanSelfTimeSchema,
   traceErrorGroupSchema,
   traceLogsResponseSchema,
-  traceRecordSchema,
-  tracesSummarySchema,
 } from "./schemas/tracesSchemas";
 import { validateResponse } from "./utils/validate";
 
@@ -33,23 +30,11 @@ import type {
   SpanEventRecord,
   SpanKindDurationRecord,
   SpanRecord,
-  SpanSelfTimeRecord,
   TraceErrorGroup,
   TraceLogsResponse,
-  TraceRecord,
-  TracesSummary,
 } from "./schemas/tracesSchemas";
-import type { QueryParams, RequestTime } from "./service-types";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
-
-const tracesListSchema = z
-  .object({
-    traces: z.array(traceRecordSchema),
-    total: z.number(),
-    summary: tracesSummarySchema.optional(),
-  })
-  .strict();
 
 const spanListSchema = z.array(spanRecordSchema);
 
@@ -79,16 +64,6 @@ const traceSpansEnvelopeSchema = z.object({
  * Service wrapper for distributed tracing endpoints.
  */
 export const tracesService = {
-  async getTraces(
-    _teamId: number | null,
-    startTime: RequestTime,
-    endTime: RequestTime,
-    params: QueryParams = {}
-  ): Promise<{ traces: TraceRecord[]; total: number; summary?: TracesSummary }> {
-    const data = await api.get(`${BASE}/traces`, { params: { startTime, endTime, ...params } });
-    return validateResponse(tracesListSchema, data);
-  },
-
   async getTraceSpans(_teamId: number | null, traceId: string): Promise<SpanRecord[]> {
     const data = await api.get(`${BASE}/traces/${traceId}/spans`);
     if (Array.isArray(data)) {
@@ -96,11 +71,6 @@ export const tracesService = {
     }
     const { spans } = validateResponse(traceSpansEnvelopeSchema, data);
     return spans as unknown as SpanRecord[];
-  },
-
-  async getTraceLogs(_teamId: number | null, traceId: string): Promise<TraceLogsResponse> {
-    const data = await api.get(`${BASE}/traces/${traceId}/logs`);
-    return validateResponse(traceLogsResponseSchema, data);
   },
 
   async getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {
@@ -113,37 +83,10 @@ export const tracesService = {
     return validateResponse(z.array(spanKindDurationSchema), data);
   },
 
-  async getTraceBundle(traceId: string): Promise<{
-    spans: unknown[];
-    logs: unknown[];
-    critical_path: CriticalPathSpanRecord[];
-    error_path: ErrorPathSpanRecord[];
-    span_kind_breakdown: SpanKindDurationRecord[];
-  }> {
-    const data = await api.get<{
-      spans: unknown[];
-      logs: unknown[];
-      critical_path: unknown;
-      error_path: unknown;
-      span_kind_breakdown: unknown;
-    }>(`${BASE}/traces/${traceId}/bundle`);
-    return {
-      spans: Array.isArray(data?.spans) ? data.spans : [],
-      logs: Array.isArray(data?.logs) ? data.logs : [],
-      critical_path: validateResponse(z.array(criticalPathSpanSchema), data?.critical_path ?? []),
-      error_path: validateResponse(z.array(errorPathSpanSchema), data?.error_path ?? []),
-      span_kind_breakdown: validateResponse(z.array(spanKindDurationSchema), data?.span_kind_breakdown ?? []),
-    };
-  },
 
   async getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
     const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
     return validateResponse(z.array(criticalPathSpanSchema), data);
-  },
-
-  async getSpanSelfTimes(traceId: string): Promise<SpanSelfTimeRecord[]> {
-    const data = await api.get(`${BASE}/traces/${traceId}/span-self-times`);
-    return validateResponse(z.array(spanSelfTimeSchema), data);
   },
 
   async getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
@@ -189,8 +132,8 @@ export const tracesService = {
     return validateResponse(z.array(traceErrorGroupSchema), data);
   },
 
-  async getSpanLogs(traceId: string, spanId: string): Promise<TraceLogsResponse> {
-    const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/logs`);
+  async getTraceLogs(traceId: string): Promise<TraceLogsResponse> {
+    const data = await api.get(`${BASE}/traces/${traceId}/logs`);
     return validateResponse(traceLogsResponseSchema, data);
   },
 
