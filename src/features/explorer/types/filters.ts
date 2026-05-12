@@ -26,4 +26,4 @@ export type ExplorerFilterOp =
 
 export type ExplorerMode = "list" | "analytics";
 
-export type ExplorerScope = "logs" | "traces";
+export type ExplorerScope = "ai" | "logs" | "traces";

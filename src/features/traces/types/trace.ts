@@ -21,7 +21,7 @@ export interface TraceSummary {
   readonly root_operation: string;
   readonly root_status: string;
   readonly root_http_method?: string;
-  readonly root_http_status?: number;
+  readonly root_http_status?: string;
   readonly root_endpoint?: string;
   readonly span_count: number;
   readonly has_error: boolean;

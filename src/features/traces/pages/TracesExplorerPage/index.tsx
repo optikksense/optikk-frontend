@@ -92,6 +92,8 @@ function TracesPane({ p }: { p: UseTracesExplorerPageReturn }) {
           series={TRACE_TREND_SERIES}
           zoomed={p.zoomed}
           onTimeRangeChange={p.onTimeRangeChange}
+          minTimeMs={p.startTime}
+          maxTimeMs={p.endTime}
         />
       ) : null}
       <TraceSortToggle mode={p.sortMode} onChange={p.setSortMode} />

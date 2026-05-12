@@ -1,6 +1,6 @@
 import { type KeyboardEvent, forwardRef, memo, useCallback, useEffect, useState } from "react";
 
-import { useDslSearchBar } from "../../hooks/useDslSearchBar";
+import { type SavedViewLite, useDslSearchBar } from "../../hooks/useDslSearchBar";
 import { formatDsl } from "../../search/formatDsl";
 import type { ExplorerFilter, ExplorerScope } from "../../types/filters";
 import { QuerySuggestions, type SuggestionOption } from "./QuerySuggestions";
@@ -11,6 +11,9 @@ interface Props {
   readonly placeholder?: string;
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
+  readonly savedViews?: readonly SavedViewLite[];
+  readonly onSavedViewSelect?: (url: string) => void;
+  readonly disableBareFreeTextFallback?: boolean;
 }
 
 /**
@@ -25,6 +28,8 @@ function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputEle
     initial: seed,
     scope: props.scope,
     valueSuggestions: props.valueSuggestions,
+    savedViews: props.savedViews,
+    onSavedViewSelect: props.onSavedViewSelect,
   });
   useSyncSeedOnExternalChange(seed, s.input, s.setInput, s.setCaret);
   const activeOpt = s.suggestions[s.activeIdx];
@@ -37,7 +42,15 @@ function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputEle
   );
   const onKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      handleKeyDown(e, showPopover, setShowPopover, s, props.onApply, activeOpt);
+      handleKeyDown(
+        e,
+        showPopover,
+        setShowPopover,
+        s,
+        props.onApply,
+        activeOpt,
+        props.disableBareFreeTextFallback
+      );
     },
     [showPopover, s, props.onApply, activeOpt]
   );
@@ -93,6 +106,7 @@ function DslBarLayout(p: LayoutProps) {
           onHover={s.setActiveIdx}
           loading={s.isLoading}
           title={popoverTitle(s.context)}
+          highlight={s.context.tokenPrefix}
         />
       ) : null}
       {s.parsed.errors.length > 0 ? (
@@ -111,6 +125,9 @@ function inputClass(hasError: boolean): string {
 }
 
 function popoverTitle(context: ReturnType<typeof useDslSearchBar>["context"]): string | undefined {
+  if (context.kind === "empty") return undefined;
+  if (context.kind === "operator") return `Operators for ${context.field}`;
+  if (context.kind === "attribute") return "Attributes";
   if (context.kind === "field") return "Fields";
   if (context.field) return `Values for ${context.field}`;
   return undefined;
@@ -122,7 +139,8 @@ function handleKeyDown(
   setShowPopover: (v: boolean) => void,
   s: ReturnType<typeof useDslSearchBar>,
   onApply: Props["onApply"],
-  activeOpt: SuggestionOption | undefined
+  activeOpt: SuggestionOption | undefined,
+  disableBareFreeTextFallback: boolean | undefined
 ) {
   if (e.key === "Escape") {
     setShowPopover(false);
@@ -146,14 +164,19 @@ function handleKeyDown(
   if (e.key === "Enter") {
     e.preventDefault();
     setShowPopover(false);
-    onApply(effectiveFilters(s), s.input);
+    s.commit();
+    onApply(effectiveFilters(s, { disableBareFreeTextFallback }), s.input);
   }
 }
 
 /** If parsing failed or produced nothing but the input has text, fall back to a single
  * search:contains filter so the user never loses what they typed. */
-function effectiveFilters(s: ReturnType<typeof useDslSearchBar>): Props["filters"] {
+function effectiveFilters(
+  s: ReturnType<typeof useDslSearchBar>,
+  opts: { readonly disableBareFreeTextFallback?: boolean } = {}
+): Props["filters"] {
   if (s.parsed.filters.length > 0) return s.parsed.filters;
+  if (opts.disableBareFreeTextFallback) return [];
   const raw = s.input.trim();
   if (raw === "") return [];
   return [{ field: "search", op: "contains", value: raw }];

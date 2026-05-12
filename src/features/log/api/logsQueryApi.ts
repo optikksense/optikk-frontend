@@ -123,5 +123,35 @@ export async function queryLogs(args: QueryLogsArgs): Promise<LogsQueryResponse>
     limit: args.limit ?? 100,
   });
   const raw = await api.post<unknown>("/v1/logs/query", body);
-  return validateResponse(queryResponseSchema, raw);
+  const parsed = validateResponse(queryResponseSchema, raw);
+  return enforceIdFilters(parsed, body);
+}
+
+/**
+ * Defensive client-side filter for trace_id / span_id. The BE list endpoint
+ * applies these filters, but if any row leaks through (BE regression, CH
+ * binding edge case, or stale cache), drop it client-side and emit a warning
+ * once per response so we surface the inconsistency rather than render rows
+ * the user explicitly excluded.
+ */
+function enforceIdFilters(
+  resp: LogsQueryResponse,
+  body: { traceId?: string; spanId?: string }
+): LogsQueryResponse {
+  const traceFilter = body.traceId;
+  const spanFilter = body.spanId;
+  if (!traceFilter && !spanFilter) return resp;
+  const filtered = resp.results.filter(
+    (r) =>
+      (!traceFilter || r.trace_id === traceFilter) &&
+      (!spanFilter || r.span_id === spanFilter)
+  );
+  if (filtered.length !== resp.results.length) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[logs/query] Backend returned ${resp.results.length - filtered.length} row(s) that do not match the active id filter`,
+      { traceFilter, spanFilter, returned: resp.results.length, kept: filtered.length }
+    );
+  }
+  return { ...resp, results: filtered };
 }

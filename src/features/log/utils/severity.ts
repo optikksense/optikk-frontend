@@ -16,12 +16,12 @@ export interface SeverityStyle {
 }
 
 const STYLES: readonly SeverityStyle[] = [
-  { bucket: 0, label: "Trace", shortLabel: "TRC", color: "#70dbed" },
-  { bucket: 1, label: "Debug", shortLabel: "DBG", color: "#5794f2" },
+  { bucket: 0, label: "Trace", shortLabel: "TRC", color: "#7e8ea0" },
+  { bucket: 1, label: "Debug", shortLabel: "DBG", color: "#4e9fdd" },
   { bucket: 2, label: "Info", shortLabel: "INF", color: "#73bf69" },
-  { bucket: 3, label: "Warn", shortLabel: "WRN", color: "#f2cc0c" },
-  { bucket: 4, label: "Error", shortLabel: "ERR", color: "#f2495c" },
-  { bucket: 5, label: "Fatal", shortLabel: "FTL", color: "#b877d9" },
+  { bucket: 3, label: "Warn", shortLabel: "WRN", color: "#e0b400" },
+  { bucket: 4, label: "Error", shortLabel: "ERR", color: "#e8494d" },
+  { bucket: 5, label: "Fatal", shortLabel: "FTL", color: "#c00021" },
 ];
 
 export const SEVERITY_STYLES: readonly SeverityStyle[] = STYLES;

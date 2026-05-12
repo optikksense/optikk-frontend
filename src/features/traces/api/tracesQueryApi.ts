@@ -34,7 +34,7 @@ export const rawTraceRowSchema = z.object({
   root_operation: z.string(),
   root_status: z.string().optional(),
   root_http_method: z.string().optional(),
-  root_http_status: z.union([z.string(), z.number()]).optional(),
+  root_http_status: z.string().optional(),
   span_count: z.coerce.number(),
   has_error: z.coerce.boolean(),
   error_count: z.coerce.number(),
@@ -42,11 +42,9 @@ export const rawTraceRowSchema = z.object({
   truncated: z.coerce.boolean().optional(),
 });
 
-function parseHttpStatus(v: unknown): number | undefined {
-  if (v == null || v === "") return undefined;
-  if (typeof v === "number" && Number.isFinite(v)) return v;
-  const n = Number(String(v));
-  return Number.isFinite(n) ? n : undefined;
+function normalizeHttpStatus(v: string | undefined): string | undefined {
+  if (v == null || v === "" || v === "0") return undefined;
+  return v;
 }
 
 export function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSummary {
@@ -61,7 +59,7 @@ export function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): T
     root_operation: row.root_operation,
     root_status: row.root_status ?? "",
     root_http_method: row.root_http_method,
-    root_http_status: parseHttpStatus(row.root_http_status),
+    root_http_status: normalizeHttpStatus(row.root_http_status),
     root_endpoint: undefined,
     span_count: row.span_count,
     has_error: row.has_error,

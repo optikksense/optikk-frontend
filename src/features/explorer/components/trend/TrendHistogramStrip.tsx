@@ -1,6 +1,7 @@
 import { memo, useMemo } from "react";
-import type uPlot from "uplot";
+import uPlot from "uplot";
 
+import { useTimezone } from "@/app/store/appStore";
 import UPlotChart, { defaultAxes } from "@shared/components/ui/charts/UPlotChart";
 
 import { TrendLegend, type TrendLegendItem } from "./TrendLegend";
@@ -17,6 +18,8 @@ interface Props {
   readonly zoomed?: boolean;
   readonly onTimeRangeChange?: (fromMs: number, toMs: number) => void;
   readonly onResetZoom?: () => void;
+  readonly minTimeMs?: number;
+  readonly maxTimeMs?: number;
 }
 
 function toAlignedData(
@@ -46,7 +49,8 @@ function toSeriesOptions(series: readonly TrendLegendItem[]): uPlot.Series[] {
  * via the `series` prop.
  */
 function TrendHistogramStripComponent(props: Props) {
-  const { buckets, series, height = 160, zoomed, onTimeRangeChange, onResetZoom } = props;
+  const { buckets, series, height = 160, zoomed, onTimeRangeChange, onResetZoom, minTimeMs, maxTimeMs } = props;
+  const tz = useTimezone();
   const data = useMemo(() => toAlignedData(buckets, series), [buckets, series]);
   const options = useMemo<Omit<uPlot.Options, "width" | "height">>(
     () => {
@@ -61,11 +65,24 @@ function TrendHistogramStripComponent(props: Props) {
         series: toSeriesOptions(series),
         legend: { show: false },
         cursor: { drag: { x: true, y: false } },
-        scales: { x: { time: true } },
+        scales: {
+          x: {
+            time: true,
+            auto: false,
+            range: (_u, dataMin, dataMax) => [
+              minTimeMs ? Math.floor(minTimeMs / 1000) : dataMin,
+              maxTimeMs ? Math.floor(maxTimeMs / 1000) : dataMax,
+            ],
+          },
+        },
         axes,
+        tzDate:
+          tz && tz !== "local"
+            ? (ts: number) => uPlot.tzDate(new Date(ts * 1000), tz)
+            : undefined,
       };
     },
-    [series]
+    [series, tz]
   );
   return (
     <div className="flex flex-col border-b border-[var(--border-color)] bg-[var(--bg-primary)]">

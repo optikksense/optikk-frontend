@@ -73,8 +73,8 @@ The current frontend owns significant page composition and interaction logic dir
 | Overview | `src/features/overview/` | Overview hub, service hub, service detail, overview dashboard/renderers |
 | Saturation | `src/features/saturation/` | Saturation hub and datastore drill-downs |
 | Metrics | `src/features/metrics/` | Metrics explorer, charts, store, API hooks |
-| Logs | `src/features/log/` | Logs explorer, cursor-paginated results, scoped DSL search suggestions, severity styling |
-| Traces | `src/features/traces/` | Trace explorer, detail, comparison, waterfall rendering |
+| Logs | `src/features/log/` | Rebuilt logs explorer (clean-slate, Datadog-class). Components grouped: toolbar, kpi, facets, trend, table, detail. Feature-scoped Zustand store at `store/logsExplorerStore.ts`. JSON auto-detection in body cells. |
+| Traces | `src/features/traces/` | Trace explorer, detail, comparison. Trace detail page uses Datadog-parity layout: full-width viz (Waterfall + Flame Graph; waterfall renders event dots on bars at event timestamps) with non-modal resizable right `SpanDrawer` for span detail (Info / Logs / Events / Links / Infra tabs, hide-when-empty). Info tab includes a "Where this happens" ancestor chain + "Timing" KV grid; drawer header shows a "critical path" pill when the selected span is on the critical path. Composition root at `pages/TraceDetailPage/components/TraceDetailLayout.tsx`. State in `store/tracesStore.ts` (persists `visualizationTab`, `spanDetailTab`, `drawerWidthPx`); URL holds `?span=<id>`. Hotkeys: `/` filter, `j`/`k` or ↑/↓ navigate spans, `c` copy trace id, `e` cycle errors, `1`/`2` switch viz, `[`/`]` resize drawer, `Esc` close. |
 | Infrastructure | `src/features/infrastructure/` | Frontend-owned infrastructure hub, APIs, fleet and tab content |
 | Settings | `src/features/settings/` | Profile, team, and preferences pages |
 | Marketing | `src/features/marketing/` | Public-facing site content and shell |
@@ -82,9 +82,12 @@ The current frontend owns significant page composition and interaction logic dir
 
 ## Explorer conventions
 
-- Logs and traces use the shared `ExplorerHeader` DSL search path. Pass `scope="logs"` or `scope="traces"` so `parseDsl` validates against the correct field catalog from `src/features/explorer/search/knownFields.ts`.
-- Logs value suggestions are fed from the logs facets response into `ExplorerHeader.valueSuggestions`; traces continue to use the backend `/traces/suggest` path.
-- Logs results use cursor-backed pages from `useLogsExplorer().list.pages` and render one page at a time with footer navigation. Do not reintroduce near-end infinite append for the logs page unless the product direction changes.
+- Logs and traces use the shared `ExplorerSearchBarDsl` DSL search. Pass `scope="logs"` or `scope="traces"` so `parseDsl` validates against the correct field catalog.
+- Logs value suggestions are fed from the logs facets response into `LogsToolbar.valueSuggestions`.
+- Logs results use cursor-backed pages from `useLogsExplorer().list.pages` and render one page at a time with footer navigation. Do not reintroduce near-end infinite append.
+- The logs explorer uses a feature-scoped Zustand store (`logsExplorerStore`) for UI-only state (expanded rows, density, wrap lines, facet collapsed, detail tab, column widths). Filters remain URL-synced via shared `useExplorerState`.
+- Log rows feature severity-colored gutter bars, inline expand with JSON tree detection, and severity-based background tinting (error rows get subtle red tint).
+- The log detail panel is rendered inside `DetailDrawer` (shared Radix Dialog slide-over) with 4 tabs: Message, Fields, JSON, Correlation.
 - `ResultsArea` accepts an optional `rowHeight` for denser or more readable explorer rows while keeping the shared virtual list implementation.
 
 ## Shared layer map

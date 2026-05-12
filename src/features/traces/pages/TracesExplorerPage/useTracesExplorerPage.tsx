@@ -17,6 +17,7 @@ import { toTrendBuckets } from "@/features/explorer/utils/trend";
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 import { formatNumber } from "@shared/utils/formatters";
 import { splitSavedViewUrl } from "@shared/utils/queryString";
+import { resolveTimeRangeBounds } from "@/types";
 
 import type { TraceScope } from "../../components/TraceScopeToggle";
 import { type TraceSortMode } from "../../components/TraceSortToggle";
@@ -42,6 +43,7 @@ export function useTracesExplorerPage() {
 
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
   const timeRange = useTimeRange();
+  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
 
   const facetGroups = useMemo<FacetGroupModel[]>(
     () => facetsToGroups(facets),
@@ -134,6 +136,8 @@ export function useTracesExplorerPage() {
     onRetry,
     onClearFilters,
     onLoadSavedView,
+    startTime,
+    endTime,
   };
 }
 

@@ -47,11 +47,11 @@ export function useTraceDetailEnhanced(
     enabled: enabled && !!selectedSpanId,
   });
 
-  // Events — only when events tab is active
+  // Events — load eagerly when any span is selected (unified scroll panel)
   const { data: spanEventsData } = useStandardQuery({
     queryKey: ["trace-span-events", traceId],
     queryFn: () => tracesService.getSpanEvents(traceId),
-    enabled: enabled && activeDetailTab === "events",
+    enabled: enabled && !!selectedSpanId,
   });
 
   const { data: relatedTracesData } = useStandardQuery({

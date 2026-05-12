@@ -80,9 +80,10 @@ export const traceLogSchema = z
   .object({
     id: z.string().default(""),
     timestamp: z.union([z.string(), z.number()]),
-    observed_timestamp: z.number().optional(),
+    observed_timestamp: z.union([z.string(), z.number()]).optional(),
     severity_text: z.string().default("INFO"),
     severity_number: z.number().optional(),
+    severity_bucket: z.coerce.number().optional(),
     body: z.string().default(""),
     trace_id: z.string().default(""),
     span_id: z.string().default(""),

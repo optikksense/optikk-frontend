@@ -1,37 +1,53 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type VisualizationTab = "flamegraph" | "timeline";
+export type VisualizationTab = "flamegraph" | "timeline" | "errors" | "raw";
+export type SpanDetailTab = "info" | "logs" | "events" | "links" | "infra";
+
+export const DRAWER_WIDTH_DEFAULT = 480;
+export const DRAWER_WIDTH_MIN = 360;
+export const DRAWER_WIDTH_MAX = 900;
 
 interface TracesState {
-  waterfallViewMode: "compact" | "detailed";
-  setWaterfallViewMode: (mode: "compact" | "detailed") => void;
-  selectedSpanId: string | null;
-  setSelectedSpanId: (spanId: string | null) => void;
-  /** User's preferred visualization — persisted so it sticks across navigations (B2). */
+  /** User's preferred visualization — persisted so it sticks across navigations. */
   visualizationTab: VisualizationTab;
   setVisualizationTab: (tab: VisualizationTab) => void;
-  /** Collapsed span ids in the waterfall (B3). Ephemeral per session. */
+  /** Span detail drawer width in px (persisted). */
+  drawerWidthPx: number;
+  setDrawerWidthPx: (px: number) => void;
+  /** Last-active detail tab — persisted so reopening drawer lands on the same tab. */
+  spanDetailTab: SpanDetailTab;
+  setSpanDetailTab: (tab: SpanDetailTab) => void;
+  /** Collapsed span ids in the waterfall. Ephemeral per session. */
   collapsedSpanIds: ReadonlySet<string>;
   toggleCollapsedSpan: (spanId: string) => void;
   clearCollapsedSpans: () => void;
-  /** Waterfall search term + current hit index (B12). */
+  /** Waterfall search term (ephemeral). */
   waterfallSearch: string;
   setWaterfallSearch: (s: string) => void;
-  /** Errors-only filter toggle (B3). */
+  /** Errors-only filter toggle (ephemeral). */
   waterfallErrorsOnly: boolean;
   setWaterfallErrorsOnly: (v: boolean) => void;
+}
+
+function clampDrawerWidth(px: number): number {
+  if (!Number.isFinite(px)) return DRAWER_WIDTH_DEFAULT;
+  const max =
+    typeof window === "undefined"
+      ? DRAWER_WIDTH_MAX
+      : Math.min(DRAWER_WIDTH_MAX, Math.floor(window.innerWidth * 0.6));
+  return Math.max(DRAWER_WIDTH_MIN, Math.min(max, Math.round(px)));
 }
 
 export const useTracesStore = create<TracesState>()(
   persist(
     (set, get) => ({
-      waterfallViewMode: "detailed",
-      setWaterfallViewMode: (mode) => set({ waterfallViewMode: mode }),
-      selectedSpanId: null,
-      setSelectedSpanId: (spanId) => set({ selectedSpanId: spanId }),
-      visualizationTab: "flamegraph",
+      visualizationTab: "timeline",
       setVisualizationTab: (tab) => set({ visualizationTab: tab }),
+      drawerWidthPx: DRAWER_WIDTH_DEFAULT,
+      setDrawerWidthPx: (px) => set({ drawerWidthPx: clampDrawerWidth(px) }),
+      spanDetailTab: "info",
+      setSpanDetailTab: (tab) => set({ spanDetailTab: tab }),
       collapsedSpanIds: new Set<string>(),
       toggleCollapsedSpan: (spanId) => {
         const next = new Set(get().collapsedSpanIds);
@@ -47,10 +63,10 @@ export const useTracesStore = create<TracesState>()(
     }),
     {
       name: "traces-store",
-      // Only persist user preferences — not ephemeral search/collapse state.
       partialize: (s) => ({
-        waterfallViewMode: s.waterfallViewMode,
         visualizationTab: s.visualizationTab,
+        drawerWidthPx: s.drawerWidthPx,
+        spanDetailTab: s.spanDetailTab,
       }),
     },
   ),
