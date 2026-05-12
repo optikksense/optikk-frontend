@@ -23,20 +23,21 @@ function LogsTableFooterComponent({
   onNext,
 }: Props) {
   const displayPageCount = hasMore ? `${pageCount}+` : String(Math.max(pageCount, 1));
+  const nextDisabled = loadingNext || (!hasMore && pageIndex + 1 >= pageCount);
 
   return (
-    <div className="flex items-center justify-between border-t border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-2">
-      <span className="font-mono text-[11px] text-[var(--text-muted)]">
+    <div className="ok-foot">
+      <span className="ok-foot-l">
         Page {pageIndex + 1} of {displayPageCount} · {pageRows.toLocaleString()} rows ·{" "}
         {loadedRows.toLocaleString()} loaded
       </span>
-      <div className="flex items-center gap-1">
+      <div className="ok-foot-r">
         <button
           type="button"
           aria-label="Previous page"
           onClick={onPrevious}
           disabled={pageIndex === 0}
-          className="inline-flex h-7 w-7 items-center justify-center rounded border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] disabled:pointer-events-none disabled:opacity-40"
+          className="ok-pg"
         >
           <ChevronLeft size={14} />
         </button>
@@ -44,8 +45,8 @@ function LogsTableFooterComponent({
           type="button"
           aria-label="Next page"
           onClick={onNext}
-          disabled={loadingNext || (!hasMore && pageIndex + 1 >= pageCount)}
-          className="inline-flex h-7 items-center gap-1 rounded border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2.5 font-medium text-[11px] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] disabled:pointer-events-none disabled:opacity-40"
+          disabled={nextDisabled}
+          className="ok-pg is-pri"
         >
           {loadingNext ? "Loading…" : "Next"}
           <ChevronRight size={14} />

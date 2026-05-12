@@ -1,16 +1,24 @@
 import { useEffect } from "react"
 
+import { useScrollReveal } from "./hooks/useScrollReveal"
 import content from "./content.json"
 import {
   CTA,
+  ChangelogTeaser,
   CodeBlock,
+  ComparisonTable,
   FAQ,
   FeatureGrid,
   Hero,
+  IntegrationsGrid,
+  InteractiveDemo,
+  LogoStrip,
   type MarketingSection,
   MetricsStrip,
+  PricingTable,
   ProductDemo,
   Split,
+  Testimonial,
 } from "./sections"
 
 interface MarketingPageEntry {
@@ -41,6 +49,20 @@ function renderSection(section: MarketingSection, index: number) {
       return <MetricsStrip key={key} {...section} />
     case "product-demo":
       return <ProductDemo key={key} {...section} />
+    case "comparison":
+      return <ComparisonTable key={key} {...section} />
+    case "testimonial":
+      return <Testimonial key={key} {...section} />
+    case "logo-strip":
+      return <LogoStrip key={key} {...section} />
+    case "integrations":
+      return <IntegrationsGrid key={key} {...section} />
+    case "pricing":
+      return <PricingTable key={key} {...section} />
+    case "changelog":
+      return <ChangelogTeaser key={key} {...section} />
+    case "interactive-demo":
+      return <InteractiveDemo key={key} {...section} />
     default:
       return null
   }
@@ -48,6 +70,7 @@ function renderSection(section: MarketingSection, index: number) {
 
 export function MarketingShell({ path }: { readonly path: string }) {
   const page = PAGES.find((entry) => entry.path === path) ?? PAGES[0]
+  const containerRef = useScrollReveal()
 
   useEffect(() => {
     if (!page) return
@@ -66,7 +89,7 @@ export function MarketingShell({ path }: { readonly path: string }) {
   if (!page) return null
 
   return (
-    <main className="marketing-main">
+    <main className="marketing-main" ref={containerRef}>
       {page.sections && page.sections.length > 0
         ? page.sections.map(renderSection)
         : (

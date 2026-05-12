@@ -14,12 +14,12 @@ interface Props {
   readonly onSavedViewSelect?: (url: string) => void;
 }
 
-/** Top toolbar: DSL search bar (with chips) + action buttons. Time picker lives in the global header. */
+/** Top toolbar — DSL search bar with chip filters, plus Views / Share actions. */
 export const LogsToolbar = memo(
   forwardRef<HTMLInputElement, Props>(function LogsToolbar(props, ref) {
     return (
-      <header className="sticky top-0 z-20 flex items-start gap-3 border-b border-[var(--border-color)] bg-[var(--bg-primary)] px-4 py-3">
-        <div className="min-w-0 flex-1">
+      <header className="ok-search-row">
+        <div style={{ flex: 1, minWidth: 0 }}>
           <DslSearchBarWithChips
             ref={ref}
             filters={props.filters}
@@ -31,7 +31,7 @@ export const LogsToolbar = memo(
             onSavedViewSelect={props.onSavedViewSelect}
           />
         </div>
-        {props.actions ? <div className="flex items-center gap-2">{props.actions}</div> : null}
+        {props.actions}
       </header>
     );
   })

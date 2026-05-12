@@ -1,3 +1,4 @@
+import { GitHubStarBadge } from "../components/GitHubStarBadge"
 import { HeroArt } from "../svg/HeroArt"
 import { CTALink, type CtaLinkData } from "./CTALink"
 
@@ -10,14 +11,33 @@ export interface HeroSection {
   readonly secondaryCta?: CtaLinkData
   /** Disable the decorative hero art (e.g. on dense copy-heavy pages). */
   readonly plain?: boolean
+  readonly github?: { readonly stars: number; readonly url: string }
+  /** Whether to render headline with gradient styling. */
+  readonly gradient?: boolean
 }
 
-export function Hero({ eyebrow, title, body, primaryCta, secondaryCta, plain }: HeroSection) {
+export function Hero({
+  eyebrow,
+  title,
+  body,
+  primaryCta,
+  secondaryCta,
+  plain,
+  github,
+  gradient,
+}: HeroSection) {
   return (
     <section className={plain ? "marketing-hero" : "marketing-hero marketing-hero-with-art"}>
       <div className="marketing-hero-copy">
+        {github ? (
+          <div style={{ marginBottom: 20 }}>
+            <GitHubStarBadge stars={github.stars} url={github.url} />
+          </div>
+        ) : null}
         {eyebrow ? <div className="marketing-eyebrow">{eyebrow}</div> : null}
-        <h1 className="marketing-h1">{title}</h1>
+        <h1 className={gradient ? "marketing-h1 marketing-h1-gradient" : "marketing-h1"}>
+          {title}
+        </h1>
         {body ? <p className="marketing-lede">{body}</p> : null}
         {(primaryCta || secondaryCta) && (
           <div className="marketing-hero-ctas">

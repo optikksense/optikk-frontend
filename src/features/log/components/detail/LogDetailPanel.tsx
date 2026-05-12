@@ -1,16 +1,17 @@
-import { Copy, ExternalLink, X } from "lucide-react";
+import { Bell, Copy, Download, GitFork, Link2, Share2, X } from "lucide-react";
 import { memo, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 import { Button } from "@shared/components/primitives/ui";
 
 import { getLogById } from "../../api/logsExplorerApi";
 import type { LogRecord } from "../../types/log";
-import { severityColor, severityStyle } from "../../utils/severity";
-import { tryParseJson } from "../../utils/jsonDetect";
-import { JsonTreeView } from "../table/JsonTreeView";
+import { severityStyle } from "../../utils/severity";
+import { serviceSwatchColor } from "../../utils/serviceHue";
+import { getSpanId, getTraceId } from "../../utils/traceCorrelation";
 
 interface Props {
   readonly logId: string;
@@ -29,12 +30,29 @@ function formatTime(iso: string): string {
   }
 }
 
-function shortId(id: string): string {
-  if (id.length <= 20) return id;
-  return `${id.slice(0, 10)}…${id.slice(-8)}`;
+function relativeTime(iso: string): string {
+  const d = new Date(iso).getTime();
+  if (Number.isNaN(d)) return "";
+  const diffSec = Math.round((Date.now() - d) / 1000);
+  const a = Math.abs(diffSec);
+  if (a < 60) return `${a}s ago`;
+  if (a < 3600) return `${Math.round(a / 60)}m ago`;
+  if (a < 86400) return `${Math.round(a / 3600)}h ago`;
+  return `${Math.round(a / 86400)}d ago`;
 }
 
-/** Full log detail slide-over panel — single unified view with all sections. */
+function flattenAttrs(log: LogRecord): Array<[string, string]> {
+  return [
+    ...Object.entries(log.attributes_string ?? {}),
+    ...Object.entries(log.attributes_number ?? {}).map(
+      ([k, v]) => [k, String(v)] as [string, string]
+    ),
+    ...Object.entries(log.attributes_bool ?? {}).map(
+      ([k, v]) => [k, v ? "true" : "false"] as [string, string]
+    ),
+  ].sort(([a], [b]) => a.localeCompare(b));
+}
+
 function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
   const navigate = useNavigate();
 
@@ -47,92 +65,187 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
 
   if (q.isPending) {
     return (
-      <div className="flex h-full items-center justify-center text-[13px] text-[var(--text-muted)]">
-        Loading log…
-      </div>
+      <aside className="ok-detail">
+        <div style={{ padding: 16, color: "var(--fg-3)", fontSize: 13 }}>Loading log…</div>
+      </aside>
     );
   }
 
   if (q.isError) {
     return (
-      <div className="flex flex-col gap-3 p-4">
-        <p className="font-medium text-[13px] text-[var(--color-error)]">Could not load log</p>
-        <pre className="text-[11px] text-[var(--text-muted)]">{formatErrorForDisplay(q.error)}</pre>
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => void q.refetch()}>Retry</Button>
-          <Button variant="secondary" onClick={onClose}>Close</Button>
+      <aside className="ok-detail">
+        <p style={{ fontWeight: 500, fontSize: 13, color: "var(--err-c)" }}>Could not load log</p>
+        <pre style={{ fontSize: 11, color: "var(--fg-3)" }}>{formatErrorForDisplay(q.error)}</pre>
+        <div style={{ display: "flex", gap: 6 }}>
+          <Button variant="secondary" onClick={() => void q.refetch()}>
+            Retry
+          </Button>
+          <Button variant="secondary" onClick={onClose}>
+            Close
+          </Button>
         </div>
-      </div>
+      </aside>
     );
   }
 
   const log = q.data?.log;
-  if (!log) return <div className="p-4 text-[var(--text-muted)]">No data</div>;
+  if (!log) {
+    return (
+      <aside className="ok-detail">
+        <div style={{ padding: 12, color: "var(--fg-3)" }}>No data</div>
+      </aside>
+    );
+  }
 
   const sev = severityStyle(log.severity_bucket);
+  const attrs = flattenAttrs(log);
+  const traceId = getTraceId(log);
+  const spanId = getSpanId(log);
+  const standardFields: Array<[string, string]> = [
+    ["service", log.service_name],
+    ["level", log.severity_text ?? sev.label],
+    ["host", log.host ?? ""],
+    ["pod", log.pod ?? ""],
+    ["container", log.container ?? ""],
+    ["env", log.environment ?? ""],
+    ["scope", log.scope_name ?? ""],
+  ].filter(([, v]) => v !== "") as Array<[string, string]>;
+
+  const allFields: Array<[string, string]> = [...standardFields, ...attrs];
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      {/* Header */}
-      <div className="shrink-0 border-b border-[var(--border-color)] px-5 py-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2.5">
-            <span
-              className="rounded-md px-2 py-0.5 font-mono font-bold text-[11px] uppercase"
-              style={{ backgroundColor: `${severityColor(log.severity_bucket)}22`, color: severityColor(log.severity_bucket) }}
-            >
-              {sev.shortLabel}
-            </span>
-            <div>
-              <div className="font-semibold text-[15px] text-[var(--text-primary)]">{log.service_name}</div>
-              <div className="text-[12px] text-[var(--text-muted)]">{formatTime(log.timestamp)}</div>
-            </div>
+    <aside className="ok-detail">
+      <div className="ok-detail-h">
+        <span className="ok-detail-svc">
+          <span
+            className="ok-tr-svc-d"
+            style={{ background: serviceSwatchColor(log.service_name) }}
+          />
+          {log.service_name}
+        </span>
+        <span className={`ok-lvl l-${sev.slug}`}>
+          <span className="ok-lvl-d" />
+          {sev.shortLabel}
+        </span>
+        <span className="ok-detail-sp" />
+        <button
+          type="button"
+          className="ok-ib"
+          title="Copy JSON"
+          onClick={() => void navigator.clipboard.writeText(JSON.stringify(log, null, 2))}
+        >
+          <Copy size={14} />
+        </button>
+        <button
+          type="button"
+          className="ok-ib"
+          title="Permalink"
+          onClick={() => void navigator.clipboard.writeText(window.location.href)}
+        >
+          <Link2 size={14} />
+        </button>
+        <button type="button" className="ok-ib" title="Close" onClick={onClose}>
+          <X size={14} />
+        </button>
+      </div>
+
+      <div className="ok-detail-msg">{log.body || "—"}</div>
+
+      <div className="ok-detail-meta">
+        <span>{formatTime(log.timestamp)}</span>
+        <span>·</span>
+        <span>{relativeTime(log.timestamp)}</span>
+        {log.host ? (
+          <>
+            <span>·</span>
+            <b>{log.host}</b>
+          </>
+        ) : null}
+        {log.environment ? (
+          <>
+            <span>·</span>
+            <span>{log.environment}</span>
+          </>
+        ) : null}
+      </div>
+
+      {traceId ? (
+        <div className="ok-callout">
+          <div className="ok-callout-h">
+            <GitFork size={12} />
+            Correlated with a distributed trace
           </div>
-          <div className="flex items-center gap-1">
+          <div className="ok-callout-id">{traceId}</div>
+          {spanId ? (
+            <div className="ok-callout-id" style={{ color: "var(--fg-3)" }}>
+              span_id · {spanId}
+            </div>
+          ) : null}
+          <div className="ok-callout-a">
             <button
               type="button"
-              onClick={() => void navigator.clipboard.writeText(log.body)}
-              className="flex h-7 items-center gap-1 rounded px-2 text-[11px] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              className="ok-btn-sm is-pri"
+              onClick={() => navigate({ to: `/traces/${encodeURIComponent(traceId)}` })}
             >
-              <Copy size={12} /> Copy
+              Open trace
             </button>
             <button
               type="button"
-              onClick={onClose}
-              className="flex h-7 w-7 items-center justify-center rounded text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              className="ok-btn-sm"
+              onClick={() => {
+                void navigator.clipboard.writeText(`trace_id:${traceId}`);
+                toast.success("Trace filter copied — paste into search");
+              }}
+              title="Copy trace_id filter to clipboard"
             >
-              <X size={16} />
+              All logs in this trace
             </button>
           </div>
         </div>
-        <p className="mt-1 font-mono text-[10px] text-[var(--text-muted)]" title={logId}>{shortId(logId)}</p>
+      ) : (
+        <div className="ok-callout ok-callout-empty">
+          <div className="ok-callout-h">
+            <GitFork size={12} />
+            No trace correlation
+          </div>
+          <div style={{ fontSize: 11, color: "var(--fg-3)" }}>
+            This log was not emitted with a trace_id. Instrument the emitter to
+            stitch it to a distributed trace.
+          </div>
+        </div>
+      )}
+
+      <div className="ok-detail-sect-t">Fields</div>
+      <div className="ok-fields">
+        {allFields.map(([k, v]) => (
+          <FieldRow key={k} field={k} value={v} />
+        ))}
       </div>
 
-      {/* Unified content — all sections stacked */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
-        {/* Message */}
-        <MessageSection log={log} />
-
-        {/* Correlation (trace/span) — shown near top for quick access */}
-        {(log.trace_id || log.span_id) ? (
-          <CorrelationSection log={log} navigate={navigate} />
-        ) : null}
-
-        {/* Fields */}
-        <FieldsSection log={log} />
-
-        {/* JSON tree (only when body is valid JSON) */}
-        <JsonSection log={log} />
+      <div className="ok-detail-actions">
+        <button type="button" className="ok-btn-sm">
+          <Bell size={12} /> Alert
+        </button>
+        <button
+          type="button"
+          className="ok-btn-sm"
+          onClick={() => void navigator.clipboard.writeText(window.location.href)}
+        >
+          <Share2 size={12} /> Share
+        </button>
+        <button type="button" className="ok-btn-sm">
+          <Download size={12} /> Export
+        </button>
       </div>
 
-      {/* Nav footer */}
-      {(onPrev || onNext) ? (
-        <div className="flex items-center justify-end gap-1 border-t border-[var(--border-color)] px-4 py-2">
+      {onPrev || onNext ? (
+        <div className="ok-detail-actions">
           <button
             type="button"
             disabled={!onPrev}
             onClick={onPrev}
-            className="rounded px-2 py-1 text-[11px] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] disabled:opacity-40"
+            className="ok-btn-sm"
+            style={{ flex: 1, justifyContent: "center" }}
           >
             ← Prev
           </button>
@@ -140,158 +253,33 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
             type="button"
             disabled={!onNext}
             onClick={onNext}
-            className="rounded px-2 py-1 text-[11px] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] disabled:opacity-40"
+            className="ok-btn-sm"
+            style={{ flex: 1, justifyContent: "center" }}
           >
             Next →
           </button>
         </div>
       ) : null}
+    </aside>
+  );
+}
+
+function FieldRow({ field, value }: { field: string; value: string }) {
+  const isErr = field.startsWith("error") || field.startsWith("exception");
+  const onCopy = useMemo(
+    () => () => void navigator.clipboard.writeText(value),
+    [value]
+  );
+  return (
+    <div className={`ok-kv ${isErr ? "is-err" : ""}`}>
+      <span className="ok-kv-k">{field}</span>
+      <span className="ok-kv-v" title={value}>
+        {value}
+      </span>
+      <button type="button" className="ok-kv-c" title="Copy" onClick={onCopy}>
+        +
+      </button>
     </div>
-  );
-}
-
-/* ─── Section components ────────────────────────────────────────────── */
-
-function SectionHeader({ title }: { title: string }) {
-  return (
-    <h3 className="mb-2 font-semibold text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
-      {title}
-    </h3>
-  );
-}
-
-function SectionDivider() {
-  return <div className="border-t border-[var(--border-color)]" />;
-}
-
-function MessageSection({ log }: { log: LogRecord }) {
-  return (
-    <div>
-      <SectionHeader title="Message" />
-      <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 font-mono text-[12px] text-[var(--text-primary)] leading-relaxed">
-        {log.body || "—"}
-      </pre>
-    </div>
-  );
-}
-
-function CorrelationSection({ log, navigate }: { log: LogRecord; navigate: ReturnType<typeof useNavigate> }) {
-  return (
-    <>
-      <SectionDivider />
-      <div>
-        <SectionHeader title="Correlation" />
-        <div className="overflow-hidden rounded-md border border-[var(--border-color)]">
-          {log.trace_id ? (
-            <div className="flex items-center gap-3 px-3 py-1.5 bg-[var(--bg-inset)]">
-              <span className="w-[140px] shrink-0 text-[11px] font-medium text-[var(--text-muted)]">trace_id</span>
-              <button
-                type="button"
-                onClick={() => navigate({ to: `/traces/${encodeURIComponent(log.trace_id ?? "")}` })}
-                className="flex items-center gap-1 min-w-0 flex-1 font-mono text-[12px] text-[var(--color-primary)] hover:underline"
-              >
-                <span className="truncate">{log.trace_id}</span>
-                <ExternalLink size={10} className="shrink-0" />
-              </button>
-              <button
-                type="button"
-                onClick={() => void navigator.clipboard.writeText(log.trace_id ?? "")}
-                className="shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity hover:text-[var(--text-primary)] [div:hover>&]:opacity-100"
-              >
-                <Copy size={10} />
-              </button>
-            </div>
-          ) : null}
-          {log.span_id ? (
-            <div className={`flex items-center gap-3 px-3 py-1.5 ${log.trace_id ? "" : "bg-[var(--bg-inset)]"}`}>
-              <span className="w-[140px] shrink-0 text-[11px] font-medium text-[var(--text-muted)]">span_id</span>
-              <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-[var(--text-primary)]">{log.span_id}</span>
-              <button
-                type="button"
-                onClick={() => void navigator.clipboard.writeText(log.span_id ?? "")}
-                className="shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity hover:text-[var(--text-primary)] [div:hover>&]:opacity-100"
-              >
-                <Copy size={10} />
-              </button>
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </>
-  );
-}
-
-function FieldsSection({ log }: { log: LogRecord }) {
-  const fields: [string, string][] = (
-    [
-      ["timestamp", log.timestamp],
-      ["service_name", log.service_name],
-      ["severity_text", log.severity_text ?? ""],
-      ["host", log.host ?? ""],
-      ["pod", log.pod ?? ""],
-      ["container", log.container ?? ""],
-      ["environment", log.environment ?? ""],
-      ["scope_name", log.scope_name ?? ""],
-    ] as [string, string][]
-  ).filter(([, v]) => v !== "");
-
-  const attrs: [string, string][] = [
-    ...Object.entries(log.attributes_string ?? {}),
-    ...Object.entries(log.attributes_number ?? {}).map(([k, v]) => [k, String(v)] as [string, string]),
-    ...Object.entries(log.attributes_bool ?? {}).map(([k, v]) => [k, v ? "true" : "false"] as [string, string]),
-  ].sort(([a], [b]) => a.localeCompare(b));
-
-  return (
-    <>
-      <SectionDivider />
-      <div className="space-y-4">
-        <FieldGroup title="Standard Fields" rows={fields} />
-        {attrs.length > 0 ? <FieldGroup title="Custom Attributes" rows={attrs} /> : null}
-      </div>
-    </>
-  );
-}
-
-function FieldGroup({ title, rows }: { title: string; rows: [string, string][] }) {
-  return (
-    <div>
-      <SectionHeader title={title} />
-      <div className="overflow-hidden rounded-md border border-[var(--border-color)]">
-        {rows.map(([key, value], i) => (
-          <div
-            key={key}
-            className={`flex items-center gap-3 px-3 py-1.5 ${i % 2 === 0 ? "bg-[var(--bg-inset)]" : ""}`}
-          >
-            <span className="w-[140px] shrink-0 text-[11px] font-medium text-[var(--text-muted)]">{key}</span>
-            <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-[var(--text-primary)]">{value}</span>
-            <button
-              type="button"
-              onClick={() => void navigator.clipboard.writeText(value)}
-              className="shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity hover:text-[var(--text-primary)] [div:hover>&]:opacity-100"
-            >
-              <Copy size={10} />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function JsonSection({ log }: { log: LogRecord }) {
-  const parsed = useMemo(() => tryParseJson(log.body), [log.body]);
-  if (!parsed) return null;
-
-  return (
-    <>
-      <SectionDivider />
-      <div>
-        <SectionHeader title="Parsed JSON" />
-        <div className="rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] p-3">
-          <JsonTreeView data={parsed} />
-        </div>
-      </div>
-    </>
   );
 }
 

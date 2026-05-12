@@ -3,7 +3,6 @@ import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
 import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
-import { DetailDrawer } from "@/features/explorer/components/detail/DetailDrawer";
 import type { SavedViewLite } from "@/features/explorer/hooks/useDslSearchBar";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { useSavedViews } from "@/features/savedViews/hooks/useSavedViews";
@@ -25,6 +24,8 @@ import { LogsTableToolbar } from "../../components/table/LogsTableToolbar";
 import { LogsActions } from "../../components/toolbar/LogsActions";
 import { LogsToolbar } from "../../components/toolbar/LogsToolbar";
 import { LogsTrendChart } from "../../components/trend/LogsTrendChart";
+
+import "./LogsExplorerPage.css";
 
 function extractSearchTerm(filters: readonly ExplorerFilter[]): string | undefined {
   const f = filters.find(
@@ -63,8 +64,8 @@ function buildValueSuggestions(
 }
 
 /**
- * Main logs explorer page — composes all zones: toolbar, KPIs, facets,
- * trend chart, table, and detail panel.
+ * Main logs explorer page — composes all zones: toolbar, facets, trend chart,
+ * table, and detail panel as an inline 380px column on the right when open.
  */
 export default function LogsExplorerPage() {
   const navigate = useNavigate();
@@ -74,7 +75,6 @@ export default function LogsExplorerPage() {
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Pagination actions from Zustand store
   const goNextPage = useLogsExplorerStore((s) => s.goNextPage);
   const goPrevPage = useLogsExplorerStore((s) => s.goPrevPage);
 
@@ -86,7 +86,6 @@ export default function LogsExplorerPage() {
     [savedViewsQuery.views]
   );
 
-  // Callbacks
   const onInclude = useCallback(
     (field: string, value: string) =>
       state.setFilters([...state.filters, { field, op: "eq", value }]),
@@ -111,7 +110,6 @@ export default function LogsExplorerPage() {
     [navigate]
   );
 
-  // Detail nav
   const results = list.results;
   const detailIdx = state.detail ? results.findIndex((r) => r.id === state.detail) : -1;
   const onDetailPrev = detailIdx > 0 ? () => state.setDetail(results[detailIdx - 1].id) : undefined;
@@ -120,85 +118,74 @@ export default function LogsExplorerPage() {
       ? () => state.setDetail(results[detailIdx + 1].id)
       : undefined;
 
-  return (
-    <div className="flex h-full flex-col bg-[var(--bg-primary)]">
-      {/* Toolbar */}
-      <LogsToolbar
-        ref={searchInputRef}
-        filters={state.filters}
-        onChangeFilters={(f) => state.setFilters(f)}
-        actions={<LogsActions onLoadSavedView={onLoadSavedView} />}
-        valueSuggestions={valueSuggestions}
-        savedViews={savedViews}
-        onSavedViewSelect={onLoadSavedView}
-      />
+  const detailOpen = Boolean(state.detail);
 
-      {/* Main body: facets + content */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* Facet panel */}
-        <LogsFacetPanel
-          facets={facets.data}
-          onInclude={onInclude}
-          onExclude={onExclude}
-          activeFilterCount={state.filters.length}
-          onClearAll={onClearFilters}
+  return (
+    <div className="logs-explorer-root">
+      <div className="ok-body">
+        <LogsToolbar
+          ref={searchInputRef}
+          filters={state.filters}
+          onChangeFilters={(f) => state.setFilters(f)}
+          actions={<LogsActions onLoadSavedView={onLoadSavedView} />}
+          valueSuggestions={valueSuggestions}
+          savedViews={savedViews}
+          onSavedViewSelect={onLoadSavedView}
         />
 
-        {/* Content area */}
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          {/* Trend chart */}
-          <LogsTrendChart
-            trend={trend.data}
-            zoomed={timeRange.kind === "absolute"}
-            onTimeRangeChange={onTimeRangeChange}
-            minTimeMs={startTime}
-            maxTimeMs={endTime}
+        <div className={`ok-grid ${detailOpen ? "has-detail" : ""}`}>
+          <LogsFacetPanel
+            facets={facets.data}
+            onInclude={onInclude}
+            onExclude={onExclude}
+            activeFilterCount={state.filters.length}
+            onClearAll={onClearFilters}
           />
 
-          {/* Table toolbar */}
-          <LogsTableToolbar />
+          <div className="ok-results">
+            <LogsTrendChart
+              trend={trend.data}
+              zoomed={timeRange.kind === "absolute"}
+              onTimeRangeChange={onTimeRangeChange}
+              minTimeMs={startTime}
+              maxTimeMs={endTime}
+            />
 
-          {/* Log table */}
-          <LogsTable
-            rows={results}
-            searchTerm={searchTerm}
-            loading={list.isPending}
-            selectedId={state.detail}
-            onRowClick={onRowClick}
-          />
+            <div className="ok-rwrap">
+              <LogsTableToolbar />
+              <LogsTable
+                rows={results}
+                searchTerm={searchTerm}
+                loading={list.isPending}
+                selectedId={state.detail}
+                onRowClick={onRowClick}
+              />
+              {results.length > 0 || list.hasMore ? (
+                <LogsTableFooter
+                  pageIndex={list.pageIndex}
+                  pageCount={list.pageCount}
+                  pageRows={results.length}
+                  loadedRows={results.length}
+                  hasMore={list.hasMore}
+                  loadingNext={list.isPending && results.length === 0}
+                  onPrevious={goPrevPage}
+                  onNext={goNextPage}
+                />
+              ) : null}
+            </div>
+          </div>
 
-          {/* Footer */}
-          {results.length > 0 || list.hasMore ? (
-            <LogsTableFooter
-              pageIndex={list.pageIndex}
-              pageCount={list.pageCount}
-              pageRows={results.length}
-              loadedRows={results.length}
-              hasMore={list.hasMore}
-              loadingNext={list.isPending && results.length === 0}
-              onPrevious={goPrevPage}
-              onNext={goNextPage}
+          {detailOpen && state.detail ? (
+            <LogDetailPanel
+              logId={state.detail}
+              onClose={() => state.setDetail(null)}
+              onPrev={onDetailPrev}
+              onNext={onDetailNext}
             />
           ) : null}
         </div>
       </div>
-
-      {/* Detail panel */}
-      <DetailDrawer
-        open={Boolean(state.detail)}
-        onOpenChange={(o) => (o ? null : state.setDetail(null))}
-        title="Log detail"
-        widthPx={720}
-      >
-        {state.detail ? (
-          <LogDetailPanel
-            logId={state.detail}
-            onClose={() => state.setDetail(null)}
-            onPrev={onDetailPrev}
-            onNext={onDetailNext}
-          />
-        ) : null}
-      </DetailDrawer>
     </div>
   );
 }
+

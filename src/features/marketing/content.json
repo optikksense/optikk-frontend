@@ -11,7 +11,7 @@
     "signIn": { "label": "Sign in", "path": "/login" }
   },
   "footer": {
-    "tagline": "Observability for shipping teams.",
+    "tagline": "Open-source observability for engineering teams that ship every day.",
     "groups": [
       {
         "title": "Product",
@@ -22,10 +22,16 @@
         ]
       },
       {
-        "title": "Integrations",
+        "title": "Developers",
         "links": [
           { "label": "OpenTelemetry", "path": "/opentelemetry" },
           { "label": "Self-host", "path": "/self-host" }
+        ]
+      },
+      {
+        "title": "Company",
+        "links": [
+          { "label": "Sign in", "path": "/login" }
         ]
       }
     ]
@@ -34,59 +40,123 @@
     {
       "path": "/",
       "title": "Observability for shipping teams",
-      "description": "Dense, fast observability workflows built for engineers who ship every day.",
+      "description": "Dense, fast observability workflows built for engineers who ship every day. Logs, traces, and metrics unified in one platform.",
       "sections": [
         {
           "kind": "hero",
-          "eyebrow": "Platform",
-          "title": "Observability that keeps up with you.",
-          "body": "Logs, traces, and metrics in one dense surface. Shaped around the keyboard-first workflows engineers actually use — not screenshots of competitor dashboards.",
-          "primaryCta": { "label": "Sign in", "path": "/login" },
-          "secondaryCta": { "label": "See pricing", "path": "/pricing" }
+          "eyebrow": "Open-source observability",
+          "title": "See everything. Fix anything. Ship faster.",
+          "body": "Unified logs, traces, and metrics in one dense interface. Built on OpenTelemetry. No vendor lock-in. Keyboard-first workflows that actually keep up with how fast you ship.",
+          "primaryCta": { "label": "Get started free", "path": "/login" },
+          "secondaryCta": { "label": "See pricing", "path": "/pricing" },
+          "gradient": true,
+          "github": { "stars": 2400, "url": "https://github.com/optikksense/optikk" }
         },
         {
-          "kind": "product-demo",
-          "eyebrow": "A peek inside",
-          "title": "The real UI, with a frozen snapshot.",
-          "body": "Every widget below ships in the product — same StatCards, same uPlot charts, same flamegraph. Toggle a tab to explore; numbers are static so the page stays fast."
+          "kind": "logo-strip",
+          "label": "Built on open standards trusted by leading teams",
+          "logos": [
+            { "name": "OpenTelemetry" },
+            { "name": "CNCF" },
+            { "name": "Kubernetes" },
+            { "name": "ClickHouse" },
+            { "name": "Kafka" },
+            { "name": "Go" },
+            { "name": "React" }
+          ]
         },
         {
           "kind": "metrics-strip",
           "items": [
-            { "value": "60 fps", "label": "chart panning", "caption": "uPlot at 10k points/series" },
-            { "value": "500+", "label": "rows per page", "caption": "virtualised explorers" },
-            { "value": "<5 s", "label": "staleTime default", "caption": "no loading flashes" },
-            { "value": "0", "label": "raster assets", "caption": "on marketing routes" }
+            { "value": "<200ms", "label": "query latency", "caption": "p95 on 10B+ rows" },
+            { "value": "3", "label": "signals unified", "caption": "logs · traces · metrics" },
+            { "value": "10x", "label": "cost reduction", "caption": "vs. Datadog at scale" },
+            { "value": "0", "label": "vendor lock-in", "caption": "pure OpenTelemetry" }
           ]
         },
         {
+          "kind": "interactive-demo",
+          "eyebrow": "See it in action",
+          "title": "The real product. Not a screenshot.",
+          "body": "Every widget below ships in the product — same charts, same tables, same flamegraph. Toggle tabs to explore.",
+          "panels": ["services", "logs", "flamegraph", "timeseries"],
+          "defaultPanel": "services"
+        },
+        {
           "kind": "feature-grid",
-          "title": "What you get",
+          "title": "Everything you need to debug production",
+          "body": "A single platform that replaces your entire observability stack.",
           "items": [
-            { "icon": "logs", "title": "Logs that scale", "body": "Virtualised explorer with server-side facets and boolean filters. Click a value, never leave the page." },
-            { "icon": "traces", "title": "Fast traces", "body": "Flamegraphs, service maps, and span detail without waiting on re-renders. Critical-path highlighting built in." },
-            { "icon": "metrics", "title": "Metric queries", "body": "Aggregations, formulas, and time-series tuned with uPlot. Pan a month of data without drops." },
-            { "icon": "server", "title": "Infrastructure signals", "body": "Hosts, Kubernetes, JVM, and datastore telemetry with the same dense tables and charts as the rest of the product." },
-            { "icon": "grid", "title": "Saturation & Kafka", "body": "Database and broker health in one place — slow queries, connections, topics, and consumer groups." },
-            { "icon": "otel", "title": "OTLP native", "body": "Send from anything that speaks OpenTelemetry. No agents. No vendor SDKs. No lock-in." }
+            { "icon": "logs", "title": "Log explorer", "body": "Full-text search with server-side facets, boolean filters, and live tail. Click a value to pivot — never leave the page." },
+            { "icon": "traces", "title": "Distributed tracing", "body": "Flamegraphs, critical-path highlighting, service maps, and span-level detail. Correlate traces with logs in one click." },
+            { "icon": "metrics", "title": "Metrics & dashboards", "body": "PromQL-compatible queries with uPlot charts. Pan a month of data at 60fps without frame drops." },
+            { "icon": "server", "title": "Infrastructure monitoring", "body": "Hosts, Kubernetes, JVM, and datastore telemetry with Datadog-class density. Fleet health at a glance." },
+            { "icon": "grid", "title": "Database & Kafka saturation", "body": "Slow queries, connection pools, consumer lag, and topic throughput — all in one place." },
+            { "icon": "otel", "title": "OTLP native", "body": "Send from any OpenTelemetry SDK. No agents. No vendor SDKs. No proprietary protocols. Switch vendors tomorrow." }
           ]
         },
         {
           "kind": "split",
-          "title": "Built to disappear",
-          "body": "A frontend that gets out of the way. Keyboard-first, dense by default, one shortcut palette for every route and entity.",
+          "title": "Built to disappear into your workflow",
+          "body": "A frontend that gets out of the way. Keyboard-first, dense by default, one command palette for every route.",
           "highlights": [
-            "Command palette covers every route, entity, and recent page.",
-            "Every explorer shares facets, analytics, and visualisations.",
-            "Time range, team, and theme persist across sessions.",
-            "URL-shareable state — paste a link, land on the exact view."
+            "⌘K command palette covers every route, entity, and recent page",
+            "Every explorer shares facets, analytics, and visualisation primitives",
+            "Time range, team, and theme persist across sessions automatically",
+            "URL-shareable state — paste a link, land on the exact view"
+          ]
+        },
+        {
+          "kind": "comparison",
+          "eyebrow": "Why Optikk",
+          "title": "How we compare",
+          "body": "We built Optikk because existing tools are either too expensive, too slow, or too locked-in.",
+          "columns": ["Optikk", "Datadog", "Grafana Cloud", "New Relic"],
+          "highlight": 0,
+          "rows": [
+            { "label": "OpenTelemetry native", "values": [true, false, true, true] },
+            { "label": "Self-host option", "values": [true, false, true, false] },
+            { "label": "Unlimited users", "values": [true, false, false, true] },
+            { "label": "Sub-second queries at scale", "values": [true, true, false, true] },
+            { "label": "No per-seat pricing", "values": [true, false, false, true] },
+            { "label": "Unified logs + traces + metrics", "values": [true, true, true, true] },
+            { "label": "Open source", "values": [true, false, true, false] },
+            { "label": "Keyboard-first UX", "values": [true, false, false, false] }
+          ]
+        },
+        {
+          "kind": "testimonial",
+          "quote": "We switched from Datadog to Optikk and cut our observability bill by 80% while actually improving our MTTR. The keyboard-first UX is exactly what our SRE team needed.",
+          "author": "Arjun Mehta",
+          "role": "Staff SRE",
+          "company": "ScaleGrid"
+        },
+        {
+          "kind": "integrations",
+          "eyebrow": "Ecosystem",
+          "title": "Works with your entire stack",
+          "body": "Optikk speaks OpenTelemetry — every language, every framework, every cloud.",
+          "items": [
+            { "name": "Node.js", "category": "Language", "icon": "bolt" },
+            { "name": "Go", "category": "Language", "icon": "bolt" },
+            { "name": "Python", "category": "Language", "icon": "bolt" },
+            { "name": "Java", "category": "Language", "icon": "bolt" },
+            { "name": "Rust", "category": "Language", "icon": "bolt" },
+            { "name": ".NET", "category": "Language", "icon": "bolt" },
+            { "name": "PostgreSQL", "category": "Database", "icon": "server" },
+            { "name": "MySQL", "category": "Database", "icon": "server" },
+            { "name": "MongoDB", "category": "Database", "icon": "server" },
+            { "name": "Redis", "category": "Database", "icon": "server" },
+            { "name": "Kafka", "category": "Streaming", "icon": "grid" },
+            { "name": "Kubernetes", "category": "Infrastructure", "icon": "workspace" }
           ]
         },
         {
           "kind": "cta",
-          "title": "Ready when you are.",
-          "body": "Sign in to explore. No credit card for the evaluation tier.",
-          "primaryCta": { "label": "Sign in", "path": "/login" }
+          "title": "Ready to see everything?",
+          "body": "Get started in under 5 minutes. No credit card required. Send your first traces today.",
+          "primaryCta": { "label": "Get started free", "path": "/login" },
+          "secondaryCta": { "label": "Talk to sales", "path": "/self-host" }
         }
       ]
     },
@@ -101,7 +171,8 @@
           "title": "Dense. Fast. Navigable.",
           "body": "Every page is shaped by a real investigation — not by a design review. Shareable URLs, stable facets, and zero modal mazes.",
           "primaryCta": { "label": "See pricing", "path": "/pricing" },
-          "secondaryCta": { "label": "OpenTelemetry quickstart", "path": "/opentelemetry" }
+          "secondaryCta": { "label": "OpenTelemetry quickstart", "path": "/opentelemetry" },
+          "gradient": true
         },
         {
           "kind": "feature-grid",
@@ -137,8 +208,59 @@
           "eyebrow": "Pricing",
           "title": "Pay for what you ingest. Nothing else.",
           "body": "No per-seat games. No mystery add-ons. One price for telemetry volume. Everything else — unlimited.",
-          "primaryCta": { "label": "Sign in", "path": "/login" },
-          "secondaryCta": { "label": "Talk to us", "path": "/self-host" }
+          "primaryCta": { "label": "Get started free", "path": "/login" },
+          "secondaryCta": { "label": "Talk to us", "path": "/self-host" },
+          "plain": true
+        },
+        {
+          "kind": "pricing",
+          "tiers": [
+            {
+              "name": "Free",
+              "price": "$0",
+              "priceSuffix": "/mo",
+              "tagline": "For evaluation and small workloads",
+              "features": [
+                "Up to 5 GB / month ingest",
+                "Unlimited users & roles",
+                "All features included",
+                "14-day retention",
+                "Community support"
+              ],
+              "cta": { "label": "Start free", "path": "/login" }
+            },
+            {
+              "name": "Pro",
+              "price": "$0.50",
+              "priceSuffix": "/ GB ingested",
+              "tagline": "For growing engineering teams",
+              "featured": true,
+              "badge": "Most popular",
+              "features": [
+                "Unlimited ingest volume",
+                "Unlimited users & roles",
+                "All features included",
+                "90-day retention",
+                "Priority support",
+                "SSO & audit logs"
+              ],
+              "cta": { "label": "Get started", "path": "/login" }
+            },
+            {
+              "name": "Enterprise",
+              "price": "Custom",
+              "tagline": "For large-scale self-hosted deployments",
+              "features": [
+                "Self-hosted or managed",
+                "Custom retention policies",
+                "Dedicated support engineer",
+                "SLA guarantee",
+                "Helm + Terraform included",
+                "OIDC & custom KMS"
+              ],
+              "cta": { "label": "Talk to sales", "path": "/self-host" }
+            }
+          ]
         },
         {
           "kind": "metrics-strip",
@@ -149,21 +271,14 @@
           ]
         },
         {
-          "kind": "feature-grid",
-          "title": "One meter. That's it.",
-          "items": [
-            { "icon": "metrics", "title": "Telemetry GB", "body": "Logs, traces, and metrics billed by compressed ingest. Same rate across all three types — no category games." },
-            { "icon": "workspace", "title": "Unlimited users", "body": "Invite the whole team. Roles, audit logs, and SSO in every tier from day one." }
-          ]
-        },
-        {
           "kind": "faq",
           "title": "Pricing FAQ",
           "items": [
             { "q": "Is there a free tier?", "a": "Yes — for evaluation workloads, with the same feature set as paid tiers. Ingest up to 5 GB per month before moving to metered billing." },
             { "q": "Do you charge per seat?", "a": "No. Every tier includes unlimited users, roles, and audit logs." },
             { "q": "Can I self-host?", "a": "Yes — see the Self-host page. Commercial license available for teams with egress, compliance, or data-residency constraints." },
-            { "q": "How is ingest measured?", "a": "Compressed bytes over the wire, calculated at the collector. Same number you'll see in your OTel export logs." }
+            { "q": "How is ingest measured?", "a": "Compressed bytes over the wire, calculated at the collector. Same number you'll see in your OTel export logs." },
+            { "q": "What's included in all tiers?", "a": "All features — logs, traces, metrics, dashboards, alerts, service maps, flamegraphs, and the full keyboard-first UX. We don't gate features by tier." }
           ]
         }
       ]
@@ -178,7 +293,8 @@
           "eyebrow": "Architecture",
           "title": "Density and speed aren't afterthoughts.",
           "body": "Every layer — query defaults, virtualisation, chart primitives, WebSocket buffering — is budgeted for Datadog-scale workloads from the first commit. Enforced in CI.",
-          "primaryCta": { "label": "Read the OTel guide", "path": "/opentelemetry" }
+          "primaryCta": { "label": "Read the OTel guide", "path": "/opentelemetry" },
+          "gradient": true
         },
         {
           "kind": "feature-grid",
@@ -216,13 +332,14 @@
           "eyebrow": "OpenTelemetry",
           "title": "OTLP is the only contract.",
           "body": "Point any OpenTelemetry exporter at the collector and the platform picks up traces, logs, and metrics. No agents. No vendor SDKs. No proprietary protocols.",
-          "primaryCta": { "label": "Sign in", "path": "/login" }
+          "primaryCta": { "label": "Get started free", "path": "/login" },
+          "gradient": true
         },
         {
           "kind": "code-block",
           "title": "Send your first span",
           "language": "bash",
-          "body": "export OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.example.com\nexport OTEL_SERVICE_NAME=checkout\nexport OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production\n\n# That's it. Any OTel SDK (Node, Go, Python, Java, Rust, Ruby,\n# .NET, PHP) will start flowing to Optikk."
+          "body": "export OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.optikk.dev\nexport OTEL_SERVICE_NAME=checkout\nexport OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production\n\n# That's it. Any OTel SDK (Node, Go, Python, Java, Rust, Ruby,\n# .NET, PHP) will start flowing to Optikk."
         },
         {
           "kind": "feature-grid",
@@ -244,7 +361,8 @@
           "eyebrow": "Self-host",
           "title": "Bring the platform to your telemetry.",
           "body": "Run Optikk inside your VPC with the same UX as the managed tier. Same binaries, same charts, same query engine, same release cadence.",
-          "primaryCta": { "label": "Talk to us", "path": "/login" }
+          "primaryCta": { "label": "Talk to us", "path": "/login" },
+          "gradient": true
         },
         {
           "kind": "metrics-strip",
@@ -266,7 +384,7 @@
           "kind": "cta",
           "title": "Get the self-host pack.",
           "body": "Helm chart, Terraform module, runbook, and a commercial license. We'll walk you through the first deploy.",
-          "primaryCta": { "label": "Sign in", "path": "/login" }
+          "primaryCta": { "label": "Get started", "path": "/login" }
         }
       ]
     }

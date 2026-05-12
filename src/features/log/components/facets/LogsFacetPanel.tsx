@@ -1,4 +1,4 @@
-import { PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { Maximize2, Search, X } from "lucide-react";
 import { memo, useState } from "react";
 
 import type { LogsFacets } from "../../api/logsAnalyticsApi";
@@ -14,21 +14,30 @@ interface Props {
   readonly onClearAll: () => void;
 }
 
-function LogsFacetPanelComponent({ facets, onInclude, onExclude, activeFilterCount, onClearAll }: Props) {
+function LogsFacetPanelComponent({
+  facets,
+  onInclude,
+  onExclude,
+  activeFilterCount,
+  onClearAll,
+}: Props) {
   const collapsed = useLogsExplorerStore((s) => s.facetCollapsed);
   const setCollapsed = useLogsExplorerStore((s) => s.setFacetCollapsed);
   const [search, setSearch] = useState("");
 
   if (collapsed) {
     return (
-      <aside className="flex w-9 shrink-0 flex-col items-center border-r border-[var(--border-color)] bg-[var(--bg-primary)] py-2">
+      <aside
+        className="ok-facets"
+        style={{ width: 40, padding: 6, alignItems: "center", justifyContent: "flex-start" }}
+      >
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          className="ok-ib"
           aria-label="Expand facets"
         >
-          <PanelLeftOpen size={14} />
+          <Maximize2 size={14} />
         </button>
       </aside>
     );
@@ -38,25 +47,33 @@ function LogsFacetPanelComponent({ facets, onInclude, onExclude, activeFilterCou
     !search || label.toLowerCase().includes(search.toLowerCase());
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col overflow-y-auto border-r border-[var(--border-color)] bg-[var(--bg-primary)]">
-      {/* Header */}
-      <header className="flex items-center justify-between gap-2 px-3 py-2 border-b border-[var(--border-color)]">
-        <div className="flex items-center gap-1.5">
-          <span className="font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-wider">
-            Facets
-          </span>
+    <aside className="ok-facets">
+      <div className="ok-facets-h">
+        <span className="ok-facets-t">
+          Facets
           {activeFilterCount > 0 ? (
-            <span className="rounded-full bg-[var(--color-primary)] px-1.5 text-[10px] font-semibold text-white">
+            <span
+              style={{
+                marginLeft: 6,
+                padding: "0 6px",
+                borderRadius: 999,
+                background: "var(--accent)",
+                color: "oklch(0.99 0.005 270)",
+                fontSize: 10,
+              }}
+            >
               {activeFilterCount}
             </span>
           ) : null}
-        </div>
-        <div className="flex items-center gap-1">
+        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           {activeFilterCount > 0 ? (
             <button
               type="button"
               onClick={onClearAll}
-              className="flex items-center gap-0.5 rounded px-1 text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              className="ok-facets-c"
+              title="Clear all filters"
+              style={{ display: "inline-flex", alignItems: "center", gap: 2, fontSize: 11 }}
             >
               <X size={10} /> Clear
             </button>
@@ -64,28 +81,28 @@ function LogsFacetPanelComponent({ facets, onInclude, onExclude, activeFilterCou
           <button
             type="button"
             onClick={() => setCollapsed(true)}
-            className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            className="ok-facets-c"
             aria-label="Collapse facets"
+            title="Collapse"
           >
-            <PanelLeftClose size={14} />
+            <Maximize2 size={12} style={{ transform: "rotate(180deg)" }} />
           </button>
         </div>
-      </header>
+      </div>
 
-      {/* Search */}
-      <div className="px-3 py-2">
+      <div className="ok-facet-search">
+        <span className="ok-facet-search-i">
+          <Search size={12} />
+        </span>
         <input
-          type="search"
           placeholder="Search facets…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-secondary)] px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)]"
         />
       </div>
 
-      {/* Facet groups */}
       {facets ? (
-        <div className="flex-1 overflow-y-auto">
+        <>
           {matchesSearch("severity") ? (
             <SeverityFacet
               labels={facets.severity_bucket}
@@ -129,11 +146,14 @@ function LogsFacetPanelComponent({ facets, onInclude, onExclude, activeFilterCou
               onExclude={onExclude}
             />
           ) : null}
-        </div>
+        </>
       ) : (
-        <div className="space-y-2 px-3 py-2">
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 animate-pulse rounded bg-[var(--bg-secondary)]" />
+            <div
+              key={i}
+              style={{ height: 96, borderRadius: 6, background: "var(--bg-2)", opacity: 0.4 }}
+            />
           ))}
         </div>
       )}

@@ -1,4 +1,4 @@
-import { Bookmark, Download, Link2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { memo, useCallback } from "react";
 import toast from "react-hot-toast";
 
@@ -8,7 +8,7 @@ interface Props {
   readonly onLoadSavedView: (url: string) => void;
 }
 
-/** Action buttons: Saved Views, Share permalink, Export. */
+/** Action buttons: Saved Views (existing dropdown) and Share (copy link). */
 function LogsActionsComponent({ onLoadSavedView }: Props) {
   const onShare = useCallback(() => {
     void navigator.clipboard.writeText(window.location.href);
@@ -18,13 +18,10 @@ function LogsActionsComponent({ onLoadSavedView }: Props) {
   return (
     <>
       <SavedViewsDropdown scope="logs" onLoad={onLoadSavedView} />
-      <button
-        type="button"
-        onClick={onShare}
-        title="Copy link"
-        className="flex h-8 items-center gap-1.5 rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2.5 text-[12px] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
-      >
-        <Link2 size={13} />
+      <button type="button" onClick={onShare} className="ok-btn" title="Copy link">
+        <span className="ok-btn-i">
+          <Share2 size={14} />
+        </span>
         Share
       </button>
     </>

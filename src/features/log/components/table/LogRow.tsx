@@ -1,13 +1,17 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { memo, useCallback } from "react";
+import { ArrowRight, ChevronDown, ChevronRight, GitFork } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { memo, useCallback, useMemo } from "react";
+
+import { HighlightedText } from "@shared/components/primitives/HighlightedText";
 
 import { useTimezone } from "@/app/store/appStore";
 
 import type { LogRecord } from "../../types/log";
 import { severityStyle } from "../../utils/severity";
+import { serviceSwatchColor } from "../../utils/serviceHue";
+import { getTraceId } from "../../utils/traceCorrelation";
 import { useLogsExplorerStore } from "../../store/logsExplorerStore";
 import { ExpandedLogRow } from "./ExpandedLogRow";
-import { LogBodyCell } from "./LogBodyCell";
 
 interface Props {
   readonly row: LogRecord;
@@ -39,12 +43,20 @@ function formatTs(ts: string, tz: string): string {
 }
 
 function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }: Props) {
+  const navigate = useNavigate();
   const expanded = useLogsExplorerStore((s) => s.expandedRows.has(row.id));
   const toggleExpanded = useLogsExplorerStore((s) => s.toggleRowExpanded);
-  const wrapLines = useLogsExplorerStore((s) => s.wrapLines);
-  const density = useLogsExplorerStore((s) => s.density);
   const sev = severityStyle(row.severity_bucket);
   const tz = useTimezone();
+  const traceId = getTraceId(row);
+
+  // Collapse newlines so load-generator separators / multi-line bodies stay
+  // on a single row, and surface a visible placeholder for empty bodies so
+  // the row keeps a stable visual presence.
+  const displayBody = useMemo(() => {
+    const collapsed = (row.body ?? "").replace(/\s*\n\s*/g, " ⏎ ").trim();
+    return collapsed.length > 0 ? collapsed : "(empty)";
+  }, [row.body]);
 
   const handleClick = useCallback(() => onClick?.(row), [onClick, row]);
   const handleContextMenu = useCallback(
@@ -64,66 +76,74 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
     [toggleExpanded, row.id]
   );
 
-  const py = density === "compact" ? "py-1" : "py-2";
-  const fontSize = density === "compact" ? "text-[11px]" : "text-[12px]";
+  const handleTrace = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!traceId) return;
+      navigate({ to: `/traces/${encodeURIComponent(traceId)}` });
+    },
+    [navigate, traceId]
+  );
 
   return (
-    <div
-      className={`border-b border-[var(--border-color)] transition-colors hover:bg-[var(--bg-hover)] ${
-        isSelected ? "ring-1 ring-inset ring-[var(--color-primary)]" : ""
-      }`}
-    >
-      {/* Main row */}
+    <>
       <div
-        className={`flex cursor-pointer items-start gap-2 px-2 ${py}`}
+        className={`ok-tr l-${sev.slug} ${isSelected ? "is-sel" : ""}`}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleClick();
+        }}
       >
-        {/* Expand toggle */}
         <button
           type="button"
           onClick={handleToggle}
-          className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+          className="ok-tr-x"
           aria-label={expanded ? "Collapse row" : "Expand row"}
+          title={expanded ? "Collapse" : "Expand"}
         >
           {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
 
-        {/* Timestamp */}
-        <span className={`w-[180px] shrink-0 font-mono ${fontSize} text-[var(--text-muted)] leading-5`}>
-          {formatTs(row.timestamp, tz)}
-        </span>
+        <span className="ok-tr-t">{formatTs(row.timestamp, tz)}</span>
 
-        {/* Service */}
-        <span className={`w-[140px] shrink-0 truncate font-medium ${fontSize} leading-5 text-[var(--text-primary)]`}>
+        <span className="ok-tr-svc">
+          <span className="ok-tr-svc-d" style={{ background: serviceSwatchColor(row.service_name) }} />
           {row.service_name}
         </span>
 
-        {/* Severity badge */}
-        <span
-          className="inline-flex h-5 w-[52px] shrink-0 items-center justify-center gap-1 rounded-sm font-mono font-semibold text-[10px] uppercase"
-          style={{
-            backgroundColor: `${sev.color}18`,
-            border: `1px solid ${sev.color}55`,
-            color: sev.color,
-          }}
-        >
-          <span
-            className="h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: sev.color }}
-          />
-          {sev.shortLabel}
+        <span>
+          <span className={`ok-lvl l-${sev.slug}`}>
+            <span className="ok-lvl-d" />
+            {sev.shortLabel}
+          </span>
         </span>
 
-        {/* Body */}
-        <div className="min-w-0 flex-1">
-          <LogBodyCell body={row.body} searchTerm={searchTerm} wrapLines={wrapLines} />
-        </div>
+        <span className="ok-tr-msg">
+          <span
+            className="ok-tr-msg-t"
+            style={row.body ? undefined : { color: "var(--fg-3)", fontStyle: "italic" }}
+          >
+            <HighlightedText text={displayBody} match={searchTerm} />
+          </span>
+          {traceId ? (
+            <button
+              type="button"
+              onClick={handleTrace}
+              className="ok-tr-trace"
+              title={`Open trace ${traceId}`}
+            >
+              <GitFork size={10} />
+              trace
+              <ArrowRight size={10} />
+            </button>
+          ) : null}
+        </span>
       </div>
-
-      {/* Expanded content */}
       {expanded ? <ExpandedLogRow row={row} /> : null}
-    </div>
+    </>
   );
 }
 

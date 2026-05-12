@@ -28,7 +28,6 @@ function LogsTableComponent({
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to top whenever the row set changes (page navigation)
   const firstRowId = rows[0]?.id;
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -36,9 +35,19 @@ function LogsTableComponent({
 
   if (loading && rows.length === 0) {
     return (
-      <div className="flex flex-1 flex-col">
+      <div className="ok-table">
         <LogsTableHeader />
-        <div className="flex flex-1 items-center justify-center gap-2 text-[13px] text-[var(--text-muted)]">
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            color: "var(--fg-3)",
+            fontSize: 13,
+          }}
+        >
           <Loader2 size={16} className="animate-spin" />
           Loading logs…
         </div>
@@ -48,25 +57,30 @@ function LogsTableComponent({
 
   if (rows.length === 0) {
     return (
-      <div className="flex flex-1 flex-col">
+      <div className="ok-table">
         <LogsTableHeader />
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-16">
-          <div className="rounded-full bg-[var(--bg-tertiary)] p-3">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[var(--text-muted)]">
-              <path d="M9 12h6M12 9v6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </div>
-          <span className="font-medium text-[14px] text-[var(--text-secondary)]">{emptyTitle}</span>
-          <span className="text-[12px] text-[var(--text-muted)]">{emptyDescription}</span>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            padding: "64px 16px",
+          }}
+        >
+          <span style={{ fontWeight: 500, fontSize: 14, color: "var(--fg-1)" }}>{emptyTitle}</span>
+          <span style={{ fontSize: 12, color: "var(--fg-3)" }}>{emptyDescription}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="ok-table">
       <LogsTableHeader />
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="ok-tbody">
         {rows.map((row) => (
           <LogRow
             key={row.id}

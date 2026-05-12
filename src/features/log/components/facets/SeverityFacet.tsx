@@ -1,7 +1,6 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 
 import { SEVERITY_STYLES } from "../../utils/severity";
-import { FacetDistributionBar } from "./FacetDistributionBar";
 
 interface Props {
   readonly labels: readonly string[];
@@ -9,38 +8,38 @@ interface Props {
   readonly onExclude: (field: string, value: string) => void;
 }
 
-/** Severity facet with a stacked distribution bar and clickable labels. */
-function SeverityFacetComponent({ labels, onInclude, onExclude }: Props) {
-  const segments = useMemo(
-    () =>
-      SEVERITY_STYLES.map((s) => ({
-        color: s.color,
-        ratio: labels.includes(s.label.toUpperCase()) ? 1 : 0.1,
-        label: s.label,
-      })),
-    [labels]
-  );
+/** Severity facet — stacked distribution bar + per-level rows with toggle. */
+function SeverityFacetComponent({ labels, onInclude }: Props) {
+  const isActive = (label: string) => labels.includes(label.toUpperCase());
 
   return (
-    <div className="border-b border-[var(--border-color)] px-3 py-2.5">
-      <span className="mb-1.5 block font-semibold text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
-        Severity
-      </span>
-      <div className="mb-2">
-        <FacetDistributionBar segments={segments} height={6} />
-      </div>
-      <div className="space-y-0.5">
+    <div className="ok-facet">
+      <div className="ok-facet-t">Severity</div>
+      <div className="ok-sev-bar">
         {SEVERITY_STYLES.map((s) => (
-          <button
-            key={s.bucket}
-            type="button"
-            onClick={() => onInclude("severity_text", s.label.toUpperCase())}
-            className="flex w-full items-center gap-2 rounded px-1 py-0.5 text-left text-[12px] hover:bg-[var(--bg-hover)]"
-          >
-            <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
-            <span className="text-[var(--text-primary)]">{s.label}</span>
-          </button>
+          <span key={s.bucket} className={`s-${s.slug}`} />
         ))}
+      </div>
+      <div className="ok-sev-list">
+        {SEVERITY_STYLES.map((s) => {
+          const active = isActive(s.label);
+          return (
+            <button
+              key={s.bucket}
+              type="button"
+              onClick={() => onInclude("severity_text", s.label.toUpperCase())}
+              className={`ok-sev-r ${active ? "" : "is-off"}`}
+              title={
+                active
+                  ? `Filtered to ${s.label.toUpperCase()}`
+                  : `Filter to ${s.label.toUpperCase()}`
+              }
+            >
+              <span className={`ok-sev-d s-${s.slug}`} />
+              <span>{s.label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
