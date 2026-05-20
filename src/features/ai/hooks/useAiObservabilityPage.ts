@@ -193,14 +193,20 @@ export function useAiObservabilityPage() {
       toolErrors: applyClientFilters(agentQueries.toolErrors.data ?? [], explorerState.filters),
       toolLatency: applyClientFilters(agentQueries.toolLatency.data ?? [], explorerState.filters),
       retrievalRate: applyClientFilters(retrievalQueries.rate.data ?? [], explorerState.filters),
-      retrievalLatency: applyClientFilters(retrievalQueries.latency.data ?? [], explorerState.filters),
-      retrievalErrors: applyClientFilters(retrievalQueries.errors.data ?? [], explorerState.filters),
+      retrievalLatency: applyClientFilters(
+        retrievalQueries.latency.data ?? [],
+        explorerState.filters
+      ),
+      retrievalErrors: applyClientFilters(
+        retrievalQueries.errors.data ?? [],
+        explorerState.filters
+      ),
       traces: applyClientFilters(tracesQuery.data ?? [], explorerState.filters),
     },
   };
 }
 
-function applyClientFilters<Row extends Record<string, unknown>>(
+function applyClientFilters<Row extends object>(
   rows: readonly Row[],
   filters: readonly ExplorerFilter[]
 ): readonly Row[] {
@@ -213,7 +219,9 @@ function applyClientFilters<Row extends Record<string, unknown>>(
       filter.op === "in"
   );
   if (relevant.length === 0) return rows;
-  return rows.filter((row) => relevant.every((filter) => rowMatchesFilter(row, filter)));
+  return rows.filter((row) =>
+    relevant.every((filter) => rowMatchesFilter(row as Record<string, unknown>, filter))
+  );
 }
 
 function rowMatchesFilter(row: Record<string, unknown>, filter: ExplorerFilter): boolean {

@@ -37,7 +37,7 @@ const MODES = [
       "Engineer-attached for first 30 days",
       "EU / US data residency",
     ],
-    cta: { label: "Get a demo", path: "mailto:hello@optikk.dev?subject=BYOC" },
+    cta: { label: "Get a demo", path: "mailto:ramantayal12@gmail.com?subject=BYOC" },
     featured: true,
   },
   {
@@ -113,7 +113,7 @@ export default function SelfHostPage() {
         subtitle="Cloud, your VPC, or fully air-gapped. Same engine, same AI SRE, same per-GiB pricing. Pick the blast radius you can defend."
         primaryCta={{
           label: "Talk to engineering",
-          path: "mailto:hello@optikk.dev",
+          path: "mailto:ramantayal12@gmail.com",
           variant: "grad",
         }}
         secondaryCta={{ label: "Architecture", path: "/architecture", variant: "secondary" }}
@@ -241,7 +241,7 @@ helm install optikk optikk/optikk \\
           </>
         }
         subtitle="Send us your environment shape and we'll have a sizing doc back within a business day."
-        primary={{ label: "hello@optikk.dev", path: "mailto:hello@optikk.dev" }}
+        primary={{ label: "ramantayal12@gmail.com", path: "mailto:ramantayal12@gmail.com" }}
         secondary={{ label: "Read architecture", path: "/architecture", variant: "secondary" }}
       />
     </>

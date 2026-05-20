@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Github, Linkedin, Twitter } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
 
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { dynamicTo } from "@/shared/utils/navigation";
@@ -37,12 +37,7 @@ const FOOTER_GROUPS = [
   },
   {
     title: "Company",
-    links: [
-      { label: "Careers", path: "https://jobs.optikk.dev" },
-      { label: "Security", path: "/self-host#security" },
-      { label: "Privacy", path: "https://optikk.dev/privacy" },
-      { label: "Contact", path: "mailto:hello@optikk.dev" },
-    ],
+    links: [{ label: "Contact", path: "mailto:ramantayal12@gmail.com" }],
   },
 ] as const;
 
@@ -105,14 +100,6 @@ export function Footer() {
         <div className="m-footer-socials">
           <a href={OSS.org} target="_blank" rel="noreferrer" aria-label="GitHub">
             <Github size={16} />
-          </a>
-          <a
-            href="https://twitter.com/optikk"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Twitter"
-          >
-            <Twitter size={16} />
           </a>
           <a
             href="https://linkedin.com/company/optikk"
