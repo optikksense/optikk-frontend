@@ -1,57 +1,98 @@
-import { GitBranch } from "lucide-react";
+import { useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
-import PageHeader from "@shared/components/ui/layout/PageHeader";
 
-import "./TraceDetailPage.css";
-
-import { TraceDetailBody } from "./components/TraceDetailBody";
+import { BottomBar } from "./components/BottomBar";
+import { KPIStrip } from "./components/KPIStrip";
+import { ServiceStrip } from "./components/ServiceStrip";
 import {
   TraceDetailEmptySpans,
   TraceDetailError,
   TraceDetailLoading,
 } from "./components/TraceDetailEmptyStates";
-import { TraceDetailHeaderActions } from "./components/TraceDetailHeaderActions";
-import { TraceDetailLogs } from "./components/TraceDetailLogs";
+import { TraceDetailLayout } from "./components/TraceDetailLayout";
+import { TraceHeader } from "./components/TraceHeader";
 import { useTraceDetailPage } from "./hooks/useTraceDetailPage";
 
+import "./TraceDetailPage.css";
+
 export default function TraceDetailPage() {
-  const { state, actions, bodyProps } = useTraceDetailPage();
-  const { traceIdParam, data } = state;
-  const { isPending: isLoading, isError, error } = data;
+  const { data, stats, resolvedTraceId, traceTimeBounds, actions, layoutProps } =
+    useTraceDetailPage();
+  // Page-local "active service" highlight; clicking a pill drills into that service's first span.
+  const [activeService, setActiveService] = useState<string | null>(null);
+
+  if (data.isPending)
+    return (
+      <PageShell>
+        <TraceDetailLoading />
+      </PageShell>
+    );
+  if (data.isError)
+    return (
+      <PageShell>
+        <TraceDetailError message={data.error?.message} />
+      </PageShell>
+    );
+  if (data.spans.length === 0) {
+    return (
+      <PageShell>
+        <TraceDetailEmptySpans hasLogs={data.traceLogs.length > 0} />
+      </PageShell>
+    );
+  }
+
+  const rootSpan = data.spans[0];
+  const httpStatus =
+    rootSpan?.http_status_code != null && rootSpan.http_status_code > 0
+      ? rootSpan.http_status_code
+      : undefined;
+
+  const onServiceChange = (svc: string | null) => {
+    setActiveService(svc);
+    if (svc) {
+      const first = data.spans.find((s) => s.service_name === svc);
+      if (first?.span_id) actions.handleSpanClick({ span_id: first.span_id });
+    }
+  };
 
   return (
-    <PageShell className="trace-page-fade-in min-h-[calc(100vh-64px)]">
-      <PageHeader
-        title={`Trace: ${traceIdParam}`}
-        icon={<GitBranch size={24} />}
-        breadcrumbs={[{ label: "Traces", path: "/traces" }, { label: traceIdParam }]}
-        actions={
-          <TraceDetailHeaderActions
-            onOpenInLogs={actions.openInLogs}
-            onBack={actions.goBack}
-          />
-        }
+    <PageShell className="tdp !gap-0 !pb-0 h-full min-h-[calc(100vh-var(--space-header-h,56px)-2rem)]">
+      <TraceHeader
+        traceId={resolvedTraceId}
+        stats={stats}
+        startMs={traceTimeBounds.startMs}
+        rootService={rootSpan?.service_name}
+        rootOperation={rootSpan?.operation_name}
+        httpMethod={rootSpan?.http_method}
+        httpStatus={httpStatus}
+        onOpenInLogs={actions.openInLogs}
+        onBack={actions.goBack}
       />
-
-      {isLoading ? (
-        <TraceDetailLoading />
-      ) : isError ? (
-        <TraceDetailError message={error?.message} />
-      ) : (
-        <>
-          {data.spans.length === 0 ? (
-            <TraceDetailEmptySpans hasLogs={data.traceLogs.length > 0} />
-          ) : (
-            <TraceDetailBody {...bodyProps} />
-          )}
-          <TraceDetailLogs
-            traceLogs={data.traceLogs}
-            traceLogsIsSpeculative={data.traceLogsIsSpeculative}
-            logsLoading={data.logsLoading}
-          />
-        </>
-      )}
+      <KPIStrip
+        stats={stats}
+        spans={data.spans}
+        criticalPathSpanIds={layoutProps.criticalPathSpanIds}
+      />
+      <ServiceStrip
+        spans={data.spans}
+        activeService={activeService}
+        onActiveServiceChange={onServiceChange}
+      />
+      <div className="flex min-h-0 flex-1 flex-col">
+        <TraceDetailLayout
+          {...layoutProps}
+          traceId={resolvedTraceId}
+          errorCount={stats.errors}
+          traceStartMs={traceTimeBounds.startMs}
+          traceEndMs={traceTimeBounds.endMs}
+        />
+      </div>
+      <BottomBar
+        traceId={resolvedTraceId}
+        spanCount={stats.totalSpans}
+        serviceCount={stats.services.size}
+      />
     </PageShell>
   );
 }

@@ -2,7 +2,10 @@ import type { ExplorerFilter, ExplorerFilterOp } from "../types/filters";
 
 /** Inverse of parseDsl — renders filters back into a DSL string. */
 export function formatDsl(filters: readonly ExplorerFilter[]): string {
-  return filters.map(formatOne).filter((s) => s !== "").join(" ");
+  return filters
+    .map(formatOne)
+    .filter((s) => s !== "")
+    .join(" ");
 }
 
 function formatOne(f: ExplorerFilter): string {
@@ -19,13 +22,20 @@ function formatSearch(f: ExplorerFilter): string {
 
 function formatValue(op: ExplorerFilterOp, value: string): string {
   switch (op) {
-    case "gt": return `>${value}`;
-    case "gte": return `>=${value}`;
-    case "lt": return `<${value}`;
-    case "lte": return `<=${value}`;
+    case "gt":
+      return `>${value}`;
+    case "gte":
+      return `>=${value}`;
+    case "lt":
+      return `<${value}`;
+    case "lte":
+      return `<=${value}`;
     case "in":
     case "not_in":
-      return `(${value.split(",").map((v) => v.trim()).join(" OR ")})`;
+      return `(${value
+        .split(",")
+        .map((v) => v.trim())
+        .join(" OR ")})`;
     default:
       return quoteIfNeeded(value);
   }

@@ -1,21 +1,23 @@
 import { useParams } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { useAppStore } from "@store/appStore";
 
 import { useTraceDetailData } from "../../../hooks/useTraceDetailData";
 import { useTraceDetailEnhanced } from "../../../hooks/useTraceDetailEnhanced";
 import { useTraceFlamegraph } from "../../../hooks/useTraceFlamegraph";
+import { useTracesStore } from "../../../store/tracesStore";
 import { computeTraceTimeBounds } from "../utils";
-
-import { useTraceDetailTabs } from "./useTraceDetailTabs";
 
 export function useTraceDetailState() {
   const { traceId } = useParams({ strict: false });
   const traceIdParam = traceId ?? "";
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
 
-  const tabs = useTraceDetailTabs();
+  const activeTab = useTracesStore((s) => s.visualizationTab);
+  const setActiveTab = useTracesStore((s) => s.setVisualizationTab);
+  const spanDetailTab = useTracesStore((s) => s.spanDetailTab);
+
   const data = useTraceDetailData(selectedTeamId, traceIdParam);
 
   const resolvedTraceId = useMemo(
@@ -25,7 +27,12 @@ export function useTraceDetailState() {
 
   const traceTimeBounds = useMemo(() => computeTraceTimeBounds(data.spans), [data.spans]);
 
-  const flamegraph = useTraceFlamegraph(traceIdParam, tabs.activeTab === "flamegraph");
+  // Lazy: only fetch flamegraph when its viz tab is selected.
+  const flamegraph = useTraceFlamegraph(traceIdParam, activeTab === "flamegraph");
+
+  // The enhanced data hook gates `related-traces` on activeDetailTab === "related".
+  // Our Links tab folds in related traces, so map "links" → "related" for that one switch.
+  const enhancedTab = spanDetailTab === "links" ? "related" : "attributes";
 
   const enhanced = useTraceDetailEnhanced(
     traceIdParam,
@@ -33,8 +40,17 @@ export function useTraceDetailState() {
     data.selectedSpan ?? data.spans[0] ?? null,
     traceTimeBounds.startMs,
     traceTimeBounds.endMs,
-    tabs.activeDetailTab
+    enhancedTab
   );
 
-  return { traceIdParam, resolvedTraceId, traceTimeBounds, ...tabs, data, enhanced, flamegraph };
+  return {
+    traceIdParam,
+    resolvedTraceId,
+    traceTimeBounds,
+    activeTab,
+    setActiveTab,
+    data,
+    enhanced,
+    flamegraph,
+  };
 }

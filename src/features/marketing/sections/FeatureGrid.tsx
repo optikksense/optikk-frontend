@@ -1,30 +1,76 @@
-import { Glyph, type GlyphName } from "../svg/Glyph"
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import type { ComponentType, ReactNode } from "react";
 
-export interface FeatureGridSection {
-  readonly kind: "feature-grid"
-  readonly title?: string
-  readonly items: ReadonlyArray<{
-    readonly icon?: GlyphName
-    readonly title: string
-    readonly body: string
-  }>
+import { dynamicTo } from "@/shared/utils/navigation";
+
+import { Stagger, StaggerItem } from "../motion/Stagger";
+
+interface FeatureItem {
+  readonly icon?: ComponentType<{ size?: number }>;
+  readonly title: ReactNode;
+  readonly body: ReactNode;
+  readonly link?: { readonly label: string; readonly path: string };
+  readonly variant?: "wide" | "tall" | "grad" | "ink";
 }
 
-export function FeatureGrid({ title, items }: FeatureGridSection) {
+interface FeatureGridProps {
+  readonly items: readonly FeatureItem[];
+}
+
+function variantClass(variant?: FeatureItem["variant"]) {
+  switch (variant) {
+    case "wide":
+      return "is-wide";
+    case "tall":
+      return "is-tall";
+    case "grad":
+      return "is-grad";
+    case "ink":
+      return "is-ink";
+    default:
+      return "";
+  }
+}
+
+function FeatureLink({ link }: { readonly link: FeatureItem["link"] }) {
+  if (!link) return null;
+  if (link.path.startsWith("http") || link.path.includes("#")) {
+    return (
+      <a className="m-bento-link" href={link.path}>
+        {link.label} <ArrowRight size={14} />
+      </a>
+    );
+  }
   return (
-    <section className="marketing-section">
-      {title ? <h2 className="marketing-h2">{title}</h2> : null}
-      <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <div key={item.title} className="marketing-card">
-            <div className="marketing-card-icon">
-              <Glyph name={(item.icon ?? "workspace") as GlyphName} size={18} />
-            </div>
-            <div className="marketing-card-title">{item.title}</div>
-            <div className="marketing-card-body">{item.body}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
+    <Link className="m-bento-link" to={dynamicTo(link.path)}>
+      {link.label} <ArrowRight size={14} />
+    </Link>
+  );
+}
+
+export function FeatureGrid({ items }: FeatureGridProps) {
+  return (
+    <Stagger className="m-bento">
+      {items.map((item, idx) => {
+        const Icon = item.icon;
+        return (
+          <StaggerItem
+            key={idx}
+            as="article"
+            className={`m-bento-card ${variantClass(item.variant)}`}
+          >
+            {Icon ? (
+              <span className="m-bento-icon">
+                <Icon size={20} />
+              </span>
+            ) : null}
+            <h3 className="m-h3">{item.title}</h3>
+            <p className="m-body">{item.body}</p>
+            <FeatureLink link={item.link} />
+          </StaggerItem>
+        );
+      })}
+    </Stagger>
+  );
 }

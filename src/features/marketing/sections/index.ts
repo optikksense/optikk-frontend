@@ -1,27 +1,13 @@
-import type { CtaSection } from "./CTA"
-import type { CodeBlockSection } from "./CodeBlock"
-import type { FaqSection } from "./FAQ"
-import type { FeatureGridSection } from "./FeatureGrid"
-import type { HeroSection } from "./Hero"
-import type { MetricsStripSection } from "./MetricsStrip"
-import type { ProductDemoSection } from "./ProductDemo"
-import type { SplitSection } from "./Split"
-
-export { CTA } from "./CTA"
-export { CodeBlock } from "./CodeBlock"
-export { FAQ } from "./FAQ"
-export { FeatureGrid } from "./FeatureGrid"
-export { Hero } from "./Hero"
-export { MetricsStrip } from "./MetricsStrip"
-export { ProductDemo } from "./ProductDemo"
-export { Split } from "./Split"
-
-export type MarketingSection =
-  | HeroSection
-  | FeatureGridSection
-  | SplitSection
-  | CtaSection
-  | FaqSection
-  | CodeBlockSection
-  | MetricsStripSection
-  | ProductDemoSection
+export { CTA } from "./CTA";
+export { CodeBlock } from "./CodeBlock";
+export { ComparisonTable } from "./ComparisonTable";
+export { FAQ } from "./FAQ";
+export { FeatureGrid } from "./FeatureGrid";
+export { Footer } from "./Footer";
+export { Hero, HeroGradientTitle } from "./Hero";
+export { LogoStrip } from "./LogoStrip";
+export { MetricsStrip } from "./MetricsStrip";
+export { Nav } from "./Nav";
+export { PricingTable } from "./PricingTable";
+export { SectionHeader } from "./SectionHeader";
+export { Split } from "./Split";

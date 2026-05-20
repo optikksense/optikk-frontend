@@ -1,22 +1,26 @@
-export interface LogoStripSection {
-  readonly kind: "logo-strip"
-  readonly label?: string
-  readonly logos: ReadonlyArray<{ readonly name: string }>
+import type { ReactNode } from "react";
+
+interface LogoStripProps {
+  readonly label?: string;
+  readonly items: readonly { readonly name: string; readonly icon?: ReactNode }[];
 }
 
-export function LogoStrip({ label, logos }: LogoStripSection) {
+export function LogoStrip({ label, items }: LogoStripProps) {
+  const doubled = [...items, ...items];
+
   return (
-    <section className="marketing-section" style={{ paddingBlock: 56 }}>
-      <div className="marketing-container">
-        {label ? <div className="marketing-logo-strip-label">{label}</div> : null}
-        <div className="marketing-logo-strip">
-          {logos.map((logo) => (
-            <span key={logo.name} className="marketing-logo-strip-item">
-              {logo.name}
-            </span>
-          ))}
-        </div>
+    <section className="m-logos m-logos-fade">
+      <div className="m-container">
+        {label ? <div className="m-logos-label">{label}</div> : null}
+      </div>
+      <div className="m-logos-track" aria-hidden="true">
+        {doubled.map((item, idx) => (
+          <span key={`${item.name}-${idx}`} className="m-logos-item">
+            {item.icon ? item.icon : null}
+            {item.name}
+          </span>
+        ))}
       </div>
     </section>
-  )
+  );
 }

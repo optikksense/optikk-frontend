@@ -8,20 +8,23 @@
 
 export type SeverityBucket = 0 | 1 | 2 | 3 | 4 | 5;
 
+export type SeveritySlug = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
+
 export interface SeverityStyle {
   readonly bucket: SeverityBucket;
   readonly label: string;
   readonly shortLabel: string;
   readonly color: string;
+  readonly slug: SeveritySlug;
 }
 
 const STYLES: readonly SeverityStyle[] = [
-  { bucket: 0, label: "Trace", shortLabel: "TRC", color: "#70dbed" },
-  { bucket: 1, label: "Debug", shortLabel: "DBG", color: "#5794f2" },
-  { bucket: 2, label: "Info", shortLabel: "INF", color: "#73bf69" },
-  { bucket: 3, label: "Warn", shortLabel: "WRN", color: "#f2cc0c" },
-  { bucket: 4, label: "Error", shortLabel: "ERR", color: "#f2495c" },
-  { bucket: 5, label: "Fatal", shortLabel: "FTL", color: "#b877d9" },
+  { bucket: 0, label: "Trace", shortLabel: "TRC", color: "#7e8ea0", slug: "trace" },
+  { bucket: 1, label: "Debug", shortLabel: "DBG", color: "#4e9fdd", slug: "debug" },
+  { bucket: 2, label: "Info", shortLabel: "INF", color: "#73bf69", slug: "info" },
+  { bucket: 3, label: "Warn", shortLabel: "WRN", color: "#e0b400", slug: "warn" },
+  { bucket: 4, label: "Error", shortLabel: "ERR", color: "#e8494d", slug: "error" },
+  { bucket: 5, label: "Fatal", shortLabel: "FTL", color: "#c00021", slug: "fatal" },
 ];
 
 export const SEVERITY_STYLES: readonly SeverityStyle[] = STYLES;
@@ -38,6 +41,10 @@ export function severityLabel(bucket: number | undefined | null): string {
 
 export function severityColor(bucket: number | undefined | null): string {
   return severityStyle(bucket).color;
+}
+
+export function severitySlug(bucket: number | undefined | null): SeveritySlug {
+  return severityStyle(bucket).slug;
 }
 
 export function severityFromText(text: string | undefined | null): SeverityBucket {

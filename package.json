@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
+    "deploy:firebase": "vite build && npx firebase-tools deploy --only hosting",
     "ci:budgets": "node scripts/check-budgets.js",
     "ci:marketing-assets": "node scripts/check-marketing-assets.mjs",
     "ci": "yarn type-check && yarn lint && yarn ci:marketing-assets && yarn build && yarn ci:budgets",
@@ -49,6 +50,7 @@
     "react-grid-layout": "^2.2.2",
     "react-hot-toast": "^2.4.1",
     "react-hotkeys-hook": "^5.2.4",
+    "react-resizable-panels": "^4.11.0",
     "react-use": "^17.6.0",
     "react-virtuoso": "^4.18.3",
     "tailwind-merge": "^3.5.0",

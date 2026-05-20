@@ -122,6 +122,7 @@ const config: Config = {
         "oqb-fade-in": "oqb-fade-in 0.12s ease",
         "trp-slide-in": "trp-slide-in 0.18s cubic-bezier(.16,1,.3,1)",
         "waterfall-bar-enter": "waterfall-bar-enter 0.4s ease-out forwards",
+        "expand-row": "expandRow 0.2s ease-out",
       },
       keyframes: {
         "accordion-down": {
@@ -159,6 +160,10 @@ const config: Config = {
         "waterfall-bar-enter": {
           from: { opacity: "0", transform: "scaleX(0.5)" },
           to: { opacity: "0.85", transform: "scaleX(1)" },
+        },
+        expandRow: {
+          from: { opacity: "0", maxHeight: "0" },
+          to: { opacity: "1", maxHeight: "600px" },
         },
       },
     },

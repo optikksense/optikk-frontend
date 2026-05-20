@@ -1,7 +1,6 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
-import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
+import { useTeamId, useTimeRange, useRefreshKey } from "@app/store/appStore";
 import { useExplorerState } from "@features/explorer/hooks/useExplorerState";
 import { resolveTimeBounds } from "@features/explorer/utils/timeRange";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
@@ -9,14 +8,13 @@ import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import {
   type LogsAnalyticsArgs,
   type LogsFacets,
-  type LogsSummary,
   type LogsTrendBucket,
   getLogsFacets,
-  getLogsSummary,
   getLogsTrend,
 } from "../api/logsAnalyticsApi";
 import { queryLogs } from "../api/logsQueryApi";
-import type { LogRecord, LogsQueryResponse } from "../types/log";
+import type { LogRecord } from "../types/log";
+import { useLogsExplorerStore } from "../store/logsExplorerStore";
 
 const DEFAULT_PAGE_SIZE = 100;
 
@@ -28,87 +26,124 @@ interface UseLogsExplorerArgs {
 /**
  * Logs explorer foundation — URL state + four parallel reads.
  *
- * - `list` uses `useInfiniteQuery` so the page can move through cursor-backed
- *   pages without losing already-loaded results. Pages flatten into `results`
- *   for aggregate helpers, while `pages` keeps the cursor pagination boundary.
- * - The peer endpoints (summary / trend / facets) intentionally stay
- *   independent so KPI strip / histogram / facet rail render as soon as
- *   each lands — bundling would gate the fastest by the slowest.
+ * ## Pagination strategy
+ * Uses a single `useQuery` for the current page, with cursor state tracked
+ * in the Zustand store. This avoids the `useInfiniteQuery` pitfalls:
+ * - Auto-refresh only refetches the CURRENT page (one query)
+ * - No opaque TanStack refetch-all-pages cascade
+ * - Prev/Next uses TanStack cache for instant back-navigation
+ *
+ * ## Refresh strategy
+ * Summary/trend/facets include `refreshKey` in their query key so they
+ * refetch on every auto-refresh tick.
+ * The list query does NOT include `refreshKey` — instead we invalidate
+ * it explicitly so it refetches in-place without losing cursor state.
+ * The `queryFn` resolves relative time bounds at call time.
  */
 export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
-  const state = useExplorerState();
+  const explorerState = useExplorerState();
   const teamId = useTeamId();
   const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
-  const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
 
-  const filtersJson = useMemo(() => JSON.stringify(state.filters), [state.filters]);
-  const baseKey = useMemo(
-    () => ["logs", teamId ?? "none", refreshKey, startTime, endTime, filtersJson] as const,
-    [teamId, refreshKey, startTime, endTime, filtersJson]
+
+  // Zustand pagination state
+  const pageIndex = useLogsExplorerStore((s) => s.pageIndex);
+  const cursors = useLogsExplorerStore((s) => s.cursors);
+  const hasMore = useLogsExplorerStore((s) => s.hasMore);
+  const setPageResponse = useLogsExplorerStore((s) => s.setPageResponse);
+  const resetPagination = useLogsExplorerStore((s) => s.resetPagination);
+
+  const currentCursor = cursors[pageIndex];
+
+  const filtersJson = useMemo(() => JSON.stringify(explorerState.filters), [explorerState.filters]);
+  const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
+
+  // Base key for the list query — stable across auto-refresh
+  const listBaseKey = useMemo(
+    () => ["logs", teamId ?? "none", timeRangeKey, filtersJson] as const,
+    [teamId, timeRangeKey, filtersJson]
   );
 
-  const analyticsArgs: LogsAnalyticsArgs = useMemo(
-    () => ({ startTime, endTime, filters: state.filters }),
-    [startTime, endTime, state.filters]
+  // Base key for analytics queries — includes refreshKey for auto-refresh
+  const analyticsBaseKey = useMemo(
+    () => ["logs-analytics", teamId ?? "none", refreshKey, timeRangeKey, filtersJson] as const,
+    [teamId, refreshKey, timeRangeKey, filtersJson]
   );
+
+  // Reset pagination when filters or time range change
+  const prevListBaseKeyRef = useRef(listBaseKey);
+  useEffect(() => {
+    const prev = prevListBaseKeyRef.current;
+    if (prev[1] !== listBaseKey[1] || prev[2] !== listBaseKey[2] || prev[3] !== listBaseKey[3]) {
+      prevListBaseKeyRef.current = listBaseKey;
+      resetPagination();
+    }
+  }, [listBaseKey, resetPagination]);
+
+  // Analytics queries auto-refresh via refreshKey in their query key.
+  // List queries do NOT auto-refresh — cursor pagination is tied to specific
+  // time bounds and invalidation would shift the data window, corrupting cursors.
+
+  // Build analytics args at fetch time — resolves relative time ranges
+  // against the current clock so each refetch uses up-to-date bounds.
+  const buildAnalyticsArgs = useCallback((): LogsAnalyticsArgs => {
+    const { startTime, endTime } = resolveTimeBounds(timeRange);
+    return { startTime, endTime, filters: explorerState.filters };
+  }, [timeRange, explorerState.filters]);
 
   const limit = args.limit ?? DEFAULT_PAGE_SIZE;
-  const listQuery = useInfiniteQuery<LogsQueryResponse, Error>({
-    queryKey: [...baseKey, "list", limit],
-    initialPageParam: undefined as string | undefined,
-    queryFn: ({ pageParam }) =>
-      queryLogs({ ...analyticsArgs, cursor: pageParam as string | undefined, limit }),
-    getNextPageParam: (last) => (last.hasMore ? last.cursor : undefined),
+
+  // Single-page list query: key includes cursor so each page is its own query.
+  // Previous pages stay in TanStack cache for instant back-navigation.
+  const listQuery = useStandardQuery({
+    queryKey: [...listBaseKey, "list", limit, currentCursor ?? "page0"],
+    queryFn: () => {
+      const analyticsArgs = buildAnalyticsArgs();
+      return queryLogs({ ...analyticsArgs, cursor: currentCursor, limit });
+    },
     enabled: args.enabled ?? true,
-    staleTime: 5_000,
-    retry: 2,
   });
 
-  const flatResults: readonly LogRecord[] = useMemo(
-    () => listQuery.data?.pages.flatMap((p) => p.results) ?? [],
-    [listQuery.data?.pages]
-  );
-  const pages = useMemo(() => listQuery.data?.pages ?? [], [listQuery.data?.pages]);
-
-  const loadMore = useCallback(async () => {
-    if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
-      await listQuery.fetchNextPage();
+  // Record the response cursor ONLY when the data is fresh for THIS page.
+  // `isPlaceholderData` is true when keepPreviousData is showing the old page's
+  // data during a page transition — we must NOT record that stale cursor.
+  const listData = listQuery.data;
+  const isPlaceholder = listQuery.isPlaceholderData;
+  useEffect(() => {
+    if (listData && !isPlaceholder) {
+      setPageResponse(listData.cursor, listData.hasMore);
     }
-  }, [listQuery]);
+  }, [listData, isPlaceholder, setPageResponse]);
+
+  const results: readonly LogRecord[] = listData?.results ?? [];
 
   const list = {
-    results: flatResults,
-    pages,
-    isPending: listQuery.isPending,
+    results,
+    isPending: listQuery.isPending && !listData,
     isError: listQuery.isError,
     error: listQuery.error,
-    isFetchingMore: listQuery.isFetchingNextPage,
-    hasMore: listQuery.hasNextPage ?? false,
+    hasMore,
     pageSize: limit,
+    pageIndex,
+    pageCount: cursors.length,
+    isFetchingMore: false,
     refetch: () => listQuery.refetch(),
-    loadMore,
   };
 
-  const summary = useStandardQuery<LogsSummary>({
-    queryKey: [...baseKey, "summary"],
-    queryFn: () => getLogsSummary(analyticsArgs),
-    enabled: args.enabled ?? true,
-  });
-
   const trend = useStandardQuery<readonly LogsTrendBucket[]>({
-    queryKey: [...baseKey, "trend"],
-    queryFn: () => getLogsTrend(analyticsArgs),
+    queryKey: [...analyticsBaseKey, "trend"],
+    queryFn: () => getLogsTrend(buildAnalyticsArgs()),
     enabled: args.enabled ?? true,
   });
 
   const facets = useStandardQuery<LogsFacets>({
-    queryKey: [...baseKey, "facets"],
-    queryFn: () => getLogsFacets(analyticsArgs),
+    queryKey: [...analyticsBaseKey, "facets"],
+    queryFn: () => getLogsFacets(buildAnalyticsArgs()),
     enabled: args.enabled ?? true,
   });
 
-  return { state, list, summary, trend, facets };
+  return { state: explorerState, list, trend, facets };
 }
 
 export type UseLogsExplorerReturn = ReturnType<typeof useLogsExplorer>;

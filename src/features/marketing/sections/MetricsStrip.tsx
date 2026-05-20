@@ -1,24 +1,36 @@
-export interface MetricsStripSection {
-  readonly kind: "metrics-strip"
-  readonly items: ReadonlyArray<{
-    readonly value: string
-    readonly label: string
-    readonly caption?: string
-  }>
+import { Counter } from "../motion/Counter";
+import { Reveal } from "../motion/Reveal";
+
+interface MetricItem {
+  readonly value: number;
+  readonly decimals?: number;
+  readonly prefix?: string;
+  readonly suffix?: string;
+  readonly label: string;
+  readonly grad?: boolean;
 }
 
-export function MetricsStrip({ items }: MetricsStripSection) {
+interface MetricsStripProps {
+  readonly metrics: readonly MetricItem[];
+}
+
+export function MetricsStrip({ metrics }: MetricsStripProps) {
   return (
-    <section className="marketing-section">
-      <div className="marketing-metrics-strip">
-        {items.map((item) => (
-          <div key={item.label} className="marketing-metric">
-            <div className="marketing-metric-value">{item.value}</div>
-            <div className="marketing-metric-label">{item.label}</div>
-            {item.caption ? <div className="marketing-metric-caption">{item.caption}</div> : null}
+    <Reveal>
+      <div className="m-metrics">
+        {metrics.map((m) => (
+          <div key={m.label} className="m-metric">
+            <Counter
+              to={m.value}
+              decimals={m.decimals ?? 0}
+              prefix={m.prefix}
+              suffix={m.suffix}
+              className={`m-metric-value m-counter${m.grad ? " is-grad" : ""}`}
+            />
+            <div className="m-metric-label">{m.label}</div>
           </div>
         ))}
       </div>
-    </section>
-  )
+    </Reveal>
+  );
 }

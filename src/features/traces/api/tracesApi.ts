@@ -47,7 +47,7 @@ function toTraceRecord(summary: TraceSummary): TraceRecord {
     status: summary.root_status,
     span_kind: "SERVER",
     http_method: summary.root_http_method,
-    http_status_code: summary.root_http_status,
+    http_status_code: summary.root_http_status ? parseInt(summary.root_http_status, 10) || undefined : undefined,
   };
 }
 

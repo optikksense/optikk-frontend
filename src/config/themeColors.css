@@ -428,6 +428,35 @@
   --toast-text: rgba(230, 237, 243, 0.9);
   --toast-border: #30363d;
 
+  /* Optikk design-handoff OKLCH tokens — additive layer used by Logs Explorer
+   * and other pages adopting the design-handoff visual language. Severity hues
+   * are identical across themes; surfaces/foregrounds flip per theme below. */
+  --accent-h: 268;
+  --accent: oklch(0.68 0.18 var(--accent-h));
+  --accent-2: oklch(0.76 0.15 var(--accent-h));
+  --accent-bg: oklch(0.68 0.18 var(--accent-h) / 0.16);
+  --accent-ln: oklch(0.68 0.18 var(--accent-h) / 0.42);
+  --live: oklch(0.78 0.18 152);
+  --trace-c: oklch(0.66 0.10 245);
+  --debug-c: oklch(0.72 0.16 235);
+  --info-c: oklch(0.78 0.16 152);
+  --warn-c: oklch(0.84 0.16 92);
+  --err-c: oklch(0.70 0.20 25);
+  --fatal-c: oklch(0.66 0.22 330);
+
+  --bg-0: oklch(0.135 0.008 270);
+  --bg-1: oklch(0.165 0.008 270);
+  --bg-2: oklch(0.205 0.008 270);
+  --bg-3: oklch(0.245 0.010 270);
+  --bg-row-h: oklch(0.20 0.010 270 / 0.45);
+  --line: oklch(0.26 0.010 270);
+  --line-2: oklch(0.34 0.012 270);
+  --fg-0: oklch(0.97 0.005 270);
+  --fg-1: oklch(0.86 0.006 270);
+  --fg-2: oklch(0.62 0.010 270);
+  --fg-3: oklch(0.48 0.010 270);
+  --shadow-pop: 0 16px 40px -12px oklch(0 0 0 / 0.6), 0 0 0 1px var(--line);
+
   color-scheme: dark;
   color: var(--text-primary);
   background-color: var(--bg-primary);
@@ -478,6 +507,21 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(216, 214, 208, 0.5);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(216, 214, 208, 0.8);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(216, 214, 208, 0.8);
+
+  /* Optikk design-handoff OKLCH tokens (light) — surfaces flip, severity stays */
+  --bg-0: oklch(0.995 0.003 270);
+  --bg-1: oklch(0.975 0.004 270);
+  --bg-2: oklch(0.955 0.005 270);
+  --bg-3: oklch(0.925 0.006 270);
+  --bg-row-h: oklch(0.96 0.006 270);
+  --line: oklch(0.88 0.006 270);
+  --line-2: oklch(0.78 0.008 270);
+  --fg-0: oklch(0.18 0.012 270);
+  --fg-1: oklch(0.32 0.012 270);
+  --fg-2: oklch(0.50 0.010 270);
+  --fg-3: oklch(0.64 0.010 270);
+  --accent-bg: oklch(0.68 0.18 var(--accent-h) / 0.10);
+  --shadow-pop: 0 16px 40px -12px oklch(0.20 0.05 270 / 0.18), 0 0 0 1px var(--line);
 
   color-scheme: light;
   color: var(--text-primary);

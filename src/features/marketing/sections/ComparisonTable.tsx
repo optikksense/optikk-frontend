@@ -1,86 +1,77 @@
-export interface ComparisonTableSection {
-  readonly kind: "comparison"
-  readonly eyebrow?: string
-  readonly title?: string
-  readonly body?: string
-  readonly columns: ReadonlyArray<string>
-  /** Index of the column to highlight (e.g. "Optikk"). */
-  readonly highlight?: number
-  readonly rows: ReadonlyArray<{
-    readonly label: string
-    readonly values: ReadonlyArray<string | boolean>
-  }>
+import { Check, Minus, X } from "lucide-react";
+import type { ReactNode } from "react";
+
+import { Reveal } from "../motion/Reveal";
+
+type CellValue = boolean | "partial" | ReactNode;
+
+interface ComparisonRow {
+  readonly label: string;
+  readonly cells: readonly CellValue[];
 }
 
-function renderCell(value: string | boolean) {
+interface ComparisonTableProps {
+  readonly columns: readonly string[];
+  readonly rows: readonly ComparisonRow[];
+  readonly highlightColumn?: number;
+}
+
+function Cell({ value }: { readonly value: CellValue }) {
   if (value === true) {
     return (
-      <span className="marketing-comparison-bool-yes">
-        <span aria-hidden>✓</span> Yes
+      <span className="m-compare-yes">
+        <Check size={18} strokeWidth={2.5} />
       </span>
-    )
+    );
   }
   if (value === false) {
-    return <span className="marketing-comparison-bool-no">—</span>
+    return (
+      <span className="m-compare-no">
+        <X size={18} strokeWidth={2.5} />
+      </span>
+    );
   }
-  return value
+  if (value === "partial") {
+    return (
+      <span className="m-compare-no">
+        <Minus size={18} strokeWidth={2.5} />
+      </span>
+    );
+  }
+  return <>{value}</>;
 }
 
-export function ComparisonTable({
-  eyebrow,
-  title,
-  body,
-  columns,
-  rows,
-  highlight,
-}: ComparisonTableSection) {
+export function ComparisonTable({ columns, rows, highlightColumn = 1 }: ComparisonTableProps) {
   return (
-    <section className="marketing-section">
-      <div className="marketing-container">
-        {(eyebrow || title || body) && (
-          <div className="marketing-section-header">
-            {eyebrow ? <div className="marketing-eyebrow">{eyebrow}</div> : null}
-            {title ? <h2 className="marketing-h2">{title}</h2> : null}
-            {body ? <p className="marketing-body">{body}</p> : null}
-          </div>
-        )}
-        <div className="marketing-comparison-wrap">
-          <div className="marketing-comparison-scroll">
-            <table className="marketing-comparison">
-              <thead>
-                <tr>
-                  <th />
-                  {columns.map((col, i) => (
-                    <th
-                      key={col}
-                      className={i === highlight ? "marketing-comparison-highlight" : undefined}
-                    >
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.label}>
-                    <td className="marketing-comparison-row-label">{row.label}</td>
-                    {row.values.map((val, i) => (
-                      <td
-                        key={`${row.label}-${i}`}
-                        className={
-                          i === highlight ? "marketing-comparison-cell-highlight" : undefined
-                        }
-                      >
-                        {renderCell(val)}
-                      </td>
-                    ))}
-                  </tr>
+    <Reveal>
+      <div style={{ overflowX: "auto" }}>
+        <table className="m-compare">
+          <thead>
+            <tr>
+              {columns.map((col, idx) => (
+                <th key={col} className={idx === highlightColumn ? "m-compare-our" : undefined}>
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.label}>
+                <td className="m-compare-row-label">{row.label}</td>
+                {row.cells.map((cell, idx) => (
+                  <td
+                    key={idx}
+                    className={idx + 1 === highlightColumn ? "m-compare-our" : undefined}
+                  >
+                    <Cell value={cell} />
+                  </td>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </section>
-  )
+    </Reveal>
+  );
 }

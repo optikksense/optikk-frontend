@@ -55,8 +55,22 @@ function base64UrlEncodeUtf8(s: string): string {
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+// FNV-1a 32-bit — small, fast, no deps. Used to disambiguate rows that share
+// (trace_id, span_id, timestamp) but have different bodies (common for batch-
+// flushed Locust / OTel-collector logs that all land at the same millisecond).
+function fnv1a(s: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(36);
+}
+
 function fallbackLogId(row: z.infer<typeof rawLogRowSchema>): string {
-  const payload = `${row.trace_id ?? ""}:${row.span_id ?? ""}:${tsToNsString(row.timestamp)}`;
+  const payload = `${row.trace_id ?? ""}:${row.span_id ?? ""}:${tsToNsString(
+    row.timestamp
+  )}:${row.service_name ?? ""}:${fnv1a(row.body ?? "")}`;
   return base64UrlEncodeUtf8(payload);
 }
 
@@ -123,5 +137,53 @@ export async function queryLogs(args: QueryLogsArgs): Promise<LogsQueryResponse>
     limit: args.limit ?? 100,
   });
   const raw = await api.post<unknown>("/v1/logs/query", body);
-  return validateResponse(queryResponseSchema, raw);
+  const parsed = validateResponse(queryResponseSchema, raw);
+  return dedupeRows(enforceIdFilters(parsed, body));
+}
+
+/**
+ * Defensive dedupe by `id`. The backend list endpoint normally returns unique
+ * rows, but pipeline misconfigs (OTel collector double-forwarding,
+ * at-least-once ingest retry) can ship the same log twice. Keep the first
+ * occurrence so selection / keys stay stable.
+ */
+function dedupeRows(resp: LogsQueryResponse): LogsQueryResponse {
+  const seen = new Set<string>();
+  const out: LogRecord[] = [];
+  for (const r of resp.results) {
+    if (seen.has(r.id)) continue;
+    seen.add(r.id);
+    out.push(r);
+  }
+  if (out.length === resp.results.length) return resp;
+  return { ...resp, results: out };
+}
+
+/**
+ * Defensive client-side filter for trace_id / span_id. The BE list endpoint
+ * applies these filters, but if any row leaks through (BE regression, CH
+ * binding edge case, or stale cache), drop it client-side and emit a warning
+ * once per response so we surface the inconsistency rather than render rows
+ * the user explicitly excluded.
+ */
+function enforceIdFilters(
+  resp: LogsQueryResponse,
+  body: { traceId?: string; spanId?: string }
+): LogsQueryResponse {
+  const traceFilter = body.traceId;
+  const spanFilter = body.spanId;
+  if (!traceFilter && !spanFilter) return resp;
+  const filtered = resp.results.filter(
+    (r) =>
+      (!traceFilter || r.trace_id === traceFilter) &&
+      (!spanFilter || r.span_id === spanFilter)
+  );
+  if (filtered.length !== resp.results.length) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[logs/query] Backend returned ${resp.results.length - filtered.length} row(s) that do not match the active id filter`,
+      { traceFilter, spanFilter, returned: resp.results.length, kept: filtered.length }
+    );
+  }
+  return { ...resp, results: filtered };
 }

@@ -1,9 +1,27 @@
-import { memo } from "react";
+import {
+  AlertCircle,
+  Bookmark,
+  ChevronRight,
+  Clock,
+  CornerDownLeft,
+  Hash,
+  MessageSquare,
+  Server,
+  Tag,
+  Wand2,
+} from "lucide-react";
+import { Fragment, memo } from "react";
+
+import type { SuggestionIcon, TypeBadge } from "../../search/knownFields";
 
 export interface SuggestionOption {
   readonly value: string;
   readonly label?: string;
   readonly hint?: string;
+  readonly description?: string;
+  readonly category?: string;
+  readonly typeBadge?: TypeBadge;
+  readonly icon?: SuggestionIcon;
 }
 
 interface Props {
@@ -13,42 +31,178 @@ interface Props {
   readonly onHover: (index: number) => void;
   readonly loading?: boolean;
   readonly title?: string;
+  readonly highlight?: string;
 }
 
-/** Popover dropdown for the DSL search bar. Renders values or field names. */
+const ICON_MAP: Record<
+  SuggestionIcon,
+  React.ComponentType<{ size?: number; className?: string }>
+> = {
+  field: Tag,
+  id: Hash,
+  attr: Tag,
+  severity: AlertCircle,
+  resource: Server,
+  body: MessageSquare,
+  recent: Clock,
+  view: Bookmark,
+  template: Wand2,
+  operator: ChevronRight,
+};
+
+const BADGE_TONE: Record<TypeBadge, string> = {
+  STR: "text-[#86b3ff] border-[#86b3ff]/30",
+  NUM: "text-[#f9c269] border-[#f9c269]/30",
+  ID: "text-[#bfa9ff] border-[#bfa9ff]/30",
+  TXT: "text-[#7fc8a4] border-[#7fc8a4]/30",
+  ENUM: "text-[#e6a4d4] border-[#e6a4d4]/30",
+  OP: "text-[var(--text-muted)] border-[var(--border-color)]",
+  BOOL: "text-[#a4d4e6] border-[#a4d4e6]/30",
+};
+
+/** Datadog-class popover for the DSL search bar. Sectioned, badged, with footer. */
 function QuerySuggestionsComponent(p: Props) {
   if (!p.loading && p.options.length === 0) return null;
   return (
-    <div className="absolute z-30 mt-1 w-80 max-h-64 overflow-y-auto rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-lg">
+    <div className="absolute z-30 mt-1 flex w-[480px] max-w-[calc(100vw-32px)] flex-col rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-2xl">
       {p.title ? (
-        <div className="px-2 py-1 text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
+        <div className="border-b border-[var(--border-color)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
           {p.title}
         </div>
       ) : null}
-      {p.loading ? (
-        <div className="px-2 py-2 text-[11px] text-[var(--text-muted)]">Loading…</div>
-      ) : (
-        <ul className="flex flex-col py-1">
-          {p.options.map((opt, i) => (
-            <li key={`${opt.value}-${i}`}>
-              <button
-                type="button"
-                onMouseEnter={() => p.onHover(i)}
-                onMouseDown={(e) => { e.preventDefault(); p.onSelect(opt); }}
-                className={`flex w-full items-center justify-between px-3 py-1 text-left text-[12px] ${
-                  i === p.activeIndex
-                    ? "bg-[var(--bg-secondary)] text-[var(--text-primary)]"
-                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]"
-                }`}
-              >
-                <span className="truncate font-mono">{opt.label ?? opt.value}</span>
-                {opt.hint ? <span className="ml-2 text-[10px] text-[var(--text-muted)]">{opt.hint}</span> : null}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="max-h-[420px] overflow-y-auto py-1">
+        {p.loading ? (
+          <div className="px-3 py-2 text-[11px] text-[var(--text-muted)]">Loading…</div>
+        ) : (
+          <ul className="flex flex-col">
+            {p.options.map((opt, i) => (
+              <Fragment key={`${opt.value}-${i}`}>
+                {sectionHeader(opt, i, p.options)}
+                <li>
+                  <Row
+                    opt={opt}
+                    active={i === p.activeIndex}
+                    highlight={p.highlight ?? ""}
+                    onHover={() => p.onHover(i)}
+                    onSelect={() => p.onSelect(opt)}
+                  />
+                </li>
+              </Fragment>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="flex items-center justify-between gap-3 border-t border-[var(--border-color)] px-3 py-1.5 text-[10px] text-[var(--text-muted)]">
+        <span>
+          <Kbd>Tab</Kbd> / <Kbd>↵</Kbd> accept
+        </span>
+        <span>
+          <Kbd>Esc</Kbd> close
+        </span>
+        <span>
+          <Kbd>↑</Kbd> <Kbd>↓</Kbd> navigate
+        </span>
+      </div>
     </div>
+  );
+}
+
+function sectionHeader(opt: SuggestionOption, i: number, all: readonly SuggestionOption[]) {
+  const prev = i === 0 ? null : (all[i - 1].category ?? null);
+  const cur = opt.category ?? null;
+  if (cur === null) return null;
+  if (cur === prev) return null;
+  return (
+    <li
+      aria-hidden="true"
+      className={`px-3 ${i === 0 ? "pt-1" : "pt-2"} pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]`}
+    >
+      {cur}
+    </li>
+  );
+}
+
+interface RowProps {
+  readonly opt: SuggestionOption;
+  readonly active: boolean;
+  readonly highlight: string;
+  readonly onHover: () => void;
+  readonly onSelect: () => void;
+}
+
+function Row({ opt, active, highlight, onHover, onSelect }: RowProps) {
+  const Icon = opt.icon ? ICON_MAP[opt.icon] : null;
+  const label = opt.label ?? opt.value;
+  return (
+    <button
+      type="button"
+      onMouseEnter={onHover}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        onSelect();
+      }}
+      className={[
+        "group flex w-full items-center gap-2 px-3 py-1.5 text-left",
+        active
+          ? "bg-[var(--bg-secondary)] text-[var(--text-primary)]"
+          : "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]",
+        active ? "border-l-2 border-l-[var(--accent)]" : "border-l-2 border-l-transparent",
+      ].join(" ")}
+    >
+      {Icon ? (
+        <span className="flex h-4 w-4 shrink-0 items-center justify-center text-[var(--text-muted)]">
+          <Icon size={12} />
+        </span>
+      ) : (
+        <span className="h-4 w-4 shrink-0" />
+      )}
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate font-mono text-[12px]">
+          <Highlighted text={label} match={highlight} />
+        </span>
+        {opt.description ? (
+          <span className="truncate text-[10.5px] text-[var(--text-muted)]">{opt.description}</span>
+        ) : null}
+      </span>
+      {opt.hint ? (
+        <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{opt.hint}</span>
+      ) : null}
+      {opt.typeBadge ? (
+        <span
+          className={`shrink-0 rounded border px-1 py-px font-mono text-[9px] tracking-wider ${BADGE_TONE[opt.typeBadge]}`}
+        >
+          {opt.typeBadge}
+        </span>
+      ) : null}
+      <span
+        className={`shrink-0 text-[var(--text-muted)] ${active ? "opacity-100" : "opacity-0 group-hover:opacity-50"}`}
+      >
+        <CornerDownLeft size={11} />
+      </span>
+    </button>
+  );
+}
+
+function Highlighted({ text, match }: { text: string; match: string }) {
+  if (match === "") return <>{text}</>;
+  const idx = text.toLowerCase().indexOf(match.toLowerCase());
+  if (idx < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <span className="font-bold text-[var(--text-primary)]">
+        {text.slice(idx, idx + match.length)}
+      </span>
+      {text.slice(idx + match.length)}
+    </>
+  );
+}
+
+function Kbd({ children }: { children: React.ReactNode }) {
+  return (
+    <kbd className="inline-flex items-center rounded border border-[var(--border-color)] bg-[var(--bg-secondary)] px-1 py-px font-mono text-[9.5px] text-[var(--text-secondary)]">
+      {children}
+    </kbd>
   );
 }
 

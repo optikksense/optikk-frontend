@@ -33,10 +33,10 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Global store**: `src/app/store/appStore.ts` — `triggerRefresh()` increments `refreshKey`; persisted: timeRange, teamId, theme, timezone, comparisonMode, viewPreferences, recentPages
 - **Live tail**: `src/shared/hooks/useSocketStream.ts` (core WebSocket), `src/features/explorer-core/hooks/useLiveTailStream.ts` (wrapper with teamId)
 - **Explorer core**: `src/features/explorer-core/` — shared analytics, facets, visualizations for Logs/Traces/Metrics explorers
-- **Logs explorer**: `src/features/log/pages/LogsExplorerPage/` — scoped DSL search (`scope="logs"`), facet-backed filter suggestions, cursor-paginated result pages, Grafana-style severity colors
+- **Logs explorer**: `src/features/log/` — rebuilt clean-slate Datadog-class explorer. Components: `toolbar/`, `kpi/`, `facets/`, `trend/`, `table/`, `detail/`. Zustand store: `store/logsExplorerStore.ts`. Page: `pages/LogsExplorerPage/LogsExplorerPage.tsx`. Features: severity gutter bars, inline row expand with JSON tree, facet distribution bars, trend histogram with brush zoom, 4-tab detail panel (Message/Fields/JSON/Correlation), density toggle, line wrap.
 - **Entities**: `src/shared/entities/` — log, metric, trace, user
 - **Theme**: `src/config/themeColors.css` → `tailwind.config.ts`
-- **Dev**: `yarn dev` | **CI**: `yarn ci`
+- **Dev**: `yarn dev` | **CI**: `yarn ci` | **Deploy**: `yarn deploy:firebase`
 - **Navigation utils**: `src/shared/utils/navigation.ts` — `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` for TanStack Router dynamic-path navigation (replaces scattered `as any` casts)
 - **Standard query**: `src/shared/hooks/useStandardQuery.ts` — `useStandardQuery(options)` with `keepPreviousData`, `staleTime: 5s`, `retry: 2`
 - **Sibling repo**: `optikk-backend` (see its `CODEBASE_INDEX.md`)

@@ -1,0 +1,40 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B5FD6"/>
+      <stop offset="100%" stop-color="#4FA9D8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="80" fill="url(#bgGradient)" />
+
+  <!-- Top diamond -->
+  <polygon
+    points="256,95 390,165 256,235 122,165"
+    fill="none"
+    stroke="white"
+    stroke-width="24"
+    stroke-linejoin="round"
+  />
+
+  <!-- Middle layer -->
+  <polyline
+    points="140,220 256,280 372,220"
+    fill="none"
+    stroke="white"
+    stroke-width="24"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Bottom layer -->
+  <polyline
+    points="140,280 256,340 372,280"
+    fill="none"
+    stroke="white"
+    stroke-width="24"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

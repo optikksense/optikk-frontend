@@ -22,6 +22,7 @@ interface Props {
   readonly variant?: SearchBarVariant;
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
+  readonly disableBareFreeTextFallback?: boolean;
 }
 
 export const ExplorerHeader = memo(
@@ -51,6 +52,7 @@ function SearchBar({ props, inputRef }: { props: Props; inputRef: React.Ref<HTML
         placeholder={props.searchPlaceholder}
         scope={props.scope}
         valueSuggestions={props.valueSuggestions}
+        disableBareFreeTextFallback={props.disableBareFreeTextFallback}
       />
     );
   }
