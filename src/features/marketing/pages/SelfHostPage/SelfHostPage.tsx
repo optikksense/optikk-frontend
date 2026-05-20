@@ -3,6 +3,7 @@ import { Check, Cloud, ServerCog, ShieldCheck } from "lucide-react";
 
 import { dynamicTo } from "@/shared/utils/navigation";
 
+import { OSS } from "../../constants";
 import { GradientText } from "../../motion/GradientText";
 import { Reveal } from "../../motion/Reveal";
 import { Stagger, StaggerItem } from "../../motion/Stagger";
@@ -41,15 +42,15 @@ const MODES = [
   },
   {
     icon: ShieldCheck,
-    name: "Self-host (air-gapped)",
-    pitch: "Helm chart on your Kubernetes. Fully offline supported.",
+    name: "Self-host (OSS)",
+    pitch: "Apache 2.0 Helm chart on your Kubernetes. Fully offline supported.",
     features: [
+      "Public repos · no license keys",
       "Air-gapped binaries available",
       "Customer-owned upgrade cadence",
       "FedRAMP-aligned controls",
-      "License keys, no phone-home",
     ],
-    cta: { label: "Talk to engineering", path: "mailto:hello@optikk.dev?subject=Self-host" },
+    cta: { label: "View on GitHub", path: OSS.org },
   },
 ];
 
@@ -140,10 +141,12 @@ export default function SelfHostPage() {
                     </li>
                   ))}
                 </ul>
-                {mode.cta.path.startsWith("mailto:") ? (
+                {mode.cta.path.startsWith("mailto:") || mode.cta.path.startsWith("http") ? (
                   <a
                     className={`m-btn ${mode.featured ? "m-btn-primary" : "m-btn-secondary"}`}
                     href={mode.cta.path}
+                    target={mode.cta.path.startsWith("http") ? "_blank" : undefined}
+                    rel={mode.cta.path.startsWith("http") ? "noreferrer" : undefined}
                   >
                     {mode.cta.label}
                   </a>

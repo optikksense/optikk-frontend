@@ -3,11 +3,15 @@ import {
   Bot,
   Cpu,
   DatabaseBackup,
+  Github,
   Globe,
   HardDrive,
   Lock,
   Network,
 } from "lucide-react";
+
+import { OSS, formatStars } from "../../constants";
+import { useGitHubStars } from "../../hooks/useGitHubStars";
 import { GradientText } from "../../motion/GradientText";
 import { CTA } from "../../sections/CTA";
 import { FAQ } from "../../sections/FAQ";
@@ -19,7 +23,7 @@ import { SectionHeader } from "../../sections/SectionHeader";
 const TIERS = [
   {
     name: "Logs",
-    price: "$0.45",
+    price: "$0.05",
     priceUnit: "per GiB ingested",
     description: "30-day hot retention included. Compress + cold-tier any time.",
     features: [
@@ -135,6 +139,7 @@ const FAQS = [
 ];
 
 export default function PricingPage() {
+  const { totalStars } = useGitHubStars();
   return (
     <>
       <Hero
@@ -153,6 +158,52 @@ export default function PricingPage() {
       <section className="m-section m-section--tight">
         <div className="m-container">
           <PricingTable tiers={TIERS} />
+
+          <a
+            href={OSS.frontend}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "auto 1fr auto",
+              gap: 20,
+              alignItems: "center",
+              marginTop: 32,
+              padding: "24px 28px",
+              borderRadius: "var(--m-r-lg)",
+              border: "1px solid var(--m-line-strong)",
+              background: "linear-gradient(120deg, #fbfbf7, #f5f3ec 60%, rgba(13, 148, 136, 0.08))",
+              color: "var(--m-ink)",
+              textDecoration: "none",
+            }}
+          >
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                background: "var(--m-ink)",
+                color: "#fff",
+              }}
+            >
+              <Github size={22} />
+            </span>
+            <span>
+              <strong style={{ display: "block", fontSize: 17, letterSpacing: "-0.01em" }}>
+                ...or self-host the open source edition for $0
+              </strong>
+              <span style={{ color: "var(--m-ink-3)", fontSize: 14 }}>
+                Engine, scheduler, and frontend dashboard are Apache 2.0. Cloud just runs the same
+                code for you.
+              </span>
+            </span>
+            <span className="m-btn m-btn-secondary m-btn-sm" style={{ pointerEvents: "none" }}>
+              Star · {formatStars(totalStars)}
+            </span>
+          </a>
         </div>
       </section>
 

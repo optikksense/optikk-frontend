@@ -7,6 +7,7 @@ import { Hero } from "../../sections/Hero";
 import { SectionHeader } from "../../sections/SectionHeader";
 import { Split } from "../../sections/Split";
 import { DashboardMock } from "../../visuals/ProductMock";
+import { Screenshot } from "../../visuals/Screenshot";
 
 const ANCHORS = [
   { label: "Logs", id: "logs" },
@@ -70,7 +71,14 @@ export default function FeaturesPage() {
                 body: "Cap noisy services without dropping them. Routing rules are first-class, not buried in YAML.",
               },
             ]}
-            visual={<DashboardMock type="logs" />}
+            visual={
+              <Screenshot
+                name="logs"
+                alt="Optikk logs explorer"
+                bare
+                fallback={<DashboardMock type="logs" />}
+              />
+            }
           />
         </div>
       </section>
@@ -101,7 +109,14 @@ export default function FeaturesPage() {
                 body: "Send any OpenTelemetry SDK. Your span attributes show up exactly as your code wrote them.",
               },
             ]}
-            visual={<DashboardMock type="traces" />}
+            visual={
+              <Screenshot
+                name="trace"
+                alt="Optikk trace waterfall"
+                bare
+                fallback={<DashboardMock type="traces" />}
+              />
+            }
           />
         </div>
       </section>
@@ -131,7 +146,14 @@ export default function FeaturesPage() {
                 body: "Skip the static-threshold tuning. Optikk learns the rhythm of your services.",
               },
             ]}
-            visual={<DashboardMock type="metrics" />}
+            visual={
+              <Screenshot
+                name="service-detail"
+                alt="Optikk service detail with metrics and endpoint table"
+                bare
+                fallback={<DashboardMock type="metrics" />}
+              />
+            }
           />
         </div>
       </section>

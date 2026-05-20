@@ -3,13 +3,18 @@ import {
   Bot,
   Database,
   GitBranch,
+  Github,
   Layers,
   LineChart,
   Network,
   ScrollText,
   Shield,
+  Star,
   Workflow,
 } from "lucide-react";
+
+import { OSS, formatStars } from "../../constants";
+import { useGitHubStars } from "../../hooks/useGitHubStars";
 
 import { GradientText } from "../../motion/GradientText";
 import { CTA } from "../../sections/CTA";
@@ -21,6 +26,7 @@ import { MetricsStrip } from "../../sections/MetricsStrip";
 import { SectionHeader } from "../../sections/SectionHeader";
 import { Split } from "../../sections/Split";
 import { DashboardMock, ProductMock } from "../../visuals/ProductMock";
+import { Screenshot } from "../../visuals/Screenshot";
 
 const STACK_LOGOS = [
   { name: "OpenTelemetry" },
@@ -70,14 +76,18 @@ const PILLARS = [
     variant: "grad" as const,
   },
   {
-    icon: Database,
-    title: "Pay for ingest, not seats",
-    body: "Per-GiB or per-DPM, capped automatically. No tier walls, no surprise overage invoices.",
-    link: { label: "See pricing", path: "/pricing" },
+    icon: Github,
+    title: "Open source at the core",
+    body: "Engine, scheduler, and frontend dashboard are Apache 2.0. Self-host the whole stack from public repos — Cloud just runs the same code for you.",
+    link: { label: "View on GitHub", path: OSS.org },
   },
 ];
 
 const COMPARE_ROWS = [
+  {
+    label: "Open source (Apache 2.0)",
+    cells: [false, true, "partial", "partial"] as const,
+  },
   {
     label: "Built on off-the-shelf primitives",
     cells: [false, true, "partial", "partial"] as const,
@@ -109,6 +119,7 @@ const COMPARE_ROWS = [
 ];
 
 export default function HomePage() {
+  const { stars, totalStars } = useGitHubStars();
   return (
     <>
       <Hero
@@ -121,8 +132,15 @@ export default function HomePage() {
         subtitle="OpenTelemetry into Kafka, then ClickHouse. Live tail on Redis, Context Graph on MySQL, AI SRE on top. Self-hostable in your VPC, priced per GiB ingested."
         primaryCta={{ label: "Start free", path: "/login", variant: "grad" }}
         secondaryCta={{ label: "Read the docs", path: "/opentelemetry", variant: "secondary" }}
-        meta={["No credit card", "5-minute setup", "Open source SDKs"]}
-        visual={<ProductMock />}
+        meta={["Apache 2.0 licensed", "No credit card", "5-minute setup"]}
+        visual={
+          <Screenshot
+            name="overview"
+            alt="Optikk saturation overview showing Kafka, Database, Redis, and Queues subsystems with a fleet hex-map"
+            eager
+            fallback={<ProductMock />}
+          />
+        }
       />
 
       <LogoStrip
@@ -135,9 +153,9 @@ export default function HomePage() {
           <MetricsStrip
             metrics={[
               { value: 10, suffix: "M", label: "spans / second", grad: true },
-              { value: 0.45, decimals: 2, prefix: "$", suffix: " / GiB", label: "log ingest" },
+              { value: 0.05, decimals: 2, prefix: "$", suffix: " / GiB", label: "log ingest" },
               { value: 200, prefix: "<", suffix: "ms", label: "p99 query latency" },
-              { value: 4, suffix: "× cheaper", label: "than Datadog at scale" },
+              { value: 25, suffix: "× cheaper", label: "than Datadog at scale" },
             ]}
           />
         </div>
@@ -180,7 +198,14 @@ export default function HomePage() {
               },
             ]}
             link={{ label: "Explore logs", path: "/features#logs" }}
-            visual={<DashboardMock type="logs" />}
+            visual={
+              <Screenshot
+                name="logs"
+                alt="Optikk logs explorer with severity facets and timeline histogram"
+                bare
+                fallback={<DashboardMock type="logs" />}
+              />
+            }
           />
         </div>
       </section>
@@ -208,7 +233,14 @@ export default function HomePage() {
               },
             ]}
             link={{ label: "See trace explorer", path: "/features#traces" }}
-            visual={<DashboardMock type="traces" />}
+            visual={
+              <Screenshot
+                name="trace"
+                alt="Optikk trace waterfall for POST /api/v2/checkout with span detail panel"
+                bare
+                fallback={<DashboardMock type="traces" />}
+              />
+            }
           />
         </div>
       </section>
@@ -235,8 +267,156 @@ export default function HomePage() {
               },
             ]}
             link={{ label: "Metrics deep-dive", path: "/features#metrics" }}
-            visual={<DashboardMock type="metrics" />}
+            visual={
+              <Screenshot
+                name="service-detail"
+                alt="Optikk service detail for payment-svc with golden signals and top endpoints"
+                bare
+                fallback={<DashboardMock type="metrics" />}
+              />
+            }
           />
+        </div>
+      </section>
+
+      <section className="m-section m-section--ink" id="open-source">
+        <div className="m-container">
+          <SectionHeader
+            eyebrow="Open source"
+            title={
+              <span style={{ color: "#fff" }}>
+                Apache 2.0, <GradientText>top to bottom.</GradientText>
+              </span>
+            }
+            lede={
+              <span style={{ color: "#c0cee0" }}>
+                The engine, the OTel collector build, the language SDKs, and the Helm chart all live
+                on GitHub. Self-host runs the same binaries Cloud does — no proprietary fork, no
+                closed core.
+              </span>
+            }
+          />
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: 18,
+              marginTop: 36,
+            }}
+          >
+            <a
+              className="is-ink m-bento-card"
+              href={OSS.frontend}
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <span className="m-bento-icon">
+                <Github size={20} />
+              </span>
+              <h3 className="m-h4">optikk-frontend</h3>
+              <p className="m-body-sm">
+                Frontend UI dashboard of Observability. Built with React 19, Vite, and TypeScript.
+              </p>
+              <div className="m-bento-link">
+                <Star size={13} strokeWidth={2.4} /> {formatStars(stars["optikk-frontend"] || 0)} ·
+                Apache 2.0
+              </div>
+            </a>
+            <a
+              className="is-ink m-bento-card"
+              href={OSS.backend}
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <span className="m-bento-icon">
+                <Github size={20} />
+              </span>
+              <h3 className="m-h4">optikk-backend</h3>
+              <p className="m-body-sm">
+                Go core backend engine. Handles high-throughput ingestion, storage, and AI-assisted
+                query resolution.
+              </p>
+              <div className="m-bento-link">
+                <Star size={13} strokeWidth={2.4} /> {formatStars(stars["optikk-backend"] || 0)} ·
+                Apache 2.0
+              </div>
+            </a>
+            <a
+              className="is-ink m-bento-card"
+              href={OSS.scheduler}
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <span className="m-bento-icon">
+                <Github size={20} />
+              </span>
+              <h3 className="m-h4">scheduler</h3>
+              <p className="m-body-sm">
+                Distributed Go scheduling engine for alerting pipelines and tasks orchestration.
+              </p>
+              <div className="m-bento-link">
+                <Star size={13} strokeWidth={2.4} /> {formatStars(stars.scheduler || 0)} · Apache
+                2.0
+              </div>
+            </a>
+            <a
+              className="is-ink m-bento-card"
+              href={OSS.otelDemo}
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <span className="m-bento-icon">
+                <Github size={20} />
+              </span>
+              <h3 className="m-h4">opentelemetry-demo</h3>
+              <p className="m-body-sm">
+                Astronomy Shop microservices demonstration instrumented with OpenTelemetry.
+              </p>
+              <div className="m-bento-link">
+                <Star size={13} strokeWidth={2.4} /> {formatStars(stars["opentelemetry-demo"] || 0)}{" "}
+                · Apache 2.0
+              </div>
+            </a>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12,
+              marginTop: 28,
+              justifyContent: "center",
+            }}
+          >
+            <a
+              className="m-btn m-btn-primary"
+              href={OSS.frontend}
+              target="_blank"
+              rel="noreferrer"
+              style={{ background: "#fff", color: "var(--m-ink)", borderColor: "#fff" }}
+            >
+              <Star size={16} strokeWidth={2.4} />
+              Star on GitHub · {formatStars(totalStars)}
+            </a>
+            <a
+              className="m-btn m-btn-secondary"
+              href={OSS.org}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                background: "transparent",
+                color: "#fff",
+                borderColor: "rgba(255,255,255,0.3)",
+              }}
+            >
+              All repos
+            </a>
+          </div>
         </div>
       </section>
 
@@ -249,7 +429,7 @@ export default function HomePage() {
                 Same telemetry. <GradientText>Less lock-in.</GradientText>
               </>
             }
-            lede="Datadog and New Relic ship great UIs on proprietary stores you can't operate. Optikk ships the same UI on Kafka + ClickHouse + MySQL + Redis — a stack your platform team already runs."
+            lede="Datadog and New Relic ship great UIs on proprietary stores you can't operate. Optikk ships the same UI on Kafka + ClickHouse + MySQL + Redis — fully open source — a stack your platform team already runs."
             align="center"
           />
           <ComparisonTable

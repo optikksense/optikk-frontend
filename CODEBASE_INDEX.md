@@ -51,6 +51,8 @@ Marketing pages are rendered through a dedicated layout and bespoke page compone
 - `/self-host` → [SelfHostPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/SelfHostPage/SelfHostPage.tsx)
 - `/architecture` → [ArchitecturePage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/ArchitecturePage/ArchitecturePage.tsx)
 
+Marketing pages dynamically fetch genuine GitHub stars using the [useGitHubStars](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/hooks/useGitHubStars.ts) hook.
+
 ### Authenticated product routes
 
 Direct protected routes in the router:

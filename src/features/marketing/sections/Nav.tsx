@@ -1,10 +1,13 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Github, Menu, Star, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { dynamicTo } from "@/shared/utils/navigation";
+
+import { OSS, formatStars } from "../constants";
+import { useGitHubStars } from "../hooks/useGitHubStars";
 
 const NAV_LINKS = [
   { label: "Platform", path: "/features" },
@@ -42,6 +45,7 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { totalStars } = useGitHubStars();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -78,6 +82,19 @@ export function Nav() {
         </nav>
 
         <div className="m-nav-actions">
+          <a
+            href={OSS.frontend}
+            target="_blank"
+            rel="noreferrer"
+            className="m-nav-stars"
+            aria-label={`Star Optikk on GitHub (${formatStars(totalStars)} stars)`}
+          >
+            <Github size={14} />
+            <span>Star</span>
+            <span className="m-nav-stars-sep" aria-hidden="true" />
+            <Star size={12} strokeWidth={2.4} />
+            <span>{formatStars(totalStars)}</span>
+          </a>
           <Link to={dynamicTo("/login")} className="m-btn m-btn-ghost m-btn-sm">
             Sign in
           </Link>

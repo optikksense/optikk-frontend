@@ -13,7 +13,7 @@ export function OptikkLogo({ size = 24, className, title }: OptikkLogoProps) {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 32 32"
+      viewBox="0 0 512 512"
       fill="none"
       className={className}
       aria-hidden={title ? undefined : "true"}
@@ -24,35 +24,48 @@ export function OptikkLogo({ size = 24, className, title }: OptikkLogoProps) {
       <defs>
         <linearGradient
           id={gradientId}
-          x1="4"
-          y1="4"
-          x2="28"
-          y2="28"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="100%"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#0f766e" />
-          <stop offset="0.58" stopColor="#2563eb" />
-          <stop offset="1" stopColor="#f97316" />
+          <stop offset="0%" stopColor="#5B5FD6" />
+          <stop offset="100%" stopColor="#4FA9D8" />
         </linearGradient>
       </defs>
-      <rect x="3" y="3" width="26" height="26" rx="7" fill={`url(#${gradientId})`} />
-      <path
-        d="M9 16h14M16 9v14"
+
+      {/* Rounded square background */}
+      <rect width="512" height="512" rx="80" fill={`url(#${gradientId})`} />
+
+      {/* Top diamond */}
+      <polygon
+        points="256,95 390,165 256,235 122,165"
+        fill="none"
         stroke="white"
-        strokeWidth="1.8"
+        strokeWidth="24"
+        strokeLinejoin="round"
+      />
+
+      {/* Middle layer */}
+      <polyline
+        points="140,220 256,280 372,220"
+        fill="none"
+        stroke="white"
+        strokeWidth="24"
         strokeLinecap="round"
-        opacity="0.82"
+        strokeLinejoin="round"
       />
-      <circle
-        cx="16"
-        cy="16"
-        r="5.2"
-        fill="white"
-        fillOpacity="0.18"
+
+      {/* Bottom layer */}
+      <polyline
+        points="140,280 256,340 372,280"
+        fill="none"
         stroke="white"
-        strokeWidth="1.6"
+        strokeWidth="24"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <circle cx="16" cy="16" r="2.2" fill="white" />
     </svg>
   );
 }

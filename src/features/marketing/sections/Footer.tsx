@@ -4,6 +4,8 @@ import { Github, Linkedin, Twitter } from "lucide-react";
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { dynamicTo } from "@/shared/utils/navigation";
 
+import { OSS } from "../constants";
+
 const FOOTER_GROUPS = [
   {
     title: "Product",
@@ -15,21 +17,22 @@ const FOOTER_GROUPS = [
     ],
   },
   {
-    title: "Developers",
+    title: "Open source",
     links: [
-      { label: "OpenTelemetry", path: "/opentelemetry" },
-      { label: "Docs", path: "https://docs.optikk.dev" },
-      { label: "Status", path: "https://status.optikk.dev" },
-      { label: "Changelog", path: "/features#changelog" },
+      { label: "Frontend · optikk-frontend", path: OSS.frontend },
+      { label: "Backend · optikk-backend", path: OSS.backend },
+      { label: "Scheduler · scheduler", path: OSS.scheduler },
+      { label: "All repos", path: OSS.org },
     ],
   },
   {
-    title: "Capabilities",
+    title: "Developers",
     links: [
-      { label: "Logs", path: "/features#logs" },
-      { label: "Traces", path: "/features#traces" },
-      { label: "Metrics", path: "/features#metrics" },
-      { label: "AI SRE", path: "/features#ai-sre" },
+      { label: "OpenTelemetry", path: "/opentelemetry" },
+      { label: "Java Agent", path: OSS.otelJava },
+      { label: "OTel Shop Demo", path: OSS.otelDemo },
+      { label: "Docs", path: "https://docs.optikk.dev" },
+      { label: "Status", path: "https://status.optikk.dev" },
     ],
   },
   {
@@ -88,14 +91,19 @@ export function Footer() {
       </div>
 
       <div className="m-container m-footer-bottom">
-        <span>© {new Date().getFullYear()} Optikk, Inc. All rights reserved.</span>
-        <div className="m-footer-socials">
+        <span>
+          © {new Date().getFullYear()} Optikk, Inc. · {OSS.license} licensed ·
           <a
-            href="https://github.com/optikksense"
+            href={OSS.frontend}
             target="_blank"
             rel="noreferrer"
-            aria-label="GitHub"
+            style={{ color: "inherit", marginLeft: 6, textDecoration: "underline" }}
           >
+            optikksense/optikk-frontend
+          </a>
+        </span>
+        <div className="m-footer-socials">
+          <a href={OSS.org} target="_blank" rel="noreferrer" aria-label="GitHub">
             <Github size={16} />
           </a>
           <a

@@ -13,11 +13,13 @@ import {
 
 import { GradientText } from "../../motion/GradientText";
 import { Reveal } from "../../motion/Reveal";
+import { Stagger, StaggerItem } from "../../motion/Stagger";
 import { CTA } from "../../sections/CTA";
 import { CodeBlock } from "../../sections/CodeBlock";
 import { Hero } from "../../sections/Hero";
 import { SectionHeader } from "../../sections/SectionHeader";
 import { Split } from "../../sections/Split";
+import { Screenshot } from "../../visuals/Screenshot";
 
 const LAYERS = [
   {
@@ -277,6 +279,67 @@ PUBLISH livetail:tenant:acme:logs:service=checkout,level=ERROR {
               />
             }
           />
+        </div>
+      </section>
+
+      <section className="m-section">
+        <div className="m-container">
+          <SectionHeader
+            eyebrow="In product"
+            title={
+              <>
+                Operate the stack <GradientText>through the same UI your team uses.</GradientText>
+              </>
+            }
+            lede="Every layer of the architecture shows up as a first-class view. No grafana sprawl, no separate Kafka UI to bookmark."
+            align="center"
+          />
+          <Stagger className="m-bento" gap={0.12}>
+            <StaggerItem as="article" className="is-wide m-bento-card">
+              <h3 className="m-h3">Database saturation</h3>
+              <p className="m-body-sm">
+                Query throughput, percentile latency, replication lag, deadlocks — keyed to the
+                ClickHouse + MySQL layers.
+              </p>
+              <Screenshot
+                name="database"
+                alt="Database saturation dashboard with QPS, p99 latency, and replication lag"
+              />
+            </StaggerItem>
+            <StaggerItem as="article" className="is-wide m-bento-card">
+              <h3 className="m-h3">Kafka broker fleet</h3>
+              <p className="m-body-sm">
+                Per-broker throughput, ISR shrinks, under-replicated partitions, consumer lag — the
+                full Kafka SRE surface.
+              </p>
+              <Screenshot
+                name="kafka"
+                alt="Kafka cluster dashboard with broker fleet heatmap and consumer lag chart"
+              />
+            </StaggerItem>
+            <StaggerItem as="article" className="is-wide m-bento-card">
+              <h3 className="m-h3">Service catalog</h3>
+              <p className="m-body-sm">
+                Every service the API + apps layer exposes, with golden signals and SLO burn at a
+                glance.
+              </p>
+              <Screenshot
+                name="services"
+                alt="Service catalog listing 15 services with request rate, error %, and p99 latency"
+              />
+            </StaggerItem>
+            <StaggerItem as="article" className="is-wide m-bento-card">
+              <h3 className="m-h3">Service detail</h3>
+              <p className="m-body-sm">
+                Drill into one service — requests, errors, latency, top endpoints, top exceptions.
+                One click from any alert.
+              </p>
+              <Screenshot
+                name="service-detail"
+                alt="Service detail view for payment-svc with golden signals and top endpoints table"
+              />
+            </StaggerItem>
+          </Stagger>
         </div>
       </section>
 
