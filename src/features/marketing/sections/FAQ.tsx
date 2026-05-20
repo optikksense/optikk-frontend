@@ -1,32 +1,55 @@
-export interface FaqSection {
-  readonly kind: "faq"
-  readonly title?: string
-  readonly items: ReadonlyArray<{ readonly q: string; readonly a: string }>
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
+import type { ReactNode } from "react";
+import { useState } from "react";
+
+interface FaqItem {
+  readonly question: string;
+  readonly answer: ReactNode;
 }
 
-export function FAQ({ title, items }: FaqSection) {
+interface FAQProps {
+  readonly items: readonly FaqItem[];
+}
+
+export function FAQ({ items }: FAQProps) {
+  const [openIdx, setOpenIdx] = useState<number | null>(0);
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <section className="marketing-section reveal">
-      {title ? (
-        <div className="marketing-section-header">
-          <h2 className="marketing-h2">{title}</h2>
-        </div>
-      ) : null}
-      <div className="mt-5 space-y-3">
-        {items.map((item, i) => (
-          <details
-            key={item.q}
-            className="marketing-faq-item reveal"
-            data-reveal-delay={String(i * 60)}
-          >
-            <summary className="marketing-faq-summary">
-              <span className="marketing-faq-toggle" aria-hidden>+</span>
-              {item.q}
-            </summary>
-            <p className="marketing-faq-answer">{item.a}</p>
-          </details>
-        ))}
-      </div>
-    </section>
-  )
+    <div className="m-faq">
+      {items.map((item, idx) => {
+        const open = openIdx === idx;
+        return (
+          <div key={item.question} className={`m-faq-item${open ? " is-open" : ""}`}>
+            <button
+              type="button"
+              className="m-faq-q"
+              aria-expanded={open}
+              onClick={() => setOpenIdx(open ? null : idx)}
+            >
+              <span>{item.question}</span>
+              <span className="m-faq-icon">
+                <ChevronDown size={18} />
+              </span>
+            </button>
+            <AnimatePresence initial={false}>
+              {open ? (
+                <motion.div
+                  key="content"
+                  initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={prefersReducedMotion ? undefined : { height: 0, opacity: 0 }}
+                  transition={{ duration: 0.28, ease: [0.2, 0.7, 0.1, 1] }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <div className="m-faq-a">{item.answer}</div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
+        );
+      })}
+    </div>
+  );
 }

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
+    "deploy:firebase": "vite build && npx firebase-tools deploy --only hosting",
     "ci:budgets": "node scripts/check-budgets.js",
     "ci:marketing-assets": "node scripts/check-marketing-assets.mjs",
     "ci": "yarn type-check && yarn lint && yarn ci:marketing-assets && yarn build && yarn ci:budgets",

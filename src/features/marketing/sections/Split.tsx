@@ -1,31 +1,70 @@
-export interface SplitSection {
-  readonly kind: "split"
-  readonly title: string
-  readonly body?: string
-  readonly highlights: ReadonlyArray<string>
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Check } from "lucide-react";
+import type { ReactNode } from "react";
+
+import { dynamicTo } from "@/shared/utils/navigation";
+
+import { Reveal } from "../motion/Reveal";
+
+interface SplitListItem {
+  readonly title?: ReactNode;
+  readonly body: ReactNode;
 }
 
-export function Split({ title, body, highlights }: SplitSection) {
+interface SplitProps {
+  readonly eyebrow?: string;
+  readonly title: ReactNode;
+  readonly body?: ReactNode;
+  readonly list?: readonly SplitListItem[];
+  readonly link?: { readonly label: string; readonly path: string };
+  readonly visual: ReactNode;
+  readonly reverse?: boolean;
+  readonly id?: string;
+}
+
+export function Split({ eyebrow, title, body, list, link, visual, reverse, id }: SplitProps) {
   return (
-    <section className="marketing-section reveal">
-      <div className="grid gap-8 lg:grid-cols-2 items-start">
-        <div>
-          <h2 className="marketing-h2">{title}</h2>
-          {body ? <p className="marketing-body">{body}</p> : null}
-        </div>
-        <ul className="space-y-3">
-          {highlights.map((item, i) => (
-            <li
-              key={item}
-              className="marketing-highlight reveal"
-              data-reveal-delay={String(i * 100)}
-            >
-              <span className="marketing-highlight-dot" aria-hidden />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <section id={id} className={`m-split${reverse ? " is-reverse" : ""}`}>
+      <Reveal className="m-split-copy">
+        {eyebrow ? (
+          <span className="m-eyebrow">
+            <span className="m-eyebrow-dot" />
+            {eyebrow}
+          </span>
+        ) : null}
+        <h2 className="m-h2">{title}</h2>
+        {body ? <p className="m-lede">{body}</p> : null}
+        {list && list.length > 0 ? (
+          <ul className="m-split-list">
+            {list.map((item, idx) => (
+              <li key={idx}>
+                <span>
+                  <Check size={14} strokeWidth={3} />
+                </span>
+                <div>
+                  {item.title ? <strong>{item.title}</strong> : null}
+                  <span>{item.body}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {link ? (
+          link.path.startsWith("http") || link.path.includes("#") ? (
+            <a className="m-btn m-btn-secondary m-btn-sm" href={link.path}>
+              {link.label} <ArrowRight size={14} />
+            </a>
+          ) : (
+            <Link className="m-btn m-btn-secondary m-btn-sm" to={dynamicTo(link.path)}>
+              {link.label} <ArrowRight size={14} />
+            </Link>
+          )
+        ) : null}
+      </Reveal>
+
+      <Reveal delay={0.1} className="m-split-visual">
+        {visual}
+      </Reveal>
     </section>
-  )
+  );
 }

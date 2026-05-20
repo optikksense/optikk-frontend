@@ -36,7 +36,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Logs explorer**: `src/features/log/` — rebuilt clean-slate Datadog-class explorer. Components: `toolbar/`, `kpi/`, `facets/`, `trend/`, `table/`, `detail/`. Zustand store: `store/logsExplorerStore.ts`. Page: `pages/LogsExplorerPage/LogsExplorerPage.tsx`. Features: severity gutter bars, inline row expand with JSON tree, facet distribution bars, trend histogram with brush zoom, 4-tab detail panel (Message/Fields/JSON/Correlation), density toggle, line wrap.
 - **Entities**: `src/shared/entities/` — log, metric, trace, user
 - **Theme**: `src/config/themeColors.css` → `tailwind.config.ts`
-- **Dev**: `yarn dev` | **CI**: `yarn ci`
+- **Dev**: `yarn dev` | **CI**: `yarn ci` | **Deploy**: `yarn deploy:firebase`
 - **Navigation utils**: `src/shared/utils/navigation.ts` — `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` for TanStack Router dynamic-path navigation (replaces scattered `as any` casts)
 - **Standard query**: `src/shared/hooks/useStandardQuery.ts` — `useStandardQuery(options)` with `keepPreviousData`, `staleTime: 5s`, `retry: 2`
 - **Sibling repo**: `optikk-backend` (see its `CODEBASE_INDEX.md`)

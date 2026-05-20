@@ -35,21 +35,21 @@ Current registered product domains:
 
 Unregistered but important feature areas:
 
-- `marketing` — public-facing site, rendered via `MarketingShell`; not a domain
+- `marketing` — public-facing site, rendered via bespoke React pages; not a domain
 - `explorer` (`src/features/explorer/`) — shared DSL search, facets, analytics, and visualization primitives used by Logs, Traces, and Metrics explorers; not a domain, no routes of its own
 
 ## Current route model
 
 ### Marketing
 
-Marketing pages are rendered through a dedicated layout and shell:
+Marketing pages are rendered through a dedicated layout and bespoke page components under `src/features/marketing/pages/`:
 
-- `/`
-- `/features`
-- `/pricing`
-- `/opentelemetry`
-- `/self-host`
-- `/architecture`
+- `/` → [HomePage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/HomePage/HomePage.tsx)
+- `/features` → [FeaturesPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/FeaturesPage/FeaturesPage.tsx)
+- `/pricing` → [PricingPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/PricingPage/PricingPage.tsx)
+- `/opentelemetry` → [OpenTelemetryPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/OpenTelemetryPage/OpenTelemetryPage.tsx)
+- `/self-host` → [SelfHostPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/SelfHostPage/SelfHostPage.tsx)
+- `/architecture` → [ArchitecturePage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/ArchitecturePage/ArchitecturePage.tsx)
 
 ### Authenticated product routes
 
@@ -113,6 +113,8 @@ The current frontend owns significant page composition and interaction logic dir
 
 Default local frontend port is `3000`.
 
+Firebase Hosting is configured via [firebase.json](/Users/ramantayal/Desktop/pro/optikk-frontend/firebase.json) with client-side SPA routing rewrites to `/index.html` and long-term asset caching headers.
+
 ## Scripts
 
 From [package.json](/Users/ramantayal/Desktop/pro/optikk-frontend/package.json):
@@ -121,6 +123,7 @@ From [package.json](/Users/ramantayal/Desktop/pro/optikk-frontend/package.json):
 - `yarn type-check`
 - `yarn lint`
 - `yarn build`
+- `yarn deploy:firebase` — compiles with Vite and deploys to Firebase Hosting
 - `yarn preview`
 - `yarn ci`
 

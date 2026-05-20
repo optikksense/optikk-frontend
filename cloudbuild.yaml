@@ -1,0 +1,11 @@
+# cloudbuild.yaml
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/observability-488317/optikk-marketing',
+      '-f', 'Dockerfile.cloudrun',
+      '.'
+    ]
+images:
+  - 'gcr.io/observability-488317/optikk-marketing'

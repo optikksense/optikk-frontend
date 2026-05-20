@@ -1,11 +1,12 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { ChevronsLeft, ChevronsRight, Layers, LogOut, Settings } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, LogOut, Settings } from "lucide-react";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 
 import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
 import { Tooltip } from "@/components/ui";
 import { cn } from "@/lib/utils";
+import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
@@ -122,7 +123,7 @@ export default function Sidebar() {
         onClick={() => navigate({ to: ROUTES.overview })}
       >
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[calc(var(--card-radius)+1px)] bg-[linear-gradient(180deg,var(--color-primary),#7266ee)] text-white shadow-[var(--shadow-sm)]">
-          <Layers size={20} />
+          <OptikkLogo size={22} />
         </div>
         {!sidebarCollapsed && (
           <span className="whitespace-nowrap font-semibold text-[14px] text-[var(--text-primary)]">
@@ -136,7 +137,7 @@ export default function Sidebar() {
           className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-[var(--space-xs)]"
           aria-label="Main navigation"
         >
-          {renderNavGroup("Observe", observeItems)}
+          {renderNavGroup("Explore", observeItems)}
           {renderNavGroup("Operate", operateItems)}
         </nav>
 

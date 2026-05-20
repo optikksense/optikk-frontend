@@ -1,6 +1,6 @@
 import { Button, Surface } from "@/components/ui";
 import { useNavigate } from "@tanstack/react-router";
-import { Layers, Lock, Mail } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
@@ -9,11 +9,8 @@ import { useAppStore, useTimeRange } from "@store/appStore";
 import { useAuthError, useAuthIsLoading, useAuthStore, useIsAuthenticated } from "@store/authStore";
 
 import { APP_COLORS } from "@config/colorLiterals";
-import {
-  DemoKpiStrip,
-  DemoServicesGrid,
-  DemoTimeseriesChart,
-} from "@shared/demo";
+import { OptikkLogo } from "@shared/components/brand/OptikkLogo";
+import { DemoKpiStrip, DemoServicesGrid, DemoTimeseriesChart } from "@shared/demo";
 
 import "./LoginPage.css";
 
@@ -71,7 +68,7 @@ export default function LoginPage() {
         <div className="login-branding-content">
           <div className="branding-logo">
             <div className="branding-logo-icon">
-              <Layers size={24} />
+              <OptikkLogo size={28} />
             </div>
             <h2 style={{ margin: 0, color: APP_COLORS.hex_fff }}>Optikk</h2>
           </div>
