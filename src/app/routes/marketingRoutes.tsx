@@ -20,6 +20,16 @@ const SelfHostPageLazy = lazy(() => import("@/features/marketing/pages/SelfHostP
 const ArchitecturePageLazy = lazy(
   () => import("@/features/marketing/pages/ArchitecturePage/ArchitecturePage")
 );
+const PrivacyPolicyPageLazy = lazy(
+  () => import("@/features/marketing/pages/PrivacyPolicyPage/PrivacyPolicyPage")
+);
+const TermsOfServicePageLazy = lazy(
+  () => import("@/features/marketing/pages/TermsOfServicePage/TermsOfServicePage")
+);
+const SecurityPageLazy = lazy(
+  () => import("@/features/marketing/pages/SecurityPage/SecurityPage")
+);
+
 
 function PageTransition({ children }: { children: ReactNode }) {
   return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
@@ -109,6 +119,48 @@ function buildArchRoute(layoutRoute: any) {
   });
 }
 
+function buildPrivacyRoute(layoutRoute: any) {
+  return createRoute({
+    getParentRoute: () => layoutRoute,
+    path: ROUTES.privacy.replace(/^\//, ""),
+    component: () => (
+      <Suspense fallback={<Loading fullscreen />}>
+        <PageTransition>
+          <PrivacyPolicyPageLazy />
+        </PageTransition>
+      </Suspense>
+    ),
+  });
+}
+
+function buildTermsRoute(layoutRoute: any) {
+  return createRoute({
+    getParentRoute: () => layoutRoute,
+    path: ROUTES.terms.replace(/^\//, ""),
+    component: () => (
+      <Suspense fallback={<Loading fullscreen />}>
+        <PageTransition>
+          <TermsOfServicePageLazy />
+        </PageTransition>
+      </Suspense>
+    ),
+  });
+}
+
+function buildSecurityRoute(layoutRoute: any) {
+  return createRoute({
+    getParentRoute: () => layoutRoute,
+    path: ROUTES.security.replace(/^\//, ""),
+    component: () => (
+      <Suspense fallback={<Loading fullscreen />}>
+        <PageTransition>
+          <SecurityPageLazy />
+        </PageTransition>
+      </Suspense>
+    ),
+  });
+}
+
 function buildLoginRoute(parent: any) {
   return createRoute({
     getParentRoute: parent,
@@ -141,6 +193,9 @@ export function buildMarketingRoutes(parent: () => typeof rootRoute) {
     buildOtelRoute(marketingLayoutRoute),
     buildSelfHostRoute(marketingLayoutRoute),
     buildArchRoute(marketingLayoutRoute),
+    buildPrivacyRoute(marketingLayoutRoute),
+    buildTermsRoute(marketingLayoutRoute),
+    buildSecurityRoute(marketingLayoutRoute),
   ];
 
   const productRedirectRoute = createRoute({

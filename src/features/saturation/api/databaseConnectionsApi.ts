@@ -66,11 +66,7 @@ export type PendingPoint = z.infer<typeof pendingPointSchema>;
 export type TimeoutPoint = z.infer<typeof timeoutPointSchema>;
 export type PoolLatencyPoint = z.infer<typeof poolLatencyPointSchema>;
 
-function withFilters(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  filters?: DatabaseFilters
-) {
+function withFilters(startTime: RequestTime, endTime: RequestTime, filters?: DatabaseFilters) {
   return { ...rangeParams(startTime, endTime), ...filters };
 }
 

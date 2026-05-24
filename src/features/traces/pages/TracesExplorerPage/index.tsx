@@ -9,7 +9,7 @@ import type { ColumnDef } from "@/features/explorer/types/results";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { TrendHistogramStrip } from "@/features/explorer/components/trend/TrendHistogramStrip";
 import { TRACE_TREND_SERIES } from "@/features/explorer/utils/trend";
-import { SavedViewsDropdown } from "@/features/savedViews/components/SavedViewsDropdown";
+
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 
 import { CreateMonitorButton } from "../../components/CreateMonitorButton";
@@ -35,7 +35,6 @@ export default function TracesExplorerPage() {
         filters={p.state.filters}
         onChangeFilters={(f: readonly ExplorerFilter[]) => p.state.setFilters(f)}
         onSubmitFreeText={p.onFreeText}
-        actions={<SavedViewsDropdown scope="traces" onLoad={p.onLoadSavedView} />}
         kpiStrip={p.kpis.length > 0 ? <SummaryStrip kpis={p.kpis} /> : null}
       />
       <div className="flex flex-1 overflow-hidden">

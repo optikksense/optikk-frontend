@@ -134,7 +134,7 @@ export async function getTopEndpoints(
   serviceName?: string,
   limit = 6
 ): Promise<EndpointMetricPoint[]> {
-  const data = await api.get<RouteTopRow[]>(`${V1}/routes/top-by-volume`, {
+  const data = await api.get<RouteTopRow[]>(`${V1}/http/routes/top-by-volume`, {
     params: range(s, e, { ...(serviceName ? { serviceName } : {}), limit }),
   });
   return (data ?? []).map((row) => ({

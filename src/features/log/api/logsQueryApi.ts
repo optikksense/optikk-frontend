@@ -29,7 +29,7 @@ export const rawLogRowSchema = z.object({
   attributes_bool: z.record(z.string(), z.boolean()).optional(),
   scope_name: z.string().optional(),
   scope_version: z.string().optional(),
-});
+}).strict();
 
 const pageInfoSchema = z
   .object({
@@ -37,6 +37,7 @@ const pageInfoSchema = z
     nextCursor: z.string().optional(),
     limit: z.coerce.number().optional(),
   })
+  .strict()
   .optional();
 
 function tsToNsString(ts: string | number): string {
@@ -117,6 +118,7 @@ const queryResponseSchema = z
     results: z.array(rawLogRowSchema),
     pageInfo: pageInfoSchema,
   })
+  .strict()
   .transform((r): LogsQueryResponse => ({
     results: r.results.map(normalizeLogRecord),
     cursor: r.pageInfo?.nextCursor || undefined,

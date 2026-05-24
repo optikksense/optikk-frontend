@@ -24,7 +24,7 @@ const spanRowSchema = z.object({
   http_method: z.string().optional(),
   response_status_code: z.string().optional(),
   environment: z.string().optional(),
-});
+}).strict();
 
 const responseSchema = z
   .object({
@@ -32,6 +32,7 @@ const responseSchema = z
     pageInfo: z.unknown().optional(),
     warnings: z.array(z.union([z.string(), warningSchema])).optional(),
   })
+  .strict()
   .transform((r) => {
     const out: SpansQueryResponse = {
       spans: r.results as SpanRow[],

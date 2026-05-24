@@ -30,6 +30,6 @@ export const logEntrySchema = z.object({
   service: z.string().optional(),
   // Internal metadata
   emit_ms: z.number().optional(),
-});
+}).strict();
 
 export type LogEntry = z.infer<typeof logEntrySchema>;

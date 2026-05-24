@@ -42,7 +42,11 @@ function withFilter(s: RequestTime, e: RequestTime, f?: KafkaFilter) {
 }
 
 export function getKafkaSummaryStats(s: RequestTime, e: RequestTime): Promise<KafkaSummaryStats> {
-  return getSaturation("/saturation/kafka/summary-stats", kafkaSummaryStatsSchema, rangeParams(s, e));
+  return getSaturation(
+    "/saturation/kafka/summary-stats",
+    kafkaSummaryStatsSchema,
+    rangeParams(s, e)
+  );
 }
 
 export function getProduceRateByTopic(s: RequestTime, e: RequestTime, f?: KafkaFilter) {

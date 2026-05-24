@@ -12,7 +12,7 @@ import StatCard from "@shared/components/ui/cards/StatCard";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { useInView } from "@shared/hooks/useInView";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { formatNumber, formatPercentage } from "@shared/utils/formatters";
+import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
 import ServiceHealthGrid from "../components/ServiceHealthGrid";
 import { HubSection } from "../HubSection";
@@ -168,21 +168,21 @@ export default function SummaryTab() {
           <StatCard
             metric={{
               title: "Avg latency",
-              value: loadingKpi ? "—" : `${num(summary?.avg_p50_ms).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : formatDuration(summary?.avg_p50_ms),
             }}
             visuals={{ loading: loadingKpi }}
           />
           <StatCard
             metric={{
               title: "P95 latency",
-              value: loadingKpi ? "—" : `${num(summary?.avg_p95_ms).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : formatDuration(summary?.avg_p95_ms),
             }}
             visuals={{ loading: loadingKpi }}
           />
           <StatCard
             metric={{
               title: "P99 latency",
-              value: loadingKpi ? "—" : `${num(summary?.avg_p99_ms).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : formatDuration(summary?.avg_p99_ms),
             }}
             visuals={{ loading: loadingKpi, icon: <LayoutDashboard size={18} />, iconColor: "var(--text-muted)" }}
           />
@@ -297,10 +297,10 @@ export default function SummaryTab() {
                       className="font-medium hover:text-[var(--text-primary)]"
                       onClick={() => toggleSort("p95_latency")}
                     >
-                      P95 (ms) {sortKey === "p95_latency" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+                      P95 {sortKey === "p95_latency" ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                  <th className="pb-2 text-right">P99 (ms)</th>
+                  <th className="pb-2 text-right">P99</th>
                 </tr>
               </thead>
               <tbody>
@@ -334,8 +334,8 @@ export default function SummaryTab() {
                       >
                         {formatPercentage(er)}
                       </td>
-                      <td className="py-2 pr-3 text-right tabular-nums">{s.p95_latency.toFixed(1)}</td>
-                      <td className="py-2 text-right tabular-nums">{s.p99_latency.toFixed(1)}</td>
+                      <td className="py-2 pr-3 text-right tabular-nums">{formatDuration(s.p95_latency)}</td>
+                      <td className="py-2 text-right tabular-nums">{formatDuration(s.p99_latency)}</td>
                     </tr>
                   );
                 })}

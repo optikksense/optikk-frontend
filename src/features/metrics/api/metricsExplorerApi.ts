@@ -36,34 +36,34 @@ const metricNameEntrySchema = z.object({
   type: z.enum(["gauge", "counter", "histogram", "summary"]),
   unit: z.string().optional(),
   description: z.string().optional(),
-});
+}).strict();
 
 const metricNamesResponseSchema = z.object({
   metrics: z.array(metricNameEntrySchema),
-});
+}).strict();
 
 const metricTagSchema = z.object({
   key: z.string(),
   values: z.array(z.string()),
-});
+}).strict();
 
 const metricTagsResponseSchema = z.object({
   tags: z.array(metricTagSchema),
-});
+}).strict();
 
 const metricSeriesSchema = z.object({
   tags: z.record(z.string(), z.string()),
   values: z.array(z.number().nullable()),
-});
+}).strict();
 
 const metricQueryResultSchema = z.object({
   timestamps: z.array(z.number()),
   series: z.array(metricSeriesSchema),
-});
+}).strict();
 
 const metricsExplorerResponseSchema = z.object({
   results: z.record(z.string(), metricQueryResultSchema),
-});
+}).strict();
 
 // Request types
 

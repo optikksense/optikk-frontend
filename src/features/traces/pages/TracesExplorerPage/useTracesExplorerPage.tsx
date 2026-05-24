@@ -16,7 +16,7 @@ import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { toTrendBuckets } from "@/features/explorer/utils/trend";
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 import { formatNumber } from "@shared/utils/formatters";
-import { splitSavedViewUrl } from "@shared/utils/queryString";
+
 import { resolveTimeRangeBounds } from "@/types";
 
 import type { TraceScope } from "../../components/TraceScopeToggle";
@@ -87,13 +87,7 @@ export function useTracesExplorerPage() {
     if (trendQuery) void trendQuery.refetch();
   }, [query, facetsQuery, trendQuery]);
   const onClearFilters = useCallback(() => state.setFilters([]), [state]);
-  const onLoadSavedView = useCallback(
-    (url: string) => {
-      const { pathname, search } = splitSavedViewUrl(url, "/traces");
-      navigate({ to: pathname, search });
-    },
-    [navigate]
-  );
+
 
   const getContextMenuItems = useCallback(
     (row: TraceSummary): readonly ContextMenuEntry[] =>
@@ -135,7 +129,7 @@ export function useTracesExplorerPage() {
     onFreeText,
     onRetry,
     onClearFilters,
-    onLoadSavedView,
+
     startTime,
     endTime,
   };

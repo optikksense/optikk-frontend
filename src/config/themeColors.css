@@ -345,9 +345,9 @@
   --chart-6: #22d3ee;
   --chart-7: #f472b6;
   --chart-8: #a3e635;
-  --chart-grid: rgba(255, 255, 255, 0.06);
-  --chart-axis: var(--text-muted);
-  --chart-area-alpha: 0.08;
+  --chart-grid: rgba(255, 255, 255, 0.10);
+  --chart-axis: var(--text-secondary);
+  --chart-area-alpha: 0.18;
   --chart-comparison: rgba(94, 169, 255, 0.45);
 
   /* Card / surface tokens */

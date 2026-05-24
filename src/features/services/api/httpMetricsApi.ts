@@ -66,23 +66,23 @@ export function getErrorTimeseries(s: RequestTime, e: RequestTime, p?: BaseParam
   return get<unknown[]>("/http/error-timeseries", withRange(s, e, p));
 }
 export function getTopRoutesByVolume(s: RequestTime, e: RequestTime, p?: BaseParams) {
-  return get<Array<Record<string, unknown>>>("/routes/top-by-volume", withRange(s, e, p));
+  return get<Array<Record<string, unknown>>>("/http/routes/top-by-volume", withRange(s, e, p));
 }
 export function getTopRoutesByLatency(s: RequestTime, e: RequestTime, p?: BaseParams) {
-  return get<Array<Record<string, unknown>>>("/routes/top-by-latency", withRange(s, e, p));
+  return get<Array<Record<string, unknown>>>("/http/routes/top-by-latency", withRange(s, e, p));
 }
 export function getRouteErrorRate(s: RequestTime, e: RequestTime, p?: BaseParams) {
-  return get<Array<Record<string, unknown>>>("/routes/error-rate", withRange(s, e, p));
+  return get<Array<Record<string, unknown>>>("/http/routes/error-rate", withRange(s, e, p));
 }
 export function getRouteErrorTimeseries(s: RequestTime, e: RequestTime, p?: BaseParams) {
-  return get<unknown[]>("/routes/error-timeseries", withRange(s, e, p));
+  return get<unknown[]>("/http/routes/error-timeseries", withRange(s, e, p));
 }
 export function getTopExternalHosts(s: RequestTime, e: RequestTime, p?: BaseParams) {
-  return get<Array<Record<string, unknown>>>("/external/top-hosts", withRange(s, e, p));
+  return get<Array<Record<string, unknown>>>("/http/external/top-hosts", withRange(s, e, p));
 }
 export function getExternalHostLatency(s: RequestTime, e: RequestTime, p?: BaseParams) {
-  return get<Array<Record<string, unknown>>>("/external/host-latency", withRange(s, e, p));
+  return get<Array<Record<string, unknown>>>("/http/external/host-latency", withRange(s, e, p));
 }
 export function getExternalHostErrorRate(s: RequestTime, e: RequestTime, p?: BaseParams) {
-  return get<Array<Record<string, unknown>>>("/external/error-rate", withRange(s, e, p));
+  return get<Array<Record<string, unknown>>>("/http/external/error-rate", withRange(s, e, p));
 }

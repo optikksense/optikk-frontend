@@ -50,6 +50,9 @@ Marketing pages are rendered through a dedicated layout and bespoke page compone
 - `/opentelemetry` → [OpenTelemetryPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/OpenTelemetryPage/OpenTelemetryPage.tsx)
 - `/self-host` → [SelfHostPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/SelfHostPage/SelfHostPage.tsx)
 - `/architecture` → [ArchitecturePage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/ArchitecturePage/ArchitecturePage.tsx)
+- `/privacy` → [PrivacyPolicyPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/PrivacyPolicyPage/PrivacyPolicyPage.tsx)
+- `/terms` → [TermsOfServicePage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/TermsOfServicePage/TermsOfServicePage.tsx)
+- `/security` → [SecurityPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/SecurityPage/SecurityPage.tsx)
 
 Marketing pages dynamically fetch genuine GitHub stars using the [useGitHubStars](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/hooks/useGitHubStars.ts) hook.
 
@@ -73,7 +76,7 @@ The current frontend owns significant page composition and interaction logic dir
 | Area | Path | Notes |
 |------|------|-------|
 | Overview | `src/features/overview/` | Overview hub, service hub, service detail, overview dashboard/renderers |
-| Saturation | `src/features/saturation/` | Saturation hub and datastore drill-downs |
+| Saturation | `src/features/saturation/` | Saturation hub (Overview surface ported from the Optikk design handoff) + per-datastore / Kafka drill-downs. `pages/SaturationPage/` is the `/saturation` landing page; composition root is `index.tsx`, data fans out from `hooks/useSaturationOverviewModel.ts`, view-model builders live in `view-models/`, presentation in `components/`, styles in `SaturationOverview.css` (scoped under `.sat-root`, uses `themeColors.css` tokens). Renders: subsystem cards (Kafka / Database / Redis), worst-saturated-systems table, top-Kafka-topics table. Subnav links to existing Kafka & datastore detail pages. Cross-fleet hex map, queues/storage subsystems, alerts feed and refresh/export buttons from the design are intentionally omitted because the backend has no matching endpoints. |
 | Metrics | `src/features/metrics/` | Metrics explorer, charts, store, API hooks |
 | Logs | `src/features/log/` | Rebuilt logs explorer (clean-slate, Datadog-class). Components grouped: toolbar, kpi, facets, trend, table, detail. Feature-scoped Zustand store at `store/logsExplorerStore.ts`. JSON auto-detection in body cells. |
 | Traces | `src/features/traces/` | Trace explorer, detail, comparison. Trace detail page uses Datadog-parity layout: full-width viz (Waterfall + Flame Graph; waterfall renders event dots on bars at event timestamps) with non-modal resizable right `SpanDrawer` for span detail (Info / Logs / Events / Links / Infra tabs, hide-when-empty). Info tab includes a "Where this happens" ancestor chain + "Timing" KV grid; drawer header shows a "critical path" pill when the selected span is on the critical path. Composition root at `pages/TraceDetailPage/components/TraceDetailLayout.tsx`. State in `store/tracesStore.ts` (persists `visualizationTab`, `spanDetailTab`, `drawerWidthPx`); URL holds `?span=<id>`. Hotkeys: `/` filter, `j`/`k` or ↑/↓ navigate spans, `c` copy trace id, `e` cycle errors, `1`/`2` switch viz, `[`/`]` resize drawer, `Esc` close. |

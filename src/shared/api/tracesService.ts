@@ -50,7 +50,7 @@ const traceSpanListItemSchema = z.object({
   has_error: z.boolean().optional().default(false),
   duration_ms: z.coerce.number(),
   start_ns: z.coerce.number(),
-});
+}).strict();
 
 /** Backend sends `{ spans: [...] }`; some paths emit `null` or omit `spans` for empty results. */
 const traceSpansEnvelopeSchema = z.object({
@@ -58,7 +58,7 @@ const traceSpansEnvelopeSchema = z.object({
     .array(traceSpanListItemSchema)
     .nullish()
     .transform((v) => v ?? []),
-});
+}).strict();
 
 /**
  * Service wrapper for distributed tracing endpoints.
@@ -133,7 +133,7 @@ export const tracesService = {
   },
 
   async getTraceLogs(traceId: string): Promise<TraceLogsResponse> {
-    const data = await api.get(`${BASE}/traces/${traceId}/logs`);
+    const data = await api.get(`${BASE}/logs/trace/${traceId}`);
     return validateResponse(traceLogsResponseSchema, data);
   },
 

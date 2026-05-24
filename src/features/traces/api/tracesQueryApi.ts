@@ -40,7 +40,7 @@ export const rawTraceRowSchema = z.object({
   error_count: z.coerce.number(),
   service_set: z.array(z.string()).optional(),
   truncated: z.coerce.boolean().optional(),
-});
+}).strict();
 
 function normalizeHttpStatus(v: string | undefined): string | undefined {
   if (v == null || v === "" || v === "0") return undefined;
@@ -73,7 +73,7 @@ export function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): T
 const facetBucketSchema = z.object({
   value: z.string(),
   count: z.coerce.number(),
-});
+}).strict();
 
 const facetBucketsArraySchema = z
   .union([z.array(facetBucketSchema), z.null()])
@@ -87,6 +87,7 @@ const rawFacetsSchema = z
     http_status: facetBucketsArraySchema.optional(),
     status: facetBucketsArraySchema.optional(),
   })
+  .strict()
   .partial()
   .nullable()
   .optional();
@@ -108,13 +109,13 @@ const rawSummarySchema = z.object({
   total_traces: z.coerce.number(),
   total_errors: z.coerce.number(),
   total_duration_ns: z.coerce.number().optional(),
-});
+}).strict();
 
 const rawTrendRowSchema = z.object({
   time_bucket: z.string(),
   total: z.coerce.number(),
   errors: z.coerce.number(),
-});
+}).strict();
 
 const tracesQueryResponseSchema = z
   .object({
@@ -125,6 +126,7 @@ const tracesQueryResponseSchema = z
     trend: z.union([z.array(rawTrendRowSchema), z.null()]).optional(),
     warnings: z.array(z.union([z.string(), warningSchema])).optional(),
   })
+  .strict()
   .transform((r) => {
     const out: TracesQueryResponse = {
       traces: r.results.map(normalizeTraceSummary),

@@ -1,7 +1,7 @@
-import { Bell, Copy, Download, GitFork, Link2, Share2, X } from "lucide-react";
-import { memo, useMemo } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { Copy, GitFork, Link2, X } from "lucide-react";
+import { memo, useMemo } from "react";
 import toast from "react-hot-toast";
 
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
@@ -9,8 +9,8 @@ import { Button } from "@shared/components/primitives/ui";
 
 import { getLogById } from "../../api/logsExplorerApi";
 import type { LogRecord } from "../../types/log";
-import { severityStyle } from "../../utils/severity";
 import { serviceSwatchColor } from "../../utils/serviceHue";
+import { severityStyle } from "../../utils/severity";
 import { getSpanId, getTraceId } from "../../utils/traceCorrelation";
 
 interface Props {
@@ -209,8 +209,8 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
             No trace correlation
           </div>
           <div style={{ fontSize: 11, color: "var(--fg-3)" }}>
-            This log was not emitted with a trace_id. Instrument the emitter to
-            stitch it to a distributed trace.
+            This log was not emitted with a trace_id. Instrument the emitter to stitch it to a
+            distributed trace.
           </div>
         </div>
       )}
@@ -220,22 +220,6 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
         {allFields.map(([k, v]) => (
           <FieldRow key={k} field={k} value={v} />
         ))}
-      </div>
-
-      <div className="ok-detail-actions">
-        <button type="button" className="ok-btn-sm">
-          <Bell size={12} /> Alert
-        </button>
-        <button
-          type="button"
-          className="ok-btn-sm"
-          onClick={() => void navigator.clipboard.writeText(window.location.href)}
-        >
-          <Share2 size={12} /> Share
-        </button>
-        <button type="button" className="ok-btn-sm">
-          <Download size={12} /> Export
-        </button>
       </div>
 
       {onPrev || onNext ? (
@@ -266,10 +250,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
 
 function FieldRow({ field, value }: { field: string; value: string }) {
   const isErr = field.startsWith("error") || field.startsWith("exception");
-  const onCopy = useMemo(
-    () => () => void navigator.clipboard.writeText(value),
-    [value]
-  );
+  const onCopy = useMemo(() => () => void navigator.clipboard.writeText(value), [value]);
   return (
     <div className={`ok-kv ${isErr ? "is-err" : ""}`}>
       <span className="ok-kv-k">{field}</span>

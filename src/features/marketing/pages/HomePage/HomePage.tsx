@@ -44,8 +44,8 @@ const STACK_LOGOS = [
 const PILLARS = [
   {
     icon: Workflow,
-    title: "One columnar store, three signals",
-    body: "Logs, metrics, and traces all land in the same ClickHouse cluster. One query language, one cache, one place to look.",
+    title: "Unified storage, three signals",
+    body: "Logs, metrics, and traces all land in the same high-performance columnar database. One query language, one cache, one place to look.",
     link: { label: "See architecture", path: "/architecture" },
     variant: "wide" as const,
   },
@@ -129,7 +129,7 @@ export default function HomePage() {
             Observability the way <GradientText>developers actually use it.</GradientText>
           </>
         }
-        subtitle="OpenTelemetry into Kafka, then ClickHouse. Live tail on Redis, Context Graph on MySQL, AI SRE on top. Self-hostable in your VPC, priced per GiB ingested."
+        subtitle="Unified logs, metrics, and traces with native OpenTelemetry. Instant live tail, intelligent context graphs, and AI SRE on top. Self-hostable in your VPC or fully managed in the cloud."
         primaryCta={{ label: "Start free", path: "/login", variant: "grad" }}
         secondaryCta={{ label: "Read the docs", path: "/opentelemetry", variant: "secondary" }}
         meta={["Apache 2.0 licensed", "No credit card", "5-minute setup"]}
@@ -170,7 +170,7 @@ export default function HomePage() {
                 Everything in one place, <GradientText>nothing forced into a box.</GradientText>
               </>
             }
-            lede="Optikk is six tools shaped like one: ingest, store, query, alert, explain, and act — all on top of a Kafka → ClickHouse → Redis pipeline you can read and operate."
+            lede="Optikk is six tools shaped like one: ingest, store, query, alert, explain, and act — unified in a single, high-performance telemetry pipeline."
           />
           <FeatureGrid items={PILLARS} />
         </div>
@@ -182,15 +182,15 @@ export default function HomePage() {
             id="logs"
             eyebrow="Logs"
             title="The full stream, not just samples."
-            body="Every line lands in ClickHouse with the full attribute map indexed. 30 days of hot data, columnar scans under 200ms, no log-vs-trace tradeoff."
+            body="Every line lands in our unified database with the full attribute map indexed. 30 days of hot data, columnar scans under 200ms, no log-vs-trace tradeoff."
             list={[
               {
                 title: "Sub-second query on 30 days hot",
-                body: "ClickHouse MergeTree partitions by day + service. Projection indexes for the queries observability tools actually run.",
+                body: "Partitions by day and service, with built-in projection indexes optimized for queries observability tools actually run.",
               },
               {
-                title: "Live tail via Redis pub/sub",
-                body: "A million concurrent filtered tails fan out from Redis without touching the analytical store.",
+                title: "Instant live tail streaming",
+                body: "A million concurrent filtered tails fan out from the cache without touching the analytical store.",
               },
               {
                 title: "Pattern detection without rules",
@@ -429,7 +429,7 @@ export default function HomePage() {
                 Same telemetry. <GradientText>Less lock-in.</GradientText>
               </>
             }
-            lede="Datadog and New Relic ship great UIs on proprietary stores you can't operate. Optikk ships the same UI on Kafka + ClickHouse + MySQL + Redis — fully open source — a stack your platform team already runs."
+            lede="Datadog and New Relic ship great UIs on proprietary, black-box systems. Optikk gives you a unified, open-source platform that you can run in your own VPC or use in our cloud, with zero vendor lock-in."
             align="center"
           />
           <ComparisonTable

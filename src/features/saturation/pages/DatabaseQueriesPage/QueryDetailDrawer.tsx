@@ -1,3 +1,4 @@
+import { Surface } from "@/components/ui";
 import {
   Drawer,
   DrawerClose,
@@ -5,7 +6,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Surface } from "@/components/ui";
 
 import type { SlowQueryPatternRow } from "../../api/databaseSlowQueriesApi";
 
@@ -31,7 +31,7 @@ function StatTile({ label, value }: { label: string; value: string }) {
       <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
         {label}
       </div>
-      <div className="mt-1 font-semibold text-[18px] tabular-nums text-[var(--text-primary)]">
+      <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)] tabular-nums">
         {value}
       </div>
     </div>
@@ -40,9 +40,7 @@ function StatTile({ label, value }: { label: string; value: string }) {
 
 function DrawerBody({ query }: { query: SlowQueryPatternRow }) {
   const errorRate =
-    query.call_count > 0
-      ? `${((query.error_count / query.call_count) * 100).toFixed(2)}%`
-      : "—";
+    query.call_count > 0 ? `${((query.error_count / query.call_count) * 100).toFixed(2)}%` : "—";
   return (
     <div className="flex flex-col gap-4 p-4">
       <Surface elevation={1} padding="sm">

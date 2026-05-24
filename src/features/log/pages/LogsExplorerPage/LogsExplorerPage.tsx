@@ -3,10 +3,8 @@ import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
 import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
-import type { SavedViewLite } from "@/features/explorer/hooks/useDslSearchBar";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
-import { useSavedViews } from "@/features/savedViews/hooks/useSavedViews";
-import { splitSavedViewUrl } from "@shared/utils/queryString";
+
 import { resolveTimeRangeBounds } from "@/types";
 
 import type { LogsFacets } from "../../api/logsAnalyticsApi";
@@ -80,11 +78,7 @@ export default function LogsExplorerPage() {
 
   const searchTerm = useMemo(() => extractSearchTerm(state.filters), [state.filters]);
   const valueSuggestions = useMemo(() => buildValueSuggestions(facets.data), [facets.data]);
-  const savedViewsQuery = useSavedViews("logs");
-  const savedViews = useMemo<readonly SavedViewLite[]>(
-    () => savedViewsQuery.views.map((v) => ({ name: v.name, url: v.url })),
-    [savedViewsQuery.views]
-  );
+
 
   const onInclude = useCallback(
     (field: string, value: string) =>
@@ -102,13 +96,7 @@ export default function LogsExplorerPage() {
     (fromMs: number, toMs: number) => setCustomTimeRange(fromMs, toMs, "Brush"),
     [setCustomTimeRange]
   );
-  const onLoadSavedView = useCallback(
-    (url: string) => {
-      const { pathname, search } = splitSavedViewUrl(url, "/logs");
-      navigate({ to: pathname, search });
-    },
-    [navigate]
-  );
+
 
   const results = list.results;
   const detailIdx = state.detail ? results.findIndex((r) => r.id === state.detail) : -1;
@@ -127,10 +115,8 @@ export default function LogsExplorerPage() {
           ref={searchInputRef}
           filters={state.filters}
           onChangeFilters={(f) => state.setFilters(f)}
-          actions={<LogsActions onLoadSavedView={onLoadSavedView} />}
+          actions={<LogsActions />}
           valueSuggestions={valueSuggestions}
-          savedViews={savedViews}
-          onSavedViewSelect={onLoadSavedView}
         />
 
         <div className={`ok-grid ${detailOpen ? "has-detail" : ""}`}>

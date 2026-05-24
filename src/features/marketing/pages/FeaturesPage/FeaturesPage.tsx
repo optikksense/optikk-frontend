@@ -52,7 +52,7 @@ export default function FeaturesPage() {
                 Stream a billion lines. <GradientText>Find one in 200ms.</GradientText>
               </>
             }
-            body="ClickHouse's vectorized engine means every field is indexable, every facet is countable, and every query stays under a second. Tag cardinality never costs you."
+            body="A high-performance vectorized database means every field is indexable, every facet is countable, and every query stays under a second. Tag cardinality never costs you."
             list={[
               {
                 title: "Full-text + structured in one query",

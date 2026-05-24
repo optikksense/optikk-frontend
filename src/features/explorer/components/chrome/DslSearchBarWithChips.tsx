@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { forwardRef, memo } from "react";
 
-import type { SavedViewLite } from "../../hooks/useDslSearchBar";
+
 import { findKnownField, knownFieldsForScope } from "../../search/knownFields";
 import type { ExplorerFilter, ExplorerFilterOp, ExplorerScope } from "../../types/filters";
 import { ExplorerSearchBarDsl } from "./ExplorerSearchBarDsl";
@@ -13,8 +13,6 @@ interface Props {
   readonly placeholder?: string;
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
-  readonly savedViews?: readonly SavedViewLite[];
-  readonly onSavedViewSelect?: (url: string) => void;
 }
 
 const CHIP_TONE: Record<string, string> = {
@@ -50,8 +48,6 @@ function DslSearchBarWithChipsComponent(props: Props, ref: React.Ref<HTMLInputEl
         placeholder={props.placeholder}
         scope={props.scope}
         valueSuggestions={props.valueSuggestions}
-        savedViews={props.savedViews}
-        onSavedViewSelect={props.onSavedViewSelect}
       />
       {props.filters.length > 0 ? (
         <div className="flex flex-wrap items-center gap-1.5">

@@ -79,7 +79,7 @@ function ObservabilityChart({
           return uLine(item.label, item.color, {
             fill: type === "area" || item.fill,
             dash: item.dash,
-            width: item.width ?? 1.85,
+            width: item.width ?? 2,
           });
         }),
       ],

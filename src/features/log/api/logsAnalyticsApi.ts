@@ -37,8 +37,9 @@ const summarySchema = z
       total: z.coerce.number(),
       errors: z.coerce.number(),
       warns: z.coerce.number().default(0),
-    }),
+    }).strict(),
   })
+  .strict()
   .transform((r): LogsSummary => r.summary);
 
 const trendSchema = z
@@ -49,14 +50,15 @@ const trendSchema = z
           time_bucket: z.string(),
           severity_bucket: z.coerce.number(),
           count: z.coerce.number(),
-        })
+        }).strict()
       )
       .nullable()
       .transform((v) => v ?? []),
   })
+  .strict()
   .transform((r): readonly LogsTrendBucket[] => r.trend);
 
-const facetValueSchema = z.object({ value: z.string(), count: z.coerce.number() });
+const facetValueSchema = z.object({ value: z.string(), count: z.coerce.number() }).strict();
 
 const facetsSchema = z
   .object({
@@ -72,8 +74,9 @@ const facetsSchema = z
       host: z.array(facetValueSchema).optional(),
       pod: z.array(facetValueSchema).optional(),
       environment: z.array(facetValueSchema).optional(),
-    }),
+    }).strict(),
   })
+  .strict()
   .transform((r): LogsFacets => r.facets);
 
 export interface LogsAnalyticsArgs {

@@ -13,15 +13,3 @@ export function parseSearchString(search: string | undefined): Record<string, st
   return out;
 }
 
-/** Split a saved-view URL (`/logs?service=foo&…`) into a `{ pathname, search }`
- *  pair compatible with TanStack Router's `navigate`. */
-export function splitSavedViewUrl(url: string, fallbackPath: string): {
-  readonly pathname: string;
-  readonly search: Record<string, string>;
-} {
-  const [pathname, search] = url.split("?");
-  return {
-    pathname: pathname || fallbackPath,
-    search: parseSearchString(search),
-  };
-}

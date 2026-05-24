@@ -45,9 +45,8 @@ export function useDatabaseQueriesPage(): DatabaseQueriesPageModel {
     (_, s, e) => getSlowQueryCollections(Number(s), Number(e), filters, DEFAULT_LIMIT)
   );
 
-  const rateQuery = useTimeRangeQuery<SlowRatePoint[]>(
-    `db-queries-rate:${filterKey}`,
-    (_, s, e) => getSlowQueryRate(Number(s), Number(e), filters, 1000)
+  const rateQuery = useTimeRangeQuery<SlowRatePoint[]>(`db-queries-rate:${filterKey}`, (_, s, e) =>
+    getSlowQueryRate(Number(s), Number(e), filters, 1000)
   );
 
   const p99TextQuery = useTimeRangeQuery<P99ByQueryTextRow[]>(

@@ -1,9 +1,9 @@
 import { memo, useMemo } from "react";
 
 import { APP_COLORS } from "@config/colorLiterals";
-import { CHART_COLORS } from "@config/constants";
 import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
 import { firstValue, tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { getChartColor } from "@shared/utils/charting";
 
 import ObservabilityChart from "../ObservabilityChart";
 import { buildServiceDatasets } from "../utils/buildServiceDatasets";
@@ -35,10 +35,6 @@ interface ErrorRateChartProps {
   targetThreshold?: number | null;
   datasetLabel?: string;
   color?: string;
-}
-
-function getChartColor(index: number): string {
-  return CHART_COLORS[index % CHART_COLORS.length];
 }
 
 /**
@@ -73,16 +69,14 @@ export default memo(function ErrorRateChart({
       serviceTimeseriesMap,
       getColor: getChartColor,
       getSelectionKey: (ep) => ep.key || String(firstValue(ep, ["service_name"], "")),
-      getLabel: (ep, key) =>
-        ep.endpoint || String(firstValue(ep, ["service_name"], "") || key),
+      getLabel: (ep, key) => ep.endpoint || String(firstValue(ep, ["service_name"], "") || key),
       initialAcc: () => ({ total: 0, errors: 0 }),
       reduceRow: (acc, row) => {
         acc.total += Number(firstValue(row, ["request_count", "req_count"], 0));
         acc.errors += Number(firstValue(row, ["error_count"], 0));
         return acc;
       },
-      computeValue: (acc) =>
-        !acc || acc.total === 0 ? 0 : (acc.errors / acc.total) * 100,
+      computeValue: (acc) => (!acc || acc.total === 0 ? 0 : (acc.errors / acc.total) * 100),
     });
 
   const chartData = useMemo(() => {
@@ -220,9 +214,7 @@ export default memo(function ErrorRateChart({
   const timestamps = useMemo(() => timeBuckets.map((t) => tsMs(t) / 1000), [timeBuckets]);
 
   const allDataValues = useMemo(() => {
-    const vals: number[] = data.map((d) =>
-      Number(firstValue(d, ["value", "error_rate"], 0))
-    );
+    const vals: number[] = data.map((d) => Number(firstValue(d, ["value", "error_rate"], 0)));
     if (Object.keys(serviceTimeseriesMap).length > 0) {
       Object.values(serviceTimeseriesMap).forEach((rows) => {
         rows.forEach((r) => {

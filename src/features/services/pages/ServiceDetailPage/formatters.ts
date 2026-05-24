@@ -1,0 +1,53 @@
+// Shared formatters for the Service Detail page. Mirror the prototype's
+// `sdNum`, `sdMs`, `sdPct`, `sdDelta` helpers so number rendering matches
+// the design pixel-for-pixel.
+
+export function fmtNum(n: number | null | undefined): string {
+  if (n == null || !Number.isFinite(n)) return "—";
+  if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}k`;
+  return Math.round(n).toLocaleString();
+}
+
+export function fmtMs(ms: number | null | undefined): string {
+  if (ms == null || !Number.isFinite(ms)) return "—";
+  if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
+  return `${Math.round(ms)}ms`;
+}
+
+export function fmtPct(value: number | null | undefined, digits = 2): string {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return `${(value * 100).toFixed(digits)}%`;
+}
+
+export interface Delta {
+  readonly label: string;
+  readonly direction: "up" | "down" | "flat";
+}
+
+export function fmtDelta(now?: number, prev?: number): Delta | null {
+  if (now == null || prev == null || prev === 0) return null;
+  const ratio = (now - prev) / prev;
+  const v = ratio * 100;
+  if (Math.abs(v) < 0.5) return { label: "0%", direction: "flat" };
+  return {
+    label: `${v > 0 ? "+" : ""}${v.toFixed(0)}%`,
+    direction: v > 0 ? "up" : "down",
+  };
+}
+
+export function ratioFromCounts(numerator: number, denominator: number): number {
+  if (!denominator) return 0;
+  return numerator / denominator;
+}
+
+export function relativeTimeFromIso(iso: string | undefined | null): string {
+  if (!iso) return "—";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  const deltaSec = Math.max(0, (Date.now() - date.getTime()) / 1000);
+  if (deltaSec < 60) return `${Math.round(deltaSec)}s ago`;
+  if (deltaSec < 3600) return `${Math.round(deltaSec / 60)}m ago`;
+  if (deltaSec < 86400) return `${Math.round(deltaSec / 3600)}h ago`;
+  return `${Math.round(deltaSec / 86400)}d ago`;
+}

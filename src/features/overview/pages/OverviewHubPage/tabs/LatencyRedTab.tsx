@@ -7,7 +7,7 @@ import LatencyHistogram from "@shared/components/ui/charts/distributions/Latency
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { formatNumber } from "@shared/utils/formatters";
+import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
 import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
@@ -117,8 +117,8 @@ export default function LatencyRedTab() {
             { label: "Spans", value: num(red?.total_span_count) },
             { label: "Total RPS", value: num(red?.total_rps).toFixed(2) },
             { label: "Avg error %", value: `${num(red?.avg_error_pct).toFixed(2)}%` },
-            { label: "Avg P95 (ms)", value: num(red?.avg_p95_ms).toFixed(1) },
-            { label: "Avg P99 (ms)", value: num(red?.avg_p99_ms).toFixed(1) },
+            { label: "Avg P95", value: formatDuration(red?.avg_p95_ms) },
+            { label: "Avg P99", value: formatDuration(red?.avg_p99_ms) },
           ].map((kpi) => (
             <Surface key={kpi.label} elevation={1} padding="sm">
               <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">{kpi.label}</div>
@@ -217,9 +217,9 @@ export default function LatencyRedTab() {
                     <td className="py-2 pr-3">{r.service}</td>
                     <td className="py-2 pr-3 text-[var(--text-secondary)]">{r.operation}</td>
                     <td className="py-2 pr-3 text-right tabular-nums">{formatNumber(r.spans)}</td>
-                    <td className="py-2 pr-3 text-right tabular-nums">{r.p50.toFixed(1)}</td>
-                    <td className="py-2 pr-3 text-right tabular-nums">{r.p95.toFixed(1)}</td>
-                    <td className="py-2 text-right tabular-nums">{r.p99.toFixed(1)}</td>
+                    <td className="py-2 pr-3 text-right tabular-nums">{formatDuration(r.p50)}</td>
+                    <td className="py-2 pr-3 text-right tabular-nums">{formatDuration(r.p95)}</td>
+                    <td className="py-2 text-right tabular-nums">{formatDuration(r.p99)}</td>
                   </tr>
                 ))}
               </tbody>

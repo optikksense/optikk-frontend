@@ -8,12 +8,14 @@ import { ROUTES } from "@/shared/constants/routes";
 
 import { AppContent } from "../App";
 import MainLayout from "../layout/MainLayout";
+import ProtectedRoute from "./ProtectedRoute";
 import { buildLegacyRedirects } from "./legacyRedirects";
 import { buildMarketingRoutes } from "./marketingRoutes";
-import ProtectedRoute from "./ProtectedRoute";
 
 const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPage"));
-const ServicePage = lazy(() => import("@/features/overview/pages/ServicePage/ServicePage"));
+const ServiceDetailPage = lazy(
+  () => import("@/features/services/pages/ServiceDetailPage/ServiceDetailPage")
+);
 const InfrastructureHubPage = lazy(
   () => import("@/features/infrastructure/pages/InfrastructureHubPage")
 );
@@ -21,18 +23,19 @@ const OverviewHubPage = lazy(
   () => import("@/features/overview/pages/OverviewHubPage/OverviewHubPage")
 );
 const DatabaseQueriesPage = lazy(() => import("@/features/saturation/pages/DatabaseQueriesPage"));
-const KafkaOverviewPage = lazy(() => import("@/features/saturation/pages/KafkaOverviewPage"));
-const ErrorTrackingPage = lazy(() => import("@/features/errors/pages/ErrorTrackingPage"));
-const ErrorGroupDetailPage = lazy(
-  () => import("@/features/errors/pages/ErrorGroupDetailPage")
+const SaturationKafkaPage = lazy(
+  () => import("@/features/saturation/pages/SaturationKafkaPage/SaturationKafkaPage")
 );
+const SaturationDatabasePage = lazy(
+  () => import("@/features/saturation/pages/SaturationDatabasePage/SaturationDatabasePage")
+);
+const ErrorTrackingPage = lazy(() => import("@/features/errors/pages/ErrorTrackingPage"));
+const ErrorGroupDetailPage = lazy(() => import("@/features/errors/pages/ErrorGroupDetailPage"));
 const SloListPage = lazy(() => import("@/features/slo/pages/SloListPage"));
 const SloDetailPage = lazy(() => import("@/features/slo/pages/SloDetailPage"));
 const ServiceCatalogPage = lazy(
-  () => import("@/features/services/pages/ServiceCatalogPage")
+  () => import("@/features/services/pages/ServiceCatalogPage/ServiceCatalogPage")
 );
-const ServiceMapPage = lazy(() => import("@/features/services/pages/ServiceMapPage"));
-const DeploymentsPage = lazy(() => import("@/features/services/pages/DeploymentsPage"));
 const HostMapPage = lazy(() => import("@/features/infrastructure/pages/HostMapPage"));
 const HostDetailPage = lazy(() => import("@/features/infrastructure/pages/HostDetailPage"));
 
@@ -88,19 +91,25 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
 const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
 const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
-const serviceDetailRoute = createProtected(ROUTES.serviceDetail, ServicePage);
-const databaseQueriesRoute = createProtected(
-  ROUTES.saturationDatabaseQueries,
-  DatabaseQueriesPage
-);
-const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, KafkaOverviewPage);
+const serviceDetailRoute = createProtected(ROUTES.serviceDetail, ServiceDetailPage);
+const databaseQueriesRoute = createProtected(ROUTES.saturationDatabaseQueries, DatabaseQueriesPage);
+const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, SaturationKafkaPage);
+const saturationDatabaseRoute = createProtected(ROUTES.saturationDatabase, SaturationDatabasePage);
 const errorTrackingRoute = createProtected(ROUTES.errors, ErrorTrackingPage);
 const errorGroupDetailRoute = createProtected(ROUTES.errorGroupDetail, ErrorGroupDetailPage);
 const sloListRoute = createProtected(ROUTES.slos, SloListPage);
 const sloDetailRoute = createProtected(ROUTES.sloDetail, SloDetailPage);
 const servicesCatalogRoute = createProtected(ROUTES.services, ServiceCatalogPage);
-const serviceMapRoute = createProtected(ROUTES.serviceMap, ServiceMapPage);
-const deploymentsRoute = createProtected(ROUTES.deployments, DeploymentsPage);
+const serviceMapRoute = createProtected(
+  ROUTES.serviceMap,
+  () => null,
+  `${ROUTES.services}?tab=map`
+);
+const deploymentsRoute = createProtected(
+  ROUTES.deployments,
+  () => null,
+  `${ROUTES.services}?tab=deploys`
+);
 const hostsRoute = createProtected(ROUTES.hosts, HostMapPage);
 const hostDetailRoute = createProtected(ROUTES.hostDetail, HostDetailPage);
 
@@ -137,6 +146,7 @@ const routeTree = rootRoute.addChildren([
     serviceDetailRoute,
     databaseQueriesRoute,
     kafkaOverviewRoute,
+    saturationDatabaseRoute,
     errorTrackingRoute,
     errorGroupDetailRoute,
     sloListRoute,

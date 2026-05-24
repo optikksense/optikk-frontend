@@ -1,16 +1,18 @@
-import { Activity, Cable, Layers3, TimerReset, Waves } from "lucide-react";
 import { useParams } from "@tanstack/react-router";
+import { Activity, Cable, Layers3, TimerReset, Waves } from "lucide-react";
 
-import {
-  Badge,
-  SimpleTable,
-  type SimpleTableColumn,
-} from "@shared/components/primitives/ui";
+import { Badge, SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { formatBytes, formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
+import {
+  formatBytes,
+  formatDuration,
+  formatNumber,
+  formatPercentage,
+} from "@shared/utils/formatters";
 
-import { type KafkaTopicRow, saturationApi } from "../../api/saturationApi";
+import type { GroupTopicRow } from "../../api/kafkaExplorerSchemas";
+import { saturationApi } from "../../api/saturationApi";
 import { SaturationStatTile } from "../../components/SaturationStatTile";
 
 function formatBytesPerSecond(value: number): string {
@@ -38,7 +40,7 @@ export default function KafkaGroupDetailPage(): JSX.Element {
     { extraKeys: [groupId] }
   );
 
-  const topicColumns: SimpleTableColumn<KafkaTopicRow>[] = [
+  const topicColumns: SimpleTableColumn<GroupTopicRow>[] = [
     {
       title: "Topic",
       key: "topic",

@@ -15,7 +15,7 @@ const serviceNodeSchema = z.object({
   p95_latency_ms: numeric,
   p99_latency_ms: numeric,
   health: z.enum(["healthy", "degraded", "unhealthy"]).catch("healthy"),
-});
+}).strict();
 
 const serviceEdgeSchema = z.object({
   source: str,
@@ -25,12 +25,12 @@ const serviceEdgeSchema = z.object({
   error_rate: numeric,
   p50_latency_ms: numeric,
   p95_latency_ms: numeric,
-});
+}).strict();
 
 export const topologyResponseSchema = z.object({
   nodes: z.array(serviceNodeSchema).default([]),
   edges: z.array(serviceEdgeSchema).default([]),
-});
+}).strict();
 
 export type ServiceTopologyNode = z.infer<typeof serviceNodeSchema>;
 export type ServiceTopologyEdge = z.infer<typeof serviceEdgeSchema>;
