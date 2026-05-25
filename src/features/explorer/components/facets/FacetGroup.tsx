@@ -58,7 +58,9 @@ function FacetGroupComponent({
       </button>
       {open ? (
         <div className="flex flex-col gap-1 pt-1">
-          {group.buckets.length > topN ? <FacetSearchBox value={query} onChange={setQuery} /> : null}
+          {group.buckets.length > topN ? (
+            <FacetSearchBox value={query} onChange={setQuery} />
+          ) : null}
           {visible.map((bucket) => (
             <FacetBucket
               key={bucket.value}

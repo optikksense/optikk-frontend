@@ -23,10 +23,7 @@ export function getApmRpcDuration(
   return getJson("/apm/rpc-duration", startTime, endTime);
 }
 
-export function getApmProcessCpu(
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<unknown[]> {
+export function getApmProcessCpu(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
   return getJson("/apm/process-cpu", startTime, endTime);
 }
 
@@ -37,9 +34,6 @@ export function getApmProcessMemory(
   return getJson("/apm/process-memory", startTime, endTime);
 }
 
-export function getApmOpenFds(
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<unknown[]> {
+export function getApmOpenFds(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
   return getJson("/apm/open-fds", startTime, endTime);
 }

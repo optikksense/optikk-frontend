@@ -87,7 +87,9 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
         initialData={drawer.data}
         onClose={() =>
           navigate({
-            ...dynamicNavigateOptions(location.pathname + clearDashboardDrawerSearch(location.search)),
+            ...dynamicNavigateOptions(
+              location.pathname + clearDashboardDrawerSearch(location.search)
+            ),
             replace: true,
           })
         }
@@ -103,7 +105,9 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
         initialData={drawer.data}
         onClose={() =>
           navigate({
-            ...dynamicNavigateOptions(location.pathname + clearDashboardDrawerSearch(location.search)),
+            ...dynamicNavigateOptions(
+              location.pathname + clearDashboardDrawerSearch(location.search)
+            ),
             replace: true,
           })
         }
@@ -116,7 +120,9 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
       open
       onClose={() =>
         navigate({
-          ...dynamicNavigateOptions(location.pathname + clearDashboardDrawerSearch(location.search)),
+          ...dynamicNavigateOptions(
+            location.pathname + clearDashboardDrawerSearch(location.search)
+          ),
           replace: true,
         })
       }

@@ -4,29 +4,29 @@ import { Skeleton, Surface } from "@/components/ui";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import LatencyHistogram from "@shared/components/ui/charts/distributions/LatencyHistogram";
-import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
+import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
-import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
-import {
-  mapRedErrorPctRows,
-  mapRedRequestRateRows,
-  mapP95Rows,
-  num,
-  str,
-} from "../chartMappers";
+import { HubSection } from "../HubSection";
+import { mapP95Rows, mapRedErrorPctRows, mapRedRequestRateRows, num, str } from "../chartMappers";
 
 const LatencyChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/LatencyChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/LatencyChart").then((m) => ({
+    default: m.default,
+  }))
 );
 const ErrorRateChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/ErrorRateChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/ErrorRateChart").then((m) => ({
+    default: m.default,
+  }))
 );
 const RequestChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({
+    default: m.default,
+  }))
 );
 
 function chartFallback() {
@@ -39,16 +39,36 @@ function chartFallback() {
 
 export default function LatencyRedTab() {
   const opts = { staleTime: OVERVIEW_QUERY_STALE_MS };
-  const summaryQ = useTimeRangeQuery("overview-red-summary", (_t, s, e) => overviewHubApi.getRedSummary(s, e), opts);
-  const p95Q = useTimeRangeQuery("overview-red-p95", (_t, s, e) => overviewHubApi.getRedP95Series(s, e), opts);
-  const rrQ = useTimeRangeQuery("overview-red-rr", (_t, s, e) => overviewHubApi.getRedRequestRateSeries(s, e), opts);
-  const erQ = useTimeRangeQuery("overview-red-er", (_t, s, e) => overviewHubApi.getRedErrorRateSeries(s, e), opts);
+  const summaryQ = useTimeRangeQuery(
+    "overview-red-summary",
+    (_t, s, e) => overviewHubApi.getRedSummary(s, e),
+    opts
+  );
+  const p95Q = useTimeRangeQuery(
+    "overview-red-p95",
+    (_t, s, e) => overviewHubApi.getRedP95Series(s, e),
+    opts
+  );
+  const rrQ = useTimeRangeQuery(
+    "overview-red-rr",
+    (_t, s, e) => overviewHubApi.getRedRequestRateSeries(s, e),
+    opts
+  );
+  const erQ = useTimeRangeQuery(
+    "overview-red-er",
+    (_t, s, e) => overviewHubApi.getRedErrorRateSeries(s, e),
+    opts
+  );
   const breakdownQ = useTimeRangeQuery(
     "overview-red-breakdown",
     (_t, s, e) => overviewHubApi.getLatencyBreakdown(s, e),
     opts
   );
-  const slowQ = useTimeRangeQuery("overview-red-slow", (_t, s, e) => overviewHubApi.getTopSlowOperations(s, e), opts);
+  const slowQ = useTimeRangeQuery(
+    "overview-red-slow",
+    (_t, s, e) => overviewHubApi.getTopSlowOperations(s, e),
+    opts
+  );
 
   const red = summaryQ.data;
 
@@ -121,7 +141,9 @@ export default function LatencyRedTab() {
             { label: "Avg P99", value: formatDuration(red?.avg_p99_ms) },
           ].map((kpi) => (
             <Surface key={kpi.label} elevation={1} padding="sm">
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">{kpi.label}</div>
+              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+                {kpi.label}
+              </div>
               <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)] tabular-nums">
                 {summaryQ.isPending && !summaryQ.data ? "—" : kpi.value}
               </div>
@@ -198,7 +220,9 @@ export default function LatencyRedTab() {
           {slowQ.isPending && slowRows.length === 0 ? (
             <Skeleton active paragraph={{ rows: 4 }} />
           ) : slowRows.length === 0 ? (
-            <div className="py-8 text-center text-[13px] text-[var(--text-muted)]">No slow operations</div>
+            <div className="py-8 text-center text-[13px] text-[var(--text-muted)]">
+              No slow operations
+            </div>
           ) : (
             <table className="w-full min-w-[640px] border-collapse text-left text-[12px]">
               <thead>
@@ -213,7 +237,10 @@ export default function LatencyRedTab() {
               </thead>
               <tbody>
                 {slowRows.map((r) => (
-                  <tr key={`${r.service}:${r.operation}`} className="border-[var(--border-color)]/60 border-b">
+                  <tr
+                    key={`${r.service}:${r.operation}`}
+                    className="border-[var(--border-color)]/60 border-b"
+                  >
                     <td className="py-2 pr-3">{r.service}</td>
                     <td className="py-2 pr-3 text-[var(--text-secondary)]">{r.operation}</td>
                     <td className="py-2 pr-3 text-right tabular-nums">{formatNumber(r.spans)}</td>

@@ -33,7 +33,9 @@ function Row({
       <span className="font-mono text-[11px] text-[var(--text-muted)]">
         {before ? formatNumber(before.total) : "—"}
       </span>
-      <span className="font-mono text-[11px] text-[var(--text-primary)]">{formatNumber(after.total)}</span>
+      <span className="font-mono text-[11px] text-[var(--text-primary)]">
+        {formatNumber(after.total)}
+      </span>
       <DeltaPill delta={diff} formatter={(value) => formatNumber(value)} invert />
     </div>
   );

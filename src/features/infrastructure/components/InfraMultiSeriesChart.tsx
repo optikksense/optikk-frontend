@@ -5,9 +5,9 @@ import RequestChart from "@shared/components/ui/charts/time-series/RequestChart"
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { firstValue } from "@shared/utils/chartDataUtils";
 
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
-import { formatBytes, formatPercentage, formatDuration } from "@shared/utils/formatters";
 import { CHART_COLORS } from "@config/constants";
+import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
+import { formatBytes, formatDuration, formatPercentage } from "@shared/utils/formatters";
 
 import { infraGet } from "../api/infrastructureApi";
 import InfraSeriesList, { type InfraSeriesListItem } from "./InfraSeriesList";
@@ -85,22 +85,22 @@ export default memo(function InfraMultiSeriesChart({
     return Object.entries(serviceTimeseriesMap)
       .slice(0, 10)
       .map(([name, rows], idx) => {
-      // Use latest non-null value for current usage
-      let latestValue = 0;
-      for (let i = rows.length - 1; i >= 0; i--) {
-        const val = Number(firstValue(rows[i], [valueField, "value", "request_count"], 0));
-        if (Number.isFinite(val) && val !== 0) {
-          latestValue = val;
-          break;
+        // Use latest non-null value for current usage
+        let latestValue = 0;
+        for (let i = rows.length - 1; i >= 0; i--) {
+          const val = Number(firstValue(rows[i], [valueField, "value", "request_count"], 0));
+          if (Number.isFinite(val) && val !== 0) {
+            latestValue = val;
+            break;
+          }
         }
-      }
-      return {
-        key: name,
-        label: name,
-        value: latestValue,
-        color: CHART_COLORS[idx % CHART_COLORS.length],
-      };
-    });
+        return {
+          key: name,
+          label: name,
+          value: latestValue,
+          color: CHART_COLORS[idx % CHART_COLORS.length],
+        };
+      });
   }, [serviceTimeseriesMap, valueField]);
 
   const hasData = useMemo(() => {

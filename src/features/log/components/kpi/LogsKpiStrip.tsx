@@ -25,7 +25,11 @@ const toneColors: Record<string, { text: string; bg: string; border: string }> =
   default: { text: "var(--text-primary)", bg: "var(--bg-card)", border: "var(--border-color)" },
   error: { text: "#e8494d", bg: "rgba(242,73,92,0.06)", border: "rgba(242,73,92,0.2)" },
   warn: { text: "#e0b400", bg: "rgba(242,204,12,0.05)", border: "rgba(242,204,12,0.18)" },
-  info: { text: "var(--color-primary)", bg: "var(--color-primary-subtle-05)", border: "var(--color-primary-subtle-15)" },
+  info: {
+    text: "var(--color-primary)",
+    bg: "var(--color-primary-subtle-05)",
+    border: "var(--color-primary-subtle-15)",
+  },
 };
 
 function LogsKpiStripComponent({ summary, loading }: Props) {

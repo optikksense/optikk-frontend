@@ -14,10 +14,7 @@ export function getErrorsServiceErrorRate(
   return getJson("/errors/service-error-rate", startTime, endTime);
 }
 
-export function getErrorsVolume(
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<unknown[]> {
+export function getErrorsVolume(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
   return getJson("/errors/error-volume", startTime, endTime);
 }
 
@@ -36,9 +33,6 @@ export function getExceptionRateByType(
   return getJson("/spans/exception-rate-by-type", startTime, endTime);
 }
 
-export function getErrorHotspot(
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<unknown[]> {
+export function getErrorHotspot(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
   return getJson("/spans/error-hotspot", startTime, endTime);
 }

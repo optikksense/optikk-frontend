@@ -20,10 +20,10 @@ import { formatNumber } from "@shared/utils/formatters";
 import { resolveTimeRangeBounds } from "@/types";
 
 import type { TraceScope } from "../../components/TraceScopeToggle";
-import { type TraceSortMode } from "../../components/TraceSortToggle";
+import type { TraceSortMode } from "../../components/TraceSortToggle";
 import { DEFAULT_TRACE_COLUMNS } from "../../config/columns";
 import { useTracesExplorer } from "../../hooks/useTracesExplorer";
-import type { TracesFacetBucket, TraceSummary } from "../../types/trace";
+import type { TraceSummary, TracesFacetBucket } from "../../types/trace";
 import { sortTraces } from "../../utils/sortTraces";
 import { buildTraceColumns } from "./tracesColumns";
 
@@ -34,7 +34,8 @@ import { buildTraceColumns } from "./tracesColumns";
  * component is a thin renderer over the returned model.
  */
 export function useTracesExplorerPage() {
-  const { state, query, facetsQuery, trendQuery, traces, facets, summary, trend } = useTracesExplorer({ include: ["summary", "facets", "trend"] });
+  const { state, query, facetsQuery, trendQuery, traces, facets, summary, trend } =
+    useTracesExplorer({ include: ["summary", "facets", "trend"] });
   const navigate = useNavigate();
   const { columns: columnConfig, setColumns } = useExplorerColumns("traces", DEFAULT_TRACE_COLUMNS);
   const [sortMode, setSortMode] = useState<TraceSortMode>("recent");
@@ -45,10 +46,7 @@ export function useTracesExplorerPage() {
   const timeRange = useTimeRange();
   const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
 
-  const facetGroups = useMemo<FacetGroupModel[]>(
-    () => facetsToGroups(facets),
-    [facets]
-  );
+  const facetGroups = useMemo<FacetGroupModel[]>(() => facetsToGroups(facets), [facets]);
   const kpis = useMemo<SummaryKPI[]>(() => buildKPIs(summary), [summary]);
   const trendBuckets = useMemo(() => toTrendBuckets(trend), [trend]);
   const columnDefs = useMemo(() => buildTraceColumns(), []);
@@ -87,7 +85,6 @@ export function useTracesExplorerPage() {
     if (trendQuery) void trendQuery.refetch();
   }, [query, facetsQuery, trendQuery]);
   const onClearFilters = useCallback(() => state.setFilters([]), [state]);
-
 
   const getContextMenuItems = useCallback(
     (row: TraceSummary): readonly ContextMenuEntry[] =>

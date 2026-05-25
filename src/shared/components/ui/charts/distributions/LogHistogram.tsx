@@ -311,7 +311,9 @@ export default function LogHistogram({
           {legendLevels.map((lvl) => (
             <span key={lvl} className="lh-legend__item">
               <span className="lh-legend__dot" style={{ background: LEVEL_COLORS[lvl] }} />
-              {((LOG_LEVELS as Record<string, { label: string; color: string }>)[lvl]?.label || lvl).toLowerCase()}
+              {(
+                (LOG_LEVELS as Record<string, { label: string; color: string }>)[lvl]?.label || lvl
+              ).toLowerCase()}
             </span>
           ))}
         </div>

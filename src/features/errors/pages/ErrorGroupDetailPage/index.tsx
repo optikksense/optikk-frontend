@@ -1,11 +1,7 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { AlertOctagon } from "lucide-react";
 
-import {
-  SimpleTable,
-  type SimpleTableColumn,
-  Surface,
-} from "@shared/components/primitives/ui";
+import { SimpleTable, type SimpleTableColumn, Surface } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
@@ -95,8 +91,7 @@ export default function ErrorGroupDetailPage(): JSX.Element {
   );
 
   const detail = detailQ.data;
-  const totalErrors =
-    timeseriesQ.data?.reduce((acc, p) => acc + (p.error_count ?? 0), 0) ?? 0;
+  const totalErrors = timeseriesQ.data?.reduce((acc, p) => acc + (p.error_count ?? 0), 0) ?? 0;
 
   return (
     <PageShell>
@@ -139,8 +134,7 @@ export default function ErrorGroupDetailPage(): JSX.Element {
           rowKey={(r) => `${r.trace_id}::${r.span_id}`}
           pagination={{ pageSize: 10 }}
           onRow={(record) => ({
-            onClick: () =>
-              navigate({ to: `/traces/${encodeURIComponent(record.trace_id)}` }),
+            onClick: () => navigate({ to: `/traces/${encodeURIComponent(record.trace_id)}` }),
             style: { cursor: "pointer" },
           })}
         />

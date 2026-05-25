@@ -28,9 +28,7 @@ export function LoginField({
   required,
   autoComplete,
 }: LoginFieldProps) {
-  const inputClass = endSlot
-    ? "login-input login-input--has-end"
-    : "login-input";
+  const inputClass = endSlot ? "login-input login-input--has-end" : "login-input";
 
   return (
     <div className="login-field-group">

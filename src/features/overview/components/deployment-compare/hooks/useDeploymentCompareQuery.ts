@@ -1,6 +1,6 @@
 import { deploymentsApi } from "@/features/overview/api/deploymentsApi";
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import type { DeploymentSeed } from "../types";
 

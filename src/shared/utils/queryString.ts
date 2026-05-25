@@ -12,4 +12,3 @@ export function parseSearchString(search: string | undefined): Record<string, st
   for (const [k, v] of params.entries()) out[k] = v;
   return out;
 }
-

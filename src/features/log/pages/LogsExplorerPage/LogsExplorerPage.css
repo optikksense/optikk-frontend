@@ -288,18 +288,42 @@
   font-size: 11px;
   color: var(--fg-3);
 }
-.s-trace { color: var(--trace-c); }
-.ok-sev-d.s-trace { background: var(--trace-c); }
-.s-debug { color: var(--debug-c); }
-.ok-sev-d.s-debug { background: var(--debug-c); }
-.s-info { color: var(--info-c); }
-.ok-sev-d.s-info { background: var(--info-c); }
-.s-warn { color: var(--warn-c); }
-.ok-sev-d.s-warn { background: var(--warn-c); }
-.s-error { color: var(--err-c); }
-.ok-sev-d.s-error { background: var(--err-c); }
-.s-fatal { color: var(--fatal-c); }
-.ok-sev-d.s-fatal { background: var(--fatal-c); }
+.s-trace {
+  color: var(--trace-c);
+}
+.ok-sev-d.s-trace {
+  background: var(--trace-c);
+}
+.s-debug {
+  color: var(--debug-c);
+}
+.ok-sev-d.s-debug {
+  background: var(--debug-c);
+}
+.s-info {
+  color: var(--info-c);
+}
+.ok-sev-d.s-info {
+  background: var(--info-c);
+}
+.s-warn {
+  color: var(--warn-c);
+}
+.ok-sev-d.s-warn {
+  background: var(--warn-c);
+}
+.s-error {
+  color: var(--err-c);
+}
+.ok-sev-d.s-error {
+  background: var(--err-c);
+}
+.s-fatal {
+  color: var(--fatal-c);
+}
+.ok-sev-d.s-fatal {
+  background: var(--fatal-c);
+}
 
 .ok-list-row {
   display: grid;
@@ -547,7 +571,7 @@
   cursor: pointer;
   font-family: "Geist Mono", monospace;
   font-size: 12.5px;
-  border-bottom: 1px solid oklch(0.26 0.010 270 / 0.45);
+  border-bottom: 1px solid oklch(0.26 0.01 270 / 0.45);
   background: none;
   width: 100%;
   text-align: left;
@@ -563,10 +587,10 @@
   background: var(--accent-bg);
 }
 .ok-tr.l-error {
-  background: oklch(0.70 0.20 25 / 0.05);
+  background: oklch(0.7 0.2 25 / 0.05);
 }
 .ok-tr.l-error.is-sel {
-  background: oklch(0.70 0.20 25 / 0.14);
+  background: oklch(0.7 0.2 25 / 0.14);
 }
 .ok-tr-x {
   color: var(--fg-3);
@@ -645,23 +669,23 @@
 }
 .ok-lvl.l-error {
   color: var(--err-c);
-  background: oklch(0.70 0.20 25 / 0.10);
+  background: oklch(0.7 0.2 25 / 0.1);
 }
 .ok-lvl.l-warn {
   color: var(--warn-c);
-  background: oklch(0.84 0.16 92 / 0.10);
+  background: oklch(0.84 0.16 92 / 0.1);
 }
 .ok-lvl.l-info {
   color: var(--info-c);
-  background: oklch(0.78 0.16 152 / 0.10);
+  background: oklch(0.78 0.16 152 / 0.1);
 }
 .ok-lvl.l-debug {
   color: var(--debug-c);
-  background: oklch(0.72 0.16 235 / 0.10);
+  background: oklch(0.72 0.16 235 / 0.1);
 }
 .ok-lvl.l-trace {
   color: var(--trace-c);
-  background: oklch(0.66 0.10 245 / 0.10);
+  background: oklch(0.66 0.1 245 / 0.1);
 }
 .ok-lvl.l-fatal {
   color: var(--fatal-c);
@@ -858,7 +882,7 @@
   background: var(--bg-2);
 }
 .ok-kv.is-err {
-  background: oklch(0.70 0.20 25 / 0.07);
+  background: oklch(0.7 0.2 25 / 0.07);
 }
 .ok-kv-k {
   color: var(--fg-2);

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
-import { useTeamId, useTimeRange, useRefreshKey } from "@app/store/appStore";
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 import { useExplorerState } from "@features/explorer/hooks/useExplorerState";
 import { resolveTimeBounds } from "@features/explorer/utils/timeRange";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
@@ -13,8 +13,8 @@ import {
   getLogsTrend,
 } from "../api/logsAnalyticsApi";
 import { queryLogs } from "../api/logsQueryApi";
-import type { LogRecord } from "../types/log";
 import { useLogsExplorerStore } from "../store/logsExplorerStore";
+import type { LogRecord } from "../types/log";
 
 const DEFAULT_PAGE_SIZE = 100;
 
@@ -45,7 +45,6 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const teamId = useTeamId();
   const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
-
 
   // Zustand pagination state
   const pageIndex = useLogsExplorerStore((s) => s.pageIndex);

@@ -19,17 +19,21 @@ export function buildCodeRepoLink(attrs: Readonly<Record<string, string>>): stri
 }
 
 function pickRepoUrl(attrs: Readonly<Record<string, string>>): string | null {
-  return attrs["vcs.repository.url"]
-    ?? attrs["code.repository"]
-    ?? attrs["vcs.repository.url.full"]
-    ?? null;
+  return (
+    attrs["vcs.repository.url"] ??
+    attrs["code.repository"] ??
+    attrs["vcs.repository.url.full"] ??
+    null
+  );
 }
 
 function pickRef(attrs: Readonly<Record<string, string>>): string {
-  return attrs["vcs.repository.ref.name"]
-    ?? attrs["vcs.repository.ref.revision"]
-    ?? attrs["code.commit"]
-    ?? "main";
+  return (
+    attrs["vcs.repository.ref.name"] ??
+    attrs["vcs.repository.ref.revision"] ??
+    attrs["code.commit"] ??
+    "main"
+  );
 }
 
 function pathLayoutFor(base: string): string | null {

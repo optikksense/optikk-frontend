@@ -51,11 +51,7 @@ export default function DemoTimeseriesChart({
   );
 
   const yFormatter =
-    variant === "requests"
-      ? formatRequests
-      : variant === "errors"
-        ? formatPercent
-        : formatMs;
+    variant === "requests" ? formatRequests : variant === "errors" ? formatPercent : formatMs;
 
   const yMax = useMemo(() => {
     let max = 0;

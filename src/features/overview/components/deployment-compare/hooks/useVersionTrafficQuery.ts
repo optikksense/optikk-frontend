@@ -2,8 +2,8 @@ import {
   type DeploymentCompareResponse,
   deploymentsApi,
 } from "@/features/overview/api/deploymentsApi";
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 export function useVersionTrafficQuery(compare?: DeploymentCompareResponse) {
   const teamId = useTeamId();

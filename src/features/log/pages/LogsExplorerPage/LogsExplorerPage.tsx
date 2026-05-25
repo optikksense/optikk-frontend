@@ -79,7 +79,6 @@ export default function LogsExplorerPage() {
   const searchTerm = useMemo(() => extractSearchTerm(state.filters), [state.filters]);
   const valueSuggestions = useMemo(() => buildValueSuggestions(facets.data), [facets.data]);
 
-
   const onInclude = useCallback(
     (field: string, value: string) =>
       state.setFilters([...state.filters, { field, op: "eq", value }]),
@@ -96,7 +95,6 @@ export default function LogsExplorerPage() {
     (fromMs: number, toMs: number) => setCustomTimeRange(fromMs, toMs, "Brush"),
     [setCustomTimeRange]
   );
-
 
   const results = list.results;
   const detailIdx = state.detail ? results.findIndex((r) => r.id === state.detail) : -1;
@@ -174,4 +172,3 @@ export default function LogsExplorerPage() {
     </div>
   );
 }
-

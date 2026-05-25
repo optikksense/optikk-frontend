@@ -7,12 +7,12 @@ import { z } from "zod";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-const traceLogArraySchema = z.array(traceLogSchema).nullish().transform((v) => v ?? []);
+const traceLogArraySchema = z
+  .array(traceLogSchema)
+  .nullish()
+  .transform((v) => v ?? []);
 
-export async function getTraceLogs(
-  traceId: string,
-  limit?: number
-): Promise<TraceLogsResponse> {
+export async function getTraceLogs(traceId: string, limit?: number): Promise<TraceLogsResponse> {
   const data = await api.get(`${BASE}/logs/trace/${traceId}`, {
     params: limit ? { limit } : undefined,
   });

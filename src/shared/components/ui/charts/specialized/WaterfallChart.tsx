@@ -33,7 +33,11 @@ export default function WaterfallChart(props: Props) {
     collapsedSpanIds: props.collapsedSpanIds,
   });
   if (!props.spans || props.spans.length === 0) {
-    return <div className="py-[60px] text-center text-sm text-[var(--text-muted)]">No spans available</div>;
+    return (
+      <div className="py-[60px] text-center text-sm text-[var(--text-muted)]">
+        No spans available
+      </div>
+    );
   }
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-lg bg-[var(--glass-bg)]">
@@ -55,7 +59,10 @@ export default function WaterfallChart(props: Props) {
   );
 }
 
-function toolbarProps(props: Props, s: ReturnType<typeof useWaterfallState>): WaterfallToolbarProps {
+function toolbarProps(
+  props: Props,
+  s: ReturnType<typeof useWaterfallState>
+): WaterfallToolbarProps {
   const setSearch = props.onSearchChange ?? s.setLocalSearch;
   const setErrorsOnly = props.onErrorsOnlyChange ?? s.setLocalErrorsOnly;
   return {
@@ -69,7 +76,8 @@ function toolbarProps(props: Props, s: ReturnType<typeof useWaterfallState>): Wa
     errorsOnly: s.errorsOnly,
     onErrorsOnlyChange: setErrorsOnly,
     hitLabel: hitCountLabel(s.search, s.hitIndex, s.hits.length),
-    onJumpPrev: () => s.setHitIndex((i) => (s.hits.length === 0 ? 0 : (i - 1 + s.hits.length) % s.hits.length)),
+    onJumpPrev: () =>
+      s.setHitIndex((i) => (s.hits.length === 0 ? 0 : (i - 1 + s.hits.length) % s.hits.length)),
     onJumpNext: () => s.setHitIndex((i) => (s.hits.length === 0 ? 0 : (i + 1) % s.hits.length)),
   };
 }

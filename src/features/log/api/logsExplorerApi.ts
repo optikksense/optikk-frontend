@@ -14,4 +14,3 @@ export {
   getLogsFacets,
 } from "./logsAnalyticsApi";
 export type { LogRecord } from "../types/log";
-

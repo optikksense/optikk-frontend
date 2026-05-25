@@ -7,29 +7,31 @@ import { validateResponse } from "@shared/api/utils/validate";
 import type { LogRecord, LogsQueryResponse } from "../types/log";
 import { buildLogsFilters } from "./buildLogsFilters";
 
-export const rawLogRowSchema = z.object({
-  id: z.string().optional(),
-  log_id: z.string().optional(),
-  timestamp: z.union([z.string(), z.number()]),
-  observed_timestamp: z.union([z.string(), z.number()]).optional(),
-  severity_text: z.string().optional(),
-  severity_number: z.coerce.number().optional(),
-  severity_bucket: z.coerce.number(),
-  body: z.string(),
-  trace_id: z.string().optional(),
-  span_id: z.string().optional(),
-  trace_flags: z.coerce.number().optional(),
-  service_name: z.string(),
-  host: z.string().optional(),
-  pod: z.string().optional(),
-  container: z.string().optional(),
-  environment: z.string().optional(),
-  attributes_string: z.record(z.string(), z.string()).optional(),
-  attributes_number: z.record(z.string(), z.number()).optional(),
-  attributes_bool: z.record(z.string(), z.boolean()).optional(),
-  scope_name: z.string().optional(),
-  scope_version: z.string().optional(),
-}).strict();
+export const rawLogRowSchema = z
+  .object({
+    id: z.string().optional(),
+    log_id: z.string().optional(),
+    timestamp: z.union([z.string(), z.number()]),
+    observed_timestamp: z.union([z.string(), z.number()]).optional(),
+    severity_text: z.string().optional(),
+    severity_number: z.coerce.number().optional(),
+    severity_bucket: z.coerce.number(),
+    body: z.string(),
+    trace_id: z.string().optional(),
+    span_id: z.string().optional(),
+    trace_flags: z.coerce.number().optional(),
+    service_name: z.string(),
+    host: z.string().optional(),
+    pod: z.string().optional(),
+    container: z.string().optional(),
+    environment: z.string().optional(),
+    attributes_string: z.record(z.string(), z.string()).optional(),
+    attributes_number: z.record(z.string(), z.number()).optional(),
+    attributes_bool: z.record(z.string(), z.boolean()).optional(),
+    scope_name: z.string().optional(),
+    scope_version: z.string().optional(),
+  })
+  .strict();
 
 const pageInfoSchema = z
   .object({
@@ -119,11 +121,13 @@ const queryResponseSchema = z
     pageInfo: pageInfoSchema,
   })
   .strict()
-  .transform((r): LogsQueryResponse => ({
-    results: r.results.map(normalizeLogRecord),
-    cursor: r.pageInfo?.nextCursor || undefined,
-    hasMore: r.pageInfo?.hasMore ?? false,
-  }));
+  .transform(
+    (r): LogsQueryResponse => ({
+      results: r.results.map(normalizeLogRecord),
+      cursor: r.pageInfo?.nextCursor || undefined,
+      hasMore: r.pageInfo?.hasMore ?? false,
+    })
+  );
 
 export interface QueryLogsArgs {
   readonly startTime: number;
@@ -176,9 +180,7 @@ function enforceIdFilters(
   const spanFilter = body.spanId;
   if (!traceFilter && !spanFilter) return resp;
   const filtered = resp.results.filter(
-    (r) =>
-      (!traceFilter || r.trace_id === traceFilter) &&
-      (!spanFilter || r.span_id === spanFilter)
+    (r) => (!traceFilter || r.trace_id === traceFilter) && (!spanFilter || r.span_id === spanFilter)
   );
   if (filtered.length !== resp.results.length) {
     // eslint-disable-next-line no-console

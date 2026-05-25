@@ -20,8 +20,7 @@ interface Props {
   initialData?: Record<string, unknown> | null;
 }
 
-interface DrawerStateProps
-  extends ReturnType<typeof useDeploymentCompare> {
+interface DrawerStateProps extends ReturnType<typeof useDeploymentCompare> {
   openSurface: ReturnType<typeof useOpenSurface>;
   impacts: ReturnType<typeof useDeploymentImpact>["impacts"];
   impactsLoading: boolean;
@@ -66,9 +65,7 @@ export default function DeploymentCompareDrawer({
 }: Props): JSX.Element {
   const compareBundle = useDeploymentCompare(initialData);
   const openSurface = useOpenSurface(compareBundle.seed?.serviceName);
-  const { impacts, loading: impactsLoading } = useDeploymentImpact(
-    compareBundle.seed?.serviceName
-  );
+  const { impacts, loading: impactsLoading } = useDeploymentImpact(compareBundle.seed?.serviceName);
   const { deployments } = useDeploymentList(compareBundle.seed?.serviceName);
 
   return (

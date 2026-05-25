@@ -4,7 +4,12 @@ import {
   SimpleTable,
   type SimpleTableColumn,
 } from "@shared/components/primitives/ui";
-import { formatDuration, formatNumber, formatPercentage, formatRelativeTime } from "@shared/utils/formatters";
+import {
+  formatDuration,
+  formatNumber,
+  formatPercentage,
+  formatRelativeTime,
+} from "@shared/utils/formatters";
 
 import type { FleetPod } from "../types";
 import { tierForPod } from "../utils/podHealth";

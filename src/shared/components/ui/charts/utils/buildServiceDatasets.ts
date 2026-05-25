@@ -50,9 +50,7 @@ export function buildServiceDatasets<Ep, Acc>(
       : 60000;
 
   return Object.entries(targetMap).map(([key, info], idx) => {
-    const tsData = getRowsForKey
-      ? getRowsForKey(key, info.ep)
-      : serviceTimeseriesMap[key] || [];
+    const tsData = getRowsForKey ? getRowsForKey(key, info.ep) : serviceTimeseriesMap[key] || [];
 
     const tsMap: Record<string, Acc> = {};
     for (const row of tsData) {

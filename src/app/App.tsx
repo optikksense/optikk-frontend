@@ -28,10 +28,7 @@ export function AppContent(): JSX.Element {
   );
 }
 
-const DASHBOARD_PANELS = [
-  ...BUILT_IN_DASHBOARD_PANELS,
-  ...getDashboardPanelRegistrations(),
-];
+const DASHBOARD_PANELS = [...BUILT_IN_DASHBOARD_PANELS, ...getDashboardPanelRegistrations()];
 
 export default function App(): JSX.Element {
   return (

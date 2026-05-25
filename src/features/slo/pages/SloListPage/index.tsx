@@ -14,9 +14,7 @@ function StatusBadge({ compliant }: { compliant: boolean }) {
   return (
     <span
       className={`inline-block rounded px-2 py-0.5 text-[11px] font-semibold ${
-        compliant
-          ? "bg-emerald-500/15 text-emerald-300"
-          : "bg-red-500/15 text-red-300"
+        compliant ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"
       }`}
     >
       {compliant ? "ON TRACK" : "BURNING"}
@@ -90,8 +88,8 @@ export default function SloListPage(): JSX.Element {
           Per-service drill-in
         </div>
         <div className="mt-2 text-[12px] text-[var(--text-secondary)]">
-          The current backend exposes one global SLO computation per call. To view a specific service&rsquo;s
-          SLO, click into a service from the catalog or use the URL{" "}
+          The current backend exposes one global SLO computation per call. To view a specific
+          service&rsquo;s SLO, click into a service from the catalog or use the URL{" "}
           <code className="font-mono text-[11px]">/slos?service=&lt;name&gt;</code>.
         </div>
         <button

@@ -164,7 +164,8 @@ export function MetricsExplorerChart({
     >
       {truncated ? (
         <div className="mb-3 rounded border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2 text-[12px] text-[var(--text-secondary)]">
-          Showing first {MAX_RENDERED_SERIES} of {series.length} series. Add a filter or group-by to narrow results.
+          Showing first {MAX_RENDERED_SERIES} of {series.length} series. Add a filter or group-by to
+          narrow results.
         </div>
       ) : null}
       <ObservabilityChart

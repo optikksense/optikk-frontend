@@ -3,19 +3,23 @@ import { Suspense, lazy, useMemo } from "react";
 import { Skeleton, Surface } from "@/components/ui";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
-import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
+import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
+import { HubSection } from "../HubSection";
 import { mapHttpErrorTsRows, mapHttpStatusRateRows, num } from "../chartMappers";
 
 const RequestChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({
+    default: m.default,
+  }))
 );
 const ErrorRateChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/ErrorRateChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/ErrorRateChart").then((m) => ({
+    default: m.default,
+  }))
 );
 
 function chartFallback() {
@@ -28,7 +32,11 @@ function chartFallback() {
 
 export default function HttpTab() {
   const opts = { staleTime: OVERVIEW_QUERY_STALE_MS };
-  const rrQ = useTimeRangeQuery("overview-http-rr", (_t, s, e) => overviewHubApi.getHttpRequestRate(s, e), opts);
+  const rrQ = useTimeRangeQuery(
+    "overview-http-rr",
+    (_t, s, e) => overviewHubApi.getHttpRequestRate(s, e),
+    opts
+  );
   const durQ = useTimeRangeQuery(
     "overview-http-dur",
     (_t, s, e) => overviewHubApi.getHttpRequestDuration(s, e),
@@ -70,7 +78,10 @@ export default function HttpTab() {
 
   return (
     <div className="page-section">
-      <HubSection title="HTTP server" description="Semantic conventions for HTTP spans—status codes, durations, and error trends.">
+      <HubSection
+        title="HTTP server"
+        description="Semantic conventions for HTTP spans—status codes, durations, and error trends."
+      >
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
             { label: "Duration P50", value: num(hist?.p50).toFixed(2) },
@@ -79,7 +90,9 @@ export default function HttpTab() {
             { label: "Duration Avg", value: num(hist?.avg).toFixed(2) },
           ].map((k) => (
             <Surface key={k.label} elevation={1} padding="sm">
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">{k.label} (ms)</div>
+              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+                {k.label} (ms)
+              </div>
               <div className="mt-1 font-semibold text-[17px] tabular-nums text-[var(--text-primary)]">
                 {durQ.isPending && !durQ.data ? "—" : k.value}
               </div>

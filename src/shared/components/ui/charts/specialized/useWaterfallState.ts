@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { type RefObject, useEffect, useMemo, useState } from "react";
 
 import { applyCollapse, buildSpanTree } from "./waterfallTree";
 import type { WaterfallSpan, WaterfallTreeSpan } from "./waterfallTypes";
@@ -29,7 +29,7 @@ export function useWaterfallState(input: WaterfallStateInput) {
   const tree = useMemo(() => buildSpanTree(spans), [spans]);
   const visibleTree = useMemo(
     () => filterTree(applyCollapse(tree.spanTree, collapsed), search, activeService, errorsOnly),
-    [tree.spanTree, collapsed, search, activeService, errorsOnly],
+    [tree.spanTree, collapsed, search, activeService, errorsOnly]
   );
   const hits = useMemo(() => searchHits(visibleTree, search), [visibleTree, search]);
 
@@ -46,12 +46,26 @@ export function useWaterfallState(input: WaterfallStateInput) {
     if (idx >= 0) virtualizer.scrollToIndex(idx, { align: "center" });
   }, [hits, hitIndex, virtualizer]);
 
-  const hitSpanId = hits.length > 0 ? visibleTree[hits[Math.min(hitIndex, hits.length - 1)]]?.span_id ?? null : null;
+  const hitSpanId =
+    hits.length > 0
+      ? (visibleTree[hits[Math.min(hitIndex, hits.length - 1)]]?.span_id ?? null)
+      : null;
 
   return {
-    tree, visibleTree, hits, hitIndex, setHitIndex, hitSpanId,
-    search, setLocalSearch, errorsOnly, setLocalErrorsOnly,
-    activeService, setActiveService, virtualizer, collapsed,
+    tree,
+    visibleTree,
+    hits,
+    hitIndex,
+    setHitIndex,
+    hitSpanId,
+    search,
+    setLocalSearch,
+    errorsOnly,
+    setLocalErrorsOnly,
+    activeService,
+    setActiveService,
+    virtualizer,
+    collapsed,
   };
 }
 
@@ -59,14 +73,17 @@ function filterTree(
   tree: readonly WaterfallTreeSpan[],
   search: string,
   activeService: string | null,
-  errorsOnly: boolean,
+  errorsOnly: boolean
 ): readonly WaterfallTreeSpan[] {
   const q = search.toLowerCase();
   return tree.filter((s) => {
     if (errorsOnly && !(s.has_error ?? s.status === "ERROR")) return false;
     if (activeService && s.service_name !== activeService) return false;
     if (!q) return true;
-    return (s.service_name ?? "").toLowerCase().includes(q) || (s.operation_name ?? "").toLowerCase().includes(q);
+    return (
+      (s.service_name ?? "").toLowerCase().includes(q) ||
+      (s.operation_name ?? "").toLowerCase().includes(q)
+    );
   });
 }
 
@@ -75,7 +92,11 @@ function searchHits(tree: readonly WaterfallTreeSpan[], search: string): readonl
   const q = search.toLowerCase();
   const out: number[] = [];
   tree.forEach((s, i) => {
-    if ((s.service_name ?? "").toLowerCase().includes(q) || (s.operation_name ?? "").toLowerCase().includes(q)) out.push(i);
+    if (
+      (s.service_name ?? "").toLowerCase().includes(q) ||
+      (s.operation_name ?? "").toLowerCase().includes(q)
+    )
+      out.push(i);
   });
   return out;
 }

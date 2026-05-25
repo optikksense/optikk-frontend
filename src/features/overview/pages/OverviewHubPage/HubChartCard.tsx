@@ -18,7 +18,9 @@ export function HubChartCard({ title, description, children, className }: HubCha
     >
       <div className="chart-card__title shrink-0">{title}</div>
       {description ? (
-        <p className="mb-1 px-0.5 text-[11px] text-[var(--text-muted)] leading-snug">{description}</p>
+        <p className="mb-1 px-0.5 text-[11px] text-[var(--text-muted)] leading-snug">
+          {description}
+        </p>
       ) : null}
       <div className="min-h-0 flex-1">{children}</div>
     </Surface>

@@ -15,7 +15,9 @@ function TimelineChartComponent({ isLoading, timeline, weightedSeries }: Props) 
     return <div className="text-[12px] text-[var(--text-muted)]">Loading version traffic…</div>;
   }
   if (!timeline || !weightedSeries) {
-    return <div className="text-[12px] text-[var(--text-muted)]">No version traffic was found.</div>;
+    return (
+      <div className="text-[12px] text-[var(--text-muted)]">No version traffic was found.</div>
+    );
   }
   return (
     <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(15,18,25,0.35)] p-3">

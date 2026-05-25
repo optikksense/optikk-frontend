@@ -61,9 +61,7 @@ function buildShareUrl(opts: {
 
 function encodeFilters(filters: readonly ExplorerFilter[]): string | null {
   if (filters.length === 0) return null;
-  return filters
-    .map((f) => `${f.field}:${f.op}:${encodeURIComponent(f.value)}`)
-    .join(";");
+  return filters.map((f) => `${f.field}:${f.op}:${encodeURIComponent(f.value)}`).join(";");
 }
 
 export const ShareLinkButton = memo(ShareLinkButtonComponent);

@@ -10,11 +10,7 @@ import { useAuthIsLoading, useAuthStore } from "@store/authStore";
 import { LoginField } from "./LoginField";
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Please enter your email")
-    .email("Please enter a valid email"),
+  email: z.string().trim().min(1, "Please enter your email").email("Please enter a valid email"),
   password: z.string().min(1, "Please enter your password"),
 });
 
@@ -111,17 +107,9 @@ function PasswordToggle({
   );
 }
 
-
-
-
 function SubmitButton({ loading }: { readonly loading: boolean }) {
   return (
-    <button
-      data-testid="login-submit"
-      type="submit"
-      className="login-submit"
-      disabled={loading}
-    >
+    <button data-testid="login-submit" type="submit" className="login-submit" disabled={loading}>
       {loading ? (
         <span className="login-spinner" />
       ) : (

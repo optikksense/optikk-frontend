@@ -1,4 +1,4 @@
-import { memo, type ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 export interface OverviewField {
   readonly key: string;
@@ -30,9 +30,7 @@ function DetailOverviewTabComponent({ fields, footer }: Props) {
           </div>
         ))}
       </dl>
-      {footer ? (
-        <div className="border-t border-[var(--border-color)] pt-2">{footer}</div>
-      ) : null}
+      {footer ? <div className="border-t border-[var(--border-color)] pt-2">{footer}</div> : null}
     </div>
   );
 }

@@ -8,11 +8,7 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { buildServiceDrawerSearch } from "../../components/serviceDrawerState";
 import { TopologyToolbar } from "./topology/TopologyToolbar";
 import { type ServiceTopologyResponse, getServiceTopology } from "./topology/api";
-import {
-  buildTopologyGraph,
-  topologyEdgeTypes,
-  topologyNodeTypes,
-} from "./topology/buildGraph";
+import { buildTopologyGraph, topologyEdgeTypes, topologyNodeTypes } from "./topology/buildGraph";
 
 function useTopologyQuery(focusService: string) {
   return useTimeRangeQuery<ServiceTopologyResponse>(

@@ -33,11 +33,13 @@ export interface LogsFacets {
 
 const summarySchema = z
   .object({
-    summary: z.object({
-      total: z.coerce.number(),
-      errors: z.coerce.number(),
-      warns: z.coerce.number().default(0),
-    }).strict(),
+    summary: z
+      .object({
+        total: z.coerce.number(),
+        errors: z.coerce.number(),
+        warns: z.coerce.number().default(0),
+      })
+      .strict(),
   })
   .strict()
   .transform((r): LogsSummary => r.summary);
@@ -46,11 +48,13 @@ const trendSchema = z
   .object({
     trend: z
       .array(
-        z.object({
-          time_bucket: z.string(),
-          severity_bucket: z.coerce.number(),
-          count: z.coerce.number(),
-        }).strict()
+        z
+          .object({
+            time_bucket: z.string(),
+            severity_bucket: z.coerce.number(),
+            count: z.coerce.number(),
+          })
+          .strict()
       )
       .nullable()
       .transform((v) => v ?? []),
@@ -62,19 +66,21 @@ const facetValueSchema = z.object({ value: z.string(), count: z.coerce.number() 
 
 const facetsSchema = z
   .object({
-    facets: z.object({
-      severity_bucket: z
-        .array(z.string())
-        .nullable()
-        .transform((v) => v ?? []),
-      service: z
-        .array(facetValueSchema)
-        .nullable()
-        .transform((v) => v ?? []),
-      host: z.array(facetValueSchema).optional(),
-      pod: z.array(facetValueSchema).optional(),
-      environment: z.array(facetValueSchema).optional(),
-    }).strict(),
+    facets: z
+      .object({
+        severity_bucket: z
+          .array(z.string())
+          .nullable()
+          .transform((v) => v ?? []),
+        service: z
+          .array(facetValueSchema)
+          .nullable()
+          .transform((v) => v ?? []),
+        host: z.array(facetValueSchema).optional(),
+        pod: z.array(facetValueSchema).optional(),
+        environment: z.array(facetValueSchema).optional(),
+      })
+      .strict(),
   })
   .strict()
   .transform((r): LogsFacets => r.facets);

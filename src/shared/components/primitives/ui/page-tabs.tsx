@@ -27,10 +27,7 @@ export function PageTabs({ items, activeKey, onChange, className }: PageTabsProp
   return (
     <div
       role="tablist"
-      className={cn(
-        "flex items-center gap-0 border-[var(--border-color)] border-b",
-        className
-      )}
+      className={cn("flex items-center gap-0 border-[var(--border-color)] border-b", className)}
     >
       {items.map((item) => {
         const isActive = item.key === activeKey;

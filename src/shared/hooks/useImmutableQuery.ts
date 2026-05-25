@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { type UseQueryOptions, keepPreviousData, useQuery } from "@tanstack/react-query";
 
 /**
  * Like `useStandardQuery` but tuned for data that never changes once fetched
@@ -15,11 +15,11 @@ export function useImmutableQuery<T>(
   options: Omit<UseQueryOptions<T, Error, T>, "queryKey" | "queryFn"> & {
     queryKey: readonly unknown[];
     queryFn: () => Promise<T>;
-  },
+  }
 ) {
   return useQuery<T, Error, T>({
     placeholderData: keepPreviousData,
-    staleTime: Infinity,
+    staleTime: Number.POSITIVE_INFINITY,
     gcTime: HOUR_MS,
     retry: 2,
     ...options,

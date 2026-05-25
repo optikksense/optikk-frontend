@@ -3,7 +3,7 @@
  * shared explorer-core `TRACES_FIELDS` so there is one source of truth
  * for field metadata (label / group / allowed operators).
  */
-import { TRACES_FIELDS, type QueryFieldOption } from "@/features/explorer/constants/fields";
+import { type QueryFieldOption, TRACES_FIELDS } from "@/features/explorer/constants/fields";
 
 export const TRACES_FACET_FIELDS: readonly QueryFieldOption[] = TRACES_FIELDS;
 

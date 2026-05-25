@@ -64,7 +64,6 @@ export async function getDatastoreSummary(
   };
 }
 
-
 export function getDatastoreSystems(
   startTime: RequestTime,
   endTime: RequestTime

@@ -14,10 +14,7 @@ function shortSha(sha: string): string {
 
 function hasAnyMeta(deployment: DeploymentCompareResponse["deployment"]): boolean {
   return Boolean(
-    deployment.commit_sha ||
-      deployment.commit_author ||
-      deployment.repo_url ||
-      deployment.pr_url
+    deployment.commit_sha || deployment.commit_author || deployment.repo_url || deployment.pr_url
   );
 }
 
@@ -75,18 +72,10 @@ function DeploymentCompareCommitMetaComponent({ compare }: Props) {
           </div>
         ) : null}
         {repoURL ? (
-          <ExternalLinkRow
-            icon={<GitCommit size={13} />}
-            label="Repository"
-            href={repoURL}
-          />
+          <ExternalLinkRow icon={<GitCommit size={13} />} label="Repository" href={repoURL} />
         ) : null}
         {prURL ? (
-          <ExternalLinkRow
-            icon={<GitPullRequest size={13} />}
-            label="Pull request"
-            href={prURL}
-          />
+          <ExternalLinkRow icon={<GitPullRequest size={13} />} label="Pull request" href={prURL} />
         ) : null}
       </div>
     </Card>

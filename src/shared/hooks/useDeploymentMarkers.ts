@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { deploymentsApi } from "@/features/overview/api/deploymentsApi";
 import type { DeploymentVersionTrafficPoint } from "@/features/overview/api/deploymentsApi";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 export interface DeploymentMarker {
   readonly at: number;

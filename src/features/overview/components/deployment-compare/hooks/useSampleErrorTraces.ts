@@ -1,7 +1,7 @@
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
-import { useRefreshKey, useTeamId } from "@app/store/appStore";
 import { tracesApi } from "@/features/traces/api/tracesApi";
+import { useRefreshKey, useTeamId } from "@app/store/appStore";
 import type { TracesResponse } from "@entities/trace/model";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 export function useSampleErrorTraces(
   serviceName: string | undefined,

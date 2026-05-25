@@ -25,10 +25,7 @@ export function getLatencyBreakdown(
   return getJson("/spans/latency-breakdown", startTime, endTime);
 }
 
-export function getRedP95Series(
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<unknown[]> {
+export function getRedP95Series(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
   return getJson("/spans/red/p95-latency", startTime, endTime);
 }
 

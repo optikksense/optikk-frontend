@@ -5,9 +5,9 @@ import { ExplorerHeader } from "@/features/explorer/components/chrome/ExplorerHe
 import { SummaryStrip } from "@/features/explorer/components/chrome/SummaryStrip";
 import { FacetRail } from "@/features/explorer/components/facets/FacetRail";
 import { ResultsArea } from "@/features/explorer/components/list/ResultsArea";
-import type { ColumnDef } from "@/features/explorer/types/results";
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { TrendHistogramStrip } from "@/features/explorer/components/trend/TrendHistogramStrip";
+import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import type { ColumnDef } from "@/features/explorer/types/results";
 import { TRACE_TREND_SERIES } from "@/features/explorer/utils/trend";
 
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
@@ -21,7 +21,7 @@ import { useSpansQuery } from "../../hooks/useSpansQuery";
 import type { SpanRow } from "../../types/span";
 import type { TraceSummary } from "../../types/trace";
 import { getTraceRowId } from "./tracesColumns";
-import { useTracesExplorerPage, type UseTracesExplorerPageReturn } from "./useTracesExplorerPage";
+import { type UseTracesExplorerPageReturn, useTracesExplorerPage } from "./useTracesExplorerPage";
 
 /** Three-zone traces explorer: query header + facet rail + scope-switched
  *  results body (traces or spans). Row click navigates to /traces/$traceId. */
@@ -201,17 +201,13 @@ const SPAN_COLUMNS: readonly ColumnDef<SpanRow>[] = [
     key: "http_method",
     label: "Method",
     width: 80,
-    render: (row) => (
-      <span className="font-mono text-xs uppercase">{row.http_method ?? ""}</span>
-    ),
+    render: (row) => <span className="font-mono text-xs uppercase">{row.http_method ?? ""}</span>,
   },
   {
     key: "http_status",
     label: "HTTP",
     width: 72,
-    render: (row) => (
-      <span className="font-mono text-xs">{row.response_status_code ?? ""}</span>
-    ),
+    render: (row) => <span className="font-mono text-xs">{row.response_status_code ?? ""}</span>,
   },
   {
     key: "trace_id",

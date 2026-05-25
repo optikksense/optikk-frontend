@@ -58,11 +58,13 @@ export function useExplorerState(): ExplorerStateApi {
     [setParams]
   );
   const setCursor = useCallback(
-    (next: string | null) => setParams((prev) => setOrDelete(prev, "cursor", next), { replace: true }),
+    (next: string | null) =>
+      setParams((prev) => setOrDelete(prev, "cursor", next), { replace: true }),
     [setParams]
   );
   const setDetail = useCallback(
-    (next: string | null) => setParams((prev) => setOrDelete(prev, "detail", next), { replace: true }),
+    (next: string | null) =>
+      setParams((prev) => setOrDelete(prev, "detail", next), { replace: true }),
     [setParams]
   );
   const clearAll = useCallback(() => {

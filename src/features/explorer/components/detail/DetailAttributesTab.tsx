@@ -43,7 +43,10 @@ function AttributeTable({ rows }: { rows: readonly AttributeRow[] }) {
           key={row.key}
           className="group flex items-start gap-2 border-b border-[var(--border-color)] py-1 text-[12px]"
         >
-          <span className="w-40 shrink-0 truncate font-mono text-[var(--text-secondary)]" title={row.key}>
+          <span
+            className="w-40 shrink-0 truncate font-mono text-[var(--text-secondary)]"
+            title={row.key}
+          >
             {row.key}
           </span>
           <span className="min-w-0 flex-1 break-words font-mono text-[var(--text-primary)]">

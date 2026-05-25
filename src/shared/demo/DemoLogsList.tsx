@@ -30,10 +30,7 @@ export default function DemoLogsList({ limit }: DemoLogsListProps) {
           style={{ gridTemplateColumns: "72px 64px 120px 1fr" }}
         >
           <span className="text-[var(--text-muted)]">{formatTs(row.tsMs)}</span>
-          <span
-            className="font-semibold"
-            style={{ color: LEVEL_TONE[row.level] }}
-          >
+          <span className="font-semibold" style={{ color: LEVEL_TONE[row.level] }}>
             {row.level}
           </span>
           <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-secondary)]">

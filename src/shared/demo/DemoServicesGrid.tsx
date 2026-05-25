@@ -22,9 +22,7 @@ function Cell({ row }: { row: DemoServiceRow }) {
       <div className="mt-0.5 text-[11px]" style={{ color: errorTone }}>
         {row.errorRate.toFixed(2)}% err
       </div>
-      <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">
-        p95 {row.p95Latency}ms
-      </div>
+      <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">p95 {row.p95Latency}ms</div>
     </div>
   );
 }

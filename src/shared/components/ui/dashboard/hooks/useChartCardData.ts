@@ -190,14 +190,7 @@ export function useChartCardData(
     }
 
     return props;
-  }, [
-    serviceTimeseriesMap,
-    endpoints,
-    selectedEndpoints,
-    chartConfig,
-    timeseriesData,
-    panelType,
-  ]);
+  }, [serviceTimeseriesMap, endpoints, selectedEndpoints, chartConfig, timeseriesData, panelType]);
 
   return {
     panelType,

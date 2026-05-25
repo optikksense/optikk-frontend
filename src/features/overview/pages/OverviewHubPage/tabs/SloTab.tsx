@@ -1,20 +1,22 @@
 import { Suspense, lazy, useMemo } from "react";
 
 import { Skeleton, Surface } from "@/components/ui";
-import { getServiceMetrics } from "@/features/overview/api/serviceMetricsApi";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
-import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
+import { getServiceMetrics } from "@/features/overview/api/serviceMetricsApi";
 import { SloIndicatorsRenderer } from "@/features/overview/dashboard/renderers/SloIndicatorsRenderer";
+import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import type { DashboardPanelSpec } from "@/types/dashboardConfig";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
+import { HubSection } from "../HubSection";
 import { mapBurnDownRows, num } from "../chartMappers";
 
 const RequestChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({
+    default: m.default,
+  }))
 );
 
 const SLO_PANEL: DashboardPanelSpec = {
@@ -93,19 +95,25 @@ export default function SloTab() {
       <HubSection title="Burn">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           <Surface elevation={1} padding="sm">
-            <div className="mb-3 font-medium text-[12px] text-[var(--text-secondary)]">Burn rate</div>
+            <div className="mb-3 font-medium text-[12px] text-[var(--text-secondary)]">
+              Burn rate
+            </div>
             {burnRateQ.isPending && !burnRateQ.data ? (
               <Skeleton active paragraph={{ rows: 2 }} />
             ) : (
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">Fast window</div>
+                  <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+                    Fast window
+                  </div>
                   <div className="mt-1 font-semibold text-[20px] tabular-nums text-[var(--text-primary)]">
                     {num(burn?.fast_burn_rate).toFixed(3)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">Slow window</div>
+                  <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+                    Slow window
+                  </div>
                   <div className="mt-1 font-semibold text-[20px] tabular-nums text-[var(--text-primary)]">
                     {num(burn?.slow_burn_rate).toFixed(3)}
                   </div>

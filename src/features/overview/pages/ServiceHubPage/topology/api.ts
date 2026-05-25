@@ -6,31 +6,37 @@ import api from "@shared/api/api";
 const numeric = z.coerce.number().default(0);
 const str = z.string().default("");
 
-const serviceNodeSchema = z.object({
-  name: str,
-  request_count: numeric,
-  error_count: numeric,
-  error_rate: numeric,
-  p50_latency_ms: numeric,
-  p95_latency_ms: numeric,
-  p99_latency_ms: numeric,
-  health: z.enum(["healthy", "degraded", "unhealthy"]).catch("healthy"),
-}).strict();
+const serviceNodeSchema = z
+  .object({
+    name: str,
+    request_count: numeric,
+    error_count: numeric,
+    error_rate: numeric,
+    p50_latency_ms: numeric,
+    p95_latency_ms: numeric,
+    p99_latency_ms: numeric,
+    health: z.enum(["healthy", "degraded", "unhealthy"]).catch("healthy"),
+  })
+  .strict();
 
-const serviceEdgeSchema = z.object({
-  source: str,
-  target: str,
-  call_count: numeric,
-  error_count: numeric,
-  error_rate: numeric,
-  p50_latency_ms: numeric,
-  p95_latency_ms: numeric,
-}).strict();
+const serviceEdgeSchema = z
+  .object({
+    source: str,
+    target: str,
+    call_count: numeric,
+    error_count: numeric,
+    error_rate: numeric,
+    p50_latency_ms: numeric,
+    p95_latency_ms: numeric,
+  })
+  .strict();
 
-export const topologyResponseSchema = z.object({
-  nodes: z.array(serviceNodeSchema).default([]),
-  edges: z.array(serviceEdgeSchema).default([]),
-}).strict();
+export const topologyResponseSchema = z
+  .object({
+    nodes: z.array(serviceNodeSchema).default([]),
+    edges: z.array(serviceEdgeSchema).default([]),
+  })
+  .strict();
 
 export type ServiceTopologyNode = z.infer<typeof serviceNodeSchema>;
 export type ServiceTopologyEdge = z.infer<typeof serviceEdgeSchema>;

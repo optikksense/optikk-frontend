@@ -11,9 +11,7 @@ export const tracesConfig: DomainConfig = {
   key: "traces",
   label: "Traces",
   permissions: ["traces:read"],
-  navigation: [
-    { path: ROUTES.traces, label: "Traces", icon: GitBranch, group: "observe" },
-  ],
+  navigation: [{ path: ROUTES.traces, label: "Traces", icon: GitBranch, group: "observe" }],
   routes: [
     { path: ROUTES.traces, page: TracesExplorerPage },
     { path: ROUTES.traceDetail, page: TraceDetailPage },

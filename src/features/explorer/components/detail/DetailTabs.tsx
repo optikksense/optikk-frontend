@@ -1,5 +1,5 @@
 import * as Tabs from "@radix-ui/react-tabs";
-import { memo, type ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 export interface DetailTabDef {
   readonly key: string;
@@ -15,11 +15,7 @@ interface Props {
 
 function DetailTabsComponent({ tabs, value, onChange }: Props) {
   return (
-    <Tabs.Root
-      value={value}
-      onValueChange={onChange}
-      className="flex min-h-0 flex-1 flex-col"
-    >
+    <Tabs.Root value={value} onValueChange={onChange} className="flex min-h-0 flex-1 flex-col">
       <Tabs.List className="flex shrink-0 items-center gap-2 border-b border-[var(--border-color)] px-3">
         {tabs.map((tab) => (
           <Tabs.Trigger
@@ -32,11 +28,7 @@ function DetailTabsComponent({ tabs, value, onChange }: Props) {
         ))}
       </Tabs.List>
       {tabs.map((tab) => (
-        <Tabs.Content
-          key={tab.key}
-          value={tab.key}
-          className="min-h-0 flex-1 overflow-auto p-3"
-        >
+        <Tabs.Content key={tab.key} value={tab.key} className="min-h-0 flex-1 overflow-auto p-3">
           {tab.content}
         </Tabs.Content>
       ))}

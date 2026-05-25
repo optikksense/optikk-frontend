@@ -26,8 +26,8 @@ function HeaderTitleBlockComponent({ title, seed }: Props) {
           <code className="rounded bg-[var(--bg-tertiary)] px-1">optik.ci.pipeline</code> or{" "}
           <code className="rounded bg-[var(--bg-tertiary)] px-1">git.commit.sha</code> when your
           pipeline emits them (see{" "}
-          <span className="text-[var(--text-secondary)]">docs/telemetry-contracts.md</span>).
-          Quick links below open service-scoped logs/traces for the selected window.
+          <span className="text-[var(--text-secondary)]">docs/telemetry-contracts.md</span>). Quick
+          links below open service-scoped logs/traces for the selected window.
         </p>
       </div>
       <DrawerClose

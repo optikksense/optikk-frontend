@@ -29,7 +29,9 @@ function WaterfallToolbarComponent(p: WaterfallToolbarProps) {
         size="small"
         style={{ width: 200 }}
       />
-      {p.hitLabel ? <HitNav label={p.hitLabel} onPrev={p.onJumpPrev} onNext={p.onJumpNext} /> : null}
+      {p.hitLabel ? (
+        <HitNav label={p.hitLabel} onPrev={p.onJumpPrev} onNext={p.onJumpNext} />
+      ) : null}
       <label className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)]">
         <input
           type="checkbox"
@@ -46,12 +48,28 @@ function WaterfallToolbarComponent(p: WaterfallToolbarProps) {
   );
 }
 
-function HitNav({ label, onPrev, onNext }: { label: string; onPrev?: () => void; onNext?: () => void }) {
+function HitNav({
+  label,
+  onPrev,
+  onNext,
+}: { label: string; onPrev?: () => void; onNext?: () => void }) {
   return (
     <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-      <button type="button" onClick={onPrev} className="rounded px-1 hover:bg-[rgba(255,255,255,0.05)]">↑</button>
+      <button
+        type="button"
+        onClick={onPrev}
+        className="rounded px-1 hover:bg-[rgba(255,255,255,0.05)]"
+      >
+        ↑
+      </button>
       <span>{label}</span>
-      <button type="button" onClick={onNext} className="rounded px-1 hover:bg-[rgba(255,255,255,0.05)]">↓</button>
+      <button
+        type="button"
+        onClick={onNext}
+        className="rounded px-1 hover:bg-[rgba(255,255,255,0.05)]"
+      >
+        ↓
+      </button>
     </div>
   );
 }
@@ -96,7 +114,10 @@ function ServicePills({
   );
 }
 
-function PathLegend({ hasCritical, hasErrorPath }: { hasCritical: boolean; hasErrorPath: boolean }) {
+function PathLegend({
+  hasCritical,
+  hasErrorPath,
+}: { hasCritical: boolean; hasErrorPath: boolean }) {
   return (
     <span className="ml-auto flex items-center gap-2.5 text-[11px] text-[var(--text-muted)]">
       {hasCritical ? (

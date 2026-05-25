@@ -3,17 +3,17 @@ import { Suspense, lazy, useMemo } from "react";
 
 import { Skeleton, Surface } from "@/components/ui";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
+import { ErrorHotspotRankingRenderer } from "@/features/overview/dashboard/renderers/ErrorHotspotRankingRenderer";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import type { DashboardDataSources, DashboardPanelSpec } from "@/types/dashboardConfig";
-import { ErrorHotspotRankingRenderer } from "@/features/overview/dashboard/renderers/ErrorHotspotRankingRenderer";
-import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { buildDashboardDrawerSearch } from "@shared/components/ui/dashboard/utils/dashboardDrawerState";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
+import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
 
-import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
+import { HubSection } from "../HubSection";
 import {
   mapErrorRateRows,
   mapExceptionTypeRows,
@@ -23,13 +23,19 @@ import {
 } from "../chartMappers";
 
 const ErrorRateChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/ErrorRateChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/ErrorRateChart").then((m) => ({
+    default: m.default,
+  }))
 );
 const RequestChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({
+    default: m.default,
+  }))
 );
 const ExceptionTypeLineChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/ExceptionTypeLineChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/ExceptionTypeLineChart").then((m) => ({
+    default: m.default,
+  }))
 );
 
 const HOTSPOT_PANEL: DashboardPanelSpec = {
@@ -60,13 +66,21 @@ export default function ErrorsTab() {
     (_t, s, e) => overviewHubApi.getErrorsServiceErrorRate(s, e),
     opts
   );
-  const volQ = useTimeRangeQuery("overview-err-vol", (_t, s, e) => overviewHubApi.getErrorsVolume(s, e), opts);
+  const volQ = useTimeRangeQuery(
+    "overview-err-vol",
+    (_t, s, e) => overviewHubApi.getErrorsVolume(s, e),
+    opts
+  );
   const exQ = useTimeRangeQuery(
     "overview-err-ex",
     (_t, s, e) => overviewHubApi.getExceptionRateByType(s, e),
     opts
   );
-  const hotQ = useTimeRangeQuery("overview-err-hot", (_t, s, e) => overviewHubApi.getErrorHotspot(s, e), opts);
+  const hotQ = useTimeRangeQuery(
+    "overview-err-hot",
+    (_t, s, e) => overviewHubApi.getErrorHotspot(s, e),
+    opts
+  );
   const groupsQ = useTimeRangeQuery(
     "overview-err-groups",
     (_t, s, e) => overviewHubApi.getErrorGroups(s, e),
@@ -184,7 +198,11 @@ export default function ErrorsTab() {
           {hotQ.isPending && hotRowCount === 0 ? (
             <Skeleton active paragraph={{ rows: 5 }} />
           ) : (
-            <ErrorHotspotRankingRenderer chartConfig={HOTSPOT_PANEL} dataSources={hotspotSources} fillHeight />
+            <ErrorHotspotRankingRenderer
+              chartConfig={HOTSPOT_PANEL}
+              dataSources={hotspotSources}
+              fillHeight
+            />
           )}
         </Surface>
       </HubSection>
@@ -194,7 +212,9 @@ export default function ErrorsTab() {
           {groupsQ.isPending && groupRows.length === 0 ? (
             <Skeleton active paragraph={{ rows: 5 }} />
           ) : groupRows.length === 0 ? (
-            <div className="py-8 text-center text-[13px] text-[var(--text-muted)]">No error groups</div>
+            <div className="py-8 text-center text-[13px] text-[var(--text-muted)]">
+              No error groups
+            </div>
           ) : (
             <table className="w-full min-w-[800px] border-collapse text-left text-[12px]">
               <thead>
@@ -221,11 +241,17 @@ export default function ErrorsTab() {
                       if (qs) navigate({ to: location.pathname + qs });
                     }}
                   >
-                    <td className="max-w-[180px] truncate py-2 pr-3 font-mono text-[11px]">{g.group_id}</td>
+                    <td className="max-w-[180px] truncate py-2 pr-3 font-mono text-[11px]">
+                      {g.group_id}
+                    </td>
                     <td className="py-2 pr-3">{g.service_name}</td>
                     <td className="py-2 pr-3 text-[var(--text-secondary)]">{g.operation_name}</td>
-                    <td className="py-2 pr-3 text-right tabular-nums">{g.http_status_code || "—"}</td>
-                    <td className="py-2 pr-3 text-right tabular-nums">{formatNumber(g.error_count)}</td>
+                    <td className="py-2 pr-3 text-right tabular-nums">
+                      {g.http_status_code || "—"}
+                    </td>
+                    <td className="py-2 pr-3 text-right tabular-nums">
+                      {formatNumber(g.error_count)}
+                    </td>
                     <td className="py-2 font-mono text-[11px] text-[var(--color-primary)]">
                       {g.sample_trace_id || "—"}
                     </td>

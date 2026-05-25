@@ -121,9 +121,8 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   outline: none;
-  transition:
-    border-color var(--duration-fast) var(--ease-default),
-    box-shadow var(--duration-fast) var(--ease-default);
+  transition: border-color var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast)
+    var(--ease-default);
 }
 
 .login-input::placeholder {
@@ -160,9 +159,6 @@
   color: var(--text-primary);
 }
 
-
-
-
 /* ── Submit button ────────────────────────────────────────── */
 .login-submit {
   width: 100%;
@@ -180,10 +176,8 @@
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition:
-    opacity var(--duration-fast) var(--ease-default),
-    transform var(--duration-fast) var(--ease-default),
-    box-shadow var(--duration-fast) var(--ease-default);
+  transition: opacity var(--duration-fast) var(--ease-default), transform var(--duration-fast)
+    var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
 
 .login-submit:hover:not(:disabled) {

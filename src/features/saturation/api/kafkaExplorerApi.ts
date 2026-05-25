@@ -21,12 +21,12 @@ import type {
   GroupHealthRow,
   GroupPartitionsRow,
   GroupTopicRow,
+  KafkaGroupOverview,
+  KafkaGroupRow,
   KafkaPartitionRow,
   KafkaSummary,
-  KafkaTopicRow,
-  KafkaGroupRow,
   KafkaTopicOverview,
-  KafkaGroupOverview,
+  KafkaTopicRow,
   TopicConsumersRow,
   TopicGroupLagRow,
   TopicGroupThroughputRow,
@@ -325,7 +325,6 @@ export function getKafkaGroupTopics(
 
 // Keep partition legacy endpoint since we didn't rewrite it in the backend yet
 export function getKafkaTopicPartitions(
-
   topic: string,
   startTime: RequestTime,
   endTime: RequestTime

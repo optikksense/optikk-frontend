@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { type UseQueryOptions, keepPreviousData, useQuery } from "@tanstack/react-query";
 
 /**
  * Standard query wrapper with project-wide defaults.
@@ -14,7 +14,7 @@ export function useStandardQuery<T>(
   options: Omit<UseQueryOptions<T, Error, T>, "queryKey" | "queryFn"> & {
     queryKey: readonly unknown[];
     queryFn: () => Promise<T>;
-  },
+  }
 ) {
   return useQuery<T, Error, T>({
     placeholderData: keepPreviousData,

@@ -11,10 +11,7 @@ interface Props<Row> {
   readonly trigger: React.ReactNode;
 }
 
-function toggleVisible(
-  config: readonly ColumnConfig[],
-  key: string
-): readonly ColumnConfig[] {
+function toggleVisible(config: readonly ColumnConfig[], key: string): readonly ColumnConfig[] {
   return config.map((entry) => (entry.key === key ? { ...entry, visible: !entry.visible } : entry));
 }
 

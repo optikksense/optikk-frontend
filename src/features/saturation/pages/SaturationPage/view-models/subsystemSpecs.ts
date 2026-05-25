@@ -132,10 +132,13 @@ export function buildOverviewSummary(
   const hasData = ds !== undefined || kafka !== undefined;
   const tone = hasData ? toneFromHealth(p95, err) : "neutral";
   const subsystemCount = (totalSystems > 0 ? 2 : 0) + (kafka?.topic_count ? 1 : 0);
-  const statusText =
-    !hasData ? "no data" :
-    tone === "ok" ? "healthy" :
-    tone === "warn" ? "elevated latency" : "degraded";
+  const statusText = !hasData
+    ? "no data"
+    : tone === "ok"
+      ? "healthy"
+      : tone === "warn"
+        ? "elevated latency"
+        : "degraded";
   return {
     totalSystems,
     totalQueries,

@@ -31,7 +31,7 @@ function buildHref(filters: readonly ExplorerFilter[]): string {
   if (filters.length > 0) {
     params.set(
       "filters",
-      filters.map((f) => `${f.field}:${f.op}:${encodeURIComponent(f.value)}`).join(";"),
+      filters.map((f) => `${f.field}:${f.op}:${encodeURIComponent(f.value)}`).join(";")
     );
   }
   return `/alerts/new?${params.toString()}`;

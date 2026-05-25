@@ -1,6 +1,6 @@
+import type { useVirtualizer } from "@tanstack/react-virtual";
 import type { RefObject } from "react";
 import { memo } from "react";
-import type { useVirtualizer } from "@tanstack/react-virtual";
 
 import { WaterfallRow } from "./WaterfallRow";
 import type { WaterfallSpan, WaterfallTreeSpan } from "./waterfallTypes";
@@ -33,7 +33,13 @@ function WaterfallListComponent(p: WaterfallListProps) {
           return (
             <div
               key={span.span_id}
-              style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${vItem.start}px)` }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                transform: `translateY(${vItem.start}px)`,
+              }}
             >
               <WaterfallRow
                 span={span}

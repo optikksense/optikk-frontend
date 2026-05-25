@@ -1,6 +1,6 @@
 import api from "@/shared/api/api/client";
-import type { RequestTime } from "@shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
+import type { RequestTime } from "@shared/api/service-types";
 
 export const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 

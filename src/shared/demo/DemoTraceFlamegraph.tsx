@@ -35,7 +35,11 @@ export default function DemoTraceFlamegraph() {
             const color = SERVICE_COLOR[span.service] ?? "#8B7FFF";
             const opacity = span.critical ? 1 : 0.55;
             return (
-              <div key={i} className="grid items-center gap-2" style={{ gridTemplateColumns: "180px 1fr 60px" }}>
+              <div
+                key={i}
+                className="grid items-center gap-2"
+                style={{ gridTemplateColumns: "180px 1fr 60px" }}
+              >
                 <div
                   className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[11px] text-[var(--text-primary)]"
                   style={{ paddingLeft: span.depth * 12 }}

@@ -40,8 +40,9 @@ function FacetBucketComponent({ field, bucket, onInclude, onExclude, active }: P
           aria-label={`Include ${field}=${bucket.value}`}
           aria-pressed={isIncluded}
           onClick={() => onInclude(field, bucket.value)}
-          className={`rounded p-1 hover:bg-[var(--bg-primary)] ${isIncluded ? "text-[var(--accent)]" : "text-[var(--text-muted)]"
-            }`}
+          className={`rounded p-1 hover:bg-[var(--bg-primary)] ${
+            isIncluded ? "text-[var(--accent)]" : "text-[var(--text-muted)]"
+          }`}
         >
           <Plus size={12} />
         </button>
@@ -50,8 +51,9 @@ function FacetBucketComponent({ field, bucket, onInclude, onExclude, active }: P
           aria-label={`Exclude ${field}=${bucket.value}`}
           aria-pressed={isExcluded}
           onClick={() => onExclude(field, bucket.value)}
-          className={`rounded p-1 hover:bg-[var(--bg-primary)] ${isExcluded ? "text-[var(--danger)]" : "text-[var(--text-muted)]"
-            }`}
+          className={`rounded p-1 hover:bg-[var(--bg-primary)] ${
+            isExcluded ? "text-[var(--danger)]" : "text-[var(--text-muted)]"
+          }`}
         >
           <Minus size={12} />
         </button>

@@ -18,7 +18,10 @@ interface Props {
 function FacetRailComponent(props: Props) {
   const [collapsed, setCollapsed] = useState(Boolean(props.defaultCollapsed));
   const [search, setSearch] = useState("");
-  const visibleGroups = useMemo(() => filterGroupsBySearch(props.groups, search), [props.groups, search]);
+  const visibleGroups = useMemo(
+    () => filterGroupsBySearch(props.groups, search),
+    [props.groups, search]
+  );
   if (collapsed) return <CollapsedRail onExpand={() => setCollapsed(false)} />;
   return (
     <aside className="flex w-64 shrink-0 flex-col overflow-y-auto border-r border-[var(--border-color)] bg-[var(--bg-primary)]">
@@ -71,9 +74,13 @@ function RailHeader({
   return (
     <header className="flex items-center justify-between gap-2 px-2 py-2">
       <div className="flex items-center gap-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Facets</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+          Facets
+        </span>
         {activeFilterCount && activeFilterCount > 0 ? (
-          <span className="rounded bg-[var(--accent)] px-1.5 text-[10px] font-semibold text-white">{activeFilterCount}</span>
+          <span className="rounded bg-[var(--accent)] px-1.5 text-[10px] font-semibold text-white">
+            {activeFilterCount}
+          </span>
         ) : null}
       </div>
       <div className="flex items-center gap-1">
@@ -116,7 +123,7 @@ function RailSearch({ value, onChange }: { value: string; onChange: (v: string) 
 
 function filterGroupsBySearch(
   groups: readonly FacetGroupModel[],
-  search: string,
+  search: string
 ): readonly FacetGroupModel[] {
   const q = search.trim().toLowerCase();
   if (!q) return groups;

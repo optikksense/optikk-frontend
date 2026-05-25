@@ -25,22 +25,24 @@ function extractNextCursor(pageInfo: unknown): string | undefined {
 }
 
 /** Backend `explorer.Trace` / traces_index row (`internal/modules/traces/explorer/models.go`). */
-export const rawTraceRowSchema = z.object({
-  trace_id: z.string(),
-  start_ms: z.coerce.number(),
-  end_ms: z.coerce.number(),
-  duration_ms: z.coerce.number(),
-  root_service: z.string(),
-  root_operation: z.string(),
-  root_status: z.string().optional(),
-  root_http_method: z.string().optional(),
-  root_http_status: z.string().optional(),
-  span_count: z.coerce.number(),
-  has_error: z.coerce.boolean(),
-  error_count: z.coerce.number(),
-  service_set: z.array(z.string()).optional(),
-  truncated: z.coerce.boolean().optional(),
-}).strict();
+export const rawTraceRowSchema = z
+  .object({
+    trace_id: z.string(),
+    start_ms: z.coerce.number(),
+    end_ms: z.coerce.number(),
+    duration_ms: z.coerce.number(),
+    root_service: z.string(),
+    root_operation: z.string(),
+    root_status: z.string().optional(),
+    root_http_method: z.string().optional(),
+    root_http_status: z.string().optional(),
+    span_count: z.coerce.number(),
+    has_error: z.coerce.boolean(),
+    error_count: z.coerce.number(),
+    service_set: z.array(z.string()).optional(),
+    truncated: z.coerce.boolean().optional(),
+  })
+  .strict();
 
 function normalizeHttpStatus(v: string | undefined): string | undefined {
   if (v == null || v === "" || v === "0") return undefined;
@@ -70,10 +72,12 @@ export function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): T
   };
 }
 
-const facetBucketSchema = z.object({
-  value: z.string(),
-  count: z.coerce.number(),
-}).strict();
+const facetBucketSchema = z
+  .object({
+    value: z.string(),
+    count: z.coerce.number(),
+  })
+  .strict();
 
 const facetBucketsArraySchema = z
   .union([z.array(facetBucketSchema), z.null()])
@@ -92,9 +96,7 @@ const rawFacetsSchema = z
   .nullable()
   .optional();
 
-function normalizeFacets(
-  raw: z.infer<typeof rawFacetsSchema>
-): TracesQueryResponse["facets"] {
+function normalizeFacets(raw: z.infer<typeof rawFacetsSchema>): TracesQueryResponse["facets"] {
   if (raw == null) return undefined;
   const out: Record<string, Array<{ value: string; count: number }>> = {};
   for (const [k, arr] of Object.entries(raw)) {
@@ -105,17 +107,21 @@ function normalizeFacets(
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
-const rawSummarySchema = z.object({
-  total_traces: z.coerce.number(),
-  total_errors: z.coerce.number(),
-  total_duration_ns: z.coerce.number().optional(),
-}).strict();
+const rawSummarySchema = z
+  .object({
+    total_traces: z.coerce.number(),
+    total_errors: z.coerce.number(),
+    total_duration_ns: z.coerce.number().optional(),
+  })
+  .strict();
 
-const rawTrendRowSchema = z.object({
-  time_bucket: z.string(),
-  total: z.coerce.number(),
-  errors: z.coerce.number(),
-}).strict();
+const rawTrendRowSchema = z
+  .object({
+    time_bucket: z.string(),
+    total: z.coerce.number(),
+    errors: z.coerce.number(),
+  })
+  .strict();
 
 const tracesQueryResponseSchema = z
   .object({
@@ -165,13 +171,18 @@ export async function query(body: TracesQueryRequest): Promise<TracesQueryRespon
   const { include: _ignore, ...reqBody } = body;
   const raw = await api.post<unknown>(`${BASE}/traces/query`, reqBody);
 
-  if (import.meta.env.DEV && body.startTime > 0 && body.endTime > body.startTime && body.endTime < 1e12) {
+  if (
+    import.meta.env.DEV &&
+    body.startTime > 0 &&
+    body.endTime > body.startTime &&
+    body.endTime < 1e12
+  ) {
     console.warn(
       "[traces/query] startTime/endTime look like seconds, not ms — queries may return no rows.",
       { startTime: body.startTime, endTime: body.endTime }
     );
   }
-  
+
   try {
     return validateResponse(tracesQueryResponseSchema, raw);
   } catch (err) {

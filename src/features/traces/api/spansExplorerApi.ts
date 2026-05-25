@@ -10,21 +10,23 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 const warningSchema = z.object({ code: z.string(), message: z.string() }).strict();
 
-const spanRowSchema = z.object({
-  span_id: z.string(),
-  trace_id: z.string(),
-  parent_span_id: z.string().optional(),
-  service_name: z.string(),
-  operation: z.string(),
-  kind: z.string().optional(),
-  duration_ms: z.coerce.number(),
-  timestamp_ns: z.coerce.number(),
-  has_error: z.coerce.boolean(),
-  status: z.string().optional(),
-  http_method: z.string().optional(),
-  response_status_code: z.string().optional(),
-  environment: z.string().optional(),
-}).strict();
+const spanRowSchema = z
+  .object({
+    span_id: z.string(),
+    trace_id: z.string(),
+    parent_span_id: z.string().optional(),
+    service_name: z.string(),
+    operation: z.string(),
+    kind: z.string().optional(),
+    duration_ms: z.coerce.number(),
+    timestamp_ns: z.coerce.number(),
+    has_error: z.coerce.boolean(),
+    status: z.string().optional(),
+    http_method: z.string().optional(),
+    response_status_code: z.string().optional(),
+    environment: z.string().optional(),
+  })
+  .strict();
 
 const responseSchema = z
   .object({
@@ -56,7 +58,7 @@ function extractNextCursor(pageInfo: unknown): string | undefined {
 }
 
 function normalizeWarnings(
-  raw: readonly (string | z.infer<typeof warningSchema>)[] | undefined,
+  raw: readonly (string | z.infer<typeof warningSchema>)[] | undefined
 ): SpansQueryResponse["warnings"] {
   if (!raw?.length) return undefined;
   return raw.map((item) => (typeof item === "string" ? { code: "query", message: item } : item));

@@ -68,6 +68,6 @@ export const useTracesStore = create<TracesState>()(
         drawerWidthPx: s.drawerWidthPx,
         spanDetailTab: s.spanDetailTab,
       }),
-    },
-  ),
+    }
+  )
 );

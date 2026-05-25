@@ -1,9 +1,9 @@
+import { getTraceLogs } from "@/features/log/api/traceLogsApi";
 import { tracesService } from "@shared/api/tracesService";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
+import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useEffect, useMemo, useState } from "react";
-import { getTraceLogs } from "@/features/log/api/traceLogsApi";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
 export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: string) {
@@ -48,10 +48,7 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     enabled: !!selectedTeamId && !!traceIdParam,
   });
 
-  const traceLogs = useMemo(
-    () => (logsData?.logs ?? []).map(normalizeTraceLog),
-    [logsData]
-  );
+  const traceLogs = useMemo(() => (logsData?.logs ?? []).map(normalizeTraceLog), [logsData]);
 
   const stats = useMemo(() => calculateTraceStats(spans), [spans]);
   const selectedSpan = useMemo(

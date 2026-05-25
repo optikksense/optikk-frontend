@@ -1,5 +1,5 @@
 import { Columns3 } from "lucide-react";
-import { memo, type ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 import type { ColumnConfig, ColumnDef } from "../../types/results";
 

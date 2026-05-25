@@ -9,10 +9,7 @@ function WaterfallRulerComponent({ traceDuration }: { traceDuration: number }) {
     <div className="relative h-5 border-b border-[var(--glass-border)] bg-[rgba(255,255,255,0.02)]">
       <div className="absolute inset-x-0 flex h-full" style={{ paddingLeft: 360 }}>
         {ticks.map((i) => (
-          <div
-            key={i}
-            className="relative flex-1 text-[10px] text-[var(--text-muted)]"
-          >
+          <div key={i} className="relative flex-1 text-[10px] text-[var(--text-muted)]">
             <span
               className="absolute left-0 top-0 -translate-x-1/2 whitespace-nowrap"
               style={{ display: i === 0 ? "none" : undefined }}

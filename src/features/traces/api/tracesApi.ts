@@ -1,3 +1,4 @@
+import { tracesService } from "@shared/api/tracesService";
 /**
  * Retargeted shim — preserves the legacy `tracesApi.getTraces` / `getTraceSpans`
  * signatures used by overview dashboards (ServicePage, deployment-compare)
@@ -8,12 +9,11 @@
  * backend querycompiler accepts. Keep external signatures stable.
  */
 import type { TraceRecord, TracesResponse } from "@shared/entities/trace/model";
-import { tracesService } from "@shared/api/tracesService";
 
 import type { ExplorerFilter } from "@/features/explorer/types";
 
-import { tracesExplorerApi } from "./tracesExplorerApi";
 import type { TraceSummary } from "../types/trace";
+import { tracesExplorerApi } from "./tracesExplorerApi";
 
 export interface LegacyTracesQueryParams {
   readonly services?: readonly string[];
@@ -47,7 +47,9 @@ function toTraceRecord(summary: TraceSummary): TraceRecord {
     status: summary.root_status,
     span_kind: "SERVER",
     http_method: summary.root_http_method,
-    http_status_code: summary.root_http_status ? parseInt(summary.root_http_status, 10) || undefined : undefined,
+    http_status_code: summary.root_http_status
+      ? Number.parseInt(summary.root_http_status, 10) || undefined
+      : undefined,
   };
 }
 
