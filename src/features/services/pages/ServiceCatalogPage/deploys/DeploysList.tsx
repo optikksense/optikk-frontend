@@ -19,11 +19,6 @@ function DeployRow({ row }: { row: RecentDeploy }) {
         </Link>
         <span className="text-[var(--text-muted)]">→</span>
         <span className="font-mono text-[var(--text-primary)]">{row.version}</span>
-        {row.commit_sha && (
-          <span className="font-mono text-[11px] text-[var(--text-muted)]">
-            ({row.commit_sha.slice(0, 8)})
-          </span>
-        )}
       </div>
       <span className="font-mono text-[11px] text-[var(--text-muted)]">{row.environment}</span>
       <span className="font-mono text-[11px] text-[var(--text-muted)]">
