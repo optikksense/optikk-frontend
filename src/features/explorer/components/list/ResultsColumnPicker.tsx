@@ -47,7 +47,7 @@ function ResultsColumnPickerImpl<Row>({ columns, config, onChange, trigger }: Pr
           sideOffset={6}
           className="z-50 flex w-64 flex-col gap-1 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] p-2 shadow-lg"
         >
-          <span className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+          <span className="px-2 py-1 font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-wider">
             Columns
           </span>
           {config.map((entry, index) => {

@@ -35,11 +35,11 @@ function FacetShowAllModalComponent(props: Props) {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50" />
         <Dialog.Content
-          className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-[480px] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 shadow-xl"
+          className="-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 z-50 flex max-h-[80vh] w-[480px] flex-col gap-3 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 shadow-xl"
           aria-describedby={undefined}
         >
           <div className="flex items-center justify-between">
-            <Dialog.Title className="text-[13px] font-medium text-[var(--text-primary)]">
+            <Dialog.Title className="font-medium text-[13px] text-[var(--text-primary)]">
               {label}
             </Dialog.Title>
             <Dialog.Close

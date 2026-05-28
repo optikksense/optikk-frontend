@@ -34,7 +34,7 @@ export const TraceDurationCell = memo(function TraceDurationCell({
       <div className="h-1.5 w-16 overflow-hidden rounded bg-[var(--bg-hover)]">
         <div className={`h-full ${tone}`} style={{ width: `${width}%` }} aria-hidden />
       </div>
-      <span className="shrink-0 text-[11px] tabular-nums text-[var(--text-secondary)]">
+      <span className="shrink-0 text-[11px] text-[var(--text-secondary)] tabular-nums">
         {formatDuration(durationMs)}
       </span>
     </div>

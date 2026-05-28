@@ -34,7 +34,7 @@ export default function WaterfallChart(props: Props) {
   });
   if (!props.spans || props.spans.length === 0) {
     return (
-      <div className="py-[60px] text-center text-sm text-[var(--text-muted)]">
+      <div className="py-[60px] text-center text-[var(--text-muted)] text-sm">
         No spans available
       </div>
     );

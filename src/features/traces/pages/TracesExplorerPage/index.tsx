@@ -159,7 +159,7 @@ const SPAN_COLUMNS: readonly ColumnDef<SpanRow>[] = [
     label: "Time",
     width: 170,
     render: (row) => (
-      <span className="font-mono text-xs text-[var(--text-secondary)]">
+      <span className="font-mono text-[var(--text-secondary)] text-xs">
         {new Date(row.timestamp_ns / 1_000_000).toISOString().slice(11, 23)}
       </span>
     ),
@@ -226,7 +226,7 @@ function SpanStatusBadge({ status, hasError }: { status: string | undefined; has
   const label = hasError ? "ERROR" : status || "UNSET";
   return (
     <span
-      className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase"
+      className="inline-flex items-center rounded px-1.5 py-0.5 font-semibold text-[10px] uppercase"
       style={{ backgroundColor: `${color}22`, color }}
     >
       {label}

@@ -227,11 +227,11 @@ export default function LatencyRedTab() {
             <table className="w-full min-w-[640px] border-collapse text-left text-[12px]">
               <thead>
                 <tr className="border-[var(--border-color)] border-b text-[var(--text-secondary)]">
-                  <th className="pb-2 pr-3 font-medium">Service</th>
-                  <th className="pb-2 pr-3 font-medium">Operation</th>
-                  <th className="pb-2 pr-3 text-right font-medium">Spans</th>
-                  <th className="pb-2 pr-3 text-right font-medium">P50</th>
-                  <th className="pb-2 pr-3 text-right font-medium">P95</th>
+                  <th className="pr-3 pb-2 font-medium">Service</th>
+                  <th className="pr-3 pb-2 font-medium">Operation</th>
+                  <th className="pr-3 pb-2 text-right font-medium">Spans</th>
+                  <th className="pr-3 pb-2 text-right font-medium">P50</th>
+                  <th className="pr-3 pb-2 text-right font-medium">P95</th>
                   <th className="pb-2 text-right font-medium">P99</th>
                 </tr>
               </thead>

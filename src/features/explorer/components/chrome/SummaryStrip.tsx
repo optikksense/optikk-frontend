@@ -22,10 +22,10 @@ function SummaryStripComponent({ kpis }: Props) {
     <div className="flex flex-wrap items-center gap-4">
       {kpis.map((kpi) => (
         <div key={kpi.label} className="flex flex-col" title={kpi.hint}>
-          <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
             {kpi.label}
           </span>
-          <span className={`text-base font-semibold ${toneClass(kpi.tone)}`}>{kpi.value}</span>
+          <span className={`font-semibold text-base ${toneClass(kpi.tone)}`}>{kpi.value}</span>
         </div>
       ))}
     </div>

@@ -31,7 +31,7 @@ function FacetBucketComponent({ field, bucket, onInclude, onExclude, active }: P
           {bucket.value || "(empty)"}
         </span>
       </div>
-      <span className="shrink-0 text-[11px] tabular-nums text-[var(--text-muted)]">
+      <span className="shrink-0 text-[11px] text-[var(--text-muted)] tabular-nums">
         {bucket.count.toLocaleString()}
       </span>
       <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">

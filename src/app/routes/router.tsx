@@ -69,7 +69,7 @@ function createProtected(
       loader: () => {
         throw redirect({ to: fallbackPath, replace: true });
       },
-    });
+    }) as any;
   }
   return createRoute({
     getParentRoute: () => mainLayoutRoute,
@@ -81,7 +81,7 @@ function createProtected(
         </Suspense>
       </FeatureErrorBoundary>
     ),
-  });
+  }) as any;
 }
 
 const protectedExplorerRoutes = getExplorerRoutes().map((route) =>

@@ -37,7 +37,7 @@ export const TraceStatusBadge = memo(function TraceStatusBadge({
   const { label, bg, fg } = classify(status, hasError);
   return (
     <span
-      className={`inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium ${bg} ${fg}`}
+      className={`inline-flex items-center rounded px-2 py-0.5 font-medium text-[11px] ${bg} ${fg}`}
     >
       {label}
     </span>

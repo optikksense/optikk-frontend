@@ -52,9 +52,12 @@ export function useExplorerState(): ExplorerStateApi {
   );
   const setMode = useCallback(
     (next: ExplorerMode) =>
-      setParams((prev) => setOrDelete(prev, "mode", next === "analytics" ? "analytics" : null), {
-        replace: true,
-      }),
+      setParams(
+        (prev) => setOrDelete(prev, "mode", (next as string) === "analytics" ? "analytics" : null),
+        {
+          replace: true,
+        }
+      ),
     [setParams]
   );
   const setCursor = useCallback(

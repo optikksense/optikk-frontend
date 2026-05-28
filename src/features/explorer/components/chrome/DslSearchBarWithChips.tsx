@@ -89,7 +89,7 @@ function Chip({ filter, tone, onRemove }: ChipProps) {
     <span
       className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[11px] ${tone}`}
     >
-      <span className="truncate max-w-[260px]">
+      <span className="max-w-[260px] truncate">
         {filter.field === "search" ? "" : `${filter.field}${opLabel(filter.op)}`}
         {filter.value}
       </span>

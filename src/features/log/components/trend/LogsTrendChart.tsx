@@ -408,7 +408,7 @@ function computeTicks(max: number): readonly number[] {
 
 function niceCeil(n: number): number {
   if (n <= 1) return 1;
-  const pow = Math.pow(10, Math.floor(Math.log10(n)));
+  const pow = 10 ** Math.floor(Math.log10(n));
   const norm = n / pow;
   let nice: number;
   if (norm <= 1) nice = 1;

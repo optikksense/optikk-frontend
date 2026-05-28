@@ -88,7 +88,7 @@ export default function ApmTab() {
               <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
                 {k.label} (ms)
               </div>
-              <div className="mt-1 font-semibold text-[17px] tabular-nums text-[var(--text-primary)]">
+              <div className="mt-1 font-semibold text-[17px] text-[var(--text-primary)] tabular-nums">
                 {rpcDurQ.isPending && !rpcDurQ.data ? "—" : k.value}
               </div>
             </Surface>
@@ -99,7 +99,7 @@ export default function ApmTab() {
             <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
               Memory RSS
             </div>
-            <div className="mt-1 font-semibold text-[17px] tabular-nums text-[var(--text-primary)]">
+            <div className="mt-1 font-semibold text-[17px] text-[var(--text-primary)] tabular-nums">
               {memQ.isPending && !memQ.data ? "—" : `${(num(mem?.rss) / 1_048_576).toFixed(1)} MiB`}
             </div>
           </Surface>
@@ -107,7 +107,7 @@ export default function ApmTab() {
             <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
               Memory VMS
             </div>
-            <div className="mt-1 font-semibold text-[17px] tabular-nums text-[var(--text-primary)]">
+            <div className="mt-1 font-semibold text-[17px] text-[var(--text-primary)] tabular-nums">
               {memQ.isPending && !memQ.data ? "—" : `${(num(mem?.vms) / 1_048_576).toFixed(1)} MiB`}
             </div>
           </Surface>

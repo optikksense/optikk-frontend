@@ -84,17 +84,16 @@ function SpanDrawerComponent({ open, widthPx, minPx, maxPx, onResize, onClose, c
 
   return (
     <aside
-      role="complementary"
       aria-label="Span detail"
       style={{ width: widthPx }}
-      className="absolute top-0 right-0 bottom-0 z-30 flex flex-col border-l border-[var(--border-color)] bg-[var(--bg-primary)] shadow-[-4px_0_16px_rgba(0,0,0,0.25)]"
+      className="absolute top-0 right-0 bottom-0 z-30 flex flex-col border-[var(--border-color)] border-l bg-[var(--bg-primary)] shadow-[-4px_0_16px_rgba(0,0,0,0.25)]"
     >
       <div
         role="separator"
         aria-orientation="vertical"
         aria-label="Resize span detail"
         onPointerDown={onHandlePointerDown}
-        className="absolute top-0 bottom-0 left-0 z-10 w-[5px] -translate-x-[2px] cursor-col-resize hover:bg-[var(--color-primary,#648FFF)]/30 active:bg-[var(--color-primary,#648FFF)]/50"
+        className="-translate-x-[2px] absolute top-0 bottom-0 left-0 z-10 w-[5px] cursor-col-resize hover:bg-[var(--color-primary,#648FFF)]/30 active:bg-[var(--color-primary,#648FFF)]/50"
       />
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
     </aside>

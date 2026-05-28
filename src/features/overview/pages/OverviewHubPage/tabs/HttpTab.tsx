@@ -93,7 +93,7 @@ export default function HttpTab() {
               <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
                 {k.label} (ms)
               </div>
-              <div className="mt-1 font-semibold text-[17px] tabular-nums text-[var(--text-primary)]">
+              <div className="mt-1 font-semibold text-[17px] text-[var(--text-primary)] tabular-nums">
                 {durQ.isPending && !durQ.data ? "—" : k.value}
               </div>
             </Surface>

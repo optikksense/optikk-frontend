@@ -24,7 +24,7 @@ function FacetRailComponent(props: Props) {
   );
   if (collapsed) return <CollapsedRail onExpand={() => setCollapsed(false)} />;
   return (
-    <aside className="flex w-64 shrink-0 flex-col overflow-y-auto border-r border-[var(--border-color)] bg-[var(--bg-primary)]">
+    <aside className="flex w-64 shrink-0 flex-col overflow-y-auto border-[var(--border-color)] border-r bg-[var(--bg-primary)]">
       <RailHeader
         activeFilterCount={props.activeFilterCount}
         onClearAll={props.onClearAll}
@@ -48,7 +48,7 @@ function FacetRailComponent(props: Props) {
 
 function CollapsedRail({ onExpand }: { onExpand: () => void }) {
   return (
-    <aside className="flex w-8 shrink-0 flex-col items-center border-r border-[var(--border-color)] bg-[var(--bg-primary)] py-2">
+    <aside className="flex w-8 shrink-0 flex-col items-center border-[var(--border-color)] border-r bg-[var(--bg-primary)] py-2">
       <button
         type="button"
         aria-label="Expand facets"
@@ -74,11 +74,11 @@ function RailHeader({
   return (
     <header className="flex items-center justify-between gap-2 px-2 py-2">
       <div className="flex items-center gap-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+        <span className="font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-wider">
           Facets
         </span>
         {activeFilterCount && activeFilterCount > 0 ? (
-          <span className="rounded bg-[var(--accent)] px-1.5 text-[10px] font-semibold text-white">
+          <span className="rounded bg-[var(--accent)] px-1.5 font-semibold text-[10px] text-white">
             {activeFilterCount}
           </span>
         ) : null}

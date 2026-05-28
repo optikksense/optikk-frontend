@@ -283,7 +283,7 @@ export default function SummaryTab() {
             <table className="w-full min-w-[720px] border-collapse text-left text-[12px]">
               <thead>
                 <tr className="border-[var(--border-color)] border-b text-[var(--text-secondary)]">
-                  <th className="pb-2 pr-3">
+                  <th className="pr-3 pb-2">
                     <button
                       type="button"
                       className="font-medium hover:text-[var(--text-primary)]"
@@ -292,7 +292,7 @@ export default function SummaryTab() {
                       Service {sortKey === "service_name" ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                  <th className="pb-2 pr-3 text-right">
+                  <th className="pr-3 pb-2 text-right">
                     <button
                       type="button"
                       className="font-medium hover:text-[var(--text-primary)]"
@@ -301,7 +301,7 @@ export default function SummaryTab() {
                       Requests {sortKey === "request_count" ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                  <th className="pb-2 pr-3 text-right">
+                  <th className="pr-3 pb-2 text-right">
                     <button
                       type="button"
                       className="font-medium hover:text-[var(--text-primary)]"
@@ -310,7 +310,7 @@ export default function SummaryTab() {
                       Err % {sortKey === "error_rate" ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                  <th className="pb-2 pr-3 text-right">
+                  <th className="pr-3 pb-2 text-right">
                     <button
                       type="button"
                       className="font-medium hover:text-[var(--text-primary)]"

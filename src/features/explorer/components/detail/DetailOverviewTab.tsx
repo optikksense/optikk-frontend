@@ -30,7 +30,7 @@ function DetailOverviewTabComponent({ fields, footer }: Props) {
           </div>
         ))}
       </dl>
-      {footer ? <div className="border-t border-[var(--border-color)] pt-2">{footer}</div> : null}
+      {footer ? <div className="border-[var(--border-color)] border-t pt-2">{footer}</div> : null}
     </div>
   );
 }

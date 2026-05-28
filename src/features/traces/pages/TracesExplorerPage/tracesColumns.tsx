@@ -51,7 +51,7 @@ export function buildTraceColumns(): readonly ColumnDef<TraceSummary>[] {
       key: "has_error",
       label: "Error",
       width: 72,
-      render: (row) => (row.has_error ? <span className="text-xs text-[#e8494d]">●</span> : null),
+      render: (row) => (row.has_error ? <span className="text-[#e8494d] text-xs">●</span> : null),
     },
     {
       key: "environment",
@@ -64,7 +64,7 @@ export function buildTraceColumns(): readonly ColumnDef<TraceSummary>[] {
 
 function renderStart(row: TraceSummary) {
   return (
-    <span className="font-mono text-xs text-[var(--text-secondary)]">
+    <span className="font-mono text-[var(--text-secondary)] text-xs">
       {new Date(row.start_ms).toISOString().slice(11, 23).replace("T", "")}
     </span>
   );
@@ -123,7 +123,7 @@ function StatusDot({ status, hasError }: { status: string | undefined; hasError:
   }
 
   return (
-    <span className={`inline-flex items-center gap-1 text-[11px] font-medium ${textColor}`}>
+    <span className={`inline-flex items-center gap-1 font-medium text-[11px] ${textColor}`}>
       <span
         className="inline-block size-1.5 shrink-0 rounded-full"
         style={{ backgroundColor: dotColor }}

@@ -106,7 +106,7 @@ export default function SloTab() {
                   <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
                     Fast window
                   </div>
-                  <div className="mt-1 font-semibold text-[20px] tabular-nums text-[var(--text-primary)]">
+                  <div className="mt-1 font-semibold text-[20px] text-[var(--text-primary)] tabular-nums">
                     {num(burn?.fast_burn_rate).toFixed(3)}
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export default function SloTab() {
                   <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
                     Slow window
                   </div>
-                  <div className="mt-1 font-semibold text-[20px] tabular-nums text-[var(--text-primary)]">
+                  <div className="mt-1 font-semibold text-[20px] text-[var(--text-primary)] tabular-nums">
                     {num(burn?.slow_burn_rate).toFixed(3)}
                   </div>
                 </div>
@@ -122,7 +122,7 @@ export default function SloTab() {
                   <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
                     Budget remaining
                   </div>
-                  <div className="mt-1 font-semibold text-[20px] tabular-nums text-[var(--color-primary)]">
+                  <div className="mt-1 font-semibold text-[20px] text-[var(--color-primary)] tabular-nums">
                     {num(burn?.budget_remaining_pct).toFixed(2)}%
                   </div>
                 </div>

@@ -33,7 +33,7 @@ function ResourceFacetComponent({ field, label, values, onInclude, onExclude }: 
             e.preventDefault();
             onExclude(field, item.value);
           }}
-          title={`Click to filter, right-click to exclude`}
+          title={"Click to filter, right-click to exclude"}
         >
           <span className="ok-list-row-n">{item.value || "(empty)"}</span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>

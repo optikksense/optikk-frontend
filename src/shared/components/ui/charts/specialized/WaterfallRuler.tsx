@@ -6,12 +6,12 @@ import { formatDuration } from "@shared/utils/formatters";
 function WaterfallRulerComponent({ traceDuration }: { traceDuration: number }) {
   const ticks = Array.from({ length: 11 }, (_, i) => i);
   return (
-    <div className="relative h-5 border-b border-[var(--glass-border)] bg-[rgba(255,255,255,0.02)]">
+    <div className="relative h-5 border-[var(--glass-border)] border-b bg-[rgba(255,255,255,0.02)]">
       <div className="absolute inset-x-0 flex h-full" style={{ paddingLeft: 360 }}>
         {ticks.map((i) => (
           <div key={i} className="relative flex-1 text-[10px] text-[var(--text-muted)]">
             <span
-              className="absolute left-0 top-0 -translate-x-1/2 whitespace-nowrap"
+              className="-translate-x-1/2 absolute top-0 left-0 whitespace-nowrap"
               style={{ display: i === 0 ? "none" : undefined }}
             >
               {formatDuration((traceDuration * i) / 10)}

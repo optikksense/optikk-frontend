@@ -47,11 +47,11 @@ const InfraSeriesList = memo(function InfraSeriesList({
   if (series.length === 0) return null;
 
   return (
-    <div className="mt-2 border-t border-[var(--border-color)] pt-2">
-      <div className="max-h-[180px] overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--border-color)] scrollbar-track-transparent">
+    <div className="mt-2 border-[var(--border-color)] border-t pt-2">
+      <div className="scrollbar-thin scrollbar-thumb-[var(--border-color)] scrollbar-track-transparent max-h-[180px] overflow-y-auto">
         <table className="w-full border-collapse text-left text-[12px]">
           <thead>
-            <tr className="border-b border-[var(--border-color)] text-[var(--text-secondary)]">
+            <tr className="border-[var(--border-color)] border-b text-[var(--text-secondary)]">
               <th className="px-2 py-1 font-medium">Name</th>
               <th className="px-2 py-1 text-right font-medium">{title}</th>
             </tr>

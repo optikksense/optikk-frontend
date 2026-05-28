@@ -96,7 +96,7 @@ function LogsKpiStripComponent({ summary, loading }: Props) {
               {card.icon}
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider">
+              <span className="font-medium text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
                 {card.label}
               </span>
               <span

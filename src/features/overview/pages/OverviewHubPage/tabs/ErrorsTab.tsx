@@ -219,11 +219,11 @@ export default function ErrorsTab() {
             <table className="w-full min-w-[800px] border-collapse text-left text-[12px]">
               <thead>
                 <tr className="border-[var(--border-color)] border-b text-[var(--text-secondary)]">
-                  <th className="pb-2 pr-3 font-medium">Group</th>
-                  <th className="pb-2 pr-3 font-medium">Service</th>
-                  <th className="pb-2 pr-3 font-medium">Operation</th>
-                  <th className="pb-2 pr-3 text-right font-medium">HTTP</th>
-                  <th className="pb-2 pr-3 text-right font-medium">Errors</th>
+                  <th className="pr-3 pb-2 font-medium">Group</th>
+                  <th className="pr-3 pb-2 font-medium">Service</th>
+                  <th className="pr-3 pb-2 font-medium">Operation</th>
+                  <th className="pr-3 pb-2 text-right font-medium">HTTP</th>
+                  <th className="pr-3 pb-2 text-right font-medium">Errors</th>
                   <th className="pb-2 font-medium">Sample trace</th>
                 </tr>
               </thead>
