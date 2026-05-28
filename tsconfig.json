@@ -29,7 +29,6 @@
     "paths": {
       "@/*": ["src/*"],
       "@/lib/*": ["src/shared/lib/*"],
-      "@/services/*": ["src/shared/api/*"],
       "@/types": ["src/shared/types/index.ts"],
       "@/types/*": ["src/shared/types/*"],
       "@app/*": ["src/app/*"],
@@ -37,14 +36,9 @@
       "@shared/*": ["src/shared/*"],
       "@config/*": ["src/config/*"],
       "@store/*": ["src/app/store/*"],
-      "@utils/*": ["src/shared/utils/*"],
-      "@hooks/*": ["src/shared/hooks/*"],
-      "@services/*": ["src/shared/api/*"],
-      "@components/*": ["src/shared/components/*"],
       "@/components/*": ["src/shared/components/primitives/*"],
       "@/components/ui/*": ["src/shared/components/primitives/ui/*"],
-      "@/features/explorer-core/*": ["src/features/explorer/*"],
-      "@/hooks/*": ["src/shared/hooks/*"]
+      "@/features/explorer-core/*": ["src/features/explorer/*"]
     }
   },
   "include": ["src"],

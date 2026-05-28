@@ -138,5 +138,3 @@ From [package.json](package.json):
 
 - Frontend overview: [README.md](README.md)
 - Backend overview: [../optikk-backend/README.md](../optikk-backend/README.md)
-- Telemetry contracts: [docs/telemetry-contracts.md](docs/telemetry-contracts.md)
-- Flow diagrams: [docs/flows/](docs/flows/) — frontend-data-flow
