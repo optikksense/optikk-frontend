@@ -32,8 +32,10 @@ function normalizeCpuPercent(raw: number | undefined): number | null {
 function useAvgCpu(): number | null {
   const query = useTimeRangeQuery<MetricValue>(
     "infrastructure.kpi.cpu-avg",
-    (_team, start, end) =>
-      infraGet<MetricValue>("/v1/infrastructure/cpu/avg", _team, Number(start), Number(end))
+    async (teamId, start, end) => {
+      if (!teamId) return { value: 0 };
+      return infraGet<MetricValue>("/v1/infrastructure/cpu/avg", teamId, Number(start), Number(end));
+    }
   );
   return normalizeCpuPercent(query.data?.value);
 }
