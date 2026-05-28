@@ -40,7 +40,7 @@ function SparklineImpl({
   if (series.length === 0) {
     return (
       <svg
-        className="sat-spark"
+        className="mt-1 block w-full"
         viewBox={`0 0 ${WIDTH} ${height}`}
         preserveAspectRatio="none"
         role={ariaLabel ? "img" : undefined}
@@ -64,7 +64,7 @@ function SparklineImpl({
 
   return (
     <svg
-      className="sat-spark"
+      className="mt-1 block w-full"
       viewBox={`0 0 ${WIDTH} ${height}`}
       preserveAspectRatio="none"
       role={ariaLabel ? "img" : undefined}

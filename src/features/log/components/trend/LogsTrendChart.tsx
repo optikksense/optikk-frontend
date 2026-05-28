@@ -215,44 +215,80 @@ function LogsTrendChartComponent({
   const tipY = PAD_T + 4;
 
   return (
-    <div className="ok-chart">
-      <div className="ok-chart-h">
-        <span className="ok-chart-t">Log Volume Over Time</span>
-        <div className="ok-chart-leg">
-          <span>
-            <i className="dot" style={{ background: "var(--info-c)" }} />
+    <div className="rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] pb-2 pl-[18px] pr-[18px] pt-[14px]">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-sm font-semibold text-[var(--fg-0)]">Log Volume Over Time</span>
+        <div className="flex gap-4">
+          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
+            <i
+              className="h-[7px] w-[7px] rounded-full"
+              style={{ background: "var(--info-c)" }}
+            />
             Info / Debug
           </span>
-          <span>
-            <i className="dot" style={{ background: "var(--warn-c)" }} />
+          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
+            <i
+              className="h-[7px] w-[7px] rounded-full"
+              style={{ background: "var(--warn-c)" }}
+            />
             Warnings
           </span>
-          <span>
-            <i className="dot" style={{ background: "var(--err-c)" }} />
+          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
+            <i
+              className="h-[7px] w-[7px] rounded-full"
+              style={{ background: "var(--err-c)" }}
+            />
             Errors
           </span>
         </div>
       </div>
       <svg
         ref={svgRef}
-        className="ok-chart-svg"
+        className="block h-[180px] w-full"
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
       >
         {/* Grid + axis frame — always rendered so the empty state still has scaffolding */}
-        <g className="ok-chart-grid">
+        <g>
           {ticks.map((t) => (
-            <line key={t} x1={PAD_L} y1={yOf(t)} x2={W - PAD_R} y2={yOf(t)} />
+            <line
+              key={t}
+              x1={PAD_L}
+              y1={yOf(t)}
+              x2={W - PAD_R}
+              y2={yOf(t)}
+              style={{ stroke: "var(--line)", strokeDasharray: "2 4" }}
+            />
           ))}
         </g>
-        <g className="ok-chart-axis">
+        <g>
           {ticks.map((t) => (
-            <text key={t} x={PAD_L - 6} y={yOf(t) + 3} textAnchor="end">
+            <text
+              key={t}
+              x={PAD_L - 6}
+              y={yOf(t) + 3}
+              textAnchor="end"
+              style={{
+                fill: "var(--fg-3)",
+                fontFamily: "'Geist Mono', monospace",
+                fontSize: 10.5,
+              }}
+            >
               {compactY(t)}
             </text>
           ))}
           {xLabels.map((lab) => (
-            <text key={lab.x} x={lab.x} y={H - 8} textAnchor="middle">
+            <text
+              key={lab.x}
+              x={lab.x}
+              y={H - 8}
+              textAnchor="middle"
+              style={{
+                fill: "var(--fg-3)",
+                fontFamily: "'Geist Mono', monospace",
+                fontSize: 10.5,
+              }}
+            >
               {lab.label}
             </text>
           ))}
@@ -270,14 +306,15 @@ function LogsTrendChartComponent({
             const yw = yi - hw;
             const ye = yw - he;
             return (
-              <g key={d.ts} className="ok-chart-bar-g">
+              <g key={d.ts} className="group">
                 {hi > 0 ? (
                   <rect
                     x={x}
                     y={yi}
                     width={barW}
                     height={hi}
-                    className="ok-chart-bar ok-chart-bar-info"
+                    className="transition-opacity duration-[120ms] [[data-theme=light]_&]:opacity-75 group-hover:opacity-[0.85]"
+                    style={{ fill: "var(--info-c)", opacity: 0.55 }}
                   />
                 ) : null}
                 {hw > 0 ? (
@@ -286,7 +323,8 @@ function LogsTrendChartComponent({
                     y={yw}
                     width={barW}
                     height={hw}
-                    className="ok-chart-bar ok-chart-bar-warn"
+                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85]"
+                    style={{ fill: "var(--warn-c)" }}
                   />
                 ) : null}
                 {he > 0 ? (
@@ -295,7 +333,8 @@ function LogsTrendChartComponent({
                     y={ye}
                     width={barW}
                     height={he}
-                    className="ok-chart-bar ok-chart-bar-err"
+                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85]"
+                    style={{ fill: "var(--err-c)" }}
                   />
                 ) : null}
               </g>
@@ -305,18 +344,23 @@ function LogsTrendChartComponent({
         {/* Incident line is always present once data exists; label is hover-only. */}
         {incidentX != null ? (
           <line
-            className="ok-chart-incident-l"
             x1={incidentX}
             y1={PAD_T}
             x2={incidentX}
             y2={H - PAD_B}
+            style={{
+              stroke: "var(--err-c)",
+              strokeWidth: 1,
+              strokeDasharray: "3 3",
+              opacity: 0.7,
+            }}
           />
         ) : null}
         {incidentX != null && incidentHovered ? (
           <text
-            className="ok-chart-incident-t"
             x={Math.min(W - PAD_R - 150, incidentX + 6)}
             y={PAD_T + 10}
+            style={{ fill: "var(--err-c)", fontFamily: "'Geist Mono', monospace", fontSize: 10 }}
           >
             incident · error spike
           </text>
@@ -324,12 +368,35 @@ function LogsTrendChartComponent({
 
         {/* Hover guide line at nearest bucket */}
         {hoverX != null ? (
-          <line className="ok-chart-hover-g" x1={hoverX} y1={PAD_T} x2={hoverX} y2={H - PAD_B} />
+          <line
+            x1={hoverX}
+            y1={PAD_T}
+            x2={hoverX}
+            y2={H - PAD_B}
+            style={{
+              stroke: "var(--fg-3)",
+              strokeWidth: 1,
+              strokeDasharray: "2 3",
+              opacity: 0.6,
+              pointerEvents: "none",
+            }}
+          />
         ) : null}
 
         {/* Brush rectangle (visible only while actively dragging) */}
         {brush ? (
-          <rect className="ok-chart-brush" x={brushX} y={PAD_T} width={brushW} height={innerH} />
+          <rect
+            x={brushX}
+            y={PAD_T}
+            width={brushW}
+            height={innerH}
+            style={{
+              fill: "var(--accent)",
+              opacity: 0.1,
+              stroke: "var(--accent)",
+              strokeWidth: 1,
+            }}
+          />
         ) : null}
 
         {/* Empty state — a single em-dash, no prose */}
@@ -346,33 +413,65 @@ function LogsTrendChartComponent({
 
         {/* Tooltip (rendered last so it stacks on top) */}
         {hoverBucket && hoverX != null ? (
-          <g className="ok-chart-tip" style={{ pointerEvents: "none" }}>
+          <g style={{ pointerEvents: "none" }}>
             <rect
-              className="ok-chart-tip-bg"
               x={tipX}
               y={tipY}
               width={TIP_W}
               height={TIP_H}
               rx={5}
+              style={{ fill: "var(--bg-2)", stroke: "var(--line)", strokeWidth: 1 }}
             />
-            <text className="ok-chart-tip-t" x={tipX + 10} y={tipY + 16}>
+            <text
+              x={tipX + 10}
+              y={tipY + 16}
+              style={{
+                fill: "var(--fg-0)",
+                fontFamily: "'Geist Mono', monospace",
+                fontSize: 11,
+              }}
+            >
               {tooltipFmt.format(new Date(hoverBucket.ts))}
             </text>
             <g>
               <circle cx={tipX + 12} cy={tipY + 30} r={3} fill="var(--info-c)" />
-              <text className="ok-chart-tip-t" x={tipX + 22} y={tipY + 33}>
+              <text
+                x={tipX + 22}
+                y={tipY + 33}
+                style={{
+                  fill: "var(--fg-0)",
+                  fontFamily: "'Geist Mono', monospace",
+                  fontSize: 11,
+                }}
+              >
                 info {hoverBucket.info.toLocaleString()}
               </text>
             </g>
             <g>
               <circle cx={tipX + 12} cy={tipY + 42} r={3} fill="var(--warn-c)" />
-              <text className="ok-chart-tip-t" x={tipX + 22} y={tipY + 45}>
+              <text
+                x={tipX + 22}
+                y={tipY + 45}
+                style={{
+                  fill: "var(--fg-0)",
+                  fontFamily: "'Geist Mono', monospace",
+                  fontSize: 11,
+                }}
+              >
                 warn {hoverBucket.warn.toLocaleString()}
               </text>
             </g>
             <g>
               <circle cx={tipX + 12} cy={tipY + 54} r={3} fill="var(--err-c)" />
-              <text className="ok-chart-tip-t" x={tipX + 22} y={tipY + 57}>
+              <text
+                x={tipX + 22}
+                y={tipY + 57}
+                style={{
+                  fill: "var(--fg-0)",
+                  fontFamily: "'Geist Mono', monospace",
+                  fontSize: 11,
+                }}
+              >
                 err {hoverBucket.err.toLocaleString()} · total {tipTotal.toLocaleString()}
               </text>
             </g>
@@ -382,7 +481,7 @@ function LogsTrendChartComponent({
         {/* Pointer hit area — confined to the chart body so axis/header clicks
             do nothing. Brush only emits when movement exceeds the threshold. */}
         <rect
-          className="ok-chart-hit"
+          className="outline-none"
           x={PAD_L}
           y={PAD_T}
           width={innerW}

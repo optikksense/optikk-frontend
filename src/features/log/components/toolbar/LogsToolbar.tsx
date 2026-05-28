@@ -16,8 +16,8 @@ interface Props {
 export const LogsToolbar = memo(
   forwardRef<HTMLInputElement, Props>(function LogsToolbar(props, ref) {
     return (
-      <header className="ok-search-row">
-        <div style={{ flex: 1, minWidth: 0 }}>
+      <header className="flex shrink-0 items-center gap-[10px]">
+        <div className="min-w-0 flex-1">
           <DslSearchBarWithChips
             ref={ref}
             filters={props.filters}

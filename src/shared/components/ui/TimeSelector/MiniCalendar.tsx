@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DAYS, MONTHS } from "./constants";
 import { dayInRange } from "./utils";
-import "./TimeSelector.css";
 
 interface MiniCalendarProps {
   fromDate: Date | null;
@@ -116,23 +115,22 @@ export function MiniCalendar({
               type="button"
               key={i}
               className={cn(
-                "trp-cal__day relative cursor-pointer border-none bg-transparent py-[2px] text-center text-[10px] leading-[1.25] transition-all duration-[80ms]",
+                "relative cursor-pointer border-none bg-transparent py-[2px] text-center text-[10px] leading-[1.25] transition-all duration-[80ms]",
                 !c.current &&
-                  "trp-cal__day--other cursor-default text-[rgba(255,255,255,0.12)] hover:bg-transparent hover:text-[rgba(255,255,255,0.12)]",
-                isTodayCell && "trp-cal__day--today font-bold text-primary",
+                  "cursor-default text-[rgba(255,255,255,0.12)] hover:bg-transparent hover:text-[rgba(255,255,255,0.12)]",
+                isTodayCell && "font-bold text-primary",
                 !isRangeStart &&
                   !isRangeEnd &&
                   !inRange &&
                   !isTodayCell &&
                   c.current &&
                   "rounded-sm text-[rgba(255,255,255,0.55)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white",
-                (isRangeStart || isRangeEnd) && "trp-cal__day--range-start-or-end",
                 isRangeStart &&
-                  "trp-cal__day--range-start z-[1] bg-primary font-bold text-white shadow-[0_2px_8px_var(--color-primary-subtle-35)]",
+                  "z-[1] bg-primary font-bold text-white shadow-[0_2px_8px_var(--color-primary-subtle-35)]",
                 isRangeEnd &&
-                  "trp-cal__day--range-end z-[1] bg-primary font-bold text-white shadow-[0_2px_8px_var(--color-primary-subtle-35)]",
+                  "z-[1] bg-primary font-bold text-white shadow-[0_2px_8px_var(--color-primary-subtle-35)]",
                 inRange &&
-                  "trp-cal__day--in-range bg-[var(--color-primary-subtle-18)] text-[rgba(255,255,255,0.9)]"
+                  "bg-[var(--color-primary-subtle-18)] text-[rgba(255,255,255,0.9)]"
               )}
               onClick={() => {
                 if (c.current) onSelectDate(new Date(calYear, calMonth, c.day));

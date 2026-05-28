@@ -8,6 +8,9 @@ interface Props {
   readonly spans: readonly TraceRecord[];
 }
 
+const btnSmGhost =
+  "px-2.5 py-[5px] text-[11.5px] rounded-[5px] bg-transparent text-[var(--text-muted)] border border-transparent cursor-pointer hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]";
+
 function RawJsonTabComponent({ traceId, spans }: Props) {
   const json = useMemo(
     () => JSON.stringify({ trace_id: traceId, spans }, null, 2),
@@ -31,21 +34,23 @@ function RawJsonTabComponent({ traceId, spans }: Props) {
   }, [json]);
 
   return (
-    <div className="tdp-raw-wrap">
-      <div className="tdp-raw-toolbar">
-        <span className="tdp-muted">
+    <div className="p-4 flex flex-col gap-2 min-h-0 flex-1">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[var(--text-caption)] text-[12px] py-2">
           OpenTelemetry-style trace document · {spans.length} span{spans.length === 1 ? "" : "s"}
         </span>
-        <div style={{ display: "flex", gap: 6 }}>
-          <button type="button" className="tdp-btn-sm tdp-btn-sm-ghost" onClick={onCopy}>
+        <div className="flex gap-1.5">
+          <button type="button" className={btnSmGhost} onClick={onCopy}>
             <Copy size={12} /> Copy
           </button>
-          <button type="button" className="tdp-btn-sm tdp-btn-sm-ghost" onClick={onDownload}>
+          <button type="button" className={btnSmGhost} onClick={onDownload}>
             <Download size={12} /> Download .json
           </button>
         </div>
       </div>
-      <pre className="tdp-raw-pre">{json}</pre>
+      <pre className="m-0 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md font-mono text-[11.5px] text-[var(--text-secondary)] overflow-auto flex-1 min-h-0 whitespace-pre">
+        {json}
+      </pre>
     </div>
   );
 }

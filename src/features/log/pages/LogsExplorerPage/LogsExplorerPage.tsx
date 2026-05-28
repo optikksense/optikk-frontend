@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
+import { cn } from "@/lib/utils";
 import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
 
@@ -22,8 +23,6 @@ import { LogsTableToolbar } from "../../components/table/LogsTableToolbar";
 import { LogsActions } from "../../components/toolbar/LogsActions";
 import { LogsToolbar } from "../../components/toolbar/LogsToolbar";
 import { LogsTrendChart } from "../../components/trend/LogsTrendChart";
-
-import "./LogsExplorerPage.css";
 
 function extractSearchTerm(filters: readonly ExplorerFilter[]): string | undefined {
   const f = filters.find(
@@ -107,8 +106,8 @@ export default function LogsExplorerPage() {
   const detailOpen = Boolean(state.detail);
 
   return (
-    <div className="logs-explorer-root">
-      <div className="ok-body">
+    <div className="flex h-full min-h-0 min-w-0 flex-col bg-[var(--bg-0)] text-[13px] text-[var(--fg-1)] [font-family:Geist,'Inter_Tight',ui-sans-serif,system-ui,sans-serif] [font-feature-settings:'ss01','cv11','tnum']">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-[14px] px-5 pb-3 pt-4">
         <LogsToolbar
           ref={searchInputRef}
           filters={state.filters}
@@ -117,7 +116,12 @@ export default function LogsExplorerPage() {
           valueSuggestions={valueSuggestions}
         />
 
-        <div className={`ok-grid ${detailOpen ? "has-detail" : ""}`}>
+        <div
+          className={cn(
+            "grid min-h-0 flex-1 gap-[14px]",
+            detailOpen ? "grid-cols-[240px_1fr_380px]" : "grid-cols-[240px_1fr]"
+          )}
+        >
           <LogsFacetPanel
             facets={facets.data}
             onInclude={onInclude}
@@ -126,7 +130,7 @@ export default function LogsExplorerPage() {
             onClearAll={onClearFilters}
           />
 
-          <div className="ok-results">
+          <div className="flex min-h-0 min-w-0 flex-col gap-3">
             <LogsTrendChart
               trend={trend.data}
               zoomed={timeRange.kind === "absolute"}
@@ -135,7 +139,7 @@ export default function LogsExplorerPage() {
               maxTimeMs={endTime}
             />
 
-            <div className="ok-rwrap">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
               <LogsTableToolbar />
               <LogsTable
                 rows={results}

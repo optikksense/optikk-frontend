@@ -8,6 +8,7 @@ import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/fo
 import type { WorstSystemRow } from "../hooks/useSaturationOverviewModel";
 import { RankBarRow } from "./RankBarRow";
 import { SaturationCard } from "./SaturationCard";
+import { SAT_TABLE_CLASS } from "./tableClasses";
 
 type Props = {
   rows: WorstSystemRow[];
@@ -35,7 +36,7 @@ function WorstSystemsTableImpl({ rows }: Props): JSX.Element {
       title="Most saturated systems"
       subtitle={`Top ${rows.length} across datastores · max(p95, errors, load)`}
     >
-      <table className="sat-tbl">
+      <table className={SAT_TABLE_CLASS}>
         <thead>
           <tr>
             <th>System</th>

@@ -72,24 +72,36 @@ function InfraTabComponent({ resourceAttributes }: Props) {
   const hasAny = groups.some((g) => g.fields.length > 0);
   if (!hasAny) {
     return (
-      <div className="tdp-sd-pane">
-        <div className="tdp-muted">No infrastructure attributes for this span.</div>
+      <div className="p-4 flex flex-col gap-4">
+        <div className="text-[var(--text-caption)] text-[12px] py-2">
+          No infrastructure attributes for this span.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="tdp-sd-pane">
+    <div className="p-4 flex flex-col gap-4">
       {groups
         .filter((g) => g.fields.length > 0)
         .map((g) => (
-          <div key={g.title} className="tdp-sect">
-            <div className="tdp-sect-t">{g.title}</div>
-            <div className="tdp-attr-list">
+          <div key={g.title} className="flex flex-col gap-2">
+            <div className="text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]">
+              {g.title}
+            </div>
+            <div className="flex flex-col gap-px bg-[var(--border-color)] rounded-md overflow-hidden">
               {g.fields.map((f) => (
-                <div key={f.label} className="tdp-attr-row">
-                  <span className="tdp-attr-k">{f.label}</span>
-                  <span className="tdp-attr-v" title={f.value}>
+                <div
+                  key={f.label}
+                  className="grid grid-cols-[180px_1fr_auto] gap-2.5 items-center px-2.5 py-1.5 bg-[var(--bg-primary)] text-[12px] hover:bg-[var(--bg-secondary)]"
+                >
+                  <span className="text-[var(--text-muted)] font-mono text-[11.5px] break-all">
+                    {f.label}
+                  </span>
+                  <span
+                    className="text-[var(--text-primary)] font-mono text-[11.5px] overflow-hidden text-ellipsis whitespace-nowrap"
+                    title={f.value}
+                  >
                     {f.value}
                   </span>
                   <span />

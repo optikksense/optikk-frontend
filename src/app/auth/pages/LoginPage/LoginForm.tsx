@@ -54,7 +54,7 @@ export function LoginForm() {
   };
 
   return (
-    <form className="login-form" onSubmit={handleSubmit} autoComplete="off">
+    <form className="flex flex-col gap-5" onSubmit={handleSubmit} autoComplete="off">
       <LoginField
         id="email"
         label="Work Email"
@@ -97,7 +97,7 @@ function PasswordToggle({
   return (
     <button
       type="button"
-      className="login-input-end"
+      className="absolute right-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-[var(--text-muted)] transition-colors duration-150 hover:text-foreground"
       onClick={() => onToggle(!show)}
       aria-label={show ? "Hide password" : "Show password"}
       tabIndex={-1}
@@ -109,9 +109,14 @@ function PasswordToggle({
 
 function SubmitButton({ loading }: { readonly loading: boolean }) {
   return (
-    <button data-testid="login-submit" type="submit" className="login-submit" disabled={loading}>
+    <button
+      data-testid="login-submit"
+      type="submit"
+      className="mt-2 flex h-[52px] w-full cursor-pointer items-center justify-center gap-2.5 rounded-[10px] border-0 bg-[image:var(--login-btn-gradient)] font-[inherit] text-base font-semibold text-[var(--login-btn-text)] transition-[opacity,transform,box-shadow] duration-150 [&:hover:not(:disabled)]:-translate-y-px [&:hover:not(:disabled)]:opacity-[0.92] [&:hover:not(:disabled)]:shadow-[0_4px_20px_var(--login-accent-glow)] [&:active:not(:disabled)]:translate-y-0 [&:active:not(:disabled)]:opacity-[0.85] disabled:cursor-not-allowed disabled:opacity-60"
+      disabled={loading}
+    >
       {loading ? (
-        <span className="login-spinner" />
+        <span className="h-[18px] w-[18px] animate-[spin_0.6s_linear_infinite] rounded-full border-2 border-transparent border-t-[var(--login-btn-text)]" />
       ) : (
         <>
           <LogIn size={18} />

@@ -9,15 +9,21 @@ type Props = {
 
 function SaturationCardImpl({ title, subtitle, right, children }: Props): JSX.Element {
   return (
-    <section className="sat-card">
-      <header className="sat-card-h">
-        <div className="sat-card-h-l">
-          <div className="sat-card-t">{title}</div>
-          {subtitle ? <div className="sat-card-s">{subtitle}</div> : null}
+    <section className="flex min-h-0 flex-col overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--bg-1)]">
+      <header className="flex items-center justify-between gap-3 border-b border-[var(--line)] px-[18px] py-[14px]">
+        <div className="flex min-w-0 items-baseline gap-[10px]">
+          <div className="text-[13.5px] font-semibold tracking-[-0.005em] text-[var(--fg-0)]">
+            {title}
+          </div>
+          {subtitle ? (
+            <div className='overflow-hidden text-ellipsis whitespace-nowrap font-["Geist_Mono",monospace] text-[11.5px] text-[var(--fg-3)]'>
+              {subtitle}
+            </div>
+          ) : null}
         </div>
-        {right ? <div className="sat-card-h-r">{right}</div> : null}
+        {right ? <div>{right}</div> : null}
       </header>
-      <div className="sat-card-b">{children}</div>
+      <div className="p-0">{children}</div>
     </section>
   );
 }

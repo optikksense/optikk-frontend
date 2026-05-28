@@ -457,6 +457,13 @@
   --fg-3: oklch(0.48 0.01 270);
   --shadow-pop: 0 16px 40px -12px oklch(0 0 0 / 0.6), 0 0 0 1px var(--line);
 
+  /* Login-page accent tokens */
+  --login-accent: #00d4aa;
+  --login-accent-hover: #00eabb;
+  --login-accent-glow: rgba(0, 212, 170, 0.18);
+  --login-btn-gradient: linear-gradient(135deg, #00e5a0 0%, #00d4aa 50%, #00c4b0 100%);
+  --login-btn-text: #0b1120;
+
   color-scheme: dark;
   color: var(--text-primary);
   background-color: var(--bg-primary);
@@ -522,6 +529,13 @@
   --fg-3: oklch(0.64 0.01 270);
   --accent-bg: oklch(0.68 0.18 var(--accent-h) / 0.1);
   --shadow-pop: 0 16px 40px -12px oklch(0.2 0.05 270 / 0.18), 0 0 0 1px var(--line);
+
+  /* Login-page accent tokens (light) */
+  --login-accent: #00a88a;
+  --login-accent-hover: #008f74;
+  --login-accent-glow: rgba(0, 168, 138, 0.12);
+  --login-btn-gradient: linear-gradient(135deg, #00c49a 0%, #00a88a 50%, #009880 100%);
+  --login-btn-text: #ffffff;
 
   color-scheme: light;
   color: var(--text-primary);

@@ -5,13 +5,33 @@ import { memo, useCallback, useMemo } from "react";
 import { HighlightedText } from "@shared/components/primitives/HighlightedText";
 
 import { useTimezone } from "@/app/store/appStore";
+import { cn } from "@/lib/utils";
 
 import { useLogsExplorerStore } from "../../store/logsExplorerStore";
 import type { LogRecord } from "../../types/log";
 import { serviceSwatchColor } from "../../utils/serviceHue";
+import type { SeveritySlug } from "../../utils/severity";
 import { severityStyle } from "../../utils/severity";
 import { getTraceId } from "../../utils/traceCorrelation";
 import { ExpandedLogRow } from "./ExpandedLogRow";
+
+const SEV_LVL_CLASS: Record<SeveritySlug, string> = {
+  trace: "text-[var(--trace-c)] bg-[oklch(0.66_0.1_245/0.1)]",
+  debug: "text-[var(--debug-c)] bg-[oklch(0.72_0.16_235/0.1)]",
+  info: "text-[var(--info-c)] bg-[oklch(0.78_0.16_152/0.1)]",
+  warn: "text-[var(--warn-c)] bg-[oklch(0.84_0.16_92/0.1)]",
+  error: "text-[var(--err-c)] bg-[oklch(0.7_0.2_25/0.1)]",
+  fatal: "text-[var(--fatal-c)] bg-[oklch(0.66_0.22_330/0.12)]",
+};
+
+export const LEVEL_BADGE_BASE =
+  "inline-flex h-[19px] items-center gap-[5px] rounded-[4px] border border-current px-[7px] text-[10.5px] font-medium tracking-[0.02em] [font-family:'Geist_Mono',monospace]";
+
+export const LEVEL_DOT = "h-[5px] w-[5px] rounded-full bg-current";
+
+export function levelBadgeClasses(slug: SeveritySlug): string {
+  return cn(LEVEL_BADGE_BASE, SEV_LVL_CLASS[slug]);
+}
 
 interface Props {
   readonly row: LogRecord;
@@ -85,10 +105,17 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
     [navigate, traceId]
   );
 
+  const isError = sev.slug === "error";
+
   return (
     <>
       <div
-        className={`ok-tr l-${sev.slug} ${isSelected ? "is-sel" : ""}`}
+        className={cn(
+          "group grid min-h-7 w-full cursor-pointer grid-cols-[24px_200px_160px_80px_1fr] items-center gap-4 border-b border-b-[oklch(0.26_0.01_270/0.45)] px-[18px] py-[6px] text-left text-[12.5px] [font-family:'Geist_Mono',monospace] hover:bg-[var(--bg-row-h)] [[data-theme=light]_&]:border-b-[oklch(0.88_0.006_270/0.5)]",
+          isError && !isSelected && "bg-[oklch(0.7_0.2_25/0.05)]",
+          isSelected && !isError && "bg-[var(--accent-bg)]",
+          isSelected && isError && "bg-[oklch(0.7_0.2_25/0.14)]"
+        )}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         role="button"
@@ -100,33 +127,33 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
         <button
           type="button"
           onClick={handleToggle}
-          className="ok-tr-x"
+          className="inline-flex items-center text-[var(--fg-3)]"
           aria-label={expanded ? "Collapse row" : "Expand row"}
           title={expanded ? "Collapse" : "Expand"}
         >
           {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
 
-        <span className="ok-tr-t">{formatTs(row.timestamp, tz)}</span>
+        <span className="text-[var(--fg-2)]">{formatTs(row.timestamp, tz)}</span>
 
-        <span className="ok-tr-svc">
+        <span className="inline-flex items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap text-[var(--fg-1)]">
           <span
-            className="ok-tr-svc-d"
+            className="h-1.5 w-1.5 shrink-0 rounded-full"
             style={{ background: serviceSwatchColor(row.service_name) }}
           />
           {row.service_name}
         </span>
 
         <span>
-          <span className={`ok-lvl l-${sev.slug}`}>
-            <span className="ok-lvl-d" />
+          <span className={levelBadgeClasses(sev.slug)}>
+            <span className={LEVEL_DOT} />
             {sev.shortLabel}
           </span>
         </span>
 
-        <span className="ok-tr-msg">
+        <span className="flex min-w-0 items-center gap-2 overflow-hidden text-[var(--fg-0)]">
           <span
-            className="ok-tr-msg-t"
+            className="overflow-hidden text-ellipsis whitespace-nowrap"
             style={row.body ? undefined : { color: "var(--fg-3)", fontStyle: "italic" }}
           >
             <HighlightedText text={displayBody} match={searchTerm} />
@@ -135,7 +162,7 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
             <button
               type="button"
               onClick={handleTrace}
-              className="ok-tr-trace"
+              className="inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full border border-[var(--accent-ln)] bg-transparent px-[7px] py-px text-[10.5px] text-[var(--accent-2)] [font-family:'Geist_Mono',monospace] group-hover:bg-[var(--accent-bg)]"
               title={`Open trace ${traceId}`}
             >
               <GitFork size={10} />

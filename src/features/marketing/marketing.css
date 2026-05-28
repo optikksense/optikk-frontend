@@ -1814,3 +1814,85 @@
     flex-shrink: 0;
   }
 }
+
+/* ============================================================
+   Themed marketing root (applied for Legal / Policy pages)
+   ============================================================ */
+.marketing-root-themed {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  transition: background-color var(--duration-normal) var(--ease-default), color
+    var(--duration-normal) var(--ease-default);
+}
+
+[data-theme="light"] .marketing-root-themed {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-nav {
+  background: rgba(15, 17, 23, 0.8) !important;
+  border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-brand,
+[data-theme="dark"] .marketing-root-themed .m-nav-link {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-nav-link:hover,
+[data-theme="dark"] .marketing-root-themed .m-nav-link.is-active {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-nav-stars {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer {
+  background: var(--bg-secondary) !important;
+  border-top-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-heading {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-brand p {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-list a {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-list a:hover {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-bottom {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-bottom span {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-bottom a {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-bottom a:hover {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-socials a {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .marketing-root-themed .m-footer-socials a:hover {
+  color: #ffffff !important;
+}

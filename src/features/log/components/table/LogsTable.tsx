@@ -35,7 +35,7 @@ function LogsTableComponent({
 
   if (loading && rows.length === 0) {
     return (
-      <div className="ok-table">
+      <div className="flex min-h-0 flex-1 flex-col">
         <LogsTableHeader />
         <div
           style={{
@@ -57,7 +57,7 @@ function LogsTableComponent({
 
   if (rows.length === 0) {
     return (
-      <div className="ok-table">
+      <div className="flex min-h-0 flex-1 flex-col">
         <LogsTableHeader />
         <div
           style={{
@@ -78,9 +78,9 @@ function LogsTableComponent({
   }
 
   return (
-    <div className="ok-table">
+    <div className="flex min-h-0 flex-1 flex-col">
       <LogsTableHeader />
-      <div ref={scrollRef} className="ok-tbody">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
         {rows.map((row) => (
           <LogRow
             key={row.id}

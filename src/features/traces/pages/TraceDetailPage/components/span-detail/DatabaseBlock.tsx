@@ -7,30 +7,31 @@ interface Props {
   readonly dbStatementNormalized?: string;
 }
 
+const kvK = "text-[11px] text-[var(--text-caption)]";
+const kvV = "text-[12px] text-[var(--text-primary)] font-mono break-words";
+
 function DatabaseBlockComponent({ dbSystem, dbName, dbStatement, dbStatementNormalized }: Props) {
   const statement = dbStatement || dbStatementNormalized;
   if (!dbSystem && !statement) return null;
 
   return (
-    <div className="tdp-kv-grid">
+    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
       {dbSystem && (
         <>
-          <div className="tdp-kv-k">system</div>
-          <div className="tdp-kv-v">{dbSystem}</div>
+          <div className={kvK}>system</div>
+          <div className={kvV}>{dbSystem}</div>
         </>
       )}
       {dbName && (
         <>
-          <div className="tdp-kv-k">name</div>
-          <div className="tdp-kv-v">{dbName}</div>
+          <div className={kvK}>name</div>
+          <div className={kvV}>{dbName}</div>
         </>
       )}
       {statement && (
-        <div style={{ gridColumn: "1 / -1" }}>
-          <div className="tdp-kv-k" style={{ marginBottom: 4 }}>
-            statement
-          </div>
-          <pre className="tdp-raw-pre" style={{ maxHeight: 180 }}>
+        <div className="col-span-2">
+          <div className={`${kvK} mb-1`}>statement</div>
+          <pre className="m-0 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md font-mono text-[11.5px] text-[var(--text-secondary)] overflow-auto whitespace-pre max-h-[180px]">
             {statement}
           </pre>
         </div>

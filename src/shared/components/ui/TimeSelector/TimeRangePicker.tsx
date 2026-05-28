@@ -10,7 +10,6 @@ import { useAppStore, useTimeRange } from "@app/store/appStore";
 import { DualCalendar } from "./DualCalendar";
 import { DISPLAY_MAP, RANGE_GROUPS } from "./constants";
 import { fmtDatetime, parseDatetime } from "./utils";
-import "./TimeSelector.css";
 
 type Tab = "relative" | "absolute";
 

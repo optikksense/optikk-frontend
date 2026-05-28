@@ -7,11 +7,23 @@ import toast from "react-hot-toast";
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 import { Button } from "@shared/components/primitives/ui";
 
+import { cn } from "@/lib/utils";
+
 import { getLogById } from "../../api/logsExplorerApi";
+import { LEVEL_DOT, levelBadgeClasses } from "../table/LogRow";
 import type { LogRecord } from "../../types/log";
 import { serviceSwatchColor } from "../../utils/serviceHue";
 import { severityStyle } from "../../utils/severity";
 import { getSpanId, getTraceId } from "../../utils/traceCorrelation";
+
+const ASIDE =
+  "flex min-w-0 flex-col gap-3 overflow-y-auto rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] p-[14px]";
+const ICON_BTN =
+  "inline-grid h-7 w-7 cursor-pointer place-items-center rounded-[5px] border-0 bg-transparent text-[var(--fg-2)] hover:bg-[var(--bg-2)] hover:text-[var(--fg-0)]";
+const BTN_SM =
+  "inline-flex h-[26px] cursor-pointer items-center gap-1 rounded-[5px] border border-[var(--line)] bg-[var(--bg-0)] px-[10px] text-xs text-[var(--fg-1)] hover:bg-[var(--bg-2)] hover:text-[var(--fg-0)] disabled:cursor-not-allowed disabled:opacity-40";
+const BTN_SM_PRI =
+  "border-transparent bg-[var(--accent)] text-[oklch(0.99_0.005_270)] hover:bg-[var(--accent-2)] hover:text-[oklch(0.99_0.005_270)]";
 
 interface Props {
   readonly logId: string;
@@ -65,18 +77,18 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
 
   if (q.isPending) {
     return (
-      <aside className="ok-detail">
-        <div style={{ padding: 16, color: "var(--fg-3)", fontSize: 13 }}>Loading log…</div>
+      <aside className={ASIDE}>
+        <div className="p-4 text-[13px] text-[var(--fg-3)]">Loading log…</div>
       </aside>
     );
   }
 
   if (q.isError) {
     return (
-      <aside className="ok-detail">
-        <p style={{ fontWeight: 500, fontSize: 13, color: "var(--err-c)" }}>Could not load log</p>
-        <pre style={{ fontSize: 11, color: "var(--fg-3)" }}>{formatErrorForDisplay(q.error)}</pre>
-        <div style={{ display: "flex", gap: 6 }}>
+      <aside className={ASIDE}>
+        <p className="text-[13px] font-medium text-[var(--err-c)]">Could not load log</p>
+        <pre className="text-[11px] text-[var(--fg-3)]">{formatErrorForDisplay(q.error)}</pre>
+        <div className="flex gap-1.5">
           <Button variant="secondary" onClick={() => void q.refetch()}>
             Retry
           </Button>
@@ -91,8 +103,8 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
   const log = q.data?.log;
   if (!log) {
     return (
-      <aside className="ok-detail">
-        <div style={{ padding: 12, color: "var(--fg-3)" }}>No data</div>
+      <aside className={ASIDE}>
+        <div className="p-3 text-[var(--fg-3)]">No data</div>
       </aside>
     );
   }
@@ -114,23 +126,23 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
   const allFields: Array<[string, string]> = [...standardFields, ...attrs];
 
   return (
-    <aside className="ok-detail">
-      <div className="ok-detail-h">
-        <span className="ok-detail-svc">
+    <aside className={ASIDE}>
+      <div className="flex items-center gap-2">
+        <span className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-[var(--fg-0)]">
           <span
-            className="ok-tr-svc-d"
+            className="h-1.5 w-1.5 shrink-0 rounded-full"
             style={{ background: serviceSwatchColor(log.service_name) }}
           />
           {log.service_name}
         </span>
-        <span className={`ok-lvl l-${sev.slug}`}>
-          <span className="ok-lvl-d" />
+        <span className={levelBadgeClasses(sev.slug)}>
+          <span className={LEVEL_DOT} />
           {sev.shortLabel}
         </span>
-        <span className="ok-detail-sp" />
+        <span className="flex-1" />
         <button
           type="button"
-          className="ok-ib"
+          className={ICON_BTN}
           title="Copy JSON"
           onClick={() => void navigator.clipboard.writeText(JSON.stringify(log, null, 2))}
         >
@@ -138,20 +150,22 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
         </button>
         <button
           type="button"
-          className="ok-ib"
+          className={ICON_BTN}
           title="Permalink"
           onClick={() => void navigator.clipboard.writeText(window.location.href)}
         >
           <Link2 size={14} />
         </button>
-        <button type="button" className="ok-ib" title="Close" onClick={onClose}>
+        <button type="button" className={ICON_BTN} title="Close" onClick={onClose}>
           <X size={14} />
         </button>
       </div>
 
-      <div className="ok-detail-msg">{log.body || "—"}</div>
+      <div className="break-words text-[13px] leading-[1.55] text-[var(--fg-0)] [font-family:'Geist_Mono',monospace]">
+        {log.body || "—"}
+      </div>
 
-      <div className="ok-detail-meta">
+      <div className="flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-[var(--fg-3)] [font-family:'Geist_Mono',monospace] [&_b]:font-medium [&_b]:text-[var(--fg-1)]">
         <span>{formatTime(log.timestamp)}</span>
         <span>·</span>
         <span>{relativeTime(log.timestamp)}</span>
@@ -170,28 +184,30 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
       </div>
 
       {traceId ? (
-        <div className="ok-callout">
-          <div className="ok-callout-h">
+        <div className="flex flex-col gap-2 rounded-[7px] border border-[var(--accent-ln)] bg-[var(--accent-bg)] p-3">
+          <div className="flex items-center gap-[7px] text-xs font-semibold text-[var(--accent-2)]">
             <GitFork size={12} />
             Correlated with a distributed trace
           </div>
-          <div className="ok-callout-id">{traceId}</div>
+          <div className="break-all text-[11px] text-[var(--fg-1)] [font-family:'Geist_Mono',monospace]">
+            {traceId}
+          </div>
           {spanId ? (
-            <div className="ok-callout-id" style={{ color: "var(--fg-3)" }}>
+            <div className="break-all text-[11px] text-[var(--fg-3)] [font-family:'Geist_Mono',monospace]">
               span_id · {spanId}
             </div>
           ) : null}
-          <div className="ok-callout-a">
+          <div className="flex flex-wrap gap-1.5">
             <button
               type="button"
-              className="ok-btn-sm is-pri"
+              className={cn(BTN_SM, BTN_SM_PRI)}
               onClick={() => navigate({ to: `/traces/${encodeURIComponent(traceId)}` })}
             >
               Open trace
             </button>
             <button
               type="button"
-              className="ok-btn-sm"
+              className={BTN_SM}
               onClick={() => {
                 void navigator.clipboard.writeText(`trace_id:${traceId}`);
                 toast.success("Trace filter copied — paste into search");
@@ -203,33 +219,34 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
           </div>
         </div>
       ) : (
-        <div className="ok-callout ok-callout-empty">
-          <div className="ok-callout-h">
+        <div className="flex flex-col gap-2 rounded-[7px] border border-[var(--line)] bg-transparent p-3">
+          <div className="flex items-center gap-[7px] text-xs font-medium text-[var(--fg-2)]">
             <GitFork size={12} />
             No trace correlation
           </div>
-          <div style={{ fontSize: 11, color: "var(--fg-3)" }}>
+          <div className="text-[11px] text-[var(--fg-3)]">
             This log was not emitted with a trace_id. Instrument the emitter to stitch it to a
             distributed trace.
           </div>
         </div>
       )}
 
-      <div className="ok-detail-sect-t">Fields</div>
-      <div className="ok-fields">
+      <div className="border-t border-[var(--line)] pt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-3)]">
+        Fields
+      </div>
+      <div className="flex flex-col gap-px overflow-hidden rounded-md border border-[var(--line)]">
         {allFields.map(([k, v]) => (
           <FieldRow key={k} field={k} value={v} />
         ))}
       </div>
 
       {onPrev || onNext ? (
-        <div className="ok-detail-actions">
+        <div className="flex flex-wrap gap-1.5">
           <button
             type="button"
             disabled={!onPrev}
             onClick={onPrev}
-            className="ok-btn-sm"
-            style={{ flex: 1, justifyContent: "center" }}
+            className={cn(BTN_SM, "flex-1 justify-center")}
           >
             ← Prev
           </button>
@@ -237,8 +254,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
             type="button"
             disabled={!onNext}
             onClick={onNext}
-            className="ok-btn-sm"
-            style={{ flex: 1, justifyContent: "center" }}
+            className={cn(BTN_SM, "flex-1 justify-center")}
           >
             Next →
           </button>
@@ -252,12 +268,27 @@ function FieldRow({ field, value }: { field: string; value: string }) {
   const isErr = field.startsWith("error") || field.startsWith("exception");
   const onCopy = useMemo(() => () => void navigator.clipboard.writeText(value), [value]);
   return (
-    <div className={`ok-kv ${isErr ? "is-err" : ""}`}>
-      <span className="ok-kv-k">{field}</span>
-      <span className="ok-kv-v" title={value}>
+    <div
+      className={cn(
+        "group grid grid-cols-[130px_1fr_22px] items-center gap-2 bg-[var(--bg-0)] px-[10px] py-[5px] text-[11.5px] [font-family:'Geist_Mono',monospace] hover:bg-[var(--bg-2)] [&:not(:last-child)]:border-b [&:not(:last-child)]:border-[var(--line)]",
+        isErr && "bg-[oklch(0.7_0.2_25/0.07)]"
+      )}
+    >
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--fg-2)]">
+        {field}
+      </span>
+      <span
+        className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--fg-0)]"
+        title={value}
+      >
         {value}
       </span>
-      <button type="button" className="ok-kv-c" title="Copy" onClick={onCopy}>
+      <button
+        type="button"
+        className="grid cursor-pointer place-items-center border-0 bg-transparent text-sm text-[var(--accent-2)] opacity-0 group-hover:opacity-100"
+        title="Copy"
+        onClick={onCopy}
+      >
         +
       </button>
     </div>
