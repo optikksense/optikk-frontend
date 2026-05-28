@@ -66,7 +66,7 @@ Marketing pages dynamically fetch genuine GitHub stars using the [useGitHubStars
 
 Direct protected routes in the router:
 
-- `/overview` → [OverviewHubPage.tsx](src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx)
+- `/overview` → [OverviewHubPage](src/features/overview/pages/OverviewHubPage/index.tsx)
 - `/infrastructure` → frontend-owned infrastructure hub
 - `/service` → service hub
 - `/service/$serviceName` → service detail page
@@ -81,7 +81,7 @@ The current frontend owns significant page composition and interaction logic dir
 
 | Area | Path | Notes |
 |------|------|-------|
-| Overview | `src/features/overview/` | Overview hub, service hub, service detail, overview dashboard/renderers |
+| Overview | `src/features/overview/` | Single-page `/overview` landing (Datadog-style). Composition root [pages/OverviewHubPage/index.tsx](src/features/overview/pages/OverviewHubPage/index.tsx); sections under `components/` (`OverviewHero` KPIs, `SystemPerformanceCard` request/error overlay, `ServiceHealthGrid` colored tiles, `TopErrorsCard`, `RecentDeploysCard`, `InfrastructureStrip` linking to Kafka/Database saturation). Data fans out from `hooks/useOverviewModel.ts` over `getRedSummary`, `getRedRequestRateSeries`, `getRedErrorRateSeries`, `getErrorHotspot`, `deploymentsApi.getLatestByService`. Active-incidents, on-call, watchdog, and Redis/Queues/Storage tiles from the design are omitted because the backend has no matching endpoints. Sibling pages: service hub, service detail, deployment-compare drawer. |
 | Saturation | `src/features/saturation/` | Saturation hub (Overview surface ported from the Optikk design handoff) + per-datastore / Kafka drill-downs. `pages/SaturationPage/` is the `/saturation` landing page; composition root is `index.tsx`, data fans out from `hooks/useSaturationOverviewModel.ts`, view-model builders live in `view-models/`, presentation in `components/` (Tailwind utilities only — no CSS file; shared table classes in `components/tableClasses.ts`, uses `themeColors.css` tokens via arbitrary values). Renders: subsystem cards (Kafka / Database / Redis), worst-saturated-systems table, top-Kafka-topics table. Subnav links to existing Kafka & datastore detail pages. Cross-fleet hex map, queues/storage subsystems, alerts feed and refresh/export buttons from the design are intentionally omitted because the backend has no matching endpoints. |
 | Metrics | `src/features/metrics/` | Metrics explorer, charts, store, API hooks |
 | Logs | `src/features/log/` | Rebuilt logs explorer (clean-slate, Datadog-class). Components grouped: toolbar, kpi, facets, trend, table, detail. Feature-scoped Zustand store at `store/logsExplorerStore.ts`. JSON auto-detection in body cells. |
@@ -106,7 +106,7 @@ The current frontend owns significant page composition and interaction logic dir
 - **HTTP client**: [src/shared/api/api/client.ts](src/shared/api/api/client.ts)
 - **Global store**: [src/app/store/appStore.ts](src/app/store/appStore.ts) — `triggerRefresh()` increments `refreshKey`; persisted: timeRange, teamId, theme, timezone, comparisonMode, viewPreferences, recentPages
 - **Theme tokens**: [src/config/themeColors.css](src/config/themeColors.css) → [tailwind.config.ts](tailwind.config.ts)
-- **Overview hub**: [src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx](src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx) — bespoke `/overview` tabs; APIs via `src/features/overview/api/overviewHubApi.ts` + `metricsOverviewApi`
+- **Overview hub**: [src/features/overview/pages/OverviewHubPage/index.tsx](src/features/overview/pages/OverviewHubPage/index.tsx) — single-page Overview landing; APIs via [src/features/overview/api/overviewHubApi.ts](src/features/overview/api/overviewHubApi.ts) (RED + errors) and [deploymentsApi](src/features/overview/api/deploymentsApi.ts)
 - **Dashboard primitives**: `src/shared/components/ui/dashboard/` — `ConfigurableChartCard.tsx`, `DashboardEntityDrawer.tsx`
 - **Panel registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain panels
 - **Built-in panels**: `builtInDashboardPanels.tsx` — request, error-rate, latency, exception-type-line (base-chart); table, bar, gauge, heatmap, pie, stat-cards-grid (specialized); stat-card, stat-summary (self-contained)

@@ -1,6 +1,6 @@
 import type { RequestTime } from "@shared/api/service-types";
 
-import { getJson, getJsonWithParams } from "./overviewClient";
+import { getJson } from "./overviewClient";
 
 export interface RedSummary {
   service_count?: number;
@@ -18,13 +18,6 @@ export function getRedSummary(startTime: RequestTime, endTime: RequestTime): Pro
   return getJson("/spans/red/summary", startTime, endTime);
 }
 
-export function getLatencyBreakdown(
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<unknown[]> {
-  return getJson("/spans/latency-breakdown", startTime, endTime);
-}
-
 export function getRedP95Series(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
   return getJson("/spans/red/p95-latency", startTime, endTime);
 }
@@ -36,29 +29,9 @@ export function getRedRequestRateSeries(
   return getJson("/spans/red/request-rate", startTime, endTime);
 }
 
-/**
- * `/spans/red/error-rate` was a phantom — the canonical endpoint is
- * `/errors/service-error-rate`. Path rewritten in Phase 0.
- */
 export function getRedErrorRateSeries(
   startTime: RequestTime,
   endTime: RequestTime
 ): Promise<unknown[]> {
   return getJson("/errors/service-error-rate", startTime, endTime);
-}
-
-export function getTopSlowOperations(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  limit = 25
-): Promise<unknown[]> {
-  return getJsonWithParams("/spans/red/top-slow-operations", startTime, endTime, { limit });
-}
-
-export function getTopErrorOperations(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  limit = 25
-): Promise<unknown[]> {
-  return getJsonWithParams("/spans/red/top-error-operations", startTime, endTime, { limit });
 }

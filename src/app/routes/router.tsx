@@ -19,9 +19,7 @@ const ServiceDetailPage = lazy(
 const InfrastructureHubPage = lazy(
   () => import("@/features/infrastructure/pages/InfrastructureHubPage")
 );
-const OverviewHubPage = lazy(
-  () => import("@/features/overview/pages/OverviewHubPage/OverviewHubPage")
-);
+const OverviewHubPage = lazy(() => import("@/features/overview/pages/OverviewHubPage"));
 const DatabaseQueriesPage = lazy(() => import("@/features/saturation/pages/DatabaseQueriesPage"));
 const SaturationKafkaPage = lazy(
   () => import("@/features/saturation/pages/SaturationKafkaPage/SaturationKafkaPage")

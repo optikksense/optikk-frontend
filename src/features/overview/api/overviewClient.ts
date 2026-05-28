@@ -33,16 +33,3 @@ export async function getJson<T>(
   return unwrapComparisonPayload<T>(raw);
 }
 
-export async function getJsonWithParams<T>(
-  path: string,
-  startTime: RequestTime,
-  endTime: RequestTime,
-  extra: Record<string, string | number | undefined>
-): Promise<T> {
-  const params: Record<string, RequestTime | string | number | undefined> = {
-    ...rangeParams(startTime, endTime),
-    ...extra,
-  };
-  const raw = await api.get<unknown>(`${V1}${path}`, { params });
-  return unwrapComparisonPayload<T>(raw);
-}
