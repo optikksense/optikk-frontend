@@ -52,7 +52,6 @@ function DslSearchBarWithChipsComponent(props: Props, ref: React.Ref<HTMLInputEl
         <div className="flex flex-wrap items-center gap-1.5">
           {props.filters.map((f, i) => (
             <Chip
-              // eslint-disable-next-line react/no-array-index-key
               key={`${f.field}-${f.op}-${f.value}-${i}`}
               filter={f}
               tone={chipTone(f, fields)}

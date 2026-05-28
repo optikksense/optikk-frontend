@@ -139,8 +139,7 @@ export function useURLFilters(config: URLFilterConfig): {
       values[param.key] = parseParamValue(searchParams.get(param.key), param.type, fallback);
     }
     return values;
-    // Initial parse should run once; subsequent URL changes are managed via state updates.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Initial parse runs once; subsequent URL changes are managed via state updates.
   }, []);
 
   const [values, setValues] = useState<URLFilterValues>(initialValues);
@@ -150,8 +149,7 @@ export function useURLFilters(config: URLFilterConfig): {
       return [];
     }
     return decodeStructuredFiltersParam(searchParams.get("filters"));
-    // Initial parse should run once; subsequent URL changes are managed via state updates.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Initial parse runs once; subsequent URL changes are managed via state updates.
   }, []);
 
   const [structuredFilters, setStructuredFilters] =
@@ -253,7 +251,6 @@ export function useURLFilters(config: URLFilterConfig): {
         setStructuredFilters(urlFilters);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   useEffect(() => {

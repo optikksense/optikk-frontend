@@ -52,7 +52,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Explorer queries**: include `refreshKey` in `queryKey`
 - **Logs results**: keep cursor pages explicit (`list.pages` + footer controls), not infinite-scroll append
 - **Always**: `placeholderData: keepPreviousData`; loading = `isPending && data === undefined`
-- **No cross-feature imports** — ESLint enforced; move shared code to `@shared/`
+- **No cross-feature imports** — convention; move shared code to `@shared/`
 - **No TS enums** — use `as const` + union types
 - **No `as any`** — use `dynamicNavigateOptions` / `dynamicTo` for router casts, `Record<string, unknown>` for data, `unknown as { keys: ... }` for Zod internals
 - **API naming**: GET operations use `get*` prefix (not `fetch*`); `fetch*` is reserved for the Fetch API itself

@@ -26,6 +26,5 @@ export function useChartTimeBuckets() {
     const timeBuckets = generateTimeBuckets(toEpochMs(startTime), toEpochMs(endTime));
     const labels = formatChartLabels(timeBuckets.map((ts) => ({ timestamp: ts })));
     return { timeBuckets, labels };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange, refreshKey]);
 }

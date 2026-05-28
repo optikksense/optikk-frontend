@@ -90,7 +90,6 @@ export function useAutoRefresh({
 
   const refreshLabel = useMemo(
     () => formatRelativeTime(lastRefreshAt),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [now, lastRefreshAt]
   );
 

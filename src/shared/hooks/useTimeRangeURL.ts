@@ -129,7 +129,6 @@ export function useTimeRangeURL(): void {
         { replace: true }
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // On store change: push to URL (replaceState)
@@ -155,7 +154,6 @@ export function useTimeRangeURL(): void {
       },
       { replace: true }
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange, timezone]);
 
   // On URL change (browser back/forward): update store
@@ -178,6 +176,5 @@ export function useTimeRangeURL(): void {
 
     const urlTz = searchParams.get(PARAM_TZ);
     if (urlTz && urlTz !== timezone) setTimezone(urlTz);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 }

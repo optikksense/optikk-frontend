@@ -183,7 +183,6 @@ function enforceIdFilters(
     (r) => (!traceFilter || r.trace_id === traceFilter) && (!spanFilter || r.span_id === spanFilter)
   );
   if (filtered.length !== resp.results.length) {
-    // eslint-disable-next-line no-console
     console.warn(
       `[logs/query] Backend returned ${resp.results.length - filtered.length} row(s) that do not match the active id filter`,
       { traceFilter, spanFilter, returned: resp.results.length, kept: filtered.length }
