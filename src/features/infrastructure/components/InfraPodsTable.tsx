@@ -4,7 +4,12 @@ import {
   SimpleTable,
   type SimpleTableColumn,
 } from "@shared/components/primitives/ui";
-import { formatNumber, formatPercentage, formatRelativeTime } from "@shared/utils/formatters";
+import {
+  formatDuration,
+  formatNumber,
+  formatPercentage,
+  formatRelativeTime,
+} from "@shared/utils/formatters";
 
 import type { FleetPod } from "../types";
 import { tierForPod } from "../utils/podHealth";
@@ -69,7 +74,7 @@ export default function InfraPodsTable({ pods, onOpenPodLogs }: InfraPodsTablePr
       title: "Avg latency",
       dataIndex: "avg_latency_ms",
       sorter: (a, b) => a.avg_latency_ms - b.avg_latency_ms,
-      render: (v) => `${formatNumber(Number(v))} ms`,
+      render: (v) => formatDuration(Number(v)),
     },
     {
       key: "last_seen",

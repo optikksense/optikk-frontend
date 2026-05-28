@@ -55,7 +55,7 @@ function shapeSpan(
   depth: number,
   traceStart: number,
   traceDuration: number,
-  childCount: number,
+  childCount: number
 ): WaterfallTreeSpan {
   const t0 = new Date(s.start_time).getTime();
   const t1 = new Date(s.end_time).getTime();
@@ -65,7 +65,8 @@ function shapeSpan(
     leftPct: traceDuration > 0 ? ((t0 - traceStart) / traceDuration) * 100 : 0,
     widthPct: traceDuration > 0 ? ((t1 - t0) / traceDuration) * 100 : 0,
     barColor: serviceColor(s.service_name ?? "", s.status ?? ""),
-    durationPct: traceDuration > 0 ? (((s.duration_ms ?? 0) / traceDuration) * 100).toFixed(1) : "—",
+    durationPct:
+      traceDuration > 0 ? (((s.duration_ms ?? 0) / traceDuration) * 100).toFixed(1) : "—",
     childCount,
   };
 }
@@ -77,7 +78,10 @@ function sortChildren(ids: readonly string[], map: Record<string, WaterfallSpan>
     .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
 }
 
-function roots(spans: readonly WaterfallSpan[], map: Record<string, WaterfallSpan>): WaterfallSpan[] {
+function roots(
+  spans: readonly WaterfallSpan[],
+  map: Record<string, WaterfallSpan>
+): WaterfallSpan[] {
   return spans
     .filter((s) => !s.parent_span_id || !map[s.parent_span_id])
     .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
@@ -98,13 +102,14 @@ export function serviceColor(serviceName: string, status: string): string {
 /** Filter out spans whose ancestor is collapsed (hides the subtree). */
 export function applyCollapse(
   tree: readonly WaterfallTreeSpan[],
-  collapsed: ReadonlySet<string>,
+  collapsed: ReadonlySet<string>
 ): readonly WaterfallTreeSpan[] {
   if (collapsed.size === 0) return tree;
   const hiddenDepth: number[] = [];
   const out: WaterfallTreeSpan[] = [];
   for (const s of tree) {
-    while (hiddenDepth.length > 0 && s.depth <= hiddenDepth[hiddenDepth.length - 1]) hiddenDepth.pop();
+    while (hiddenDepth.length > 0 && s.depth <= hiddenDepth[hiddenDepth.length - 1])
+      hiddenDepth.pop();
     if (hiddenDepth.length === 0) out.push(s);
     if (collapsed.has(s.span_id)) hiddenDepth.push(s.depth);
   }

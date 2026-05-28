@@ -7,11 +7,7 @@ import type { OpsSeriesPoint, ReadWriteSeriesPoint } from "./databaseSeriesSchem
 import type { DatabaseFilters } from "./databaseSlowQueriesApi";
 import { getSaturation, rangeParams } from "./saturationClient";
 
-function withFilters(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  filters?: DatabaseFilters
-) {
+function withFilters(startTime: RequestTime, endTime: RequestTime, filters?: DatabaseFilters) {
   return { ...rangeParams(startTime, endTime), ...filters };
 }
 

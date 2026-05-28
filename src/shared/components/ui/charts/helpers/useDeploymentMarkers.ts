@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import { deploymentsApi, type DeploymentRow } from "@/features/overview/api/deploymentsApi";
+import { type DeploymentRow, deploymentsApi } from "@/features/overview/api/deploymentsApi";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { deploymentMarkersPlugin, type DeploymentMarker } from "./deploymentMarkersPlugin";
+import { type DeploymentMarker, deploymentMarkersPlugin } from "./deploymentMarkersPlugin";
 
 function toMarker(row: DeploymentRow): DeploymentMarker | null {
   const ms = new Date(row.first_seen).getTime();

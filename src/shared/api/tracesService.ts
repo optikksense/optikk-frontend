@@ -39,26 +39,30 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 const spanListSchema = z.array(spanRecordSchema);
 
 /** Wire item for GET /traces/:traceId/spans (tracedetail SpanListItem). */
-const traceSpanListItemSchema = z.object({
-  span_id: z.string(),
-  parent_span_id: z.string().optional(),
-  trace_id: z.string(),
-  service_name: z.string(),
-  operation_name: z.string(),
-  kind: z.string().optional().default(""),
-  status_code: z.string().optional().default(""),
-  has_error: z.boolean().optional().default(false),
-  duration_ms: z.coerce.number(),
-  start_ns: z.coerce.number(),
-});
+const traceSpanListItemSchema = z
+  .object({
+    span_id: z.string(),
+    parent_span_id: z.string().optional(),
+    trace_id: z.string(),
+    service_name: z.string(),
+    operation_name: z.string(),
+    kind: z.string().optional().default(""),
+    status_code: z.string().optional().default(""),
+    has_error: z.boolean().optional().default(false),
+    duration_ms: z.coerce.number(),
+    start_ns: z.coerce.number(),
+  })
+  .strict();
 
 /** Backend sends `{ spans: [...] }`; some paths emit `null` or omit `spans` for empty results. */
-const traceSpansEnvelopeSchema = z.object({
-  spans: z
-    .array(traceSpanListItemSchema)
-    .nullish()
-    .transform((v) => v ?? []),
-});
+const traceSpansEnvelopeSchema = z
+  .object({
+    spans: z
+      .array(traceSpanListItemSchema)
+      .nullish()
+      .transform((v) => v ?? []),
+  })
+  .strict();
 
 /**
  * Service wrapper for distributed tracing endpoints.
@@ -82,7 +86,6 @@ export const tracesService = {
     const data = await api.get(`${BASE}/traces/${traceId}/span-kind-breakdown`);
     return validateResponse(z.array(spanKindDurationSchema), data);
   },
-
 
   async getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
     const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
@@ -133,9 +136,7 @@ export const tracesService = {
   },
 
   async getTraceLogs(traceId: string): Promise<TraceLogsResponse> {
-    const data = await api.get(`${BASE}/traces/${traceId}/logs`);
+    const data = await api.get(`${BASE}/logs/trace/${traceId}`);
     return validateResponse(traceLogsResponseSchema, data);
   },
-
-
 };

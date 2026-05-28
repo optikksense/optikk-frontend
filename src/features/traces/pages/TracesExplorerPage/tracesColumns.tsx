@@ -15,19 +15,56 @@ export function buildTraceColumns(): readonly ColumnDef<TraceSummary>[] {
     { key: "duration", label: "Duration", width: 180, render: (row) => <DurationCell row={row} /> },
     { key: "service", label: "Service", width: 160, render: renderService },
     { key: "operation", label: "Operation", render: renderOperation },
-    { key: "endpoint", label: "Endpoint", width: 200, render: (row) => <span className="truncate text-xs">{row.root_endpoint ?? ""}</span> },
-    { key: "status", label: "Status", width: 80, render: (row) => <StatusDot status={row.root_status} hasError={row.has_error} /> },
-    { key: "http_method", label: "Method", width: 80, render: (row) => <span className="font-mono text-xs uppercase">{row.root_http_method ?? ""}</span> },
-    { key: "root_http_status", label: "HTTP", width: 80, render: (row) => <span className="font-mono text-xs">{row.root_http_status ?? ""}</span> },
-    { key: "span_count", label: "Spans", width: 80, render: (row) => <span className="font-mono text-xs">{row.span_count}</span> },
-    { key: "has_error", label: "Error", width: 72, render: (row) => (row.has_error ? <span className="text-xs text-[#e8494d]">●</span> : null) },
-    { key: "environment", label: "Env", width: 120, render: (row) => <span className="truncate text-xs">{row.environment ?? ""}</span> },
+    {
+      key: "endpoint",
+      label: "Endpoint",
+      width: 200,
+      render: (row) => <span className="truncate text-xs">{row.root_endpoint ?? ""}</span>,
+    },
+    {
+      key: "status",
+      label: "Status",
+      width: 80,
+      render: (row) => <StatusDot status={row.root_status} hasError={row.has_error} />,
+    },
+    {
+      key: "http_method",
+      label: "Method",
+      width: 80,
+      render: (row) => (
+        <span className="font-mono text-xs uppercase">{row.root_http_method ?? ""}</span>
+      ),
+    },
+    {
+      key: "root_http_status",
+      label: "HTTP",
+      width: 80,
+      render: (row) => <span className="font-mono text-xs">{row.root_http_status ?? ""}</span>,
+    },
+    {
+      key: "span_count",
+      label: "Spans",
+      width: 80,
+      render: (row) => <span className="font-mono text-xs">{row.span_count}</span>,
+    },
+    {
+      key: "has_error",
+      label: "Error",
+      width: 72,
+      render: (row) => (row.has_error ? <span className="text-[#e8494d] text-xs">●</span> : null),
+    },
+    {
+      key: "environment",
+      label: "Env",
+      width: 120,
+      render: (row) => <span className="truncate text-xs">{row.environment ?? ""}</span>,
+    },
   ];
 }
 
 function renderStart(row: TraceSummary) {
   return (
-    <span className="font-mono text-xs text-[var(--text-secondary)]">
+    <span className="font-mono text-[var(--text-secondary)] text-xs">
       {new Date(row.start_ms).toISOString().slice(11, 23).replace("T", "")}
     </span>
   );
@@ -60,7 +97,9 @@ function DurationCell({ row }: { row: TraceSummary }) {
   const ms = row.duration_ns / 1e6;
   const color = row.has_error ? "#e8494d" : undefined;
   return (
-    <span className="font-mono text-xs" style={{ color }}>{formatMs(ms)}</span>
+    <span className="font-mono text-xs" style={{ color }}>
+      {formatMs(ms)}
+    </span>
   );
 }
 
@@ -84,7 +123,7 @@ function StatusDot({ status, hasError }: { status: string | undefined; hasError:
   }
 
   return (
-    <span className={`inline-flex items-center gap-1 text-[11px] font-medium ${textColor}`}>
+    <span className={`inline-flex items-center gap-1 font-medium text-[11px] ${textColor}`}>
       <span
         className="inline-block size-1.5 shrink-0 rounded-full"
         style={{ backgroundColor: dotColor }}

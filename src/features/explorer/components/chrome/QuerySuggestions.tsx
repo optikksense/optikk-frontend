@@ -66,7 +66,7 @@ function QuerySuggestionsComponent(p: Props) {
   return (
     <div className="absolute z-30 mt-1 flex w-[480px] max-w-[calc(100vw-32px)] flex-col rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-2xl">
       {p.title ? (
-        <div className="border-b border-[var(--border-color)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+        <div className="border-[var(--border-color)] border-b px-3 py-1.5 font-semibold text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
           {p.title}
         </div>
       ) : null}
@@ -92,7 +92,7 @@ function QuerySuggestionsComponent(p: Props) {
           </ul>
         )}
       </div>
-      <div className="flex items-center justify-between gap-3 border-t border-[var(--border-color)] px-3 py-1.5 text-[10px] text-[var(--text-muted)]">
+      <div className="flex items-center justify-between gap-3 border-[var(--border-color)] border-t px-3 py-1.5 text-[10px] text-[var(--text-muted)]">
         <span>
           <Kbd>Tab</Kbd> / <Kbd>↵</Kbd> accept
         </span>
@@ -115,7 +115,7 @@ function sectionHeader(opt: SuggestionOption, i: number, all: readonly Suggestio
   return (
     <li
       aria-hidden="true"
-      className={`px-3 ${i === 0 ? "pt-1" : "pt-2"} pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]`}
+      className={`px-3 ${i === 0 ? "pt-1" : "pt-2"} pb-0.5 font-semibold text-[10px] text-[var(--text-muted)] uppercase tracking-wider`}
     >
       {cur}
     </li>

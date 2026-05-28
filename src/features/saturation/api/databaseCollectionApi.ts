@@ -28,11 +28,7 @@ const collectionTopQuerySchema = z
 
 export type CollectionTopQuery = z.infer<typeof collectionTopQuerySchema>;
 
-function withCollection(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  filters?: DatabaseFilters
-) {
+function withCollection(startTime: RequestTime, endTime: RequestTime, filters?: DatabaseFilters) {
   return { ...rangeParams(startTime, endTime), ...filters };
 }
 

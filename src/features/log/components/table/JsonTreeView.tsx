@@ -13,7 +13,7 @@ function JsonTreeViewComponent({ data, depth = 0 }: Props) {
     : Object.entries(data);
 
   return (
-    <div className={depth > 0 ? "ml-4 border-l border-[var(--border-color)] pl-2" : ""}>
+    <div className={depth > 0 ? "ml-4 border-[var(--border-color)] border-l pl-2" : ""}>
       {entries.map(([key, value]) => (
         <JsonNode key={key} nodeKey={key} value={value} depth={depth} />
       ))}

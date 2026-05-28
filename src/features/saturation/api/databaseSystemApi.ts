@@ -2,16 +2,8 @@ import { z } from "zod";
 
 import type { RequestTime } from "@/shared/api/service-types";
 
-import {
-  errorSeriesSchema,
-  latencySeriesSchema,
-  opsSeriesSchema,
-} from "./databaseSeriesSchemas";
-import type {
-  ErrorSeriesPoint,
-  LatencySeriesPoint,
-  OpsSeriesPoint,
-} from "./databaseSeriesSchemas";
+import { errorSeriesSchema, latencySeriesSchema, opsSeriesSchema } from "./databaseSeriesSchemas";
+import type { ErrorSeriesPoint, LatencySeriesPoint, OpsSeriesPoint } from "./databaseSeriesSchemas";
 import type { DatabaseFilters } from "./databaseSlowQueriesApi";
 import { getSaturation, numericValue, rangeParams, stringValue } from "./saturationClient";
 
@@ -33,11 +25,7 @@ const systemNamespaceSchema = z
 export type SystemCollectionRow = z.infer<typeof systemCollectionRowSchema>;
 export type SystemNamespace = z.infer<typeof systemNamespaceSchema>;
 
-function withSystem(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  filters?: DatabaseFilters
-) {
+function withSystem(startTime: RequestTime, endTime: RequestTime, filters?: DatabaseFilters) {
   return { ...rangeParams(startTime, endTime), ...filters };
 }
 

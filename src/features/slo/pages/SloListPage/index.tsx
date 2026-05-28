@@ -13,10 +13,8 @@ function pct(v: number): string {
 function StatusBadge({ compliant }: { compliant: boolean }) {
   return (
     <span
-      className={`inline-block rounded px-2 py-0.5 text-[11px] font-semibold ${
-        compliant
-          ? "bg-emerald-500/15 text-emerald-300"
-          : "bg-red-500/15 text-red-300"
+      className={`inline-block rounded px-2 py-0.5 font-semibold text-[11px] ${
+        compliant ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"
       }`}
     >
       {compliant ? "ON TRACK" : "BURNING"}
@@ -54,7 +52,7 @@ export default function SloListPage(): JSX.Element {
               Availability
             </div>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-semibold text-[28px] tabular-nums text-[var(--text-primary)]">
+              <span className="font-semibold text-[28px] text-[var(--text-primary)] tabular-nums">
                 {data ? pct(data.status.availability_percent) : "—"}
               </span>
               {data ? <StatusBadge compliant={data.status.compliant} /> : null}
@@ -67,7 +65,7 @@ export default function SloListPage(): JSX.Element {
             <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
               Error budget remaining
             </div>
-            <div className="mt-1 font-semibold text-[28px] tabular-nums text-[var(--text-primary)]">
+            <div className="mt-1 font-semibold text-[28px] text-[var(--text-primary)] tabular-nums">
               {data ? pct(data.status.error_budget_remaining_percent) : "—"}
             </div>
           </div>
@@ -75,7 +73,7 @@ export default function SloListPage(): JSX.Element {
             <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
               p95 latency
             </div>
-            <div className="mt-1 font-semibold text-[28px] tabular-nums text-[var(--text-primary)]">
+            <div className="mt-1 font-semibold text-[28px] text-[var(--text-primary)] tabular-nums">
               {data ? `${Math.round(data.status.p95_latency_ms)}ms` : "—"}
             </div>
             <div className="mt-1 text-[12px] text-[var(--text-muted)]">
@@ -86,12 +84,12 @@ export default function SloListPage(): JSX.Element {
       </PageSurface>
 
       <PageSurface padding="lg">
-        <div className="text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-[0.06em]">
+        <div className="font-semibold text-[12px] text-[var(--text-primary)] uppercase tracking-[0.06em]">
           Per-service drill-in
         </div>
         <div className="mt-2 text-[12px] text-[var(--text-secondary)]">
-          The current backend exposes one global SLO computation per call. To view a specific service&rsquo;s
-          SLO, click into a service from the catalog or use the URL{" "}
+          The current backend exposes one global SLO computation per call. To view a specific
+          service&rsquo;s SLO, click into a service from the catalog or use the URL{" "}
           <code className="font-mono text-[11px]">/slos?service=&lt;name&gt;</code>.
         </div>
         <button

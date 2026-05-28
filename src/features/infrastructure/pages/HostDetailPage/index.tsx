@@ -69,7 +69,7 @@ function StatTile({ label, value }: { label: string; value: string }) {
       <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
         {label}
       </div>
-      <div className="mt-1 font-semibold text-[18px] tabular-nums text-[var(--text-primary)]">
+      <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)] tabular-nums">
         {value}
       </div>
     </div>
@@ -107,7 +107,7 @@ export default function HostDetailPage(): JSX.Element {
       </PageSurface>
 
       <PageSurface padding="lg">
-        <div className="mb-3 text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-[0.06em]">
+        <div className="mb-3 font-semibold text-[12px] text-[var(--text-primary)] uppercase tracking-[0.06em]">
           Services on this host
         </div>
         <SimpleTable

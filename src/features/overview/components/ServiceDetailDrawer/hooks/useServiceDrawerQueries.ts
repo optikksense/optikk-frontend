@@ -1,11 +1,10 @@
-import {
-  getErrorRateTimeseries,
-  getP95LatencyTimeseries,
-  getRequestRateTimeseries,
-  getServiceMetrics,
-  getTopEndpoints,
-} from "@/features/overview/api/serviceMetricsApi";
+import { getServiceErrorRate } from "@/features/errors/api/errorGroupsApi";
+import { getServiceMetrics, getTopEndpoints } from "@/features/overview/api/serviceMetricsApi";
 import { getServiceTopology } from "@/features/overview/pages/ServiceHubPage/topology/api";
+import {
+  getLatencyPercentilesTimeseries,
+  getStatusTimeseries,
+} from "@/features/services/api/serviceDetailApi";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 /**
@@ -25,19 +24,19 @@ export function useServiceDrawerQueries(serviceName: string) {
 
   const requestTrendQuery = useTimeRangeQuery(
     "service-drawer-request-trend",
-    async (_t, s, e) => getRequestRateTimeseries(s, e, serviceName),
+    async (_t, s, e) => getStatusTimeseries(s, e, serviceName),
     opts
   );
 
   const errorTrendQuery = useTimeRangeQuery(
     "service-drawer-error-trend",
-    async (_t, s, e) => getErrorRateTimeseries(s, e, serviceName),
+    async (_t, s, e) => getServiceErrorRate(s, e, { serviceName }),
     opts
   );
 
   const latencyTrendQuery = useTimeRangeQuery(
     "service-drawer-latency-trend",
-    async (_t, s, e) => getP95LatencyTimeseries(s, e, serviceName),
+    async (_t, s, e) => getLatencyPercentilesTimeseries(s, e, serviceName),
     opts
   );
 

@@ -48,8 +48,7 @@ function toCell(row: ServiceMetricPoint): HealthCell {
 }
 
 function Cell({ cell, onOpen }: { cell: HealthCell; onOpen: () => void }) {
-  const errorTone =
-    cell.errorRate > 1 ? APP_COLORS.hex_f04438 : "var(--text-muted)";
+  const errorTone = cell.errorRate > 1 ? APP_COLORS.hex_f04438 : "var(--text-muted)";
   return (
     <button
       type="button"
@@ -75,7 +74,11 @@ export default function ServiceHealthGrid({ services, limit = 8 }: ServiceHealth
   const location = useLocation();
 
   const cells = useMemo(
-    () => services.slice(0, limit).map(toCell).filter((cell) => cell.name),
+    () =>
+      services
+        .slice(0, limit)
+        .map(toCell)
+        .filter((cell) => cell.name),
     [services, limit]
   );
 

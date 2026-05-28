@@ -5,11 +5,11 @@ import { ExplorerHeader } from "@/features/explorer/components/chrome/ExplorerHe
 import { SummaryStrip } from "@/features/explorer/components/chrome/SummaryStrip";
 import { FacetRail } from "@/features/explorer/components/facets/FacetRail";
 import { ResultsArea } from "@/features/explorer/components/list/ResultsArea";
-import type { ColumnDef } from "@/features/explorer/types/results";
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { TrendHistogramStrip } from "@/features/explorer/components/trend/TrendHistogramStrip";
+import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import type { ColumnDef } from "@/features/explorer/types/results";
 import { TRACE_TREND_SERIES } from "@/features/explorer/utils/trend";
-import { SavedViewsDropdown } from "@/features/savedViews/components/SavedViewsDropdown";
+
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 
 import { CreateMonitorButton } from "../../components/CreateMonitorButton";
@@ -21,7 +21,7 @@ import { useSpansQuery } from "../../hooks/useSpansQuery";
 import type { SpanRow } from "../../types/span";
 import type { TraceSummary } from "../../types/trace";
 import { getTraceRowId } from "./tracesColumns";
-import { useTracesExplorerPage, type UseTracesExplorerPageReturn } from "./useTracesExplorerPage";
+import { type UseTracesExplorerPageReturn, useTracesExplorerPage } from "./useTracesExplorerPage";
 
 /** Three-zone traces explorer: query header + facet rail + scope-switched
  *  results body (traces or spans). Row click navigates to /traces/$traceId. */
@@ -35,7 +35,6 @@ export default function TracesExplorerPage() {
         filters={p.state.filters}
         onChangeFilters={(f: readonly ExplorerFilter[]) => p.state.setFilters(f)}
         onSubmitFreeText={p.onFreeText}
-        actions={<SavedViewsDropdown scope="traces" onLoad={p.onLoadSavedView} />}
         kpiStrip={p.kpis.length > 0 ? <SummaryStrip kpis={p.kpis} /> : null}
       />
       <div className="flex flex-1 overflow-hidden">
@@ -160,7 +159,7 @@ const SPAN_COLUMNS: readonly ColumnDef<SpanRow>[] = [
     label: "Time",
     width: 170,
     render: (row) => (
-      <span className="font-mono text-xs text-[var(--text-secondary)]">
+      <span className="font-mono text-[var(--text-secondary)] text-xs">
         {new Date(row.timestamp_ns / 1_000_000).toISOString().slice(11, 23)}
       </span>
     ),
@@ -202,17 +201,13 @@ const SPAN_COLUMNS: readonly ColumnDef<SpanRow>[] = [
     key: "http_method",
     label: "Method",
     width: 80,
-    render: (row) => (
-      <span className="font-mono text-xs uppercase">{row.http_method ?? ""}</span>
-    ),
+    render: (row) => <span className="font-mono text-xs uppercase">{row.http_method ?? ""}</span>,
   },
   {
     key: "http_status",
     label: "HTTP",
     width: 72,
-    render: (row) => (
-      <span className="font-mono text-xs">{row.response_status_code ?? ""}</span>
-    ),
+    render: (row) => <span className="font-mono text-xs">{row.response_status_code ?? ""}</span>,
   },
   {
     key: "trace_id",
@@ -231,7 +226,7 @@ function SpanStatusBadge({ status, hasError }: { status: string | undefined; has
   const label = hasError ? "ERROR" : status || "UNSET";
   return (
     <span
-      className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase"
+      className="inline-flex items-center rounded px-1.5 py-0.5 font-semibold text-[10px] uppercase"
       style={{ backgroundColor: `${color}22`, color }}
     >
       {label}

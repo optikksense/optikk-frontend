@@ -1,6 +1,6 @@
 import { type KeyboardEvent, forwardRef, memo, useCallback, useEffect, useState } from "react";
 
-import { type SavedViewLite, useDslSearchBar } from "../../hooks/useDslSearchBar";
+import { useDslSearchBar } from "../../hooks/useDslSearchBar";
 import { formatDsl } from "../../search/formatDsl";
 import type { ExplorerFilter, ExplorerScope } from "../../types/filters";
 import { QuerySuggestions, type SuggestionOption } from "./QuerySuggestions";
@@ -11,8 +11,6 @@ interface Props {
   readonly placeholder?: string;
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
-  readonly savedViews?: readonly SavedViewLite[];
-  readonly onSavedViewSelect?: (url: string) => void;
   readonly disableBareFreeTextFallback?: boolean;
 }
 
@@ -28,8 +26,6 @@ function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputEle
     initial: seed,
     scope: props.scope,
     valueSuggestions: props.valueSuggestions,
-    savedViews: props.savedViews,
-    onSavedViewSelect: props.onSavedViewSelect,
   });
   useSyncSeedOnExternalChange(seed, s.input, s.setInput, s.setCaret);
   const activeOpt = s.suggestions[s.activeIdx];

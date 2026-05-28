@@ -10,9 +10,7 @@ export const logsConfig: DomainConfig = {
   key: "logs",
   label: "Logs",
   permissions: ["logs:read"],
-  navigation: [
-    { path: ROUTES.logs, label: "Logs", icon: FileText, group: "observe" },
-  ],
+  navigation: [{ path: ROUTES.logs, label: "Logs", icon: FileText, group: "observe" }],
   routes: [{ path: ROUTES.logs, page: LogsExplorerPage }],
   dashboardPanels: [],
 };

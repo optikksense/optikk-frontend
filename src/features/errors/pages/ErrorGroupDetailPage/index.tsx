@@ -1,11 +1,7 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { AlertOctagon } from "lucide-react";
 
-import {
-  SimpleTable,
-  type SimpleTableColumn,
-  Surface,
-} from "@shared/components/primitives/ui";
+import { SimpleTable, type SimpleTableColumn, Surface } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
@@ -68,7 +64,7 @@ function StatTile({ label, value }: { label: string; value: string }) {
       <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
         {label}
       </div>
-      <div className="mt-1 font-semibold text-[18px] tabular-nums text-[var(--text-primary)]">
+      <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)] tabular-nums">
         {value}
       </div>
     </div>
@@ -95,8 +91,7 @@ export default function ErrorGroupDetailPage(): JSX.Element {
   );
 
   const detail = detailQ.data;
-  const totalErrors =
-    timeseriesQ.data?.reduce((acc, p) => acc + (p.error_count ?? 0), 0) ?? 0;
+  const totalErrors = timeseriesQ.data?.reduce((acc, p) => acc + (p.error_count ?? 0), 0) ?? 0;
 
   return (
     <PageShell>
@@ -130,7 +125,7 @@ export default function ErrorGroupDetailPage(): JSX.Element {
       ) : null}
 
       <PageSurface padding="lg">
-        <div className="mb-3 text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-[0.06em]">
+        <div className="mb-3 font-semibold text-[12px] text-[var(--text-primary)] uppercase tracking-[0.06em]">
           Sample traces
         </div>
         <SimpleTable
@@ -139,8 +134,7 @@ export default function ErrorGroupDetailPage(): JSX.Element {
           rowKey={(r) => `${r.trace_id}::${r.span_id}`}
           pagination={{ pageSize: 10 }}
           onRow={(record) => ({
-            onClick: () =>
-              navigate({ to: `/traces/${encodeURIComponent(record.trace_id)}` }),
+            onClick: () => navigate({ to: `/traces/${encodeURIComponent(record.trace_id)}` }),
             style: { cursor: "pointer" },
           })}
         />

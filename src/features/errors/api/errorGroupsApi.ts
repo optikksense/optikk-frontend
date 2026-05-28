@@ -39,6 +39,7 @@ export interface ErrorTimeSeriesPoint {
 interface ErrorListParams {
   serviceName?: string;
   limit?: number;
+  [key: string]: unknown;
 }
 
 function range(s: RequestTime, e: RequestTime, extra?: Record<string, unknown>) {
@@ -50,7 +51,9 @@ export function listErrorGroups(
   e: RequestTime,
   p?: ErrorListParams
 ): Promise<ErrorGroup[]> {
-  return api.get<ErrorGroup[]>(`${V1}/errors/groups`, { params: range(s, e, p as Record<string, unknown> | undefined) });
+  return api.get<ErrorGroup[]>(`${V1}/errors/groups`, {
+    params: range(s, e, p),
+  });
 }
 
 export function getErrorGroupDetail(groupId: string): Promise<ErrorGroupDetail> {
@@ -63,10 +66,9 @@ export function getErrorGroupTraces(
   e: RequestTime,
   limit = 50
 ): Promise<ErrorGroupTrace[]> {
-  return api.get<ErrorGroupTrace[]>(
-    `${V1}/errors/groups/${encodeURIComponent(groupId)}/traces`,
-    { params: range(s, e, { limit }) }
-  );
+  return api.get<ErrorGroupTrace[]>(`${V1}/errors/groups/${encodeURIComponent(groupId)}/traces`, {
+    params: range(s, e, { limit }),
+  });
 }
 
 export function getErrorGroupTimeseries(
@@ -81,11 +83,13 @@ export function getErrorGroupTimeseries(
 }
 
 export function getErrorVolume(s: RequestTime, e: RequestTime, p?: ErrorListParams) {
-  return api.get<ErrorTimeSeriesPoint[]>(`${V1}/errors/error-volume`, { params: range(s, e, p as Record<string, unknown> | undefined) });
+  return api.get<ErrorTimeSeriesPoint[]>(`${V1}/errors/error-volume`, {
+    params: range(s, e, p),
+  });
 }
 
 export function getServiceErrorRate(s: RequestTime, e: RequestTime, p?: ErrorListParams) {
   return api.get<ErrorTimeSeriesPoint[]>(`${V1}/errors/service-error-rate`, {
-    params: range(s, e, p as Record<string, unknown> | undefined),
+    params: range(s, e, p),
   });
 }

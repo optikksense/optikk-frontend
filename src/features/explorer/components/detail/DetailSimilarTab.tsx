@@ -1,4 +1,4 @@
-import { memo, type ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 export interface SimilarItem {
   readonly id: string;
@@ -27,7 +27,7 @@ function DetailSimilarTabComponent({ items, onSelect, emptyState }: Props) {
           <button
             type="button"
             onClick={() => onSelect?.(item.id)}
-            className="flex w-full flex-col items-start gap-0.5 border-b border-[var(--border-color)] px-2 py-2 text-left text-[12px] hover:bg-[rgba(255,255,255,0.04)]"
+            className="flex w-full flex-col items-start gap-0.5 border-[var(--border-color)] border-b px-2 py-2 text-left text-[12px] hover:bg-[rgba(255,255,255,0.04)]"
           >
             <span className="truncate text-[var(--text-primary)]">{item.title}</span>
             {item.subtitle ? (

@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { useMemo } from "react";
 
 import { useExplorerQuery } from "@/features/explorer/hooks/useExplorerQuery";
 import { useExplorerState } from "@/features/explorer/hooks/useExplorerState";
@@ -38,15 +38,35 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
 
   const needsFacets = include.includes("facets");
   const facetsQuery = useStandardQuery({
-    queryKey: ["traces", "explorer", "facets", teamId ?? "none", refreshKey, startTime, endTime, JSON.stringify(state.filters)],
-    queryFn: () => tracesExplorerApi.queryFacets({ startTime, endTime, filters: state.filters, limit: 0 }),
+    queryKey: [
+      "traces",
+      "explorer",
+      "facets",
+      teamId ?? "none",
+      refreshKey,
+      startTime,
+      endTime,
+      JSON.stringify(state.filters),
+    ],
+    queryFn: () =>
+      tracesExplorerApi.queryFacets({ startTime, endTime, filters: state.filters, limit: 0 }),
     enabled: (args.enabled ?? true) && needsFacets,
   });
 
   const needsTrend = include.includes("trend") || include.includes("summary");
   const trendQuery = useStandardQuery({
-    queryKey: ["traces", "explorer", "trend", teamId ?? "none", refreshKey, startTime, endTime, JSON.stringify(state.filters)],
-    queryFn: () => tracesExplorerApi.queryTrend({ startTime, endTime, filters: state.filters, limit: 0 }),
+    queryKey: [
+      "traces",
+      "explorer",
+      "trend",
+      teamId ?? "none",
+      refreshKey,
+      startTime,
+      endTime,
+      JSON.stringify(state.filters),
+    ],
+    queryFn: () =>
+      tracesExplorerApi.queryTrend({ startTime, endTime, filters: state.filters, limit: 0 }),
     enabled: (args.enabled ?? true) && needsTrend,
   });
 

@@ -7,15 +7,11 @@ interface Props {
   readonly onRetry?: () => void;
 }
 
-function ResultsErrorStateComponent({
-  title = "Couldn't load results",
-  message,
-  onRetry,
-}: Props) {
+function ResultsErrorStateComponent({ title = "Couldn't load results", message, onRetry }: Props) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-8 text-center">
       <AlertTriangle size={28} className="text-[var(--danger)]" />
-      <span className="text-[13px] font-medium text-[var(--text-primary)]">{title}</span>
+      <span className="font-medium text-[13px] text-[var(--text-primary)]">{title}</span>
       {message ? (
         <span className="max-w-md text-[12px] text-[var(--text-muted)]">{message}</span>
       ) : null}

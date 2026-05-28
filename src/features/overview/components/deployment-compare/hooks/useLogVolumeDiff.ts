@@ -1,6 +1,6 @@
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
-import { getLogsTrend } from "@features/log/api/logsAnalyticsApi";
 import { aggregateSeverityTrend } from "@features/explorer/utils/trend";
+import { getLogsTrend } from "@features/log/api/logsAnalyticsApi";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 export interface WindowVolume {
@@ -32,7 +32,7 @@ function sumBuckets(buckets: readonly TrendBucket[] | undefined): WindowVolume {
       fatals: acc.fatals,
       warnings: acc.warnings + b.warnings,
     }),
-    base,
+    base
   );
 }
 
@@ -54,7 +54,7 @@ export function useLogVolumeDiff(
   beforeStart: number | undefined,
   beforeEnd: number | undefined,
   afterStart: number,
-  afterEnd: number,
+  afterEnd: number
 ): LogVolumeDiff {
   const teamId = useTeamId();
   const refreshKey = useRefreshKey();

@@ -29,7 +29,16 @@ export interface WaterfallRowProps {
 }
 
 function WaterfallRowComponent(p: WaterfallRowProps) {
-  const { span, isSelected, isCritical, isError, isHit, isCollapsed, onSpanClick, onToggleCollapse } = p;
+  const {
+    span,
+    isSelected,
+    isCritical,
+    isError,
+    isHit,
+    isCollapsed,
+    onSpanClick,
+    onToggleCollapse,
+  } = p;
   const kind = ((span.kind_string || span.span_kind) ?? "").toUpperCase();
   const { borderLeft, rowBg } = rowBgStyles(isSelected, isError, isCritical, isHit);
   const bg = span.barColor.startsWith("#")
@@ -41,7 +50,12 @@ function WaterfallRowComponent(p: WaterfallRowProps) {
       style={{ borderLeft, background: rowBg }}
       onClick={() => onSpanClick?.(span)}
     >
-      <RowLabel span={span} kind={kind} isCollapsed={isCollapsed} onToggleCollapse={onToggleCollapse} />
+      <RowLabel
+        span={span}
+        kind={kind}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={onToggleCollapse}
+      />
       <div className="flex w-[60px] min-w-[60px] items-center justify-end border-[var(--glass-border)] border-r px-2 text-[11px] text-[var(--text-muted)] tabular-nums">
         {span.durationPct}%
       </div>
@@ -49,7 +63,11 @@ function WaterfallRowComponent(p: WaterfallRowProps) {
         <div className="relative h-full">
           <div
             className="absolute flex h-6 min-w-[3px] animate-[waterfall-bar-enter_0.4s_ease-out_forwards] cursor-pointer items-center justify-start rounded px-1.5 opacity-0 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.3)] transition-[opacity,transform,box-shadow] duration-200 hover:z-[5] hover:scale-y-[1.15] hover:opacity-100 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
-            style={{ left: `${span.leftPct}%`, width: `${Math.max(span.widthPct, 0.5)}%`, background: bg }}
+            style={{
+              left: `${span.leftPct}%`,
+              width: `${Math.max(span.widthPct, 0.5)}%`,
+              background: bg,
+            }}
             title={`${span.operation_name} — ${formatDuration(span.duration_ms)}`}
           >
             <span className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[10px] text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.8)]">
@@ -76,7 +94,10 @@ function RowLabel({
   const Chevron = isCollapsed ? ChevronRight : ChevronDown;
   return (
     <div className="w-[300px] min-w-[300px] border-[var(--glass-border)] border-r">
-      <div className="flex flex-col gap-0.5 py-2" style={{ paddingLeft: `${span.depth * 16 + 8}px` }}>
+      <div
+        className="flex flex-col gap-0.5 py-2"
+        style={{ paddingLeft: `${span.depth * 16 + 8}px` }}
+      >
         <div className="flex items-center gap-1">
           {span.childCount > 0 ? (
             <button
@@ -113,7 +134,11 @@ function RowLabel({
 }
 
 function rowBgStyles(isSelected: boolean, isError: boolean, isCritical: boolean, isHit: boolean) {
-  if (isSelected) return { borderLeft: "3px solid var(--literal-hex-5e60ce)", rowBg: "var(--literal-rgba-94-96-206-0p15)" };
+  if (isSelected)
+    return {
+      borderLeft: "3px solid var(--literal-hex-5e60ce)",
+      rowBg: "var(--literal-rgba-94-96-206-0p15)",
+    };
   if (isError) return { borderLeft: "3px solid #f04438", rowBg: "rgba(240,68,56,0.06)" };
   if (isCritical) return { borderLeft: "3px solid #f59e0b", rowBg: "rgba(245,158,11,0.06)" };
   if (isHit) return { borderLeft: "3px solid #06aed5", rowBg: "rgba(6,174,213,0.08)" };

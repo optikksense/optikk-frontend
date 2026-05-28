@@ -29,11 +29,11 @@ export const TraceMethodBadge = memo(function TraceMethodBadge({ method, httpSta
   const { bg, fg } = resolveColors(normalized);
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${bg} ${fg}`}
+      className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-semibold text-[10px] uppercase tracking-wide ${bg} ${fg}`}
     >
       <span>{normalized}</span>
       {typeof httpStatus === "number" ? (
-        <span className="text-[10px] font-normal text-[var(--text-muted)]">{httpStatus}</span>
+        <span className="font-normal text-[10px] text-[var(--text-muted)]">{httpStatus}</span>
       ) : null}
     </span>
   );

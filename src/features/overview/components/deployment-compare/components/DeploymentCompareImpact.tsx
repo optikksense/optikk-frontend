@@ -39,7 +39,9 @@ function impactColumns(): SimpleTableColumn<DeploymentImpactRow>[] {
       key: "p95_delta",
       align: "right",
       width: 120,
-      render: (_value, row) => <DeltaPill delta={row.p95_delta} formatter={formatDuration} invert />,
+      render: (_value, row) => (
+        <DeltaPill delta={row.p95_delta} formatter={formatDuration} invert />
+      ),
     },
     {
       title: "RPS Δ",

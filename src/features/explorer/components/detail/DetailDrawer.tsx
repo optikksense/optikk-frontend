@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { memo, type ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 interface Props {
   readonly open: boolean;
@@ -22,10 +22,10 @@ function DetailDrawerComponent({ open, onOpenChange, title, children, widthPx = 
         <Dialog.Content
           aria-describedby={undefined}
           style={{ width: widthPx }}
-          className="fixed right-0 top-0 z-50 flex h-full flex-col border-l border-[var(--border-color)] bg-[var(--bg-primary)] shadow-2xl"
+          className="fixed top-0 right-0 z-50 flex h-full flex-col border-[var(--border-color)] border-l bg-[var(--bg-primary)] shadow-2xl"
         >
-          <header className="flex shrink-0 items-center justify-between border-b border-[var(--border-color)] px-4 py-3">
-            <Dialog.Title className="min-w-0 truncate text-[13px] font-medium text-[var(--text-primary)]">
+          <header className="flex shrink-0 items-center justify-between border-[var(--border-color)] border-b px-4 py-3">
+            <Dialog.Title className="min-w-0 truncate font-medium text-[13px] text-[var(--text-primary)]">
               {title}
             </Dialog.Title>
             <Dialog.Close

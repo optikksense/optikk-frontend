@@ -2,7 +2,7 @@ import { type ReactNode, forwardRef, memo } from "react";
 
 import { DslSearchBarWithChips } from "@/features/explorer/components/chrome/DslSearchBarWithChips";
 import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
-import type { SavedViewLite } from "@/features/explorer/hooks/useDslSearchBar";
+
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
 
 interface Props {
@@ -10,8 +10,6 @@ interface Props {
   readonly onChangeFilters: (next: readonly ExplorerFilter[]) => void;
   readonly actions?: ReactNode;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
-  readonly savedViews?: readonly SavedViewLite[];
-  readonly onSavedViewSelect?: (url: string) => void;
 }
 
 /** Top toolbar — DSL search bar with chip filters, plus Views / Share actions. */
@@ -27,8 +25,6 @@ export const LogsToolbar = memo(
             placeholder='Search logs: service_name:checkout severity_text:ERROR "timeout"'
             scope="logs"
             valueSuggestions={props.valueSuggestions}
-            savedViews={props.savedViews}
-            onSavedViewSelect={props.onSavedViewSelect}
           />
         </div>
         {props.actions}

@@ -20,7 +20,9 @@ function FacetDistributionBarComponent({ segments, height = 4 }: Props) {
     <div
       className="flex w-full overflow-hidden rounded-full"
       style={{ height }}
-      title={segments.map((s) => `${s.label ?? ""}: ${((s.ratio / total) * 100).toFixed(1)}%`).join(" · ")}
+      title={segments
+        .map((s) => `${s.label ?? ""}: ${((s.ratio / total) * 100).toFixed(1)}%`)
+        .join(" · ")}
     >
       {segments.map((seg, i) => (
         <div

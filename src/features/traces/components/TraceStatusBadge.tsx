@@ -5,7 +5,10 @@ interface Props {
   readonly hasError?: boolean;
 }
 
-function classify(status: string, hasError: boolean): {
+function classify(
+  status: string,
+  hasError: boolean
+): {
   label: string;
   bg: string;
   fg: string;
@@ -27,11 +30,14 @@ function classify(status: string, hasError: boolean): {
  * Trace status pill — green (OK), red (Error), yellow (Unset).
  * Also drives the `hasError` signal coming from `traces_index`.
  */
-export const TraceStatusBadge = memo(function TraceStatusBadge({ status, hasError = false }: Props) {
+export const TraceStatusBadge = memo(function TraceStatusBadge({
+  status,
+  hasError = false,
+}: Props) {
   const { label, bg, fg } = classify(status, hasError);
   return (
     <span
-      className={`inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium ${bg} ${fg}`}
+      className={`inline-flex items-center rounded px-2 py-0.5 font-medium text-[11px] ${bg} ${fg}`}
     >
       {label}
     </span>

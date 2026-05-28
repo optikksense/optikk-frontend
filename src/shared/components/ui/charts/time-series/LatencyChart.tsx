@@ -1,16 +1,12 @@
 import { memo, useMemo } from "react";
 
 import { APP_COLORS } from "@config/colorLiterals";
-import { CHART_COLORS } from "@config/constants";
 import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
 import { firstValue, tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { getChartColor } from "@shared/utils/charting";
 
 import ObservabilityChart from "../ObservabilityChart";
 import { buildServiceDatasets } from "../utils/buildServiceDatasets";
-
-function getChartColor(index: number): string {
-  return CHART_COLORS[index % CHART_COLORS.length];
-}
 
 interface EndpointData {
   key?: string;
@@ -81,7 +77,7 @@ export default memo(function LatencyChart({
   fillHeight = false,
   targetThreshold = null,
   datasetLabel = "Avg Latency (ms)",
-  color = CHART_COLORS[0],
+  color = getChartColor(0),
   valueKey = "avg_latency",
 }: LatencyChartProps) {
   const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;

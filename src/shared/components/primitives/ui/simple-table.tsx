@@ -12,6 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
+import { TableVirtuoso } from "react-virtuoso";
 
 import { cn } from "@/lib/utils";
 import { type ColumnWidthMap, useResizableColumns } from "@shared/hooks/useResizableColumns";
@@ -65,6 +66,7 @@ export interface SimpleTableProps<RowType extends TableRowData = TableRowData> {
   onRow?: (record: RowType, index?: number) => React.HTMLAttributes<HTMLTableRowElement>;
   sorting?: SortingState;
   onSortingChange?: (sorting: SortingState) => void;
+  virtualize?: boolean | { threshold: number };
 }
 
 interface ColumnMeta {
@@ -126,6 +128,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
   onRow,
   sorting: controlledSorting,
   onSortingChange,
+  virtualize = true,
 }: SimpleTableProps<RowType>) {
   const initialSorting = useMemo<SortingState>(() => {
     for (const column of incomingColumns) {
@@ -335,6 +338,173 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
   };
 
   const rows = table.getRowModel().rows;
+
+  const virtualizeConfig = useMemo(() => {
+    if (typeof virtualize === "object") {
+      return { enabled: true, threshold: virtualize.threshold ?? 300 };
+    }
+    return { enabled: virtualize, threshold: 300 };
+  }, [virtualize]);
+
+  const shouldVirtualize =
+    virtualizeConfig.enabled && dataSource.length > virtualizeConfig.threshold;
+
+  if (shouldVirtualize) {
+    return (
+      <div className={cn("w-full overflow-hidden", className)}>
+        <TableVirtuoso
+          style={{ height: scroll?.y ?? 400 }}
+          data={rows}
+          components={{
+            Table: (props: any) => (
+              <Table
+                {...props}
+                className={cn(
+                  "table-fixed border-collapse overflow-hidden rounded-[var(--card-radius)] bg-[var(--bg-secondary)]",
+                  sizeClasses[size],
+                  props.className
+                )}
+                style={{
+                  ...props.style,
+                  minWidth: scroll?.x,
+                }}
+              />
+            ),
+            TableHead: TableHeader,
+            TableBody: TableBody,
+            TableRow: (props: any) => {
+              const index = props["data-index"];
+              const row = rows[index];
+              if (!row) {
+                return <TableRow {...props} />;
+              }
+              const rowCls =
+                typeof rowClassName === "function"
+                  ? rowClassName(row.original, index)
+                  : (rowClassName ?? "");
+              const rowProps = onRow ? onRow(row.original, index) : {};
+              return <TableRow {...props} className={cn(rowCls, props.className)} {...rowProps} />;
+            },
+          }}
+          fixedHeaderContent={() =>
+            table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                {headerGroup.headers.map((header) => {
+                  const meta = header.column.columnDef.meta as ColumnMeta | undefined;
+                  const colId = meta?.columnId ?? header.id;
+                  const resolvedWidth = columnWidths[colId] ?? meta?.width;
+
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        "relative min-w-0 overflow-hidden border-[var(--border-color)] border-b bg-[var(--bg-secondary)] font-medium text-[11px] text-[var(--text-secondary)] normal-case tracking-[0.01em]",
+                        headRowClasses[size],
+                        header.column.getCanSort() && "cursor-pointer select-none",
+                        meta?.sticky && "z-[11]",
+                        meta?.headerClassName
+                      )}
+                      style={{
+                        width: resolvedWidth,
+                        textAlign: meta?.align ?? "left",
+                        ...(meta?.sticky === "left"
+                          ? { position: "sticky", left: meta.stickyOffset ?? 0 }
+                          : {}),
+                        ...(meta?.sticky === "right"
+                          ? { position: "sticky", right: meta.stickyOffset ?? 0 }
+                          : {}),
+                      }}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <div
+                        className={cn(
+                          "min-w-0 pr-4",
+                          meta?.ellipsis
+                            ? "truncate"
+                            : "overflow-hidden text-ellipsis whitespace-nowrap"
+                        )}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{
+                          asc: " ↑",
+                          desc: " ↓",
+                        }[header.column.getIsSorted() as string] ?? ""}
+                      </div>
+
+                      {/* Resize handle */}
+                      <div
+                        className="-right-1 absolute top-0 z-[12] h-full w-2 cursor-col-resize hover:bg-[var(--color-primary-subtle-18)]"
+                        onMouseDown={(event) => {
+                          event.stopPropagation();
+                          handleResizeMouseDown(event, colId);
+                        }}
+                      />
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))
+          }
+          itemContent={(index, row) => (
+            <>
+              {row.getVisibleCells().map((cell) => {
+                const meta = cell.column.columnDef.meta as ColumnMeta | undefined;
+                const colId = meta?.columnId ?? cell.column.id;
+                const resolvedWidth = columnWidths[colId] ?? meta?.width;
+
+                return (
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      cellPadClasses[size],
+                      "min-w-0 overflow-hidden",
+                      meta?.ellipsis && "max-w-0",
+                      meta?.sticky && "z-[6] bg-[var(--bg-secondary)]",
+                      meta?.className,
+                      meta?.cellClassName
+                    )}
+                    style={{
+                      textAlign: meta?.align ?? "left",
+                      width: resolvedWidth,
+                      maxWidth: resolvedWidth,
+                      ...(meta?.sticky === "left"
+                        ? { position: "sticky", left: meta.stickyOffset ?? 0 }
+                        : {}),
+                      ...(meta?.sticky === "right"
+                        ? { position: "sticky", right: meta.stickyOffset ?? 0 }
+                        : {}),
+                    }}
+                  >
+                    <div
+                      className={cn("min-w-0", meta?.ellipsis ? "truncate" : "overflow-x-hidden")}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </div>
+                  </TableCell>
+                );
+              })}
+            </>
+          )}
+        />
+        {pagination ? (
+          <div className="border-[var(--border-color)] border-t bg-[var(--bg-secondary)] px-3 py-2.5">
+            <Pagination
+              page={table.getState().pagination.pageIndex + 1}
+              pageSize={table.getState().pagination.pageSize}
+              total={totalRows}
+              onPageChange={(page) => table.setPageIndex(Math.max(page - 1, 0))}
+              onPageSizeChange={
+                typeof pagination === "object" && pagination.showSizeChanger
+                  ? (pageSize) => table.setPageSize(pageSize)
+                  : undefined
+              }
+              pageSizeOptions={[10, 20, 50, 100]}
+            />
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div className={cn("w-full overflow-auto", className)}>

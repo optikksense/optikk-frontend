@@ -1,5 +1,5 @@
-import { tracesService } from "@shared/api/tracesService";
 import type { ServiceMapResponse, TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
+import { tracesService } from "@shared/api/tracesService";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 /** Paired fetch of service-map + trace-errors for the overview panel (Phase 4). */

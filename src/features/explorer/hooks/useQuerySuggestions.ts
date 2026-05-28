@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { useDebounce } from "use-debounce";
 
-import { useTimeRange } from "@app/store/appStore";
 import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
+import { useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
-import { fetchSuggestions, type SuggestionItem } from "../search/suggestApi";
+import { type SuggestionItem, fetchSuggestions } from "../search/suggestApi";
 
 interface Args {
   readonly field: string | null;
@@ -30,7 +30,8 @@ export function useQuerySuggestions({ field, prefix, enabled }: Args) {
   const effectiveEnabled = (enabled ?? true) && field !== null && field.trim() !== "";
   return useStandardQuery<SuggestionItem[]>({
     queryKey: ["traces", "suggest", field ?? "none", debouncedPrefix, bucket],
-    queryFn: () => fetchSuggestions({ startTime, endTime, field: field as string, prefix: debouncedPrefix }),
+    queryFn: () =>
+      fetchSuggestions({ startTime, endTime, field: field as string, prefix: debouncedPrefix }),
     enabled: effectiveEnabled,
   });
 }

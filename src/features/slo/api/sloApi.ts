@@ -84,10 +84,6 @@ export function getBurnDown(
   return api.get<BurnDownPoint[]>(`${V1}/slo/burn-down`, { params: range(s, e, p) });
 }
 
-export function getBurnRate(
-  s: RequestTime,
-  e: RequestTime,
-  p?: SloFilter
-): Promise<BurnRate> {
+export function getBurnRate(s: RequestTime, e: RequestTime, p?: SloFilter): Promise<BurnRate> {
   return api.get<BurnRate>(`${V1}/slo/burn-rate`, { params: range(s, e, p) });
 }

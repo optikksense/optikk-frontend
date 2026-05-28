@@ -1,5 +1,5 @@
 import { Columns3 } from "lucide-react";
-import { memo, type ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 import type { ColumnConfig, ColumnDef } from "../../types/results";
 
@@ -16,7 +16,7 @@ function ResultsHeaderImpl<Row>({ columns, config, onOpenPicker, trailing }: Pro
   return (
     <div
       role="row"
-      className="sticky top-0 z-10 flex h-8 items-center gap-2 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]"
+      className="sticky top-0 z-10 flex h-8 items-center gap-2 border-[var(--border-color)] border-b bg-[var(--bg-secondary)] px-3 font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-wider"
     >
       {visibleConfig.map((entry) => {
         const column = columnByKey.get(entry.key);

@@ -1,8 +1,8 @@
 import { memo, useMemo } from "react";
 
-import { CHART_COLORS } from "@config/constants";
 import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
 import { firstValue, tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { getChartColor } from "@shared/utils/charting";
 
 import ObservabilityChart from "../ObservabilityChart";
 import { buildServiceDatasets } from "../utils/buildServiceDatasets";
@@ -37,10 +37,6 @@ interface RequestChartProps {
   legend?: boolean;
 }
 
-function getChartColor(index: number): string {
-  return CHART_COLORS[index % CHART_COLORS.length];
-}
-
 function formatAxisValue(value: any) {
   const n = Number(value) || 0;
   const abs = Math.abs(n);
@@ -72,7 +68,7 @@ export default memo(function RequestChart({
   height = 280,
   fillHeight = false,
   datasetLabel = "Requests/min",
-  color = CHART_COLORS[0],
+  color = getChartColor(0),
   valueKey = "request_count",
   yFormatter,
   legend = false,
@@ -100,8 +96,7 @@ export default memo(function RequestChart({
       serviceTimeseriesMap,
       getColor: getChartColor,
       getSelectionKey: (ep) => ep.key || String(firstValue(ep, ["service_name"], "")),
-      getLabel: (ep, key) =>
-        ep.endpoint || String(firstValue(ep, ["service_name"], "") || key),
+      getLabel: (ep, key) => ep.endpoint || String(firstValue(ep, ["service_name"], "") || key),
       getRowsForKey: (selectionKey, ep) =>
         getSeriesRows(ep.seriesKey || ep.series_key || selectionKey),
       initialAcc: () => ({ sum: 0 }),

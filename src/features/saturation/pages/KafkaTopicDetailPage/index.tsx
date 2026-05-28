@@ -1,19 +1,12 @@
-import { Layers3, TrendingUp, Waves } from "lucide-react";
 import { useParams } from "@tanstack/react-router";
+import { Layers3, TrendingUp, Waves } from "lucide-react";
 
-import {
-  Badge,
-  SimpleTable,
-  type SimpleTableColumn,
-} from "@shared/components/primitives/ui";
+import { Badge, SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatBytes, formatNumber } from "@shared/utils/formatters";
 
-import {
-  type KafkaTopicConsumerRow,
-  saturationApi,
-} from "../../api/saturationApi";
+import { type KafkaTopicConsumerRow, saturationApi } from "../../api/saturationApi";
 import { SaturationStatTile } from "../../components/SaturationStatTile";
 
 function formatBytesPerSecond(value: number): string {

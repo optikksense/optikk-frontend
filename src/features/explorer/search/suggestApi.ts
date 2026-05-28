@@ -19,14 +19,18 @@ export interface SuggestionItem {
   readonly count: number;
 }
 
-const suggestionSchema = z.object({
-  value: z.string(),
-  count: z.coerce.number(),
-});
+const suggestionSchema = z
+  .object({
+    value: z.string(),
+    count: z.coerce.number(),
+  })
+  .strict();
 
-const responseSchema = z.object({
-  suggestions: z.union([z.array(suggestionSchema), z.null()]).transform((v) => v ?? []),
-});
+const responseSchema = z
+  .object({
+    suggestions: z.union([z.array(suggestionSchema), z.null()]).transform((v) => v ?? []),
+  })
+  .strict();
 
 export async function fetchSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
   const body = {

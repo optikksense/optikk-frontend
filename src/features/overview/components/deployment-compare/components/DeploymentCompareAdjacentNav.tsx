@@ -4,8 +4,8 @@ import { memo, useMemo } from "react";
 
 import type { DeploymentRow } from "@/features/overview/api/deploymentsApi";
 import { buildDeploymentCompareDrawerSearch } from "@/features/overview/components/serviceDrawerState";
-import { Button } from "@shared/components/primitives/ui";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
+import { Button } from "@shared/components/primitives/ui";
 
 interface Props {
   readonly serviceName: string;
@@ -65,7 +65,10 @@ function DeploymentCompareAdjacentNavComponent({
   const navigate = useNavigate();
   const location = useLocation();
   const ordered = useMemo(() => sortByRecency(deployments), [deployments]);
-  const { prev, next } = useMemo(() => neighbors(ordered, currentVersion), [ordered, currentVersion]);
+  const { prev, next } = useMemo(
+    () => neighbors(ordered, currentVersion),
+    [ordered, currentVersion]
+  );
 
   if (!prev && !next) return null;
 

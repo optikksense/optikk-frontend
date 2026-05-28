@@ -1,4 +1,4 @@
-import { AlignLeft, Columns3, Minimize2, ArrowDownUp } from "lucide-react";
+import { AlignLeft, ArrowDownUp, Columns3, Minimize2 } from "lucide-react";
 import { memo } from "react";
 
 import { useLogsExplorerStore } from "../../store/logsExplorerStore";

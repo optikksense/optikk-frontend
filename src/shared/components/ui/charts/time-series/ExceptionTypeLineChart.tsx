@@ -1,14 +1,10 @@
 import { memo, useMemo } from "react";
 
-import { CHART_COLORS } from "@config/constants";
 import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
 import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { getChartColor } from "@shared/utils/charting";
 
 import ObservabilityChart from "../ObservabilityChart";
-
-function getChartColor(index: number): string {
-  return CHART_COLORS[index % CHART_COLORS.length];
-}
 
 /**
  * ExceptionTypeLineChart renders exception counts grouped by exception type

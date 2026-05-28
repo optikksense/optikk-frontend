@@ -9,7 +9,10 @@ interface Props {
 
 /** Exports the currently-loaded page of traces as JSON or CSV (no server trip). */
 function ExportButtonComponent({ traces }: Props) {
-  const onJson = useCallback(() => downloadBlob(toJson(traces), "traces.json", "application/json"), [traces]);
+  const onJson = useCallback(
+    () => downloadBlob(toJson(traces), "traces.json", "application/json"),
+    [traces]
+  );
   const onCsv = useCallback(() => downloadBlob(toCsv(traces), "traces.csv", "text/csv"), [traces]);
   const disabled = traces.length === 0;
   return (
@@ -42,8 +45,15 @@ function toJson(rows: readonly TraceSummary[]): string {
 
 function toCsv(rows: readonly TraceSummary[]): string {
   const cols: Array<keyof TraceSummary> = [
-    "trace_id", "start_ms", "duration_ns", "root_service",
-    "root_operation", "root_status", "span_count", "has_error", "error_count",
+    "trace_id",
+    "start_ms",
+    "duration_ns",
+    "root_service",
+    "root_operation",
+    "root_status",
+    "span_count",
+    "has_error",
+    "error_count",
   ];
   const header = cols.join(",");
   const body = rows.map((r) => cols.map((c) => csvCell(r[c])).join(",")).join("\n");

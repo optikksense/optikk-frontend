@@ -8,7 +8,7 @@ import type { TraceSummary } from "../types/trace";
  */
 export function sortTraces(
   rows: readonly TraceSummary[],
-  mode: TraceSortMode,
+  mode: TraceSortMode
 ): readonly TraceSummary[] {
   if (mode === "recent" || rows.length === 0) return rows;
   const copy = rows.slice();

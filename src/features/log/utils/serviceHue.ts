@@ -29,7 +29,7 @@ function fnv1aHue(s: string): number {
     h ^= s.charCodeAt(i);
     h = Math.imul(h, 0x01000193);
   }
-  return ((h >>> 0) % 360);
+  return (h >>> 0) % 360;
 }
 
 export function serviceHue(name: string | null | undefined): number {

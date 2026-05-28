@@ -1,9 +1,9 @@
-import type {
-  ErrorRatePoint,
-  P95LatencyPoint,
-  RequestRatePoint,
-} from "@/features/overview/api/serviceMetricsApi";
+import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
 import type { ServiceTopologyEdge } from "@/features/overview/pages/ServiceHubPage/topology/api";
+import type {
+  LatencyPercentilesPoint,
+  StatusTimeseriesPoint,
+} from "@/features/services/api/serviceDetailApi";
 
 import type { DependencyRow, EndpointRow, ServiceSummarySnapshot } from "./types";
 
@@ -66,27 +66,41 @@ export function buildDependencyRows(
     }));
 }
 
-export function buildLatencyTrendSeries(points: readonly P95LatencyPoint[]) {
+export function buildLatencyTrendSeries(points: readonly LatencyPercentilesPoint[]) {
   return points.map((point) => ({
     timestamp: point.timestamp,
-    p95: point.p95,
+    p50_ms: point.p50_ms,
+    p95_ms: point.p95_ms,
+    p99_ms: point.p99_ms,
+    p95: point.p95_ms, // for sparkline compatibility
   }));
 }
 
-export function buildRequestTrendSeries(points: readonly RequestRatePoint[]) {
-  return points.map((point) => ({
-    timestamp: point.timestamp,
-    request_count: point.requestCount,
-  }));
+export function buildRequestTrendSeries(points: readonly StatusTimeseriesPoint[]) {
+  return points.map((point) => {
+    const total =
+      (point.status_2xx ?? 0) +
+      (point.status_4xx ?? 0) +
+      (point.status_5xx ?? 0) +
+      (point.status_other ?? 0);
+    return {
+      timestamp: point.timestamp,
+      request_count: total,
+    };
+  });
 }
 
-export function buildErrorTrendSeries(points: readonly ErrorRatePoint[]) {
-  return points.map((point) => ({
-    timestamp: point.timestamp,
-    request_count: point.requestCount,
-    error_count: point.errorCount,
-    error_rate: point.errorRate,
-  }));
+export function buildErrorTrendSeries(points: readonly ErrorTimeSeriesPoint[]) {
+  return points.map((point) => {
+    const requests = point.request_count ?? 0;
+    const errors = point.error_count ?? 0;
+    return {
+      timestamp: point.timestamp,
+      request_count: requests,
+      error_count: errors,
+      error_rate: requests > 0 ? (errors / requests) * 100 : 0,
+    };
+  });
 }
 
 export function healthVariantForErrorRate(

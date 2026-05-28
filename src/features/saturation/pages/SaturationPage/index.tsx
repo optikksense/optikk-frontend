@@ -1,66 +1,32 @@
-import { useNavigate } from "@tanstack/react-router";
+import "./SaturationOverview.css";
 
-import { PageShell } from "@shared/components/ui";
+import { SaturationSubnav } from "@/features/saturation/components/SaturationSubnav";
 
-import { SaturationDataTables } from "./components/SaturationDataTables";
-import { SaturationExplorerToolbar } from "./components/SaturationExplorerToolbar";
-import { SaturationPageHeader } from "./components/SaturationPageHeader";
-import { SaturationStatTilesGrid } from "./components/SaturationStatTilesGrid";
-import { KAFKA_TOPICS, SECTION_DATASTORES } from "./constants";
-import { useSaturationExplorerModel } from "./hooks/useSaturationExplorerModel";
-import { useSaturationLegacyRedirect } from "./hooks/useSaturationLegacyRedirect";
+import { SaturationOverviewHeader } from "./components/SaturationOverviewHeader";
+import { SubsystemCardsRow } from "./components/SubsystemCardsRow";
+import { TopKafkaTopicsCard } from "./components/TopKafkaTopicsCard";
+import { WorstSystemsTable } from "./components/WorstSystemsTable";
+import { useSaturationOverviewModel } from "./hooks/useSaturationOverviewModel";
 
 export default function SaturationPage(): JSX.Element {
-  const navigate = useNavigate();
-  const model = useSaturationExplorerModel();
-
-  useSaturationLegacyRedirect(model.searchParams);
-
-  const datastoreSummary = model.datastoreSummaryQuery.data;
-  const kafkaSummary = model.kafkaSummaryQuery.data;
-
-  const primaryTableError =
-    model.activeSection === SECTION_DATASTORES
-      ? model.datastoreSystemsQuery.error
-      : model.kafkaView === KAFKA_TOPICS
-        ? model.kafkaTopicsQuery.error
-        : model.kafkaGroupsQuery.error;
-
+  const model = useSaturationOverviewModel();
   return (
-    <PageShell>
-      <SaturationPageHeader activeSection={model.activeSection} />
+    <div className="sat-root">
+      <SaturationOverviewHeader summary={model.summary} />
+      <SaturationSubnav
+        active="overview"
+        counts={{ kafka: model.counts.topics, database: model.counts.database }}
+      />
 
-      {primaryTableError ? (
-        <div
-          className="rounded-md border border-red-500/35 bg-red-500/10 px-3 py-2 text-red-300 text-sm"
-          role="alert"
-        >
-          Could not load saturation data: {primaryTableError.message}
+      {model.error ? (
+        <div className="sat-error" role="alert">
+          Could not load saturation data: {model.error.message}
         </div>
       ) : null}
 
-      <SaturationStatTilesGrid
-        activeSection={model.activeSection}
-        datastoreSummary={datastoreSummary}
-        kafkaSummary={kafkaSummary}
-      />
-
-      <SaturationExplorerToolbar
-        activeSection={model.activeSection}
-        kafkaView={model.kafkaView}
-        storeType={model.storeType}
-        queryText={model.queryText}
-        setSearchValue={model.setSearchValue}
-      />
-
-      <SaturationDataTables
-        activeSection={model.activeSection}
-        kafkaView={model.kafkaView}
-        datastoreRows={model.datastoreRows}
-        kafkaTopicRows={model.kafkaTopicRows}
-        kafkaGroupRows={model.kafkaGroupRows}
-        navigate={navigate}
-      />
-    </PageShell>
+      <SubsystemCardsRow cards={model.cards} />
+      <WorstSystemsTable rows={model.worstSystems} />
+      <TopKafkaTopicsCard topics={model.topTopics} />
+    </div>
   );
 }

@@ -17,9 +17,6 @@ export function getSloBurnRate(startTime: RequestTime, endTime: RequestTime): Pr
   return getJson("/slo/burn-rate", startTime, endTime);
 }
 
-export function getSloBurnDown(
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<unknown[]> {
+export function getSloBurnDown(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
   return getJson("/slo/burn-down", startTime, endTime);
 }

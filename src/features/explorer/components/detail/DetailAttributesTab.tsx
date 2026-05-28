@@ -41,9 +41,12 @@ function AttributeTable({ rows }: { rows: readonly AttributeRow[] }) {
       {rows.map((row) => (
         <div
           key={row.key}
-          className="group flex items-start gap-2 border-b border-[var(--border-color)] py-1 text-[12px]"
+          className="group flex items-start gap-2 border-[var(--border-color)] border-b py-1 text-[12px]"
         >
-          <span className="w-40 shrink-0 truncate font-mono text-[var(--text-secondary)]" title={row.key}>
+          <span
+            className="w-40 shrink-0 truncate font-mono text-[var(--text-secondary)]"
+            title={row.key}
+          >
             {row.key}
           </span>
           <span className="min-w-0 flex-1 break-words font-mono text-[var(--text-primary)]">
@@ -61,7 +64,7 @@ function DetailAttributesTabComponent({ groups }: Props) {
     <div className="flex flex-col gap-4">
       {groups.map((group) => (
         <section key={group.label} className="flex flex-col gap-1">
-          <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+          <h4 className="font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-wider">
             {group.label}
           </h4>
           <AttributeTable rows={group.rows} />

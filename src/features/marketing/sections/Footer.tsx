@@ -37,7 +37,12 @@ const FOOTER_GROUPS = [
   },
   {
     title: "Company",
-    links: [{ label: "Contact", path: "mailto:ramantayal12@gmail.com" }],
+    links: [
+      { label: "Contact", path: "mailto:ramantayal12@gmail.com" },
+      { label: "Privacy", path: "/privacy" },
+      { label: "Terms", path: "/terms" },
+      { label: "Security", path: "/security" },
+    ],
   },
 ] as const;
 
@@ -66,8 +71,8 @@ export function Footer() {
             <span>Optikk</span>
           </Link>
           <p>
-            Logs, metrics, and traces on one columnar store. OpenTelemetry-native. Built on Kafka,
-            ClickHouse, MySQL, and Redis — operable, not opaque.
+            Logs, metrics, and traces unified in a single high-performance telemetry platform.
+            OpenTelemetry-native, developer-first, and fully open source.
           </p>
         </div>
 

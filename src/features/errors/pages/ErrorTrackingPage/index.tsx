@@ -1,18 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 
-import {
-  SimpleTable,
-  type SimpleTableColumn,
-} from "@shared/components/primitives/ui";
+import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
 
-import {
-  type ErrorGroup,
-  listErrorGroups,
-} from "../../api/errorGroupsApi";
+import { type ErrorGroup, listErrorGroups } from "../../api/errorGroupsApi";
 
 function fmtDate(iso: string): string {
   if (!iso) return "—";
@@ -43,9 +37,7 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     title: "Status message",
     key: "status_message",
     render: (_v, row) => (
-      <span className="text-[12px] text-[var(--text-primary)]">
-        {row.status_message || "—"}
-      </span>
+      <span className="text-[12px] text-[var(--text-primary)]">{row.status_message || "—"}</span>
     ),
   },
   {

@@ -16,21 +16,13 @@ import { getRecent, pushRecent } from "../search/recentSearches";
 import type { ExplorerScope } from "../types/filters";
 import { useQuerySuggestions } from "./useQuerySuggestions";
 
-export interface SavedViewLite {
-  readonly name: string;
-  readonly url: string;
-}
-
 interface Args {
   readonly initial: string;
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
-  readonly savedViews?: readonly SavedViewLite[];
-  readonly onSavedViewSelect?: (url: string) => void;
 }
 
 const SUGGEST_PREFIX = "__suggest__:";
-const SAVED_VIEW_PREFIX = "__savedview__:";
 const RECENT_PREFIX = "__recent__:";
 const TEMPLATE_PREFIX = "__template__:";
 const BODY_HINT_PREFIX = "__bodyhint__:";
@@ -43,7 +35,6 @@ function encodeSuggest(prefix: string, value: string): string {
 function decodeSuggest(value: string): { prefix: string; value: string } | null {
   for (const p of [
     SUGGEST_PREFIX,
-    SAVED_VIEW_PREFIX,
     RECENT_PREFIX,
     TEMPLATE_PREFIX,
     BODY_HINT_PREFIX,
@@ -58,13 +49,7 @@ function decodeSuggest(value: string): { prefix: string; value: string } | null 
  * State + derived suggestion data for the DSL search bar. Keeps the React
  * component lean — it only renders.
  */
-export function useDslSearchBar({
-  initial,
-  scope,
-  valueSuggestions,
-  savedViews,
-  onSavedViewSelect,
-}: Args) {
+export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
   const [input, setInput] = useState(initial);
   const [caret, setCaret] = useState(initial.length);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -104,10 +89,9 @@ export function useDslSearchBar({
         localValues: localValueSuggestions,
         knownFields,
         recents,
-        savedViews: savedViews ?? [],
         templates,
       }),
-    [context, valueQuery.data, localValueSuggestions, knownFields, recents, savedViews, templates]
+    [context, valueQuery.data, localValueSuggestions, knownFields, recents, templates]
   );
   // `isPending` stays true while the query is `enabled: false` (react-query default),
   // so we use `isFetching` — true only during an actual in-flight request.
@@ -123,10 +107,6 @@ export function useDslSearchBar({
   const acceptSuggestion = useCallback(
     (opt: SuggestionOption) => {
       const decoded = decodeSuggest(opt.value);
-      if (decoded?.prefix === SAVED_VIEW_PREFIX) {
-        onSavedViewSelect?.(decoded.value);
-        return;
-      }
       if (decoded?.prefix === RECENT_PREFIX || decoded?.prefix === TEMPLATE_PREFIX) {
         const next = decoded.value;
         setInput(next);
@@ -164,7 +144,7 @@ export function useDslSearchBar({
       setCaret(nextCaret);
       setActiveIdx(0);
     },
-    [input, caret, context, onSavedViewSelect]
+    [input, caret, context]
   );
 
   const commit = useCallback(() => {
@@ -205,7 +185,6 @@ interface BuildArgs {
   readonly localValues: readonly SuggestionOption[];
   readonly knownFields: readonly KnownField[];
   readonly recents: readonly { q: string; ts: number }[];
-  readonly savedViews: readonly SavedViewLite[];
   readonly templates: readonly { label: string; query: string; description: string }[];
 }
 
@@ -282,14 +261,7 @@ function buildEmptyState(a: BuildArgs): readonly SuggestionOption[] {
       category: "Recent",
     });
   }
-  for (const v of a.savedViews) {
-    out.push({
-      value: encodeSuggest(SAVED_VIEW_PREFIX, v.url),
-      label: v.name,
-      icon: "view",
-      category: "Saved views",
-    });
-  }
+
   for (const t of a.templates) {
     out.push({
       value: encodeSuggest(TEMPLATE_PREFIX, t.query),

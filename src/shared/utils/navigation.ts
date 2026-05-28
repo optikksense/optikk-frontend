@@ -13,7 +13,7 @@ import type { NavigateOptions } from "@tanstack/react-router";
  */
 export function dynamicNavigateOptions(
   to: string,
-  search?: Record<string, unknown>,
+  search?: Record<string, unknown>
 ): NavigateOptions {
   return { to, search } as NavigateOptions;
 }

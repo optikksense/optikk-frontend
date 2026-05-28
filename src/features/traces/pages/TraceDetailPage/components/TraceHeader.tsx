@@ -1,13 +1,4 @@
-import {
-  ArrowLeft,
-  Bell,
-  Check,
-  Copy,
-  ExternalLink,
-  MoreHorizontal,
-  Share2,
-  Zap,
-} from "lucide-react";
+import { ArrowLeft, Check, Copy, ExternalLink, MoreHorizontal } from "lucide-react";
 import { memo, useCallback, useState } from "react";
 
 import { useTimezone } from "@/app/store/appStore";
@@ -148,30 +139,6 @@ function TraceHeaderComponent({
           title="View correlated logs"
         >
           <ExternalLink size={13} /> Logs
-        </button>
-        <button
-          type="button"
-          className="tdp-btn tdp-btn-ghost"
-          title="Create alert (coming soon)"
-          disabled
-        >
-          <Bell size={13} /> Alert
-        </button>
-        <button
-          type="button"
-          className="tdp-btn tdp-btn-ghost"
-          title="Copy share link"
-          onClick={() => navigator.clipboard?.writeText(window.location.href)}
-        >
-          <Share2 size={13} /> Share
-        </button>
-        <button
-          type="button"
-          className="tdp-btn tdp-btn-primary"
-          title="Investigate (coming soon)"
-          disabled
-        >
-          <Zap size={13} /> Investigate
         </button>
         <button
           type="button"

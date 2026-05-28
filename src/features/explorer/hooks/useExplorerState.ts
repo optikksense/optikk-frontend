@@ -52,17 +52,22 @@ export function useExplorerState(): ExplorerStateApi {
   );
   const setMode = useCallback(
     (next: ExplorerMode) =>
-      setParams((prev) => setOrDelete(prev, "mode", next === "analytics" ? "analytics" : null), {
-        replace: true,
-      }),
+      setParams(
+        (prev) => setOrDelete(prev, "mode", (next as string) === "analytics" ? "analytics" : null),
+        {
+          replace: true,
+        }
+      ),
     [setParams]
   );
   const setCursor = useCallback(
-    (next: string | null) => setParams((prev) => setOrDelete(prev, "cursor", next), { replace: true }),
+    (next: string | null) =>
+      setParams((prev) => setOrDelete(prev, "cursor", next), { replace: true }),
     [setParams]
   );
   const setDetail = useCallback(
-    (next: string | null) => setParams((prev) => setOrDelete(prev, "detail", next), { replace: true }),
+    (next: string | null) =>
+      setParams((prev) => setOrDelete(prev, "detail", next), { replace: true }),
     [setParams]
   );
   const clearAll = useCallback(() => {

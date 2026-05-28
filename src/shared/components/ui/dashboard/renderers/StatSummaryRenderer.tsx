@@ -1,8 +1,5 @@
-import {
-  asDashboardRecord,
-  asDashboardRecordArray,
-} from "../utils/runtimeValue";
 import { firstValue, formatStatValue, splitValueUnit } from "../utils/dashboardFormatters";
+import { asDashboardRecord, asDashboardRecordArray } from "../utils/runtimeValue";
 
 interface StatSummaryField {
   label: string;

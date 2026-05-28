@@ -200,7 +200,6 @@ export const relatedTraceSchema = z
   })
   .strict();
 
-
 export type TraceRecord = z.infer<typeof traceRecordSchema>;
 export type SpanRecord = z.infer<typeof spanRecordSchema>;
 export type TracesSummary = z.infer<typeof tracesSummarySchema>;

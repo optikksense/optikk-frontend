@@ -2,12 +2,7 @@ import { Activity, AlertTriangle, CheckCircle2, Clock, Gauge, TrendingUp } from 
 
 import { StatCard } from "@shared/components/ui/cards";
 
-import {
-  DEMO_ERROR_SPARK,
-  DEMO_KPIS,
-  DEMO_P95_SPARK,
-  DEMO_REQUEST_SPARK,
-} from "./fixtures";
+import { DEMO_ERROR_SPARK, DEMO_KPIS, DEMO_P95_SPARK, DEMO_REQUEST_SPARK } from "./fixtures";
 
 interface DemoKpiStripProps {
   readonly variant?: "full" | "compact";
@@ -41,7 +36,11 @@ export default function DemoKpiStrip({ variant = "full" }: DemoKpiStripProps) {
 
   const cards = [
     {
-      metric: { title: "Requests / min", value: DEMO_KPIS.requestsPerMin, formatter: compactFormatter },
+      metric: {
+        title: "Requests / min",
+        value: DEMO_KPIS.requestsPerMin,
+        formatter: compactFormatter,
+      },
       trend: { value: 4.2 },
       visuals: {
         icon: <Activity size={18} />,
@@ -71,7 +70,12 @@ export default function DemoKpiStrip({ variant = "full" }: DemoKpiStripProps) {
       visuals: { icon: <TrendingUp size={18} />, iconColor: ACCENTS.err },
     },
     {
-      metric: { title: "P95 latency", value: DEMO_KPIS.p95Ms, formatter: latencyFormatter, suffix: "ms" },
+      metric: {
+        title: "P95 latency",
+        value: DEMO_KPIS.p95Ms,
+        formatter: latencyFormatter,
+        suffix: "ms",
+      },
       trend: { value: 2.1, inverted: true },
       visuals: {
         icon: <Gauge size={18} />,
@@ -81,7 +85,12 @@ export default function DemoKpiStrip({ variant = "full" }: DemoKpiStripProps) {
       },
     },
     {
-      metric: { title: "P99 latency", value: DEMO_KPIS.p99Ms, formatter: latencyFormatter, suffix: "ms" },
+      metric: {
+        title: "P99 latency",
+        value: DEMO_KPIS.p99Ms,
+        formatter: latencyFormatter,
+        suffix: "ms",
+      },
       visuals: { icon: <Clock size={18} />, iconColor: ACCENTS.lat },
     },
     {

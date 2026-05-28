@@ -5,10 +5,7 @@ import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import { useAppStore } from "@app/store/appStore";
 
-import {
-  buildServiceLogsSearch,
-  buildServiceTracesSearch,
-} from "../../serviceDrawerState";
+import { buildServiceLogsSearch, buildServiceTracesSearch } from "../../serviceDrawerState";
 
 export function useOpenSurface(serviceName: string | undefined) {
   const navigate = useNavigate();

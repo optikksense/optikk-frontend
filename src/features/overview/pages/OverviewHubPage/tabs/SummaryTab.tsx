@@ -4,29 +4,35 @@ import { Suspense, lazy, useMemo, useState } from "react";
 
 import { Skeleton, Surface } from "@/components/ui";
 import type { ServiceMetricPoint } from "@/features/metrics/types";
-import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
+import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
-import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
 import StatCard from "@shared/components/ui/cards/StatCard";
+import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { useInView } from "@shared/hooks/useInView";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { formatNumber, formatPercentage } from "@shared/utils/formatters";
+import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
-import ServiceHealthGrid from "../components/ServiceHealthGrid";
-import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
-import { mapRedErrorPctRows, mapP95Rows, mapRedRequestRateRows, num } from "../chartMappers";
+import { HubSection } from "../HubSection";
+import { mapP95Rows, mapRedErrorPctRows, mapRedRequestRateRows, num } from "../chartMappers";
+import ServiceHealthGrid from "../components/ServiceHealthGrid";
 
 const RequestChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({
+    default: m.default,
+  }))
 );
 const ErrorRateChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/ErrorRateChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/ErrorRateChart").then((m) => ({
+    default: m.default,
+  }))
 );
 const LatencyChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/LatencyChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/LatencyChart").then((m) => ({
+    default: m.default,
+  }))
 );
 
 type SortKey = "service_name" | "request_count" | "error_rate" | "p95_latency";
@@ -141,7 +147,11 @@ export default function SummaryTab() {
               title: "Total requests",
               value: loadingKpi ? "—" : formatNumber(totalReq),
             }}
-            visuals={{ loading: loadingKpi, icon: <Activity size={18} />, iconColor: "var(--color-primary)" }}
+            visuals={{
+              loading: loadingKpi,
+              icon: <Activity size={18} />,
+              iconColor: "var(--color-primary)",
+            }}
           />
           <StatCard
             metric={{
@@ -168,28 +178,35 @@ export default function SummaryTab() {
           <StatCard
             metric={{
               title: "Avg latency",
-              value: loadingKpi ? "—" : `${num(summary?.avg_p50_ms).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : formatDuration(summary?.avg_p50_ms),
             }}
             visuals={{ loading: loadingKpi }}
           />
           <StatCard
             metric={{
               title: "P95 latency",
-              value: loadingKpi ? "—" : `${num(summary?.avg_p95_ms).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : formatDuration(summary?.avg_p95_ms),
             }}
             visuals={{ loading: loadingKpi }}
           />
           <StatCard
             metric={{
               title: "P99 latency",
-              value: loadingKpi ? "—" : `${num(summary?.avg_p99_ms).toFixed(1)} ms`,
+              value: loadingKpi ? "—" : formatDuration(summary?.avg_p99_ms),
             }}
-            visuals={{ loading: loadingKpi, icon: <LayoutDashboard size={18} />, iconColor: "var(--text-muted)" }}
+            visuals={{
+              loading: loadingKpi,
+              icon: <LayoutDashboard size={18} />,
+              iconColor: "var(--text-muted)",
+            }}
           />
         </div>
       </HubSection>
 
-      <HubSection title="Traffic & latency" description="Per-service series (top lists follow chart conventions).">
+      <HubSection
+        title="Traffic & latency"
+        description="Per-service series (top lists follow chart conventions)."
+      >
         <div ref={chartsRef} className="grid grid-cols-1 gap-3 lg:grid-cols-3">
           <HubChartCard title="Request rate">
             <Suspense fallback={chartFallback()}>
@@ -259,12 +276,14 @@ export default function SummaryTab() {
           {summaryQ.isPending && serviceList.length === 0 ? (
             <Skeleton active paragraph={{ rows: 6 }} />
           ) : sortedServices.length === 0 ? (
-            <div className="py-10 text-center text-[13px] text-[var(--text-muted)]">No service metrics in range</div>
+            <div className="py-10 text-center text-[13px] text-[var(--text-muted)]">
+              No service metrics in range
+            </div>
           ) : (
             <table className="w-full min-w-[720px] border-collapse text-left text-[12px]">
               <thead>
                 <tr className="border-[var(--border-color)] border-b text-[var(--text-secondary)]">
-                  <th className="pb-2 pr-3">
+                  <th className="pr-3 pb-2">
                     <button
                       type="button"
                       className="font-medium hover:text-[var(--text-primary)]"
@@ -273,7 +292,7 @@ export default function SummaryTab() {
                       Service {sortKey === "service_name" ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                  <th className="pb-2 pr-3 text-right">
+                  <th className="pr-3 pb-2 text-right">
                     <button
                       type="button"
                       className="font-medium hover:text-[var(--text-primary)]"
@@ -282,7 +301,7 @@ export default function SummaryTab() {
                       Requests {sortKey === "request_count" ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                  <th className="pb-2 pr-3 text-right">
+                  <th className="pr-3 pb-2 text-right">
                     <button
                       type="button"
                       className="font-medium hover:text-[var(--text-primary)]"
@@ -291,16 +310,16 @@ export default function SummaryTab() {
                       Err % {sortKey === "error_rate" ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                  <th className="pb-2 pr-3 text-right">
+                  <th className="pr-3 pb-2 text-right">
                     <button
                       type="button"
                       className="font-medium hover:text-[var(--text-primary)]"
                       onClick={() => toggleSort("p95_latency")}
                     >
-                      P95 (ms) {sortKey === "p95_latency" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+                      P95 {sortKey === "p95_latency" ? (sortDir === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                  <th className="pb-2 text-right">P99 (ms)</th>
+                  <th className="pb-2 text-right">P99</th>
                 </tr>
               </thead>
               <tbody>
@@ -326,16 +345,24 @@ export default function SummaryTab() {
                         })
                       }
                     >
-                      <td className="py-2 pr-3 font-medium text-[var(--text-primary)]">{s.service_name}</td>
-                      <td className="py-2 pr-3 text-right tabular-nums">{formatNumber(s.request_count)}</td>
+                      <td className="py-2 pr-3 font-medium text-[var(--text-primary)]">
+                        {s.service_name}
+                      </td>
+                      <td className="py-2 pr-3 text-right tabular-nums">
+                        {formatNumber(s.request_count)}
+                      </td>
                       <td
                         className="py-2 pr-3 text-right tabular-nums"
                         style={{ color: er > 1 ? "var(--color-error)" : "var(--text-secondary)" }}
                       >
                         {formatPercentage(er)}
                       </td>
-                      <td className="py-2 pr-3 text-right tabular-nums">{s.p95_latency.toFixed(1)}</td>
-                      <td className="py-2 text-right tabular-nums">{s.p99_latency.toFixed(1)}</td>
+                      <td className="py-2 pr-3 text-right tabular-nums">
+                        {formatDuration(s.p95_latency)}
+                      </td>
+                      <td className="py-2 text-right tabular-nums">
+                        {formatDuration(s.p99_latency)}
+                      </td>
                     </tr>
                   );
                 })}

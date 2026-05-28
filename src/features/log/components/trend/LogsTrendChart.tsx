@@ -51,7 +51,7 @@ function compactY(v: number): string {
 
 function inferBucketMs(buckets: readonly ChartBucket[]): number {
   if (buckets.length < 2) return 60_000;
-  let minDiff = Infinity;
+  let minDiff = Number.POSITIVE_INFINITY;
   for (let i = 1; i < buckets.length; i++) {
     const d = buckets[i].ts - buckets[i - 1].ts;
     if (d > 0 && d < minDiff) minDiff = d;
@@ -144,7 +144,7 @@ function LogsTrendChartComponent({
   const nearestBucketIdx = (x: number): number | null => {
     if (buckets.length === 0) return null;
     let best = 0;
-    let bestDist = Infinity;
+    let bestDist = Number.POSITIVE_INFINITY;
     for (let i = 0; i < buckets.length; i++) {
       const bx = xOf(buckets[i].ts) + barW / 2;
       const d = Math.abs(bx - x);
@@ -210,7 +210,8 @@ function LogsTrendChartComponent({
   // Tooltip width / height in viewBox units. Switch sides when near right edge.
   const TIP_W = 168;
   const TIP_H = 64;
-  const tipX = hoverX != null ? (hoverX + TIP_W + 12 > W - PAD_R ? hoverX - TIP_W - 8 : hoverX + 8) : 0;
+  const tipX =
+    hoverX != null ? (hoverX + TIP_W + 12 > W - PAD_R ? hoverX - TIP_W - 8 : hoverX + 8) : 0;
   const tipY = PAD_T + 4;
 
   return (
@@ -271,13 +272,31 @@ function LogsTrendChartComponent({
             return (
               <g key={d.ts} className="ok-chart-bar-g">
                 {hi > 0 ? (
-                  <rect x={x} y={yi} width={barW} height={hi} className="ok-chart-bar ok-chart-bar-info" />
+                  <rect
+                    x={x}
+                    y={yi}
+                    width={barW}
+                    height={hi}
+                    className="ok-chart-bar ok-chart-bar-info"
+                  />
                 ) : null}
                 {hw > 0 ? (
-                  <rect x={x} y={yw} width={barW} height={hw} className="ok-chart-bar ok-chart-bar-warn" />
+                  <rect
+                    x={x}
+                    y={yw}
+                    width={barW}
+                    height={hw}
+                    className="ok-chart-bar ok-chart-bar-warn"
+                  />
                 ) : null}
                 {he > 0 ? (
-                  <rect x={x} y={ye} width={barW} height={he} className="ok-chart-bar ok-chart-bar-err" />
+                  <rect
+                    x={x}
+                    y={ye}
+                    width={barW}
+                    height={he}
+                    className="ok-chart-bar ok-chart-bar-err"
+                  />
                 ) : null}
               </g>
             );
@@ -305,13 +324,7 @@ function LogsTrendChartComponent({
 
         {/* Hover guide line at nearest bucket */}
         {hoverX != null ? (
-          <line
-            className="ok-chart-hover-g"
-            x1={hoverX}
-            y1={PAD_T}
-            x2={hoverX}
-            y2={H - PAD_B}
-          />
+          <line className="ok-chart-hover-g" x1={hoverX} y1={PAD_T} x2={hoverX} y2={H - PAD_B} />
         ) : null}
 
         {/* Brush rectangle (visible only while actively dragging) */}
@@ -360,7 +373,7 @@ function LogsTrendChartComponent({
             <g>
               <circle cx={tipX + 12} cy={tipY + 54} r={3} fill="var(--err-c)" />
               <text className="ok-chart-tip-t" x={tipX + 22} y={tipY + 57}>
-                err  {hoverBucket.err.toLocaleString()} · total {tipTotal.toLocaleString()}
+                err {hoverBucket.err.toLocaleString()} · total {tipTotal.toLocaleString()}
               </text>
             </g>
           </g>
@@ -395,7 +408,7 @@ function computeTicks(max: number): readonly number[] {
 
 function niceCeil(n: number): number {
   if (n <= 1) return 1;
-  const pow = Math.pow(10, Math.floor(Math.log10(n)));
+  const pow = 10 ** Math.floor(Math.log10(n));
   const norm = n / pow;
   let nice: number;
   if (norm <= 1) nice = 1;

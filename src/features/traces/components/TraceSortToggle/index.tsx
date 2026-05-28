@@ -20,7 +20,7 @@ const OPTIONS: ReadonlyArray<{ value: TraceSortMode; label: string }> = [
  */
 function TraceSortToggleComponent({ mode, onChange }: Props) {
   return (
-    <div className="flex items-center gap-1 border-b border-[var(--border-color)] bg-[var(--bg-primary)] px-3 py-1 text-[11px]">
+    <div className="flex items-center gap-1 border-[var(--border-color)] border-b bg-[var(--bg-primary)] px-3 py-1 text-[11px]">
       <span className="text-[var(--text-muted)]">Sort:</span>
       {OPTIONS.map((opt) => (
         <button

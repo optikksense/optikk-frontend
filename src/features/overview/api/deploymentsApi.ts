@@ -7,15 +7,15 @@ import { API_CONFIG } from "@config/apiConfig";
 
 import {
   activeVersionSchema,
-  compareEndpointRegressionSchema,
-  compareErrorRegressionSchema,
-  compareWindowSchema,
+  type compareEndpointRegressionSchema,
+  type compareErrorRegressionSchema,
+  type compareWindowSchema,
   deploymentCompareSchema,
   deploymentImpactResponseSchema,
-  deploymentImpactRowSchema,
+  type deploymentImpactRowSchema,
   deploymentListResponseSchema,
-  deploymentRowSchema,
-  impactMetricsSchema,
+  type deploymentRowSchema,
+  type impactMetricsSchema,
   latestDeploymentSchema,
   versionTrafficPointSchema,
 } from "./deploymentSchemas";

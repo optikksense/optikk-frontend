@@ -1,5 +1,5 @@
-import { tracesService } from "@shared/api/tracesService";
 import type { TraceLogsResponse } from "@shared/api/schemas/tracesSchemas";
+import { tracesService } from "@shared/api/tracesService";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 /** Fetches trace-scoped logs and filters for the Logs tab in the span detail drawer (O8). */

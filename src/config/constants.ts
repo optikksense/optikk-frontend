@@ -64,16 +64,16 @@ export /**
  *
  */
 const CHART_COLORS = [
-  "#8B7FFF",
-  "#F38B6B",
-  "#66C2A5",
-  "#F2C14E",
-  "#D978FF",
-  "#6BB6FF",
-  "#EF6F98",
-  "#8CD6C5",
-  "#A695FF",
-  "#8EA1FF",
+  "#5ea9ff", // chart-1 — vibrant sky blue (flagship)
+  "#f38b6b", // chart-2 — coral / salmon
+  "#34d399", // chart-3 — emerald green
+  "#facc15", // chart-4 — golden yellow
+  "#c084fc", // chart-5 — purple
+  "#22d3ee", // chart-6 — cyan
+  "#f472b6", // chart-7 — hot pink
+  "#a3e635", // chart-8 — lime
+  "#fb923c", // extra  — orange
+  "#818cf8", // extra  — indigo
 ];
 
 export /**

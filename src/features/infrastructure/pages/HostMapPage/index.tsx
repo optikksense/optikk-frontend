@@ -120,9 +120,7 @@ export default function HostMapPage(): JSX.Element {
         <HostHexGrid
           nodes={nodesQ.data ?? []}
           colorBy={colorBy}
-          onSelect={(host) =>
-            navigate({ to: `/infrastructure/hosts/${encodeURIComponent(host)}` })
-          }
+          onSelect={(host) => navigate({ to: `/infrastructure/hosts/${encodeURIComponent(host)}` })}
         />
       </PageSurface>
     </PageShell>

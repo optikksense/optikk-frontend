@@ -18,7 +18,7 @@ function ExpandedLogRowComponent({ row }: Props) {
   };
 
   return (
-    <div className="animate-[expandRow_200ms_ease-out] overflow-hidden border-t border-[var(--border-color)] bg-[var(--bg-inset)]">
+    <div className="animate-[expandRow_200ms_ease-out] overflow-hidden border-[var(--border-color)] border-t bg-[var(--bg-inset)]">
       <div className="px-6 py-3">
         {/* Full body text */}
         <div className="group/body relative mb-3">

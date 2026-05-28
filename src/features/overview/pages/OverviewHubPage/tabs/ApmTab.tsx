@@ -3,16 +3,18 @@ import { Suspense, lazy, useMemo } from "react";
 import { Skeleton, Surface } from "@/components/ui";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
-import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
+import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { HubSection } from "../HubSection";
 import { HubChartCard } from "../HubChartCard";
+import { HubSection } from "../HubSection";
 import { mapApmCpuRows, mapApmTimeBucketRows, num } from "../chartMappers";
 
 const RequestChart = lazy(() =>
-  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({ default: m.default }))
+  import("@shared/components/ui/charts/time-series/RequestChart").then((m) => ({
+    default: m.default,
+  }))
 );
 
 function chartFallback() {
@@ -35,9 +37,21 @@ export default function ApmTab() {
     (_t, s, e) => overviewHubApi.getApmRpcDuration(s, e),
     opts
   );
-  const cpuQ = useTimeRangeQuery("overview-apm-cpu", (_t, s, e) => overviewHubApi.getApmProcessCpu(s, e), opts);
-  const memQ = useTimeRangeQuery("overview-apm-mem", (_t, s, e) => overviewHubApi.getApmProcessMemory(s, e), opts);
-  const fdsQ = useTimeRangeQuery("overview-apm-fds", (_t, s, e) => overviewHubApi.getApmOpenFds(s, e), opts);
+  const cpuQ = useTimeRangeQuery(
+    "overview-apm-cpu",
+    (_t, s, e) => overviewHubApi.getApmProcessCpu(s, e),
+    opts
+  );
+  const memQ = useTimeRangeQuery(
+    "overview-apm-mem",
+    (_t, s, e) => overviewHubApi.getApmProcessMemory(s, e),
+    opts
+  );
+  const fdsQ = useTimeRangeQuery(
+    "overview-apm-fds",
+    (_t, s, e) => overviewHubApi.getApmOpenFds(s, e),
+    opts
+  );
 
   const rpcRows = useMemo(() => mapApmTimeBucketRows(rpcRateQ.data ?? []), [rpcRateQ.data]);
   const rpcFlat = useMemo(() => {
@@ -71,8 +85,10 @@ export default function ApmTab() {
             { label: "RPC Avg", value: num(hist?.avg).toFixed(2) },
           ].map((k) => (
             <Surface key={k.label} elevation={1} padding="sm">
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">{k.label} (ms)</div>
-              <div className="mt-1 font-semibold text-[17px] tabular-nums text-[var(--text-primary)]">
+              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+                {k.label} (ms)
+              </div>
+              <div className="mt-1 font-semibold text-[17px] text-[var(--text-primary)] tabular-nums">
                 {rpcDurQ.isPending && !rpcDurQ.data ? "—" : k.value}
               </div>
             </Surface>
@@ -80,14 +96,18 @@ export default function ApmTab() {
         </div>
         <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-2">
           <Surface elevation={1} padding="sm">
-            <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">Memory RSS</div>
-            <div className="mt-1 font-semibold text-[17px] tabular-nums text-[var(--text-primary)]">
+            <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+              Memory RSS
+            </div>
+            <div className="mt-1 font-semibold text-[17px] text-[var(--text-primary)] tabular-nums">
               {memQ.isPending && !memQ.data ? "—" : `${(num(mem?.rss) / 1_048_576).toFixed(1)} MiB`}
             </div>
           </Surface>
           <Surface elevation={1} padding="sm">
-            <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">Memory VMS</div>
-            <div className="mt-1 font-semibold text-[17px] tabular-nums text-[var(--text-primary)]">
+            <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+              Memory VMS
+            </div>
+            <div className="mt-1 font-semibold text-[17px] text-[var(--text-primary)] tabular-nums">
               {memQ.isPending && !memQ.data ? "—" : `${(num(mem?.vms) / 1_048_576).toFixed(1)} MiB`}
             </div>
           </Surface>

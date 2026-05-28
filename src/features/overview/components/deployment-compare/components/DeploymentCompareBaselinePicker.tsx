@@ -3,8 +3,8 @@ import { memo, useCallback } from "react";
 
 import type { DeploymentRow } from "@/features/overview/api/deploymentsApi";
 import { buildDeploymentCompareDrawerSearch } from "@/features/overview/components/serviceDrawerState";
-import { Card } from "@shared/components/primitives/ui";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
+import { Card } from "@shared/components/primitives/ui";
 
 interface Props {
   readonly serviceName: string;

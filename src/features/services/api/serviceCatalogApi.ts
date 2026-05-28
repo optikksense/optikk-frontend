@@ -4,6 +4,17 @@ import { API_CONFIG } from "@config/apiConfig";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
+function unwrapEnvelope<T>(value: unknown): T {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return value as T;
+  }
+  const record = value as Record<string, unknown>;
+  if ("data" in record && Object.keys(record).length <= 2) {
+    return record.data as T;
+  }
+  return value as T;
+}
+
 export interface ServiceNode {
   readonly name: string;
   readonly request_count: number;
@@ -38,4 +49,76 @@ export function getTopology(
   const params: Record<string, RequestTime | string> = { startTime: s, endTime: e };
   if (service) params.service = service;
   return api.get<TopologyResponse>(`${V1}/services/topology`, { params });
+}
+
+export interface RedServiceRow {
+  readonly service_name: string;
+  readonly request_count: number;
+  readonly error_count: number;
+  readonly avg_latency: number;
+  readonly p95_latency: number;
+  readonly p99_latency: number;
+}
+
+export interface RedSummary {
+  readonly service_count: number;
+  readonly total_span_count: number;
+  readonly total_errors: number;
+  readonly total_rps: number;
+  readonly avg_error_pct: number;
+  readonly avg_p50_ms: number;
+  readonly avg_p95_ms: number;
+  readonly avg_p99_ms: number;
+  readonly services: RedServiceRow[];
+}
+
+export interface RedSummaryWithComparison {
+  readonly data: RedSummary;
+  readonly comparison?: RedSummary;
+}
+
+export async function getRedSummaryWithComparison(
+  s: RequestTime,
+  e: RequestTime
+): Promise<RedSummaryWithComparison> {
+  const raw = await api.get<unknown>(`${V1}/spans/red/summary`, {
+    params: { startTime: s, endTime: e, compareTo: "previous_period" },
+  });
+  if (typeof raw === "object" && raw !== null && "data" in (raw as Record<string, unknown>)) {
+    return raw as RedSummaryWithComparison;
+  }
+  return { data: raw as RedSummary };
+}
+
+export interface RequestRatePoint {
+  readonly timestamp: string;
+  readonly service_name: string;
+  readonly rps: number;
+}
+
+export async function getRequestRateSeries(
+  s: RequestTime,
+  e: RequestTime
+): Promise<RequestRatePoint[]> {
+  const raw = await api.get<unknown>(`${V1}/spans/red/request-rate`, {
+    params: { startTime: s, endTime: e },
+  });
+  return unwrapEnvelope<RequestRatePoint[]>(raw);
+}
+
+export interface SloRow {
+  readonly service_name: string;
+  readonly slo_name?: string;
+  readonly sli?: number;
+  readonly slo?: number;
+  readonly error_budget_remaining?: number;
+  readonly status?: string;
+  readonly burn_rate?: number;
+}
+
+export async function getSloList(s: RequestTime, e: RequestTime): Promise<SloRow[]> {
+  const raw = await api.get<unknown>(`${V1}/slo`, {
+    params: { startTime: s, endTime: e },
+  });
+  return unwrapEnvelope<SloRow[]>(raw);
 }

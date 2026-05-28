@@ -1,16 +1,16 @@
-import { ArrowRight, ChevronDown, ChevronRight, GitFork } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
+import { ArrowRight, ChevronDown, ChevronRight, GitFork } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 
 import { HighlightedText } from "@shared/components/primitives/HighlightedText";
 
 import { useTimezone } from "@/app/store/appStore";
 
-import type { LogRecord } from "../../types/log";
-import { severityStyle } from "../../utils/severity";
-import { serviceSwatchColor } from "../../utils/serviceHue";
-import { getTraceId } from "../../utils/traceCorrelation";
 import { useLogsExplorerStore } from "../../store/logsExplorerStore";
+import type { LogRecord } from "../../types/log";
+import { serviceSwatchColor } from "../../utils/serviceHue";
+import { severityStyle } from "../../utils/severity";
+import { getTraceId } from "../../utils/traceCorrelation";
 import { ExpandedLogRow } from "./ExpandedLogRow";
 
 interface Props {
@@ -110,7 +110,10 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
         <span className="ok-tr-t">{formatTs(row.timestamp, tz)}</span>
 
         <span className="ok-tr-svc">
-          <span className="ok-tr-svc-d" style={{ background: serviceSwatchColor(row.service_name) }} />
+          <span
+            className="ok-tr-svc-d"
+            style={{ background: serviceSwatchColor(row.service_name) }}
+          />
           {row.service_name}
         </span>
 

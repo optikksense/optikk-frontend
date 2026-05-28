@@ -134,7 +134,11 @@ export default function ResourcesTab() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {PANELS.map((p) => (
-          <Card key={p.queryKey} padding="md" className="min-h-[300px] border-[var(--border-color)]">
+          <Card
+            key={p.queryKey}
+            padding="md"
+            className="min-h-[300px] border-[var(--border-color)]"
+          >
             <InfraMultiSeriesChart
               queryKey={p.queryKey}
               endpoint={p.endpoint}

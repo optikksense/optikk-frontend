@@ -2,10 +2,10 @@ import { useNavigate } from "@tanstack/react-router";
 import { memo } from "react";
 
 import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
-import type { TraceRecord } from "@entities/trace/model";
-import { Badge, Card } from "@shared/components/primitives/ui";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
+import type { TraceRecord } from "@entities/trace/model";
+import { Badge, Card } from "@shared/components/primitives/ui";
 import { formatDuration, formatRelativeTime } from "@shared/utils/formatters";
 
 import { useSampleErrorTraces } from "../hooks/useSampleErrorTraces";
@@ -23,9 +23,7 @@ function TraceRow({ trace, onOpen }: { trace: TraceRecord; onOpen: () => void })
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <Badge variant="error">
-            {trace.http_status_code || trace.status_message || "ERROR"}
-          </Badge>
+          <Badge variant="error">{trace.http_status_code || trace.status_message || "ERROR"}</Badge>
           <span className="truncate font-medium text-[12px] text-[var(--text-primary)]">
             {trace.operation_name}
           </span>

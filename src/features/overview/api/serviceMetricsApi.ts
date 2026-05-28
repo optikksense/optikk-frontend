@@ -1,9 +1,6 @@
+import type { EndpointMetricPoint, ServiceMetricPoint } from "@/features/metrics/types";
 import api from "@/shared/api/api/client";
 import type { RequestTime } from "@/shared/api/service-types";
-import type {
-  EndpointMetricPoint,
-  ServiceMetricPoint,
-} from "@/features/metrics/types";
 import { API_CONFIG } from "@config/apiConfig";
 
 import { getServiceTopology } from "../pages/ServiceHubPage/topology/api";
@@ -134,7 +131,7 @@ export async function getTopEndpoints(
   serviceName?: string,
   limit = 6
 ): Promise<EndpointMetricPoint[]> {
-  const data = await api.get<RouteTopRow[]>(`${V1}/routes/top-by-volume`, {
+  const data = await api.get<RouteTopRow[]>(`${V1}/http/routes/top-by-volume`, {
     params: range(s, e, { ...(serviceName ? { serviceName } : {}), limit }),
   });
   return (data ?? []).map((row) => ({
