@@ -23,6 +23,7 @@ export const ROUTES = {
   infrastructure: "/infrastructure",
   hosts: "/infrastructure/hosts",
   hostDetail: "/infrastructure/hosts/$host",
+  containerDetail: "/infrastructure/containers/$container",
   errors: "/errors",
   errorGroupDetail: "/errors/$groupId",
   saturation: "/saturation",

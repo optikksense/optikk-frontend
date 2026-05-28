@@ -1,7 +1,8 @@
+import { KpiCard, type KpiTone } from "@shared/components/ui/dashboard/KpiCard";
+
 import { fmtMs, fmtNum, fmtPct } from "../formatters";
 import type { ServiceSummary } from "../hooks/useServiceSummary";
 import type { SloStatsResponse } from "../hooks/useSloStats";
-import { KpiCard, type KpiTone } from "./KpiCard";
 
 interface ServiceKpiStripProps {
   readonly summary: ServiceSummary | null;

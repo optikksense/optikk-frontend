@@ -34,6 +34,9 @@ const ServiceCatalogPage = lazy(
 );
 const HostMapPage = lazy(() => import("@/features/infrastructure/pages/HostMapPage"));
 const HostDetailPage = lazy(() => import("@/features/infrastructure/pages/HostDetailPage"));
+const ContainerDetailPage = lazy(
+  () => import("@/features/infrastructure/pages/ContainerDetailPage")
+);
 const MonitorsPage = lazy(
   () => import("@/features/monitors/pages/MonitorsPage/MonitorsPage")
 );
@@ -120,6 +123,7 @@ const deploymentsRoute = createProtected(
 );
 const hostsRoute = createProtected(ROUTES.hosts, HostMapPage);
 const hostDetailRoute = createProtected(ROUTES.hostDetail, HostDetailPage);
+const containerDetailRoute = createProtected(ROUTES.containerDetail, ContainerDetailPage);
 
 const monitorsRoute = createProtected(ROUTES.monitors, MonitorsPage);
 const monitorsNotificationsRoute = createProtected(ROUTES.monitorsNotifications, NotificationsPage);
@@ -168,6 +172,7 @@ const routeTree = rootRoute.addChildren([
     deploymentsRoute,
     hostsRoute,
     hostDetailRoute,
+    containerDetailRoute,
     monitorsRoute,
     monitorsNotificationsRoute,
     monitorsNewRoute,

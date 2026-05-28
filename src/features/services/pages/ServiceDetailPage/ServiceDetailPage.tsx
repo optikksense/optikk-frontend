@@ -6,7 +6,6 @@ import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { ServiceHeroHeader } from "./hero/ServiceHeroHeader";
 import { useServiceHeroData } from "./hooks/useServiceHeroData";
 import { useServiceHosts } from "./hooks/useServiceHosts";
-import { useServiceTopology } from "./hooks/useServiceTopology";
 import { useSloStats } from "./hooks/useSloStats";
 import { ServiceKpiStrip } from "./kpi/ServiceKpiStrip";
 import { ServiceTabContent } from "./sections/ServiceTabContent";
@@ -31,14 +30,11 @@ function useTabCounts(serviceName: string): {
   instanceCount: number | null;
 } {
   const hostsQ = useServiceHosts(serviceName);
-  const { dependencies } = useServiceTopology(serviceName);
   return useMemo(() => {
     const counts: Partial<Record<ServiceTabId, number>> = {};
     if (hostsQ.data) counts.infra = hostsQ.data.length;
-    const deps = dependencies.upstream.length + dependencies.downstream.length;
-    if (deps > 0) counts.overview = deps;
     return { counts, instanceCount: hostsQ.data?.length ?? null };
-  }, [hostsQ.data, dependencies]);
+  }, [hostsQ.data]);
 }
 
 function ServiceDetailBody({ serviceName }: { serviceName: string }) {

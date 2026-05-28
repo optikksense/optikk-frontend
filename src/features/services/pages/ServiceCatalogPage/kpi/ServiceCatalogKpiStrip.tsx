@@ -1,5 +1,6 @@
+import { KpiCard } from "@shared/components/ui/dashboard/KpiCard";
+
 import { fmtMs, fmtNum } from "../../ServiceDetailPage/formatters";
-import { KpiCard } from "../../ServiceDetailPage/kpi/KpiCard";
 import type { CatalogAggregate } from "../hooks/useCatalogAggregate";
 
 interface ServiceCatalogKpiStripProps {

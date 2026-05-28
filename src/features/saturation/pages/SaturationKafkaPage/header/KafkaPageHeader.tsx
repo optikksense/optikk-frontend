@@ -1,5 +1,6 @@
 import { RefreshCw, Waves } from "lucide-react";
 
+import { Pill } from "@shared/components/primitives/ui/pill";
 import { useAppStore } from "@store/appStore";
 
 import type { KafkaSummary } from "@/features/saturation/api/kafkaExplorerSchemas";
@@ -7,6 +8,7 @@ import { fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 
 interface KafkaPageHeaderProps {
   readonly summary: KafkaSummary | undefined;
+  readonly degraded?: { readonly label: string } | null;
 }
 
 function RefreshButton() {
@@ -35,7 +37,7 @@ function Subtitle({ summary }: { summary: KafkaSummary | undefined }) {
   );
 }
 
-export function KafkaPageHeader({ summary }: KafkaPageHeaderProps) {
+export function KafkaPageHeader({ summary, degraded }: KafkaPageHeaderProps) {
   return (
     <header className="flex items-start justify-between gap-3">
       <div className="flex items-start gap-3">
@@ -43,7 +45,14 @@ export function KafkaPageHeader({ summary }: KafkaPageHeaderProps) {
           <Waves size={18} />
         </div>
         <div>
-          <h1 className="font-semibold text-[20px] text-[var(--text-primary)]">Kafka</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-semibold text-[20px] text-[var(--text-primary)]">Kafka</h1>
+            {degraded && (
+              <Pill variant="warning" dot>
+                {degraded.label}
+              </Pill>
+            )}
+          </div>
           <Subtitle summary={summary} />
         </div>
       </div>

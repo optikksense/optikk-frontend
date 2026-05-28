@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ExternalLink, X } from "lucide-react";
 
+import { ServiceAvatar } from "@/features/services/components/ServiceAvatar";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicTo } from "@shared/utils/navigation";
 
@@ -19,18 +20,22 @@ function DrawerHeader({ row, onClose }: { row: CatalogRow; onClose: () => void }
   const detail = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(row.serviceName));
   return (
     <header className="flex items-start justify-between gap-2 border-[var(--border-color)] border-b px-4 py-3">
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <StatusDot status={row.status} />
-          <Link
-            to={dynamicTo(detail)}
-            className="truncate font-mono text-[13px] text-[var(--text-primary)] hover:text-[var(--color-primary,#3b82f6)]"
-          >
-            {row.serviceName} <ExternalLink size={11} className="inline" />
-          </Link>
-        </div>
-        <div className="mt-1 text-[11px] text-[var(--text-muted)]">
-          {row.version} · {row.environment}
+      <div className="flex min-w-0 items-start gap-2.5">
+        <ServiceAvatar serviceName={row.serviceName} size={28} />
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <StatusDot status={row.status} />
+            <Link
+              to={dynamicTo(detail)}
+              className="truncate text-[13px] font-semibold text-[var(--text-primary)] hover:text-[var(--color-primary)]"
+            >
+              {row.serviceName} <ExternalLink size={11} className="inline" />
+            </Link>
+          </div>
+          <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+            {row.version}
+            {row.environment !== "—" ? ` · ${row.environment}` : ""}
+          </div>
         </div>
       </div>
       <button

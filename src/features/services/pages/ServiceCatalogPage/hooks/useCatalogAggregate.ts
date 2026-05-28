@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { useCatalogList } from "./useCatalogList";
+import type { CatalogRow } from "../catalog/buildCatalogRows";
 
 export interface CatalogAggregate {
   readonly totalServices: number;
@@ -15,7 +15,7 @@ export interface CatalogAggregate {
 
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
-function countDeploysIn24h(rows: ReturnType<typeof useCatalogList>["rows"]): number {
+function countDeploysIn24h(rows: ReadonlyArray<CatalogRow>): number {
   const cutoff = Date.now() - TWENTY_FOUR_HOURS_MS;
   let count = 0;
   for (const r of rows) {
@@ -26,7 +26,7 @@ function countDeploysIn24h(rows: ReturnType<typeof useCatalogList>["rows"]): num
   return count;
 }
 
-function countSlosAtRisk(rows: ReturnType<typeof useCatalogList>["rows"]): number {
+function countSlosAtRisk(rows: ReadonlyArray<CatalogRow>): number {
   let count = 0;
   for (const r of rows) {
     const status = r.slo?.status ?? "";
@@ -35,7 +35,7 @@ function countSlosAtRisk(rows: ReturnType<typeof useCatalogList>["rows"]): numbe
   return count;
 }
 
-function buildAggregate(rows: ReturnType<typeof useCatalogList>["rows"]): CatalogAggregate {
+function buildAggregate(rows: ReadonlyArray<CatalogRow>): CatalogAggregate {
   let totalRps = 0;
   let healthy = 0;
   let warn = 0;
@@ -64,8 +64,6 @@ function buildAggregate(rows: ReturnType<typeof useCatalogList>["rows"]): Catalo
   };
 }
 
-export function useCatalogAggregate(): { aggregate: CatalogAggregate; isPending: boolean } {
-  const { rows, isPending } = useCatalogList();
-  const aggregate = useMemo(() => buildAggregate(rows), [rows]);
-  return { aggregate, isPending };
+export function useCatalogAggregate(rows: ReadonlyArray<CatalogRow>): CatalogAggregate {
+  return useMemo(() => buildAggregate(rows), [rows]);
 }

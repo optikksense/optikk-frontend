@@ -7,9 +7,9 @@ export const SERVICE_TAB_IDS = [
   "endpoints",
   "traces",
   "errors",
+  "logs",
   "infra",
   "deploys",
-  "logs",
   "code",
 ] as const;
 

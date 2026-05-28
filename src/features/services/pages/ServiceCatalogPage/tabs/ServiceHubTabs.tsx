@@ -22,8 +22,8 @@ function TabCount({ value, isError }: { value: number; isError: boolean }) {
       className={cn(
         "ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10px]",
         isError
-          ? "bg-[var(--color-error-bg,rgba(239,68,68,0.16))] text-[var(--color-error,#ef4444)]"
-          : "bg-[var(--bg-elevated,rgba(255,255,255,0.06))] text-[var(--text-muted)]"
+          ? "bg-[var(--color-error-subtle)] text-[var(--color-error)]"
+          : "bg-[var(--bg-tertiary)] text-[var(--text-muted)]"
       )}
     >
       {value}
@@ -51,7 +51,7 @@ function TabButton({
       className={cn(
         "flex items-center gap-1 border-b-2 px-3 py-2 text-[13px] transition-colors",
         active
-          ? "border-[var(--color-primary,#3b82f6)] text-[var(--text-primary)]"
+          ? "border-[var(--color-primary)] text-[var(--text-primary)]"
           : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
       )}
     >
