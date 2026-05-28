@@ -31,10 +31,6 @@ export default defineConfig(({ mode }) => {
         { find: "@shared", replacement: path.resolve(__dirname, "./src/shared") },
         { find: "@config", replacement: path.resolve(__dirname, "./src/config") },
         { find: "@store", replacement: path.resolve(__dirname, "./src/app/store") },
-        {
-          find: "@/features/explorer-core",
-          replacement: path.resolve(__dirname, "./src/features/explorer"),
-        },
         { find: "@", replacement: path.resolve(__dirname, "./src") },
       ],
     },
@@ -62,10 +58,6 @@ export default defineConfig(({ mode }) => {
                 const featureName = parts[1].split("/")[0];
                 if (featureName) return `feature-${featureName}`;
               }
-            }
-
-            if (id.includes("/src/features/marketing/")) {
-              return "marketing-runtime";
             }
 
             if (

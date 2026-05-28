@@ -37,8 +37,7 @@
       "@config/*": ["src/config/*"],
       "@store/*": ["src/app/store/*"],
       "@/components/*": ["src/shared/components/primitives/*"],
-      "@/components/ui/*": ["src/shared/components/primitives/ui/*"],
-      "@/features/explorer-core/*": ["src/features/explorer/*"]
+      "@/components/ui/*": ["src/shared/components/primitives/ui/*"]
     }
   },
   "include": ["src"],

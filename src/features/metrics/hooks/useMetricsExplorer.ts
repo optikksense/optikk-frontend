@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import {
   deserializeStateSnapshot,
   serializeStateSnapshot,
-} from "@/features/explorer-core/utils/urlState";
+} from "@/features/explorer/utils/urlState";
 import { type URLFilterConfig, useURLFilters } from "@/shared/hooks/useURLFilters";
 import { QUERY_LABELS, createDefaultQuery } from "../constants";
 import type {

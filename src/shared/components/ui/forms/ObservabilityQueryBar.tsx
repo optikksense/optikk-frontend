@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Keyboard, Plus, Search, X } from "lucide-react";
 import type { ReactNode } from "react";
 
-import type { QueryFieldOption } from "@/features/explorer-core/constants/fields";
+import type { QueryFieldOption } from "@/features/explorer/constants/fields";
 
 import QueryFieldPicker from "./QueryFieldPicker";
 import QueryKeyboardHints from "./QueryKeyboardHints";
