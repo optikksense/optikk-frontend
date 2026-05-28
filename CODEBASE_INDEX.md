@@ -1,15 +1,15 @@
 # Optikk Frontend — Codebase Index
 
-Orientation for [optikk-frontend](/Users/ramantayal/Desktop/pro/optikk-frontend). This index is aligned to the current repo shape and route wiring.
+Orientation for [optikk-frontend](.). This index is aligned to the current repo shape and route wiring.
 
 ## Snapshot
 
 - Stack: React 19, TypeScript, Vite 8, TanStack Router, TanStack Query, Zustand, Tailwind, Biome
-- Bootstrap: [src/main.tsx](/Users/ramantayal/Desktop/pro/optikk-frontend/src/main.tsx)
-- Root app: [src/app/App.tsx](/Users/ramantayal/Desktop/pro/optikk-frontend/src/app/App.tsx)
-- Router: [src/app/routes/router.tsx](/Users/ramantayal/Desktop/pro/optikk-frontend/src/app/routes/router.tsx)
-- Domain registry: [src/app/registry/domainRegistry.ts](/Users/ramantayal/Desktop/pro/optikk-frontend/src/app/registry/domainRegistry.ts)
-- Build and proxy config: [vite.config.ts](/Users/ramantayal/Desktop/pro/optikk-frontend/vite.config.ts)
+- Bootstrap: [src/main.tsx](src/main.tsx)
+- Root app: [src/app/App.tsx](src/app/App.tsx)
+- Router: [src/app/routes/router.tsx](src/app/routes/router.tsx)
+- Domain registry: [src/app/registry/domainRegistry.ts](src/app/registry/domainRegistry.ts)
+- Build and proxy config: [vite.config.ts](vite.config.ts)
 
 ## Top-level architecture
 
@@ -21,7 +21,7 @@ Orientation for [optikk-frontend](/Users/ramantayal/Desktop/pro/optikk-frontend)
 
 ### Feature ownership
 
-The canonical feature registration lives in [src/app/registry/domainRegistry.ts](/Users/ramantayal/Desktop/pro/optikk-frontend/src/app/registry/domainRegistry.ts).
+The canonical feature registration lives in [src/app/registry/domainRegistry.ts](src/app/registry/domainRegistry.ts).
 
 Current registered product domains:
 
@@ -37,6 +37,8 @@ Unregistered but important feature areas:
 
 - `marketing` — public-facing site, rendered via bespoke React pages; not a domain
 - `explorer` (`src/features/explorer/`) — shared DSL search, facets, analytics, and visualization primitives used by Logs, Traces, and Metrics explorers; not a domain, no routes of its own
+- `errors` (`src/features/errors/`) — error-tracking pages (`/errors`, `/errors/$groupId`); routes wired directly in `router.tsx`
+- `services` (`src/features/services/`) — service catalog, service map, deployments pages (`/services`, `/service-map`, `/deployments`); routes wired directly in `router.tsx`; also exports components consumed by the overview service page
 
 ## Current route model
 
@@ -44,23 +46,23 @@ Unregistered but important feature areas:
 
 Marketing pages are rendered through a dedicated layout and bespoke page components under `src/features/marketing/pages/`:
 
-- `/` → [HomePage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/HomePage/HomePage.tsx)
-- `/features` → [FeaturesPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/FeaturesPage/FeaturesPage.tsx)
-- `/pricing` → [PricingPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/PricingPage/PricingPage.tsx)
-- `/opentelemetry` → [OpenTelemetryPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/OpenTelemetryPage/OpenTelemetryPage.tsx)
-- `/self-host` → [SelfHostPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/SelfHostPage/SelfHostPage.tsx)
-- `/architecture` → [ArchitecturePage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/ArchitecturePage/ArchitecturePage.tsx)
-- `/privacy` → [PrivacyPolicyPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/PrivacyPolicyPage/PrivacyPolicyPage.tsx)
-- `/terms` → [TermsOfServicePage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/TermsOfServicePage/TermsOfServicePage.tsx)
-- `/security` → [SecurityPage.tsx](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/pages/SecurityPage/SecurityPage.tsx)
+- `/` → [HomePage.tsx](src/features/marketing/pages/HomePage/HomePage.tsx)
+- `/features` → [FeaturesPage.tsx](src/features/marketing/pages/FeaturesPage/FeaturesPage.tsx)
+- `/pricing` → [PricingPage.tsx](src/features/marketing/pages/PricingPage/PricingPage.tsx)
+- `/opentelemetry` → [OpenTelemetryPage.tsx](src/features/marketing/pages/OpenTelemetryPage/OpenTelemetryPage.tsx)
+- `/self-host` → [SelfHostPage.tsx](src/features/marketing/pages/SelfHostPage/SelfHostPage.tsx)
+- `/architecture` → [ArchitecturePage.tsx](src/features/marketing/pages/ArchitecturePage/ArchitecturePage.tsx)
+- `/privacy` → [PrivacyPolicyPage.tsx](src/features/marketing/pages/PrivacyPolicyPage/PrivacyPolicyPage.tsx)
+- `/terms` → [TermsOfServicePage.tsx](src/features/marketing/pages/TermsOfServicePage/TermsOfServicePage.tsx)
+- `/security` → [SecurityPage.tsx](src/features/marketing/pages/SecurityPage/SecurityPage.tsx)
 
-Marketing pages dynamically fetch genuine GitHub stars using the [useGitHubStars](file:///Users/ramantayal/Desktop/pro/optikk-frontend/src/features/marketing/hooks/useGitHubStars.ts) hook.
+Marketing pages dynamically fetch genuine GitHub stars using the [useGitHubStars](src/features/marketing/hooks/useGitHubStars.ts) hook.
 
 ### Authenticated product routes
 
 Direct protected routes in the router:
 
-- `/overview` → [OverviewHubPage.tsx](/Users/ramantayal/Desktop/pro/optikk-frontend/src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx)
+- `/overview` → [OverviewHubPage.tsx](src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx)
 - `/infrastructure` → frontend-owned infrastructure hub
 - `/service` → service hub
 - `/service/$serviceName` → service detail page
@@ -76,7 +78,7 @@ The current frontend owns significant page composition and interaction logic dir
 | Area | Path | Notes |
 |------|------|-------|
 | Overview | `src/features/overview/` | Overview hub, service hub, service detail, overview dashboard/renderers |
-| Saturation | `src/features/saturation/` | Saturation hub (Overview surface ported from the Optikk design handoff) + per-datastore / Kafka drill-downs. `pages/SaturationPage/` is the `/saturation` landing page; composition root is `index.tsx`, data fans out from `hooks/useSaturationOverviewModel.ts`, view-model builders live in `view-models/`, presentation in `components/`, styles in `SaturationOverview.css` (scoped under `.sat-root`, uses `themeColors.css` tokens). Renders: subsystem cards (Kafka / Database / Redis), worst-saturated-systems table, top-Kafka-topics table. Subnav links to existing Kafka & datastore detail pages. Cross-fleet hex map, queues/storage subsystems, alerts feed and refresh/export buttons from the design are intentionally omitted because the backend has no matching endpoints. |
+| Saturation | `src/features/saturation/` | Saturation hub (Overview surface ported from the Optikk design handoff) + per-datastore / Kafka drill-downs. `pages/SaturationPage/` is the `/saturation` landing page; composition root is `index.tsx`, data fans out from `hooks/useSaturationOverviewModel.ts`, view-model builders live in `view-models/`, presentation in `components/` (Tailwind utilities only — no CSS file; shared table classes in `components/tableClasses.ts`, uses `themeColors.css` tokens via arbitrary values). Renders: subsystem cards (Kafka / Database / Redis), worst-saturated-systems table, top-Kafka-topics table. Subnav links to existing Kafka & datastore detail pages. Cross-fleet hex map, queues/storage subsystems, alerts feed and refresh/export buttons from the design are intentionally omitted because the backend has no matching endpoints. |
 | Metrics | `src/features/metrics/` | Metrics explorer, charts, store, API hooks |
 | Logs | `src/features/log/` | Rebuilt logs explorer (clean-slate, Datadog-class). Components grouped: toolbar, kpi, facets, trend, table, detail. Feature-scoped Zustand store at `store/logsExplorerStore.ts`. JSON auto-detection in body cells. |
 | Traces | `src/features/traces/` | Trace explorer, detail, comparison. Trace detail page uses Datadog-parity layout: full-width viz (Waterfall + Flame Graph; waterfall renders event dots on bars at event timestamps) with non-modal resizable right `SpanDrawer` for span detail (Info / Logs / Events / Links / Infra tabs, hide-when-empty). Info tab includes a "Where this happens" ancestor chain + "Timing" KV grid; drawer header shows a "critical path" pill when the selected span is on the critical path. Composition root at `pages/TraceDetailPage/components/TraceDetailLayout.tsx`. State in `store/tracesStore.ts` (persists `visualizationTab`, `spanDetailTab`, `drawerWidthPx`); URL holds `?span=<id>`. Hotkeys: `/` filter, `j`/`k` or ↑/↓ navigate spans, `c` copy trace id, `e` cycle errors, `1`/`2` switch viz, `[`/`]` resize drawer, `Esc` close. |
@@ -109,7 +111,7 @@ The current frontend owns significant page composition and interaction logic dir
 
 ## Build, proxy, and aliases
 
-[vite.config.ts](/Users/ramantayal/Desktop/pro/optikk-frontend/vite.config.ts) is the source of truth for:
+[vite.config.ts](vite.config.ts) is the source of truth for:
 
 - alias mappings such as `@`, `@app`, `@features`, `@shared`, `@store`
 - local dev proxying of `/api` to `VITE_DEV_BACKEND_URL`
@@ -118,11 +120,11 @@ The current frontend owns significant page composition and interaction logic dir
 
 Default local frontend port is `3000`.
 
-Firebase Hosting is configured via [firebase.json](/Users/ramantayal/Desktop/pro/optikk-frontend/firebase.json) with client-side SPA routing rewrites to `/index.html` and long-term asset caching headers.
+Firebase Hosting is configured via [firebase.json](firebase.json) with client-side SPA routing rewrites to `/index.html` and long-term asset caching headers.
 
 ## Scripts
 
-From [package.json](/Users/ramantayal/Desktop/pro/optikk-frontend/package.json):
+From [package.json](package.json):
 
 - `yarn dev`
 - `yarn type-check`
@@ -132,13 +134,7 @@ From [package.json](/Users/ramantayal/Desktop/pro/optikk-frontend/package.json):
 - `yarn preview`
 - `yarn ci`
 
-## Deprecated / empty directories
-
-- `src/platform/` — 8 subdirs (`api`, `auth`, `config`, `query`, `state`, `stream`, `url`, `utils`) are all empty. Treat as deprecated legacy scaffold; do not add new code here.
-
 ## Cross-repo docs
 
-- Frontend overview: [README.md](/Users/ramantayal/Desktop/pro/optikk-frontend/README.md)
-- Backend overview: [../optikk-backend/README.md](/Users/ramantayal/Desktop/pro/optikk-backend/README.md)
-- Telemetry contracts: [docs/telemetry-contracts.md](/Users/ramantayal/Desktop/pro/optikk-frontend/docs/telemetry-contracts.md)
-- Flow diagrams: [docs/flows/](/Users/ramantayal/Desktop/pro/optikk-frontend/docs/flows/) — frontend-data-flow
+- Frontend overview: [README.md](README.md)
+- Backend overview: [../optikk-backend/README.md](../optikk-backend/README.md)

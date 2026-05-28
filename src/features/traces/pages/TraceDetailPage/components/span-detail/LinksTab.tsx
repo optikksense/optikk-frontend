@@ -10,33 +10,46 @@ interface Props {
   readonly relatedTraces: readonly RelatedTrace[];
 }
 
+const pane = "p-4 flex flex-col gap-4";
+const sect = "flex flex-col gap-2";
+const sectH = "flex items-center justify-between gap-2";
+const sectT = "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
+const ctxRow =
+  "grid grid-cols-[10px_110px_1fr_auto] gap-2 px-2.5 py-1.5 items-center bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-md text-[11.5px] text-left cursor-pointer hover:bg-[var(--bg-tertiary)]";
+const ctxSvc = "text-[var(--text-secondary)]";
+const ctxOp =
+  "text-[var(--text-primary)] font-mono overflow-hidden text-ellipsis whitespace-nowrap";
+const ctxDur = "text-[var(--text-muted)] font-mono";
+
 function LinksTabComponent({ links, relatedTraces }: Props) {
   const hasAny = links.length > 0 || relatedTraces.length > 0;
   if (!hasAny) {
     return (
-      <div className="tdp-sd-pane">
-        <div className="tdp-muted">No span links or related traces.</div>
+      <div className={pane}>
+        <div className="text-[var(--text-caption)] text-[12px] py-2">
+          No span links or related traces.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="tdp-sd-pane">
+    <div className={pane}>
       {links.length > 0 && (
-        <div className="tdp-sect">
-          <div className="tdp-sect-h">
-            <div className="tdp-sect-t">Span links ({links.length})</div>
+        <div className={sect}>
+          <div className={sectH}>
+            <div className={sectT}>Span links ({links.length})</div>
           </div>
-          <div className="tdp-ctx-list">
+          <div className="flex flex-col gap-1">
             {links.map((link, i) => (
               <a
                 key={`${link.traceId}-${link.spanId}-${i}`}
                 href={`/traces/${link.traceId}?span=${link.spanId}`}
-                className="tdp-ctx-row"
+                className={ctxRow}
               >
-                <span className="tdp-svc-swatch-sm" />
-                <span className="tdp-ctx-svc">trace</span>
-                <span className="tdp-ctx-op">
+                <span className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0 bg-[var(--color-primary)]" />
+                <span className={ctxSvc}>trace</span>
+                <span className={ctxOp}>
                   {link.traceId.slice(0, 12)}… · span {link.spanId.slice(0, 8)}…
                 </span>
                 <ExternalLink size={11} />
@@ -47,21 +60,21 @@ function LinksTabComponent({ links, relatedTraces }: Props) {
       )}
 
       {relatedTraces.length > 0 && (
-        <div className="tdp-sect">
-          <div className="tdp-sect-h">
-            <div className="tdp-sect-t">Related traces ({relatedTraces.length})</div>
+        <div className={sect}>
+          <div className={sectH}>
+            <div className={sectT}>Related traces ({relatedTraces.length})</div>
           </div>
-          <div className="tdp-ctx-list">
+          <div className="flex flex-col gap-1">
             {relatedTraces.map((rt) => (
               <a
                 key={`${rt.traceId}-${rt.spanId}`}
                 href={`/traces/${rt.traceId}`}
-                className="tdp-ctx-row"
+                className={ctxRow}
               >
-                <span className="tdp-svc-swatch-sm" />
-                <span className="tdp-ctx-svc">{rt.serviceName}</span>
-                <span className="tdp-ctx-op">{rt.operationName}</span>
-                <span className="tdp-ctx-dur">{formatDuration(rt.durationMs)}</span>
+                <span className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0 bg-[var(--color-primary)]" />
+                <span className={ctxSvc}>{rt.serviceName}</span>
+                <span className={ctxOp}>{rt.operationName}</span>
+                <span className={ctxDur}>{formatDuration(rt.durationMs)}</span>
               </a>
             ))}
           </div>

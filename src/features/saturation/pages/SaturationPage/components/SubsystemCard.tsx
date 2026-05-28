@@ -11,19 +11,29 @@ type Props = {
 
 function SubsystemCardImpl({ spec }: Props): JSX.Element {
   return (
-    <a className="sat-kpi" href={spec.href} aria-label={`${spec.label} subsystem`}>
-      <div className="sat-kpi-head">
-        <span className="sat-kpi-icon">
+    <a
+      className="flex min-h-[152px] min-w-0 flex-col gap-2 rounded-[10px] border border-[var(--line)] bg-[var(--bg-1)] px-5 py-[18px] text-inherit no-underline transition-[border-color] duration-150 hover:border-[var(--line-2,var(--accent-ln))]"
+      href={spec.href}
+      aria-label={`${spec.label} subsystem`}
+    >
+      <div className="mb-1 flex items-center gap-[10px]">
+        <span className="inline-grid h-7 w-7 flex-shrink-0 place-items-center rounded-md bg-[var(--accent-bg)] text-[var(--accent-2)]">
           <SubsystemIcon name={spec.iconName} />
         </span>
-        <span className="sat-kpi-label">{spec.label}</span>
-        <span style={{ marginLeft: "auto" }}>
+        <span className="text-[14px] font-semibold text-[var(--fg-0)]">{spec.label}</span>
+        <span className="ml-auto">
           <StatusChip tone={spec.tone} text={spec.statusText} size="sm" />
         </span>
       </div>
-      <div className="sat-kpi-sub">{spec.sub}</div>
-      <div className="sat-kpi-primary">{spec.primary}</div>
-      <div className="sat-kpi-secondary">{spec.secondary}</div>
+      <div className='font-["Geist_Mono",monospace] text-[11.5px] text-[var(--fg-3)]'>
+        {spec.sub}
+      </div>
+      <div className='mt-[6px] font-["Geist_Mono",monospace] text-[18px] font-semibold tracking-[-0.01em] text-[var(--fg-0)]'>
+        {spec.primary}
+      </div>
+      <div className='-mt-[2px] font-["Geist_Mono",monospace] text-[11.5px] text-[var(--fg-3)]'>
+        {spec.secondary}
+      </div>
       <Sparkline series={spec.series} ariaLabel={`${spec.label} trend`} />
     </a>
   );

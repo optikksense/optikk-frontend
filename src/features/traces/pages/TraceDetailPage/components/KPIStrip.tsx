@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 
+import { cn } from "@/lib/utils";
 import { formatDuration } from "@shared/utils/formatters";
 
 import type { TraceRecord } from "@shared/entities/trace/model";
@@ -60,7 +61,6 @@ function summarizeCriticalPath(
 ): { label: string; pct: number } {
   if (ids.size === 0) return { label: "—", pct: 0 };
   const onPath = spans.filter((s) => ids.has(s.span_id));
-  // Build the longest-duration sequence label (root → … → leaf).
   const byId = new Map(onPath.map((s) => [s.span_id, s]));
   const childrenOf = new Map<string, TraceRecord[]>();
   for (const s of onPath) {
@@ -68,7 +68,6 @@ function summarizeCriticalPath(
     if (!childrenOf.has(p)) childrenOf.set(p, []);
     childrenOf.get(p)!.push(s);
   }
-  // Find the path root: a span on the path whose parent is not on the path.
   const pathRoots = onPath.filter((s) => !s.parent_span_id || !byId.has(s.parent_span_id));
   let cursor: TraceRecord | undefined = pathRoots.sort(
     (a, b) => (b.duration_ms ?? 0) - (a.duration_ms ?? 0)
@@ -86,6 +85,14 @@ function summarizeCriticalPath(
     pct,
   };
 }
+
+const kpiBase =
+  "bg-[var(--bg-primary)] px-[18px] py-[14px] flex flex-col gap-1 min-w-0";
+const kpiK =
+  "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
+const kpiV =
+  "text-[24px] font-semibold text-[var(--text-primary)] tracking-[-0.015em] font-mono whitespace-nowrap [font-feature-settings:'tnum']";
+const kpiSub = "text-[11.5px] text-[var(--text-caption)]";
 
 function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: Props) {
   const errors = stats.errors;
@@ -105,48 +112,62 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
   const slowFactor = showBaseline && p50Ms ? stats.duration / p50Ms : null;
 
   return (
-    <div className="tdp-kpis">
-      <div className="tdp-kpi tdp-kpi-hero">
-        <div className="tdp-kpi-k">Duration</div>
-        <div className="tdp-kpi-v">{formatDuration(stats.duration)}</div>
+    <div
+      className="grid gap-px bg-[var(--border-color)] border-b border-[var(--border-color)]"
+      style={{
+        gridTemplateColumns:
+          "minmax(220px, 1.4fr) minmax(110px, 0.7fr) minmax(120px, 0.7fr) minmax(140px, 0.9fr) minmax(260px, 2fr)",
+      }}
+    >
+      <div className={cn(kpiBase, "bg-[var(--bg-secondary)]")}>
+        <div className={kpiK}>Duration</div>
+        <div className={kpiV}>{formatDuration(stats.duration)}</div>
         {showBaseline && slowFactor != null && p95Ms != null && p50Ms != null ? (
           <>
-            <div className={`tdp-kpi-delta ${stats.duration > p95Ms ? "tdp-kpi-delta-bad" : ""}`}>
+            <div
+              className={cn(
+                "text-[11.5px] text-[var(--text-muted)]",
+                stats.duration > p95Ms && "text-[var(--color-error)]"
+              )}
+            >
               {slowFactor.toFixed(1)}× p50 · {stats.duration > p95Ms ? "above p95" : "below p95"}
             </div>
             <BaselineBar dur={stats.duration} p50={p50Ms} p95={p95Ms} />
           </>
         ) : (
-          <div className="tdp-kpi-sub">end-to-end wall time</div>
+          <div className={kpiSub}>end-to-end wall time</div>
         )}
       </div>
 
-      <div className="tdp-kpi">
-        <div className="tdp-kpi-k">Errors</div>
-        <div className={`tdp-kpi-v ${errors > 0 ? "tdp-kpi-v-err" : ""}`}>{errors}</div>
-        <div className="tdp-kpi-sub">{okCount} ok</div>
+      <div className={kpiBase}>
+        <div className={kpiK}>Errors</div>
+        <div className={cn(kpiV, errors > 0 && "!text-[var(--color-error)]")}>{errors}</div>
+        <div className={kpiSub}>{okCount} ok</div>
       </div>
 
-      <div className="tdp-kpi">
-        <div className="tdp-kpi-k">Services</div>
-        <div className="tdp-kpi-v">{services}</div>
-        <div className="tdp-kpi-sub">
+      <div className={kpiBase}>
+        <div className={kpiK}>Services</div>
+        <div className={kpiV}>{services}</div>
+        <div className={kpiSub}>
           {totalSpans} span{totalSpans === 1 ? "" : "s"}
         </div>
       </div>
 
-      <div className="tdp-kpi">
-        <div className="tdp-kpi-k">Self time (root)</div>
-        <div className="tdp-kpi-v">{formatDuration(selfMs)}</div>
-        <div className="tdp-kpi-sub">{selfPct.toFixed(1)}% of total</div>
+      <div className={kpiBase}>
+        <div className={kpiK}>Self time (root)</div>
+        <div className={kpiV}>{formatDuration(selfMs)}</div>
+        <div className={kpiSub}>{selfPct.toFixed(1)}% of total</div>
       </div>
 
-      <div className="tdp-kpi tdp-kpi-wide">
-        <div className="tdp-kpi-k">Critical path</div>
-        <div className="tdp-kpi-v tdp-kpi-v-sm" title={critical.label}>
+      <div className={cn(kpiBase, "gap-1.5")}>
+        <div className={kpiK}>Critical path</div>
+        <div
+          className="text-[13.5px] font-medium text-[var(--text-primary)] leading-[1.35] break-words"
+          title={critical.label}
+        >
           {critical.label || "—"}
         </div>
-        <div className="tdp-kpi-sub">
+        <div className={kpiSub}>
           {critical.pct > 0 ? `${critical.pct.toFixed(0)}% of total time on this path` : "—"}
         </div>
       </div>
@@ -160,29 +181,35 @@ function BaselineBar({ dur, p50, p95 }: { dur: number; p50: number; p95: number 
   const p50Pct = Math.min(100, (p50 / max) * 100);
   const p95Pct = Math.min(100, (p95 / max) * 100);
   return (
-    <div className="tdp-bbar">
-      <div className="tdp-bbar-track">
-        <div className="tdp-bbar-fill" style={{ width: `${fillPct}%` }} />
+    <div className="mt-1.5">
+      <div className="relative h-1.5 rounded-[3px] bg-[var(--bg-tertiary)] overflow-visible">
         <div
-          className="tdp-bbar-p50"
+          className="absolute top-0 left-0 h-full bg-[var(--color-error)] rounded-[3px]"
+          style={{ width: `${fillPct}%` }}
+        />
+        <div
+          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-[var(--color-success)] rounded-[1px]"
           style={{ left: `${p50Pct}%` }}
           title={`p50 ${formatDuration(p50)}`}
         />
         <div
-          className="tdp-bbar-p95"
+          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-[var(--color-warning)] rounded-[1px]"
           style={{ left: `${p95Pct}%` }}
           title={`p95 ${formatDuration(p95)}`}
         />
       </div>
-      <div className="tdp-bbar-legend">
+      <div className="flex gap-3 mt-1.5 text-[10.5px] text-[var(--text-caption)] font-mono">
         <span>
-          <i className="tdp-dot tdp-dot-p50" /> p50 {formatDuration(p50)}
+          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-success)]" />{" "}
+          p50 {formatDuration(p50)}
         </span>
         <span>
-          <i className="tdp-dot tdp-dot-p95" /> p95 {formatDuration(p95)}
+          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-warning)]" />{" "}
+          p95 {formatDuration(p95)}
         </span>
         <span>
-          <i className="tdp-dot tdp-dot-now" /> this {formatDuration(dur)}
+          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-error)]" />{" "}
+          this {formatDuration(dur)}
         </span>
       </div>
     </div>

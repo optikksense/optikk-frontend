@@ -1,5 +1,7 @@
 import { memo } from "react";
 
+import { cn } from "@/lib/utils";
+
 import type { Tone } from "../view-models/saturationScore";
 
 export type RankBarRowProps = {
@@ -12,29 +14,35 @@ export type RankBarRowProps = {
   onClick?: () => void;
 };
 
-function toneClass(tone: Tone): string {
-  if (tone === "err") return " is-err";
-  if (tone === "warn") return " is-warn";
+function toneRowClass(tone: Tone): string {
+  if (tone === "err") return "is-err";
+  if (tone === "warn") return "is-warn";
   return "";
 }
 
-function fillClass(tone: Tone): string {
-  if (tone === "err") return "sat-lagbar-f is-err";
-  if (tone === "warn") return "sat-lagbar-f is-warn";
-  return "sat-lagbar-f";
+function fillToneClass(tone: Tone): string {
+  if (tone === "err") return "bg-[var(--err-c)]";
+  if (tone === "warn") return "bg-[var(--warn-c)]";
+  return "bg-[var(--info-c)]";
 }
 
 function RankBarRowImpl(props: RankBarRowProps): JSX.Element {
   const { primary, secondary, meta, bar, barLabel, tone, onClick } = props;
   const widthPct = Math.max(0, Math.min(100, bar * 100));
   return (
-    <tr className={toneClass(tone)} onClick={onClick}>
+    <tr className={toneRowClass(tone)} onClick={onClick}>
       <td className="strong">{primary}</td>
       <td className="dim">{secondary ?? ""}</td>
       <td className="dim">{meta ?? ""}</td>
       <td style={{ minWidth: 160 }}>
-        <div className="sat-lagbar">
-          <div className={fillClass(tone)} style={{ width: `${widthPct}%` }} />
+        <div className="relative h-2 min-w-[80px] overflow-hidden rounded bg-[var(--bg-2)]">
+          <div
+            className={cn(
+              "absolute inset-y-0 left-0 rounded-[3px] transition-[width] duration-[250ms]",
+              fillToneClass(tone)
+            )}
+            style={{ width: `${widthPct}%` }}
+          />
         </div>
       </td>
       <td className="num">{barLabel}</td>

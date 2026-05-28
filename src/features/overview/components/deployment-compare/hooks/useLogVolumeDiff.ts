@@ -1,6 +1,6 @@
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
-import { aggregateSeverityTrend } from "@features/explorer/utils/trend";
-import { getLogsTrend } from "@features/log/api/logsAnalyticsApi";
+import { aggregateSeverityTrend } from "@/features/explorer/utils/trend";
+import { getLogsTrend } from "@/features/log/api/logsAnalyticsApi";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 export interface WindowVolume {

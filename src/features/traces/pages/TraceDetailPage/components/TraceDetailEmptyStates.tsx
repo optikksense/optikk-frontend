@@ -5,7 +5,7 @@ import { PageSurface } from "@shared/components/ui";
 export const TraceDetailLoading = memo(function TraceDetailLoading() {
   return (
     <PageSurface className="flex min-h-[320px] items-center justify-center">
-      <div className="ok-spinner" />
+      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--accent)]" />
     </PageSurface>
   );
 });

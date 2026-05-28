@@ -26,22 +26,11 @@ export default defineConfig(({ mode }) => {
         },
         { find: "@/lib", replacement: path.resolve(__dirname, "./src/shared/lib") },
         { find: "@/types", replacement: path.resolve(__dirname, "./src/shared/types") },
-        { find: "@/hooks", replacement: path.resolve(__dirname, "./src/shared/hooks") },
-        { find: "@/services", replacement: path.resolve(__dirname, "./src/shared/api") },
         { find: "@app", replacement: path.resolve(__dirname, "./src/app") },
-        { find: "@features", replacement: path.resolve(__dirname, "./src/features") },
         { find: "@entities", replacement: path.resolve(__dirname, "./src/shared/entities") },
         { find: "@shared", replacement: path.resolve(__dirname, "./src/shared") },
         { find: "@config", replacement: path.resolve(__dirname, "./src/config") },
-        { find: "@components", replacement: path.resolve(__dirname, "./src/shared/components") },
-        { find: "@hooks", replacement: path.resolve(__dirname, "./src/shared/hooks") },
-        { find: "@utils", replacement: path.resolve(__dirname, "./src/shared/utils") },
-        { find: "@services", replacement: path.resolve(__dirname, "./src/shared/api") },
         { find: "@store", replacement: path.resolve(__dirname, "./src/app/store") },
-        {
-          find: "@/features/explorer-core",
-          replacement: path.resolve(__dirname, "./src/features/explorer"),
-        },
         { find: "@", replacement: path.resolve(__dirname, "./src") },
       ],
     },
@@ -69,10 +58,6 @@ export default defineConfig(({ mode }) => {
                 const featureName = parts[1].split("/")[0];
                 if (featureName) return `feature-${featureName}`;
               }
-            }
-
-            if (id.includes("/src/features/marketing/")) {
-              return "marketing-runtime";
             }
 
             if (

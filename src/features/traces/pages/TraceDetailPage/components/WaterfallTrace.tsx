@@ -1,6 +1,7 @@
 import { AlertCircle, ChevronDown, RotateCw } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 
+import { cn } from "@/lib/utils";
 import { formatDuration } from "@shared/utils/formatters";
 
 import type { TraceRecord } from "@shared/entities/trace/model";
@@ -125,6 +126,11 @@ function matchesQuery(span: TraceRecord, q: string): boolean {
   return hay.includes(ql);
 }
 
+const wfGrid = "grid grid-cols-[360px_1fr]";
+
+const lblBase =
+  "px-3 flex items-center gap-2 border-r border-[var(--border-color)] text-[12px] min-w-0";
+
 function WaterfallTraceComponent({
   spans,
   selectedSpanId,
@@ -176,16 +182,36 @@ function WaterfallTraceComponent({
   const showCritDot = criticalPathSpanIds.size > 0;
 
   return (
-    <div className="tdp-wf">
-      <div className="tdp-wf-head">
-        <div className="tdp-wf-head-lbl">Service · Operation</div>
-        <div className="tdp-wf-head-bar">
-          <div className="tdp-ruler">
+    <div className="flex flex-col min-h-0 flex-1 bg-[var(--bg-primary)]">
+      <div
+        className={cn(
+          wfGrid,
+          "sticky top-0 z-[5] bg-[var(--bg-primary)] border-b border-[var(--border-color)]"
+        )}
+      >
+        <div
+          className={cn(
+            lblBase,
+            "h-[34px] text-[var(--text-caption)] !text-[10.5px] tracking-[0.06em] uppercase"
+          )}
+        >
+          Service · Operation
+        </div>
+        <div className="relative h-[34px]">
+          <div className="relative h-full">
             {ticks.map(({ t, pct }) => (
-              <div key={t} className="tdp-ruler-tick" style={{ left: `${pct}%` }}>
-                <div className="tdp-ruler-line" />
+              <div
+                key={t}
+                className="absolute top-0 bottom-0"
+                style={{ left: `${pct}%` }}
+              >
+                <div className="absolute top-2 bottom-2 w-px bg-[var(--border-color)]" />
                 <div
-                  className={`tdp-ruler-lbl ${pct < 4 ? "is-first" : ""} ${pct > 96 ? "is-last" : ""}`}
+                  className={cn(
+                    "absolute bottom-[5px] -translate-x-1/2 font-mono text-[10px] text-[var(--text-caption)] whitespace-nowrap px-[3px] bg-[var(--bg-primary)] [font-variant-numeric:tabular-nums]",
+                    pct < 4 && "!left-0 !translate-x-0",
+                    pct > 96 && "!-translate-x-full"
+                  )}
                 >
                   {formatDuration(t)}
                 </div>
@@ -195,7 +221,7 @@ function WaterfallTraceComponent({
         </div>
       </div>
 
-      <div className="tdp-wf-body">
+      <div className="flex flex-col flex-1 min-h-0">
         {flat.map((row) => (
           <Row
             key={row.span.span_id}
@@ -214,7 +240,7 @@ function WaterfallTraceComponent({
         ))}
       </div>
 
-      <div className="tdp-wf-foot">
+      <div className="flex gap-4 px-4 py-2.5 border-t border-[var(--border-color)] text-[11px] text-[var(--text-caption)] bg-[var(--bg-primary)]">
         <span>
           Showing {flat.length} of {spans.length} span{spans.length === 1 ? "" : "s"}
         </span>
@@ -262,10 +288,17 @@ function Row({
   const isErr = (span.status ?? "").toUpperCase() === "ERROR";
   const isSelected = selectedSpanId === span.span_id;
   const hue = svcHue(span.service_name || "");
+  const barColor = `oklch(0.62 0.14 ${hue})`;
+  const swatchColor = barColor;
 
   return (
     <div
-      className={`tdp-wf-row ${isSelected ? "is-sel" : ""} ${isCrit ? "is-crit" : ""} ${dim ? "is-dim" : ""}`}
+      className={cn(
+        wfGrid,
+        "cursor-pointer transition-[background] duration-[0.08s] ease border-b border-[color-mix(in_oklch,var(--border-color),transparent_70%)] h-[28px] hover:bg-[var(--bg-secondary)]",
+        isSelected && "bg-[var(--color-primary-subtle-15)]",
+        dim && "opacity-[0.35]"
+      )}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -273,10 +306,20 @@ function Row({
         if (e.key === "Enter") onClick();
       }}
     >
-      <div className="tdp-wf-lbl" style={{ paddingLeft: 8 + depth * 14 }}>
+      <div
+        className={cn(
+          lblBase,
+          isSelected && "shadow-[inset_2px_0_0_var(--color-primary)]"
+        )}
+        style={{ paddingLeft: 8 + depth * 14 }}
+      >
         <button
           type="button"
-          className={`tdp-wf-twist ${hasChildren ? "" : "is-leaf"} ${collapsed ? "is-collapsed" : ""}`}
+          className={cn(
+            "w-[14px] h-[14px] inline-grid place-items-center text-[var(--text-caption)] rounded-[3px] bg-transparent border-0 cursor-pointer transition-transform duration-[0.12s] ease flex-none hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]",
+            !hasChildren && "invisible",
+            collapsed && "[&_svg]:-rotate-90"
+          )}
           onClick={(e) => {
             e.stopPropagation();
             if (hasChildren) onToggle();
@@ -286,40 +329,60 @@ function Row({
           {hasChildren && <ChevronDown size={12} />}
         </button>
         <span
-          className="tdp-svc-swatch-sm"
-          style={{ ["--tdp-svc-color" as string]: `oklch(0.62 0.14 ${hue})` }}
+          className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0"
+          style={{ background: swatchColor }}
         />
-        <span className="tdp-wf-svc" title={span.service_name}>
+        <span
+          className="text-[var(--text-muted)] text-[11.5px] flex-none max-w-[110px] overflow-hidden text-ellipsis whitespace-nowrap"
+          title={span.service_name}
+        >
           {span.service_name || "—"}
+          {isCrit && (
+            <span
+              aria-hidden
+              className="inline-block w-1 h-1 rounded-full ml-1.5 align-[2px] bg-[var(--color-degraded)]"
+            />
+          )}
         </span>
-        <span className="tdp-wf-op" title={span.operation_name}>
+        <span
+          className="text-[var(--text-primary)] text-[12.5px] overflow-hidden text-ellipsis whitespace-nowrap min-w-0"
+          title={span.operation_name}
+        >
           {span.operation_name || "(no name)"}
         </span>
         {isErr && (
-          <span className="tdp-wf-tag tdp-wf-tag-err">
+          <span className="inline-flex items-center gap-[3px] text-[10px] px-1.5 py-px rounded-full ml-auto font-mono flex-none bg-[var(--color-error-subtle)] text-[var(--color-error)]">
             <AlertCircle size={9} /> error
           </span>
         )}
         {!isErr && isErrPath && (
-          <span className="tdp-wf-tag tdp-wf-tag-warn">
+          <span className="inline-flex items-center gap-[3px] text-[10px] px-1.5 py-px rounded-full ml-auto font-mono flex-none bg-[var(--color-warning-subtle)] text-[var(--color-warning)]">
             <RotateCw size={9} /> err-path
           </span>
         )}
       </div>
 
-      <div className="tdp-wf-bar-col">
-        <div className="tdp-wf-bar-wrap">
+      <div className="px-3 pr-6 relative min-w-0">
+        <div className="relative h-full">
           <div
-            className={`tdp-wf-bar ${isErr ? "is-err" : ""} ${isCrit ? "is-crit-bar" : ""}`}
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 h-3.5 rounded-[3px] shadow-[0_1px_0_oklch(1_0_0/0.08)_inset,0_1px_2px_oklch(0_0_0/0.25)]",
+              isErr &&
+                "!bg-[var(--color-error)] !shadow-[0_0_0_1px_var(--color-error-subtle),0_1px_2px_oklch(0_0_0/0.3)]",
+              isCrit && "outline outline-1 outline-[var(--color-degraded)] outline-offset-1"
+            )}
             style={{
               left: `${leftPct}%`,
               width: `${widthPct}%`,
-              ["--tdp-bar-color" as string]: `oklch(0.62 0.14 ${hue})`,
+              background: isErr ? undefined : barColor,
             }}
             title={`${span.service_name} · ${span.operation_name}\n${formatDuration(dur)} · starts +${formatDuration(startMs - traceStartMs)}`}
           />
           <span
-            className="tdp-wf-bar-lbl-out"
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 font-mono text-[10.5px] whitespace-nowrap pointer-events-none [font-variant-numeric:tabular-nums] font-medium",
+              isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
+            )}
             style={
               flipLeft
                 ? { right: `calc(${100 - leftPct}% + 6px)` }
@@ -332,10 +395,19 @@ function Row({
             if (totalMs <= 0) return null;
             const pct = ((ev.tMs - traceStartMs) / totalMs) * 100;
             if (pct < 0 || pct > 100) return null;
+            const dotBg =
+              ev.level === "error"
+                ? "bg-[var(--color-error)] shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-error),transparent_70%)]"
+                : ev.level === "warn"
+                  ? "bg-[var(--color-warning)]"
+                  : "bg-[var(--color-primary)]";
             return (
               <span
                 key={`${ev.tMs}-${i}`}
-                className={`tdp-wf-evt tdp-wf-evt-${ev.level}`}
+                className={cn(
+                  "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-[var(--bg-primary)] pointer-events-auto z-[1]",
+                  dotBg
+                )}
                 style={{ left: `${pct}%` }}
                 title={`${ev.level}: ${ev.name}`}
               />

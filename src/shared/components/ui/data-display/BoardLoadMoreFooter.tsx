@@ -33,7 +33,7 @@ export default function BoardLoadMoreFooter({
       >
         {isFetchingNextPage ? (
           <>
-            <div className="ok-spinner" style={{ marginRight: 8 }} />
+            <div className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--accent)] align-middle" />
             Loading…
           </>
         ) : (

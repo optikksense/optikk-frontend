@@ -1,6 +1,6 @@
 /**
  * Facet field definitions for the traces explorer. Re-exported from the
- * shared explorer-core `TRACES_FIELDS` so there is one source of truth
+ * shared explorer `TRACES_FIELDS` so there is one source of truth
  * for field metadata (label / group / allowed operators).
  */
 import { type QueryFieldOption, TRACES_FIELDS } from "@/features/explorer/constants/fields";

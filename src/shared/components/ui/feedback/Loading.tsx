@@ -10,7 +10,7 @@ export default function Loading({
       style={{ minHeight: fullscreen ? "100vh" : "160px" }}
     >
       <div className="flex-col items-center gap-sm">
-        <div className="ok-spinner" />
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--accent)]" />
         {label && <span className="text-muted text-xs">{label}</span>}
       </div>
     </div>

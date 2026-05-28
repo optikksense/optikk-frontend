@@ -10,6 +10,7 @@ import { formatBytesPerSecond } from "../formatUtils";
 import { toneFromScore } from "../view-models/saturationScore";
 import { RankBarRow } from "./RankBarRow";
 import { SaturationCard } from "./SaturationCard";
+import { SAT_TABLE_CLASS } from "./tableClasses";
 
 type Props = {
   topics: KafkaTopicRow[];
@@ -37,7 +38,7 @@ function TopKafkaTopicsCardImpl({ topics }: Props): JSX.Element {
 
   return (
     <SaturationCard title="Top Kafka topics" subtitle={`${topics.length} topics by throughput`}>
-      <table className="sat-tbl">
+      <table className={SAT_TABLE_CLASS}>
         <thead>
           <tr>
             <th>Topic</th>

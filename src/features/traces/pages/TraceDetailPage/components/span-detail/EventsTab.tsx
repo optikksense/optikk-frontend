@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 
+import { cn } from "@/lib/utils";
 import { useTimezone } from "@/app/store/appStore";
 
 import type { SpanEvent } from "../../../../types";
@@ -58,38 +59,71 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
 
   if (sorted.length === 0) {
     return (
-      <div className="tdp-sd-pane">
-        <div className="tdp-muted">No events recorded on this span.</div>
+      <div className="p-4 flex flex-col gap-4">
+        <div className="text-[var(--text-caption)] text-[12px] py-2">
+          No events recorded on this span.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="tdp-sd-pane">
-      <div className="tdp-evt-list">
+    <div className="p-4 flex flex-col gap-4">
+      <div className="flex flex-col">
         {sorted.map((event, i) => {
           const level = levelOf(event.eventName);
           const attrs = safeParseAttrs(event.attributes);
           const isLast = i === sorted.length - 1;
+          const dotColor =
+            level === "error"
+              ? "bg-[var(--color-error)]"
+              : level === "warn"
+                ? "bg-[var(--color-warning)]"
+                : "bg-[var(--color-primary)]";
+          const lvlPillColor =
+            level === "error"
+              ? "bg-[var(--color-error-subtle)] text-[var(--color-error)]"
+              : level === "warn"
+                ? "bg-[var(--color-warning-subtle)] text-[var(--color-warning)]"
+                : "bg-[var(--color-primary-subtle-18)] text-[var(--color-primary)]";
           return (
             <div
               key={`${event.spanId}-${event.timestamp}-${i}`}
-              className={`tdp-evt tdp-evt-${level}`}
+              className="grid grid-cols-[18px_1fr] gap-2 pb-2.5"
             >
-              <div className="tdp-evt-rail">
-                <div className="tdp-evt-dot" />
-                {!isLast && <div className="tdp-evt-line" />}
+              <div className="relative">
+                <div
+                  className={cn(
+                    "absolute top-1 left-1 w-2.5 h-2.5 rounded-full",
+                    dotColor
+                  )}
+                />
+                {!isLast && (
+                  <div className="absolute top-4 left-2 -bottom-2.5 w-0.5 bg-[var(--border-color)]" />
+                )}
               </div>
-              <div className="tdp-evt-body">
-                <div className="tdp-evt-row">
-                  <span className={`tdp-evt-lvl tdp-evt-lvl-${level}`}>{level}</span>
-                  <span className="tdp-evt-t">{formatTs(event.timestamp, tz)}</span>
-                  <span className="tdp-evt-msg">{event.eventName}</span>
+              <div className="text-[12px]">
+                <div className="flex gap-2 items-baseline flex-wrap">
+                  <span
+                    className={cn(
+                      "font-mono text-[10px] px-1.5 py-px rounded-[3px] uppercase tracking-[0.04em]",
+                      lvlPillColor
+                    )}
+                  >
+                    {level}
+                  </span>
+                  <span className="text-[var(--text-caption)] font-mono text-[11px]">
+                    {formatTs(event.timestamp, tz)}
+                  </span>
+                  <span className="text-[var(--text-primary)]">{event.eventName}</span>
                 </div>
                 {attrs.length > 0 && (
-                  <div className="tdp-evt-attrs">
+                  <div className="flex flex-wrap gap-1 mt-1">
                     {attrs.map(([k, v]) => (
-                      <span key={k} className="tdp-evt-chip">
+                      <span
+                        key={k}
+                        className="bg-[var(--bg-tertiary)] px-1.5 py-px rounded-[4px] font-mono text-[10.5px] text-[var(--text-secondary)]"
+                      >
                         <b>{k}</b>={v}
                       </span>
                     ))}

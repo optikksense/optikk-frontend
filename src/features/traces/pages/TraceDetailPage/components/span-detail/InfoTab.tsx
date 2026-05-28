@@ -66,7 +66,6 @@ function computeTiming(
     : startMs + (span.duration_ms ?? 0);
   const durMs = Math.max(0, endMs - startMs);
 
-  // Self time: span duration minus merged direct-child intervals.
   const children = spans
     .filter((s) => s.parent_span_id === span.span_id)
     .map((s) => ({
@@ -84,7 +83,6 @@ function computeTiming(
   }
   const selfMs = durMs > 0 ? Math.max(0, durMs - merged) : 0;
 
-  // Ancestors via parent_span_id chain (oldest first).
   const ancestors: TraceRecord[] = [];
   let cursor: TraceRecord | undefined = span;
   const visited = new Set<string>([span.span_id]);
@@ -103,6 +101,21 @@ function computeTiming(
   return { selectedSpan: span, ancestors, startMs, endMs, durMs, selfMs, pctOfTrace };
 }
 
+const pane = "p-4 flex flex-col gap-4";
+const sect = "flex flex-col gap-2";
+const sectH = "flex items-center justify-between gap-2";
+const sectT = "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
+const kvK = "text-[11px] text-[var(--text-caption)]";
+const kvV = "text-[12px] text-[var(--text-primary)] font-mono break-words";
+const ancSvc = "text-[var(--text-muted)]";
+const ancOp = "text-[var(--text-primary)] font-mono text-[11px]";
+const sdKind =
+  "font-mono text-[10.5px] text-[var(--text-caption)] px-1.5 py-px bg-[var(--bg-tertiary)] rounded-[4px]";
+const ancLink =
+  "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[11.5px] text-[var(--text-secondary)] cursor-pointer hover:bg-[var(--bg-hover)]";
+const ancHere =
+  "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-[var(--color-primary-subtle-15)] text-[var(--text-primary)] text-[11.5px] border border-[var(--color-primary)]";
+
 function InfoTabComponent({
   spanAttributes,
   loading,
@@ -120,7 +133,7 @@ function InfoTabComponent({
 
   if (loading && !spanAttributes) {
     return (
-      <div className="tdp-sd-pane">
+      <div className={pane}>
         <Skeleton count={6} />
       </div>
     );
@@ -142,22 +155,22 @@ function InfoTabComponent({
   const selfPct = timing.durMs > 0 ? (timing.selfMs / timing.durMs) * 100 : 0;
 
   return (
-    <div className="tdp-sd-pane">
+    <div className={pane}>
       {hasException && (
-        <div className="tdp-callout">
-          <div className="tdp-callout-h">
+        <div className="rounded-[10px] p-3 bg-[var(--color-error-subtle)] border border-[var(--color-error-subtle)] flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5 text-[var(--color-error)] font-semibold text-[12.5px]">
             <AlertCircle size={13} /> Span errored
             {spanAttributes?.exceptionType && (
-              <span className="tdp-sd-kind" style={{ marginLeft: 4 }}>
-                {spanAttributes.exceptionType}
-              </span>
+              <span className={`${sdKind} ml-1`}>{spanAttributes.exceptionType}</span>
             )}
           </div>
           {spanAttributes?.exceptionMessage && (
-            <div className="tdp-callout-b">{spanAttributes.exceptionMessage}</div>
+            <div className="text-[var(--text-secondary)] text-[12.5px] leading-[1.5]">
+              {spanAttributes.exceptionMessage}
+            </div>
           )}
           {spanAttributes?.exceptionStacktrace && (
-            <pre className="tdp-raw-pre" style={{ maxHeight: 200, marginTop: 4, fontSize: 11 }}>
+            <pre className="m-0 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md font-mono text-[11px] text-[var(--text-secondary)] overflow-auto whitespace-pre max-h-[200px] mt-1">
               {spanAttributes.exceptionStacktrace}
             </pre>
           )}
@@ -165,85 +178,77 @@ function InfoTabComponent({
       )}
 
       {span && (
-        <div className="tdp-sect">
-          <div className="tdp-sect-h">
-            <div className="tdp-sect-t">Where this happens</div>
+        <div className={sect}>
+          <div className={sectH}>
+            <div className={sectT}>Where this happens</div>
           </div>
-          <div className="tdp-anc-chain">
+          <div className="flex flex-wrap items-center gap-1">
             {timing.ancestors.map((a) => (
-              <span key={a.span_id} style={{ display: "inline-flex", alignItems: "center" }}>
+              <span key={a.span_id} className="inline-flex items-center">
                 <button
                   type="button"
-                  className="tdp-anc-link"
+                  className={ancLink}
                   onClick={() => onSpanClick?.({ span_id: a.span_id })}
                   title={`${a.service_name} · ${a.operation_name}`}
                 >
                   <span
-                    className="tdp-svc-swatch-sm"
-                    style={
-                      {
-                        ["--tdp-svc-color" as string]: `oklch(0.62 0.14 ${svcHue(a.service_name || "")})`,
-                      } as React.CSSProperties
-                    }
+                    className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0"
+                    style={{ background: `oklch(0.62 0.14 ${svcHue(a.service_name || "")})` }}
                   />
-                  <span className="tdp-anc-svc">{a.service_name || "—"}</span>
-                  <span className="tdp-anc-op">{a.operation_name || "(no name)"}</span>
+                  <span className={ancSvc}>{a.service_name || "—"}</span>
+                  <span className={ancOp}>{a.operation_name || "(no name)"}</span>
                 </button>
-                <span className="tdp-anc-sep">
+                <span className="text-[var(--text-caption)] inline-flex">
                   <ChevronRight size={11} />
                 </span>
               </span>
             ))}
-            <span className="tdp-anc-here">
+            <span className={ancHere}>
               <span
-                className="tdp-svc-swatch-sm"
-                style={
-                  {
-                    ["--tdp-svc-color" as string]: `oklch(0.62 0.14 ${svcHue(span.service_name || "")})`,
-                  } as React.CSSProperties
-                }
+                className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0"
+                style={{ background: `oklch(0.62 0.14 ${svcHue(span.service_name || "")})` }}
               />
-              <span className="tdp-anc-svc">{span.service_name || "—"}</span>
-              <span className="tdp-anc-op">{span.operation_name || "(no name)"}</span>
+              <span className={ancSvc}>{span.service_name || "—"}</span>
+              <span className={ancOp}>{span.operation_name || "(no name)"}</span>
             </span>
           </div>
         </div>
       )}
 
       {span && timing.durMs > 0 && (
-        <div className="tdp-sect">
-          <div className="tdp-sect-h">
-            <div className="tdp-sect-t">Timing</div>
+        <div className={sect}>
+          <div className={sectH}>
+            <div className={sectT}>Timing</div>
           </div>
-          <div className="tdp-kv-grid">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
             <div>
-              <div className="tdp-kv-k">Started</div>
-              <div className="tdp-kv-v">+{formatDuration(offsetMs)} from trace start</div>
+              <div className={kvK}>Started</div>
+              <div className={kvV}>+{formatDuration(offsetMs)} from trace start</div>
             </div>
             <div>
-              <div className="tdp-kv-k">Ended</div>
-              <div className="tdp-kv-v">+{formatDuration(endOffsetMs)} from trace start</div>
+              <div className={kvK}>Ended</div>
+              <div className={kvV}>+{formatDuration(endOffsetMs)} from trace start</div>
             </div>
             <div>
-              <div className="tdp-kv-k">Duration</div>
-              <div className="tdp-kv-v">{formatDuration(timing.durMs)}</div>
+              <div className={kvK}>Duration</div>
+              <div className={kvV}>{formatDuration(timing.durMs)}</div>
             </div>
             <div>
-              <div className="tdp-kv-k">Self time</div>
-              <div className="tdp-kv-v">
+              <div className={kvK}>Self time</div>
+              <div className={kvV}>
                 {formatDuration(timing.selfMs)} ({selfPct.toFixed(0)}%)
               </div>
             </div>
             {timing.pctOfTrace > 0 && (
               <div>
-                <div className="tdp-kv-k">% of trace</div>
-                <div className="tdp-kv-v">{timing.pctOfTrace.toFixed(1)}%</div>
+                <div className={kvK}>% of trace</div>
+                <div className={kvV}>{timing.pctOfTrace.toFixed(1)}%</div>
               </div>
             )}
             {span.span_kind && (
               <div>
-                <div className="tdp-kv-k">Span kind</div>
-                <div className="tdp-kv-v">{span.span_kind}</div>
+                <div className={kvK}>Span kind</div>
+                <div className={kvV}>{span.span_kind}</div>
               </div>
             )}
           </div>
@@ -251,8 +256,8 @@ function InfoTabComponent({
       )}
 
       {hasDb && (
-        <div className="tdp-sect">
-          <div className="tdp-sect-t">Database</div>
+        <div className={sect}>
+          <div className={sectT}>Database</div>
           <DatabaseBlock
             dbSystem={spanAttributes?.dbSystem}
             dbName={spanAttributes?.dbName}
@@ -262,8 +267,8 @@ function InfoTabComponent({
         </div>
       )}
 
-      <div className="tdp-sect">
-        <div className="tdp-sect-t">Attributes</div>
+      <div className={sect}>
+        <div className={sectT}>Attributes</div>
         <AttributesTable
           spanAttributes={spanAttributes?.attributesString ?? {}}
           resourceAttributes={spanAttributes?.resourceAttributes ?? {}}

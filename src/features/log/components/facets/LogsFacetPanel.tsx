@@ -1,10 +1,17 @@
 import { Maximize2, Search, X } from "lucide-react";
 import { memo, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 import type { LogsFacets } from "../../api/logsAnalyticsApi";
 import { useLogsExplorerStore } from "../../store/logsExplorerStore";
 import { ResourceFacet } from "./ResourceFacet";
 import { SeverityFacet } from "./SeverityFacet";
+
+const FACETS_ASIDE =
+  "flex min-w-0 flex-col gap-[14px] overflow-y-auto rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] p-[14px]";
+const ICON_BTN =
+  "inline-grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[5px] border-0 bg-transparent text-[var(--fg-2)] hover:bg-[var(--bg-2)] hover:text-[var(--fg-0)]";
 
 interface Props {
   readonly facets: LogsFacets | undefined;
@@ -27,14 +34,11 @@ function LogsFacetPanelComponent({
 
   if (collapsed) {
     return (
-      <aside
-        className="ok-facets"
-        style={{ width: 40, padding: 6, alignItems: "center", justifyContent: "flex-start" }}
-      >
+      <aside className={cn(FACETS_ASIDE, "w-10 items-center justify-start !p-[6px]")}>
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className="ok-ib"
+          className={ICON_BTN}
           aria-label="Expand facets"
         >
           <Maximize2 size={14} />
@@ -47,33 +51,23 @@ function LogsFacetPanelComponent({
     !search || label.toLowerCase().includes(search.toLowerCase());
 
   return (
-    <aside className="ok-facets">
-      <div className="ok-facets-h">
-        <span className="ok-facets-t">
+    <aside className={FACETS_ASIDE}>
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-2)]">
           Facets
           {activeFilterCount > 0 ? (
-            <span
-              style={{
-                marginLeft: 6,
-                padding: "0 6px",
-                borderRadius: 999,
-                background: "var(--accent)",
-                color: "oklch(0.99 0.005 270)",
-                fontSize: 10,
-              }}
-            >
+            <span className="ml-[6px] rounded-full bg-[var(--accent)] px-[6px] text-[10px] text-[oklch(0.99_0.005_270)]">
               {activeFilterCount}
             </span>
           ) : null}
         </span>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <div className="flex items-center gap-1">
           {activeFilterCount > 0 ? (
             <button
               type="button"
               onClick={onClearAll}
-              className="ok-facets-c"
+              className="inline-flex cursor-pointer items-center gap-[2px] border-0 bg-transparent p-0 text-[11px] text-[var(--fg-3)] hover:text-[var(--fg-0)]"
               title="Clear all filters"
-              style={{ display: "inline-flex", alignItems: "center", gap: 2, fontSize: 11 }}
             >
               <X size={10} /> Clear
             </button>
@@ -81,23 +75,24 @@ function LogsFacetPanelComponent({
           <button
             type="button"
             onClick={() => setCollapsed(true)}
-            className="ok-facets-c"
+            className="cursor-pointer border-0 bg-transparent p-0 text-[var(--fg-3)] hover:text-[var(--fg-0)]"
             aria-label="Collapse facets"
             title="Collapse"
           >
-            <Maximize2 size={12} style={{ transform: "rotate(180deg)" }} />
+            <Maximize2 size={12} className="rotate-180" />
           </button>
         </div>
       </div>
 
-      <div className="ok-facet-search">
-        <span className="ok-facet-search-i">
+      <div className="flex h-[30px] items-center gap-[7px] rounded-md border border-[var(--line)] bg-[var(--bg-0)] px-[10px]">
+        <span className="inline-flex text-[var(--fg-3)]">
           <Search size={12} />
         </span>
         <input
           placeholder="Search facets…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          className="min-w-0 flex-1 border-0 bg-transparent text-[12.5px] text-[var(--fg-0)] outline-none placeholder:text-[var(--fg-3)]"
         />
       </div>
 
@@ -148,12 +143,9 @@ function LogsFacetPanelComponent({
           ) : null}
         </>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              style={{ height: 96, borderRadius: 6, background: "var(--bg-2)", opacity: 0.4 }}
-            />
+            <div key={i} className="h-24 rounded-md bg-[var(--bg-2)] opacity-40" />
           ))}
         </div>
       )}

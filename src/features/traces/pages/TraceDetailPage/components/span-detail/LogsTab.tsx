@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 
+import { cn } from "@/lib/utils";
 import { useTimezone } from "@/app/store/appStore";
 
 interface LogEntry {
@@ -20,6 +21,11 @@ interface Props {
 }
 
 type LevelFilter = "all" | "info" | "warn" | "error";
+
+const pane = "p-4 flex flex-col gap-4";
+const btnSmGhost =
+  "px-2.5 py-[5px] text-[11.5px] rounded-[5px] bg-transparent text-[var(--text-muted)] border border-transparent cursor-pointer hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]";
+const muted = "text-[var(--text-caption)] text-[12px] py-2";
 
 function normalizeLevel(sev: string): LevelFilter {
   const s = sev.toUpperCase();
@@ -62,55 +68,69 @@ function LogsTabComponent({ logs, selectedSpanId, onOpenInLogs }: Props) {
 
   if (scoped.length === 0) {
     return (
-      <div className="tdp-sd-pane">
-        <div className="tdp-muted">No logs for this span.</div>
+      <div className={pane}>
+        <div className={muted}>No logs for this span.</div>
       </div>
     );
   }
 
   return (
-    <div className="tdp-sd-pane">
-      <div className="tdp-log-toolbar">
+    <div className={pane}>
+      <div className="flex gap-1.5 items-center mb-2 flex-wrap">
         {(["all", "info", "warn", "error"] as const).map((k) => (
           <button
             key={k}
             type="button"
-            className={`tdp-chip ${filter === k ? "is-on" : ""} ${k === "error" ? "tdp-chip-err" : ""}`}
+            className={cn(
+              "px-2 py-[3px] rounded-full bg-[var(--bg-tertiary)] text-[var(--text-muted)] text-[11px] border border-[var(--border-color)] cursor-pointer",
+              filter === k &&
+                "bg-[var(--color-primary-subtle-15)] text-[var(--text-primary)] border-[var(--color-primary)]",
+              k === "error" && "text-[var(--color-error)]"
+            )}
             onClick={() => setFilter(k)}
           >
             {k}
           </button>
         ))}
         {onOpenInLogs && (
-          <div className="tdp-log-toolbar-r">
-            <button type="button" className="tdp-btn-sm tdp-btn-sm-ghost" onClick={onOpenInLogs}>
+          <div className="ml-auto">
+            <button type="button" className={btnSmGhost} onClick={onOpenInLogs}>
               <ExternalLink size={11} /> Open in Logs
             </button>
           </div>
         )}
       </div>
 
-      <div className="tdp-log-list">
+      <div className="flex flex-col gap-px bg-[var(--border-color)] rounded-md overflow-hidden">
         {filtered.map((log, i) => {
           const level = normalizeLevel(log.severity_text || log.level || "INFO");
           const body = log.body || log.message || "";
+          const lvlColor =
+            level === "error"
+              ? "text-[var(--color-error)]"
+              : level === "warn"
+                ? "text-[var(--color-warning)]"
+                : "text-[var(--color-primary)]";
           return (
             <div
               key={log.id || `${log.timestamp}-${i}`}
-              className={`tdp-log ${level === "error" ? "tdp-log-error" : ""}`}
+              className={cn(
+                "grid grid-cols-[80px_50px_90px_1fr] gap-2 px-2.5 py-[5px] bg-[var(--bg-primary)] font-mono text-[11.5px] items-baseline hover:bg-[var(--bg-secondary)]",
+                level === "error" && "!bg-[var(--color-error-subtle)]"
+              )}
             >
-              <span className="tdp-log-t">{formatLogTs(log.timestamp, tz)}</span>
-              <span className={`tdp-log-lvl tdp-log-lvl-${level}`}>{level}</span>
-              <span className="tdp-log-svc">
+              <span className="text-[var(--text-caption)]">{formatLogTs(log.timestamp, tz)}</span>
+              <span className={cn("text-[10px] uppercase", lvlColor)}>{level}</span>
+              <span className="text-[var(--text-muted)]">
                 {(log.severity_text || log.level || "INFO").slice(0, 9)}
               </span>
-              <span className="tdp-log-msg">
+              <span className="text-[var(--text-primary)] break-words whitespace-pre-wrap">
                 {body.length > 600 ? `${body.slice(0, 600)}…` : body}
               </span>
             </div>
           );
         })}
-        {filtered.length === 0 && <div className="tdp-muted">No logs match this filter.</div>}
+        {filtered.length === 0 && <div className={muted}>No logs match this filter.</div>}
       </div>
     </div>
   );

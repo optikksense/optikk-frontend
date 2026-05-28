@@ -12,9 +12,8 @@ Optikk Frontend is the React/Vite application for the Optikk product UI. It cont
 - Zustand
 - Tailwind CSS
 - Biome
-- Playwright and Vitest
 
-See [package.json](/Users/ramantayal/Desktop/pro/optikk-frontend/package.json) for the current scripts and dependency versions.
+See [package.json](package.json) for the current scripts and dependency versions.
 
 ## App shape
 
@@ -25,11 +24,11 @@ The application has two broad surfaces:
 
 ### Key app entrypoints
 
-- [src/main.tsx](/Users/ramantayal/Desktop/pro/optikk-frontend/src/main.tsx): bootstrap
-- [src/app/App.tsx](/Users/ramantayal/Desktop/pro/optikk-frontend/src/app/App.tsx): root app providers
-- [src/app/routes/router.tsx](/Users/ramantayal/Desktop/pro/optikk-frontend/src/app/routes/router.tsx): route table
-- [src/app/registry/domainRegistry.ts](/Users/ramantayal/Desktop/pro/optikk-frontend/src/app/registry/domainRegistry.ts): domain registration for product features
-- [vite.config.ts](/Users/ramantayal/Desktop/pro/optikk-frontend/vite.config.ts): aliases, dev proxy, build chunking
+- [src/main.tsx](src/main.tsx): bootstrap
+- [src/app/App.tsx](src/app/App.tsx): root app providers
+- [src/app/routes/router.tsx](src/app/routes/router.tsx): route table
+- [src/app/registry/domainRegistry.ts](src/app/registry/domainRegistry.ts): domain registration for product features
+- [vite.config.ts](vite.config.ts): aliases, dev proxy, build chunking
 
 ## Current feature layout
 
@@ -38,9 +37,7 @@ optikk-frontend/
 ├── src/app/           # Bootstrap, routing, providers, shell
 ├── src/features/      # Product and marketing features
 ├── src/shared/        # Shared api, ui, hooks, entities, telemetry, utils
-├── src/config/        # App config constants
-├── src/tests/         # Test setup and e2e coverage
-└── docs/              # Cross-repo and implementation docs
+└── src/config/        # App config constants
 ```
 
 Current feature directories under `src/features`:
@@ -53,11 +50,11 @@ Current feature directories under `src/features`:
 - `infrastructure`
 - `settings`
 - `marketing`
-- `explorer-core` as shared explorer infrastructure
+- `explorer` (shared explorer infrastructure)
 
 ## Product routing
 
-The route table in [src/app/routes/router.tsx](/Users/ramantayal/Desktop/pro/optikk-frontend/src/app/routes/router.tsx) shows the current product direction:
+The route table in [src/app/routes/router.tsx](src/app/routes/router.tsx) shows the current product direction:
 
 - `/overview`: frontend-owned overview hub
 - `/infrastructure`: frontend-owned infrastructure hub
@@ -107,6 +104,5 @@ yarn ci
 
 ## Related docs
 
-- Codebase map: [CODEBASE_INDEX.md](/Users/ramantayal/Desktop/pro/optikk-frontend/CODEBASE_INDEX.md)
-- Telemetry contracts: [docs/telemetry-contracts.md](/Users/ramantayal/Desktop/pro/optikk-frontend/docs/telemetry-contracts.md)
-- Backend sibling repo: [../optikk-backend/README.md](/Users/ramantayal/Desktop/pro/optikk-backend/README.md)
+- Codebase map: [CODEBASE_INDEX.md](CODEBASE_INDEX.md)
+- Backend sibling repo: [../optikk-backend/README.md](../optikk-backend/README.md)

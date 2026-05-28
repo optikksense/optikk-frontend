@@ -10,8 +10,13 @@ function LogsActionsComponent() {
   }, []);
 
   return (
-    <button type="button" onClick={onShare} className="ok-btn" title="Copy link">
-      <span className="ok-btn-i">
+    <button
+      type="button"
+      onClick={onShare}
+      className="group inline-flex h-[38px] cursor-pointer items-center gap-[7px] rounded-[7px] border border-[var(--line)] bg-[var(--bg-1)] px-[14px] text-[13px] text-[var(--fg-0)] hover:bg-[var(--bg-2)]"
+      title="Copy link"
+    >
+      <span className="inline-flex text-[var(--fg-2)] group-hover:text-[var(--fg-0)]">
         <Share2 size={14} />
       </span>
       Share

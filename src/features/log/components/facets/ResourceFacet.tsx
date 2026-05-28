@@ -21,13 +21,15 @@ function ResourceFacetComponent({ field, label, values, onInclude, onExclude }: 
   if (values.length === 0) return null;
 
   return (
-    <div className="ok-facet">
-      <div className="ok-facet-t">{label}</div>
+    <div className="flex flex-col gap-2">
+      <div className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-3)]">
+        {label}
+      </div>
       {visible.map((item) => (
         <button
           key={item.value || "(empty)"}
           type="button"
-          className="ok-list-row"
+          className="group grid w-full cursor-pointer grid-cols-[1fr_auto] items-center rounded-[5px] border-0 bg-transparent px-[6px] py-[5px] text-left text-[13px] hover:bg-[var(--bg-2)]"
           onClick={() => onInclude(field, item.value)}
           onContextMenu={(e) => {
             e.preventDefault();
@@ -35,21 +37,26 @@ function ResourceFacetComponent({ field, label, values, onInclude, onExclude }: 
           }}
           title={"Click to filter, right-click to exclude"}
         >
-          <span className="ok-list-row-n">{item.value || "(empty)"}</span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <span
-              className="opacity-0 group-hover:opacity-100"
-              style={{ display: "inline-flex", gap: 2 }}
-            >
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--fg-1)]">
+            {item.value || "(empty)"}
+          </span>
+          <span className="inline-flex items-center gap-[6px]">
+            <span className="inline-flex gap-[2px] opacity-0 group-hover:opacity-100">
               <Plus size={10} className="text-[var(--color-success)]" />
               <Minus size={10} className="text-[var(--color-error)]" />
             </span>
-            <span className="ok-list-row-c">{item.count.toLocaleString()}</span>
+            <span className="ml-2 text-[11px] text-[var(--fg-3)] [font-family:'Geist_Mono',monospace]">
+              {item.count.toLocaleString()}
+            </span>
           </span>
         </button>
       ))}
       {hasMore ? (
-        <button type="button" onClick={() => setShowAll(!showAll)} className="ok-facet-more">
+        <button
+          type="button"
+          onClick={() => setShowAll(!showAll)}
+          className="cursor-pointer border-0 bg-transparent px-[6px] py-1 text-left text-xs text-[var(--accent-2)] hover:underline"
+        >
           {showAll ? "Show less" : `Show all ${values.length}`}
         </button>
       ) : null}

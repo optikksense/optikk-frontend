@@ -8,8 +8,6 @@ import { LoginFooter } from "./LoginFooter";
 import { LoginForm } from "./LoginForm";
 import { LoginHeader } from "./LoginHeader";
 
-import "./LoginPage.css";
-
 /**
  * Login page composition root.
  * Handles auth redirect and error toasting, delegates rendering
@@ -35,8 +33,8 @@ export function LoginPage() {
   }, [error, clearError]);
 
   return (
-    <div className="login-root">
-      <div className="login-content">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-6 py-12 max-[480px]:px-4 max-[480px]:py-8 before:absolute before:left-0 before:right-0 before:top-0 before:h-0.5 before:bg-[var(--login-accent)] before:content-['']">
+      <div className="flex w-full max-w-[480px] flex-col gap-9">
         <LoginHeader />
         <LoginForm />
         <LoginFooter />

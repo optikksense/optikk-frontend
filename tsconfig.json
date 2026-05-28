@@ -29,26 +29,17 @@
     "paths": {
       "@/*": ["src/*"],
       "@/lib/*": ["src/shared/lib/*"],
-      "@/services/*": ["src/shared/api/*"],
       "@/types": ["src/shared/types/index.ts"],
       "@/types/*": ["src/shared/types/*"],
       "@app/*": ["src/app/*"],
-      "@features/*": ["src/features/*"],
       "@entities/*": ["src/shared/entities/*"],
       "@shared/*": ["src/shared/*"],
       "@config/*": ["src/config/*"],
       "@store/*": ["src/app/store/*"],
-      "@utils/*": ["src/shared/utils/*"],
-      "@hooks/*": ["src/shared/hooks/*"],
-      "@services/*": ["src/shared/api/*"],
-      "@components/*": ["src/shared/components/*"],
       "@/components/*": ["src/shared/components/primitives/*"],
-      "@/components/ui/*": ["src/shared/components/primitives/ui/*"],
-      "@/features/explorer-core/*": ["src/features/explorer/*"],
-      "@/hooks/*": ["src/shared/hooks/*"]
+      "@/components/ui/*": ["src/shared/components/primitives/ui/*"]
     }
   },
   "include": ["src"],
-  "exclude": ["src/test_zod_schema.ts", "src/app/auth/pages/Pricing"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

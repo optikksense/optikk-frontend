@@ -1,4 +1,4 @@
-import type { ColumnConfig } from "@features/explorer/types";
+import type { ColumnConfig } from "@/features/explorer/types";
 
 /**
  * Default visible columns for the logs explorer list mode. Matches the

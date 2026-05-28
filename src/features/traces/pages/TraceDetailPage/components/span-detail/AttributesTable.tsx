@@ -1,6 +1,8 @@
 import { Check, Copy, Search } from "lucide-react";
 import { Fragment, memo, useCallback, useMemo, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 interface Props {
   readonly spanAttributes: Record<string, string>;
   readonly resourceAttributes: Record<string, string>;
@@ -19,6 +21,12 @@ function prefixOf(key: string): string {
   if (dot <= 0) return "other";
   return key.slice(0, dot);
 }
+
+const sectTitle =
+  "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
+const muted = "text-[var(--text-caption)] text-[12px] py-2";
+const iconBtn =
+  "inline-grid place-items-center w-6 h-6 rounded-md text-[var(--text-muted)] bg-transparent border-0 cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]";
 
 function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFilter }: Props) {
   const [filter, setFilter] = useState("");
@@ -59,52 +67,64 @@ function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFil
   }, []);
 
   if (allEntries.length === 0) {
-    return <div className="tdp-muted">No attributes for this span.</div>;
+    return <div className={muted}>No attributes for this span.</div>;
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <div className="tdp-attr-search">
-        <span className="tdp-search-i">
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-1.5 px-[9px] py-1.5 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-md">
+        <span className="text-[var(--text-caption)] inline-flex items-center">
           <Search size={13} aria-hidden />
         </span>
         <input
           type="text"
-          className="tdp-search-input"
+          className="flex-1 bg-transparent border-0 outline-none text-[var(--text-primary)] font-inherit text-[12px] min-w-0 placeholder:text-[var(--text-caption)]"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder={`Filter ${allEntries.length} attribute${allEntries.length === 1 ? "" : "s"}…`}
         />
       </div>
 
-      {grouped.length === 0 && <div className="tdp-muted">No attributes match "{filter}".</div>}
+      {grouped.length === 0 && <div className={muted}>No attributes match "{filter}".</div>}
 
       {grouped.map(([prefix, entries]) => (
         <Fragment key={prefix}>
-          <div className="tdp-sect-t">{prefix}</div>
-          <div className="tdp-attr-list">
+          <div className={sectTitle}>{prefix}</div>
+          <div className="flex flex-col gap-px bg-[var(--border-color)] rounded-md overflow-hidden">
             {entries.map((entry) => {
               const rowKey = `${entry.source}-${entry.key}`;
               const justCopied = copiedKey === rowKey;
               const isErr = entry.key.startsWith("error") || entry.key.startsWith("exception");
               return (
-                <div key={rowKey} className={`tdp-attr-row ${isErr ? "tdp-attr-row-err" : ""}`}>
-                  <span className="tdp-attr-k" title={entry.key}>
+                <div
+                  key={rowKey}
+                  className={cn(
+                    "group grid grid-cols-[180px_1fr_auto] gap-2.5 items-center px-2.5 py-1.5 bg-[var(--bg-primary)] text-[12px] hover:bg-[var(--bg-secondary)]",
+                    isErr && "!bg-[var(--color-error-subtle)]"
+                  )}
+                >
+                  <span
+                    className="text-[var(--text-muted)] font-mono text-[11.5px] break-all"
+                    title={entry.key}
+                  >
                     {entry.key}
                     {entry.source === "resource" && (
-                      <span className="tdp-sd-kind" style={{ marginLeft: 6, fontSize: 9 }}>
+                      <span className="font-mono text-[9px] text-[var(--text-caption)] px-1.5 py-px bg-[var(--bg-tertiary)] rounded-[4px] ml-1.5">
                         resource
                       </span>
                     )}
                   </span>
-                  <span className="tdp-attr-v" title={entry.value}>
+                  <span
+                    className="text-[var(--text-primary)] font-mono text-[11.5px] overflow-hidden text-ellipsis whitespace-nowrap"
+                    title={entry.value}
+                  >
                     {entry.value}
                   </span>
-                  <div style={{ display: "flex", gap: 4 }}>
+                  <div className="flex gap-1">
                     {onAddFilter && (
                       <button
                         type="button"
-                        className="tdp-iconbtn tdp-attr-copy"
+                        className={iconBtn}
                         onClick={() => onAddFilter(entry.key, entry.value)}
                         title="Filter waterfall by this"
                         aria-label="Add as filter"
@@ -114,7 +134,7 @@ function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFil
                     )}
                     <button
                       type="button"
-                      className="tdp-iconbtn tdp-attr-copy"
+                      className={iconBtn}
                       onClick={() => handleCopy(entry)}
                       title="Copy key=value"
                       aria-label="Copy"

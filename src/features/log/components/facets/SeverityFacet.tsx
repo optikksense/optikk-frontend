@@ -1,5 +1,8 @@
 import { memo } from "react";
 
+import { cn } from "@/lib/utils";
+
+import type { SeveritySlug } from "../../utils/severity";
 import { SEVERITY_STYLES } from "../../utils/severity";
 
 interface Props {
@@ -8,19 +11,30 @@ interface Props {
   readonly onExclude: (field: string, value: string) => void;
 }
 
+const SEV_TOKEN: Record<SeveritySlug, string> = {
+  trace: "var(--trace-c)",
+  debug: "var(--debug-c)",
+  info: "var(--info-c)",
+  warn: "var(--warn-c)",
+  error: "var(--err-c)",
+  fatal: "var(--fatal-c)",
+};
+
 /** Severity facet — stacked distribution bar + per-level rows with toggle. */
 function SeverityFacetComponent({ labels, onInclude }: Props) {
   const isActive = (label: string) => labels.includes(label.toUpperCase());
 
   return (
-    <div className="ok-facet">
-      <div className="ok-facet-t">Severity</div>
-      <div className="ok-sev-bar">
+    <div className="flex flex-col gap-2">
+      <div className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-3)]">
+        Severity
+      </div>
+      <div className="flex h-[6px] overflow-hidden rounded-[3px]">
         {SEVERITY_STYLES.map((s) => (
-          <span key={s.bucket} className={`s-${s.slug}`} />
+          <span key={s.bucket} className="flex-1" style={{ background: SEV_TOKEN[s.slug] }} />
         ))}
       </div>
-      <div className="ok-sev-list">
+      <div className="flex flex-col gap-px">
         {SEVERITY_STYLES.map((s) => {
           const active = isActive(s.label);
           return (
@@ -28,14 +42,20 @@ function SeverityFacetComponent({ labels, onInclude }: Props) {
               key={s.bucket}
               type="button"
               onClick={() => onInclude("severity_text", s.label.toUpperCase())}
-              className={`ok-sev-r ${active ? "" : "is-off"}`}
+              className={cn(
+                "grid w-full cursor-pointer grid-cols-[14px_1fr_auto] items-center gap-[10px] rounded-[5px] border-0 bg-transparent p-[6px] text-left text-[13px] hover:bg-[var(--bg-2)] hover:text-[var(--fg-0)]",
+                active ? "text-[var(--fg-1)]" : "text-[var(--fg-3)]"
+              )}
               title={
                 active
                   ? `Filtered to ${s.label.toUpperCase()}`
                   : `Filter to ${s.label.toUpperCase()}`
               }
             >
-              <span className={`ok-sev-d s-${s.slug}`} />
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: SEV_TOKEN[s.slug] }}
+              />
               <span>{s.label}</span>
             </button>
           );
