@@ -58,6 +58,10 @@ Marketing pages are rendered through a dedicated layout and bespoke page compone
 
 Marketing pages dynamically fetch genuine GitHub stars using the [useGitHubStars](src/features/marketing/hooks/useGitHubStars.ts) hook.
 
+### Login
+
+- `/login` → [LoginPage](src/app/auth/pages/LoginPage/LoginPage.tsx) — two-column shell (`grid-cols-[1.05fr_1fr]`, single column under `lg`). Left side is `LoginBrandPanel` (Optikk logomark + name, "Observability" eyebrow, gradient headline, sub, year/Privacy/Terms/Security row; radial gradients + soft 32px grid mask). Right side stacks `LoginTopBar` (trial CTA), `LoginHeader` (form title), `LoginForm` (icon-prefixed `LoginField` inputs, password Show/Hide trailing slot, "Forgot?" hint, "Keep me signed in" checkbox, `Sign in` submit + arrow, "Request access" line, legal blurb) and `LoginFooter` (status pill + version link). Form state + submission live in [useLoginSubmit.ts](src/app/auth/pages/LoginPage/useLoginSubmit.ts). Tailwind utilities only — uses existing theme tokens (`--bg-canvas`, `--bg-card`, `--border-color`, `--text-*`, `--color-primary`, `--color-healthy`) plus new login tokens in [themeColors.css](src/config/themeColors.css) (`--login-link`, `--login-link-hover`, `--login-submit-fg`, `--login-focus-ring`, `--login-grid-line`, `--login-headline-from/to`, `--login-aside-bg`) that flip between dark and light themes so the page renders correctly in both.
+
 ### Authenticated product routes
 
 Direct protected routes in the router:
@@ -86,6 +90,32 @@ The current frontend owns significant page composition and interaction logic dir
 | Settings | `src/features/settings/` | Profile, team, and preferences pages |
 | Marketing | `src/features/marketing/` | Public-facing site content and shell |
 | Explorer | `src/features/explorer/` | Shared explorer primitives across logs/traces/metrics (DSL search, facets, analytics, trend) |
+
+## Domain → dashboard page mapping
+
+| Dashboard page ID | Feature | Hub page component |
+|-------------------|---------|--------------------|
+| overview | overview | OverviewHubPage |
+| service | overview | ServiceHubPage |
+| saturation | overview → metrics | SaturationHubPage |
+| infrastructure | infrastructure | InfrastructureHubPage — full frontend-owned infra UI + Datadog-style fleet controls + new panels; see § Infrastructure product direction |
+
+## Key paths and hooks
+
+- **Route constants**: [src/shared/constants/routes.ts](src/shared/constants/routes.ts)
+- **HTTP client**: [src/shared/api/api/client.ts](src/shared/api/api/client.ts)
+- **Global store**: [src/app/store/appStore.ts](src/app/store/appStore.ts) — `triggerRefresh()` increments `refreshKey`; persisted: timeRange, teamId, theme, timezone, comparisonMode, viewPreferences, recentPages
+- **Theme tokens**: [src/config/themeColors.css](src/config/themeColors.css) → [tailwind.config.ts](tailwind.config.ts)
+- **Overview hub**: [src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx](src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx) — bespoke `/overview` tabs; APIs via `src/features/overview/api/overviewHubApi.ts` + `metricsOverviewApi`
+- **Dashboard primitives**: `src/shared/components/ui/dashboard/` — `ConfigurableChartCard.tsx`, `DashboardEntityDrawer.tsx`
+- **Panel registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain panels
+- **Built-in panels**: `builtInDashboardPanels.tsx` — request, error-rate, latency, exception-type-line (base-chart); table, bar, gauge, heatmap, pie, stat-cards-grid (specialized); stat-card, stat-summary (self-contained)
+- **Charts**: `src/shared/components/ui/charts/` — `UPlotChart` (use `setData()` for flicker-free refresh), `ObservabilityChart`, `time-series/`, `distributions/`, `micro/`, `specialized/`
+- **Live tail**: [src/shared/hooks/useSocketStream.ts](src/shared/hooks/useSocketStream.ts) (core WebSocket), `src/features/explorer-core/hooks/useLiveTailStream.ts` (wrapper with teamId)
+- **Explorer core**: `src/features/explorer-core/` — shared analytics, facets, visualizations for Logs/Traces/Metrics explorers
+- **Navigation utils**: [src/shared/utils/navigation.ts](src/shared/utils/navigation.ts) — `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` for TanStack Router dynamic-path navigation (replaces scattered `as any` casts)
+- **Standard query**: [src/shared/hooks/useStandardQuery.ts](src/shared/hooks/useStandardQuery.ts) — `useStandardQuery(options)` with `keepPreviousData`, `staleTime: 5s`, `retry: 2`
+- **Drawer entities**: databaseSystem, deployment, errorGroup, kafkaGroup, kafkaTopic, node, redisInstance, service
 
 ## Explorer conventions
 

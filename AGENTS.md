@@ -1,66 +1,42 @@
-# Optik Frontend — Codex Instructions
+# Optikk Frontend — Agent Rules
+
+This file is **rules only**. Project info (paths, routes, hooks, domain mapping, conventions) lives in [CODEBASE_INDEX.md](CODEBASE_INDEX.md).
+
+## The bar
+
+This project is held to the **highest engineering standards**. Match the bar of the existing code: correctness, clarity, minimality, no shortcuts, no half-measures, no speculative abstraction. If a change would lower the bar — skip it, push back, or ask. "It works" is not the bar; "it is the right change, done the right way" is.
 
 ## Before any task
 
-1. Read **`CODEBASE_INDEX.md`** (repo root) — full map of domains, routes, shared layers, LLD patterns, hooks reference, type system, and cross-repo references.
+1. **Research is mandatory — not optional.** Before writing a single line, do the work to understand what you're about to do:
+   - Read [CODEBASE_INDEX.md](CODEBASE_INDEX.md) and the actual code you'll touch — sibling features, the shared layer, the hooks/types in play.
+   - Verify against authoritative docs for anything you don't already know cold (React 19, TanStack Router/Query, Zustand 5, Tailwind, Vite, MDN, WCAG).
+   - For anything non-trivial — new architectural patterns, performance work, state-management redesigns, virtualization, caching strategies, accessibility, concurrency — **read the relevant research papers, RFCs, and engineering write-ups** before designing. The React, TanStack, observability, and frontend-performance communities have well-known prior art; use it. "I haven't read it but I think…" is not acceptable.
+   - Borrowing an existing pattern from this repo beats inventing one. Inventing one without checking what's already there, or designing something subtle without checking what the literature already says, is a violation.
 2. **Do not modify files** until the user approves the plan (except trivial one-line fixes).
 
 ## After every iteration
 
-After completing any task — no matter how small — review and update the following if anything changed:
-
-1. **`CODEBASE_INDEX.md`** — new features, routes, hooks, types, dashboard panels, cross-repo contracts
-2. **This file (`AGENTS.md`)** — new quick-reference paths or principles
+After completing any task — no matter how small — review and update [CODEBASE_INDEX.md](CODEBASE_INDEX.md) if anything changed: new features, routes, hooks, types, dashboard panels, cross-repo contracts.
 
 This is **mandatory**, not optional. The documentation must always reflect the current architecture so the next session (by any AI tool) does not need to scan the full codebase. If nothing changed, skip — but always check.
 
-## Quick reference
+## Code patterns
 
-- **Stack**: React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Zustand 5, Tailwind 3.4, uPlot 1.6, Zod
-- **Entry**: `src/main.tsx` → `src/app/App.tsx` → `src/app/routes/router.tsx`
-- **Feature registry**: `src/app/registry/domainRegistry.ts` — 7 domains: overview, saturation, metrics, logs, traces, infrastructure, settings
-- **Route constants**: `src/shared/constants/routes.ts`
-- **HTTP client**: `src/shared/api/api/client.ts`
-- **Overview hub**: `src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx` — bespoke `/overview` tabs; APIs via `src/features/overview/api/overviewHubApi.ts` + `metricsOverviewApi`
-- **Dashboard primitives**: `src/shared/components/ui/dashboard/` — `ConfigurableChartCard.tsx`, `DashboardEntityDrawer.tsx`
-- **Panel registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain panels
-- **Built-in panels**: `builtInDashboardPanels.tsx` — request, error-rate, latency, exception-type-line (base-chart); table, bar, gauge, heatmap, pie, stat-cards-grid (specialized); stat-card, stat-summary (self-contained)
-- **Charts**: `src/shared/components/ui/charts/` — UPlotChart (use `setData()` for flicker-free refresh), ObservabilityChart, time-series/, distributions/, micro/, specialized/
-- **Global store**: `src/app/store/appStore.ts` — `triggerRefresh()` increments `refreshKey`; persisted: timeRange, teamId, theme, timezone, comparisonMode, viewPreferences, recentPages
-- **Live tail**: `src/shared/hooks/useSocketStream.ts` (core WebSocket), `src/features/explorer-core/hooks/useLiveTailStream.ts` (wrapper with teamId)
-- **Explorer core**: `src/features/explorer-core/` — shared analytics, facets, visualizations for Logs/Traces/Metrics explorers
-- **Logs explorer**: `src/features/log/` — rebuilt clean-slate Datadog-class explorer. Components: `toolbar/`, `kpi/`, `facets/`, `trend/`, `table/`, `detail/`. Zustand store: `store/logsExplorerStore.ts`. Page: `pages/LogsExplorerPage/LogsExplorerPage.tsx`. Features: severity gutter bars, inline row expand with JSON tree, facet distribution bars, trend histogram with brush zoom, 4-tab detail panel (Message/Fields/JSON/Correlation), density toggle, line wrap.
-- **Entities**: `src/shared/entities/` — log, metric, trace, user
-- **Theme**: `src/config/themeColors.css` → `tailwind.config.ts`
-- **Dev**: `yarn dev` | **CI**: `yarn ci` | **Deploy**: `yarn deploy:firebase`
-- **Navigation utils**: `src/shared/utils/navigation.ts` — `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` for TanStack Router dynamic-path navigation (replaces scattered `as any` casts)
-- **Standard query**: `src/shared/hooks/useStandardQuery.ts` — `useStandardQuery(options)` with `keepPreviousData`, `staleTime: 5s`, `retry: 2`
-- **Sibling repo**: `optikk-backend` (see its `CODEBASE_INDEX.md`)
-
-## Domain → dashboard page mapping
-
-| Dashboard page ID | Feature | Hub page component |
-|-------------------|---------|-------------------|
-| overview | overview | OverviewHubPage |
-| service | overview | ServiceHubPage |
-| saturation | overview → metrics | SaturationHubPage |
-| infrastructure | infrastructure | InfrastructureHubPage — full frontend-owned infra UI + Datadog-style fleet controls + new panels; see `CODEBASE_INDEX.md` § Infrastructure product direction |
-
-## Key patterns
-
-- **Dashboard queries**: stable keys (no `refreshKey`), use `useInvalidateQueriesOnAppRefresh`
-- **Explorer queries**: include `refreshKey` in `queryKey`
-- **Logs results**: keep cursor pages explicit (`list.pages` + footer controls), not infinite-scroll append
-- **Always**: `placeholderData: keepPreviousData`; loading = `isPending && data === undefined`
-- **No cross-feature imports** — convention; move shared code to `@shared/`
-- **No TS enums** — use `as const` + union types
-- **No `as any`** — use `dynamicNavigateOptions` / `dynamicTo` for router casts, `Record<string, unknown>` for data, `unknown as { keys: ... }` for Zod internals
-- **API naming**: GET operations use `get*` prefix (not `fetch*`); `fetch*` is reserved for the Fetch API itself
-- **Prefer `useStandardQuery`** over raw `useQuery` for consistent defaults
-- **Drawer entities**: databaseSystem, deployment, errorGroup, kafkaGroup, kafkaTopic, node, redisInstance, service
+- **Dashboard queries**: stable keys (no `refreshKey`), use `useInvalidateQueriesOnAppRefresh`.
+- **Explorer queries**: include `refreshKey` in `queryKey`.
+- **Logs results**: keep cursor pages explicit (`list.pages` + footer controls), not infinite-scroll append.
+- **Always**: `placeholderData: keepPreviousData`; loading = `isPending && data === undefined`.
+- **No cross-feature imports** — convention; move shared code to `@shared/`.
+- **No TS enums** — use `as const` + union types.
+- **No `as any`** — use `dynamicNavigateOptions` / `dynamicTo` for router casts, `Record<string, unknown>` for data, `unknown as { keys: ... }` for Zod internals.
+- **API naming**: GET operations use `get*` prefix (not `fetch*`); `fetch*` is reserved for the Fetch API itself.
+- **Prefer `useStandardQuery`** over raw `useQuery` for consistent defaults.
 
 ## Engineering principles
 
-- **SOLID & DRY**: Factor shared behavior when a pattern appears more than once.
-- **Quality**: Leave the code clearer or simpler with every change.
-- **No unsolicited tests**: Do not add tests unless explicitly asked.
+- **SOLID & DRY**: factor shared behavior when a pattern appears more than once.
+- **Quality**: leave the code clearer or simpler with every change.
+- **No unsolicited tests**: do not add tests unless explicitly asked.
+- **No god files or functions**: every function has a single responsibility; every file has a single responsibility.
+

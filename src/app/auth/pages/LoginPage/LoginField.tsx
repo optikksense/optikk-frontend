@@ -11,13 +11,19 @@ interface LoginFieldProps {
   readonly placeholder: string;
   readonly icon: ReactNode;
   readonly endSlot?: ReactNode;
+  readonly hint?: ReactNode;
   readonly required?: boolean;
   readonly autoComplete?: string;
 }
 
-/**
- * Reusable login field — uppercase label, left icon, optional right action slot.
- */
+const INPUT_BASE =
+  "h-[42px] w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] " +
+  "py-0 pl-9 pr-3 font-[inherit] text-[13.5px] text-[var(--text-primary)] outline-none " +
+  "transition-[border-color,box-shadow] duration-150 " +
+  "placeholder:text-[var(--text-muted)] " +
+  "hover:border-[var(--text-muted)] " +
+  "focus:border-[var(--color-primary)] focus:shadow-[var(--login-focus-ring)]";
+
 export function LoginField({
   id,
   label,
@@ -27,36 +33,35 @@ export function LoginField({
   placeholder,
   icon,
   endSlot,
+  hint,
   required,
   autoComplete,
 }: LoginFieldProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <label
-        htmlFor={id}
-        className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]"
-      >
-        {label}
-      </label>
-      <div className="relative flex items-center">
-        <span className="pointer-events-none absolute left-[14px] flex items-center text-[var(--text-muted)]">
+    <div className="mb-3 grid gap-1.5">
+      <div className="flex items-baseline justify-between">
+        <label
+          htmlFor={id}
+          className="text-[11.5px] font-semibold uppercase tracking-[0.04em] text-[var(--text-secondary)]"
+        >
+          {label}
+        </label>
+        {hint}
+      </div>
+      <div className="relative">
+        <span className="pointer-events-none absolute left-[11px] top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
           {icon}
         </span>
         <input
           id={id}
           data-testid={`login-${id}`}
-          className={cn(
-            "h-12 w-full rounded-lg border border-border bg-[var(--bg-tertiary)] pl-11 pr-[14px] font-[inherit] text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-150",
-            "placeholder:text-[var(--text-muted)] placeholder:opacity-70",
-            "focus:border-[var(--login-accent)] focus:shadow-[0_0_0_3px_var(--login-accent-glow)]",
-            endSlot && "pr-11",
-          )}
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           required={required}
           autoComplete={autoComplete}
+          className={cn(INPUT_BASE, endSlot && "pr-16")}
         />
         {endSlot}
       </div>

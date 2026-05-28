@@ -1,31 +1,16 @@
-import { Link } from "@tanstack/react-router";
-
-import { ROUTES } from "@/shared/constants/routes";
-import { dynamicTo } from "@/shared/utils/navigation";
-
-const FOOTER_LINKS = [
-  { label: "Privacy Policy", to: ROUTES.privacy },
-  { label: "Terms of Service", to: ROUTES.terms },
-  { label: "Security", to: ROUTES.security },
-] as const;
-
-/**
- * Login page footer — legal and security links.
- */
 export function LoginFooter() {
   return (
-    <footer className="flex items-center justify-between pt-4 max-[480px]:flex-col max-[480px]:items-center max-[480px]:gap-3">
-      {FOOTER_LINKS.map((link) => (
-        <Link
-          key={link.to}
-          to={dynamicTo(link.to)}
-          className="text-[13px] text-[var(--text-muted)] no-underline transition-colors duration-150 hover:text-secondary-foreground"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {link.label}
-        </Link>
-      ))}
+    <footer className="flex items-center justify-between font-mono text-[11.5px] text-[var(--text-muted)]">
+      <span className="inline-flex items-center gap-1.5 text-[var(--text-secondary)]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-healthy)]" />
+        All systems operational
+      </span>
+      <a
+        href="#"
+        className="text-[var(--text-muted)] no-underline hover:text-[var(--text-secondary)]"
+      >
+        v2026.5 · status →
+      </a>
     </footer>
   );
 }
