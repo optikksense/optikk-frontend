@@ -26,8 +26,6 @@ export const ROUTES = {
   hostDetail: "/infrastructure/hosts/$host",
   errors: "/errors",
   errorGroupDetail: "/errors/$groupId",
-  slos: "/slos",
-  sloDetail: "/slos/$sloId",
   saturation: "/saturation",
   saturationDatastoreDetail: "/saturation/datastores/$system",
   saturationDatabase: "/saturation/database",

@@ -31,8 +31,6 @@ const SaturationDatabasePage = lazy(
 );
 const ErrorTrackingPage = lazy(() => import("@/features/errors/pages/ErrorTrackingPage"));
 const ErrorGroupDetailPage = lazy(() => import("@/features/errors/pages/ErrorGroupDetailPage"));
-const SloListPage = lazy(() => import("@/features/slo/pages/SloListPage"));
-const SloDetailPage = lazy(() => import("@/features/slo/pages/SloDetailPage"));
 const ServiceCatalogPage = lazy(
   () => import("@/features/services/pages/ServiceCatalogPage/ServiceCatalogPage")
 );
@@ -97,8 +95,6 @@ const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, Satur
 const saturationDatabaseRoute = createProtected(ROUTES.saturationDatabase, SaturationDatabasePage);
 const errorTrackingRoute = createProtected(ROUTES.errors, ErrorTrackingPage);
 const errorGroupDetailRoute = createProtected(ROUTES.errorGroupDetail, ErrorGroupDetailPage);
-const sloListRoute = createProtected(ROUTES.slos, SloListPage);
-const sloDetailRoute = createProtected(ROUTES.sloDetail, SloDetailPage);
 const servicesCatalogRoute = createProtected(ROUTES.services, ServiceCatalogPage);
 const serviceMapRoute = createProtected(
   ROUTES.serviceMap,
@@ -149,8 +145,6 @@ const routeTree = rootRoute.addChildren([
     saturationDatabaseRoute,
     errorTrackingRoute,
     errorGroupDetailRoute,
-    sloListRoute,
-    sloDetailRoute,
     servicesCatalogRoute,
     serviceMapRoute,
     deploymentsRoute,
