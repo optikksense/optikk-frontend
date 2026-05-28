@@ -37,6 +37,10 @@ Unregistered but important feature areas:
 
 - `marketing` — public-facing site, rendered via bespoke React pages; not a domain
 - `explorer` (`src/features/explorer/`) — shared DSL search, facets, analytics, and visualization primitives used by Logs, Traces, and Metrics explorers; not a domain, no routes of its own
+- `errors` (`src/features/errors/`) — error-tracking pages (`/errors`, `/errors/$groupId`); routes wired directly in `router.tsx`
+- `slo` (`src/features/slo/`) — SLO list and detail pages (`/slos`, `/slos/$sloId`); routes wired directly in `router.tsx`
+- `services` (`src/features/services/`) — service catalog, service map, deployments pages (`/services`, `/service-map`, `/deployments`); routes wired directly in `router.tsx`; also exports components consumed by the overview service page
+- `savedViews` (`src/features/savedViews/`) — reusable saved-views dropdown + hook consumed by the logs and traces explorer toolbars; no routes
 
 ## Current route model
 

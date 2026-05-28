@@ -1,4 +1,4 @@
-import { LOGS_FIELDS, type QueryFieldOption } from "@features/explorer/constants/fields";
+import { LOGS_FIELDS, type QueryFieldOption } from "@/features/explorer/constants/fields";
 
 /**
  * Re-export of the canonical logs field list. The explorer foundation owns

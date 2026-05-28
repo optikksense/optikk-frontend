@@ -29,7 +29,6 @@ export default defineConfig(({ mode }) => {
         { find: "@/hooks", replacement: path.resolve(__dirname, "./src/shared/hooks") },
         { find: "@/services", replacement: path.resolve(__dirname, "./src/shared/api") },
         { find: "@app", replacement: path.resolve(__dirname, "./src/app") },
-        { find: "@features", replacement: path.resolve(__dirname, "./src/features") },
         { find: "@entities", replacement: path.resolve(__dirname, "./src/shared/entities") },
         { find: "@shared", replacement: path.resolve(__dirname, "./src/shared") },
         { find: "@config", replacement: path.resolve(__dirname, "./src/config") },

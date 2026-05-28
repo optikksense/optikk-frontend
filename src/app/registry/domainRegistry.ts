@@ -15,16 +15,10 @@ export interface DashboardAdapterPageProps {
   readonly pathParams?: Record<string, string>;
 }
 
-/**
- *
- */
 type DomainPage =
   | ComponentType<DashboardAdapterPageProps>
   | LazyExoticComponent<ComponentType<DashboardAdapterPageProps>>;
 
-/**
- *
- */
 export interface DomainNavigationItem {
   readonly path: string;
   readonly label: string;
@@ -32,9 +26,6 @@ export interface DomainNavigationItem {
   readonly group: string;
 }
 
-/**
- *
- */
 export interface DomainRouteConfig {
   readonly path: AppRoutePath;
   readonly page: DomainPage;
@@ -45,9 +36,6 @@ export interface DashboardPageAdapterConfig {
   readonly page: DomainPage;
 }
 
-/**
- *
- */
 export interface DomainConfig {
   readonly key: string;
   readonly label: string;

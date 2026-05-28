@@ -33,7 +33,6 @@
       "@/types": ["src/shared/types/index.ts"],
       "@/types/*": ["src/shared/types/*"],
       "@app/*": ["src/app/*"],
-      "@features/*": ["src/features/*"],
       "@entities/*": ["src/shared/entities/*"],
       "@shared/*": ["src/shared/*"],
       "@config/*": ["src/config/*"],
@@ -49,6 +48,5 @@
     }
   },
   "include": ["src"],
-  "exclude": ["src/test_zod_schema.ts", "src/app/auth/pages/Pricing"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

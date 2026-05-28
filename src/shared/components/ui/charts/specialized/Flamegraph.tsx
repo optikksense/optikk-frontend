@@ -1,4 +1,4 @@
-import type { FlamegraphNode } from "@features/traces/types";
+import type { FlamegraphNode } from "@/features/traces/types";
 import { useEffect, useRef } from "react";
 import { useMeasure } from "react-use";
 

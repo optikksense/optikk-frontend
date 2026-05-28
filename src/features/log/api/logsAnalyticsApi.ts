@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { ExplorerFilter } from "@features/explorer/types/filters";
+import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { api } from "@shared/api/api/client";
 import { validateResponse } from "@shared/api/utils/validate";
 

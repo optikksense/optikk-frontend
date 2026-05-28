@@ -1,7 +1,4 @@
-export /**
- *
- */
-const ROUTES = {
+export const ROUTES = {
   login: "/login",
   product: "/product",
   home: "/",
@@ -23,7 +20,6 @@ const ROUTES = {
   traces: "/traces",
   traceDetail: "/traces/$traceId",
   traceCompare: "/traces/compare",
-  ai: "/ai",
   metrics: "/metrics",
   infrastructure: "/infrastructure",
   hosts: "/infrastructure/hosts",
@@ -43,7 +39,4 @@ const ROUTES = {
   settings: "/settings",
 } as const;
 
-/**
- *
- */
 export type AppRoutePath = (typeof ROUTES)[keyof typeof ROUTES];
