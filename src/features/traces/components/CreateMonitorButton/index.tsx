@@ -34,7 +34,7 @@ function buildHref(filters: readonly ExplorerFilter[]): string {
       filters.map((f) => `${f.field}:${f.op}:${encodeURIComponent(f.value)}`).join(";")
     );
   }
-  return `/alerts/new?${params.toString()}`;
+  return `/monitors/new?${params.toString()}`;
 }
 
 export const CreateMonitorButton = memo(CreateMonitorButtonComponent);

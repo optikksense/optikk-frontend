@@ -33,6 +33,12 @@ export const ROUTES = {
   saturationKafkaTopicDetail: "/saturation/kafka/topics/$topic",
   saturationKafkaGroupDetail: "/saturation/kafka/groups/$groupId",
 
+  monitors: "/monitors",
+  monitorsNew: "/monitors/new",
+  monitorDetail: "/monitors/$monitorId",
+  monitorsNotifications: "/monitors/notifications",
+  alertsNew: "/alerts/new",
+
   settings: "/settings",
 } as const;
 

@@ -127,6 +127,31 @@ The current frontend owns significant page composition and interaction logic dir
 - The log detail panel is rendered inside `DetailDrawer` (shared Radix Dialog slide-over) with 4 tabs: Message, Fields, JSON, Correlation.
 - `ResultsArea` accepts an optional `rowHeight` for denser or more readable explorer rows while keeping the shared virtual list implementation.
 
+## Monitors
+
+`src/features/monitors/` ships the alerting platform UI — list, detail, wizard, notifications — backed by `optikk-backend`'s `internal/modules/alerting/`. The feature is **flat-vs-nested compliant**: only subdirectories live under `monitors/`.
+
+```
+src/features/monitors/
+  api/                         monitorsApi.ts (CRUD + state actions + series + events), notificationsApi.ts (channels/integrations/policies/templates)
+  pages/
+    MonitorsPage/              list (KpiStrip + Tabs + MonitorsTable + ActivityCard)
+    MonitorDetailPage/         DetailHeader + EvalChartCard (SVG threshold lines) + CurrentValueCard + StatusTimelineCard + QueryCard + RecentTriggersCard + NotificationsCard + RunbookCard
+    NewMonitorPage/            5-step wizard (WizardTypeStep / WizardQueryStep / WizardConditionsStep / WizardNotifyStep / WizardDefineStep) with per-type query forms under queryForms/ (MetricQuery, APMQuery, LogQuery)
+    NotificationsPage/         tabs: ChannelsTab (CRUD + test) / IntegrationsTab / PoliciesTab / TemplatesTab
+  components/                  MonitorStatusBadge, PriorityChip
+  hooks/                       useMonitorsList, useMonitorsActivity, useMonitorDetail (+series/events/status-timeline), useChannels, useNotifications (integrations/policies/templates)
+  index.ts                     monitorsConfig DomainConfig
+```
+
+Routes live in [src/app/routes/router.tsx](src/app/routes/router.tsx): `/monitors`, `/monitors/new`, `/monitors/$monitorId`, `/monitors/notifications`. `/alerts/new` redirects to `/monitors/new` preserving querystring so `CreateMonitorButton` deep-links keep working.
+
+[src/features/traces/components/CreateMonitorButton/index.tsx](src/features/traces/components/CreateMonitorButton/index.tsx) targets `/monitors/new` and passes `?from=traces&filters=field:op:value;…`. The wizard's `useWizardState` hook parses this on mount and pre-fills `type=apm` + scope chips.
+
+The eval chart on the detail page is hand-rolled SVG (`EvalChartCard.tsx`) rather than `UPlotChart` because it needs threshold-line overlays in the same coordinate space as the area path — switching to `UPlotChart` for parity with other dashboards is a follow-up.
+
+Channel transports: only **Slack** is wired end-to-end on the backend (`dispatch.SlackWebhook` posts to a Slack incoming-webhook URL); the wizard exposes `slack`/`webhook`/`email`/`pagerduty` types but everything except `slack` routes through `dispatch.Stub` server-side. The Integrations tab mirrors this: Slack = "connected", others = "install".
+
 ## Shared layer map
 
 | Area | Path | Notes |

@@ -34,6 +34,18 @@ const ServiceCatalogPage = lazy(
 );
 const HostMapPage = lazy(() => import("@/features/infrastructure/pages/HostMapPage"));
 const HostDetailPage = lazy(() => import("@/features/infrastructure/pages/HostDetailPage"));
+const MonitorsPage = lazy(
+  () => import("@/features/monitors/pages/MonitorsPage/MonitorsPage")
+);
+const MonitorDetailPage = lazy(
+  () => import("@/features/monitors/pages/MonitorDetailPage/MonitorDetailPage")
+);
+const NewMonitorPage = lazy(
+  () => import("@/features/monitors/pages/NewMonitorPage/NewMonitorPage")
+);
+const NotificationsPage = lazy(
+  () => import("@/features/monitors/pages/NotificationsPage/NotificationsPage")
+);
 
 export const rootRoute = createRootRoute({ component: AppContent });
 
@@ -109,6 +121,12 @@ const deploymentsRoute = createProtected(
 const hostsRoute = createProtected(ROUTES.hosts, HostMapPage);
 const hostDetailRoute = createProtected(ROUTES.hostDetail, HostDetailPage);
 
+const monitorsRoute = createProtected(ROUTES.monitors, MonitorsPage);
+const monitorsNotificationsRoute = createProtected(ROUTES.monitorsNotifications, NotificationsPage);
+const monitorsNewRoute = createProtected(ROUTES.monitorsNew, NewMonitorPage);
+const monitorDetailRoute = createProtected(ROUTES.monitorDetail, MonitorDetailPage);
+const alertsNewRedirect = createProtected(ROUTES.alertsNew, () => null, ROUTES.monitorsNew);
+
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
 const logsTransactionsRedirect = createProtected("/logs/transactions", () => null, ROUTES.logs);
 
@@ -150,6 +168,11 @@ const routeTree = rootRoute.addChildren([
     deploymentsRoute,
     hostsRoute,
     hostDetailRoute,
+    monitorsRoute,
+    monitorsNotificationsRoute,
+    monitorsNewRoute,
+    monitorDetailRoute,
+    alertsNewRedirect,
     logsPatternsRedirect,
     logsTransactionsRedirect,
     ...buildLegacyRedirects(mainLayoutRoute),

@@ -1,0 +1,135 @@
+import type { CreateMonitorPayload, MonitorConditions } from "../../api/monitorsApi";
+
+import StepShell from "./StepShell";
+import FieldRow from "./queryForms/FieldRow";
+
+interface Props {
+  readonly draft: CreateMonitorPayload;
+  readonly setDraft: (fn: (prev: CreateMonitorPayload) => CreateMonitorPayload) => void;
+}
+
+const COMPARATORS: { id: MonitorConditions["comparator"]; label: string }[] = [
+  { id: "above", label: "above" },
+  { id: "below", label: "below" },
+  { id: "equal", label: "equal to" },
+];
+
+const NO_DATA_AS: { id: NonNullable<MonitorConditions["no_data_as"]>; label: string }[] = [
+  { id: "no_data", label: "no-data" },
+  { id: "alert", label: "alert" },
+  { id: "ok", label: "ok" },
+];
+
+function NumericInput({
+  value,
+  onChange,
+}: {
+  value: number | undefined;
+  onChange: (v: number | undefined) => void;
+}) {
+  return (
+    <input
+      type="number"
+      step="any"
+      value={value ?? ""}
+      onChange={(e) => {
+        const v = e.target.value;
+        onChange(v === "" ? undefined : Number(v));
+      }}
+      className="w-32 rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 font-mono text-xs"
+    />
+  );
+}
+
+export default function WizardConditionsStep({ draft, setDraft }: Props) {
+  const c = draft.conditions;
+
+  const update = (patch: Partial<MonitorConditions>) =>
+    setDraft((prev) => ({ ...prev, conditions: { ...prev.conditions, ...patch } }));
+
+  return (
+    <StepShell n={3} title="Set alert conditions" sub="When should this monitor fire?">
+      <FieldRow label="Trigger when">
+        <div className="flex items-center gap-2">
+          <span className="text-xs">value is</span>
+          <div className="flex items-center gap-1">
+            {COMPARATORS.map((cmp) => {
+              const active = c.comparator === cmp.id;
+              return (
+                <button
+                  key={cmp.id}
+                  type="button"
+                  onClick={() => update({ comparator: cmp.id })}
+                  className={`rounded px-2 py-0.5 text-xs ${
+                    active
+                      ? "bg-blue-600 text-white"
+                      : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
+                  }`}
+                >
+                  {cmp.label}
+                </button>
+              );
+            })}
+          </div>
+          <span className="text-xs">the threshold</span>
+        </div>
+      </FieldRow>
+      <FieldRow label="Alert threshold">
+        <div className="flex items-center gap-2">
+          <NumericInput
+            value={c.alert_threshold}
+            onChange={(v) => update({ alert_threshold: v })}
+          />
+          <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] text-red-500">
+            critical
+          </span>
+        </div>
+      </FieldRow>
+      <FieldRow label="Warn threshold">
+        <div className="flex items-center gap-2">
+          <NumericInput
+            value={c.warn_threshold}
+            onChange={(v) => update({ warn_threshold: v })}
+          />
+          <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] text-amber-500">
+            warn
+          </span>
+        </div>
+      </FieldRow>
+      <FieldRow label="Recovery threshold">
+        <NumericInput
+          value={c.recovery_threshold}
+          onChange={(v) => update({ recovery_threshold: v })}
+        />
+      </FieldRow>
+      <FieldRow label="No data after">
+        <div className="flex items-center gap-2">
+          <NumericInput
+            value={c.no_data_after_sec}
+            onChange={(v) => update({ no_data_after_sec: v ?? 0 })}
+          />
+          <span className="text-xs text-[var(--text-muted)]">seconds · treat as</span>
+          <div className="flex items-center gap-1">
+            {NO_DATA_AS.map((opt) => {
+              const active = c.no_data_as === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => update({ no_data_as: opt.id })}
+                  className={`rounded px-2 py-0.5 text-xs ${
+                    active
+                      ? "bg-blue-600 text-white"
+                      : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </FieldRow>
+    </StepShell>
+  );
+}
