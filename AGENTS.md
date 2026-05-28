@@ -3,18 +3,14 @@
 ## Before any task
 
 1. Read **`CODEBASE_INDEX.md`** (repo root) — full map of domains, routes, shared layers, LLD patterns, hooks reference, type system, and cross-repo references.
-2. Read **`.cursor/rules/optik-frontend.mdc`** — hot paths, feature module pattern, dashboard panel registration, query patterns, state management, ESLint rules, theming.
-3. Read **`.cursor/rules/engineering-workflow.mdc`** — plan before code, two approaches with pros/cons, approval gate.
-4. **Do not modify files** until the user approves the plan (except trivial one-line fixes).
+2. **Do not modify files** until the user approves the plan (except trivial one-line fixes).
 
 ## After every iteration
 
 After completing any task — no matter how small — review and update the following if anything changed:
 
 1. **`CODEBASE_INDEX.md`** — new features, routes, hooks, types, dashboard panels, cross-repo contracts
-2. **`.cursor/rules/optik-frontend.mdc`** — new patterns, conventions, hot paths, or LLD details
-3. **`.agent/SKILL.md`** — keep aligned with cursor rules
-4. **This file (`AGENTS.md`)** — new quick-reference paths or principles
+2. **This file (`AGENTS.md`)** — new quick-reference paths or principles
 
 This is **mandatory**, not optional. The documentation must always reflect the current architecture so the next session (by any AI tool) does not need to scan the full codebase. If nothing changed, skip — but always check.
 
@@ -22,7 +18,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 
 - **Stack**: React 19, Vite 8, TypeScript, TanStack Query v5, TanStack Router, Zustand 5, Tailwind 3.4, uPlot 1.6, Zod
 - **Entry**: `src/main.tsx` → `src/app/App.tsx` → `src/app/routes/router.tsx`
-- **Feature registry**: `src/app/registry/domainRegistry.ts` — 8 domains: overview, saturation, metrics, logs, traces, infrastructure, alerts, settings
+- **Feature registry**: `src/app/registry/domainRegistry.ts` — 7 domains: overview, saturation, metrics, logs, traces, infrastructure, settings
 - **Route constants**: `src/shared/constants/routes.ts`
 - **HTTP client**: `src/shared/api/api/client.ts`
 - **Overview hub**: `src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx` — bespoke `/overview` tabs; APIs via `src/features/overview/api/overviewHubApi.ts` + `metricsOverviewApi`
