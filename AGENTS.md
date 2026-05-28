@@ -22,7 +22,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **Route constants**: `src/shared/constants/routes.ts`
 - **HTTP client**: `src/shared/api/api/client.ts`
 - **Overview hub**: `src/features/overview/pages/OverviewHubPage/OverviewHubPage.tsx` — bespoke `/overview` tabs; APIs via `src/features/overview/api/overviewHubApi.ts` + `metricsOverviewApi`
-- **Dashboard primitives**: `src/shared/components/ui/dashboard/` — `ConfigurableDashboard.tsx`, `ConfigurableChartCard.tsx`, `DashboardEntityDrawer.tsx`
+- **Dashboard primitives**: `src/shared/components/ui/dashboard/` — `ConfigurableChartCard.tsx`, `DashboardEntityDrawer.tsx`
 - **Panel registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain panels
 - **Built-in panels**: `builtInDashboardPanels.tsx` — request, error-rate, latency, exception-type-line (base-chart); table, bar, gauge, heatmap, pie, stat-cards-grid (specialized); stat-card, stat-summary (self-contained)
 - **Charts**: `src/shared/components/ui/charts/` — UPlotChart (use `setData()` for flicker-free refresh), ObservabilityChart, time-series/, distributions/, micro/, specialized/

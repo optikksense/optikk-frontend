@@ -33,19 +33,6 @@ export interface EmptyStateProps {
 /**
  *
  */
-export type StatusBadgeType = "service" | "trace";
-
-/**
- *
- */
-export interface StatusBadgeProps {
-  status: string;
-  type?: StatusBadgeType;
-}
-
-/**
- *
- */
 export interface TrendIndicatorProps {
   value?: number | null;
   inverted?: boolean;

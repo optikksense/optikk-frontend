@@ -5,7 +5,6 @@ export { default as ErrorBoundary } from "./ErrorBoundary";
 export * from "./FeatureErrorBoundary";
 export { default as Loading } from "./Loading";
 export { default as Skeleton } from "./Skeleton";
-export { default as StatusBadge } from "./StatusBadge";
 export { default as TrendIndicator } from "./TrendIndicator";
 
 export type {
@@ -14,7 +13,5 @@ export type {
   ErrorBoundaryState,
   FeedbackSkeletonProps,
   LoadingProps,
-  StatusBadgeProps,
-  StatusBadgeType,
   TrendIndicatorProps,
 } from "./types";
