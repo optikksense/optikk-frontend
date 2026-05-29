@@ -1,10 +1,14 @@
-import { AreaChart, BarChart3, LineChart } from "lucide-react";
-
 import { Select } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { Switch } from "@shared/components/primitives/ui/switch";
 
-import { SPACE_AGGREGATION_OPTIONS, TIME_STEP_OPTIONS } from "../constants";
-import type { ChartType, MetricSpaceAggregation, TimeStep } from "../types";
+import {
+  CHART_TYPE_OPTIONS,
+  SPACE_AGGREGATION_OPTIONS,
+  TIME_STEP_OPTIONS,
+} from "../constants";
+import { useMetricsStore } from "../store/metricsStore";
+import type { ChartType, MetricSpaceAggregation, MetricYAxisScale, TimeStep } from "../types";
+import { MetricSegmentedControl, type SegmentOption } from "./MetricSegmentedControl";
 
 interface MetricsExplorerToolbarProps {
   readonly chartType: ChartType;
@@ -15,10 +19,14 @@ interface MetricsExplorerToolbarProps {
   readonly onSpaceAggChange: (sa: MetricSpaceAggregation) => void;
 }
 
-const CHART_TYPE_BUTTONS: { value: ChartType; icon: typeof LineChart; label: string }[] = [
-  { value: "line", icon: LineChart, label: "Line" },
-  { value: "area", icon: AreaChart, label: "Area" },
-  { value: "bar", icon: BarChart3, label: "Bar" },
+const CHART_TYPE_SEGMENTS: ReadonlyArray<SegmentOption<ChartType>> = CHART_TYPE_OPTIONS.map(
+  (o) => ({ value: o.value, label: o.label })
+);
+
+const Y_AXIS_SEGMENTS: ReadonlyArray<SegmentOption<MetricYAxisScale>> = [
+  { value: "linear", label: "linear" },
+  { value: "log", label: "log" },
+  { value: "percent", label: "%" },
 ];
 
 export function MetricsExplorerToolbar({
@@ -29,35 +37,38 @@ export function MetricsExplorerToolbar({
   onStepChange,
   onSpaceAggChange,
 }: MetricsExplorerToolbarProps) {
+  const showMarkers = useMetricsStore((s) => s.showMarkers);
+  const setShowMarkers = useMetricsStore((s) => s.setShowMarkers);
+  const showLegend = useMetricsStore((s) => s.showLegend);
+  const setShowLegend = useMetricsStore((s) => s.setShowLegend);
+  const smooth = useMetricsStore((s) => s.smooth);
+  const setSmooth = useMetricsStore((s) => s.setSmooth);
+  const yAxisScale = useMetricsStore((s) => s.yAxisScale);
+  const setYAxisScale = useMetricsStore((s) => s.setYAxisScale);
+
   return (
-    <div className="flex items-center justify-between gap-3">
-      {/* Left: chart type toggle */}
-      <div className="inline-flex overflow-hidden rounded-lg border border-[var(--border-color)]">
-        {CHART_TYPE_BUTTONS.map(({ value, icon: Icon, label }) => {
-          const active = chartType === value;
-          return (
-            <button
-              key={value}
-              type="button"
-              onClick={() => onChartTypeChange(value)}
-              title={label}
-              className={cn(
-                "flex h-8 items-center gap-1.5 px-3 font-medium text-[12px]",
-                "transition-colors duration-150",
-                active
-                  ? "border-[rgba(77,166,200,0.45)] border-r bg-[rgba(77,166,200,0.14)] text-[var(--text-primary)]"
-                  : "border-[var(--border-color)] border-r text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]",
-                "last:border-r-0"
-              )}
-            >
-              <Icon size={14} />
-              {label}
-            </button>
-          );
-        })}
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Left: view type + toggles */}
+      <div className="flex flex-wrap items-center gap-3">
+        <MetricSegmentedControl
+          options={CHART_TYPE_SEGMENTS}
+          value={chartType}
+          onChange={onChartTypeChange}
+        />
+        <Switch
+          label="Markers"
+          checked={showMarkers}
+          onChange={(e) => setShowMarkers(e.target.checked)}
+        />
+        <Switch
+          label="Legend"
+          checked={showLegend}
+          onChange={(e) => setShowLegend(e.target.checked)}
+        />
+        <Switch label="Smooth" checked={smooth} onChange={(e) => setSmooth(e.target.checked)} />
       </div>
 
-      {/* Right: step + space agg */}
+      {/* Right: step + space agg + y-axis scale */}
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1.5">
           <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
@@ -84,6 +95,20 @@ export function MetricsExplorerToolbar({
             onChange={onSpaceAggChange}
             options={SPACE_AGGREGATION_OPTIONS}
             className="w-[90px]"
+          />
+        </div>
+
+        <div className="h-4 w-px bg-[var(--border-color)]" />
+
+        <div className="flex items-center gap-1.5">
+          <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+            Y-axis
+          </span>
+          <MetricSegmentedControl
+            options={Y_AXIS_SEGMENTS}
+            value={yAxisScale}
+            onChange={setYAxisScale}
+            size="sm"
           />
         </div>
       </div>

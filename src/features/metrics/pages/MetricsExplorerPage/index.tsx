@@ -1,15 +1,21 @@
-import { BarChart3, Share2 } from "lucide-react";
-import { useCallback } from "react";
-import toast from "react-hot-toast";
+import { BarChart3 } from "lucide-react";
+import { useMemo } from "react";
 
-import { Button } from "@shared/components/primitives/ui/button";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 
+import { FleetDistributionPanel } from "../../components/FleetDistributionPanel";
+import { GroupByBreakdownTable } from "../../components/GroupByBreakdownTable";
 import { MetricQueryBuilder } from "../../components/MetricQueryBuilder/MetricQueryBuilder";
 import { MetricsExplorerChart } from "../../components/MetricsExplorerChart";
 import { MetricsExplorerToolbar } from "../../components/MetricsExplorerToolbar";
+import { MetricsHeaderActions } from "../../components/MetricsHeaderActions";
+import { MetricsKpiStrip } from "../../components/MetricsKpiStrip";
+import { RecentMetricsPanel } from "../../components/RecentMetricsPanel";
+import { TopSeriesPanel } from "../../components/TopSeriesPanel";
+import { useMetricNames } from "../../hooks/useMetricNames";
 import { useMetricsExplorer } from "../../hooks/useMetricsExplorer";
 import { useMetricsExplorerQuery } from "../../hooks/useMetricsExplorerQuery";
+import { useRecordRecentMetrics } from "../../hooks/useRecordRecentMetrics";
 import type { MetricExplorerResults } from "../../types";
 
 export default function MetricsExplorerPage() {
@@ -34,63 +40,103 @@ export default function MetricsExplorerPage() {
   } = useMetricsExplorer();
 
   const { data, isLoading, isError, refetch } = useMetricsExplorerQuery(queries, step, spaceAgg);
+  const results = (data?.results ?? {}) as MetricExplorerResults;
 
-  const handleShare = useCallback(() => {
-    void navigator.clipboard.writeText(window.location.href);
-    toast.success("Link copied to clipboard");
-  }, []);
+  useRecordRecentMetrics(queries);
+
+  const primaryQuery = useMemo(() => queries.find((q) => q.metricName), [queries]);
+  const primaryResult = primaryQuery ? results[primaryQuery.id] : undefined;
+
+  const { data: metricNames } = useMetricNames("");
+  const primaryUnit = useMemo(
+    () => metricNames?.metrics.find((m) => m.name === primaryQuery?.metricName)?.unit,
+    [metricNames, primaryQuery]
+  );
+
+  const reselectMetric = (metricName: string) => {
+    if (primaryQuery) updateQueryMetric(primaryQuery.id, metricName);
+  };
 
   return (
     <PageShell>
       <PageHeader
-        title="Metrics"
+        title="Metrics Explorer"
         icon={<BarChart3 size={22} />}
-        subtitle="Query, visualize, and compare metrics across your services."
+        subtitle="Query, slice and correlate metrics across your services."
         actions={
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" icon={<Share2 size={14} />} onClick={handleShare}>
-              Share
-            </Button>
-          </div>
+          <MetricsHeaderActions primaryQuery={primaryQuery} primaryResult={primaryResult} />
         }
       />
 
+      {/* Query builder */}
       <PageSurface padding="lg" className="relative z-[40] overflow-visible">
-        <div className="flex flex-col gap-4">
-          <MetricQueryBuilder
-            queries={queries}
-            formulas={formulas}
-            onAddQuery={addQuery}
-            onRemoveQuery={removeQuery}
-            onAggregationChange={updateQueryAggregation}
-            onMetricChange={updateQueryMetric}
-            onWhereChange={updateQueryWhere}
-            onGroupByChange={updateQueryGroupBy}
-            onAddFormula={addFormula}
-            onRemoveFormula={removeFormula}
-            onFormulaExpressionChange={updateFormulaExpression}
-          />
-
-          <MetricsExplorerToolbar
-            chartType={chartType}
-            step={step}
-            spaceAgg={spaceAgg}
-            onChartTypeChange={setChartType}
-            onStepChange={setStep}
-            onSpaceAggChange={setSpaceAgg}
-          />
-        </div>
+        <MetricQueryBuilder
+          queries={queries}
+          formulas={formulas}
+          onAddQuery={addQuery}
+          onRemoveQuery={removeQuery}
+          onAggregationChange={updateQueryAggregation}
+          onMetricChange={updateQueryMetric}
+          onWhereChange={updateQueryWhere}
+          onGroupByChange={updateQueryGroupBy}
+          onAddFormula={addFormula}
+          onRemoveFormula={removeFormula}
+          onFormulaExpressionChange={updateFormulaExpression}
+        />
       </PageSurface>
 
-      <MetricsExplorerChart
-        queries={queries}
-        formulas={formulas}
-        results={(data?.results ?? {}) as MetricExplorerResults}
-        chartType={chartType}
-        isLoading={isLoading}
-        isError={isError}
-        onRetry={() => refetch()}
-      />
+      {/* Main chart + top-series row */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2.1fr_1fr]">
+        <div className="flex flex-col gap-4">
+          <PageSurface padding="lg" className="flex flex-col gap-3">
+            <MetricsExplorerToolbar
+              chartType={chartType}
+              step={step}
+              spaceAgg={spaceAgg}
+              onChartTypeChange={setChartType}
+              onStepChange={setStep}
+              onSpaceAggChange={setSpaceAgg}
+            />
+            <MetricsKpiStrip
+              primaryQuery={primaryQuery}
+              results={results}
+              spaceAgg={spaceAgg}
+              unit={primaryUnit}
+            />
+          </PageSurface>
+
+          {chartType === "heat" ? (
+            <FleetDistributionPanel result={primaryResult} />
+          ) : chartType === "top" ? (
+            <TopSeriesPanel result={primaryResult} unit={primaryUnit} />
+          ) : (
+            <MetricsExplorerChart
+              queries={queries}
+              formulas={formulas}
+              results={results}
+              chartType={chartType}
+              isLoading={isLoading}
+              isError={isError}
+              onRetry={() => refetch()}
+            />
+          )}
+        </div>
+
+        <TopSeriesPanel result={primaryResult} unit={primaryUnit} />
+      </div>
+
+      {/* Fleet distribution + recent metrics row */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2.1fr_1fr]">
+        <FleetDistributionPanel result={primaryResult} />
+        <RecentMetricsPanel
+          primaryMetric={primaryQuery?.metricName}
+          primaryResult={primaryResult}
+          onSelectMetric={reselectMetric}
+        />
+      </div>
+
+      {/* Group-by breakdown table */}
+      <GroupByBreakdownTable primaryQuery={primaryQuery} result={primaryResult} />
     </PageShell>
   );
 }

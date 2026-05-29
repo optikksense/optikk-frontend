@@ -10,16 +10,26 @@ import ObservabilityChart, {
 
 import { getChartColor } from "@shared/utils/charting";
 import { QUERY_LABEL_COLORS } from "../constants";
+import { useMetricsStore } from "../store/metricsStore";
 import type {
   ChartType,
   FormulaDefinition,
   MetricExplorerResults,
   MetricQueryDefinition,
+  MetricYAxisScale,
 } from "../types";
 import { evaluateFormula } from "../utils/formulaEvaluator";
 
 const FORMULA_COLOR = "#f59e0b";
 const MAX_RENDERED_SERIES = 100;
+
+/** Underlying renderable type for the uPlot-backed chart. "stack" renders as a
+ * filled area; "heat"/"top" are handled by sibling panels, never this chart. */
+function toRenderType(chartType: ChartType): "line" | "area" | "bar" {
+  if (chartType === "bar") return "bar";
+  if (chartType === "area" || chartType === "stack") return "area";
+  return "line";
+}
 
 interface MetricsExplorerChartProps {
   readonly queries: MetricQueryDefinition[];
@@ -61,7 +71,7 @@ function buildSeries(
         label,
         values: series.values,
         color: result.series.length > 1 ? getChartColor(colorIdx) : baseColor,
-        fill: chartType === "area",
+        fill: toRenderType(chartType) === "area",
       });
       colorIdx++;
     }
@@ -83,6 +93,14 @@ function buildSeries(
   return { timestamps, series: allSeries };
 }
 
+function percentFormatter(value: number): string {
+  return `${value.toFixed(value >= 100 ? 0 : 1)}%`;
+}
+
+function yFormatterFor(scale: MetricYAxisScale): ((value: number) => string) | undefined {
+  return scale === "percent" ? percentFormatter : undefined;
+}
+
 export function MetricsExplorerChart({
   queries,
   formulas,
@@ -92,8 +110,17 @@ export function MetricsExplorerChart({
   isError,
   onRetry,
 }: MetricsExplorerChartProps) {
+  const showLegend = useMetricsStore((s) => s.showLegend);
+  const smooth = useMetricsStore((s) => s.smooth);
+  const yAxisScale = useMetricsStore((s) => s.yAxisScale);
+
   const hasResults = results && Object.keys(results).length > 0;
   const hasActiveQuery = queries.some((q) => q.metricName);
+
+  const { timestamps, series } = useMemo(
+    () => buildSeries(queries, formulas, results ?? {}, chartType),
+    [queries, formulas, results, chartType]
+  );
 
   if (!hasActiveQuery) {
     return (
@@ -149,13 +176,11 @@ export function MetricsExplorerChart({
     );
   }
 
-  const { timestamps, series } = useMemo(
-    () => buildSeries(queries, formulas, results, chartType),
-    [queries, formulas, results, chartType]
-  );
-
   const truncated = series.length > MAX_RENDERED_SERIES;
-  const renderedSeries = truncated ? series.slice(0, MAX_RENDERED_SERIES) : series;
+  const widthAdjusted = smooth
+    ? series
+    : series.map((s) => ({ ...s, width: 1 }));
+  const renderedSeries = truncated ? widthAdjusted.slice(0, MAX_RENDERED_SERIES) : widthAdjusted;
 
   return (
     <PageSurface
@@ -171,9 +196,10 @@ export function MetricsExplorerChart({
       <ObservabilityChart
         timestamps={timestamps}
         series={renderedSeries}
-        type={chartType}
+        type={toRenderType(chartType)}
         height={360}
-        legend
+        legend={showLegend}
+        yFormatter={yFormatterFor(yAxisScale)}
       />
     </PageSurface>
   );

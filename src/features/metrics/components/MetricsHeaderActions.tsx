@@ -1,0 +1,63 @@
+import { Bell, Download, ExternalLink, Plus } from "lucide-react";
+import { useCallback } from "react";
+import toast from "react-hot-toast";
+
+import { Button } from "@shared/components/primitives/ui/button";
+
+import type { MetricQueryDefinition, MetricQueryResult } from "../types";
+import { buildBreakdownCsv, downloadCsv } from "../utils/breakdownCsv";
+
+interface MetricsHeaderActionsProps {
+  readonly primaryQuery: MetricQueryDefinition | undefined;
+  readonly primaryResult: MetricQueryResult | undefined;
+}
+
+/** Deep link to the monitors feature, pre-seeding the source + metric, mirroring
+ * the traces CreateMonitorButton pattern (`/monitors/new?from=...`). */
+function createMonitorHref(primaryQuery: MetricQueryDefinition | undefined): string {
+  const params = new URLSearchParams({ from: "metrics" });
+  if (primaryQuery?.metricName) params.set("metric", primaryQuery.metricName);
+  return `/monitors/new?${params.toString()}`;
+}
+
+/** Page-header actions for the metrics explorer. Export downloads the group-by
+ * breakdown as CSV (fully local); Notebook / Save graph are stubs. */
+export function MetricsHeaderActions({ primaryQuery, primaryResult }: MetricsHeaderActionsProps) {
+  const handleExport = useCallback(() => {
+    const csv = buildBreakdownCsv(primaryResult);
+    if (!csv) {
+      toast.error("Nothing to export yet");
+      return;
+    }
+    downloadCsv(`${primaryQuery?.metricName || "metrics"}-breakdown.csv`, csv);
+  }, [primaryQuery, primaryResult]);
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <Button
+        variant="ghost"
+        size="sm"
+        icon={<ExternalLink size={13} />}
+        onClick={() => toast("Notebooks are coming soon")}
+      >
+        Open in Notebook
+      </Button>
+      <a href={createMonitorHref(primaryQuery)}>
+        <Button variant="ghost" size="sm" icon={<Bell size={13} />}>
+          Create monitor
+        </Button>
+      </a>
+      <Button variant="ghost" size="sm" icon={<Download size={13} />} onClick={handleExport}>
+        Export
+      </Button>
+      <Button
+        variant="primary"
+        size="sm"
+        icon={<Plus size={13} />}
+        onClick={() => toast("Saved graphs are coming soon")}
+      >
+        Save graph
+      </Button>
+    </div>
+  );
+}

@@ -46,7 +46,11 @@ export interface MetricQueryDefinition {
   readonly spaceAggregation: MetricSpaceAggregation;
 }
 
-export type ChartType = "line" | "area" | "bar";
+export type ChartType = "line" | "area" | "bar" | "stack" | "heat" | "top";
+
+export type MetricYAxisScale = "linear" | "log" | "percent";
+
+export type TopSeriesGroupBy = "host" | "region" | "version";
 
 export type TimeStep = "1m" | "5m" | "15m" | "1h" | "1d";
 
