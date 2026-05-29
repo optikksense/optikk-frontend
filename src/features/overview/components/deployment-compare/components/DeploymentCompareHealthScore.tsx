@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentCompareResponse } from "@shared/api/deployments/deploymentsApi";
 import { Badge, Card } from "@shared/components/primitives/ui";
 
 interface Props {

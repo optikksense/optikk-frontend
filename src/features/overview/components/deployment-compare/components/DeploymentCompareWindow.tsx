@@ -1,7 +1,7 @@
 import { ArrowUpRight, GitBranch, Radar } from "lucide-react";
 import { memo } from "react";
 
-import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentCompareResponse } from "@shared/api/deployments/deploymentsApi";
 import { Button, Card } from "@shared/components/primitives/ui";
 
 import { formatWindowLabel } from "../utils";

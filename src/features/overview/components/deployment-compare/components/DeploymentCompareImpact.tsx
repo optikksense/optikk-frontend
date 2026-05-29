@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import type { DeploymentImpactRow } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentImpactRow } from "@shared/api/deployments/deploymentsApi";
 import { Badge, Card, SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 import { formatDuration, formatPercentage } from "@shared/utils/formatters";
 

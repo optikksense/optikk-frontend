@@ -12,11 +12,13 @@ import { InfrastructureHubHeader } from "./InfrastructureHubHeader";
 import { InfrastructureKpiStrip } from "./InfrastructureKpiStrip";
 
 const HostsTab = lazy(() => import("./tabs/HostsTab"));
+const ContainersTab = lazy(() => import("./tabs/ContainersTab"));
 const NetworkTab = lazy(() => import("./tabs/NetworkTab"));
 const FleetTab = lazy(() => import("./tabs/FleetTab"));
 
-const TAB_ITEMS: { id: InfraTabId; label: string; count?: keyof InfrastructureNodeSummary }[] = [
+const TAB_ITEMS: { id: InfraTabId; label: string }[] = [
   { id: INFRA_TAB.hosts, label: "Hosts" },
+  { id: INFRA_TAB.containers, label: "Containers" },
   { id: INFRA_TAB.network, label: "Network" },
   { id: INFRA_TAB.hostMap, label: "Host map" },
 ];
@@ -34,19 +36,28 @@ function useNodesSummary() {
   );
 }
 
+function tabCount(id: InfraTabId, hostCount: number | null, podCount: number | null): number | null {
+  if (id === INFRA_TAB.hosts) return hostCount;
+  if (id === INFRA_TAB.containers) return podCount;
+  return null;
+}
+
 function TabsRow({
   active,
   hostCount,
+  podCount,
   onChange,
 }: {
   active: InfraTabId;
   hostCount: number | null;
+  podCount: number | null;
   onChange: (next: InfraTabId) => void;
 }) {
   return (
     <nav className="flex border-[var(--border-color)] border-b">
       {TAB_ITEMS.map((tab) => {
         const isActive = active === tab.id;
+        const count = tabCount(tab.id, hostCount, podCount);
         return (
           <button
             key={tab.id}
@@ -59,9 +70,9 @@ function TabsRow({
             }`}
           >
             {tab.label}
-            {tab.id === INFRA_TAB.hosts && hostCount != null && (
+            {count != null && (
               <span className="ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full bg-[var(--bg-tertiary)] px-1 text-[10px] text-[var(--text-muted)]">
-                {hostCount}
+                {count}
               </span>
             )}
           </button>
@@ -99,7 +110,12 @@ export default function InfrastructureHubPage() {
         alertCount={alertCount}
       />
       <InfrastructureKpiStrip summary={summary} />
-      <TabsRow active={activeTab} hostCount={hostCount} onChange={setTab} />
+      <TabsRow
+        active={activeTab}
+        hostCount={hostCount}
+        podCount={podCount}
+        onChange={setTab}
+      />
       <Suspense
         fallback={
           <div className="flex h-64 items-center justify-center text-[13px] text-[var(--text-muted)]">
@@ -108,6 +124,7 @@ export default function InfrastructureHubPage() {
         }
       >
         {activeTab === INFRA_TAB.hosts ? <HostsTab /> : null}
+        {activeTab === INFRA_TAB.containers ? <ContainersTab /> : null}
         {activeTab === INFRA_TAB.network ? <NetworkTab /> : null}
         {activeTab === INFRA_TAB.hostMap ? <FleetTab /> : null}
       </Suspense>

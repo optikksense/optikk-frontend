@@ -15,9 +15,10 @@ import { KafkaKpiStrip } from "./kpi/KafkaKpiStrip";
 const OverviewTab = lazy(() => import("./tabs/OverviewTab"));
 const TopicsTab = lazy(() => import("./tabs/TopicsTab"));
 const ConsumerGroupsTab = lazy(() => import("./tabs/ConsumerGroupsTab"));
+const LagTab = lazy(() => import("./tabs/LagTab"));
 const E2ELatencyTab = lazy(() => import("./tabs/E2ELatencyTab"));
 
-const TAB_IDS = ["overview", "topics", "groups", "e2e"] as const;
+const TAB_IDS = ["overview", "topics", "groups", "lag", "e2e"] as const;
 type TabId = (typeof TAB_IDS)[number];
 
 const URL_TAB = "tab";
@@ -55,6 +56,7 @@ export default function SaturationKafkaPage() {
     { key: "overview", label: "Overview" },
     { key: "topics", label: "Topics", count: summaryQ.data?.topic_count },
     { key: "groups", label: "Consumer groups", count: summaryQ.data?.group_count },
+    { key: "lag", label: "Lag" },
     { key: "e2e", label: "E2E latency" },
   ];
 
@@ -69,6 +71,7 @@ export default function SaturationKafkaPage() {
           {activeTab === "overview" && <OverviewTab />}
           {activeTab === "topics" && <TopicsTab />}
           {activeTab === "groups" && <ConsumerGroupsTab />}
+          {activeTab === "lag" && <LagTab />}
           {activeTab === "e2e" && <E2ELatencyTab />}
         </Suspense>
       </div>

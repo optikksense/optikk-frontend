@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { memo, useCallback } from "react";
 
-import type { DeploymentRow } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentRow } from "@shared/api/deployments/deploymentsApi";
 import { buildDeploymentCompareDrawerSearch } from "@/features/overview/components/serviceDrawerState";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import { Card } from "@shared/components/primitives/ui";

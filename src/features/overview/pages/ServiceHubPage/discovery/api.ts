@@ -2,11 +2,13 @@ import type { ServiceMetricPoint } from "@/features/metrics/types";
 import {
   type ServiceLatestDeployment,
   deploymentsApi,
-} from "@/features/overview/api/deploymentsApi";
+} from "@shared/api/deployments/deploymentsApi";
 import { getServiceMetrics } from "@/features/overview/api/serviceMetricsApi";
 import type { RequestTime } from "@/shared/api/service-types";
-import type { ServiceTopologyResponse } from "../topology/api";
-import { getServiceTopology } from "../topology/api";
+import {
+  type ServiceTopologyResponse,
+  getServiceTopology,
+} from "@shared/components/ui/charts/ServiceTopologyGraph";
 
 export type DiscoveryHealth = "healthy" | "degraded" | "unhealthy";
 export type DeploymentRisk = "stable" | "watch" | "critical" | "unknown";

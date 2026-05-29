@@ -1,4 +1,4 @@
-import { deploymentsApi } from "@/features/overview/api/deploymentsApi";
+import { deploymentsApi } from "@shared/api/deployments/deploymentsApi";
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 

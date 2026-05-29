@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentCompareResponse } from "@shared/api/deployments/deploymentsApi";
 import { Card } from "@shared/components/primitives/ui";
 import { formatNumber } from "@shared/utils/formatters";
 

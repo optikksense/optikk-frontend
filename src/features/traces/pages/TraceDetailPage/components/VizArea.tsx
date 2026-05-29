@@ -1,5 +1,6 @@
 import { memo } from "react";
 
+import type { TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
 import type Flamegraph from "@shared/components/ui/charts/specialized/Flamegraph";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
@@ -23,6 +24,7 @@ interface Props {
   readonly flamegraphLoading: boolean;
   readonly flamegraphError: boolean;
   readonly spanEvents?: readonly SpanEvent[];
+  readonly errorGroups?: readonly TraceErrorGroup[];
 }
 
 function VizAreaComponent(props: Props) {
@@ -46,7 +48,11 @@ function VizAreaComponent(props: Props) {
         />
       )}
       {props.activeTab === "errors" && (
-        <ErrorsTab spans={props.spans} onSelect={props.onSpanClick} />
+        <ErrorsTab
+          spans={props.spans}
+          onSelect={props.onSpanClick}
+          errorGroups={props.errorGroups}
+        />
       )}
       {props.activeTab === "raw" && <RawJsonTab traceId={props.traceId} spans={props.spans} />}
     </div>

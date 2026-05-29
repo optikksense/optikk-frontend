@@ -36,7 +36,7 @@ function formatPct(value: number | undefined): string {
   return `${value.toFixed(0)}%`;
 }
 
-export function HostCard({ host }: { host: HostForService }) {
+export function HostCard({ host, isOutlier }: { host: HostForService; isOutlier?: boolean }) {
   return (
     <article
       className={cn(
@@ -48,11 +48,21 @@ export function HostCard({ host }: { host: HostForService }) {
         <span className="truncate font-mono text-[12px] text-[var(--text-primary)]">
           {host.host}
         </span>
-        {host.zone && (
-          <span className="shrink-0 rounded bg-[var(--bg-elevated,rgba(255,255,255,0.06))] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)] uppercase">
-            {host.zone}
-          </span>
-        )}
+        <div className="flex shrink-0 items-center gap-1">
+          {isOutlier && (
+            <span
+              title="Error rate or p99 latency is a clear outlier vs the rest of this service's fleet"
+              className="rounded bg-[var(--color-warning,#f59e0b)]/15 px-1.5 py-0.5 text-[10px] text-[var(--color-warning,#f59e0b)] uppercase"
+            >
+              outlier
+            </span>
+          )}
+          {host.zone && (
+            <span className="rounded bg-[var(--bg-elevated,rgba(255,255,255,0.06))] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)] uppercase">
+              {host.zone}
+            </span>
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-y-1">
         <HostStat label="CPU" value={formatPct(host.cpu_pct)} />

@@ -3,20 +3,25 @@ import { memo, useMemo } from "react";
 
 import { formatDuration } from "@shared/utils/formatters";
 
+import type { TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
 import type { TraceRecord } from "@shared/entities/trace/model";
+
+import { TraceErrorSummary } from "./TraceErrorSummary";
 
 interface Props {
   readonly spans: readonly TraceRecord[];
   readonly onSelect: (span: { span_id: string }) => void;
+  readonly errorGroups?: readonly TraceErrorGroup[];
 }
 
-function ErrorsTabComponent({ spans, onSelect }: Props) {
+function ErrorsTabComponent({ spans, onSelect, errorGroups }: Props) {
   const errs = useMemo(
     () => spans.filter((s) => (s.status ?? "").toUpperCase() === "ERROR"),
     [spans]
   );
+  const groups = errorGroups ?? [];
 
-  if (errs.length === 0) {
+  if (errs.length === 0 && groups.length === 0) {
     return (
       <div className="grid place-items-center px-5 py-20 text-center gap-1.5">
         <div className="text-[18px] text-[var(--text-primary)] font-semibold">
@@ -31,9 +36,12 @@ function ErrorsTabComponent({ spans, onSelect }: Props) {
 
   return (
     <div className="p-4 flex flex-col gap-2.5 overflow-auto">
-      <div className="text-[12px] text-[var(--text-caption)] uppercase tracking-[0.06em]">
-        {errs.length} error span{errs.length === 1 ? "" : "s"} in this trace
-      </div>
+      {groups.length > 0 && <TraceErrorSummary groups={groups} onSpanClick={onSelect} />}
+      {errs.length > 0 && (
+        <div className="text-[12px] text-[var(--text-caption)] uppercase tracking-[0.06em]">
+          {errs.length} error span{errs.length === 1 ? "" : "s"} in this trace
+        </div>
+      )}
       {errs.map((s) => (
         <button
           key={s.span_id}

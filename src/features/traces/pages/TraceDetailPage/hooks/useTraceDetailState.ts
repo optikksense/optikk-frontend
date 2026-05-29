@@ -5,7 +5,11 @@ import { useAppStore } from "@store/appStore";
 
 import { useTraceDetailData } from "../../../hooks/useTraceDetailData";
 import { useTraceDetailEnhanced } from "../../../hooks/useTraceDetailEnhanced";
+import { useTraceErrors } from "../../../hooks/useTraceErrors";
 import { useTraceFlamegraph } from "../../../hooks/useTraceFlamegraph";
+import { useTraceHotSpans } from "../../../hooks/useTraceHotSpans";
+import { useTracePhaseBreakdown } from "../../../hooks/useTracePhaseBreakdown";
+import { useTraceServiceMap } from "../../../hooks/useTraceServiceMap";
 import { useTracesStore } from "../../../store/tracesStore";
 import { computeTraceTimeBounds } from "../utils";
 
@@ -30,6 +34,15 @@ export function useTraceDetailState() {
   // Lazy: only fetch flamegraph when its viz tab is selected.
   const flamegraph = useTraceFlamegraph(traceIdParam, activeTab === "flamegraph");
 
+  // Service-time breakdown + per-trace error groups (previously-unused endpoints).
+  const serviceMap = useTraceServiceMap(traceIdParam);
+  // Error groups only matter when the errors tab is open.
+  const traceErrors = useTraceErrors(traceIdParam, activeTab === "errors");
+  // Top-3 hot spans by self-time, derived from flamegraph frames (eager, cached).
+  const hotSpans = useTraceHotSpans(traceIdParam);
+  // Self-time grouped by execution phase, from the same cached frames.
+  const phaseBreakdown = useTracePhaseBreakdown(traceIdParam);
+
   // The enhanced data hook gates `related-traces` on activeDetailTab === "related".
   // Our Links tab folds in related traces, so map "links" → "related" for that one switch.
   const enhancedTab = spanDetailTab === "links" ? "related" : "attributes";
@@ -52,5 +65,9 @@ export function useTraceDetailState() {
     data,
     enhanced,
     flamegraph,
+    serviceMap,
+    traceErrors,
+    hotSpans,
+    phaseBreakdown,
   };
 }

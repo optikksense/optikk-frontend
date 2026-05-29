@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import type uPlot from "uplot";
 
 import ObservabilityChart, {
   type ObservabilityChartSeries,
@@ -9,6 +10,7 @@ import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
 import type { LatencyPercentilesPoint } from "@/features/services/api/serviceDetailApi";
 
 import { fmtMs } from "../formatters";
+import { useDeployMarkers } from "../hooks/useDeployMarkers";
 import { useLatencyPercentiles } from "../hooks/useLatencyPercentiles";
 import { PanelCard } from "./PanelCard";
 
@@ -61,7 +63,7 @@ function buildSeries(
   };
 }
 
-function ChartBody({ data }: { data: ChartData }) {
+function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
   if (data.timestamps.length === 0) {
     return (
       <div className="grid h-[180px] place-items-center text-[12px] text-[var(--text-muted)]">
@@ -75,6 +77,7 @@ function ChartBody({ data }: { data: ChartData }) {
       series={data.series}
       height={200}
       yFormatter={(v) => fmtMs(v)}
+      plugins={plugins}
     />
   );
 }
@@ -82,10 +85,11 @@ function ChartBody({ data }: { data: ChartData }) {
 export function LatencyPanel({ serviceName }: { serviceName: string }) {
   const query = useLatencyPercentiles(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
+  const deployPlugins = useDeployMarkers(serviceName);
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
   return (
     <PanelCard title="Latency" subtitle="p50 / p95 / p99">
-      <ChartBody data={data} />
+      <ChartBody data={data} plugins={deployPlugins} />
     </PanelCard>
   );
 }

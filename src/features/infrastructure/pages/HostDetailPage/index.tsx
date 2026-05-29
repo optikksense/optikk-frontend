@@ -8,7 +8,9 @@ import { formatNumber } from "@shared/utils/formatters";
 
 import { getNodes, getNodeServices } from "../../api/hostsApi";
 import type { InfrastructureNode, InfrastructureNodeService } from "../../api/hostsApi";
+import { InfraLogsLink } from "../../components/InfraLogsLink";
 import { tierForNode } from "../../utils/nodeHealth";
+import { HostDetailContainers } from "./HostDetailContainers";
 import { HostDetailHero, type HostStatus } from "./HostDetailHero";
 import { HostDetailKpiCards } from "./HostDetailKpiCards";
 import { HostDetailSystemMetrics } from "./HostDetailSystemMetrics";
@@ -112,6 +114,8 @@ export default function HostDetailPage(): JSX.Element {
           pagination={{ pageSize: 25 }}
         />
       </section>
+      <HostDetailContainers host={host} />
+      <InfraLogsLink scope="host" value={host} />
     </PageShell>
   );
 }

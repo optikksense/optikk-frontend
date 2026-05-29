@@ -1,6 +1,6 @@
 import { memo, useMemo } from "react";
 
-import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentCompareResponse } from "@shared/api/deployments/deploymentsApi";
 
 import { SummaryCard } from "./SummaryCard";
 import { buildSummaryTiles } from "./summaryTiles";

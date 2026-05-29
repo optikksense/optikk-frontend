@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { CreateMonitorPayload, MonitorType } from "../../api/monitorsApi";
 
@@ -81,10 +81,21 @@ function applyTypeDefaults(payload: CreateMonitorPayload, type: MonitorType): Cr
   }
 }
 
-export function useWizardState() {
-  const [draft, setDraft] = useState<CreateMonitorPayload>(DEFAULT);
+export function useWizardState(initial?: CreateMonitorPayload) {
+  const [draft, setDraft] = useState<CreateMonitorPayload>(initial ?? DEFAULT);
+  const seededFromInitial = useRef(false);
+
+  // Edit mode: re-seed the draft once the monitor finishes loading. The hook
+  // mounts before the fetched monitor is available, so `initial` arrives later.
+  useEffect(() => {
+    if (initial && !seededFromInitial.current) {
+      seededFromInitial.current = true;
+      setDraft(initial);
+    }
+  }, [initial]);
 
   useEffect(() => {
+    if (initial) return; // querystring prefill is for create mode only
     const prefill = parsePrefill();
     if (Object.keys(prefill).length > 0) {
       setDraft((prev) => {
@@ -92,7 +103,7 @@ export function useWizardState() {
         return applyTypeDefaults(merged, merged.type);
       });
     }
-  }, []);
+  }, [initial]);
 
   const setType = (type: MonitorType) =>
     setDraft((prev) => applyTypeDefaults(prev, type));

@@ -7,6 +7,7 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatBytes, formatNumber } from "@shared/utils/formatters";
 
 import { type KafkaTopicConsumerRow, saturationApi } from "../../api/saturationApi";
+import { KafkaPartitionsCard } from "../../components/KafkaPartitionsCard";
 import { SaturationStatTile } from "../../components/SaturationStatTile";
 
 function formatBytesPerSecond(value: number): string {
@@ -27,6 +28,12 @@ export default function KafkaTopicDetailPage(): JSX.Element {
     "saturation-kafka-topic-groups",
     (teamId, startTime, endTime) =>
       saturationApi.getKafkaTopicGroups(topic, teamId, startTime, endTime),
+    { extraKeys: [topic] }
+  );
+  const partitionsQuery = useTimeRangeQuery(
+    "saturation-kafka-topic-partitions",
+    (teamId, startTime, endTime) =>
+      saturationApi.getKafkaTopicPartitions(topic, teamId, startTime, endTime),
     { extraKeys: [topic] }
   );
 
@@ -146,6 +153,8 @@ export default function KafkaTopicDetailPage(): JSX.Element {
           scroll={{ x: 920 }}
         />
       </PageSurface>
+
+      <KafkaPartitionsCard rows={partitionsQuery.data ?? []} scope="topic" />
     </PageShell>
   );
 }

@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
+import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import { ackMonitor, muteMonitor } from "../../api/monitorsApi";
 import {
@@ -10,6 +11,7 @@ import {
   useMonitorSeriesQuery,
   useStatusTimelineQuery,
 } from "../../hooks/useMonitorDetail";
+import { useDeleteMonitor } from "../../hooks/useMonitorMutations";
 
 import CurrentValueCard from "./CurrentValueCard";
 import DetailHeader from "./DetailHeader";
@@ -32,6 +34,8 @@ export default function MonitorDetailPage() {
   const seriesQ = useMonitorSeriesQuery(id, ONE_HOUR_MS);
   const timelineQ = useStatusTimelineQuery(id, ONE_DAY_MS);
   const eventsQ = useMonitorEventsQuery(id, 10);
+  const deleteMutation = useDeleteMonitor();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const handleAck = useCallback(async () => {
     if (id === undefined) return;
@@ -53,6 +57,23 @@ export default function MonitorDetailPage() {
       console.error("mute failed", err);
     }
   }, [id, detailQ]);
+
+  const handleEdit = useCallback(() => {
+    if (id === undefined) return;
+    navigate(dynamicNavigateOptions(`/monitors/${id}/edit`));
+  }, [id, navigate]);
+
+  const handleDelete = useCallback(async () => {
+    if (id === undefined) return;
+    setDeleteError(null);
+    try {
+      await deleteMutation.mutateAsync(id);
+      navigate({ to: "/monitors" });
+    } catch (err) {
+      const e = err as { response?: { data?: { error?: { message?: string } } } };
+      setDeleteError(e?.response?.data?.error?.message ?? "Failed to delete monitor");
+    }
+  }, [id, deleteMutation, navigate]);
 
   if (id === undefined || Number.isNaN(id)) {
     return (
@@ -100,7 +121,15 @@ export default function MonitorDetailPage() {
 
   return (
     <PageShell>
-      <DetailHeader monitor={monitor} onAck={handleAck} onMute={handleMute} />
+      <DetailHeader
+        monitor={monitor}
+        onAck={handleAck}
+        onMute={handleMute}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        deleting={deleteMutation.isPending}
+        deleteError={deleteError}
+      />
 
       <div className="grid grid-cols-[1.5fr_1fr_1fr] gap-4">
         <EvalChartCard data={seriesQ.data} loading={seriesQ.isPending} />

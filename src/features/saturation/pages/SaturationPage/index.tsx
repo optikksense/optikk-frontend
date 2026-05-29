@@ -1,5 +1,6 @@
 import { SaturationSubnav } from "@/features/saturation/components/SaturationSubnav";
 
+import { HostSaturationMap } from "./components/HostSaturationMap";
 import { SaturationOverviewHeader } from "./components/SaturationOverviewHeader";
 import { SubsystemCardsRow } from "./components/SubsystemCardsRow";
 import { TopKafkaTopicsCard } from "./components/TopKafkaTopicsCard";
@@ -28,6 +29,7 @@ export default function SaturationPage(): JSX.Element {
       ) : null}
 
       <SubsystemCardsRow cards={model.cards} />
+      <HostSaturationMap />
       <WorstSystemsTable rows={model.worstSystems} />
       <TopKafkaTopicsCard topics={model.topTopics} />
     </div>

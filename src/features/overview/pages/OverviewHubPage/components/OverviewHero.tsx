@@ -1,4 +1,4 @@
-import { Activity, AlertOctagon, Gauge, Timer } from "lucide-react";
+import { Activity, AlertOctagon, Gauge, Smile } from "lucide-react";
 
 import type { RedSummary } from "@/features/overview/api/overviewHubApi";
 import StatCard from "@shared/components/ui/cards/StatCard";
@@ -8,6 +8,7 @@ import { num } from "../hooks/mappers";
 
 interface Props {
   readonly summary: RedSummary | undefined;
+  readonly apdex: number | null | undefined;
   readonly loading: boolean;
 }
 
@@ -17,10 +18,18 @@ function colorForErrorPct(pct: number): string {
   return "var(--text-muted)";
 }
 
-export default function OverviewHero({ summary, loading }: Props) {
+// Apdex bands: ≥0.94 excellent, ≥0.85 good, ≥0.7 fair, else poor.
+function colorForApdex(score: number): string {
+  if (score >= 0.94) return "var(--color-healthy)";
+  if (score >= 0.7) return "var(--color-warning)";
+  return "var(--color-error)";
+}
+
+export default function OverviewHero({ summary, apdex, loading }: Props) {
   const totalReq = num(summary?.total_span_count);
   const errPct = num(summary?.avg_error_pct);
   const errCount = num(summary?.total_errors);
+  const hasApdex = apdex !== null && apdex !== undefined;
 
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -50,19 +59,23 @@ export default function OverviewHero({ summary, loading }: Props) {
       />
       <StatCard
         metric={{
-          title: "Latency p95",
-          value: loading ? "—" : formatDuration(summary?.avg_p95_ms),
-          description: loading ? undefined : "across services",
-        }}
-        visuals={{ loading, icon: <Timer size={18} />, iconColor: "var(--text-muted)" }}
-      />
-      <StatCard
-        metric={{
           title: "Latency p99",
           value: loading ? "—" : formatDuration(summary?.avg_p99_ms),
           description: loading ? undefined : "tail latency",
         }}
         visuals={{ loading, icon: <Gauge size={18} />, iconColor: "var(--text-muted)" }}
+      />
+      <StatCard
+        metric={{
+          title: "Apdex",
+          value: loading || !hasApdex ? "—" : apdex.toFixed(2),
+          description: loading ? undefined : "satisfaction (300ms / 1.2s)",
+        }}
+        visuals={{
+          loading,
+          icon: <Smile size={18} />,
+          iconColor: hasApdex ? colorForApdex(apdex) : "var(--text-muted)",
+        }}
       />
     </div>
   );

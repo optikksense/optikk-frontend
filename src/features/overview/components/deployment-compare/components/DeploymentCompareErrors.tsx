@@ -1,7 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 import { memo } from "react";
 
-import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentCompareResponse } from "@shared/api/deployments/deploymentsApi";
 import { Card } from "@shared/components/primitives/ui";
 
 import { ErrorRowItem } from "./ErrorRowItem";

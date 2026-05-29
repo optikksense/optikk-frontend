@@ -1,4 +1,4 @@
-import { deploymentsApi } from "@/features/overview/api/deploymentsApi";
+import { deploymentsApi } from "@shared/api/deployments/deploymentsApi";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 export function useDeploymentList(serviceName: string | undefined) {

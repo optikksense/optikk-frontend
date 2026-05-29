@@ -1,5 +1,4 @@
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
-import { aggregateSeverityTrend } from "@/features/explorer/utils/trend";
 import { getLogsTrend } from "@/features/log/api/logsAnalyticsApi";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
@@ -46,7 +45,8 @@ async function fetchTrend(
     endTime: end,
     filters: [{ field: "service_name", op: "eq", value: serviceName }],
   });
-  return aggregateSeverityTrend(rows);
+  // /logs/trend is wide-format: { total, error (sev>=4), warn (sev=3), info, debug }.
+  return rows.map((r) => ({ total: r.total, errors: r.error, warnings: r.warn }));
 }
 
 export function useLogVolumeDiff(

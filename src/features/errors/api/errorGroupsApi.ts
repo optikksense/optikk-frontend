@@ -17,7 +17,8 @@ export interface ErrorGroup {
 }
 
 export interface ErrorGroupDetail extends ErrorGroup {
-  readonly stack_trace?: string;
+  /** Raw multi-line stacktrace from the sample exception; may be empty. */
+  readonly sample_stacktrace?: string;
   readonly exception_type?: string;
 }
 

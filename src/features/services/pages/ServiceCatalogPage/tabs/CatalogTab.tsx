@@ -1,9 +1,12 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { dynamicNavigateOptions } from "@shared/utils/navigation";
+
+import { ROUTES } from "@/shared/constants/routes";
 
 import type { CatalogRow } from "../catalog/buildCatalogRows";
-import { CatalogDrawer } from "../catalog/CatalogDrawer";
 import { CatalogTable } from "../catalog/CatalogTable";
 import { SearchToolbar } from "../catalog/SearchToolbar";
 import { type StatusFilter } from "../catalog/StatusFilterPill";
@@ -22,11 +25,7 @@ function matchesStatus(row: CatalogRow, filter: StatusFilter): boolean {
   return row.status === filter;
 }
 
-function applyFilters(
-  rows: ReturnType<typeof useCatalogList>["rows"],
-  search: string,
-  status: StatusFilter
-): ReturnType<typeof useCatalogList>["rows"] {
+function applyFilters(rows: CatalogRow[], search: string, status: StatusFilter): CatalogRow[] {
   const needle = search.trim().toLowerCase();
   return rows.filter((row) => {
     if (!matchesStatus(row, status)) return false;
@@ -45,6 +44,7 @@ function EmptyState({ isPending }: { isPending: boolean }) {
 
 export function CatalogTab() {
   const { rows, isPending } = useCatalogList();
+  const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const status = normalizeStatusFilter(params.get("status"));
   const setStatus = (next: StatusFilter) => {
@@ -54,14 +54,15 @@ export function CatalogTab() {
     setParams(updated);
   };
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<string | null>(null);
   const filtered = useMemo(() => applyFilters(rows, search, status), [rows, search, status]);
-  const selectedRow = useMemo(
-    () => rows.find((row) => row.serviceName === selected) ?? null,
-    [rows, selected]
-  );
+
+  const openService = (serviceName: string) => {
+    const detail = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(serviceName));
+    navigate(dynamicNavigateOptions(detail));
+  };
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
       <SearchToolbar
         value={search}
         onChange={setSearch}
@@ -71,13 +72,7 @@ export function CatalogTab() {
       {filtered.length === 0 ? (
         <EmptyState isPending={isPending} />
       ) : (
-        <div
-          className="grid grid-cols-1 gap-3"
-          style={selectedRow ? { gridTemplateColumns: "minmax(0, 1fr) 360px" } : undefined}
-        >
-          <CatalogTable rows={filtered} onSelect={setSelected} selectedServiceName={selected} />
-          {selectedRow && <CatalogDrawer row={selectedRow} onClose={() => setSelected(null)} />}
-        </div>
+        <CatalogTable rows={filtered} onRowClick={openService} />
       )}
     </div>
   );

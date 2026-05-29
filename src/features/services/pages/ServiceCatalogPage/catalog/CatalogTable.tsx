@@ -1,15 +1,8 @@
+import { ChevronRight } from "lucide-react";
+
 import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 
-import { ServiceAvatar } from "@/features/services/components/ServiceAvatar";
-
-import {
-  fmtDelta,
-  fmtMs,
-  fmtNum,
-  fmtPct,
-  relativeTimeFromIso,
-} from "../../ServiceDetailPage/formatters";
-import { SloBarCell } from "./SloBarCell";
+import { fmtDelta, fmtMs, fmtNum, fmtPct } from "../../ServiceDetailPage/formatters";
 import { SparklineCell } from "./SparklineCell";
 import { StatusDot } from "./StatusDot";
 import type { CatalogRow } from "./buildCatalogRows";
@@ -41,12 +34,11 @@ function NameCell({ row }: { row: CatalogRow }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
       <StatusDot status={row.status} />
-      <ServiceAvatar serviceName={row.serviceName} size={26} />
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate text-[12.5px] font-semibold text-[var(--text-primary)]">
           {row.serviceName}
         </span>
-        <span className="truncate text-[11px] text-[var(--text-muted)]">
+        <span className="truncate font-mono text-[11px] text-[var(--text-muted)]">
           {row.version}
           {row.environment !== "—" ? ` · ${row.environment}` : ""}
         </span>
@@ -55,71 +47,77 @@ function NameCell({ row }: { row: CatalogRow }) {
   );
 }
 
-function RateCell({ row }: { row: CatalogRow }) {
-  const tone = row.status === "error" ? "err" : row.status === "warn" ? "warn" : "info";
-  return (
-    <div className="inline-flex items-center justify-end gap-2">
-      <span className="text-[12.5px] font-semibold text-[var(--text-primary)]">
-        {fmtNum(row.rps)}
-        <span className="ml-1 font-normal text-[10px] text-[var(--text-muted)]">/s</span>
-      </span>
-      <SparklineCell values={row.sparkline} tone={tone} />
-    </div>
-  );
+function sparkTone(status: CatalogRow["status"]): "info" | "warn" | "err" {
+  return status === "error" ? "err" : status === "warn" ? "warn" : "info";
 }
 
 const COLUMNS: SimpleTableColumn<CatalogRow>[] = [
   { title: "Service", key: "serviceName", width: 300, render: (_v, row) => <NameCell row={row} /> },
   {
-    title: "Request rate",
+    title: "RPS",
     key: "rps",
-    width: 200,
+    width: 110,
     align: "right",
     sorter: (a, b) => a.rps - b.rps,
     defaultSortOrder: "descend",
-    render: (_v, row) => <RateCell row={row} />,
+    render: (_v, row) => (
+      <span className="font-semibold text-[12.5px] text-[var(--text-primary)] tabular-nums">
+        {fmtNum(row.rps)}
+      </span>
+    ),
   },
   {
-    title: "Errors",
+    title: "Error",
     key: "errorRate",
     width: 90,
     align: "right",
     sorter: (a, b) => a.errorRate - b.errorRate,
-    render: (_v, row) => <ErrorCell rate={row.errorRate} />,
+    render: (_v, row) => (
+      <span className="tabular-nums">
+        <ErrorCell rate={row.errorRate} />
+      </span>
+    ),
   },
   {
-    title: "p99 latency",
+    title: "P99",
     key: "p99Ms",
-    width: 140,
+    width: 100,
     align: "right",
     sorter: (a, b) => a.p99Ms - b.p99Ms,
+    render: (_v, row) => <span className="font-mono text-[12px] tabular-nums">{fmtMs(row.p99Ms)}</span>,
+  },
+  {
+    title: "Last 1 hour",
+    key: "sparkline",
+    width: 140,
+    render: (_v, row) => <SparklineCell values={row.sparkline} tone={sparkTone(row.status)} width={120} />,
+  },
+  {
+    title: "Δ",
+    key: "p99DeltaPct",
+    width: 80,
+    align: "right",
     render: (_v, row) => (
-      <span className="inline-flex items-baseline justify-end gap-2 font-mono text-[12px]">
-        {fmtMs(row.p99Ms)}
+      <span className="text-[12px] tabular-nums">
         <DeltaCell value={row.p99DeltaPct} />
       </span>
     ),
   },
-  { title: "SLO", key: "slo", width: 160, render: (_v, row) => <SloBarCell slo={row.slo} /> },
   {
-    title: "Last deploy",
-    key: "lastDeployedAt",
-    width: 120,
-    render: (_v, row) => (
-      <span className="font-mono text-[11px] text-[var(--text-muted)]">
-        {relativeTimeFromIso(row.lastDeployedAt)}
-      </span>
-    ),
+    title: "",
+    key: "chevron",
+    width: 40,
+    align: "right",
+    render: () => <ChevronRight size={14} className="text-[var(--text-muted)]" />,
   },
 ];
 
 interface CatalogTableProps {
   readonly rows: CatalogRow[];
-  readonly onSelect: (serviceName: string) => void;
-  readonly selectedServiceName: string | null;
+  readonly onRowClick: (serviceName: string) => void;
 }
 
-export function CatalogTable({ rows, onSelect, selectedServiceName }: CatalogTableProps) {
+export function CatalogTable({ rows, onRowClick }: CatalogTableProps) {
   return (
     <SimpleTable
       columns={COLUMNS}
@@ -127,14 +125,8 @@ export function CatalogTable({ rows, onSelect, selectedServiceName }: CatalogTab
       rowKey={(r) => r.serviceName}
       pagination={{ pageSize: 50 }}
       onRow={(record) => ({
-        onClick: () => onSelect(record.serviceName),
-        style: {
-          cursor: "pointer",
-          background:
-            selectedServiceName === record.serviceName
-              ? "var(--bg-card-hover)"
-              : undefined,
-        },
+        onClick: () => onRowClick(record.serviceName),
+        style: { cursor: "pointer" },
       })}
     />
   );

@@ -5,14 +5,12 @@ import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery
 import {
   type ServiceLatestDeployment,
   deploymentsApi,
-} from "@/features/overview/api/deploymentsApi";
+} from "@shared/api/deployments/deploymentsApi";
 import {
   type RedSummaryWithComparison,
   type RequestRatePoint,
-  type SloRow,
   getRedSummaryWithComparison,
   getRequestRateSeries,
-  getSloList,
 } from "@/features/services/api/serviceCatalogApi";
 
 import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
@@ -35,10 +33,6 @@ function useRateSeries() {
   );
 }
 
-function useSloListQuery() {
-  return useTimeRangeQuery<SloRow[]>("service-hub.slo-list", (_team, s, e) => getSloList(s, e));
-}
-
 function useLatestDeploysQuery() {
   return useTimeRangeQuery<ServiceLatestDeployment[]>(
     "service-hub.latest-deploys",
@@ -51,7 +45,6 @@ export function useCatalogList(): UseCatalogListResult {
   const { getTimeRange } = useTimeRange();
   const summary = useRedSummary();
   const series = useRateSeries();
-  const slos = useSloListQuery();
   const latest = useLatestDeploysQuery();
 
   const rows = useMemo<CatalogRow[]>(() => {
@@ -62,15 +55,14 @@ export function useCatalogList(): UseCatalogListResult {
       primary: summary.data.data,
       comparison: summary.data.comparison,
       rateSeries: series.data ?? [],
-      slos: slos.data ?? [],
       latestDeploys: latest.data ?? [],
       windowSec,
     });
-  }, [summary.data, series.data, slos.data, latest.data, getTimeRange]);
+  }, [summary.data, series.data, latest.data, getTimeRange]);
 
   return {
     rows,
     isPending: summary.isPending,
-    isError: Boolean(summary.error || series.error || slos.error || latest.error),
+    isError: Boolean(summary.error || series.error || latest.error),
   };
 }

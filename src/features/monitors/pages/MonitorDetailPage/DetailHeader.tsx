@@ -1,6 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Check, MoreHorizontal, Pause } from "lucide-react";
-import { memo } from "react";
+import { ArrowLeft, Check, MoreHorizontal, Pause, Pencil, Trash2 } from "lucide-react";
+import { memo, useState } from "react";
+
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  Modal,
+} from "@shared/components/primitives/ui";
 
 import type { Monitor } from "../../api/monitorsApi";
 import MonitorStatusBadge from "../../components/MonitorStatusBadge";
@@ -10,10 +16,24 @@ interface Props {
   readonly monitor: Monitor;
   readonly onAck: () => void;
   readonly onMute: () => void;
+  readonly onEdit: () => void;
+  readonly onDelete: () => void;
+  readonly deleting: boolean;
+  readonly deleteError: string | null;
 }
 
-function DetailHeader({ monitor, onAck, onMute }: Props) {
+function DetailHeader({
+  monitor,
+  onAck,
+  onMute,
+  onEdit,
+  onDelete,
+  deleting,
+  deleteError,
+}: Props) {
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const scope = (monitor.scope.tags ?? []).map((t) => `${t.key}:${t.value}`).join(" ");
   return (
     <div className="flex flex-col gap-4">
@@ -76,14 +96,72 @@ function DetailHeader({ monitor, onAck, onMute }: Props) {
             <Pause size={13} />
             Mute · 1h
           </button>
-          <button
-            type="button"
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] p-1.5 hover:bg-[var(--bg-secondary)]"
+          <DropdownMenu
+            open={menuOpen}
+            onOpenChange={setMenuOpen}
+            trigger={
+              <button
+                type="button"
+                className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] p-1.5 hover:bg-[var(--bg-secondary)]"
+              >
+                <MoreHorizontal size={14} />
+              </button>
+            }
           >
-            <MoreHorizontal size={14} />
-          </button>
+            <DropdownMenuItem
+              onSelect={() => {
+                setMenuOpen(false);
+                onEdit();
+              }}
+            >
+              <Pencil size={13} className="mr-2" />
+              Edit monitor
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-400"
+              onSelect={() => {
+                setMenuOpen(false);
+                setConfirmOpen(true);
+              }}
+            >
+              <Trash2 size={13} className="mr-2" />
+              Delete monitor
+            </DropdownMenuItem>
+          </DropdownMenu>
         </div>
       </div>
+
+      <Modal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Delete monitor"
+        width={420}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setConfirmOpen(false)}
+              className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5 text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={onDelete}
+              className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
+            >
+              {deleting ? "Deleting…" : "Delete"}
+            </button>
+          </>
+        }
+      >
+        <p className="text-sm text-[var(--text-secondary)]">
+          Delete <span className="font-medium text-[var(--text-primary)]">{monitor.name}</span>?
+          This stops all evaluation and notifications for this monitor and cannot be undone.
+        </p>
+        {deleteError && <p className="mt-2 text-xs text-red-400">{deleteError}</p>}
+      </Modal>
     </div>
   );
 }

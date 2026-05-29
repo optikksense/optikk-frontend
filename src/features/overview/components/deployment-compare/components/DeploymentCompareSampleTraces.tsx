@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { memo } from "react";
 
-import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentCompareResponse } from "@shared/api/deployments/deploymentsApi";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import type { TraceRecord } from "@entities/trace/model";

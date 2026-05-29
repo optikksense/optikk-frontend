@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-import type { DeploymentRow } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentRow } from "@shared/api/deployments/deploymentsApi";
 
 import { fmtNum, relativeTimeFromIso } from "../formatters";
 import { useServiceDeploys } from "../hooks/useServiceDeploys";

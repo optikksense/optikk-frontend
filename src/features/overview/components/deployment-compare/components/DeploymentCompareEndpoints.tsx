@@ -1,7 +1,7 @@
 import { GitCompare } from "lucide-react";
 import { memo } from "react";
 
-import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentCompareResponse } from "@shared/api/deployments/deploymentsApi";
 import { Card, SimpleTable } from "@shared/components/primitives/ui";
 
 import { ENDPOINT_COLUMNS } from "./endpointColumns";

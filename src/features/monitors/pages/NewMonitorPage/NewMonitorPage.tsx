@@ -1,37 +1,47 @@
-import { useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Check } from "lucide-react";
-import { useState } from "react";
+import { useNavigate, useParams } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
+import { useMemo } from "react";
 
 import { PageShell } from "@shared/components/ui";
 
-import { createMonitor } from "../../api/monitorsApi";
+import { useMonitorDetail } from "../../hooks/useMonitorDetail";
 
 import WizardConditionsStep from "./WizardConditionsStep";
 import WizardDefineStep from "./WizardDefineStep";
+import WizardFooter from "./WizardFooter";
 import WizardNotifyStep from "./WizardNotifyStep";
 import WizardQueryStep from "./WizardQueryStep";
 import WizardTypeStep from "./WizardTypeStep";
+import { monitorToDraft } from "./monitorToDraft";
 import { useWizardState } from "./useWizardState";
+import { useWizardSubmit } from "./useWizardSubmit";
 
 export default function NewMonitorPage() {
   const navigate = useNavigate();
-  const { draft, setDraft, setType } = useWizardState();
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const params = useParams({ strict: false }) as { monitorId?: string };
+  const editId = params.monitorId ? Number(params.monitorId) : undefined;
+  const editMode = editId !== undefined && !Number.isNaN(editId);
 
-  const handleSave = async () => {
-    setSaving(true);
-    setError(null);
-    try {
-      const created = await createMonitor(draft);
-      navigate({ to: `/monitors/${created.id}` });
-    } catch (err) {
-      const e = err as { response?: { data?: { error?: { message?: string } } } };
-      setError(e?.response?.data?.error?.message ?? "Failed to save monitor");
-    } finally {
-      setSaving(false);
-    }
-  };
+  const detailQ = useMonitorDetail(editMode ? editId : undefined);
+  const initial = useMemo(
+    () => (detailQ.data ? monitorToDraft(detailQ.data) : undefined),
+    [detailQ.data]
+  );
+
+  const { draft, setDraft, setType } = useWizardState(initial);
+  const { saving, error, save, testing, testResult, testError, test } = useWizardSubmit(
+    editMode ? editId : undefined
+  );
+
+  const title = editMode ? "Edit monitor" : "New monitor";
+
+  if (editMode && detailQ.isPending && !detailQ.data) {
+    return (
+      <PageShell>
+        <div className="p-8 text-sm text-[var(--text-muted)]">Loading monitor…</div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>
@@ -45,14 +55,15 @@ export default function NewMonitorPage() {
           Monitors
         </button>
         <span className="text-[var(--text-muted)]">/</span>
-        <span className="font-medium text-[var(--text-primary)]">New monitor</span>
+        <span className="font-medium text-[var(--text-primary)]">{title}</span>
       </div>
 
       <div>
-        <h1 className="text-2xl font-semibold text-[var(--text-primary)]">New monitor</h1>
+        <h1 className="text-2xl font-semibold text-[var(--text-primary)]">{title}</h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          Create an alert rule · saved monitors are evaluated continuously and notify configured
-          channels.
+          {editMode
+            ? "Adjust this alert rule · changes apply on the next evaluation cycle."
+            : "Create an alert rule · saved monitors are evaluated continuously and notify configured channels."}
         </p>
       </div>
 
@@ -62,31 +73,18 @@ export default function NewMonitorPage() {
       <WizardNotifyStep draft={draft} setDraft={setDraft} />
       <WizardDefineStep draft={draft} setDraft={setDraft} />
 
-      <div className="sticky bottom-0 -mx-6 -mb-10 mt-4 flex items-center gap-3 border-t border-[var(--border-color)] bg-[var(--bg-card)] px-6 py-3">
-        <div className="text-xs text-[var(--text-muted)]">
-          Monitor will be evaluated every{" "}
-          <span className="font-mono">{draft.eval_every_sec}s</span>
-        </div>
-        {error && <div className="text-xs text-red-400">{error}</div>}
-        <div className="ml-auto flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/monitors" })}
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5 text-sm"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            disabled={saving}
-            onClick={handleSave}
-            className="flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-          >
-            <Check size={13} />
-            {saving ? "Saving…" : "Save monitor"}
-          </button>
-        </div>
-      </div>
+      <WizardFooter
+        evalEverySec={draft.eval_every_sec}
+        editMode={editMode}
+        saving={saving}
+        error={error}
+        testing={testing}
+        testResult={testResult}
+        testError={testError}
+        onCancel={() => navigate({ to: "/monitors" })}
+        onSave={() => save(draft)}
+        onTest={test}
+      />
     </PageShell>
   );
 }

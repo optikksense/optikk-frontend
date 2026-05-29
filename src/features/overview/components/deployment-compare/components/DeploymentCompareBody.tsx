@@ -5,7 +5,7 @@ import type {
   DeploymentCompareResponse,
   DeploymentImpactRow,
   DeploymentRow,
-} from "@/features/overview/api/deploymentsApi";
+} from "@shared/api/deployments/deploymentsApi";
 
 import type { TimelineSeries } from "../types";
 

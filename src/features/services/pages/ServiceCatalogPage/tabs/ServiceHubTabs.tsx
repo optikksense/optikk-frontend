@@ -5,14 +5,12 @@ import { SERVICE_HUB_TABS, type ServiceHubTab } from "../useServiceHubTab";
 interface ServiceHubTabsProps {
   readonly active: ServiceHubTab;
   readonly counts: Partial<Record<ServiceHubTab, number>>;
-  readonly errorTabs?: ReadonlyArray<ServiceHubTab>;
   readonly onChange: (next: ServiceHubTab) => void;
 }
 
 const LABELS: Record<ServiceHubTab, string> = {
   catalog: "Catalog",
   map: "Service map",
-  slos: "SLOs",
   deploys: "Deploys",
 };
 
@@ -35,13 +33,11 @@ function TabButton({
   id,
   active,
   count,
-  isError,
   onClick,
 }: {
   id: ServiceHubTab;
   active: boolean;
   count: number | undefined;
-  isError: boolean;
   onClick: () => void;
 }) {
   return (
@@ -56,17 +52,12 @@ function TabButton({
       )}
     >
       {LABELS[id]}
-      {count != null && <TabCount value={count} isError={isError} />}
+      {count != null && <TabCount value={count} isError={false} />}
     </button>
   );
 }
 
-export function ServiceHubTabs({
-  active,
-  counts,
-  errorTabs = ["slos"],
-  onChange,
-}: ServiceHubTabsProps) {
+export function ServiceHubTabs({ active, counts, onChange }: ServiceHubTabsProps) {
   return (
     <nav className="flex border-[var(--border-color)] border-b">
       {SERVICE_HUB_TABS.map((id) => (
@@ -75,7 +66,6 @@ export function ServiceHubTabs({
           id={id}
           active={active === id}
           count={counts[id]}
-          isError={errorTabs.includes(id) && (counts[id] ?? 0) > 0}
           onClick={() => onChange(id)}
         />
       ))}

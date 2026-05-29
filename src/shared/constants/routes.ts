@@ -37,6 +37,7 @@ export const ROUTES = {
   monitors: "/monitors",
   monitorsNew: "/monitors/new",
   monitorDetail: "/monitors/$monitorId",
+  monitorEdit: "/monitors/$monitorId/edit",
   monitorsNotifications: "/monitors/notifications",
   alertsNew: "/alerts/new",
 

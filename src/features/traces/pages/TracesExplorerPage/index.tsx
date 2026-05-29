@@ -20,6 +20,7 @@ import { TraceSortToggle } from "../../components/TraceSortToggle";
 import { useSpansQuery } from "../../hooks/useSpansQuery";
 import type { SpanRow } from "../../types/span";
 import type { TraceSummary } from "../../types/trace";
+import { TraceQuickLook } from "./TraceQuickLook";
 import { getTraceRowId } from "./tracesColumns";
 import { type UseTracesExplorerPageReturn, useTracesExplorerPage } from "./useTracesExplorerPage";
 
@@ -83,6 +84,7 @@ function getTraceRowClassName(row: TraceSummary): string {
 }
 
 function TracesPane({ p }: { p: UseTracesExplorerPageReturn }) {
+  const previewOpen = Boolean(p.focusedTrace);
   return (
     <>
       {p.trendBuckets.length > 0 ? (
@@ -96,22 +98,34 @@ function TracesPane({ p }: { p: UseTracesExplorerPageReturn }) {
         />
       ) : null}
       <TraceSortToggle mode={p.sortMode} onChange={p.setSortMode} />
-      <ResultsArea<TraceSummary>
-        rows={p.sortedTraces}
-        columns={p.columnDefs}
-        config={p.columnConfig}
-        onConfigChange={p.setColumns}
-        getRowId={getTraceRowId}
-        onRowClick={p.onRowClick}
-        getContextMenuItems={p.getContextMenuItems}
-        resetKey={p.filterKey}
-        loading={p.query.isPending}
-        queryError={p.queryError}
-        onRetry={p.onRetry}
-        getRowClassName={getTraceRowClassName}
-        emptyTitle="No traces"
-        emptyDescription="Adjust filters or broaden the time range."
-      />
+      <div
+        className={
+          previewOpen
+            ? "grid min-h-0 flex-1 gap-3 grid-cols-[1fr_360px] overflow-hidden p-3"
+            : "flex min-h-0 flex-1 flex-col overflow-hidden"
+        }
+      >
+        <ResultsArea<TraceSummary>
+          rows={p.sortedTraces}
+          columns={p.columnDefs}
+          config={p.columnConfig}
+          onConfigChange={p.setColumns}
+          getRowId={getTraceRowId}
+          selectedId={p.focusedTraceId}
+          onRowClick={p.onRowClick}
+          getContextMenuItems={p.getContextMenuItems}
+          resetKey={p.filterKey}
+          loading={p.query.isPending}
+          queryError={p.queryError}
+          onRetry={p.onRetry}
+          getRowClassName={getTraceRowClassName}
+          emptyTitle="No traces"
+          emptyDescription="Adjust filters or broaden the time range."
+        />
+        {p.focusedTrace ? (
+          <TraceQuickLook trace={p.focusedTrace} onClose={p.onCloseQuickLook} />
+        ) : null}
+      </div>
     </>
   );
 }

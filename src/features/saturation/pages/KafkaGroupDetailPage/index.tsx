@@ -13,6 +13,7 @@ import {
 
 import type { GroupTopicRow } from "../../api/kafkaExplorerSchemas";
 import { saturationApi } from "../../api/saturationApi";
+import { KafkaPartitionsCard } from "../../components/KafkaPartitionsCard";
 import { SaturationStatTile } from "../../components/SaturationStatTile";
 
 function formatBytesPerSecond(value: number): string {
@@ -37,6 +38,12 @@ export default function KafkaGroupDetailPage(): JSX.Element {
     "saturation-kafka-group-topics",
     (teamId, startTime, endTime) =>
       saturationApi.getKafkaGroupTopics(groupId, teamId, startTime, endTime),
+    { extraKeys: [groupId] }
+  );
+  const partitionsQuery = useTimeRangeQuery(
+    "saturation-kafka-group-partitions",
+    (teamId, startTime, endTime) =>
+      saturationApi.getKafkaGroupPartitions(groupId, teamId, startTime, endTime),
     { extraKeys: [groupId] }
   );
 
@@ -165,6 +172,8 @@ export default function KafkaGroupDetailPage(): JSX.Element {
           scroll={{ x: 1060 }}
         />
       </PageSurface>
+
+      <KafkaPartitionsCard rows={partitionsQuery.data ?? []} scope="group" />
     </PageShell>
   );
 }

@@ -1,7 +1,7 @@
 import type {
   DeploymentCompareResponse,
   deploymentsApi,
-} from "@/features/overview/api/deploymentsApi";
+} from "@shared/api/deployments/deploymentsApi";
 import { CHART_COLORS } from "@config/constants";
 import { formatTimestamp } from "@shared/utils/formatters";
 

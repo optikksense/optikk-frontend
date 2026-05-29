@@ -3,13 +3,10 @@ import { z } from "zod";
 import type { RequestTime } from "@/shared/api/service-types";
 
 import {
-  brokerConnectionPointSchema,
-  clientOpDurationPointSchema,
   e2eLatencyPointSchema,
   errorRatePointSchema,
   groupLatencyPointSchema,
   groupRatePointSchema,
-  kafkaSummaryStatsSchema,
   lagPointSchema,
   partitionLagSchema,
   rebalancePointSchema,
@@ -17,13 +14,10 @@ import {
   topicRatePointSchema,
 } from "./kafkaPanelsSchemas";
 import type {
-  BrokerConnectionPoint,
-  ClientOpDurationPoint,
   E2ELatencyPoint,
   ErrorRatePoint,
   GroupLatencyPoint,
   GroupRatePoint,
-  KafkaSummaryStats,
   LagPoint,
   PartitionLag,
   RebalancePoint,
@@ -39,14 +33,6 @@ type KafkaFilter = {
 
 function withFilter(s: RequestTime, e: RequestTime, f?: KafkaFilter) {
   return { ...rangeParams(s, e), ...f };
-}
-
-export function getKafkaSummaryStats(s: RequestTime, e: RequestTime): Promise<KafkaSummaryStats> {
-  return getSaturation(
-    "/saturation/kafka/summary-stats",
-    kafkaSummaryStatsSchema,
-    rangeParams(s, e)
-  );
 }
 
 export function getProduceRateByTopic(s: RequestTime, e: RequestTime, f?: KafkaFilter) {
@@ -161,26 +147,3 @@ export function getProcessErrors(s: RequestTime, e: RequestTime, f?: KafkaFilter
   );
 }
 
-export function getClientOpErrors(s: RequestTime, e: RequestTime, f?: KafkaFilter) {
-  return getSaturation<ErrorRatePoint[]>(
-    "/saturation/kafka/client-op-errors",
-    z.array(errorRatePointSchema),
-    withFilter(s, e, f)
-  );
-}
-
-export function getBrokerConnections(s: RequestTime, e: RequestTime) {
-  return getSaturation<BrokerConnectionPoint[]>(
-    "/saturation/kafka/broker-connections",
-    z.array(brokerConnectionPointSchema),
-    rangeParams(s, e)
-  );
-}
-
-export function getClientOperationDuration(s: RequestTime, e: RequestTime) {
-  return getSaturation<ClientOpDurationPoint[]>(
-    "/saturation/kafka/client-op-duration",
-    z.array(clientOpDurationPointSchema),
-    rangeParams(s, e)
-  );
-}

@@ -1,4 +1,4 @@
-import { Activity, Clipboard, FileText, Zap } from "lucide-react";
+import { Activity, Clipboard, FileText } from "lucide-react";
 
 import type { MonitorType } from "../../api/monitorsApi";
 
@@ -58,12 +58,6 @@ export default function WizardTypeStep({ value, onChange }: Props) {
             </button>
           );
         })}
-        <div className="flex items-center justify-center rounded border border-dashed border-[var(--border-color)] p-4 text-center text-[11px] text-[var(--text-muted)]">
-          <div>
-            <Zap size={14} className="mx-auto mb-1" />
-            Anomaly: coming soon
-          </div>
-        </div>
       </div>
     </StepShell>
   );

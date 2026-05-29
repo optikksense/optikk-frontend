@@ -14,6 +14,8 @@ import {
   getErrorGroupTraces,
 } from "../../api/errorGroupsApi";
 
+import { StackFramesPanel } from "./StackFramesPanel";
+
 function fmtDate(iso: string): string {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -113,15 +115,8 @@ export default function ErrorGroupDetailPage(): JSX.Element {
         </div>
       </Surface>
 
-      {detail?.stack_trace ? (
-        <PageSurface padding="lg">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
-            Stack trace
-          </div>
-          <pre className="mt-2 max-h-[320px] overflow-auto whitespace-pre-wrap break-words font-mono text-[12px] text-[var(--text-primary)]">
-            {detail.stack_trace}
-          </pre>
-        </PageSurface>
+      {detail?.sample_stacktrace ? (
+        <StackFramesPanel stacktrace={detail.sample_stacktrace} />
       ) : null}
 
       <PageSurface padding="lg">

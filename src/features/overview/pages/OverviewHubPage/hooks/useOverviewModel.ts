@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import type { ServiceMetricPoint } from "@/features/metrics/types";
-import { deploymentsApi } from "@/features/overview/api/deploymentsApi";
-import type { ServiceLatestDeployment } from "@/features/overview/api/deploymentsApi";
+import { deploymentsApi } from "@shared/api/deployments/deploymentsApi";
+import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
@@ -59,6 +59,32 @@ export function useOverviewSummaryQuery() {
   return useTimeRangeQuery(
     "overview-summary",
     (_team, start, end) => overviewHubApi.getRedSummary(start, end),
+    { staleTime: OVERVIEW_QUERY_STALE_MS }
+  );
+}
+
+/**
+ * Fleet-wide Apdex for the hero KPI. The backend returns one row per service;
+ * we fold them into a single score weighted by request volume
+ * (apdex = (satisfied + 0.5·tolerating) / total).
+ */
+export function useOverviewApdexQuery(): UseQueryResult<number | null> {
+  return useTimeRangeQuery<number | null>(
+    "overview-apdex",
+    async (_team, start, end) => {
+      const rows = await overviewHubApi.getApdex(start, end);
+      if (!rows || rows.length === 0) return null;
+      let satisfied = 0;
+      let tolerating = 0;
+      let total = 0;
+      for (const r of rows) {
+        satisfied += num(r.satisfied);
+        tolerating += num(r.tolerating);
+        total += num(r.satisfied) + num(r.tolerating) + num(r.frustrated);
+      }
+      if (total === 0) return null;
+      return (satisfied + tolerating * 0.5) / total;
+    },
     { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
 }

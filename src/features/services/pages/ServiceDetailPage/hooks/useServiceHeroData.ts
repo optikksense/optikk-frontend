@@ -8,7 +8,7 @@ import {
   type ActiveVersion,
   type ServiceLatestDeployment,
   deploymentsApi,
-} from "@/features/overview/api/deploymentsApi";
+} from "@shared/api/deployments/deploymentsApi";
 
 import type { ServiceSummary } from "./useServiceSummary";
 import { useServiceSummary } from "./useServiceSummary";

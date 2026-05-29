@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo, useRef } from "react";
 
+import type { TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
 import type Flamegraph from "@shared/components/ui/charts/specialized/Flamegraph";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
@@ -61,6 +62,7 @@ export interface TraceDetailLayoutProps {
   readonly flamegraphData: Parameters<typeof Flamegraph>[0]["data"] | null;
   readonly flamegraphLoading: boolean;
   readonly flamegraphError: boolean;
+  readonly errorGroups: readonly TraceErrorGroup[];
   readonly spanAttributes: SpanAttributes | null;
   readonly spanAttributesLoading: boolean;
   readonly spanEvents: readonly SpanEvent[];
@@ -195,6 +197,7 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
             flamegraphLoading={props.flamegraphLoading}
             flamegraphError={props.flamegraphError}
             spanEvents={props.spanEvents}
+            errorGroups={props.errorGroups}
           />
         </div>
 

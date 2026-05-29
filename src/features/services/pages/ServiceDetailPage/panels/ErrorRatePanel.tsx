@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import type uPlot from "uplot";
 
 import ObservabilityChart, {
   type ObservabilityChartSeries,
@@ -9,6 +10,7 @@ import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
 import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
 
 import { fmtPct } from "../formatters";
+import { useDeployMarkers } from "../hooks/useDeployMarkers";
 import { useErrorRateSeries } from "../hooks/useErrorRateSeries";
 import { PanelCard } from "./PanelCard";
 
@@ -67,7 +69,7 @@ function buildSeries(rows: ErrorTimeSeriesPoint[] | undefined, timeBuckets: stri
   };
 }
 
-function ChartBody({ data }: { data: ChartData }) {
+function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
   if (data.timestamps.length === 0) {
     return (
       <div className="grid h-[180px] place-items-center text-[12px] text-[var(--text-muted)]">
@@ -82,6 +84,7 @@ function ChartBody({ data }: { data: ChartData }) {
       series={data.series}
       height={200}
       yFormatter={(v) => fmtPct(v, v < 0.01 ? 2 : 1)}
+      plugins={plugins}
     />
   );
 }
@@ -89,10 +92,11 @@ function ChartBody({ data }: { data: ChartData }) {
 export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
   const query = useErrorRateSeries(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
+  const deployPlugins = useDeployMarkers(serviceName);
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
   return (
     <PanelCard title="Error rate" subtitle="errors / requests">
-      <ChartBody data={data} />
+      <ChartBody data={data} plugins={deployPlugins} />
     </PanelCard>
   );
 }

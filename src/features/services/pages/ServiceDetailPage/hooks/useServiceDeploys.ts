@@ -3,7 +3,7 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import {
   type DeploymentListResponse,
   deploymentsApi,
-} from "@/features/overview/api/deploymentsApi";
+} from "@shared/api/deployments/deploymentsApi";
 
 export function useServiceDeploys(serviceName: string) {
   return useTimeRangeQuery<DeploymentListResponse>(

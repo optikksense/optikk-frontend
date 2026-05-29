@@ -1,5 +1,4 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
@@ -8,40 +7,16 @@ import { dynamicTo } from "@shared/utils/navigation";
 import { ROUTES } from "@/shared/constants/routes";
 
 import { getNodes } from "../../api/hostsApi";
+import { InfraHostsFilterBar } from "../../components/InfraHostsFilterBar";
 import { InfraHostsTable } from "../../components/InfraHostsTable";
+import { InfraTopConsumersSidebar } from "../../components/InfraTopConsumersSidebar";
 import type { InfrastructureNode } from "../../types";
-
-function filterNodes(
-  nodes: readonly InfrastructureNode[],
-  search: string
-): readonly InfrastructureNode[] {
-  if (!search) return nodes;
-  const needle = search.trim().toLowerCase();
-  return nodes.filter((node) => {
-    if (node.host.toLowerCase().includes(needle)) return true;
-    return node.services.some((svc) => svc.toLowerCase().includes(needle));
-  });
-}
-
-function HostSearch({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (next: string) => void;
-}) {
-  return (
-    <div className="flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-3.5 py-1.5">
-      <Search size={14} className="text-[var(--text-muted)]" />
-      <input
-        value={value}
-        onChange={(ev) => onChange(ev.target.value)}
-        placeholder="Filter hosts by name or service…"
-        className="min-w-0 flex-1 bg-transparent text-[12px] text-[var(--text-primary)] outline-none"
-      />
-    </div>
-  );
-}
+import {
+  EMPTY_NODE_FILTER,
+  filterNodes,
+  type NodeFilterState,
+  serviceOptions,
+} from "../../utils/filterNodes";
 
 export default function HostsTab() {
   const navigate = useNavigate();
@@ -49,9 +24,10 @@ export default function HostsTab() {
     "infrastructure.hosts.list",
     (_team, s, e) => getNodes(s, e)
   );
-  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<NodeFilterState>(EMPTY_NODE_FILTER);
   const nodes = query.data ?? [];
-  const filtered = useMemo(() => filterNodes(nodes, search), [nodes, search]);
+  const services = useMemo(() => serviceOptions(nodes), [nodes]);
+  const filtered = useMemo(() => filterNodes(nodes, filter), [nodes, filter]);
 
   const onOpenNode = (host: string) => {
     navigate({ to: dynamicTo(ROUTES.hostDetail.replace("$host", encodeURIComponent(host))) });
@@ -59,14 +35,19 @@ export default function HostsTab() {
 
   return (
     <div className="flex flex-col gap-3">
-      <HostSearch value={search} onChange={setSearch} />
-      {filtered.length === 0 ? (
-        <div className="grid h-[200px] place-items-center text-[12px] text-[var(--text-muted)]">
-          {query.isPending ? "Loading hosts…" : "No hosts match the current filter."}
+      <InfraHostsFilterBar value={filter} serviceOptions={services} onChange={setFilter} />
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-[1fr_280px]">
+        <div className="min-w-0">
+          {filtered.length === 0 ? (
+            <div className="grid h-[200px] place-items-center text-[12px] text-[var(--text-muted)]">
+              {query.isPending ? "Loading hosts…" : "No hosts match the current filter."}
+            </div>
+          ) : (
+            <InfraHostsTable nodes={filtered} onOpenNode={onOpenNode} />
+          )}
         </div>
-      ) : (
-        <InfraHostsTable nodes={filtered} onOpenNode={onOpenNode} />
-      )}
+        <InfraTopConsumersSidebar onOpenHost={onOpenNode} />
+      </div>
     </div>
   );
 }

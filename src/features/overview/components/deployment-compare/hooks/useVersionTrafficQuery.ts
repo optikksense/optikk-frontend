@@ -1,7 +1,7 @@
 import {
   type DeploymentCompareResponse,
   deploymentsApi,
-} from "@/features/overview/api/deploymentsApi";
+} from "@shared/api/deployments/deploymentsApi";
 import { useRefreshKey, useTeamId } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 

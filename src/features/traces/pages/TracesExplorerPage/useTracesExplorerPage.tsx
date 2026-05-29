@@ -40,6 +40,7 @@ export function useTracesExplorerPage() {
   const { columns: columnConfig, setColumns } = useExplorerColumns("traces", DEFAULT_TRACE_COLUMNS);
   const [sortMode, setSortMode] = useState<TraceSortMode>("recent");
   const [scope, setScope] = useState<TraceScope>("traces");
+  const [focusedTraceId, setFocusedTraceId] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
@@ -68,10 +69,18 @@ export function useTracesExplorerPage() {
       state.setFilters([...state.filters, { field, op: "neq", value }]),
     [state]
   );
+  // Single click opens the right-rail quick-look; the preview's "Open trace"
+  // button performs the full navigation (mirrors the logs detail-panel flow).
   const onRowClick = useCallback(
-    (row: TraceSummary) => navigate({ to: `/traces/${encodeURIComponent(row.trace_id)}` }),
-    [navigate]
+    (row: TraceSummary) =>
+      setFocusedTraceId((cur) => (cur === row.trace_id ? null : row.trace_id)),
+    []
   );
+  const focusedTrace = useMemo(
+    () => sortedTraces.find((t) => t.trace_id === focusedTraceId) ?? null,
+    [sortedTraces, focusedTraceId]
+  );
+  const onCloseQuickLook = useCallback(() => setFocusedTraceId(null), []);
   const onFreeText = useCallback(
     (text: string) => {
       if (!text) return;
@@ -116,6 +125,9 @@ export function useTracesExplorerPage() {
     queryError,
     scope,
     setScope,
+    focusedTraceId,
+    focusedTrace,
+    onCloseQuickLook,
     zoomed: timeRange.kind === "absolute",
     searchInputRef,
     getContextMenuItems,

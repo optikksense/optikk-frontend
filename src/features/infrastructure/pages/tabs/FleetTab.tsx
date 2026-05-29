@@ -14,6 +14,7 @@ import { formatNumber } from "@shared/utils/formatters";
 
 import { ROUTES } from "@/shared/constants/routes";
 
+import { getFleetPods } from "../../api/hostsApi";
 import { infraGet } from "../../api/infrastructureApi";
 import InfraFleetMap from "../../components/InfraFleetMap";
 import InfraFleetToolbar from "../../components/InfraFleetToolbar";
@@ -97,16 +98,7 @@ export default function FleetTab() {
 
   const podsQuery = useTimeRangeQuery<FleetPod[]>(
     "infra-fleet-pods",
-    async (teamId, start, end) => {
-      if (!teamId) return [];
-      const data = await infraGet<FleetPod[]>(
-        "/v1/infrastructure/fleet/pods",
-        teamId,
-        Number(start),
-        Number(end)
-      );
-      return Array.isArray(data) ? data : [];
-    },
+    (_team, start, end) => getFleetPods(start, end),
     { enabled: lens === INFRA_LENS.pod }
   );
 

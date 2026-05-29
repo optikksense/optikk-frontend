@@ -1,4 +1,4 @@
-import type { DeploymentCompareResponse } from "@/features/overview/api/deploymentsApi";
+import type { DeploymentCompareResponse } from "@shared/api/deployments/deploymentsApi";
 import type { SimpleTableColumn } from "@shared/components/primitives/ui";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 

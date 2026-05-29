@@ -22,6 +22,7 @@ import { LogsTableFooter } from "../../components/table/LogsTableFooter";
 import { LogsTableToolbar } from "../../components/table/LogsTableToolbar";
 import { LogsActions } from "../../components/toolbar/LogsActions";
 import { LogsToolbar } from "../../components/toolbar/LogsToolbar";
+import { LogsSummaryChips } from "../../components/trend/LogsSummaryChips";
 import { LogsTrendChart } from "../../components/trend/LogsTrendChart";
 
 function extractSearchTerm(filters: readonly ExplorerFilter[]): string | undefined {
@@ -66,7 +67,7 @@ function buildValueSuggestions(
  */
 export default function LogsExplorerPage() {
   const navigate = useNavigate();
-  const { state, list, trend, facets } = useLogsExplorer();
+  const { state, list, summary, trend, facets } = useLogsExplorer();
   const timeRange = useTimeRange();
   const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
@@ -131,6 +132,7 @@ export default function LogsExplorerPage() {
           />
 
           <div className="flex min-h-0 min-w-0 flex-col gap-3">
+            <LogsSummaryChips summary={summary.data} />
             <LogsTrendChart
               trend={trend.data}
               zoomed={timeRange.kind === "absolute"}

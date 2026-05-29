@@ -1,5 +1,5 @@
 import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
-import type { ServiceTopologyEdge } from "@/features/overview/pages/ServiceHubPage/topology/api";
+import type { ServiceTopologyEdge } from "@shared/components/ui/charts/ServiceTopologyGraph";
 import type {
   LatencyPercentilesPoint,
   StatusTimeseriesPoint,

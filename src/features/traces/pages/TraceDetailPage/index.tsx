@@ -3,8 +3,11 @@ import { useState } from "react";
 import { PageShell } from "@shared/components/ui";
 
 import { BottomBar } from "./components/BottomBar";
+import { HotSpansStrip } from "./components/HotSpansStrip";
 import { KPIStrip } from "./components/KPIStrip";
+import { PhaseBreakdownBar } from "./components/PhaseBreakdownBar";
 import { ServiceStrip } from "./components/ServiceStrip";
+import { ServiceTimeBar } from "./components/ServiceTimeBar";
 import {
   TraceDetailEmptySpans,
   TraceDetailError,
@@ -15,8 +18,17 @@ import { TraceHeader } from "./components/TraceHeader";
 import { useTraceDetailPage } from "./hooks/useTraceDetailPage";
 
 export default function TraceDetailPage() {
-  const { data, stats, resolvedTraceId, traceTimeBounds, actions, layoutProps } =
-    useTraceDetailPage();
+  const {
+    data,
+    stats,
+    resolvedTraceId,
+    traceTimeBounds,
+    actions,
+    layoutProps,
+    serviceMapNodes,
+    hotSpans,
+    phaseBreakdown,
+  } = useTraceDetailPage();
   // Page-local "active service" highlight; clicking a pill drills into that service's first span.
   const [activeService, setActiveService] = useState<string | null>(null);
 
@@ -71,6 +83,13 @@ export default function TraceDetailPage() {
         stats={stats}
         spans={data.spans}
         criticalPathSpanIds={layoutProps.criticalPathSpanIds}
+      />
+      <ServiceTimeBar nodes={serviceMapNodes} />
+      <PhaseBreakdownBar segments={phaseBreakdown} />
+      <HotSpansStrip
+        hotSpans={hotSpans}
+        selectedSpanId={data.selectedSpanId}
+        onSpanClick={actions.handleSpanClick}
       />
       <ServiceStrip
         spans={data.spans}

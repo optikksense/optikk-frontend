@@ -11,6 +11,7 @@ import ServiceHealthGrid from "./components/ServiceHealthGrid";
 import SystemPerformanceCard from "./components/SystemPerformanceCard";
 import TopErrorsCard from "./components/TopErrorsCard";
 import {
+  useOverviewApdexQuery,
   useOverviewPerformanceQuery,
   useOverviewSummaryQuery,
   usePerformanceSeries,
@@ -22,6 +23,7 @@ import {
 
 export default function OverviewHubPage() {
   const summaryQ = useOverviewSummaryQuery();
+  const apdexQ = useOverviewApdexQuery();
   const { ref: belowRef, inView: belowInView } = useInView<HTMLDivElement>();
 
   const performanceQ = useOverviewPerformanceQuery(belowInView);
@@ -45,7 +47,7 @@ export default function OverviewHubPage() {
         icon={<LayoutDashboard size={22} />}
       />
 
-      <OverviewHero summary={summary} loading={summaryLoading} />
+      <OverviewHero summary={summary} apdex={apdexQ.data} loading={summaryLoading} />
 
       <div ref={belowRef} className="flex flex-col gap-3">
         <SystemPerformanceCard series={performance} loading={performanceQ.isPending} />

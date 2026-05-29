@@ -129,6 +129,7 @@ const monitorsRoute = createProtected(ROUTES.monitors, MonitorsPage);
 const monitorsNotificationsRoute = createProtected(ROUTES.monitorsNotifications, NotificationsPage);
 const monitorsNewRoute = createProtected(ROUTES.monitorsNew, NewMonitorPage);
 const monitorDetailRoute = createProtected(ROUTES.monitorDetail, MonitorDetailPage);
+const monitorEditRoute = createProtected(ROUTES.monitorEdit, NewMonitorPage);
 const alertsNewRedirect = createProtected(ROUTES.alertsNew, () => null, ROUTES.monitorsNew);
 
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
@@ -177,6 +178,7 @@ const routeTree = rootRoute.addChildren([
     monitorsNotificationsRoute,
     monitorsNewRoute,
     monitorDetailRoute,
+    monitorEditRoute,
     alertsNewRedirect,
     logsPatternsRedirect,
     logsTransactionsRedirect,

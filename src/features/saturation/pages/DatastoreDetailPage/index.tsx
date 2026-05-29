@@ -3,6 +3,8 @@ import { Database } from "lucide-react";
 
 import { PageHeader, PageShell } from "@shared/components/ui";
 
+import { ConnectionPoolPanel } from "./components/ConnectionPoolPanel";
+import { DatastoreBreakdowns } from "./components/DatastoreBreakdowns";
 import { DatastoreHeaderActions } from "./components/DatastoreHeaderActions";
 import { DatastoreOverviewCard } from "./components/DatastoreOverviewCard";
 import { DatastoreStatTiles } from "./components/DatastoreStatTiles";
@@ -33,7 +35,9 @@ export default function DatastoreDetailPage(): JSX.Element {
       />
       <DatastoreStatTiles overview={overview} />
       <DatastoreOverviewCard overview={overview} />
+      <DatastoreBreakdowns system={system} />
       <DatastoreTables bundle={bundle} />
+      <ConnectionPoolPanel system={system} />
     </PageShell>
   );
 }

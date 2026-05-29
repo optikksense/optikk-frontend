@@ -4,25 +4,16 @@ import { useMemo } from "react";
 import { PageShell } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { infraGet } from "../../api/infrastructureApi";
+import { getFleetPods } from "../../api/hostsApi";
+import { InfraLogsLink } from "../../components/InfraLogsLink";
 import type { FleetPod } from "../../types";
 import { ContainerDetailHero } from "./ContainerDetailHero";
 import { ContainerDetailKpiCards } from "./ContainerDetailKpiCards";
 import { ContainerDetailSystemMetrics } from "./ContainerDetailSystemMetrics";
 
 function useContainerPod(podName: string): FleetPod | null {
-  const podsQ = useTimeRangeQuery<FleetPod[]>(
-    "container-detail.pods-list",
-    async (teamId, start, end) => {
-      if (!teamId) return [];
-      const data = await infraGet<FleetPod[]>(
-        "/v1/infrastructure/fleet/pods",
-        teamId,
-        Number(start),
-        Number(end)
-      );
-      return Array.isArray(data) ? data : [];
-    }
+  const podsQ = useTimeRangeQuery<FleetPod[]>("container-detail.pods-list", (_team, s, e) =>
+    getFleetPods(s, e)
   );
   return useMemo(
     () => podsQ.data?.find((pod) => pod.pod_name === podName) ?? null,
@@ -61,6 +52,7 @@ export default function ContainerDetailPage(): JSX.Element {
           current time range.
         </div>
       )}
+      <InfraLogsLink scope="pod" value={container} />
     </PageShell>
   );
 }

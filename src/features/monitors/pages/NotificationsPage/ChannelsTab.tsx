@@ -1,53 +1,69 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
 
-import {
-  type ChannelType,
-  createChannel,
-  deleteChannel,
-  testChannel,
-} from "../../api/notificationsApi";
+import { type Channel, type ChannelType, testChannel } from "../../api/notificationsApi";
 import { useChannels } from "../../hooks/useChannels";
+import { useChannelMutations } from "../../hooks/useNotificationMutations";
 
-interface CreateForm {
+interface ChannelForm {
+  id: number | null;
   type: ChannelType;
   name: string;
   webhookUrl: string;
 }
 
-function emptyForm(): CreateForm {
-  return { type: "slack", name: "", webhookUrl: "" };
+function emptyForm(): ChannelForm {
+  return { id: null, type: "slack", name: "", webhookUrl: "" };
+}
+
+function formFromChannel(ch: Channel): ChannelForm {
+  return {
+    id: ch.id,
+    type: ch.type,
+    name: ch.name,
+    webhookUrl: typeof ch.config.webhook_url === "string" ? ch.config.webhook_url : "",
+  };
+}
+
+function errorMessage(err: unknown, fallback: string): string {
+  const e = err as { response?: { data?: { error?: { message?: string } } } };
+  return e?.response?.data?.error?.message ?? fallback;
 }
 
 export default function ChannelsTab() {
   const channelsQ = useChannels();
-  const [form, setForm] = useState<CreateForm>(emptyForm());
+  const { create, update, remove } = useChannelMutations();
+  const [form, setForm] = useState<ChannelForm>(emptyForm());
   const [status, setStatus] = useState<string | null>(null);
 
-  const handleCreate = async () => {
+  const editing = form.id !== null;
+
+  const handleSubmit = async () => {
     setStatus(null);
+    const payload = {
+      type: form.type,
+      name: form.name,
+      config: form.type === "slack" ? { webhook_url: form.webhookUrl } : {},
+    };
     try {
-      await createChannel({
-        type: form.type,
-        name: form.name,
-        config: form.type === "slack" ? { webhook_url: form.webhookUrl } : {},
-      });
+      if (form.id !== null) {
+        await update.mutateAsync({ id: form.id, payload });
+      } else {
+        await create.mutateAsync(payload);
+      }
       setForm(emptyForm());
-      channelsQ.refetch();
     } catch (err) {
-      const e = err as { response?: { data?: { error?: { message?: string } } } };
-      setStatus(e?.response?.data?.error?.message ?? "Failed to create channel");
+      setStatus(errorMessage(err, "Failed to save channel"));
     }
   };
 
   const handleDelete = async (id: number) => {
     setStatus(null);
     try {
-      await deleteChannel(id);
-      channelsQ.refetch();
+      await remove.mutateAsync(id);
+      if (form.id === id) setForm(emptyForm());
     } catch (err) {
-      const e = err as { response?: { data?: { error?: { message?: string } } } };
-      setStatus(e?.response?.data?.error?.message ?? "Failed to delete channel");
+      setStatus(errorMessage(err, "Failed to delete channel"));
     }
   };
 
@@ -58,15 +74,16 @@ export default function ChannelsTab() {
       setStatus(res.ok ? "Test delivery sent." : `Test failed: ${res.error_text}`);
       channelsQ.refetch();
     } catch (err) {
-      const e = err as { response?: { data?: { error?: { message?: string } } } };
-      setStatus(e?.response?.data?.error?.message ?? "Failed to test channel");
+      setStatus(errorMessage(err, "Failed to test channel"));
     }
   };
+
+  const saving = create.isPending || update.isPending;
 
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
-        <div className="text-sm font-medium">Create channel</div>
+        <div className="text-sm font-medium">{editing ? "Edit channel" : "Create channel"}</div>
         <div className="mt-3 grid grid-cols-[120px_1fr_1fr_auto] items-center gap-2">
           <select
             value={form.type}
@@ -91,13 +108,25 @@ export default function ChannelsTab() {
             className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 font-mono text-xs"
             disabled={form.type !== "slack"}
           />
-          <button
-            type="button"
-            onClick={handleCreate}
-            className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
-          >
-            Create
-          </button>
+          <div className="flex items-center gap-1.5">
+            {editing && (
+              <button
+                type="button"
+                onClick={() => setForm(emptyForm())}
+                className="rounded border border-[var(--border-color)] px-3 py-1.5 text-xs hover:bg-[var(--bg-secondary)]"
+              >
+                Cancel
+              </button>
+            )}
+            <button
+              type="button"
+              disabled={saving}
+              onClick={handleSubmit}
+              className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+            >
+              {editing ? "Save" : "Create"}
+            </button>
+          </div>
         </div>
         {status && <div className="mt-2 text-xs text-amber-500">{status}</div>}
       </div>
@@ -143,6 +172,13 @@ export default function ChannelsTab() {
                       : "—"}
                   </td>
                   <td className="py-2 pr-4 text-right">
+                    <button
+                      type="button"
+                      onClick={() => setForm(formFromChannel(ch))}
+                      className="mr-1 rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] hover:bg-[var(--bg-secondary)]"
+                    >
+                      Edit
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleTest(ch.id)}

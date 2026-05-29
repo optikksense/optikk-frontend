@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type uPlot from "uplot";
 
 import ObservabilityChart, {
   type ObservabilityChartSeries,
@@ -9,6 +10,7 @@ import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
 import type { StatusTimeseriesPoint } from "@/features/services/api/serviceDetailApi";
 
 import { fmtNum } from "../formatters";
+import { useDeployMarkers } from "../hooks/useDeployMarkers";
 import { useStatusTimeseries } from "../hooks/useStatusTimeseries";
 import { PanelCard } from "./PanelCard";
 import { type StatusSeriesFilter, StatusSeriesToggle } from "./StatusSeriesToggle";
@@ -71,7 +73,7 @@ function filterSeries(data: ChartData, filter: StatusSeriesFilter): ChartData {
   };
 }
 
-function ChartBody({ data }: { data: ChartData }) {
+function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
   if (data.timestamps.length === 0) {
     return (
       <div className="grid h-[180px] place-items-center text-[12px] text-[var(--text-muted)]">
@@ -86,6 +88,7 @@ function ChartBody({ data }: { data: ChartData }) {
       series={data.series}
       height={200}
       yFormatter={(v) => fmtNum(v)}
+      plugins={plugins}
     />
   );
 }
@@ -93,6 +96,7 @@ function ChartBody({ data }: { data: ChartData }) {
 export function RpsStatusPanel({ serviceName }: { serviceName: string }) {
   const query = useStatusTimeseries(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
+  const deployPlugins = useDeployMarkers(serviceName);
   const [filter, setFilter] = useState<StatusSeriesFilter>("all");
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
   const filtered = useMemo(() => filterSeries(data, filter), [data, filter]);
@@ -102,7 +106,7 @@ export function RpsStatusPanel({ serviceName }: { serviceName: string }) {
       subtitle="rps by status"
       action={<StatusSeriesToggle value={filter} onChange={setFilter} />}
     >
-      <ChartBody data={filtered} />
+      <ChartBody data={filtered} plugins={deployPlugins} />
     </PanelCard>
   );
 }

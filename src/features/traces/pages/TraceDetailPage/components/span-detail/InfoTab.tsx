@@ -10,6 +10,7 @@ import type { SpanAttributes } from "../../../../types";
 
 import { AttributesTable } from "./AttributesTable";
 import { DatabaseBlock } from "./DatabaseBlock";
+import { SelfChildBar } from "./SelfChildBar";
 
 interface Props {
   readonly spanAttributes: SpanAttributes | null;
@@ -252,6 +253,7 @@ function InfoTabComponent({
               </div>
             )}
           </div>
+          <SelfChildBar selfMs={timing.selfMs} childMs={Math.max(0, timing.durMs - timing.selfMs)} />
         </div>
       )}
 

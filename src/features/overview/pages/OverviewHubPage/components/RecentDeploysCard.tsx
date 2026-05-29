@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
 import { Skeleton, Surface } from "@/components/ui";
-import type { ServiceLatestDeployment } from "@/features/overview/api/deploymentsApi";
+import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
 import { ROUTES } from "@/shared/constants/routes";
 
