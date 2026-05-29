@@ -57,7 +57,7 @@ function Row({ row }: { row: DeploymentImpactRow }) {
         {row.is_baseline ? (
           <span className="text-[var(--text-muted)]">—</span>
         ) : (
-          <DeltaCell delta={row.p99_delta} format={fmtMs} />
+          <DeltaCell delta={row.p95_delta} format={fmtMs} />
         )}
       </td>
     </tr>
@@ -71,7 +71,7 @@ function TableHeader() {
         <th className={COL_HEAD}>Version</th>
         <th className={COL_HEAD}>Released</th>
         <th className={cn(COL_HEAD, "text-right")}>Δ Error rate</th>
-        <th className={cn(COL_HEAD, "text-right")}>Δ p99</th>
+        <th className={cn(COL_HEAD, "text-right")}>Δ p95</th>
       </tr>
     </thead>
   );
