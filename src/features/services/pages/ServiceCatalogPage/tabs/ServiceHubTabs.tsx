@@ -20,8 +20,8 @@ function TabCount({ value, isError }: { value: number; isError: boolean }) {
       className={cn(
         "ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10px]",
         isError
-          ? "bg-[var(--color-error-subtle)] text-[var(--color-error)]"
-          : "bg-[var(--bg-tertiary)] text-[var(--text-muted)]"
+          ? "bg-error-subtle text-error"
+          : "bg-muted text-foreground-muted"
       )}
     >
       {value}
@@ -47,8 +47,8 @@ function TabButton({
       className={cn(
         "flex items-center gap-1 border-b-2 px-3 py-2 text-[13px] transition-colors",
         active
-          ? "border-[var(--color-primary)] text-[var(--text-primary)]"
-          : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          ? "border-primary text-foreground"
+          : "border-transparent text-foreground-muted hover:text-foreground"
       )}
     >
       {LABELS[id]}
@@ -59,7 +59,7 @@ function TabButton({
 
 export function ServiceHubTabs({ active, counts, onChange }: ServiceHubTabsProps) {
   return (
-    <nav className="flex border-[var(--border-color)] border-b">
+    <nav className="flex border-border border-b">
       {SERVICE_HUB_TABS.map((id) => (
         <TabButton
           key={id}

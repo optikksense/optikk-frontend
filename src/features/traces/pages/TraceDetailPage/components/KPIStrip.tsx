@@ -77,12 +77,12 @@ function summarizeCriticalPath(
 }
 
 const kpiBase =
-  "bg-[var(--bg-primary)] px-[18px] py-[14px] flex flex-col gap-1 min-w-0";
+  "bg-background px-[18px] py-[14px] flex flex-col gap-1 min-w-0";
 const kpiK =
-  "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
+  "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
 const kpiV =
-  "text-[24px] font-semibold text-[var(--text-primary)] tracking-[-0.015em] font-mono whitespace-nowrap [font-feature-settings:'tnum']";
-const kpiSub = "text-[11.5px] text-[var(--text-caption)]";
+  "text-[24px] font-semibold text-foreground tracking-[-0.015em] font-mono whitespace-nowrap [font-feature-settings:'tnum']";
+const kpiSub = "text-[11.5px] text-foreground-caption";
 
 function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: Props) {
   const errors = stats.errors;
@@ -102,21 +102,21 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
 
   return (
     <div
-      className="grid gap-px bg-[var(--border-color)] border-b border-[var(--border-color)]"
+      className="grid gap-px bg-border border-b border-border"
       style={{
         gridTemplateColumns:
           "minmax(220px, 1.4fr) minmax(110px, 0.7fr) minmax(150px, 0.9fr) minmax(260px, 2fr)",
       }}
     >
-      <div className={cn(kpiBase, "bg-[var(--bg-secondary)]")}>
+      <div className={cn(kpiBase, "bg-secondary")}>
         <div className={kpiK}>Duration</div>
         <div className={kpiV}>{formatDuration(stats.duration)}</div>
         {showBaseline && slowFactor != null && p95Ms != null && p50Ms != null ? (
           <>
             <div
               className={cn(
-                "text-[11.5px] text-[var(--text-muted)]",
-                stats.duration > p95Ms && "text-[var(--color-error)]"
+                "text-[11.5px] text-foreground-muted",
+                stats.duration > p95Ms && "text-error"
               )}
             >
               {slowFactor.toFixed(1)}× p50 · {stats.duration > p95Ms ? "above p95" : "below p95"}
@@ -130,14 +130,14 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
 
       <div className={kpiBase}>
         <div className={kpiK}>Errors</div>
-        <div className={cn(kpiV, errors > 0 && "!text-[var(--color-error)]")}>{errors}</div>
+        <div className={cn(kpiV, errors > 0 && "!text-error")}>{errors}</div>
         <div className={kpiSub}>{okCount} ok</div>
       </div>
 
       <div className={kpiBase}>
         <div className={kpiK}>Spans · Services</div>
         <div className={kpiV}>
-          {totalSpans} <span className="text-[var(--text-muted)]">·</span> {services}
+          {totalSpans} <span className="text-foreground-muted">·</span> {services}
         </div>
         <div className={kpiSub}>depth {maxDepth}</div>
       </div>
@@ -145,7 +145,7 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
       <div className={cn(kpiBase, "gap-1.5")}>
         <div className={kpiK}>Critical path</div>
         <div
-          className="text-[13.5px] font-medium text-[var(--text-primary)] leading-[1.35] break-words"
+          className="text-[13.5px] font-medium text-foreground leading-[1.35] break-words"
           title={critical.label}
         >
           {critical.label || "—"}
@@ -165,33 +165,33 @@ function BaselineBar({ dur, p50, p95 }: { dur: number; p50: number; p95: number 
   const p95Pct = Math.min(100, (p95 / max) * 100);
   return (
     <div className="mt-1.5">
-      <div className="relative h-1.5 rounded-[3px] bg-[var(--bg-tertiary)] overflow-visible">
+      <div className="relative h-1.5 rounded-[3px] bg-muted overflow-visible">
         <div
-          className="absolute top-0 left-0 h-full bg-[var(--color-error)] rounded-[3px]"
+          className="absolute top-0 left-0 h-full bg-error rounded-[3px]"
           style={{ width: `${fillPct}%` }}
         />
         <div
-          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-[var(--color-success)] rounded-[1px]"
+          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-success rounded-[1px]"
           style={{ left: `${p50Pct}%` }}
           title={`p50 ${formatDuration(p50)}`}
         />
         <div
-          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-[var(--color-warning)] rounded-[1px]"
+          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-warning rounded-[1px]"
           style={{ left: `${p95Pct}%` }}
           title={`p95 ${formatDuration(p95)}`}
         />
       </div>
-      <div className="flex gap-3 mt-1.5 text-[10.5px] text-[var(--text-caption)] font-mono">
+      <div className="flex gap-3 mt-1.5 text-[10.5px] text-foreground-caption font-mono">
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-success)]" />{" "}
+          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-success" />{" "}
           p50 {formatDuration(p50)}
         </span>
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-warning)]" />{" "}
+          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-warning" />{" "}
           p95 {formatDuration(p95)}
         </span>
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-error)]" />{" "}
+          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-error" />{" "}
           this {formatDuration(dur)}
         </span>
       </div>

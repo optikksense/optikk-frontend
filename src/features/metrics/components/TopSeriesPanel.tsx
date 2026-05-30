@@ -35,10 +35,10 @@ export function TopSeriesPanel({ result, unit }: TopSeriesPanelProps) {
     <PageSurface padding="lg" className="flex flex-col">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="font-semibold text-[15px] text-[var(--text-primary)] tracking-[0.01em]">
+          <div className="font-semibold text-[15px] text-foreground tracking-[0.01em]">
             Top series
           </div>
-          <div className="mt-0.5 text-[12px] text-[var(--text-muted)]">
+          <div className="mt-0.5 text-[12px] text-foreground-muted">
             By current value · grouped by {groupBy}
           </div>
         </div>
@@ -52,7 +52,7 @@ export function TopSeriesPanel({ result, unit }: TopSeriesPanelProps) {
 
       <div className="mt-3.5 flex flex-col gap-2">
         {shown.length === 0 ? (
-          <div className="py-8 text-center text-[12px] text-[var(--text-muted)]">
+          <div className="py-8 text-center text-[12px] text-foreground-muted">
             No series to rank.
           </div>
         ) : (
@@ -75,11 +75,11 @@ export function TopSeriesPanel({ result, unit }: TopSeriesPanelProps) {
                 />
                 <div className="relative flex items-center justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-2">
-                    <span className="truncate font-mono text-[11.5px] text-[var(--text-primary)]">
+                    <span className="truncate font-mono text-[11.5px] text-foreground">
                       {row.label}
                     </span>
                     {row.sublabel ? (
-                      <span className="font-mono text-[10.5px] text-[var(--text-muted)]">
+                      <span className="font-mono text-[10.5px] text-foreground-muted">
                         {row.sublabel}
                       </span>
                     ) : null}
@@ -92,7 +92,7 @@ export function TopSeriesPanel({ result, unit }: TopSeriesPanelProps) {
                     >
                       {formatStatValue(row.current)}
                       {unit ? (
-                        <span className="font-normal text-[var(--text-muted)]"> {unit}</span>
+                        <span className="font-normal text-foreground-muted"> {unit}</span>
                       ) : null}
                     </span>
                   </div>
@@ -105,11 +105,11 @@ export function TopSeriesPanel({ result, unit }: TopSeriesPanelProps) {
 
       {hidden > 0 ? (
         <>
-          <div className="my-3 h-px bg-[var(--border-color)]" />
+          <div className="my-3 h-px bg-border" />
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="flex h-7 w-full items-center justify-center text-[12px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+            className="flex h-7 w-full items-center justify-center text-[12px] text-foreground-secondary hover:text-foreground"
           >
             {expanded ? "Show less" : `Show ${hidden} more`}
           </button>

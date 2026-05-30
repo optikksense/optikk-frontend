@@ -50,7 +50,7 @@ export function ServiceHealthGridRenderer({
           {serviceHealth.map((service) => (
             <div key={service.name}>
               <div
-                className="hover:-translate-y-px cursor-pointer rounded-lg border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-3 text-center transition-all duration-200 hover:border-[var(--color-primary)]"
+                className="hover:-translate-y-px cursor-pointer rounded-lg border border-border bg-muted p-3 text-center transition-all duration-200 hover:border-primary"
                 onClick={() =>
                   navigate({
                     to:
@@ -68,10 +68,10 @@ export function ServiceHealthGridRenderer({
                 }
               >
                 <HealthIndicator status={service.status} size={8} />
-                <div className="mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-primary)] text-xs">
+                <div className="mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-foreground text-xs">
                   {service.name}
                 </div>
-                <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                <div className="mt-0.5 text-[11px] text-foreground-muted">
                   {formatNumber(service.requestCount)} req
                 </div>
                 <div

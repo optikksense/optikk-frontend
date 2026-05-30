@@ -7,16 +7,16 @@ interface Props {
 }
 
 const COLORS: Record<string, string> = {
-  P1: "text-[var(--color-error)]",
-  P2: "text-[var(--color-warning)]",
-  P3: "text-[var(--text-secondary)]",
-  P4: "text-[var(--text-muted)]",
+  P1: "text-error",
+  P2: "text-warning",
+  P3: "text-foreground-secondary",
+  P4: "text-foreground-muted",
 };
 
 function PriorityChip({ priority }: Props) {
   return (
     <span
-      className={`font-mono text-[11px] font-bold ${COLORS[priority] ?? "text-[var(--text-muted)]"}`}
+      className={`font-mono text-[11px] font-bold ${COLORS[priority] ?? "text-foreground-muted"}`}
     >
       {priority}
     </span>

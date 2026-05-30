@@ -72,47 +72,47 @@ export default function SettingsProfileTab({
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="font-medium text-[13px] text-[var(--text-primary)]">Name</label>
+          <label className="font-medium text-[13px] text-foreground">Name</label>
           <div className="relative">
             <User
               size={16}
-              className="-translate-y-1/2 absolute top-1/2 left-3 text-[var(--text-muted)]"
+              className="-translate-y-1/2 absolute top-1/2 left-3 text-foreground-muted"
             />
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               required
-              className="h-9 w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] pr-3 pl-10 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-10)]"
+              className="h-9 w-full rounded-md border border-border bg-muted pr-3 pl-10 text-[13px] text-foreground placeholder:text-foreground-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-10)]"
             />
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="font-medium text-[13px] text-[var(--text-primary)]">Email</label>
+          <label className="font-medium text-[13px] text-foreground">Email</label>
           <input
             value={profile?.email ?? ""}
             disabled
-            className="h-9 w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 text-[13px] text-[var(--text-muted)] opacity-60"
+            className="h-9 w-full rounded-md border border-border bg-muted px-3 text-[13px] text-foreground-muted opacity-60"
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="font-medium text-[13px] text-[var(--text-primary)]">Avatar URL</label>
+          <label className="font-medium text-[13px] text-foreground">Avatar URL</label>
           <input
             value={avatarUrl}
             onChange={(e) => setAvatarUrl(e.target.value)}
             placeholder="https://example.com/avatar.jpg"
-            className="h-9 w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-10)]"
+            className="h-9 w-full rounded-md border border-border bg-muted px-3 text-[13px] text-foreground placeholder:text-foreground-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-10)]"
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="font-medium text-[13px] text-[var(--text-primary)]">Role</label>
+          <label className="font-medium text-[13px] text-foreground">Role</label>
           <input
             value={profile?.role ?? ""}
             disabled
-            className="h-9 w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 text-[13px] text-[var(--text-muted)] opacity-60"
+            className="h-9 w-full rounded-md border border-border bg-muted px-3 text-[13px] text-foreground-muted opacity-60"
           />
         </div>
 

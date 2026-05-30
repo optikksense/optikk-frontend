@@ -11,10 +11,10 @@ type Props = {
 };
 
 const TONE_CLASSES: Record<Tone, string> = {
-  ok: "bg-[var(--color-success-subtle)] text-[var(--color-success)] border-[color-mix(in_oklch,var(--color-success),transparent_65%)]",
-  warn: "bg-[var(--color-warning-subtle)] text-[var(--color-warning)] border-[color-mix(in_oklch,var(--color-warning),transparent_65%)]",
-  err: "bg-[var(--color-error-subtle)] text-[var(--color-error)] border-[color-mix(in_oklch,var(--color-error),transparent_65%)]",
-  neutral: "bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-[var(--border-color)]",
+  ok: "bg-success-subtle text-success border-[color-mix(in_oklch,var(--color-success),transparent_65%)]",
+  warn: "bg-warning-subtle text-warning border-[color-mix(in_oklch,var(--color-warning),transparent_65%)]",
+  err: "bg-error-subtle text-error border-[color-mix(in_oklch,var(--color-error),transparent_65%)]",
+  neutral: "bg-muted text-foreground-secondary border-border",
 };
 
 function StatusChipImpl({ tone, text, size = "md" }: Props): JSX.Element {

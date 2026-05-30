@@ -17,12 +17,12 @@ interface LoginFieldProps {
 }
 
 const INPUT_BASE =
-  "h-[42px] w-full rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] " +
-  "py-0 pl-9 pr-3 font-[inherit] text-[13.5px] text-[var(--text-primary)] outline-none " +
+  "h-[42px] w-full rounded-md border border-border bg-card " +
+  "py-0 pl-9 pr-3 font-[inherit] text-[13.5px] text-foreground outline-none " +
   "transition-[border-color,box-shadow] duration-150 " +
-  "placeholder:text-[var(--text-muted)] " +
-  "hover:border-[var(--text-muted)] " +
-  "focus:border-[var(--color-primary)] focus:shadow-[var(--login-focus-ring)]";
+  "placeholder:text-foreground-muted " +
+  "hover:border-foreground-muted " +
+  "focus:border-primary focus:shadow-[var(--login-focus-ring)]";
 
 export function LoginField({
   id,
@@ -42,14 +42,14 @@ export function LoginField({
       <div className="flex items-baseline justify-between">
         <label
           htmlFor={id}
-          className="text-[11.5px] font-semibold uppercase tracking-[0.04em] text-[var(--text-secondary)]"
+          className="text-[11.5px] font-semibold uppercase tracking-[0.04em] text-foreground-secondary"
         >
           {label}
         </label>
         {hint}
       </div>
       <div className="relative">
-        <span className="pointer-events-none absolute left-[11px] top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
+        <span className="pointer-events-none absolute left-[11px] top-1/2 -translate-y-1/2 text-foreground-muted">
           {icon}
         </span>
         <input

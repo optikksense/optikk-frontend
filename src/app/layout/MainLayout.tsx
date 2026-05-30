@@ -24,13 +24,13 @@ function ErrorFallback({
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
       <div className="font-medium text-lg text-error">Something went wrong</div>
-      <pre className="max-w-xl overflow-auto whitespace-pre-wrap text-[var(--text-secondary)] text-sm">
+      <pre className="max-w-xl overflow-auto whitespace-pre-wrap text-foreground-secondary text-sm">
         {message}
       </pre>
       <button
         type="button"
         onClick={resetErrorBoundary}
-        className="rounded-md bg-[var(--bg-tertiary)] px-4 py-2 text-[var(--text-primary)] text-sm transition-colors hover:bg-[var(--bg-hover)]"
+        className="rounded-md bg-muted px-4 py-2 text-foreground text-sm transition-colors hover:bg-accent"
       >
         Try again
       </button>

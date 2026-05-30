@@ -30,11 +30,11 @@ function KpiStrip({ counts }: Props) {
       {kpis.map((k) => (
         <div
           key={k.label}
-          className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-3"
+          className="rounded-lg border border-border bg-card p-3"
         >
-          <div className="text-[11px] text-[var(--text-muted)]">{k.label}</div>
+          <div className="text-[11px] text-foreground-muted">{k.label}</div>
           <div className={`mt-1 text-2xl font-semibold ${k.color}`}>{k.value}</div>
-          <div className="mt-0.5 text-[10px] text-[var(--text-muted)]">{k.sub}</div>
+          <div className="mt-0.5 text-[10px] text-foreground-muted">{k.sub}</div>
         </div>
       ))}
     </div>

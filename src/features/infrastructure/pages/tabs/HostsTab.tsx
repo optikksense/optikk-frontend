@@ -39,7 +39,7 @@ export default function HostsTab() {
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-[1fr_280px]">
         <div className="min-w-0">
           {filtered.length === 0 ? (
-            <div className="grid h-[200px] place-items-center text-[12px] text-[var(--text-muted)]">
+            <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted">
               {query.isPending ? "Loading hosts…" : "No hosts match the current filter."}
             </div>
           ) : (

@@ -54,7 +54,7 @@ function TabsRow({
   onChange: (next: InfraTabId) => void;
 }) {
   return (
-    <nav className="flex border-[var(--border-color)] border-b">
+    <nav className="flex border-border border-b">
       {TAB_ITEMS.map((tab) => {
         const isActive = active === tab.id;
         const count = tabCount(tab.id, hostCount, podCount);
@@ -65,13 +65,13 @@ function TabsRow({
             onClick={() => onChange(tab.id)}
             className={`flex items-center gap-1 border-b-2 px-3 py-2 text-[13px] transition-colors ${
               isActive
-                ? "border-[var(--color-primary)] text-[var(--text-primary)]"
-                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                ? "border-primary text-foreground"
+                : "border-transparent text-foreground-muted hover:text-foreground"
             }`}
           >
             {tab.label}
             {count != null && (
-              <span className="ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full bg-[var(--bg-tertiary)] px-1 text-[10px] text-[var(--text-muted)]">
+              <span className="ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full bg-muted px-1 text-[10px] text-foreground-muted">
                 {count}
               </span>
             )}
@@ -118,7 +118,7 @@ export default function InfrastructureHubPage() {
       />
       <Suspense
         fallback={
-          <div className="flex h-64 items-center justify-center text-[13px] text-[var(--text-muted)]">
+          <div className="flex h-64 items-center justify-center text-[13px] text-foreground-muted">
             Loading…
           </div>
         }

@@ -22,22 +22,22 @@ function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     <nav
       aria-label="Breadcrumb"
       className={cn(
-        "flex flex-wrap items-center gap-1 text-[11px] text-[var(--text-secondary)]",
+        "flex flex-wrap items-center gap-1 text-[11px] text-foreground-secondary",
         className
       )}
     >
       {items.map((item, index) => (
         <span key={`${String(item.label)}-${index}`} className="inline-flex items-center gap-1">
-          {index > 0 ? <ChevronRight size={12} className="text-[var(--text-muted)]" /> : null}
+          {index > 0 ? <ChevronRight size={12} className="text-foreground-muted" /> : null}
           {item.path ? (
             <Link
               to={item.path}
-              className="font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--color-primary)]"
+              className="font-medium text-foreground-muted transition-colors hover:text-primary"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="font-medium text-[var(--text-secondary)]">{item.label}</span>
+            <span className="font-medium text-foreground-secondary">{item.label}</span>
           )}
         </span>
       ))}

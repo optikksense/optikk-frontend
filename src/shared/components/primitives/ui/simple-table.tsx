@@ -360,7 +360,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
               <Table
                 {...props}
                 className={cn(
-                  "table-fixed border-collapse overflow-hidden rounded-[var(--card-radius)] bg-[var(--bg-secondary)]",
+                  "table-fixed border-collapse overflow-hidden rounded-[var(--card-radius)] bg-secondary",
                   sizeClasses[size],
                   props.className
                 )}
@@ -398,7 +398,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        "relative min-w-0 overflow-hidden border-[var(--border-color)] border-b bg-[var(--bg-secondary)] font-medium text-[11px] text-[var(--text-secondary)] normal-case tracking-[0.01em]",
+                        "relative min-w-0 overflow-hidden border-border border-b bg-secondary font-medium text-[11px] text-foreground-secondary normal-case tracking-[0.01em]",
                         headRowClasses[size],
                         header.column.getCanSort() && "cursor-pointer select-none",
                         meta?.sticky && "z-[11]",
@@ -459,7 +459,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                       cellPadClasses[size],
                       "min-w-0 overflow-hidden",
                       meta?.ellipsis && "max-w-0",
-                      meta?.sticky && "z-[6] bg-[var(--bg-secondary)]",
+                      meta?.sticky && "z-[6] bg-secondary",
                       meta?.className,
                       meta?.cellClassName
                     )}
@@ -487,7 +487,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
           )}
         />
         {pagination ? (
-          <div className="border-[var(--border-color)] border-t bg-[var(--bg-secondary)] px-3 py-2.5">
+          <div className="border-border border-t bg-secondary px-3 py-2.5">
             <Pagination
               page={table.getState().pagination.pageIndex + 1}
               pageSize={table.getState().pagination.pageSize}
@@ -511,7 +511,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
       <div style={scroll?.y ? { maxHeight: scroll.y, overflowY: "auto" } : undefined}>
         <Table
           className={cn(
-            "table-fixed border-collapse overflow-hidden rounded-[var(--card-radius)] bg-[var(--bg-secondary)]",
+            "table-fixed border-collapse overflow-hidden rounded-[var(--card-radius)] bg-secondary",
             sizeClasses[size]
           )}
           style={scroll?.x ? { minWidth: scroll.x } : undefined}
@@ -528,10 +528,10 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        "relative min-w-0 overflow-hidden border-[var(--border-color)] border-b bg-[var(--bg-hover)] font-medium text-[11px] text-[var(--text-secondary)] normal-case tracking-[0.01em]",
+                        "relative min-w-0 overflow-hidden border-border border-b bg-accent font-medium text-[11px] text-foreground-secondary normal-case tracking-[0.01em]",
                         headRowClasses[size],
                         header.column.getCanSort() && "cursor-pointer select-none",
-                        meta?.sticky && "z-[11] bg-[var(--bg-secondary)]",
+                        meta?.sticky && "z-[11] bg-secondary",
                         meta?.headerClassName
                       )}
                       style={{
@@ -597,7 +597,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                           cellPadClasses[size],
                           "min-w-0 overflow-hidden",
                           meta?.ellipsis && "max-w-0",
-                          meta?.sticky && "z-[6] bg-[var(--bg-secondary)]",
+                          meta?.sticky && "z-[6] bg-secondary",
                           meta?.className,
                           meta?.cellClassName
                         )}
@@ -631,7 +631,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
               <TableRow className="hover:bg-transparent">
                 <TableCell
                   colSpan={incomingColumns.length}
-                  className="px-3 py-8 text-center text-[12px] text-[var(--text-muted)]"
+                  className="px-3 py-8 text-center text-[12px] text-foreground-muted"
                 >
                   No data
                 </TableCell>
@@ -641,7 +641,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
         </Table>
       </div>
       {pagination ? (
-        <div className="border-[var(--border-color)] border-t px-3 py-2.5">
+        <div className="border-border border-t px-3 py-2.5">
           <Pagination
             page={table.getState().pagination.pageIndex + 1}
             pageSize={table.getState().pagination.pageSize}

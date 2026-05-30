@@ -11,7 +11,7 @@ import { PanelCard } from "./PanelCard";
 function ErrorRow({ row }: { row: ErrorGroup }) {
   const detail = ROUTES.errorGroupDetail.replace("$groupId", encodeURIComponent(row.group_id));
   return (
-    <li className="flex items-start justify-between gap-3 border-[var(--border-color)] border-t px-4 py-3 first:border-t-0">
+    <li className="flex items-start justify-between gap-3 border-border border-t px-4 py-3 first:border-t-0">
       <div className="min-w-0 flex-1">
         <Link
           to={detail}
@@ -19,18 +19,18 @@ function ErrorRow({ row }: { row: ErrorGroup }) {
         >
           {row.operation_name || row.status_message || row.group_id}
         </Link>
-        <div className="mt-1 flex flex-wrap items-baseline gap-x-3 text-[11px] text-[var(--text-muted)]">
+        <div className="mt-1 flex flex-wrap items-baseline gap-x-3 text-[11px] text-foreground-muted">
           {row.status_message && (
-            <span className="truncate text-[var(--text-secondary)]">{row.status_message}</span>
+            <span className="truncate text-foreground-secondary">{row.status_message}</span>
           )}
           {row.http_status_code > 0 && <span>http {row.http_status_code}</span>}
         </div>
       </div>
       <div className="shrink-0 text-right">
-        <div className="font-semibold text-[15px] text-[var(--text-primary)] tabular-nums">
+        <div className="font-semibold text-[15px] text-foreground tabular-nums">
           {fmtNum(row.error_count)}
         </div>
-        <div className="text-[10px] text-[var(--text-muted)]">
+        <div className="text-[10px] text-foreground-muted">
           last {relativeTimeFromIso(row.last_occurrence)}
         </div>
       </div>
@@ -58,7 +58,7 @@ export function ErrorsListPanel({
       padded={false}
     >
       {rows.length === 0 ? (
-        <div className="px-4 py-8 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="px-4 py-8 text-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No errors in selected range."}
         </div>
       ) : (

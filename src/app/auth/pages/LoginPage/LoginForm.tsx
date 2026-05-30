@@ -66,7 +66,7 @@ function ShowHideToggle({
       onClick={() => onToggle(!show)}
       tabIndex={-1}
       aria-label={show ? "Hide password" : "Show password"}
-      className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1.5 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-inset)] hover:text-[var(--text-secondary)]"
+      className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1.5 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-foreground-muted transition-colors hover:bg-surface-inset hover:text-foreground-secondary"
     >
       {show ? "Hide" : "Show"}
     </button>
@@ -76,7 +76,7 @@ function ShowHideToggle({
 function KeepSignedInRow() {
   return (
     <div className="my-1 mb-[18px] flex items-center justify-between">
-      <label className="flex cursor-pointer select-none items-center gap-2 text-[13px] text-[var(--text-secondary)]">
+      <label className="flex cursor-pointer select-none items-center gap-2 text-[13px] text-foreground-secondary">
         <input
           type="checkbox"
           className="m-0 h-[14px] w-[14px] accent-[var(--color-primary)]"
@@ -93,7 +93,7 @@ function SubmitButton({ loading }: { readonly loading: boolean }) {
       data-testid="login-submit"
       type="submit"
       disabled={loading}
-      className="flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-[var(--color-primary)] bg-[var(--color-primary)] font-[inherit] text-sm font-semibold text-[var(--login-submit-fg)] transition-[background-color,border-color,transform] duration-150 hover:border-[var(--login-link)] hover:bg-[var(--login-link)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+      className="flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-primary bg-primary font-[inherit] text-sm font-semibold text-[var(--login-submit-fg)] transition-[background-color,border-color,transform] duration-150 hover:border-[var(--login-link)] hover:bg-[var(--login-link)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
     >
       {loading ? (
         <span className="h-[16px] w-[16px] animate-[spin_0.6s_linear_infinite] rounded-full border-2 border-transparent border-t-current" />
@@ -109,7 +109,7 @@ function SubmitButton({ loading }: { readonly loading: boolean }) {
 
 function RequestAccessLine() {
   return (
-    <p className="mt-4 text-center text-[12.5px] text-[var(--text-muted)]">
+    <p className="mt-4 text-center text-[12.5px] text-foreground-muted">
       Don&apos;t have an account?{" "}
       <Link
         to={ROUTES.pricing}
@@ -123,13 +123,13 @@ function RequestAccessLine() {
 
 function LegalLine() {
   return (
-    <p className="mx-auto mt-[22px] max-w-[320px] text-center text-[11px] leading-[1.5] text-[var(--text-muted)]">
+    <p className="mx-auto mt-[22px] max-w-[320px] text-center text-[11px] leading-[1.5] text-foreground-muted">
       By signing in you agree to Optikk&apos;s{" "}
-      <Link to={ROUTES.terms} className="text-[var(--text-secondary)] underline">
+      <Link to={ROUTES.terms} className="text-foreground-secondary underline">
         Terms of Service
       </Link>{" "}
       and{" "}
-      <Link to={ROUTES.privacy} className="text-[var(--text-secondary)] underline">
+      <Link to={ROUTES.privacy} className="text-foreground-secondary underline">
         Privacy Policy
       </Link>
       .

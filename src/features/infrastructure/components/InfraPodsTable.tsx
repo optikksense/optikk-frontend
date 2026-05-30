@@ -42,7 +42,7 @@ export default function InfraPodsTable({ pods, onOpenPodLogs }: InfraPodsTablePr
           to={dynamicTo(
             ROUTES.containerDetail.replace("$container", encodeURIComponent(row.pod_name))
           )}
-          className="font-medium font-mono text-[var(--color-primary)] hover:underline"
+          className="font-medium font-mono text-primary hover:underline"
         >
           {row.pod_name}
         </Link>

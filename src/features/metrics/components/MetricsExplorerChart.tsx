@@ -126,11 +126,11 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="flex min-h-[400px] items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-center">
-          <BarChart3 size={40} className="text-[var(--text-muted)] opacity-40" />
-          <div className="font-medium text-[14px] text-[var(--text-secondary)]">
+          <BarChart3 size={40} className="text-foreground-muted opacity-40" />
+          <div className="font-medium text-[14px] text-foreground-secondary">
             Select a metric to start exploring
           </div>
-          <div className="max-w-[320px] text-[12px] text-[var(--text-muted)]">
+          <div className="max-w-[320px] text-[12px] text-foreground-muted">
             Choose a metric name and aggregation function to visualize your data over time.
           </div>
         </div>
@@ -142,7 +142,7 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="min-h-[400px]">
         <div className="flex h-[360px] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--text-muted)] border-t-[var(--color-primary)]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-foreground-muted border-t-primary" />
         </div>
       </PageSurface>
     );
@@ -152,8 +152,8 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="min-h-[400px]">
         <div className="flex h-[360px] flex-col items-center justify-center gap-3">
-          <AlertCircle size={32} className="text-[var(--color-error)] opacity-60" />
-          <div className="text-[13px] text-[var(--color-error)]">Failed to load metrics data</div>
+          <AlertCircle size={32} className="text-error opacity-60" />
+          <div className="text-[13px] text-error">Failed to load metrics data</div>
           {onRetry && (
             <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />} onClick={onRetry}>
               Retry
@@ -168,7 +168,7 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="min-h-[400px]">
         <div className="flex h-[360px] items-center justify-center">
-          <div className="text-[13px] text-[var(--text-muted)]">
+          <div className="text-[13px] text-foreground-muted">
             No data for the selected query.
           </div>
         </div>
@@ -188,7 +188,7 @@ export function MetricsExplorerChart({
       className={cn("min-h-[400px]", isLoading && "opacity-70 transition-opacity duration-200")}
     >
       {truncated ? (
-        <div className="mb-3 rounded border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2 text-[12px] text-[var(--text-secondary)]">
+        <div className="mb-3 rounded border border-border bg-secondary px-3 py-2 text-[12px] text-foreground-secondary">
           Showing first {MAX_RENDERED_SERIES} of {series.length} series. Add a filter or group-by to
           narrow results.
         </div>

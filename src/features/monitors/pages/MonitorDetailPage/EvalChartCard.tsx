@@ -42,18 +42,18 @@ function EvalChartCard({ data, loading }: Props) {
   }, [data]);
 
   return (
-    <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-baseline justify-between">
         <div>
-          <div className="text-sm font-medium text-[var(--text-primary)]">
+          <div className="text-sm font-medium text-foreground">
             Evaluation · last 1 hour
           </div>
-          <div className="text-[11px] text-[var(--text-muted)]">
+          <div className="text-[11px] text-foreground-muted">
             line is monitor value · bands show thresholds
           </div>
         </div>
         {data && (
-          <div className="flex items-center gap-3 text-[11px] text-[var(--text-muted)]">
+          <div className="flex items-center gap-3 text-[11px] text-foreground-muted">
             {data.warn_threshold !== undefined && (
               <span className="font-mono">warn ≥ {data.warn_threshold}</span>
             )}
@@ -65,11 +65,11 @@ function EvalChartCard({ data, loading }: Props) {
       </div>
       <div className="mt-3 h-[180px] w-full">
         {loading && !data ? (
-          <div className="flex h-full items-center justify-center text-xs text-[var(--text-muted)]">
+          <div className="flex h-full items-center justify-center text-xs text-foreground-muted">
             Loading…
           </div>
         ) : !chart ? (
-          <div className="flex h-full items-center justify-center text-xs text-[var(--text-muted)]">
+          <div className="flex h-full items-center justify-center text-xs text-foreground-muted">
             No data yet for this monitor.
           </div>
         ) : (

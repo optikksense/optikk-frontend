@@ -19,15 +19,15 @@ function WindowInfo({ compare }: { compare: DeploymentCompareResponse }) {
   return (
     <div>
       <div className="flex items-center gap-2">
-        <Radar size={16} className="text-[var(--color-primary)]" />
-        <h3 className="font-semibold text-[var(--text-primary)]">Deployment window</h3>
+        <Radar size={16} className="text-primary" />
+        <h3 className="font-semibold text-foreground">Deployment window</h3>
       </div>
-      <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
+      <p className="mt-1 text-[12px] text-foreground-secondary">
         {compare.has_baseline && before
           ? `Before: ${formatWindowLabel(before.start_ms, before.end_ms)}`
           : "No prior deployment baseline exists for this release."}
       </p>
-      <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
+      <p className="mt-1 text-[12px] text-foreground-secondary">
         After: {formatWindowLabel(after.start_ms, after.end_ms)}
       </p>
     </div>
@@ -67,7 +67,7 @@ function WindowActionGroup({
 
 function DeploymentCompareWindowComponent({ compare, onOpen }: Props) {
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <WindowInfo compare={compare} />
         <div className="flex flex-wrap gap-2">

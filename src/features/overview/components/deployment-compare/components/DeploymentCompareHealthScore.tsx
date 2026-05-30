@@ -44,20 +44,20 @@ function DeploymentCompareHealthScoreComponent({ compare }: Props) {
   if (!compare.has_baseline) return null;
 
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Release health score
           </div>
           <div className="mt-1 flex items-baseline gap-3">
-            <span className="font-semibold text-[32px] text-[var(--text-primary)] leading-none">
+            <span className="font-semibold text-[32px] text-foreground leading-none">
               {verdict.score}
             </span>
             <Badge variant={verdict.tone}>{verdict.label}</Badge>
           </div>
         </div>
-        <p className="max-w-md text-[12px] text-[var(--text-secondary)]">
+        <p className="max-w-md text-[12px] text-foreground-secondary">
           Derived client-side from error-rate, p95, and p99 deltas against the prior baseline.
         </p>
       </div>

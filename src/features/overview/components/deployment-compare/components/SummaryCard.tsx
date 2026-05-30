@@ -24,22 +24,22 @@ function SummaryCardComponent({
   return (
     <Card
       padding="lg"
-      className="border-[var(--border-light)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]"
+      className="border-border-light bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             {label}
           </div>
-          <div className="mt-2 font-semibold text-[22px] text-[var(--text-primary)]">
+          <div className="mt-2 font-semibold text-[22px] text-foreground">
             {formatter(afterValue)}
           </div>
         </div>
         <DeltaPill delta={delta} formatter={formatter} invert={invertDelta} />
       </div>
-      <div className="mt-3 flex items-center gap-2 text-[12px] text-[var(--text-secondary)]">
+      <div className="mt-3 flex items-center gap-2 text-[12px] text-foreground-secondary">
         <span>Before</span>
-        <span className="font-medium text-[var(--text-primary)]">
+        <span className="font-medium text-foreground">
           {beforeValue == null ? "—" : formatter(beforeValue)}
         </span>
       </div>

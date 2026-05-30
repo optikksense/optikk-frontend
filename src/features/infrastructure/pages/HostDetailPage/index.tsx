@@ -103,8 +103,8 @@ export default function HostDetailPage(): JSX.Element {
       <HostDetailHero host={host} node={node} status={status} />
       <HostDetailKpiCards host={host} />
       <HostDetailSystemMetrics host={host} />
-      <section className="rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
-        <div className="mb-3 font-semibold text-[13px] text-[var(--text-primary)]">
+      <section className="rounded-md border border-border bg-card p-4">
+        <div className="mb-3 font-semibold text-[13px] text-foreground">
           Services on this host
         </div>
         <SimpleTable

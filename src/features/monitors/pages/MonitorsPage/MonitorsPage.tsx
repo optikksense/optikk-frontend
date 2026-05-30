@@ -60,7 +60,7 @@ export default function MonitorsPage() {
             <button
               type="button"
               onClick={() => navigate({ to: "/monitors/notifications" })}
-              className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
+              className="rounded border border-border bg-card px-3 py-1.5 text-sm text-foreground hover:bg-secondary"
             >
               Manage notifications
             </button>
@@ -81,13 +81,13 @@ export default function MonitorsPage() {
       <Tabs tab={tab} setTab={setTab} counts={counts} />
 
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5">
-          <Search size={14} className="text-[var(--text-muted)]" />
+        <div className="flex items-center gap-2 rounded border border-border bg-card px-2 py-1.5">
+          <Search size={14} className="text-foreground-muted" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search monitors by name…"
-            className="w-72 bg-transparent text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+            className="w-72 bg-transparent text-sm text-foreground placeholder-[var(--text-muted)] outline-none"
           />
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function MonitorsPage() {
       <div className="grid grid-cols-[2fr_1fr] gap-4">
         <div>
           {listQ.isPending && monitors.length === 0 ? (
-            <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-12 text-center text-sm text-[var(--text-muted)]">
+            <div className="rounded-lg border border-border bg-card p-12 text-center text-sm text-foreground-muted">
               Loading monitors…
             </div>
           ) : (

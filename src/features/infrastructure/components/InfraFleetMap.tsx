@@ -86,7 +86,7 @@ export default function InfraFleetMap({
 
   if (nodes.length === 0) {
     return (
-      <Card padding="lg" className="text-center text-[13px] text-[var(--text-muted)]">
+      <Card padding="lg" className="text-center text-[13px] text-foreground-muted">
         No hosts in this time range.
       </Card>
     );
@@ -99,9 +99,9 @@ export default function InfraFleetMap({
         .map(([groupName, list]) => (
           <div key={groupName}>
             {group !== INFRA_GROUP.none ? (
-              <div className="mb-2 font-semibold text-[12px] text-[var(--text-secondary)] uppercase tracking-[0.06em]">
+              <div className="mb-2 font-semibold text-[12px] text-foreground-secondary uppercase tracking-[0.06em]">
                 {groupName}
-                <span className="ml-2 font-normal text-[var(--text-muted)] normal-case">
+                <span className="ml-2 font-normal text-foreground-muted normal-case">
                   ({list.length} hosts)
                 </span>
               </div>
@@ -119,7 +119,7 @@ export default function InfraFleetMap({
                     type="button"
                     title={`${node.host}\n${fill}: ${fv.toFixed(2)}`}
                     onClick={() => onHostClick(node.host)}
-                    className="flex items-center justify-center rounded-[10px] border border-[var(--border-color)] font-medium text-[10px] text-white shadow-sm transition-transform hover:scale-[1.03] hover:brightness-110"
+                    className="flex items-center justify-center rounded-[10px] border border-border font-medium text-[10px] text-white shadow-sm transition-transform hover:scale-[1.03] hover:brightness-110"
                     style={{
                       width: dim,
                       height: dim,

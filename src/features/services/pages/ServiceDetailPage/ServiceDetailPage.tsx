@@ -18,7 +18,7 @@ function InvalidIdentity() {
   return (
     <PageShell>
       <PageSurface padding="lg">
-        <div className="text-[13px] text-[var(--text-muted)]">
+        <div className="text-[13px] text-foreground-muted">
           This URL does not contain a service name.
         </div>
       </PageSurface>

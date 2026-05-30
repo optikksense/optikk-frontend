@@ -93,11 +93,11 @@ function DeploymentCell({
 }) {
   if (!row.latestDeployment) {
     return (
-      <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] border-dashed bg-[var(--bg-hover)] px-3 py-2 text-left">
-        <div className="font-medium text-[12px] text-[var(--text-secondary)]">
+      <div className="rounded-[var(--card-radius)] border border-border border-dashed bg-accent px-3 py-2 text-left">
+        <div className="font-medium text-[12px] text-foreground-secondary">
           No deployment metadata
         </div>
-        <div className="mt-1 text-[11px] text-[var(--text-muted)]">
+        <div className="mt-1 text-[11px] text-foreground-muted">
           Telemetry has not reported a release version yet.
         </div>
       </div>
@@ -113,17 +113,17 @@ function DeploymentCell({
         event.stopPropagation();
         onOpen(row);
       }}
-      className="w-full rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015))] px-3 py-2 text-left transition-colors hover:border-[var(--color-primary-subtle-45)] hover:bg-[var(--color-primary-subtle-08)]"
+      className="w-full rounded-[var(--card-radius)] border border-border bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015))] px-3 py-2 text-left transition-colors hover:border-[var(--color-primary-subtle-45)] hover:bg-[var(--color-primary-subtle-08)]"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="font-medium text-[var(--text-primary)]">{deployment.version}</span>
+        <span className="font-medium text-foreground">{deployment.version}</span>
         <Badge variant={DEPLOYMENT_RISK_VARIANT[row.deploymentRisk]}>{row.deploymentRisk}</Badge>
       </div>
-      <div className="mt-1 text-[11px] text-[var(--text-secondary)]">
+      <div className="mt-1 text-[11px] text-foreground-secondary">
         {deployment.environment || "unknown env"} • deployed{" "}
         {formatRelativeTime(deployment.deployed_at)}
       </div>
-      <div className="mt-1 text-[11px] text-[var(--text-muted)]">Open release comparison</div>
+      <div className="mt-1 text-[11px] text-foreground-muted">Open release comparison</div>
     </button>
   );
 }
@@ -193,12 +193,12 @@ export default function DiscoveryView(): JSX.Element {
       key: "name",
       width: 300,
       sticky: "left",
-      headerClassName: "border-r border-[var(--border-color)]",
-      cellClassName: "border-r border-[var(--border-color)]",
+      headerClassName: "border-r border-border",
+      cellClassName: "border-r border-border",
       render: (_value, row) => (
         <div className="flex flex-col gap-1">
-          <span className="font-semibold text-[13px] text-[var(--text-primary)]">{row.name}</span>
-          <div className="flex flex-wrap items-center gap-2 text-[11px] text-[var(--text-muted)]">
+          <span className="font-semibold text-[13px] text-foreground">{row.name}</span>
+          <div className="flex flex-wrap items-center gap-2 text-[11px] text-foreground-muted">
             <span>{formatNumber(row.requestCount)} req</span>
             <span>•</span>
             <span>{formatPercentage(row.errorRate)}</span>
@@ -234,10 +234,10 @@ export default function DiscoveryView(): JSX.Element {
         <span
           className={
             row.errorRate > 5
-              ? "text-[var(--color-error)]"
+              ? "text-error"
               : row.errorRate > 1
-                ? "text-[var(--color-warning)]"
-                : "text-[var(--text-primary)]"
+                ? "text-warning"
+                : "text-foreground"
           }
         >
           {formatPercentage(row.errorRate)}
@@ -257,7 +257,7 @@ export default function DiscoveryView(): JSX.Element {
       key: "topology",
       width: 140,
       render: (_value, row) => (
-        <div className="flex flex-col gap-0.5 text-[12px] text-[var(--text-secondary)]">
+        <div className="flex flex-col gap-0.5 text-[12px] text-foreground-secondary">
           <span>{row.upstreamCount} upstream</span>
           <span>{row.downstreamCount} downstream</span>
         </div>
@@ -268,8 +268,8 @@ export default function DiscoveryView(): JSX.Element {
       key: "deployment",
       width: 280,
       sticky: "right",
-      headerClassName: "border-l border-[var(--border-color)]",
-      cellClassName: "border-l border-[var(--border-color)]",
+      headerClassName: "border-l border-border",
+      cellClassName: "border-l border-border",
       render: (_value, row) => <DeploymentCell row={row} onOpen={openDeploymentCompare} />,
     },
   ];
@@ -285,48 +285,48 @@ export default function DiscoveryView(): JSX.Element {
       >
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-2xl">
-            <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.1em]">
+            <div className="text-[11px] text-foreground-muted uppercase tracking-[0.1em]">
               Discovery
             </div>
-            <h2 className="mt-2 font-semibold text-[20px] text-[var(--text-primary)]">
+            <h2 className="mt-2 font-semibold text-[20px] text-foreground">
               Release-aware service catalog
             </h2>
-            <p className="mt-2 text-[13px] text-[var(--text-secondary)] leading-6">
+            <p className="mt-2 text-[13px] text-foreground-secondary leading-6">
               Scan health, latency, topology footprint, and the newest release for every service
               from one dense surface.
             </p>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-hover)] px-4 py-3">
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+            <div className="rounded-[var(--card-radius)] border border-border bg-accent px-4 py-3">
+              <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
                 Visible
               </div>
-              <div className="mt-2 font-semibold text-[20px] text-[var(--text-primary)]">
+              <div className="mt-2 font-semibold text-[20px] text-foreground">
                 {formatNumber(filtered.length)}
               </div>
             </div>
-            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-hover)] px-4 py-3">
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+            <div className="rounded-[var(--card-radius)] border border-border bg-accent px-4 py-3">
+              <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
                 Recent Releases
               </div>
-              <div className="mt-2 font-semibold text-[20px] text-[var(--text-primary)]">
+              <div className="mt-2 font-semibold text-[20px] text-foreground">
                 {formatNumber(recentReleases)}
               </div>
             </div>
-            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-hover)] px-4 py-3">
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+            <div className="rounded-[var(--card-radius)] border border-border bg-accent px-4 py-3">
+              <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
                 Degraded
               </div>
-              <div className="mt-2 font-semibold text-[20px] text-[var(--text-primary)]">
+              <div className="mt-2 font-semibold text-[20px] text-foreground">
                 {formatNumber(rows.filter((row) => row.health !== "healthy").length)}
               </div>
             </div>
-            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-hover)] px-4 py-3">
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+            <div className="rounded-[var(--card-radius)] border border-border bg-accent px-4 py-3">
+              <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
                 Missing Deploy
               </div>
-              <div className="mt-2 font-semibold text-[20px] text-[var(--text-primary)]">
+              <div className="mt-2 font-semibold text-[20px] text-foreground">
                 {formatNumber(rows.filter((row) => !row.latestDeployment).length)}
               </div>
             </div>
@@ -340,7 +340,7 @@ export default function DiscoveryView(): JSX.Element {
             <select
               value={healthFilter}
               onChange={(event) => setHealthFilter(event.target.value as "all" | DiscoveryHealth)}
-              className="h-10 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 text-[12px] text-[var(--text-primary)] focus:border-[var(--color-primary)] focus:outline-none"
+              className="h-10 rounded-[var(--card-radius)] border border-border bg-muted px-3 text-[12px] text-foreground focus:border-primary focus:outline-none"
             >
               <option value="all">All health states</option>
               <option value="healthy">Healthy</option>
@@ -351,7 +351,7 @@ export default function DiscoveryView(): JSX.Element {
             <select
               value={releaseFilter}
               onChange={(event) => setReleaseFilter(event.target.value as ReleaseFilter)}
-              className="h-10 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 text-[12px] text-[var(--text-primary)] focus:border-[var(--color-primary)] focus:outline-none"
+              className="h-10 rounded-[var(--card-radius)] border border-border bg-muted px-3 text-[12px] text-foreground focus:border-primary focus:outline-none"
             >
               <option value="all">All release states</option>
               <option value="recent">Recent releases</option>
@@ -362,7 +362,7 @@ export default function DiscoveryView(): JSX.Element {
             <select
               value={sortPreset}
               onChange={(event) => setSortPreset(event.target.value as SortPreset)}
-              className="h-10 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 text-[12px] text-[var(--text-primary)] focus:border-[var(--color-primary)] focus:outline-none"
+              className="h-10 rounded-[var(--card-radius)] border border-border bg-muted px-3 text-[12px] text-foreground focus:border-primary focus:outline-none"
             >
               <option value="recent">Sort by release recency</option>
               <option value="requests">Sort by request volume</option>
@@ -371,21 +371,21 @@ export default function DiscoveryView(): JSX.Element {
               <option value="health">Sort by health</option>
             </select>
 
-            <div className="ml-auto text-[12px] text-[var(--text-muted)]">
+            <div className="ml-auto text-[12px] text-foreground-muted">
               {filtered.length} of {rows.length} services
             </div>
           </div>
 
           {query.isLoading ? (
-            <div className="flex h-48 items-center justify-center text-[13px] text-[var(--text-muted)]">
+            <div className="flex h-48 items-center justify-center text-[13px] text-foreground-muted">
               Loading services…
             </div>
           ) : query.isError ? (
-            <div className="flex h-48 items-center justify-center text-[13px] text-[var(--color-error)]">
+            <div className="flex h-48 items-center justify-center text-[13px] text-error">
               Failed to load services.
             </div>
           ) : isEmpty ? (
-            <div className="flex h-48 items-center justify-center text-[13px] text-[var(--text-muted)]">
+            <div className="flex h-48 items-center justify-center text-[13px] text-foreground-muted">
               No services match the current filters.
             </div>
           ) : (

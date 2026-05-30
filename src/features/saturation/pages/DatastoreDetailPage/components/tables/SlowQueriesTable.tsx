@@ -19,7 +19,7 @@ function SlowQueriesTableComponent({ bundle }: { bundle: Bundle }) {
       pageSize={10}
       scrollX={980}
       rightAdornment={
-        <div className="text-[11px] text-[var(--text-muted)]">
+        <div className="text-[11px] text-foreground-muted">
           Updated {formatTimestamp(Date.now())}
         </div>
       }

@@ -46,8 +46,8 @@ function ServiceStripComponent({ spans, activeService, onActiveServiceChange }: 
   if (tallies.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-3.5 px-5 py-2.5 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] overflow-x-auto">
-      <span className="text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)] whitespace-nowrap">
+    <div className="flex items-center gap-3.5 px-5 py-2.5 bg-secondary border-b border-border overflow-x-auto">
+      <span className="text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption whitespace-nowrap">
         Services
       </span>
       <div className="flex gap-1.5 flex-1 flex-wrap">
@@ -59,9 +59,9 @@ function ServiceStripComponent({ spans, activeService, onActiveServiceChange }: 
               key={t.name}
               type="button"
               className={cn(
-                "inline-flex items-center gap-1.5 pr-[9px] pl-1.5 py-1 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[12px] text-[var(--text-secondary)] whitespace-nowrap cursor-pointer flex-none hover:bg-[var(--bg-hover)]",
+                "inline-flex items-center gap-1.5 pr-[9px] pl-1.5 py-1 rounded-full bg-muted border border-border text-[12px] text-foreground-secondary whitespace-nowrap cursor-pointer flex-none hover:bg-accent",
                 isActive &&
-                  "border-[var(--color-primary)] bg-[var(--color-primary-subtle-15)] text-[var(--text-primary)]",
+                  "border-primary bg-[var(--color-primary-subtle-15)] text-foreground",
                 t.errors > 0 && "shadow-[inset_0_0_0_1px_var(--color-error-subtle)]"
               )}
               onClick={() => onActiveServiceChange(isActive ? null : t.name)}
@@ -72,10 +72,10 @@ function ServiceStripComponent({ spans, activeService, onActiveServiceChange }: 
                 style={{ background: swatchColor }}
               />
               <span className="whitespace-nowrap">{t.name}</span>
-              <span className="text-[var(--text-caption)] font-mono text-[11px]">{t.count}</span>
+              <span className="text-foreground-caption font-mono text-[11px]">{t.count}</span>
               {t.errors > 0 && (
                 <span
-                  className="text-[var(--color-error)] inline-flex items-center"
+                  className="text-error inline-flex items-center"
                   aria-label={`${t.errors} errors`}
                 >
                   <AlertCircle size={11} />

@@ -30,7 +30,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
           value={q.metric}
           onChange={(e) => update({ metric: e.target.value })}
           placeholder="e.g. trace.errors.payment_svc"
-          className="w-full rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 font-mono text-xs"
+          className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
       </FieldRow>
       <FieldRow label="Aggregation">
@@ -45,14 +45,14 @@ export default function MetricQuery({ draft, setDraft }: Props) {
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
                     ? "bg-primary text-white"
-                    : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    : "bg-secondary text-foreground-secondary hover:text-foreground"
                 }`}
               >
                 {a}
               </button>
             );
           })}
-          <span className="text-xs text-[var(--text-muted)]">over</span>
+          <span className="text-xs text-foreground-muted">over</span>
           {WINDOWS.map((w) => {
             const active = q.window_sec === w;
             return (
@@ -63,7 +63,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
                     ? "bg-primary text-white"
-                    : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    : "bg-secondary text-foreground-secondary hover:text-foreground"
                 }`}
               >
                 {w >= 3600 ? `${w / 3600}h` : `${w / 60}m`}

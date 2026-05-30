@@ -28,13 +28,13 @@ export default function NotificationsPage() {
         <button
           type="button"
           onClick={() => navigate({ to: "/monitors" })}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          className="flex items-center gap-1 text-foreground-muted hover:text-foreground"
         >
           <ArrowLeft size={12} />
           Monitors
         </button>
-        <span className="text-[var(--text-muted)]">/</span>
-        <span className="font-medium text-[var(--text-primary)]">Notifications</span>
+        <span className="text-foreground-muted">/</span>
+        <span className="font-medium text-foreground">Notifications</span>
       </div>
 
       <PageHeader
@@ -43,7 +43,7 @@ export default function NotificationsPage() {
         icon={<Bell size={22} />}
       />
 
-      <div className="flex items-center gap-1 border-b border-[var(--border-color)]">
+      <div className="flex items-center gap-1 border-b border-border">
         {TABS.map((t) => {
           const active = t.id === tab;
           return (
@@ -53,8 +53,8 @@ export default function NotificationsPage() {
               onClick={() => setTab(t.id)}
               className={`-mb-px border-b-2 px-3 py-2 text-sm transition-colors ${
                 active
-                  ? "border-primary text-[var(--text-primary)]"
-                  : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-foreground-muted hover:text-foreground"
               }`}
             >
               {t.label}

@@ -35,12 +35,12 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
   };
 
   return (
-    <section className="rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
-      <div className="mb-3 font-semibold text-[13px] text-[var(--text-primary)]">
+    <section className="rounded-md border border-border bg-card p-4">
+      <div className="mb-3 font-semibold text-[13px] text-foreground">
         Containers on this host
       </div>
       {pods.length === 0 ? (
-        <div className="grid h-[120px] place-items-center text-[12px] text-[var(--text-muted)]">
+        <div className="grid h-[120px] place-items-center text-[12px] text-foreground-muted">
           {podsQ.isPending
             ? "Loading containers…"
             : "No containers reported on this host in the current time range."}

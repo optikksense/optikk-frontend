@@ -61,7 +61,7 @@ export function CalendarMonth({
       {/* Day headers */}
       <div className="mb-1 grid grid-cols-7">
         {DAYS.map((d) => (
-          <div key={d} className="text-center font-medium text-[11px] text-[var(--text-tertiary)]">
+          <div key={d} className="text-center font-medium text-[11px] text-foreground-tertiary">
             {d}
           </div>
         ))}
@@ -88,10 +88,10 @@ export function CalendarMonth({
               className={cn(
                 "relative flex h-7 w-full cursor-pointer items-center justify-center border-none text-[12px] outline-none transition-colors",
                 selected
-                  ? "bg-[var(--color-primary)] font-semibold text-white"
+                  ? "bg-primary font-semibold text-white"
                   : inRange
-                    ? "bg-[var(--color-primary)]/15 text-[var(--text-primary)]"
-                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]",
+                    ? "bg-primary/15 text-foreground"
+                    : "text-foreground-secondary hover:bg-muted hover:text-foreground",
                 selectedStart && "rounded-r-none rounded-l-md",
                 selectedEnd && "rounded-r-md rounded-l-none",
                 inRange && !selected && "rounded-none",
@@ -103,7 +103,7 @@ export function CalendarMonth({
                 <span
                   className={cn(
                     "-translate-x-1/2 absolute bottom-0.5 left-1/2 h-1 w-1 rounded-full",
-                    selected ? "bg-white" : "bg-[var(--color-primary)]"
+                    selected ? "bg-white" : "bg-primary"
                   )}
                 />
               )}

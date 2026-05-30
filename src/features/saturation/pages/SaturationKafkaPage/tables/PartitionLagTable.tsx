@@ -12,7 +12,7 @@ const COLUMNS: SimpleTableColumn<PartitionLag>[] = [
     key: "topic",
     width: 260,
     render: (_v, row) => (
-      <span className="truncate font-mono text-[12px] text-[var(--text-primary)]">{row.topic}</span>
+      <span className="truncate font-mono text-[12px] text-foreground">{row.topic}</span>
     ),
   },
   {
@@ -28,7 +28,7 @@ const COLUMNS: SimpleTableColumn<PartitionLag>[] = [
     key: "consumer_group",
     width: 260,
     render: (_v, row) => (
-      <span className="truncate font-mono text-[12px] text-[var(--text-secondary)]">
+      <span className="truncate font-mono text-[12px] text-foreground-secondary">
         {row.consumer_group}
       </span>
     ),
@@ -54,7 +54,7 @@ export function PartitionLagTable() {
       padded={false}
     >
       {rows.length === 0 ? (
-        <div className="px-4 py-8 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="px-4 py-8 text-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No partition lag in window."}
         </div>
       ) : (

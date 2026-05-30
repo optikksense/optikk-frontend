@@ -12,13 +12,13 @@ interface Props {
 
 function DeploymentCompareEndpointsComponent({ compare }: Props) {
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="mb-4 flex items-center gap-2">
-        <GitCompare size={16} className="text-[var(--color-primary)]" />
-        <h3 className="font-semibold text-[var(--text-primary)]">Endpoint regressions</h3>
+        <GitCompare size={16} className="text-primary" />
+        <h3 className="font-semibold text-foreground">Endpoint regressions</h3>
       </div>
       {compare.top_endpoints.length === 0 ? (
-        <div className="text-[12px] text-[var(--text-muted)]">
+        <div className="text-[12px] text-foreground-muted">
           No endpoint regression candidates were found for this release.
         </div>
       ) : (

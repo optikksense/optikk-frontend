@@ -32,7 +32,7 @@ export function DeployTimelineChart({ rows }: DeployTimelineChartProps) {
 
   if (total === 0) {
     return (
-      <div className="grid h-[120px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[120px] place-items-center text-[12px] text-foreground-muted">
         No deploys in this time range.
       </div>
     );

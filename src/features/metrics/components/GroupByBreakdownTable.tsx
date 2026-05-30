@@ -53,10 +53,10 @@ export function GroupByBreakdownTable({ primaryQuery, result }: GroupByBreakdown
     <PageSurface padding="lg" className="overflow-hidden">
       <div className="flex items-start justify-between gap-3 pb-3">
         <div>
-          <div className="font-semibold text-[15px] text-[var(--text-primary)] tracking-[0.01em]">
+          <div className="font-semibold text-[15px] text-foreground tracking-[0.01em]">
             Group-by breakdown
           </div>
-          <div className="mt-0.5 text-[12px] text-[var(--text-muted)]">
+          <div className="mt-0.5 text-[12px] text-foreground-muted">
             <span className="font-mono">{primaryQuery?.metricName || "—"}</span> · grouped by{" "}
             <span className="font-mono">{groupByLabel}</span>
           </div>
@@ -67,7 +67,7 @@ export function GroupByBreakdownTable({ primaryQuery, result }: GroupByBreakdown
       </div>
 
       {rows.length === 0 ? (
-        <div className="py-10 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="py-10 text-center text-[12px] text-foreground-muted">
           No grouped series. Add a group-by to the primary query.
         </div>
       ) : (
@@ -91,7 +91,7 @@ export function GroupByBreakdownTable({ primaryQuery, result }: GroupByBreakdown
               {rows.map((row, i) => (
                 <TableRow key={i}>
                   {tagKeys.map((key) => (
-                    <TableCell key={key} className="font-mono text-[12px] text-[var(--text-primary)]">
+                    <TableCell key={key} className="font-mono text-[12px] text-foreground">
                       {row.tags[key] ?? "—"}
                     </TableCell>
                   ))}
@@ -101,7 +101,7 @@ export function GroupByBreakdownTable({ primaryQuery, result }: GroupByBreakdown
                   <TableCell className="text-right font-mono">
                     {formatStatValue(row.stats.avg)}
                   </TableCell>
-                  <TableCell className="text-right font-mono font-semibold text-[var(--text-primary)]">
+                  <TableCell className="text-right font-mono font-semibold text-foreground">
                     {formatStatValue(row.stats.p95)}
                   </TableCell>
                   <TableCell className="text-right font-mono">

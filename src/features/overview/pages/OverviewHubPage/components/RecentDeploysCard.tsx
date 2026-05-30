@@ -36,16 +36,16 @@ function Row({
     <button
       type="button"
       onClick={onOpen}
-      className="flex items-center justify-between gap-3 rounded-md bg-[var(--bg-inset)] px-2.5 py-2 text-left transition-colors hover:bg-[var(--bg-hover)]"
+      className="flex items-center justify-between gap-3 rounded-md bg-surface-inset px-2.5 py-2 text-left transition-colors hover:bg-accent"
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
-          <span className="overflow-hidden text-ellipsis whitespace-nowrap font-mono font-medium text-[12px] text-[var(--text-primary)]">
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap font-mono font-medium text-[12px] text-foreground">
             {row.service_name}
           </span>
-          <span className="font-mono text-[10.5px] text-[var(--text-muted)]">{row.version}</span>
+          <span className="font-mono text-[10.5px] text-foreground-muted">{row.version}</span>
         </div>
-        <div className="font-mono text-[10.5px] text-[var(--text-muted)]">
+        <div className="font-mono text-[10.5px] text-foreground-muted">
           {row.environment} · {relativeTime(row.deployed_at)}
         </div>
       </div>
@@ -75,15 +75,15 @@ export default function RecentDeploysCard({ rows, loading }: Props) {
     <Surface elevation={1} padding="md" className="flex flex-col gap-3">
       <div className="flex items-end justify-between">
         <div>
-          <div className="font-semibold text-[13px] text-[var(--text-primary)]">
+          <div className="font-semibold text-[13px] text-foreground">
             Recent deploys
           </div>
-          <div className="text-[11px] text-[var(--text-muted)]">Latest active version per service</div>
+          <div className="text-[11px] text-foreground-muted">Latest active version per service</div>
         </div>
         <button
           type="button"
           onClick={() => navigate({ to: ROUTES.deployments })}
-          className="flex items-center gap-1 rounded px-1.5 py-1 text-[11px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
+          className="flex items-center gap-1 rounded px-1.5 py-1 text-[11px] text-foreground-secondary hover:bg-accent"
         >
           <ExternalLink size={12} />
           All deploys
@@ -93,7 +93,7 @@ export default function RecentDeploysCard({ rows, loading }: Props) {
       {loading && visible.length === 0 ? (
         <Skeleton active paragraph={{ rows: 4 }} />
       ) : visible.length === 0 ? (
-        <div className="py-6 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="py-6 text-center text-[12px] text-foreground-muted">
           No recent deploys
         </div>
       ) : (

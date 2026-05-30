@@ -18,8 +18,8 @@ function FilterChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-hover)] px-2 py-1 text-[12px] text-[var(--text-secondary)]">
-      <span className="font-mono text-[11px] text-[var(--text-primary)]">
+    <span className="inline-flex items-center gap-1 rounded-full border border-border bg-accent px-2 py-1 text-[12px] text-foreground-secondary">
+      <span className="font-mono text-[11px] text-foreground">
         {filter.field}
         {":"}
         {filter.value}
@@ -28,7 +28,7 @@ function FilterChip({
         type="button"
         onClick={onRemove}
         aria-label={`Remove filter ${filter.field}:${filter.value}`}
-        className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+        className="text-foreground-muted hover:text-foreground"
       >
         <X size={12} />
       </button>
@@ -51,8 +51,8 @@ export const ExplorerSearchBar = forwardRef<HTMLInputElement, Props>(function Ex
     [filters, onChangeFilters]
   );
   return (
-    <div className="flex min-h-10 flex-wrap items-center gap-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 py-1">
-      <Search size={14} className="shrink-0 text-[var(--text-muted)]" />
+    <div className="flex min-h-10 flex-wrap items-center gap-2 rounded-md border border-border bg-muted px-2 py-1">
+      <Search size={14} className="shrink-0 text-foreground-muted" />
       {filters.map((filter, index) => (
         <FilterChip
           key={`${filter.field}:${filter.op}:${filter.value}:${index}`}
@@ -72,7 +72,7 @@ export const ExplorerSearchBar = forwardRef<HTMLInputElement, Props>(function Ex
           }
         }}
         placeholder={placeholder}
-        className="min-w-[120px] flex-1 bg-transparent text-[13px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
+        className="min-w-[120px] flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-foreground-muted"
       />
     </div>
   );

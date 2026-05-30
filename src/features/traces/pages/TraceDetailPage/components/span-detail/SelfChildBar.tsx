@@ -22,25 +22,25 @@ function SelfChildBarComponent({ selfMs, childMs }: Props) {
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex h-2 w-full overflow-hidden rounded-[3px] bg-[var(--bg-tertiary)]">
+      <div className="flex h-2 w-full overflow-hidden rounded-[3px] bg-muted">
         <div
-          className="h-full bg-[var(--color-primary)]"
+          className="h-full bg-primary"
           style={{ width: `${selfPct}%` }}
           title={`Self ${formatDuration(selfMs)}`}
         />
         <div
-          className="h-full bg-[var(--bg-hover)]"
+          className="h-full bg-accent"
           style={{ width: `${childPct}%` }}
           title={`Children ${formatDuration(childMs)}`}
         />
       </div>
-      <div className="flex justify-between font-mono text-[10.5px] text-[var(--text-caption)]">
+      <div className="flex justify-between font-mono text-[10.5px] text-foreground-caption">
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-primary)]" />
+          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-primary" />
           self {selfPct.toFixed(0)}%
         </span>
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--bg-hover)]" />
+          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-accent" />
           children {childPct.toFixed(0)}%
         </span>
       </div>

@@ -65,34 +65,34 @@ export default function TemplatesTab() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
+      <div className="rounded-lg border border-border bg-card p-4">
         <div className="text-sm font-medium">{editing ? "Edit template" : "Create template"}</div>
         <div className="mt-3 grid gap-2">
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             placeholder="Template name (e.g. Payments incident)"
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 text-xs"
+            className="rounded border border-border bg-card px-2 py-1.5 text-xs"
           />
           <input
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
             placeholder="Description (optional)"
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 text-xs"
+            className="rounded border border-border bg-card px-2 py-1.5 text-xs"
           />
           <textarea
             value={form.body}
             onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
             rows={5}
             placeholder="Message body · supports {{value}} {{threshold}} {{service.name}} placeholders"
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-2 font-mono text-xs"
+            className="rounded border border-border bg-card px-2 py-2 font-mono text-xs"
           />
           <div className="flex items-center justify-end gap-1.5">
             {editing && (
               <button
                 type="button"
                 onClick={() => setForm(emptyForm())}
-                className="rounded border border-[var(--border-color)] px-3 py-1.5 text-xs hover:bg-[var(--bg-secondary)]"
+                className="rounded border border-border px-3 py-1.5 text-xs hover:bg-secondary"
               >
                 Cancel
               </button>
@@ -112,30 +112,30 @@ export default function TemplatesTab() {
 
       <div className="grid grid-cols-2 gap-3">
         {q.isPending && !q.data ? (
-          <div className="col-span-2 rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-center text-xs text-[var(--text-muted)]">
+          <div className="col-span-2 rounded-lg border border-border bg-card p-6 text-center text-xs text-foreground-muted">
             Loading templates…
           </div>
         ) : templates.length === 0 ? (
-          <div className="col-span-2 rounded-lg border border-dashed border-[var(--border-color)] p-8 text-center text-sm text-[var(--text-muted)]">
+          <div className="col-span-2 rounded-lg border border-dashed border-border p-8 text-center text-sm text-foreground-muted">
             No templates yet. Create one above to customize notification message bodies.
           </div>
         ) : (
           templates.map((t) => (
             <div
               key={t.id}
-              className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4"
+              className="rounded-lg border border-border bg-card p-4"
             >
               <div className="flex items-baseline justify-between">
                 <div className="text-sm font-medium">{t.name}</div>
-                <span className="font-mono text-[10px] text-[var(--text-muted)]">
+                <span className="font-mono text-[10px] text-foreground-muted">
                   {t.used_count} in use
                 </span>
               </div>
               {t.description && (
-                <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">{t.description}</div>
+                <div className="mt-0.5 text-[11px] text-foreground-muted">{t.description}</div>
               )}
-              <div className="mt-3 rounded bg-[var(--bg-secondary)] p-3">
-                <div className="whitespace-pre-line font-mono text-[11px] text-[var(--text-secondary)]">
+              <div className="mt-3 rounded bg-secondary p-3">
+                <div className="whitespace-pre-line font-mono text-[11px] text-foreground-secondary">
                   {t.body}
                 </div>
               </div>
@@ -143,14 +143,14 @@ export default function TemplatesTab() {
                 <button
                   type="button"
                   onClick={() => setForm(formFromTemplate(t))}
-                  className="rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] hover:bg-[var(--bg-secondary)]"
+                  className="rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
                 >
                   Edit
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDelete(t.id)}
-                  className="rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] text-error hover:bg-[var(--bg-secondary)]"
+                  className="rounded border border-border px-2 py-0.5 text-[11px] text-error hover:bg-secondary"
                 >
                   Delete
                 </button>

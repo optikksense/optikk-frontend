@@ -13,11 +13,11 @@ function HeaderBadgeRowComponent({ seed }: { seed: DeploymentSeed }) {
       <Badge variant={seed.isActive ? "success" : "warning"}>
         {seed.isActive ? "Active release" : "Historical release"}
       </Badge>
-      <span className="text-[12px] text-[var(--text-secondary)]">
+      <span className="text-[12px] text-foreground-secondary">
         deployed {formatRelativeTime(seed.deployedAtMs)}
       </span>
       {seed.lastSeenAtMs ? (
-        <span className="text-[12px] text-[var(--text-muted)]">
+        <span className="text-[12px] text-foreground-muted">
           last seen {formatRelativeTime(seed.lastSeenAtMs)}
         </span>
       ) : null}

@@ -75,7 +75,7 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
           className={cn(
             "inline-flex items-center gap-1 rounded-2xl border px-[10px] py-[2px]",
             "border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)]",
-            "fade-in-0 zoom-in-95 animate-in text-[11px] text-[var(--color-primary)] duration-150"
+            "fade-in-0 zoom-in-95 animate-in text-[11px] text-primary duration-150"
           )}
         >
           <span className="max-w-[180px] truncate">{filterDisplay(f)}</span>
@@ -99,8 +99,8 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
               type="button"
               className={cn(
                 "inline-flex h-6 items-center gap-1 rounded-md px-1.5",
-                "text-[11px] text-[var(--text-muted)]",
-                "hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]",
+                "text-[11px] text-foreground-muted",
+                "hover:bg-accent hover:text-foreground-secondary",
                 "transition-colors duration-100"
               )}
             >
@@ -142,8 +142,8 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
                 "h-8 rounded-[var(--card-radius)] px-3 font-medium text-[12px]",
                 "transition-colors duration-150",
                 selectedKey && selectedValue
-                  ? "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]"
-                  : "cursor-not-allowed bg-[var(--bg-tertiary)] text-[var(--text-muted)]"
+                  ? "bg-primary text-white hover:bg-primary-hover"
+                  : "cursor-not-allowed bg-muted text-foreground-muted"
               )}
             >
               Add filter

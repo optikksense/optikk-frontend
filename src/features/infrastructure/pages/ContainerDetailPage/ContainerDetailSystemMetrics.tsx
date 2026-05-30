@@ -17,13 +17,13 @@ export function ContainerDetailSystemMetrics({
   return (
     <section className="flex flex-col gap-3">
       <header>
-        <div className="font-semibold text-[13px] text-[var(--text-primary)]">Container metrics</div>
-        <div className="text-[11px] text-[var(--text-muted)]">
+        <div className="font-semibold text-[13px] text-foreground">Container metrics</div>
+        <div className="text-[11px] text-foreground-muted">
           CPU · memory · network · disk — last 1 hour
         </div>
       </header>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+        <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`container-cpu-${container}`}
             endpoint="/v1/infrastructure/cpu/by-instance"
@@ -34,7 +34,7 @@ export function ContainerDetailSystemMetrics({
             extraParams={extraParams}
           />
         </Card>
-        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+        <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`container-mem-${container}`}
             endpoint="/v1/infrastructure/memory/by-instance"
@@ -45,7 +45,7 @@ export function ContainerDetailSystemMetrics({
             extraParams={extraParams}
           />
         </Card>
-        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+        <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`container-net-${container}`}
             endpoint="/v1/infrastructure/network/by-instance"
@@ -56,7 +56,7 @@ export function ContainerDetailSystemMetrics({
             extraParams={extraParams}
           />
         </Card>
-        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+        <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`container-disk-${container}`}
             endpoint="/v1/infrastructure/disk/by-instance"

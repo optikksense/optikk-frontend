@@ -51,7 +51,7 @@ export function buildTraceColumns(): readonly ColumnDef<TraceSummary>[] {
       key: "has_error",
       label: "Error",
       width: 72,
-      render: (row) => (row.has_error ? <span className="text-[var(--color-error)] text-xs">●</span> : null),
+      render: (row) => (row.has_error ? <span className="text-error text-xs">●</span> : null),
     },
     {
       key: "environment",
@@ -64,7 +64,7 @@ export function buildTraceColumns(): readonly ColumnDef<TraceSummary>[] {
 
 function renderStart(row: TraceSummary) {
   return (
-    <span className="font-mono text-[var(--text-secondary)] text-xs">
+    <span className="font-mono text-foreground-secondary text-xs">
       {new Date(row.start_ms).toISOString().slice(11, 23).replace("T", "")}
     </span>
   );
@@ -95,7 +95,7 @@ function renderOperation(row: TraceSummary) {
 
 function DurationCell({ row }: { row: TraceSummary }) {
   const ms = row.duration_ns / 1e6;
-  const color = row.has_error ? "#e8494d" : undefined;
+  const color = row.has_error ? "var(--color-error)" : undefined;
   return (
     <span className="font-mono text-xs" style={{ color }}>
       {formatMs(ms)}
@@ -109,15 +109,15 @@ function StatusDot({ status, hasError }: { status: string | undefined; hasError:
   let textColor: string;
 
   if (hasError || status?.toUpperCase() === "ERROR") {
-    dotColor = "#e8494d";
+    dotColor = "var(--color-error)";
     label = "Error";
     textColor = "text-error";
   } else if (!status || status.toUpperCase() === "UNSET") {
-    dotColor = "#7e8ea0";
+    dotColor = "var(--text-muted)";
     label = "Unset";
     textColor = "text-foreground-secondary";
   } else {
-    dotColor = "#73bf69";
+    dotColor = "var(--color-success)";
     label = "OK";
     textColor = "text-success";
   }

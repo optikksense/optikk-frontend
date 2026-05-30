@@ -18,13 +18,13 @@ interface Props {
 }
 
 const ASIDE =
-  "flex min-w-0 flex-col gap-3 overflow-y-auto rounded-[8px] border border-[var(--border-color)] bg-[var(--bg-secondary)] p-[14px]";
+  "flex min-w-0 flex-col gap-3 overflow-y-auto rounded-[8px] border border-border bg-secondary p-[14px]";
 const sectT =
-  "border-t border-[var(--border-color)] pt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[var(--text-caption)]";
-const kvK = "text-[11px] text-[var(--text-caption)]";
-const kvV = "text-[12px] text-[var(--text-primary)] font-mono break-words";
+  "border-t border-border pt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-foreground-caption";
+const kvK = "text-[11px] text-foreground-caption";
+const kvV = "text-[12px] text-foreground font-mono break-words";
 const iconBtn =
-  "inline-grid h-7 w-7 place-items-center rounded-[5px] border-0 bg-transparent text-[var(--text-muted)] cursor-pointer hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]";
+  "inline-grid h-7 w-7 place-items-center rounded-[5px] border-0 bg-transparent text-foreground-muted cursor-pointer hover:bg-muted hover:text-foreground";
 
 interface SlowOp {
   readonly operation: string;
@@ -88,14 +88,14 @@ function TraceQuickLookComponent({ trace, onClose }: Props) {
           style={{ backgroundColor: getServiceColor(trace.root_service) }}
           aria-hidden
         />
-        <span className="text-[13px] font-medium text-[var(--text-primary)] truncate">
+        <span className="text-[13px] font-medium text-foreground truncate">
           {trace.root_service}
         </span>
       </div>
-      <div className="break-words text-[13px] leading-[1.45] text-[var(--text-primary)] font-mono">
+      <div className="break-words text-[13px] leading-[1.45] text-foreground font-mono">
         {trace.root_operation || "—"}
       </div>
-      <div className="flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-[var(--text-caption)] font-mono">
+      <div className="flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-foreground-caption font-mono">
         <span>{formatRelativeTime(trace.start_ms)}</span>
         {trace.environment ? (
           <>
@@ -116,7 +116,7 @@ function TraceQuickLookComponent({ trace, onClose }: Props) {
         </div>
         <div>
           <div className={kvK}>Errors</div>
-          <div className={cn(kvV, trace.error_count > 0 && "!text-[var(--color-error)]")}>
+          <div className={cn(kvV, trace.error_count > 0 && "!text-error")}>
             {trace.error_count}
           </div>
         </div>
@@ -143,7 +143,7 @@ function TraceQuickLookComponent({ trace, onClose }: Props) {
             {services.map((svc) => (
               <span
                 key={svc}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border-color)] px-2 py-0.5 text-[11px] text-[var(--text-secondary)]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-2 py-0.5 text-[11px] text-foreground-secondary"
               >
                 <span
                   className="size-2 rounded-sm flex-shrink-0"
@@ -159,16 +159,16 @@ function TraceQuickLookComponent({ trace, onClose }: Props) {
       {topOps.length > 0 && (
         <>
           <div className={sectT}>Slowest spans</div>
-          <div className="flex flex-col gap-px overflow-hidden rounded-md border border-[var(--border-color)]">
+          <div className="flex flex-col gap-px overflow-hidden rounded-md border border-border">
             {topOps.map((op, i) => (
               <div
                 key={`${op.operation}-${i}`}
-                className="grid grid-cols-[1fr_auto] items-center gap-2 bg-[var(--bg-primary)] px-2.5 py-1.5 text-[11.5px] font-mono [&:not(:last-child)]:border-b [&:not(:last-child)]:border-[var(--border-color)]"
+                className="grid grid-cols-[1fr_auto] items-center gap-2 bg-background px-2.5 py-1.5 text-[11.5px] font-mono [&:not(:last-child)]:border-b [&:not(:last-child)]:border-border"
               >
-                <span className="truncate text-[var(--text-primary)]" title={op.operation}>
+                <span className="truncate text-foreground" title={op.operation}>
                   {op.operation}
                 </span>
-                <span className="text-[var(--text-caption)]">{formatDuration(op.durationMs)}</span>
+                <span className="text-foreground-caption">{formatDuration(op.durationMs)}</span>
               </div>
             ))}
           </div>

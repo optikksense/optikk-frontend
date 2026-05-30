@@ -42,15 +42,15 @@ export function MetricsKpiStrip({ primaryQuery, results, spaceAgg, unit }: Metri
     <div className="mb-3 flex flex-wrap gap-x-8 gap-y-3">
       {cells.map((cell) => (
         <div key={cell.label}>
-          <div className="font-medium text-[10.5px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+          <div className="font-medium text-[10.5px] text-foreground-muted uppercase tracking-[0.06em]">
             {cell.label}
           </div>
           <div className="mt-0.5 flex items-baseline gap-1.5">
-            <span className="font-bold text-[20px] text-[var(--text-primary)] tracking-[-0.01em] tabular-nums">
+            <span className="font-bold text-[20px] text-foreground tracking-[-0.01em] tabular-nums">
               {cell.value}
             </span>
             {cell.unit ? (
-              <span className="text-[11px] text-[var(--text-muted)]">{cell.unit}</span>
+              <span className="text-[11px] text-foreground-muted">{cell.unit}</span>
             ) : null}
             {cell.delta !== undefined ? (
               <DeltaBadge delta={cell.delta} className="ml-1" />

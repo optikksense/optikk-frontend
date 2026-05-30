@@ -16,20 +16,20 @@ function severityVariant(severity: string): "error" | "warning" | "default" {
 
 function ErrorRowItemComponent({ row }: { row: ErrorRow }) {
   return (
-    <div className="rounded-[var(--card-radius)] border border-[var(--border-light)] bg-[var(--bg-hover)] p-3">
+    <div className="rounded-[var(--card-radius)] border border-border-light bg-accent p-3">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={severityVariant(row.severity)}>{row.http_status_code || "error"}</Badge>
         <DeltaPill delta={row.delta_count} formatter={formatNumber} />
       </div>
-      <div className="mt-2 font-medium text-[var(--text-primary)]">
+      <div className="mt-2 font-medium text-foreground">
         {row.status_message || row.operation_name || "Unhandled error"}
       </div>
-      <div className="mt-1 text-[12px] text-[var(--text-secondary)]">
+      <div className="mt-1 text-[12px] text-foreground-secondary">
         {row.operation_name} • before {formatNumber(row.before_count)} • after{" "}
         {formatNumber(row.after_count)}
       </div>
       {row.sample_trace_id ? (
-        <div className="mt-1 text-[11px] text-[var(--text-muted)]">
+        <div className="mt-1 text-[11px] text-foreground-muted">
           sample trace {row.sample_trace_id.slice(0, 12)}
         </div>
       ) : null}

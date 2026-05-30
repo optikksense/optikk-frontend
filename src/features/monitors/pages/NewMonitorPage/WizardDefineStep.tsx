@@ -23,7 +23,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
           value={draft.name}
           onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))}
           placeholder="e.g. Error rate spike · payment-svc"
-          className="w-full rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 text-sm"
+          className="w-full rounded border border-border bg-card px-2.5 py-1.5 text-sm"
         />
       </FieldRow>
       <FieldRow label="Priority">
@@ -37,8 +37,8 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
                 onClick={() => setDraft((d) => ({ ...d, priority: p.id }))}
                 className={`rounded border px-3 py-1 text-xs font-medium ${
                   active
-                    ? `${p.color} bg-[var(--bg-secondary)]`
-                    : "border-[var(--border-color)] text-[var(--text-secondary)]"
+                    ? `${p.color} bg-secondary`
+                    : "border-border text-foreground-secondary"
                 }`}
               >
                 {p.label}
@@ -60,7 +60,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
             }))
           }
           placeholder="team:payments, tier:0"
-          className="w-full rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 font-mono text-xs"
+          className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
       </FieldRow>
       <FieldRow label="Runbook URL">
@@ -68,7 +68,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
           value={draft.runbook_url ?? ""}
           onChange={(e) => setDraft((p) => ({ ...p, runbook_url: e.target.value }))}
           placeholder="https://…"
-          className="w-full rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 font-mono text-xs"
+          className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
       </FieldRow>
       <FieldRow label="Eval every">
@@ -83,7 +83,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
                 className={`rounded px-2 py-0.5 text-xs ${
                   active
                     ? "bg-primary text-white"
-                    : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
+                    : "bg-secondary text-foreground-secondary"
                 }`}
               >
                 {sec >= 3600 ? `${sec / 3600}h` : `${sec / 60}m`}

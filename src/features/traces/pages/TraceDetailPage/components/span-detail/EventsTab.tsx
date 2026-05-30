@@ -60,7 +60,7 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
   if (sorted.length === 0) {
     return (
       <div className="p-4 flex flex-col gap-4">
-        <div className="text-[var(--text-caption)] text-[12px] py-2">
+        <div className="text-foreground-caption text-[12px] py-2">
           No events recorded on this span.
         </div>
       </div>
@@ -76,16 +76,16 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
           const isLast = i === sorted.length - 1;
           const dotColor =
             level === "error"
-              ? "bg-[var(--color-error)]"
+              ? "bg-error"
               : level === "warn"
-                ? "bg-[var(--color-warning)]"
-                : "bg-[var(--color-primary)]";
+                ? "bg-warning"
+                : "bg-primary";
           const lvlPillColor =
             level === "error"
-              ? "bg-[var(--color-error-subtle)] text-[var(--color-error)]"
+              ? "bg-error-subtle text-error"
               : level === "warn"
-                ? "bg-[var(--color-warning-subtle)] text-[var(--color-warning)]"
-                : "bg-[var(--color-primary-subtle-18)] text-[var(--color-primary)]";
+                ? "bg-warning-subtle text-warning"
+                : "bg-[var(--color-primary-subtle-18)] text-primary";
           return (
             <div
               key={`${event.spanId}-${event.timestamp}-${i}`}
@@ -99,7 +99,7 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
                   )}
                 />
                 {!isLast && (
-                  <div className="absolute top-4 left-2 -bottom-2.5 w-0.5 bg-[var(--border-color)]" />
+                  <div className="absolute top-4 left-2 -bottom-2.5 w-0.5 bg-border" />
                 )}
               </div>
               <div className="text-[12px]">
@@ -112,17 +112,17 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
                   >
                     {level}
                   </span>
-                  <span className="text-[var(--text-caption)] font-mono text-[11px]">
+                  <span className="text-foreground-caption font-mono text-[11px]">
                     {formatTs(event.timestamp, tz)}
                   </span>
-                  <span className="text-[var(--text-primary)]">{event.eventName}</span>
+                  <span className="text-foreground">{event.eventName}</span>
                 </div>
                 {attrs.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-1">
                     {attrs.map(([k, v]) => (
                       <span
                         key={k}
-                        className="bg-[var(--bg-tertiary)] px-1.5 py-px rounded-[4px] font-mono text-[10.5px] text-[var(--text-secondary)]"
+                        className="bg-muted px-1.5 py-px rounded-[4px] font-mono text-[10.5px] text-foreground-secondary"
                       >
                         <b>{k}</b>={v}
                       </span>

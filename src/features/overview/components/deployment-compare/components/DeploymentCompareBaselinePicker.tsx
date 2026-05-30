@@ -55,13 +55,13 @@ function DeploymentCompareBaselinePickerComponent({
   if (deployments.length <= 1) return null;
 
   return (
-    <Card padding="md" className="border-[var(--border-light)]">
+    <Card padding="md" className="border-border-light">
       <label className="flex flex-wrap items-center gap-2 text-[12px]">
-        <span className="text-[var(--text-secondary)]">Compare against baseline:</span>
+        <span className="text-foreground-secondary">Compare against baseline:</span>
         <select
           value={currentVersion}
           onChange={onChange}
-          className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 py-1 font-medium text-[var(--text-primary)]"
+          className="rounded-[var(--card-radius)] border border-border bg-muted px-2 py-1 font-medium text-foreground"
         >
           {deployments.map((row) => (
             <option key={`${row.version}:${row.first_seen}`} value={row.version}>

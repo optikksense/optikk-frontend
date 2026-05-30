@@ -35,16 +35,16 @@ export function InfraLogsLink({ scope, value }: InfraLogsLinkProps) {
   };
 
   return (
-    <section className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
+    <section className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card p-4">
       <div className="flex items-start gap-3">
-        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)]">
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[var(--color-primary-subtle-12)] text-primary">
           <FileText size={18} />
         </div>
         <div className="min-w-0">
-          <div className="font-semibold text-[13px] text-[var(--text-primary)]">Logs</div>
-          <div className="text-[11px] text-[var(--text-muted)]">
+          <div className="font-semibold text-[13px] text-foreground">Logs</div>
+          <div className="text-[11px] text-foreground-muted">
             Open the log explorer scoped to{" "}
-            <code className="rounded bg-[var(--bg-tertiary)] px-1 font-mono">
+            <code className="rounded bg-muted px-1 font-mono">
               {scope}={value}
             </code>{" "}
             for the current time range.

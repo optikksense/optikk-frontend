@@ -129,7 +129,7 @@ function matchesQuery(span: TraceRecord, q: string): boolean {
 const wfGrid = "grid grid-cols-[360px_1fr]";
 
 const lblBase =
-  "px-3 flex items-center gap-2 border-r border-[var(--border-color)] text-[12px] min-w-0";
+  "px-3 flex items-center gap-2 border-r border-border text-[12px] min-w-0";
 
 function WaterfallTraceComponent({
   spans,
@@ -182,17 +182,17 @@ function WaterfallTraceComponent({
   const showCritDot = criticalPathSpanIds.size > 0;
 
   return (
-    <div className="flex flex-col min-h-0 flex-1 bg-[var(--bg-primary)]">
+    <div className="flex flex-col min-h-0 flex-1 bg-background">
       <div
         className={cn(
           wfGrid,
-          "sticky top-0 z-[5] bg-[var(--bg-primary)] border-b border-[var(--border-color)]"
+          "sticky top-0 z-[5] bg-background border-b border-border"
         )}
       >
         <div
           className={cn(
             lblBase,
-            "h-[34px] text-[var(--text-caption)] !text-[10.5px] tracking-[0.06em] uppercase"
+            "h-[34px] text-foreground-caption !text-[10.5px] tracking-[0.06em] uppercase"
           )}
         >
           Service · Operation
@@ -205,10 +205,10 @@ function WaterfallTraceComponent({
                 className="absolute top-0 bottom-0"
                 style={{ left: `${pct}%` }}
               >
-                <div className="absolute top-2 bottom-2 w-px bg-[var(--border-color)]" />
+                <div className="absolute top-2 bottom-2 w-px bg-border" />
                 <div
                   className={cn(
-                    "absolute bottom-[5px] -translate-x-1/2 font-mono text-[10px] text-[var(--text-caption)] whitespace-nowrap px-[3px] bg-[var(--bg-primary)] [font-variant-numeric:tabular-nums]",
+                    "absolute bottom-[5px] -translate-x-1/2 font-mono text-[10px] text-foreground-caption whitespace-nowrap px-[3px] bg-background [font-variant-numeric:tabular-nums]",
                     pct < 4 && "!left-0 !translate-x-0",
                     pct > 96 && "!-translate-x-full"
                   )}
@@ -240,7 +240,7 @@ function WaterfallTraceComponent({
         ))}
       </div>
 
-      <div className="flex gap-4 px-4 py-2.5 border-t border-[var(--border-color)] text-[11px] text-[var(--text-caption)] bg-[var(--bg-primary)]">
+      <div className="flex gap-4 px-4 py-2.5 border-t border-border text-[11px] text-foreground-caption bg-background">
         <span>
           Showing {flat.length} of {spans.length} span{spans.length === 1 ? "" : "s"}
         </span>
@@ -295,7 +295,7 @@ function Row({
     <div
       className={cn(
         wfGrid,
-        "cursor-pointer transition-[background] duration-[0.08s] ease border-b border-[color-mix(in_oklch,var(--border-color),transparent_70%)] h-[28px] hover:bg-[var(--bg-secondary)]",
+        "cursor-pointer transition-[background] duration-[0.08s] ease border-b border-[color-mix(in_oklch,var(--border-color),transparent_70%)] h-[28px] hover:bg-secondary",
         isSelected && "bg-[var(--color-primary-subtle-15)]",
         dim && "opacity-[0.35]"
       )}
@@ -316,7 +316,7 @@ function Row({
         <button
           type="button"
           className={cn(
-            "w-[14px] h-[14px] inline-grid place-items-center text-[var(--text-caption)] rounded-[3px] bg-transparent border-0 cursor-pointer transition-transform duration-[0.12s] ease flex-none hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]",
+            "w-[14px] h-[14px] inline-grid place-items-center text-foreground-caption rounded-[3px] bg-transparent border-0 cursor-pointer transition-transform duration-[0.12s] ease flex-none hover:bg-muted hover:text-foreground",
             !hasChildren && "invisible",
             collapsed && "[&_svg]:-rotate-90"
           )}
@@ -333,30 +333,30 @@ function Row({
           style={{ background: swatchColor }}
         />
         <span
-          className="text-[var(--text-muted)] text-[11.5px] flex-none max-w-[110px] overflow-hidden text-ellipsis whitespace-nowrap"
+          className="text-foreground-muted text-[11.5px] flex-none max-w-[110px] overflow-hidden text-ellipsis whitespace-nowrap"
           title={span.service_name}
         >
           {span.service_name || "—"}
           {isCrit && (
             <span
               aria-hidden
-              className="inline-block w-1 h-1 rounded-full ml-1.5 align-[2px] bg-[var(--color-degraded)]"
+              className="inline-block w-1 h-1 rounded-full ml-1.5 align-[2px] bg-degraded"
             />
           )}
         </span>
         <span
-          className="text-[var(--text-primary)] text-[12.5px] overflow-hidden text-ellipsis whitespace-nowrap min-w-0"
+          className="text-foreground text-[12.5px] overflow-hidden text-ellipsis whitespace-nowrap min-w-0"
           title={span.operation_name}
         >
           {span.operation_name || "(no name)"}
         </span>
         {isErr && (
-          <span className="inline-flex items-center gap-[3px] text-[10px] px-1.5 py-px rounded-full ml-auto font-mono flex-none bg-[var(--color-error-subtle)] text-[var(--color-error)]">
+          <span className="inline-flex items-center gap-[3px] text-[10px] px-1.5 py-px rounded-full ml-auto font-mono flex-none bg-error-subtle text-error">
             <AlertCircle size={9} /> error
           </span>
         )}
         {!isErr && isErrPath && (
-          <span className="inline-flex items-center gap-[3px] text-[10px] px-1.5 py-px rounded-full ml-auto font-mono flex-none bg-[var(--color-warning-subtle)] text-[var(--color-warning)]">
+          <span className="inline-flex items-center gap-[3px] text-[10px] px-1.5 py-px rounded-full ml-auto font-mono flex-none bg-warning-subtle text-warning">
             <RotateCw size={9} /> err-path
           </span>
         )}
@@ -368,8 +368,8 @@ function Row({
             className={cn(
               "absolute top-1/2 -translate-y-1/2 h-3.5 rounded-[3px] shadow-[0_1px_0_oklch(1_0_0/0.08)_inset,0_1px_2px_oklch(0_0_0/0.25)]",
               isErr &&
-                "!bg-[var(--color-error)] !shadow-[0_0_0_1px_var(--color-error-subtle),0_1px_2px_oklch(0_0_0/0.3)]",
-              isCrit && "outline outline-1 outline-[var(--color-degraded)] outline-offset-1"
+                "!bg-error !shadow-[0_0_0_1px_var(--color-error-subtle),0_1px_2px_oklch(0_0_0/0.3)]",
+              isCrit && "outline outline-1 outline-degraded outline-offset-1"
             )}
             style={{
               left: `${leftPct}%`,
@@ -381,7 +381,7 @@ function Row({
           <span
             className={cn(
               "absolute top-1/2 -translate-y-1/2 font-mono text-[10.5px] whitespace-nowrap pointer-events-none [font-variant-numeric:tabular-nums] font-medium",
-              isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
+              isSelected ? "text-foreground" : "text-foreground-secondary"
             )}
             style={
               flipLeft
@@ -397,15 +397,15 @@ function Row({
             if (pct < 0 || pct > 100) return null;
             const dotBg =
               ev.level === "error"
-                ? "bg-[var(--color-error)] shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-error),transparent_70%)]"
+                ? "bg-error shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-error),transparent_70%)]"
                 : ev.level === "warn"
-                  ? "bg-[var(--color-warning)]"
-                  : "bg-[var(--color-primary)]";
+                  ? "bg-warning"
+                  : "bg-primary";
             return (
               <span
                 key={`${ev.tMs}-${i}`}
                 className={cn(
-                  "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-[var(--bg-primary)] pointer-events-auto z-[1]",
+                  "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-background pointer-events-auto z-[1]",
                   dotBg
                 )}
                 style={{ left: `${pct}%` }}

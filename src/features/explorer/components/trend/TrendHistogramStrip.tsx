@@ -89,10 +89,10 @@ function TrendHistogramStripComponent(props: Props) {
     };
   }, [series, tz]);
   return (
-    <div className="flex flex-col border-[var(--border-color)] border-b bg-[var(--bg-primary)]">
+    <div className="flex flex-col border-border border-b bg-background">
       {/* Title bar with legend positioned top-right */}
       <div className="flex items-center justify-between px-4 pt-3 pb-1">
-        <span className="font-semibold text-[13px] text-[var(--text-primary)]">
+        <span className="font-semibold text-[13px] text-foreground">
           Log Volume Over Time
         </span>
         <TrendLegend items={series} zoomed={zoomed} onResetZoom={onResetZoom} />

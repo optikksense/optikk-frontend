@@ -20,7 +20,7 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     key: "service_name",
     width: 180,
     render: (_v, row) => (
-      <span className="font-medium text-[var(--text-primary)]">{row.service_name}</span>
+      <span className="font-medium text-foreground">{row.service_name}</span>
     ),
   },
   {
@@ -28,7 +28,7 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     key: "operation_name",
     width: 220,
     render: (_v, row) => (
-      <span className="font-mono text-[12px] text-[var(--text-secondary)]">
+      <span className="font-mono text-[12px] text-foreground-secondary">
         {row.operation_name}
       </span>
     ),
@@ -37,7 +37,7 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     title: "Status message",
     key: "status_message",
     render: (_v, row) => (
-      <span className="text-[12px] text-[var(--text-primary)]">{row.status_message || "—"}</span>
+      <span className="text-[12px] text-foreground">{row.status_message || "—"}</span>
     ),
   },
   {
@@ -61,7 +61,7 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     key: "last_occurrence",
     width: 200,
     render: (_v, row) => (
-      <span className="text-[11px] text-[var(--text-muted)]">{fmtDate(row.last_occurrence)}</span>
+      <span className="text-[11px] text-foreground-muted">{fmtDate(row.last_occurrence)}</span>
     ),
   },
 ];

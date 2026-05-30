@@ -20,10 +20,10 @@ function Card({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-md border border-[var(--border-color)] bg-[var(--bg-card)]">
-      <header className="border-[var(--border-color)] border-b px-4 py-3">
-        <div className="font-medium text-[13px] text-[var(--text-primary)]">{title}</div>
-        <div className="text-[11px] text-[var(--text-muted)]">{subtitle}</div>
+    <section className="rounded-md border border-border bg-card">
+      <header className="border-border border-b px-4 py-3">
+        <div className="font-medium text-[13px] text-foreground">{title}</div>
+        <div className="text-[11px] text-foreground-muted">{subtitle}</div>
       </header>
       <div className="p-4">{children}</div>
     </section>

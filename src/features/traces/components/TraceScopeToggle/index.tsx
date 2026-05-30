@@ -11,8 +11,8 @@ interface Props {
 /** Datadog-style "Traces | Spans" segmented control for the explorer. */
 function TraceScopeToggleComponent({ scope, onChange, trailing }: Props) {
   return (
-    <div className="flex items-center gap-1 border-[var(--border-color)] border-b bg-[var(--bg-primary)] px-3 py-1 text-[11px]">
-      <span className="text-[var(--text-muted)]">View:</span>
+    <div className="flex items-center gap-1 border-border border-b bg-background px-3 py-1 text-[11px]">
+      <span className="text-foreground-muted">View:</span>
       <button
         type="button"
         onClick={() => onChange("traces")}
@@ -34,8 +34,8 @@ function TraceScopeToggleComponent({ scope, onChange, trailing }: Props) {
 
 function className(active: boolean): string {
   return active
-    ? "rounded bg-[var(--bg-secondary)] px-2 py-0.5 font-semibold text-[var(--text-primary)]"
-    : "rounded px-2 py-0.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+    ? "rounded bg-secondary px-2 py-0.5 font-semibold text-foreground"
+    : "rounded px-2 py-0.5 text-foreground-muted hover:text-foreground";
 }
 
 export const TraceScopeToggle = memo(TraceScopeToggleComponent);

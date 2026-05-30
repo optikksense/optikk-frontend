@@ -41,38 +41,38 @@ function DetailHeader({
         <button
           type="button"
           onClick={() => navigate({ to: "/monitors" })}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          className="flex items-center gap-1 text-foreground-muted hover:text-foreground"
         >
           <ArrowLeft size={12} />
           Monitors
         </button>
-        <span className="text-[var(--text-muted)]">/</span>
-        <span className="font-mono font-medium text-[var(--text-primary)]">m-{monitor.id}</span>
+        <span className="text-foreground-muted">/</span>
+        <span className="font-mono font-medium text-foreground">m-{monitor.id}</span>
       </div>
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-baseline gap-3">
-            <h1 className="text-2xl font-semibold text-[var(--text-primary)]">{monitor.name}</h1>
+            <h1 className="text-2xl font-semibold text-foreground">{monitor.name}</h1>
             <MonitorStatusBadge status={monitor.status} />
             <PriorityChip priority={monitor.priority} />
-            <span className="font-mono text-[10px] font-bold uppercase text-[var(--text-muted)]">
+            <span className="font-mono text-[10px] font-bold uppercase text-foreground-muted">
               {monitor.type}
             </span>
           </div>
-          <div className="mt-2 flex flex-wrap gap-4 text-[11px] text-[var(--text-muted)]">
+          <div className="mt-2 flex flex-wrap gap-4 text-[11px] text-foreground-muted">
             {scope && (
               <span>
-                Scope <span className="font-mono text-[var(--text-secondary)]">{scope}</span>
+                Scope <span className="font-mono text-foreground-secondary">{scope}</span>
               </span>
             )}
             <span>
               Eval every{" "}
-              <span className="font-mono text-[var(--text-secondary)]">{monitor.eval_every_sec}s</span>
+              <span className="font-mono text-foreground-secondary">{monitor.eval_every_sec}s</span>
             </span>
             {monitor.last_evaluated_at && (
               <span>
                 Last eval{" "}
-                <span className="font-mono text-[var(--text-secondary)]">
+                <span className="font-mono text-foreground-secondary">
                   {new Date(monitor.last_evaluated_at).toLocaleString()}
                 </span>
               </span>
@@ -83,7 +83,7 @@ function DetailHeader({
           <button
             type="button"
             onClick={onAck}
-            className="flex items-center gap-1.5 rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5 text-sm hover:bg-[var(--bg-secondary)]"
+            className="flex items-center gap-1.5 rounded border border-border bg-card px-3 py-1.5 text-sm hover:bg-secondary"
           >
             <Check size={13} />
             Acknowledge
@@ -91,7 +91,7 @@ function DetailHeader({
           <button
             type="button"
             onClick={onMute}
-            className="flex items-center gap-1.5 rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5 text-sm hover:bg-[var(--bg-secondary)]"
+            className="flex items-center gap-1.5 rounded border border-border bg-card px-3 py-1.5 text-sm hover:bg-secondary"
           >
             <Pause size={13} />
             Mute · 1h
@@ -102,7 +102,7 @@ function DetailHeader({
             trigger={
               <button
                 type="button"
-                className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] p-1.5 hover:bg-[var(--bg-secondary)]"
+                className="rounded border border-border bg-card p-1.5 hover:bg-secondary"
               >
                 <MoreHorizontal size={14} />
               </button>
@@ -141,7 +141,7 @@ function DetailHeader({
             <button
               type="button"
               onClick={() => setConfirmOpen(false)}
-              className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5 text-sm"
+              className="rounded border border-border bg-card px-3 py-1.5 text-sm"
             >
               Cancel
             </button>
@@ -156,8 +156,8 @@ function DetailHeader({
           </>
         }
       >
-        <p className="text-sm text-[var(--text-secondary)]">
-          Delete <span className="font-medium text-[var(--text-primary)]">{monitor.name}</span>?
+        <p className="text-sm text-foreground-secondary">
+          Delete <span className="font-medium text-foreground">{monitor.name}</span>?
           This stops all evaluation and notifications for this monitor and cannot be undone.
         </p>
         {deleteError && <p className="mt-2 text-xs text-error">{deleteError}</p>}

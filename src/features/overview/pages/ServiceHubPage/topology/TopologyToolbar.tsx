@@ -18,18 +18,18 @@ export function TopologyToolbar({
   onClearFocus,
 }: Props) {
   return (
-    <div className="flex items-center gap-3 border-[var(--border-color)] border-b bg-[var(--bg-secondary)] px-3 py-2">
+    <div className="flex items-center gap-3 border-border border-b bg-secondary px-3 py-2">
       <div className="relative">
         <Search
           size={13}
-          className="-translate-y-1/2 absolute top-1/2 left-2 text-[var(--text-muted)]"
+          className="-translate-y-1/2 absolute top-1/2 left-2 text-foreground-muted"
         />
         <input
           type="text"
           value={filter}
           onChange={(e) => onFilterChange(e.target.value)}
           placeholder="Filter services..."
-          className="h-7 w-56 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] pr-2 pl-7 text-[12px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none"
+          className="h-7 w-56 rounded-[var(--card-radius)] border border-border bg-muted pr-2 pl-7 text-[12px] text-foreground placeholder:text-foreground-muted focus:border-primary focus:outline-none"
         />
       </div>
 
@@ -37,14 +37,14 @@ export function TopologyToolbar({
         <button
           type="button"
           onClick={onClearFocus}
-          className="inline-flex items-center gap-1 rounded-full border border-[var(--color-primary)] bg-[var(--color-primary-subtle-12)] px-2 py-0.5 text-[11px] text-[var(--text-primary)] hover:bg-[var(--color-primary-subtle-20)]"
+          className="inline-flex items-center gap-1 rounded-full border border-primary bg-[var(--color-primary-subtle-12)] px-2 py-0.5 text-[11px] text-foreground hover:bg-[var(--color-primary-subtle-20)]"
         >
           Focus: {focusService}
           <X size={11} />
         </button>
       ) : null}
 
-      <div className="ml-auto flex items-center gap-3 text-[11px] text-[var(--text-muted)]">
+      <div className="ml-auto flex items-center gap-3 text-[11px] text-foreground-muted">
         <span>
           {nodeCount} services • {edgeCount} edges
         </span>

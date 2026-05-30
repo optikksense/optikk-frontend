@@ -12,15 +12,15 @@ interface Props {
 
 function TimelineChartComponent({ isLoading, timeline, weightedSeries }: Props) {
   if (isLoading) {
-    return <div className="text-[12px] text-[var(--text-muted)]">Loading version traffic…</div>;
+    return <div className="text-[12px] text-foreground-muted">Loading version traffic…</div>;
   }
   if (!timeline || !weightedSeries) {
     return (
-      <div className="text-[12px] text-[var(--text-muted)]">No version traffic was found.</div>
+      <div className="text-[12px] text-foreground-muted">No version traffic was found.</div>
     );
   }
   return (
-    <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-overlay)] p-3">
+    <div className="rounded-[var(--card-radius)] border border-border bg-surface-overlay p-3">
       <ObservabilityChart
         timestamps={timeline.timestamps}
         series={weightedSeries}

@@ -77,7 +77,7 @@ export default function DeploymentCompareDrawer({
       direction="right"
     >
       <DrawerContent
-        className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto z-[1100] h-auto select-text overflow-y-auto border-[var(--border-color)] border-l"
+        className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto z-[1100] h-auto select-text overflow-y-auto border-border border-l"
         style={{ width: "min(1120px, calc(100vw - 20px))" }}
       >
         <DeploymentCompareHeader title={title} seed={compareBundle.seed} />

@@ -4,7 +4,7 @@ export default function IntegrationsTab() {
   const q = useIntegrations();
   if (q.isPending && !q.data) {
     return (
-      <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-center text-xs text-[var(--text-muted)]">
+      <div className="rounded-lg border border-border bg-card p-6 text-center text-xs text-foreground-muted">
         Loading integrations…
       </div>
     );
@@ -17,7 +17,7 @@ export default function IntegrationsTab() {
         return (
           <div
             key={it.id}
-            className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4"
+            className="rounded-lg border border-border bg-card p-4"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -29,7 +29,7 @@ export default function IntegrationsTab() {
                 </div>
                 <div>
                   <div className="text-sm font-medium">{it.name}</div>
-                  <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">{it.desc}</div>
+                  <div className="mt-0.5 text-[11px] text-foreground-muted">{it.desc}</div>
                 </div>
               </div>
               <span
@@ -43,7 +43,7 @@ export default function IntegrationsTab() {
               </span>
             </div>
             <div className="mt-3 flex items-center justify-between">
-              <div className="text-[11px] text-[var(--text-muted)]">
+              <div className="text-[11px] text-foreground-muted">
                 {it.count} channel{it.count !== 1 ? "s" : ""}
               </div>
               <button
@@ -51,8 +51,8 @@ export default function IntegrationsTab() {
                 disabled={!connected}
                 className={`rounded px-2.5 py-1 text-xs ${
                   connected
-                    ? "border border-[var(--border-color)] hover:bg-[var(--bg-secondary)]"
-                    : "border border-[var(--border-color)] text-[var(--text-muted)]"
+                    ? "border border-border hover:bg-secondary"
+                    : "border border-border text-foreground-muted"
                 }`}
               >
                 {connected ? "Configure" : "Install"}

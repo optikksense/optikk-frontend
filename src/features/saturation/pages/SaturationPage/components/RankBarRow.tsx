@@ -21,9 +21,9 @@ function toneRowClass(tone: Tone): string {
 }
 
 function fillToneClass(tone: Tone): string {
-  if (tone === "err") return "bg-[var(--color-error)]";
-  if (tone === "warn") return "bg-[var(--color-warning)]";
-  return "bg-[var(--color-success)]";
+  if (tone === "err") return "bg-error";
+  if (tone === "warn") return "bg-warning";
+  return "bg-success";
 }
 
 function RankBarRowImpl(props: RankBarRowProps): JSX.Element {

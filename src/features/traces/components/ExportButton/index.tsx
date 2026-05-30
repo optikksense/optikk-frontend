@@ -17,21 +17,21 @@ function ExportButtonComponent({ traces }: Props) {
   const disabled = traces.length === 0;
   return (
     <div className="flex items-center gap-1 text-[11px]">
-      <Download size={12} className="text-[var(--text-muted)]" />
+      <Download size={12} className="text-foreground-muted" />
       <button
         type="button"
         onClick={onJson}
         disabled={disabled}
-        className="rounded px-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-40"
+        className="rounded px-1 text-foreground-muted hover:text-foreground disabled:opacity-40"
       >
         JSON
       </button>
-      <span className="text-[var(--text-muted)]">·</span>
+      <span className="text-foreground-muted">·</span>
       <button
         type="button"
         onClick={onCsv}
         disabled={disabled}
-        className="rounded px-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-40"
+        className="rounded px-1 text-foreground-muted hover:text-foreground disabled:opacity-40"
       >
         CSV
       </button>

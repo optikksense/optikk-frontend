@@ -23,10 +23,10 @@ function prefixOf(key: string): string {
 }
 
 const sectTitle =
-  "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
-const muted = "text-[var(--text-caption)] text-[12px] py-2";
+  "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
+const muted = "text-foreground-caption text-[12px] py-2";
 const iconBtn =
-  "inline-grid place-items-center w-6 h-6 rounded-md text-[var(--text-muted)] bg-transparent border-0 cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]";
+  "inline-grid place-items-center w-6 h-6 rounded-md text-foreground-muted bg-transparent border-0 cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-muted hover:text-foreground";
 
 function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFilter }: Props) {
   const [filter, setFilter] = useState("");
@@ -72,13 +72,13 @@ function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFil
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-1.5 px-[9px] py-1.5 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-md">
-        <span className="text-[var(--text-caption)] inline-flex items-center">
+      <div className="flex items-center gap-1.5 px-[9px] py-1.5 bg-background border border-border rounded-md">
+        <span className="text-foreground-caption inline-flex items-center">
           <Search size={13} aria-hidden />
         </span>
         <input
           type="text"
-          className="flex-1 bg-transparent border-0 outline-none text-[var(--text-primary)] font-inherit text-[12px] min-w-0 placeholder:text-[var(--text-caption)]"
+          className="flex-1 bg-transparent border-0 outline-none text-foreground font-inherit text-[12px] min-w-0 placeholder:text-foreground-caption"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder={`Filter ${allEntries.length} attribute${allEntries.length === 1 ? "" : "s"}…`}
@@ -90,7 +90,7 @@ function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFil
       {grouped.map(([prefix, entries]) => (
         <Fragment key={prefix}>
           <div className={sectTitle}>{prefix}</div>
-          <div className="flex flex-col gap-px bg-[var(--border-color)] rounded-md overflow-hidden">
+          <div className="flex flex-col gap-px bg-border rounded-md overflow-hidden">
             {entries.map((entry) => {
               const rowKey = `${entry.source}-${entry.key}`;
               const justCopied = copiedKey === rowKey;
@@ -99,23 +99,23 @@ function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFil
                 <div
                   key={rowKey}
                   className={cn(
-                    "group grid grid-cols-[180px_1fr_auto] gap-2.5 items-center px-2.5 py-1.5 bg-[var(--bg-primary)] text-[12px] hover:bg-[var(--bg-secondary)]",
-                    isErr && "!bg-[var(--color-error-subtle)]"
+                    "group grid grid-cols-[180px_1fr_auto] gap-2.5 items-center px-2.5 py-1.5 bg-background text-[12px] hover:bg-secondary",
+                    isErr && "!bg-error-subtle"
                   )}
                 >
                   <span
-                    className="text-[var(--text-muted)] font-mono text-[11.5px] break-all"
+                    className="text-foreground-muted font-mono text-[11.5px] break-all"
                     title={entry.key}
                   >
                     {entry.key}
                     {entry.source === "resource" && (
-                      <span className="font-mono text-[9px] text-[var(--text-caption)] px-1.5 py-px bg-[var(--bg-tertiary)] rounded-[4px] ml-1.5">
+                      <span className="font-mono text-[9px] text-foreground-caption px-1.5 py-px bg-muted rounded-[4px] ml-1.5">
                         resource
                       </span>
                     )}
                   </span>
                   <span
-                    className="text-[var(--text-primary)] font-mono text-[11.5px] overflow-hidden text-ellipsis whitespace-nowrap"
+                    className="text-foreground font-mono text-[11.5px] overflow-hidden text-ellipsis whitespace-nowrap"
                     title={entry.value}
                   >
                     {entry.value}

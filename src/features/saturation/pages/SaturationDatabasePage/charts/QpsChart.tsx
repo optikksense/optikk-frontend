@@ -8,7 +8,7 @@ import { useDatabaseQpsSeries } from "../hooks/useDatabaseQpsSeries";
 function ChartBody({ timestamps, opsPerSec }: { timestamps: number[]; opsPerSec: number[] }) {
   if (timestamps.length === 0) {
     return (
-      <div className="grid h-[200px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted">
         No query traffic in this window.
       </div>
     );

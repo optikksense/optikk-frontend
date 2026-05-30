@@ -24,7 +24,7 @@ export function TableSparkline({
   className,
 }: TableSparklineProps) {
   if (!data || data.length < 2) {
-    return <span className={cn("text-[11px] text-[var(--text-muted)]", className)}>—</span>;
+    return <span className={cn("text-[11px] text-foreground-muted", className)}>—</span>;
   }
   return (
     <span className={cn("inline-block align-middle", className)} style={{ width, height }}>

@@ -82,13 +82,13 @@ export default function ChannelsTab() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
+      <div className="rounded-lg border border-border bg-card p-4">
         <div className="text-sm font-medium">{editing ? "Edit channel" : "Create channel"}</div>
         <div className="mt-3 grid grid-cols-[120px_1fr_1fr_auto] items-center gap-2">
           <select
             value={form.type}
             onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as ChannelType }))}
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 text-xs"
+            className="rounded border border-border bg-card px-2 py-1.5 text-xs"
           >
             <option value="slack">Slack</option>
             <option value="webhook">Webhook (stub)</option>
@@ -99,13 +99,13 @@ export default function ChannelsTab() {
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             placeholder="Channel name (e.g. #oncall-payments)"
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 text-xs"
+            className="rounded border border-border bg-card px-2 py-1.5 text-xs"
           />
           <input
             value={form.webhookUrl}
             onChange={(e) => setForm((f) => ({ ...f, webhookUrl: e.target.value }))}
             placeholder={form.type === "slack" ? "Slack webhook URL" : "(config)"}
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 font-mono text-xs"
+            className="rounded border border-border bg-card px-2 py-1.5 font-mono text-xs"
             disabled={form.type !== "slack"}
           />
           <div className="flex items-center gap-1.5">
@@ -113,7 +113,7 @@ export default function ChannelsTab() {
               <button
                 type="button"
                 onClick={() => setForm(emptyForm())}
-                className="rounded border border-[var(--border-color)] px-3 py-1.5 text-xs hover:bg-[var(--bg-secondary)]"
+                className="rounded border border-border px-3 py-1.5 text-xs hover:bg-secondary"
               >
                 Cancel
               </button>
@@ -131,9 +131,9 @@ export default function ChannelsTab() {
         {status && <div className="mt-2 text-xs text-warning">{status}</div>}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)]">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-[var(--border-color)] text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
+          <thead className="border-b border-border text-[11px] uppercase tracking-wider text-foreground-muted">
             <tr>
               <th className="py-2 pl-4 text-left font-medium">Channel</th>
               <th className="py-2 text-left font-medium">Type</th>
@@ -145,28 +145,28 @@ export default function ChannelsTab() {
           <tbody>
             {channelsQ.isPending && !channelsQ.data ? (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-[var(--text-muted)]">
+                <td colSpan={5} className="py-6 text-center text-xs text-foreground-muted">
                   Loading…
                 </td>
               </tr>
             ) : (channelsQ.data ?? []).length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-[var(--text-muted)]">
+                <td colSpan={5} className="py-6 text-center text-xs text-foreground-muted">
                   No channels yet.
                 </td>
               </tr>
             ) : (
               (channelsQ.data ?? []).map((ch) => (
-                <tr key={ch.id} className="border-b border-[var(--border-color)] last:border-0">
+                <tr key={ch.id} className="border-b border-border last:border-0">
                   <td className="py-2 pl-4">
                     <div className="flex items-center gap-2">
-                      <Send size={13} className="text-[var(--text-muted)]" />
+                      <Send size={13} className="text-foreground-muted" />
                       <span className="font-mono text-xs">{ch.name}</span>
                     </div>
                   </td>
                   <td className="py-2 font-mono text-[10px] font-bold uppercase">{ch.type}</td>
                   <td className="py-2 text-right font-mono">{ch.used_by_count}</td>
-                  <td className="py-2 font-mono text-[11px] text-[var(--text-muted)]">
+                  <td className="py-2 font-mono text-[11px] text-foreground-muted">
                     {ch.last_delivery_at
                       ? new Date(ch.last_delivery_at).toLocaleString()
                       : "—"}
@@ -175,21 +175,21 @@ export default function ChannelsTab() {
                     <button
                       type="button"
                       onClick={() => setForm(formFromChannel(ch))}
-                      className="mr-1 rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] hover:bg-[var(--bg-secondary)]"
+                      className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
                     >
                       Edit
                     </button>
                     <button
                       type="button"
                       onClick={() => handleTest(ch.id)}
-                      className="mr-1 rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] hover:bg-[var(--bg-secondary)]"
+                      className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
                     >
                       Test
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(ch.id)}
-                      className="rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] text-error hover:bg-[var(--bg-secondary)]"
+                      className="rounded border border-border px-2 py-0.5 text-[11px] text-error hover:bg-secondary"
                     >
                       Delete
                     </button>

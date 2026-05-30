@@ -78,7 +78,7 @@ export default function MonitorDetailPage() {
   if (id === undefined || Number.isNaN(id)) {
     return (
       <PageShell>
-        <div className="p-8 text-sm text-[var(--text-muted)]">
+        <div className="p-8 text-sm text-foreground-muted">
           Invalid monitor id.{" "}
           <button
             type="button"
@@ -95,7 +95,7 @@ export default function MonitorDetailPage() {
   if (detailQ.isPending && !detailQ.data) {
     return (
       <PageShell>
-        <div className="p-8 text-sm text-[var(--text-muted)]">Loading monitor…</div>
+        <div className="p-8 text-sm text-foreground-muted">Loading monitor…</div>
       </PageShell>
     );
   }

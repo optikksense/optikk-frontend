@@ -25,7 +25,7 @@ export function PageSurface({
       elevation={elevation}
       padding={padding}
       className={cn(
-        "border-[var(--border-color)] bg-[var(--bg-card)] shadow-[var(--shadow-sm)]",
+        "border-border bg-card shadow-[var(--shadow-sm)]",
         className
       )}
       {...props}

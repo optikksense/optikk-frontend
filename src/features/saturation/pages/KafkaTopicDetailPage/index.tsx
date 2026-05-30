@@ -44,8 +44,8 @@ export default function KafkaTopicDetailPage(): JSX.Element {
       width: 320,
       render: (_value, row) => (
         <div className="flex flex-col gap-1">
-          <span className="font-medium text-[var(--text-primary)]">{row.consumer_group}</span>
-          <span className="text-[11px] text-[var(--text-muted)]">
+          <span className="font-medium text-foreground">{row.consumer_group}</span>
+          <span className="text-[11px] text-foreground-muted">
             Raw Kafka client-id surfaced as consumer group
           </span>
         </div>
@@ -138,10 +138,10 @@ export default function KafkaTopicDetailPage(): JSX.Element {
 
       <PageSurface padding="lg">
         <div className="mb-3">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Consumer Groups
           </div>
-          <div className="mt-2 font-semibold text-[18px] text-[var(--text-primary)]">
+          <div className="mt-2 font-semibold text-[18px] text-foreground">
             Groups consuming this topic
           </div>
         </div>

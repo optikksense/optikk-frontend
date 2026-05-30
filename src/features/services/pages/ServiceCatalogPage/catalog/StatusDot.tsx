@@ -6,7 +6,7 @@ const COLOR: Record<CatalogStatus, string> = {
   healthy: "bg-[var(--color-success,#10b981)]",
   warn: "bg-[var(--color-warning,#f59e0b)]",
   error: "bg-[var(--color-error,#ef4444)]",
-  unknown: "bg-[var(--text-muted)]",
+  unknown: "bg-foreground-muted",
 };
 
 const RING: Record<CatalogStatus, string> = {

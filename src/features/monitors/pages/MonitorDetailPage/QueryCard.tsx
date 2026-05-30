@@ -26,26 +26,26 @@ function formatQuery(m: Monitor): string {
 
 function QueryCard({ monitor }: Props) {
   return (
-    <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
-      <div className="text-sm font-medium text-[var(--text-primary)]">Query</div>
-      <div className="mt-3 rounded border border-[var(--border-color)] bg-[var(--bg-secondary)] p-3">
-        <div className="font-mono text-xs text-[var(--text-primary)] break-words">
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="text-sm font-medium text-foreground">Query</div>
+      <div className="mt-3 rounded border border-border bg-secondary p-3">
+        <div className="font-mono text-xs text-foreground break-words">
           {formatQuery(monitor)}
         </div>
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2">
-        <div className="rounded bg-[var(--bg-secondary)] p-2.5">
-          <div className="text-[10px] text-[var(--text-muted)]">Comparator</div>
+        <div className="rounded bg-secondary p-2.5">
+          <div className="text-[10px] text-foreground-muted">Comparator</div>
           <div className="mt-0.5 font-mono text-xs">{monitor.conditions.comparator}</div>
         </div>
-        <div className="rounded bg-[var(--bg-secondary)] p-2.5">
-          <div className="text-[10px] text-[var(--text-muted)]">Recovery</div>
+        <div className="rounded bg-secondary p-2.5">
+          <div className="text-[10px] text-foreground-muted">Recovery</div>
           <div className="mt-0.5 font-mono text-xs">
             {monitor.conditions.recovery_threshold ?? "—"}
           </div>
         </div>
-        <div className="rounded bg-[var(--bg-secondary)] p-2.5">
-          <div className="text-[10px] text-[var(--text-muted)]">No-data after</div>
+        <div className="rounded bg-secondary p-2.5">
+          <div className="text-[10px] text-foreground-muted">No-data after</div>
           <div className="mt-0.5 font-mono text-xs">{monitor.conditions.no_data_after_sec}s</div>
         </div>
       </div>

@@ -51,34 +51,34 @@ export function FleetDistributionPanel({ result }: FleetDistributionPanelProps) 
     <PageSurface padding="lg">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="font-semibold text-[15px] text-[var(--text-primary)] tracking-[0.01em]">
+          <div className="font-semibold text-[15px] text-foreground tracking-[0.01em]">
             Distribution across fleet
           </div>
-          <div className="mt-0.5 text-[12px] text-[var(--text-muted)]">
+          <div className="mt-0.5 text-[12px] text-foreground-muted">
             p95 latency · binned per bucket · color = host density
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[var(--text-muted)]">0</span>
+          <span className="text-[11px] text-foreground-muted">0</span>
           <span
             className="h-2 w-[90px] rounded-[2px]"
             style={{
               background: "linear-gradient(90deg,#dbeafe,#bfdbfe,#93c5fd,#60a5fa,#3b82f6,#1d4ed8)",
             }}
           />
-          <span className="text-[11px] text-[var(--text-muted)]">{max}+ hosts</span>
+          <span className="text-[11px] text-foreground-muted">{max}+ hosts</span>
         </div>
       </div>
 
       {buckets.length === 0 ? (
-        <div className="py-12 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="py-12 text-center text-[12px] text-foreground-muted">
           No fleet data — group a query by host to populate the distribution.
         </div>
       ) : (
         <div className="mt-3.5 flex flex-col gap-0.5">
           {displayBands.map((band) => (
             <div key={band} className="flex items-center gap-1">
-              <div className="w-[72px] min-w-[72px] whitespace-nowrap pr-2 text-right text-[10.5px] text-[var(--text-muted)]">
+              <div className="w-[72px] min-w-[72px] whitespace-nowrap pr-2 text-right text-[10.5px] text-foreground-muted">
                 {band}
               </div>
               <div className="flex flex-1 gap-px">
@@ -97,7 +97,7 @@ export function FleetDistributionPanel({ result }: FleetDistributionPanelProps) 
             </div>
           ))}
           <div className="mt-2 flex items-center justify-between">
-            <span className="font-mono text-[10.5px] text-[var(--text-muted)]">
+            <span className="font-mono text-[10.5px] text-foreground-muted">
               earliest ──────── now
             </span>
           </div>

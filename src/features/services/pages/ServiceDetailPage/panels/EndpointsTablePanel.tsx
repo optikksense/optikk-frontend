@@ -6,10 +6,10 @@ import { useTopEndpoints } from "../hooks/useTopEndpoints";
 import { PanelCard } from "./PanelCard";
 
 const COL_HEAD =
-  "px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]";
-const COL_BODY = "px-3 py-2 align-middle text-[12px] text-[var(--text-primary)]";
+  "px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-foreground-muted";
+const COL_BODY = "px-3 py-2 align-middle text-[12px] text-foreground";
 const COL_NUM =
-  "px-3 py-2 align-middle text-right font-mono text-[12px] text-[var(--text-primary)]";
+  "px-3 py-2 align-middle text-right font-mono text-[12px] text-foreground";
 
 function ErrorCell({ rate }: { rate: number }) {
   const tone =
@@ -17,27 +17,27 @@ function ErrorCell({ rate }: { rate: number }) {
       ? "text-[var(--color-error,#ef4444)]"
       : rate >= 0.005
         ? "text-[var(--color-warning,#f59e0b)]"
-        : "text-[var(--text-primary)]";
+        : "text-foreground";
   return <span className={tone}>{fmtPct(rate, rate < 0.001 ? 3 : 2)}</span>;
 }
 
 function DeltaCell({ delta }: { delta: number | null }) {
-  if (delta == null) return <span className="text-[var(--text-muted)]">—</span>;
+  if (delta == null) return <span className="text-foreground-muted">—</span>;
   const formatted = fmtDelta(1 + delta, 1);
-  if (!formatted) return <span className="text-[var(--text-muted)]">0%</span>;
+  if (!formatted) return <span className="text-foreground-muted">0%</span>;
   const tone =
     formatted.direction === "up"
       ? "text-[var(--color-error,#ef4444)]"
       : formatted.direction === "down"
         ? "text-[var(--color-success,#10b981)]"
-        : "text-[var(--text-muted)]";
+        : "text-foreground-muted";
   return <span className={tone}>{formatted.label}</span>;
 }
 
 function EndpointTypeBadge({ row }: { row: EndpointWithDelta }) {
   const kind = row.span_kind || "http";
   return (
-    <span className="inline-flex h-5 items-center rounded bg-[var(--bg-elevated,rgba(255,255,255,0.06))] px-2 text-[10px] text-[var(--text-muted)] uppercase tracking-wide">
+    <span className="inline-flex h-5 items-center rounded bg-[var(--bg-elevated,rgba(255,255,255,0.06))] px-2 text-[10px] text-foreground-muted uppercase tracking-wide">
       {kind.toLowerCase()}
     </span>
   );
@@ -45,14 +45,14 @@ function EndpointTypeBadge({ row }: { row: EndpointWithDelta }) {
 
 function Row({ row, maxRows }: { row: EndpointWithDelta; maxRows: number }) {
   return (
-    <tr className={cn("border-[var(--border-color)] border-t", maxRows > 25 ? "" : "h-10")}>
+    <tr className={cn("border-border border-t", maxRows > 25 ? "" : "h-10")}>
       <td className={COL_BODY}>
         <div className="flex min-w-0 flex-col gap-0.5">
-          <span className="font-mono text-[12px] text-[var(--text-primary)]">
+          <span className="font-mono text-[12px] text-foreground">
             {row.operation_name}
           </span>
           {row.http_route && (
-            <span className="font-mono text-[11px] text-[var(--text-muted)]">{row.http_route}</span>
+            <span className="font-mono text-[11px] text-foreground-muted">{row.http_route}</span>
           )}
         </div>
       </td>
@@ -112,7 +112,7 @@ export function EndpointsTablePanel({
       padded={false}
     >
       {rows.length === 0 ? (
-        <div className="px-4 py-8 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="px-4 py-8 text-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No endpoints in selected range."}
         </div>
       ) : (

@@ -10,13 +10,13 @@ export interface ButtonProps extends React.ComponentPropsWithRef<"button"> {
 
 const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
-    "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] border-transparent shadow-[var(--shadow-sm)]",
+    "bg-primary text-white hover:bg-primary-hover border-transparent shadow-[var(--shadow-sm)]",
   secondary:
-    "bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] border-[var(--border-color)] shadow-[var(--shadow-sm)]",
+    "bg-muted text-foreground hover:bg-accent border-border shadow-[var(--shadow-sm)]",
   ghost:
-    "bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] border-transparent",
+    "bg-transparent text-foreground-secondary hover:bg-accent hover:text-foreground border-transparent",
   danger:
-    "bg-[var(--color-error)] text-white hover:opacity-90 border-transparent shadow-[var(--shadow-sm)]",
+    "bg-error text-white hover:opacity-90 border-transparent shadow-[var(--shadow-sm)]",
 };
 
 const sizeClasses: Record<NonNullable<ButtonProps["size"]>, string> = {

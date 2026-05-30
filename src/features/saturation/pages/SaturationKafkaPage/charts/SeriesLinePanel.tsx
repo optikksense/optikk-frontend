@@ -29,7 +29,7 @@ export function SeriesLinePanel({
   return (
     <PanelCard title={title} subtitle={subtitle}>
       {timestamps.length === 0 ? (
-        <div className="grid h-[200px] place-items-center text-[12px] text-[var(--text-muted)]">
+        <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted">
           {emptyLabel}
         </div>
       ) : (

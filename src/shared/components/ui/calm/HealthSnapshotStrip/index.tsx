@@ -65,7 +65,7 @@ export default function HealthSnapshotStrip({
       </div>
 
       {/* Legend */}
-      <div className="flex flex-shrink-0 items-center gap-3 border-[var(--border-light)] border-l pl-4">
+      <div className="flex flex-shrink-0 items-center gap-3 border-border-light border-l pl-4">
         {healthy > 0 && (
           <span className="whitespace-nowrap font-medium text-[11px] text-[color:var(--color-healthy)]">
             {healthy} healthy

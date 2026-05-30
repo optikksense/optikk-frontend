@@ -17,7 +17,7 @@ function CreateMonitorButtonComponent({ filters }: Props) {
   return (
     <a
       href={href}
-      className="flex items-center gap-1 rounded px-2 py-0.5 text-[11px] text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+      className="flex items-center gap-1 rounded px-2 py-0.5 text-[11px] text-foreground-muted hover:bg-secondary hover:text-foreground"
       title="Create alert from current query"
     >
       <Bell size={12} />

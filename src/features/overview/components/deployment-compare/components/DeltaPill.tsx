@@ -13,10 +13,10 @@ function DeltaPillComponent({ delta, formatter, invert = false }: Props) {
   const tone = toneFromDelta(effective);
   const classes =
     tone === "negative"
-      ? "border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-[var(--color-error-subtle)] text-[var(--color-error)]"
+      ? "border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-error-subtle text-error"
       : tone === "positive"
-        ? "border-[color-mix(in_oklch,var(--color-success),transparent_65%)] bg-[var(--color-success-subtle)] text-[var(--color-success)]"
-        : "border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)]";
+        ? "border-[color-mix(in_oklch,var(--color-success),transparent_65%)] bg-success-subtle text-success"
+        : "border-border bg-muted text-foreground-secondary";
   const prefix = delta > 0 ? "+" : "";
 
   return (

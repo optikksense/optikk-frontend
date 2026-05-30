@@ -20,7 +20,7 @@ function impactColumns(): SimpleTableColumn<DeploymentImpactRow>[] {
       width: 180,
       render: (_value, row) => (
         <div className="flex items-center gap-2">
-          <span className="font-medium text-[var(--text-primary)]">{row.version || "—"}</span>
+          <span className="font-medium text-foreground">{row.version || "—"}</span>
           {row.is_baseline ? <Badge variant="default">baseline</Badge> : null}
         </div>
       ),
@@ -57,15 +57,15 @@ function impactColumns(): SimpleTableColumn<DeploymentImpactRow>[] {
 
 function DeploymentCompareImpactComponent({ serviceName, impacts, isLoading }: Props) {
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="m-0 font-semibold text-[var(--text-primary)]">Per-version impact</h3>
-        <span className="text-[11px] text-[var(--text-muted)]">{serviceName}</span>
+        <h3 className="m-0 font-semibold text-foreground">Per-version impact</h3>
+        <span className="text-[11px] text-foreground-muted">{serviceName}</span>
       </div>
       {isLoading && impacts.length === 0 ? (
-        <div className="text-[12px] text-[var(--text-muted)]">Loading impact…</div>
+        <div className="text-[12px] text-foreground-muted">Loading impact…</div>
       ) : impacts.length === 0 ? (
-        <div className="text-[12px] text-[var(--text-muted)]">No impact rows in this window.</div>
+        <div className="text-[12px] text-foreground-muted">No impact rows in this window.</div>
       ) : (
         <SimpleTable
           columns={impactColumns()}

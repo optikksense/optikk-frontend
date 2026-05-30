@@ -133,7 +133,7 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
       sections={sections}
       extra={
         !drawer.data ? (
-          <p className="text-[var(--text-secondary)] text-sm">
+          <p className="text-foreground-secondary text-sm">
             This detail view was opened from a legacy link, so only the identifier is available
             until the parent dashboard is opened from a live row selection.
           </p>

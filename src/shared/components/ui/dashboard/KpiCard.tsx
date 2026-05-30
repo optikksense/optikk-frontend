@@ -8,16 +8,16 @@ export interface KpiDelta {
 }
 
 const VALUE_TONE: Record<KpiTone, string> = {
-  ok: "text-[var(--text-primary)]",
-  warn: "text-[var(--color-warning)]",
-  err: "text-[var(--color-error)]",
-  neutral: "text-[var(--text-primary)]",
+  ok: "text-foreground",
+  warn: "text-warning",
+  err: "text-error",
+  neutral: "text-foreground",
 };
 
 const DELTA_TONE: Record<KpiDelta["direction"], string> = {
-  up: "text-[var(--color-error)]",
-  down: "text-[var(--color-success)]",
-  flat: "text-[var(--text-muted)]",
+  up: "text-error",
+  down: "text-success",
+  flat: "text-foreground-muted",
 };
 
 const DELTA_ARROW: Record<KpiDelta["direction"], string> = {
@@ -37,8 +37,8 @@ interface KpiCardProps {
 
 export function KpiCard({ label, value, secondary, subtext, delta, tone = "ok" }: KpiCardProps) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] px-3.5 py-3">
-      <div className="text-[10.5px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+    <div className="flex flex-col gap-1.5 rounded-md border border-border bg-card px-3.5 py-3">
+      <div className="text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">
         {label}
       </div>
       <div
@@ -49,10 +49,10 @@ export function KpiCard({ label, value, secondary, subtext, delta, tone = "ok" }
       >
         <span>{value}</span>
         {secondary && (
-          <span className="font-normal text-[13px] text-[var(--text-muted)]">{secondary}</span>
+          <span className="font-normal text-[13px] text-foreground-muted">{secondary}</span>
         )}
       </div>
-      <div className="flex items-baseline gap-2 text-[11px] text-[var(--text-muted)]">
+      <div className="flex items-baseline gap-2 text-[11px] text-foreground-muted">
         {subtext && <span>{subtext}</span>}
         {delta && (
           <span className={cn("font-medium", DELTA_TONE[delta.direction])}>

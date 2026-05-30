@@ -116,7 +116,7 @@ export default memo(function InfraMultiSeriesChart({
 
   if (q.isPending && q.data === undefined) {
     return (
-      <div className="flex h-[260px] items-center justify-center text-[13px] text-[var(--text-muted)]">
+      <div className="flex h-[260px] items-center justify-center text-[13px] text-foreground-muted">
         Loading…
       </div>
     );
@@ -124,7 +124,7 @@ export default memo(function InfraMultiSeriesChart({
 
   if (!hasData && timeBuckets.length === 0) {
     return (
-      <div className="flex h-[260px] items-center justify-center text-[13px] text-[var(--text-muted)]">
+      <div className="flex h-[260px] items-center justify-center text-[13px] text-foreground-muted">
         No data in range
       </div>
     );
@@ -132,7 +132,7 @@ export default memo(function InfraMultiSeriesChart({
 
   return (
     <div className="flex min-h-0 flex-col gap-2">
-      <div className="font-medium text-[13px] text-[var(--text-primary)]">{title}</div>
+      <div className="font-medium text-[13px] text-foreground">{title}</div>
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="relative min-h-[58%] shrink-0">
           <RequestChart

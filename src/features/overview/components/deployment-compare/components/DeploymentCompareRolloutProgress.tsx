@@ -45,11 +45,11 @@ function DeploymentCompareRolloutProgressComponent({ compare, timeline }: Props)
   if (!timeline || series.length === 0 || timeline.timestamps.length === 0) return null;
 
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="mb-3 flex items-center justify-between">
         <div>
-          <h3 className="m-0 font-semibold text-[var(--text-primary)]">Rollout progress</h3>
-          <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
+          <h3 className="m-0 font-semibold text-foreground">Rollout progress</h3>
+          <p className="mt-1 text-[12px] text-foreground-secondary">
             Share of total request volume served by {releaseVersion} over time.
           </p>
         </div>

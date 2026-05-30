@@ -76,7 +76,7 @@ function filterSeries(data: ChartData, filter: StatusSeriesFilter): ChartData {
 function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
   if (data.timestamps.length === 0) {
     return (
-      <div className="grid h-[180px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[180px] place-items-center text-[12px] text-foreground-muted">
         No request traffic in this window.
       </div>
     );

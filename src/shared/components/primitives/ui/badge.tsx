@@ -8,16 +8,16 @@ export interface BadgeProps extends React.ComponentPropsWithRef<"div"> {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: "bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-[var(--border-color)]",
+  default: "bg-muted text-foreground-secondary border-border",
   primary:
-    "bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)] border-[color-mix(in_oklch,var(--color-primary),transparent_70%)]",
+    "bg-[var(--color-primary-subtle-12)] text-primary border-[color-mix(in_oklch,var(--color-primary),transparent_70%)]",
   success:
-    "bg-[var(--color-success-subtle)] text-[var(--color-success)] border-[color-mix(in_oklch,var(--color-success),transparent_70%)]",
+    "bg-success-subtle text-success border-[color-mix(in_oklch,var(--color-success),transparent_70%)]",
   error:
-    "bg-[var(--color-error-subtle)] text-[var(--color-error)] border-[color-mix(in_oklch,var(--color-error),transparent_70%)]",
+    "bg-error-subtle text-error border-[color-mix(in_oklch,var(--color-error),transparent_70%)]",
   warning:
-    "bg-[var(--color-warning-subtle)] text-[var(--color-warning)] border-[color-mix(in_oklch,var(--color-warning),transparent_70%)]",
-  info: "bg-[var(--color-info-subtle)] text-[var(--color-info)] border-[color-mix(in_oklch,var(--color-info),transparent_70%)]",
+    "bg-warning-subtle text-warning border-[color-mix(in_oklch,var(--color-warning),transparent_70%)]",
+  info: "bg-info-subtle text-info border-[color-mix(in_oklch,var(--color-info),transparent_70%)]",
 };
 
 // Legacy color names map onto the theme-aware semantic variants.

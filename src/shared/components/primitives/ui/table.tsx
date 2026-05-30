@@ -19,7 +19,7 @@ function TableFooter({ className, ref, ...props }: React.ComponentPropsWithRef<"
     <tfoot
       ref={ref}
       className={cn(
-        "border-[var(--border-color)] border-t bg-[var(--color-primary-subtle-05)] font-medium [&>tr]:last:border-b-0",
+        "border-border border-t bg-[var(--color-primary-subtle-05)] font-medium [&>tr]:last:border-b-0",
         className
       )}
       {...props}
@@ -32,7 +32,7 @@ function TableRow({ className, ref, ...props }: React.ComponentPropsWithRef<"tr"
     <tr
       ref={ref}
       className={cn(
-        "border-[var(--border-color)] border-b transition-colors hover:bg-[var(--color-primary-subtle-05)] data-[state=selected]:bg-[var(--color-primary-subtle-08)] [&:nth-child(even)]:bg-[var(--bg-hover)]",
+        "border-border border-b transition-colors hover:bg-[var(--color-primary-subtle-05)] data-[state=selected]:bg-[var(--color-primary-subtle-08)] [&:nth-child(even)]:bg-accent",
         className
       )}
       {...props}
@@ -45,7 +45,7 @@ function TableHead({ className, ref, ...props }: React.ComponentPropsWithRef<"th
     <th
       ref={ref}
       className={cn(
-        "h-9 px-3 py-2 text-left align-middle font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-[0.06em] [&:has([role=checkbox])]:pr-0",
+        "h-9 px-3 py-2 text-left align-middle font-semibold text-[11px] text-foreground-secondary uppercase tracking-[0.06em] [&:has([role=checkbox])]:pr-0",
         className
       )}
       {...props}

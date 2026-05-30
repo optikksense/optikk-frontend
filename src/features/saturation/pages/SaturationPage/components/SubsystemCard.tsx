@@ -16,7 +16,7 @@ function SubsystemCardImpl({ spec }: Props): JSX.Element {
       aria-label={`${spec.label} subsystem`}
     >
       <div className="mb-1 flex items-center gap-[10px]">
-        <span className="inline-grid h-7 w-7 flex-shrink-0 place-items-center rounded-md bg-[var(--accent-bg)] text-[var(--color-primary)]">
+        <span className="inline-grid h-7 w-7 flex-shrink-0 place-items-center rounded-md bg-[var(--accent-bg)] text-primary">
           <SubsystemIcon name={spec.iconName} />
         </span>
         <span className="text-[14px] font-semibold text-[var(--fg-0)]">{spec.label}</span>

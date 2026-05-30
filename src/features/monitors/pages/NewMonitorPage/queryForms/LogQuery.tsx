@@ -31,7 +31,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
           onChange={(e) => update({ query: e.target.value })}
           rows={2}
           placeholder='e.g. @level:error service:payment-svc'
-          className="w-full rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 font-mono text-xs"
+          className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
       </FieldRow>
       <FieldRow label="Group by">
@@ -46,7 +46,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
                     ? "bg-primary text-white"
-                    : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
+                    : "bg-secondary text-foreground-secondary"
                 }`}
               >
                 {g}
@@ -67,7 +67,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
                     ? "bg-primary text-white"
-                    : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
+                    : "bg-secondary text-foreground-secondary"
                 }`}
               >
                 {w >= 3600 ? `${w / 3600}h` : `${w / 60}m`}

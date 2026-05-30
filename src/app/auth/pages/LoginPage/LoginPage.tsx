@@ -30,7 +30,7 @@ export function LoginPage() {
   }, [error, clearError]);
 
   return (
-    <div className="grid min-h-screen grid-cols-1 bg-[var(--bg-canvas)] text-[var(--text-primary)] lg:grid-cols-[1.05fr_1fr]">
+    <div className="grid min-h-screen grid-cols-1 bg-surface-canvas text-foreground lg:grid-cols-[1.05fr_1fr]">
       <LoginBrandPanel />
       <main className="grid grid-rows-[auto_1fr_auto] px-12 py-7 max-md:px-6 max-md:py-5">
         <LoginTopBar />

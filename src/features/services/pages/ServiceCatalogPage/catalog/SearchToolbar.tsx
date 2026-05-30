@@ -35,21 +35,21 @@ export function SearchToolbar({
     return () => window.removeEventListener("keydown", onKey);
   }, []);
   return (
-    <div className="flex items-center gap-3 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-3.5 py-1.5">
-      <Search size={14} className="text-[var(--text-muted)]" />
+    <div className="flex items-center gap-3 rounded-full border border-border bg-card px-3.5 py-1.5">
+      <Search size={14} className="text-foreground-muted" />
       <input
         ref={inputRef}
         value={value}
         onChange={(ev) => onChange(ev.target.value)}
         placeholder="Search services, tags…"
-        className="min-w-0 flex-1 bg-transparent text-[12px] text-[var(--text-primary)] outline-none"
+        className="min-w-0 flex-1 bg-transparent text-[12px] text-foreground outline-none"
       />
-      <kbd className="hidden rounded border border-[var(--border-color)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)] sm:inline">
+      <kbd className="hidden rounded border border-border px-1.5 py-0.5 text-[10px] text-foreground-muted sm:inline">
         /
       </kbd>
-      <span className="h-4 w-px bg-[var(--border-color)]" aria-hidden="true" />
+      <span className="h-4 w-px bg-border" aria-hidden="true" />
       <EnvFilterPill value={env} options={environments} onChange={onEnvChange} />
-      <span className="h-4 w-px bg-[var(--border-color)]" aria-hidden="true" />
+      <span className="h-4 w-px bg-border" aria-hidden="true" />
       <StatusFilterPill value={status} onChange={onStatusChange} />
     </div>
   );

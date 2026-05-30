@@ -71,7 +71,7 @@ export function MetricsExplorerToolbar({
       {/* Right: step + space agg + y-axis scale */}
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1.5">
-          <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+          <span className="font-semibold text-[11px] text-foreground-muted uppercase tracking-wide">
             Step
           </span>
           <Select
@@ -83,10 +83,10 @@ export function MetricsExplorerToolbar({
           />
         </div>
 
-        <div className="h-4 w-px bg-[var(--border-color)]" />
+        <div className="h-4 w-px bg-border" />
 
         <div className="flex items-center gap-1.5">
-          <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+          <span className="font-semibold text-[11px] text-foreground-muted uppercase tracking-wide">
             Space
           </span>
           <Select
@@ -98,10 +98,10 @@ export function MetricsExplorerToolbar({
           />
         </div>
 
-        <div className="h-4 w-px bg-[var(--border-color)]" />
+        <div className="h-4 w-px bg-border" />
 
         <div className="flex items-center gap-1.5">
-          <span className="font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+          <span className="font-semibold text-[11px] text-foreground-muted uppercase tracking-wide">
             Y-axis
           </span>
           <MetricSegmentedControl

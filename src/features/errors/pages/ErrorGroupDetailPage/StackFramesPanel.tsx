@@ -15,14 +15,14 @@ export function StackFramesPanel({ stacktrace }: Props): JSX.Element {
 
   return (
     <PageSurface padding="lg">
-      <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+      <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
         Stack trace
       </div>
-      <div className="mt-2 max-h-[320px] overflow-auto rounded-[6px] border border-[var(--border-color)] bg-[var(--bg-inset)] font-mono text-[12px] text-[var(--text-primary)]">
+      <div className="mt-2 max-h-[320px] overflow-auto rounded-[6px] border border-border bg-surface-inset font-mono text-[12px] text-foreground">
         {frames.map((frame, i) => (
           <div
             key={`${i}-${frame}`}
-            className="whitespace-pre-wrap break-words border-b border-[var(--border-color)] px-3 py-1 last:border-b-0"
+            className="whitespace-pre-wrap break-words border-b border-border px-3 py-1 last:border-b-0"
           >
             {frame}
           </div>

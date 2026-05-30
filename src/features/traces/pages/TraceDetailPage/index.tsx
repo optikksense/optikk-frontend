@@ -61,7 +61,7 @@ export default function TraceDetailPage() {
   };
 
   return (
-    <PageShell className="flex min-h-0 flex-1 flex-col bg-[var(--bg-primary)] text-[var(--text-secondary)] [font-feature-settings:'tnum'] !gap-0 !pb-0 h-full min-h-[calc(100vh-var(--space-header-h,56px)-2rem)]">
+    <PageShell className="flex min-h-0 flex-1 flex-col bg-background text-foreground-secondary [font-feature-settings:'tnum'] !gap-0 !pb-0 h-full min-h-[calc(100vh-var(--space-header-h,56px)-2rem)]">
       <TraceHeader
         traceId={resolvedTraceId}
         stats={stats}

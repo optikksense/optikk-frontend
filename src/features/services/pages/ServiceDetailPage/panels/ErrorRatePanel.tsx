@@ -72,7 +72,7 @@ function buildSeries(rows: ErrorTimeSeriesPoint[] | undefined, timeBuckets: stri
 function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
   if (data.timestamps.length === 0) {
     return (
-      <div className="grid h-[180px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[180px] place-items-center text-[12px] text-foreground-muted">
         No error samples in this window.
       </div>
     );
@@ -92,10 +92,10 @@ function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[]
 function CurrentRate({ value }: { value: number }) {
   const tone =
     value >= 0.02
-      ? "text-[var(--color-error)]"
+      ? "text-error"
       : value >= 0.005
-        ? "text-[var(--color-warning)]"
-        : "text-[var(--text-secondary)]";
+        ? "text-warning"
+        : "text-foreground-secondary";
   return <span className={`font-semibold text-[13px] ${tone}`}>{fmtPct(value, value < 0.01 ? 2 : 1)}</span>;
 }
 

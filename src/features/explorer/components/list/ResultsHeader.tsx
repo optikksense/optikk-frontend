@@ -16,7 +16,7 @@ function ResultsHeaderImpl<Row>({ columns, config, onOpenPicker, trailing }: Pro
   return (
     <div
       role="row"
-      className="sticky top-0 z-10 flex h-8 items-center gap-2 border-[var(--border-color)] border-b bg-[var(--bg-secondary)] px-3 font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-wider"
+      className="sticky top-0 z-10 flex h-8 items-center gap-2 border-border border-b bg-secondary px-3 font-semibold text-[11px] text-foreground-secondary uppercase tracking-wider"
     >
       {visibleConfig.map((entry) => {
         const column = columnByKey.get(entry.key);
@@ -39,7 +39,7 @@ function ResultsHeaderImpl<Row>({ columns, config, onOpenPicker, trailing }: Pro
             type="button"
             aria-label="Configure columns"
             onClick={onOpenPicker}
-            className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            className="rounded p-1 text-foreground-muted hover:text-foreground"
           >
             <Columns3 size={14} />
           </button>

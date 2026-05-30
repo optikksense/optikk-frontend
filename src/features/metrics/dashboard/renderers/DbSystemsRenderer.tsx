@@ -65,7 +65,7 @@ function getDbMeta(system: string) {
   return (
     DB_SYSTEM_META[key] || {
       label: system || "Unknown",
-      color: APP_COLORS.hex_8e8e8e,
+      color: "#8e8e8e", // agnostic fallback icon hue (alpha-concatenated below)
       gradient: `linear-gradient(135deg, ${APP_COLORS.hex_5e60ce} 0%, ${APP_COLORS.hex_48cae4} 100%)`,
     }
   );
@@ -87,9 +87,9 @@ function DbSystemCard({ system }: { system: any }) {
   return (
     <div
       style={{
-        background: APP_COLORS.rgba_255_255_255_0p03,
+        background: "var(--bg-card)",
         backdropFilter: "blur(12px)",
-        border: `1px solid ${APP_COLORS.rgba_255_255_255_0p06}`,
+        border: "1px solid var(--border-color)",
         borderRadius: "14px",
         padding: "18px 20px",
         position: "relative",
@@ -124,27 +124,27 @@ function DbSystemCard({ system }: { system: any }) {
           <Database size={18} color={meta.color} />
         </div>
         <div>
-          <div style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 600, fontSize: "14px" }}>
+          <div style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}>
             {meta.label}
           </div>
-          <div style={{ color: APP_COLORS.hex_8e8e8e, fontSize: "11px" }}>{system.db_system}</div>
+          <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>{system.db_system}</div>
         </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
         <div>
-          <div style={{ color: APP_COLORS.hex_8e8e8e, fontSize: "11px", marginBottom: "2px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "11px", marginBottom: "2px" }}>
             Spans
           </div>
           <div
             className="font-mono"
-            style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 600, fontSize: "16px" }}
+            style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: "16px" }}
           >
             {formatNumber(spanCount)}
           </div>
         </div>
         <div>
-          <div style={{ color: APP_COLORS.hex_8e8e8e, fontSize: "11px", marginBottom: "2px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "11px", marginBottom: "2px" }}>
             Avg Latency
           </div>
           <div
@@ -164,19 +164,19 @@ function DbSystemCard({ system }: { system: any }) {
           </div>
         </div>
         <div>
-          <div style={{ color: APP_COLORS.hex_8e8e8e, fontSize: "11px", marginBottom: "2px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "11px", marginBottom: "2px" }}>
             p95 Latency
           </div>
           <div
             className="font-mono"
-            style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 600, fontSize: "14px" }}
+            style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
           >
             {formatDuration(p95Latency)}
           </div>
         </div>
         {spanCount > 0 && (
           <div>
-            <div style={{ color: APP_COLORS.hex_8e8e8e, fontSize: "11px", marginBottom: "2px" }}>
+            <div style={{ color: "var(--text-muted)", fontSize: "11px", marginBottom: "2px" }}>
               Error Rate
             </div>
             <div

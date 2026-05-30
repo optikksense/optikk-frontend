@@ -29,7 +29,7 @@ interface InfraFleetToolbarProps {
 }
 
 const selectClass =
-  "h-9 min-w-[140px] rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-2 text-[12px] text-[var(--text-primary)]";
+  "h-9 min-w-[140px] rounded-[var(--card-radius)] border border-border bg-muted px-2 text-[12px] text-foreground";
 
 export default function InfraFleetToolbar({
   lens,
@@ -46,9 +46,9 @@ export default function InfraFleetToolbar({
   onFilterChange,
 }: InfraFleetToolbarProps) {
   return (
-    <Card padding="md" className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
+    <Card padding="md" className="border-border bg-secondary">
       <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-end">
-        <label className="flex flex-col gap-1 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+        <label className="flex flex-col gap-1 text-[11px] text-foreground-muted uppercase tracking-[0.06em]">
           Resource
           <select
             className={selectClass}
@@ -60,7 +60,7 @@ export default function InfraFleetToolbar({
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+        <label className="flex flex-col gap-1 text-[11px] text-foreground-muted uppercase tracking-[0.06em]">
           Fill by
           <select
             className={selectClass}
@@ -74,7 +74,7 @@ export default function InfraFleetToolbar({
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+        <label className="flex flex-col gap-1 text-[11px] text-foreground-muted uppercase tracking-[0.06em]">
           Size by
           <select
             className={selectClass}
@@ -87,7 +87,7 @@ export default function InfraFleetToolbar({
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+        <label className="flex flex-col gap-1 text-[11px] text-foreground-muted uppercase tracking-[0.06em]">
           Group by
           <select
             className={selectClass}
@@ -100,7 +100,7 @@ export default function InfraFleetToolbar({
           </select>
         </label>
 
-        <label className="flex min-w-[200px] flex-1 flex-col gap-1 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+        <label className="flex min-w-[200px] flex-1 flex-col gap-1 text-[11px] text-foreground-muted uppercase tracking-[0.06em]">
           <span className="inline-flex items-center gap-1">
             <Filter size={12} />
             {filterResourceLabel}

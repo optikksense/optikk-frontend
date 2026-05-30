@@ -19,20 +19,20 @@ function TraceRow({ trace, onOpen }: { trace: TraceRecord; onOpen: () => void })
     <button
       type="button"
       onClick={onOpen}
-      className="flex w-full items-center justify-between gap-3 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 py-2 text-left transition-colors hover:border-[var(--color-primary-subtle-45)] hover:bg-[var(--bg-hover)]"
+      className="flex w-full items-center justify-between gap-3 rounded-[var(--card-radius)] border border-border bg-muted px-3 py-2 text-left transition-colors hover:border-[var(--color-primary-subtle-45)] hover:bg-accent"
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <Badge variant="error">{trace.http_status_code || trace.status_message || "ERROR"}</Badge>
-          <span className="truncate font-medium text-[12px] text-[var(--text-primary)]">
+          <span className="truncate font-medium text-[12px] text-foreground">
             {trace.operation_name}
           </span>
         </div>
-        <div className="mt-1 text-[11px] text-[var(--text-muted)]">
+        <div className="mt-1 text-[11px] text-foreground-muted">
           {trace.trace_id.slice(0, 12)} · {formatRelativeTime(trace.start_time)}
         </div>
       </div>
-      <span className="shrink-0 text-[11px] text-[var(--text-secondary)]">
+      <span className="shrink-0 text-[11px] text-foreground-secondary">
         {formatDuration(trace.duration_ms)}
       </span>
     </button>
@@ -55,10 +55,10 @@ function DeploymentCompareSampleTracesComponent({ compare }: Props) {
     navigate(dynamicNavigateOptions(ROUTES.traceDetail.replace("$traceId", traceId)));
 
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="mb-3">
-        <h3 className="m-0 font-semibold text-[var(--text-primary)]">Sample error traces</h3>
-        <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
+        <h3 className="m-0 font-semibold text-foreground">Sample error traces</h3>
+        <p className="mt-1 text-[12px] text-foreground-secondary">
           Error traces captured in the post-deploy window for {serviceName}.
         </p>
       </div>

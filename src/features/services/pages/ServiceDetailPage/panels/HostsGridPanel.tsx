@@ -27,7 +27,7 @@ export function HostsGridPanel({
   return (
     <PanelCard title={title} subtitle={computedSubtitle}>
       {rows.length === 0 ? (
-        <div className="grid h-[120px] place-items-center text-[12px] text-[var(--text-muted)]">
+        <div className="grid h-[120px] place-items-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No hosts emitting telemetry for this service."}
         </div>
       ) : (

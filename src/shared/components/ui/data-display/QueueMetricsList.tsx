@@ -228,7 +228,7 @@ export default function QueueMetricsList({
                       style={{
                         width: "100%",
                         height: "3px",
-                        background: "rgba(255,255,255,0.06)",
+                        background: "var(--bg-tertiary)",
                         borderRadius: "999px",
                         overflow: "hidden",
                         marginTop: "2px",

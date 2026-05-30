@@ -33,7 +33,7 @@ export function ServiceAvatar({ serviceName, size = 44 }: ServiceAvatarProps) {
   return (
     <div
       aria-hidden="true"
-      className="flex shrink-0 items-center justify-center rounded-md font-semibold text-[var(--text-primary)]"
+      className="flex shrink-0 items-center justify-center rounded-md font-semibold text-foreground"
       style={{
         backgroundColor: bg,
         width: size,

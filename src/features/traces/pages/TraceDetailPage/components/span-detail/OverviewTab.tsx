@@ -104,19 +104,19 @@ function computeTiming(
 const pane = "p-4 flex flex-col gap-4";
 const sect = "flex flex-col gap-2";
 const sectH = "flex items-center justify-between gap-2";
-const sectT = "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
-const kvK = "text-[11px] text-[var(--text-caption)]";
-const kvV = "text-[12px] text-[var(--text-primary)] font-mono break-words";
-const ancSvc = "text-[var(--text-muted)]";
-const ancOp = "text-[var(--text-primary)] font-mono text-[11px]";
+const sectT = "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
+const kvK = "text-[11px] text-foreground-caption";
+const kvV = "text-[12px] text-foreground font-mono break-words";
+const ancSvc = "text-foreground-muted";
+const ancOp = "text-foreground font-mono text-[11px]";
 const sdKind =
-  "font-mono text-[10.5px] text-[var(--text-caption)] px-1.5 py-px bg-[var(--bg-tertiary)] rounded-[4px]";
+  "font-mono text-[10.5px] text-foreground-caption px-1.5 py-px bg-muted rounded-[4px]";
 const ancLink =
-  "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[11.5px] text-[var(--text-secondary)] cursor-pointer hover:bg-[var(--bg-hover)]";
+  "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-muted border border-border text-[11.5px] text-foreground-secondary cursor-pointer hover:bg-accent";
 const ancHere =
-  "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-[var(--color-primary-subtle-15)] text-[var(--text-primary)] text-[11.5px] border border-[var(--color-primary)]";
+  "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-[var(--color-primary-subtle-15)] text-foreground text-[11.5px] border border-primary";
 const linkBtn =
-  "inline-flex items-center gap-1 text-[11.5px] text-[var(--color-primary)] hover:underline bg-transparent border-0 cursor-pointer p-0";
+  "inline-flex items-center gap-1 text-[11.5px] text-primary hover:underline bg-transparent border-0 cursor-pointer p-0";
 
 function OverviewTabComponent({
   spanAttributes,
@@ -159,20 +159,20 @@ function OverviewTabComponent({
   return (
     <div className={pane}>
       {hasException && (
-        <div className="rounded-[10px] p-3 bg-[var(--color-error-subtle)] border border-[var(--color-error-subtle)] flex flex-col gap-1.5">
-          <div className="flex items-center gap-1.5 text-[var(--color-error)] font-semibold text-[12.5px]">
+        <div className="rounded-[10px] p-3 bg-error-subtle border border-error-subtle flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5 text-error font-semibold text-[12.5px]">
             <AlertCircle size={13} /> Span errored
             {spanAttributes?.exceptionType && (
               <span className={`${sdKind} ml-1`}>{spanAttributes.exceptionType}</span>
             )}
           </div>
           {spanAttributes?.exceptionMessage && (
-            <div className="text-[var(--text-secondary)] text-[12.5px] leading-[1.5]">
+            <div className="text-foreground-secondary text-[12.5px] leading-[1.5]">
               {spanAttributes.exceptionMessage}
             </div>
           )}
           {spanAttributes?.exceptionStacktrace && (
-            <pre className="m-0 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md font-mono text-[11px] text-[var(--text-secondary)] overflow-auto whitespace-pre max-h-[200px] mt-1">
+            <pre className="m-0 p-3 bg-secondary border border-border rounded-md font-mono text-[11px] text-foreground-secondary overflow-auto whitespace-pre max-h-[200px] mt-1">
               {spanAttributes.exceptionStacktrace}
             </pre>
           )}
@@ -211,7 +211,7 @@ function OverviewTabComponent({
                   <span className={ancSvc}>{a.service_name || "—"}</span>
                   <span className={ancOp}>{a.operation_name || "(no name)"}</span>
                 </button>
-                <span className="text-[var(--text-caption)] inline-flex">
+                <span className="text-foreground-caption inline-flex">
                   <ChevronRight size={11} />
                 </span>
               </span>

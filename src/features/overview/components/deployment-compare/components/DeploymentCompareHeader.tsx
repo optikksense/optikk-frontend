@@ -14,7 +14,7 @@ interface Props {
 
 function DeploymentCompareHeaderComponent({ title, seed }: Props) {
   return (
-    <DrawerHeader className="items-start border-[var(--border-color)] border-b bg-[linear-gradient(180deg,var(--color-primary-subtle-15),var(--color-primary-subtle-02))]">
+    <DrawerHeader className="items-start border-border border-b bg-[linear-gradient(180deg,var(--color-primary-subtle-15),var(--color-primary-subtle-02))]">
       <div className="flex w-full flex-col gap-4">
         <HeaderTitleBlock title={title} seed={seed} />
         {seed ? <HeaderBadgeRow seed={seed} /> : null}

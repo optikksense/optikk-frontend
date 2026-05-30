@@ -4,27 +4,27 @@ import type { HeroStatus } from "../hooks/useServiceHeroData";
 
 const TONES: Record<HeroStatus, { bg: string; text: string; dot: string; label: string }> = {
   healthy: {
-    bg: "bg-[var(--color-success-subtle)]",
-    text: "text-[var(--color-success)]",
-    dot: "bg-[var(--color-success)]",
+    bg: "bg-success-subtle",
+    text: "text-success",
+    dot: "bg-success",
     label: "Healthy",
   },
   warn: {
-    bg: "bg-[var(--color-warning-subtle)]",
-    text: "text-[var(--color-warning)]",
-    dot: "bg-[var(--color-warning)]",
+    bg: "bg-warning-subtle",
+    text: "text-warning",
+    dot: "bg-warning",
     label: "Warn",
   },
   error: {
-    bg: "bg-[var(--color-error-subtle)]",
-    text: "text-[var(--color-error)]",
-    dot: "bg-[var(--color-error)]",
+    bg: "bg-error-subtle",
+    text: "text-error",
+    dot: "bg-error",
     label: "Error",
   },
   unknown: {
-    bg: "bg-[var(--bg-tertiary)]",
-    text: "text-[var(--text-muted)]",
-    dot: "bg-[var(--text-muted)]",
+    bg: "bg-muted",
+    text: "text-foreground-muted",
+    dot: "bg-foreground-muted",
     label: "Unknown",
   },
 };

@@ -32,14 +32,14 @@ export function EmptyState({
         className={cn(
           "flex items-center justify-center rounded-full",
           compact ? "h-8 w-8" : "h-12 w-12",
-          "bg-[var(--color-primary-subtle-08)] text-[var(--color-primary)]"
+          "bg-[var(--color-primary-subtle-08)] text-primary"
         )}
       >
         <Icon size={compact ? 16 : 22} strokeWidth={1.75} />
       </span>
       <div
         className={cn(
-          "font-semibold text-[var(--text-primary)]",
+          "font-semibold text-foreground",
           compact ? "text-[12px]" : "text-[14px]"
         )}
       >
@@ -48,7 +48,7 @@ export function EmptyState({
       {description ? (
         <div
           className={cn(
-            "max-w-[420px] text-[var(--text-muted)]",
+            "max-w-[420px] text-foreground-muted",
             compact ? "text-[11px]" : "text-[12px] leading-[1.55]"
           )}
         >

@@ -22,15 +22,15 @@ function DetailDrawerComponent({ open, onOpenChange, title, children, widthPx = 
         <Dialog.Content
           aria-describedby={undefined}
           style={{ width: widthPx }}
-          className="fixed top-0 right-0 z-50 flex h-full flex-col border-[var(--border-color)] border-l bg-[var(--bg-primary)] shadow-2xl"
+          className="fixed top-0 right-0 z-50 flex h-full flex-col border-border border-l bg-background shadow-2xl"
         >
-          <header className="flex shrink-0 items-center justify-between border-[var(--border-color)] border-b px-4 py-3">
-            <Dialog.Title className="min-w-0 truncate font-medium text-[13px] text-[var(--text-primary)]">
+          <header className="flex shrink-0 items-center justify-between border-border border-b px-4 py-3">
+            <Dialog.Title className="min-w-0 truncate font-medium text-[13px] text-foreground">
               {title}
             </Dialog.Title>
             <Dialog.Close
               aria-label="Close detail"
-              className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              className="rounded p-1 text-foreground-muted hover:text-foreground"
             >
               <X size={14} />
             </Dialog.Close>

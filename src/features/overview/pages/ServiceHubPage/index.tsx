@@ -30,27 +30,27 @@ function SummaryTile({
 }) {
   const toneClasses =
     tone === "success"
-      ? "border-[color-mix(in_oklch,var(--color-success),transparent_65%)] bg-[var(--color-success-subtle)]"
+      ? "border-[color-mix(in_oklch,var(--color-success),transparent_65%)] bg-success-subtle"
       : tone === "warning"
-        ? "border-[color-mix(in_oklch,var(--color-warning),transparent_65%)] bg-[var(--color-warning-subtle)]"
+        ? "border-[color-mix(in_oklch,var(--color-warning),transparent_65%)] bg-warning-subtle"
         : tone === "danger"
-          ? "border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-[var(--color-error-subtle)]"
+          ? "border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-error-subtle"
           : tone === "info"
             ? "border-[var(--color-primary-subtle-22)] bg-[var(--color-primary-subtle-10)]"
-            : "border-[var(--border-color)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]";
+            : "border-border bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]";
 
   return (
     <Card padding="lg" className={`min-h-[108px] ${toneClasses}`}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             {label}
           </div>
-          <div className="mt-3 font-semibold text-[28px] text-[var(--text-primary)] leading-none">
+          <div className="mt-3 font-semibold text-[28px] text-foreground leading-none">
             {value}
           </div>
         </div>
-        <div className="rounded-full border border-[var(--border-color)] bg-[var(--bg-hover)] p-2 text-[var(--text-secondary)]">
+        <div className="rounded-full border border-border bg-accent p-2 text-foreground-secondary">
           {icon}
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function ServiceHubPage() {
         className="bg-[linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0.01))]"
       >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="inline-flex rounded-[calc(var(--card-radius)+2px)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-1">
+          <div className="inline-flex rounded-[calc(var(--card-radius)+2px)] border border-border bg-muted p-1">
             {[
               { key: TAB_DISCOVERY, label: "Discovery", icon: <Server size={14} /> },
               { key: TAB_TOPOLOGY, label: "Topology", icon: <Network size={14} /> },
@@ -168,8 +168,8 @@ export default function ServiceHubPage() {
                   onClick={() => setActiveView(tab.key)}
                   className={`inline-flex items-center gap-2 rounded-[calc(var(--card-radius)+1px)] px-4 py-2 font-medium text-[12px] transition-colors ${
                     active
-                      ? "bg-[var(--color-primary)] text-white shadow-[var(--shadow-sm)]"
-                      : "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                      ? "bg-primary text-white shadow-[var(--shadow-sm)]"
+                      : "text-foreground-secondary hover:bg-accent hover:text-foreground"
                   }`}
                 >
                   {tab.icon}
@@ -183,7 +183,7 @@ export default function ServiceHubPage() {
             <div className="relative flex-1">
               <Search
                 size={14}
-                className="-translate-y-1/2 absolute top-1/2 left-3 text-[var(--text-muted)]"
+                className="-translate-y-1/2 absolute top-1/2 left-3 text-foreground-muted"
               />
               <Input
                 value={serviceSearch}
@@ -196,7 +196,7 @@ export default function ServiceHubPage() {
               <button
                 type="button"
                 onClick={() => setServiceSearch("")}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--card-radius)] border border-border bg-muted text-foreground-secondary transition-colors hover:bg-accent hover:text-foreground"
                 aria-label="Clear service search"
               >
                 <X size={14} />
@@ -207,7 +207,7 @@ export default function ServiceHubPage() {
       </PageSurface>
       <Suspense
         fallback={
-          <div className="flex h-64 items-center justify-center text-[13px] text-[var(--text-muted)]">
+          <div className="flex h-64 items-center justify-center text-[13px] text-foreground-muted">
             Loading…
           </div>
         }

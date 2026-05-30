@@ -16,7 +16,7 @@ const COLUMNS: SimpleTableColumn<SlowQueryPatternRow>[] = [
     key: "query_text",
     width: 460,
     render: (_v, row) => (
-      <span className="block max-w-[460px] truncate font-mono text-[11.5px] text-[var(--text-primary)]">
+      <span className="block max-w-[460px] truncate font-mono text-[11.5px] text-foreground">
         {row.query_text || "—"}
       </span>
     ),
@@ -26,7 +26,7 @@ const COLUMNS: SimpleTableColumn<SlowQueryPatternRow>[] = [
     key: "collection_name",
     width: 160,
     render: (_v, row) => (
-      <span className="font-mono text-[11.5px] text-[var(--text-muted)]">
+      <span className="font-mono text-[11.5px] text-foreground-muted">
         {row.collection_name || "—"}
       </span>
     ),
@@ -72,7 +72,7 @@ export function SlowQueriesPreviewTable() {
       padded={false}
     >
       {rows.length === 0 ? (
-        <div className="px-4 py-8 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="px-4 py-8 text-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No slow queries in window."}
         </div>
       ) : (

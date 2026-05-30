@@ -23,12 +23,12 @@ export function InfrastructureHubHeader({
   const subtitle = buildSubtitle(hostCount, podCount);
   return (
     <header className="flex items-start gap-3">
-      <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)]">
+      <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-subtle-12)] text-primary">
         <HardDrive size={18} />
       </div>
       <div className="min-w-0">
         <div className="flex items-center gap-3">
-          <h1 className="font-bold text-[22px] text-[var(--text-primary)] leading-tight">
+          <h1 className="font-bold text-[22px] text-foreground leading-tight">
             Infrastructure
           </h1>
           {alertCount != null && alertCount > 0 && (
@@ -38,7 +38,7 @@ export function InfrastructureHubHeader({
           )}
         </div>
         {subtitle && (
-          <div className="mt-1 text-[12px] text-[var(--text-muted)]">{subtitle}</div>
+          <div className="mt-1 text-[12px] text-foreground-muted">{subtitle}</div>
         )}
       </div>
     </header>

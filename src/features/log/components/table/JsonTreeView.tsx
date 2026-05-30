@@ -13,7 +13,7 @@ function JsonTreeViewComponent({ data, depth = 0 }: Props) {
     : Object.entries(data);
 
   return (
-    <div className={depth > 0 ? "ml-4 border-[var(--border-color)] border-l pl-2" : ""}>
+    <div className={depth > 0 ? "ml-4 border-border border-l pl-2" : ""}>
       {entries.map(([key, value]) => (
         <JsonNode key={key} nodeKey={key} value={value} depth={depth} />
       ))}
@@ -47,15 +47,15 @@ function JsonNode({
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-1 rounded py-0.5 font-mono text-[12px] hover:bg-[var(--bg-hover)]"
+          className="flex items-center gap-1 rounded py-0.5 font-mono text-[12px] hover:bg-accent"
         >
           {open ? (
-            <ChevronDown size={12} className="text-[var(--text-muted)]" />
+            <ChevronDown size={12} className="text-foreground-muted" />
           ) : (
-            <ChevronRight size={12} className="text-[var(--text-muted)]" />
+            <ChevronRight size={12} className="text-foreground-muted" />
           )}
-          <span className="text-[var(--text-secondary)]">{nodeKey}</span>
-          <span className="text-[var(--text-muted)]">{label}</span>
+          <span className="text-foreground-secondary">{nodeKey}</span>
+          <span className="text-foreground-muted">{label}</span>
         </button>
         {open ? (
           <JsonTreeViewComponent
@@ -69,7 +69,7 @@ function JsonNode({
 
   return (
     <div className="group/leaf flex items-center gap-1 py-0.5 pl-4 font-mono text-[12px]">
-      <span className="text-[var(--text-secondary)]">{nodeKey}:</span>
+      <span className="text-foreground-secondary">{nodeKey}:</span>
       <span className={valueClassName(value)}>{formatValue(value)}</span>
       <button
         type="button"
@@ -77,18 +77,18 @@ function JsonNode({
         className="ml-1 opacity-0 transition-opacity group-hover/leaf:opacity-100"
         title="Copy value"
       >
-        <Copy size={10} className="text-[var(--text-muted)]" />
+        <Copy size={10} className="text-foreground-muted" />
       </button>
     </div>
   );
 }
 
 function valueClassName(value: unknown): string {
-  if (typeof value === "string") return "text-[var(--color-success)]";
-  if (typeof value === "number") return "text-[var(--chart-1)]";
-  if (typeof value === "boolean") return "text-[var(--color-warning)]";
-  if (value === null) return "text-[var(--text-muted)] italic";
-  return "text-[var(--text-primary)]";
+  if (typeof value === "string") return "text-success";
+  if (typeof value === "number") return "text-chart-1";
+  if (typeof value === "boolean") return "text-warning";
+  if (value === null) return "text-foreground-muted italic";
+  return "text-foreground";
 }
 
 function formatValue(value: unknown): string {

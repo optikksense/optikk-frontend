@@ -17,14 +17,14 @@ interface StatusFilterPillProps {
 
 export function StatusFilterPill({ value, onChange }: StatusFilterPillProps) {
   return (
-    <label className="inline-flex items-center gap-1.5 text-[11.5px] text-[var(--text-muted)]">
+    <label className="inline-flex items-center gap-1.5 text-[11.5px] text-foreground-muted">
       <span>status</span>
       <select
         value={value}
         onChange={(ev) => onChange(ev.target.value as StatusFilter)}
         className={cn(
-          "rounded border border-transparent bg-transparent text-[11.5px] font-medium text-[var(--text-primary)] outline-none",
-          "hover:border-[var(--border-color)] focus:border-[var(--color-primary)]"
+          "rounded border border-transparent bg-transparent text-[11.5px] font-medium text-foreground outline-none",
+          "hover:border-border focus:border-primary"
         )}
       >
         {OPTIONS.map((opt) => (

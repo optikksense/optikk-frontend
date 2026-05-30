@@ -15,7 +15,7 @@ interface Props {
 
 function TrendLegendComponent({ items, zoomed, onResetZoom }: Props) {
   return (
-    <div className="flex items-center justify-between gap-3 px-3 py-1.5 text-[11px] text-[var(--text-secondary)]">
+    <div className="flex items-center justify-between gap-3 px-3 py-1.5 text-[11px] text-foreground-secondary">
       <div className="flex items-center gap-3">
         {items.map((item) => (
           <span key={item.key} className="inline-flex items-center gap-1.5">
@@ -32,7 +32,7 @@ function TrendLegendComponent({ items, zoomed, onResetZoom }: Props) {
         <button
           type="button"
           onClick={onResetZoom}
-          className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+          className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] text-foreground-secondary hover:bg-accent hover:text-foreground"
         >
           <RotateCcw size={11} />
           Reset zoom

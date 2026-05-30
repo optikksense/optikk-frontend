@@ -11,23 +11,23 @@ import type { CatalogRow } from "./buildCatalogRows";
 function ErrorCell({ rate }: { rate: number }) {
   const tone =
     rate >= 0.02
-      ? "text-[var(--color-error)]"
+      ? "text-error"
       : rate >= 0.005
-        ? "text-[var(--color-warning)]"
-        : "text-[var(--text-primary)]";
+        ? "text-warning"
+        : "text-foreground";
   return <span className={tone}>{fmtPct(rate, rate < 0.001 ? 3 : 2)}</span>;
 }
 
 function DeltaCell({ value }: { value: number | null }) {
-  if (value == null) return <span className="text-[var(--text-muted)]">—</span>;
+  if (value == null) return <span className="text-foreground-muted">—</span>;
   const formatted = fmtDelta(1 + value, 1);
-  if (!formatted) return <span className="text-[var(--text-muted)]">0%</span>;
+  if (!formatted) return <span className="text-foreground-muted">0%</span>;
   const tone =
     formatted.direction === "up"
-      ? "text-[var(--color-error)]"
+      ? "text-error"
       : formatted.direction === "down"
-        ? "text-[var(--color-success)]"
-        : "text-[var(--text-muted)]";
+        ? "text-success"
+        : "text-foreground-muted";
   return <span className={tone}>{formatted.label}</span>;
 }
 
@@ -37,10 +37,10 @@ function NameCell({ row }: { row: CatalogRow }) {
       <StatusDot status={row.status} />
       <ServiceAvatar serviceName={row.serviceName} size={26} />
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate text-[12.5px] font-semibold text-[var(--text-primary)]">
+        <span className="truncate text-[12.5px] font-semibold text-foreground">
           {row.serviceName}
         </span>
-        <span className="truncate font-mono text-[11px] text-[var(--text-muted)]">
+        <span className="truncate font-mono text-[11px] text-foreground-muted">
           {row.version}
           {row.environment !== "—" ? ` · ${row.environment}` : ""}
         </span>
@@ -63,7 +63,7 @@ const COLUMNS: SimpleTableColumn<CatalogRow>[] = [
     sorter: (a, b) => a.rps - b.rps,
     defaultSortOrder: "descend",
     render: (_v, row) => (
-      <span className="font-semibold text-[12.5px] text-[var(--text-primary)] tabular-nums">
+      <span className="font-semibold text-[12.5px] text-foreground tabular-nums">
         {fmtNum(row.rps)}
       </span>
     ),
@@ -110,7 +110,7 @@ const COLUMNS: SimpleTableColumn<CatalogRow>[] = [
     key: "chevron",
     width: 40,
     align: "right",
-    render: () => <ChevronRight size={14} className="text-[var(--text-muted)]" />,
+    render: () => <ChevronRight size={14} className="text-foreground-muted" />,
   },
 ];
 

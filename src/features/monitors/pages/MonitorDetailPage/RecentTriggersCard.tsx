@@ -9,11 +9,11 @@ interface Props {
 
 function RecentTriggersCard({ events, loading }: Props) {
   return (
-    <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
-      <div className="text-sm font-medium text-[var(--text-primary)]">Recent triggers</div>
-      <div className="text-[11px] text-[var(--text-muted)]">last events</div>
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="text-sm font-medium text-foreground">Recent triggers</div>
+      <div className="text-[11px] text-foreground-muted">last events</div>
       <table className="mt-3 w-full text-xs">
-        <thead className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+        <thead className="text-[10px] uppercase tracking-wider text-foreground-muted">
           <tr>
             <th className="py-1 text-left font-medium">When</th>
             <th className="py-1 text-left font-medium">Kind</th>
@@ -24,19 +24,19 @@ function RecentTriggersCard({ events, loading }: Props) {
         <tbody>
           {loading && events.length === 0 ? (
             <tr>
-              <td colSpan={4} className="py-4 text-center text-[var(--text-muted)]">
+              <td colSpan={4} className="py-4 text-center text-foreground-muted">
                 Loading…
               </td>
             </tr>
           ) : events.length === 0 ? (
             <tr>
-              <td colSpan={4} className="py-4 text-center text-[var(--text-muted)]">
+              <td colSpan={4} className="py-4 text-center text-foreground-muted">
                 No triggers yet.
               </td>
             </tr>
           ) : (
             events.map((e) => (
-              <tr key={e.id} className="border-t border-[var(--border-color)]">
+              <tr key={e.id} className="border-t border-border">
                 <td className="py-1.5 font-mono">
                   {new Date(e.started_at).toLocaleString()}
                 </td>

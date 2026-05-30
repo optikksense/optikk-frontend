@@ -46,15 +46,15 @@ export default function WizardTypeStep({ value, onChange }: Props) {
               onClick={() => onChange(t.id)}
               className={`flex flex-col items-start gap-2 rounded border-2 p-4 text-left transition-colors ${
                 active
-                  ? `${t.color} bg-[var(--bg-secondary)]`
-                  : "border-[var(--border-color)] bg-[var(--bg-card)] hover:border-[var(--text-muted)]"
+                  ? `${t.color} bg-secondary`
+                  : "border-border bg-card hover:border-foreground-muted"
               }`}
             >
               <div className="flex items-center gap-2">
                 <t.Icon size={16} />
                 <span className="text-sm font-medium">{t.label}</span>
               </div>
-              <div className="text-[11px] text-[var(--text-muted)]">{t.desc}</div>
+              <div className="text-[11px] text-foreground-muted">{t.desc}</div>
             </button>
           );
         })}

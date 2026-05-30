@@ -19,15 +19,15 @@ export interface PageTabsProps {
 
 const TAB_BASE =
   "relative inline-flex h-9 items-center gap-1.5 px-3 text-[12px] font-medium leading-none transition-colors";
-const TAB_INACTIVE = "text-[var(--text-secondary)] hover:text-[var(--text-primary)]";
-const TAB_ACTIVE = "text-[var(--text-primary)]";
-const TAB_DISABLED = "text-[var(--text-muted)] cursor-not-allowed opacity-60";
+const TAB_INACTIVE = "text-foreground-secondary hover:text-foreground";
+const TAB_ACTIVE = "text-foreground";
+const TAB_DISABLED = "text-foreground-muted cursor-not-allowed opacity-60";
 
 export function PageTabs({ items, activeKey, onChange, className }: PageTabsProps) {
   return (
     <div
       role="tablist"
-      className={cn("flex items-center gap-0 border-[var(--border-color)] border-b", className)}
+      className={cn("flex items-center gap-0 border-border border-b", className)}
     >
       {items.map((item) => {
         const isActive = item.key === activeKey;
@@ -39,8 +39,8 @@ export function PageTabs({ items, activeKey, onChange, className }: PageTabsProp
                 className={cn(
                   "rounded-full px-1.5 py-[1px] font-mono text-[10px] leading-none",
                   isActive
-                    ? "bg-[var(--color-primary-subtle-14)] text-[var(--color-primary)]"
-                    : "bg-[var(--bg-tertiary)] text-[var(--text-muted)]"
+                    ? "bg-[var(--color-primary-subtle-14)] text-primary"
+                    : "bg-muted text-foreground-muted"
                 )}
               >
                 {item.count}

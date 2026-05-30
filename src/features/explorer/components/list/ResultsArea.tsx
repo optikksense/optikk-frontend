@@ -85,7 +85,7 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
               <button
                 type="button"
                 aria-label="Configure columns"
-                className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                className="rounded p-1 text-foreground-muted hover:text-foreground"
               >
                 <Columns3 size={14} />
               </button>
@@ -99,7 +99,7 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
           <span className="font-medium text-[13px] text-[var(--color-error,#ef4444)]">
             Could not load results
           </span>
-          <span className="max-w-lg whitespace-pre-wrap break-words font-mono text-[11px] text-[var(--text-muted)]">
+          <span className="max-w-lg whitespace-pre-wrap break-words font-mono text-[11px] text-foreground-muted">
             {queryError}
           </span>
           {onRetry ? (
@@ -129,7 +129,7 @@ function ResultsAreaImpl<Row>(props: Props<Row>) {
             rowHeight={rowHeight}
           />
           {footer ? (
-            <div className="border-[var(--border-color)] border-t bg-[var(--bg-secondary)] px-4 py-1.5 text-center text-[11px] text-[var(--text-muted)]">
+            <div className="border-border border-t bg-secondary px-4 py-1.5 text-center text-[11px] text-foreground-muted">
               {footer}
             </div>
           ) : null}

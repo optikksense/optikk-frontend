@@ -35,8 +35,8 @@ function ChannelChip({
       onClick={onToggle}
       className={`rounded border px-2.5 py-1 text-xs ${
         selected
-          ? "border-primary bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)]"
-          : "border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-secondary)]"
+          ? "border-primary bg-[var(--color-primary-subtle-12)] text-foreground"
+          : "border-border bg-card text-foreground-secondary"
       }`}
     >
       <span className="font-mono">@{channel.name}</span>
@@ -54,9 +54,9 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
       <FieldRow label="Send to">
         <div className="flex flex-wrap items-center gap-1.5">
           {channelsQ.isPending && !channelsQ.data ? (
-            <span className="text-xs text-[var(--text-muted)]">Loading channels…</span>
+            <span className="text-xs text-foreground-muted">Loading channels…</span>
           ) : (channelsQ.data ?? []).length === 0 ? (
-            <span className="text-xs text-[var(--text-muted)]">
+            <span className="text-xs text-foreground-muted">
               No channels yet —{" "}
               <button
                 type="button"
@@ -99,7 +99,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
           }
           rows={4}
           placeholder="Error rate {{value}}% exceeds threshold ({{threshold}}%) for {{service.name}} {{#is_alert}}@oncall{{/is_alert}}"
-          className="w-full rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-2 font-mono text-xs"
+          className="w-full rounded border border-border bg-card px-2.5 py-2 font-mono text-xs"
         />
       </FieldRow>
       <FieldRow label="Renotify if unresolved">
@@ -120,7 +120,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
                 className={`rounded px-2 py-0.5 text-xs ${
                   active
                     ? "bg-primary text-white"
-                    : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
+                    : "bg-secondary text-foreground-secondary"
                 }`}
               >
                 {label}

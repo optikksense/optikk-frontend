@@ -36,13 +36,13 @@ export default function InfrastructureStrip() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-end justify-between">
-        <span className="font-medium text-[10.5px] uppercase tracking-wider text-[var(--text-muted)]">
+        <span className="font-medium text-[10.5px] uppercase tracking-wider text-foreground-muted">
           Infrastructure
         </span>
         <button
           type="button"
           onClick={() => navigate({ to: ROUTES.saturation })}
-          className="text-[11px] text-[var(--color-primary)] hover:underline"
+          className="text-[11px] text-primary hover:underline"
         >
           Saturation hub →
         </button>
@@ -53,7 +53,7 @@ export default function InfrastructureStrip() {
             key={tile.key}
             elevation={1}
             padding="md"
-            className="cursor-pointer transition-colors hover:bg-[var(--bg-card-hover)]"
+            className="cursor-pointer transition-colors hover:bg-card-hover"
           >
             <button
               type="button"
@@ -70,10 +70,10 @@ export default function InfrastructureStrip() {
                 {tile.icon}
               </span>
               <span className="flex min-w-0 flex-col">
-                <span className="font-semibold text-[13px] text-[var(--text-primary)]">
+                <span className="font-semibold text-[13px] text-foreground">
                   {tile.label}
                 </span>
-                <span className="text-[11px] text-[var(--text-muted)]">{tile.description}</span>
+                <span className="text-[11px] text-foreground-muted">{tile.description}</span>
               </span>
             </button>
           </Surface>

@@ -29,7 +29,7 @@ import { type UseTracesExplorerPageReturn, useTracesExplorerPage } from "./useTr
 export default function TracesExplorerPage() {
   const p = useTracesExplorerPage();
   return (
-    <div className="flex h-full flex-col bg-[var(--bg-primary)]">
+    <div className="flex h-full flex-col bg-background">
       <ExplorerHeader
         ref={p.searchInputRef}
         variant="dsl"
@@ -173,7 +173,7 @@ const SPAN_COLUMNS: readonly ColumnDef<SpanRow>[] = [
     label: "Time",
     width: 170,
     render: (row) => (
-      <span className="font-mono text-[var(--text-secondary)] text-xs">
+      <span className="font-mono text-foreground-secondary text-xs">
         {new Date(row.timestamp_ns / 1_000_000).toISOString().slice(11, 23)}
       </span>
     ),
@@ -183,7 +183,10 @@ const SPAN_COLUMNS: readonly ColumnDef<SpanRow>[] = [
     label: "Duration",
     width: 100,
     render: (row) => (
-      <span className="font-mono text-xs" style={{ color: row.has_error ? "#e8494d" : undefined }}>
+      <span
+        className="font-mono text-xs"
+        style={{ color: row.has_error ? "var(--color-error)" : undefined }}
+      >
         {formatMs(row.duration_ms)}
       </span>
     ),
@@ -228,7 +231,7 @@ const SPAN_COLUMNS: readonly ColumnDef<SpanRow>[] = [
     label: "Trace",
     width: 140,
     render: (row) => (
-      <span className="truncate font-mono text-[11px] text-[var(--text-muted)]">
+      <span className="truncate font-mono text-[11px] text-foreground-muted">
         {row.trace_id.slice(0, 12)}…
       </span>
     ),

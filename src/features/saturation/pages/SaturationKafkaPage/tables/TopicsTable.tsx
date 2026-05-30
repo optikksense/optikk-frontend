@@ -23,7 +23,7 @@ const COLUMNS: SimpleTableColumn<KafkaTopicRow>[] = [
     key: "topic",
     width: 280,
     render: (_v, row) => (
-      <span className="truncate font-mono text-[12px] text-[var(--text-primary)]">{row.topic}</span>
+      <span className="truncate font-mono text-[12px] text-foreground">{row.topic}</span>
     ),
   },
   {
@@ -67,7 +67,7 @@ export function TopicsTable() {
   return (
     <PanelCard title="Topics" subtitle={data ? `${rows.length} topics` : undefined} padded={false}>
       {rows.length === 0 ? (
-        <div className="px-4 py-8 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="px-4 py-8 text-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No topics in window."}
         </div>
       ) : (

@@ -38,7 +38,7 @@ export default function NewMonitorPage() {
   if (editMode && detailQ.isPending && !detailQ.data) {
     return (
       <PageShell>
-        <div className="p-8 text-sm text-[var(--text-muted)]">Loading monitor…</div>
+        <div className="p-8 text-sm text-foreground-muted">Loading monitor…</div>
       </PageShell>
     );
   }
@@ -49,18 +49,18 @@ export default function NewMonitorPage() {
         <button
           type="button"
           onClick={() => navigate({ to: "/monitors" })}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          className="flex items-center gap-1 text-foreground-muted hover:text-foreground"
         >
           <ArrowLeft size={12} />
           Monitors
         </button>
-        <span className="text-[var(--text-muted)]">/</span>
-        <span className="font-medium text-[var(--text-primary)]">{title}</span>
+        <span className="text-foreground-muted">/</span>
+        <span className="font-medium text-foreground">{title}</span>
       </div>
 
       <div>
-        <h1 className="text-2xl font-semibold text-[var(--text-primary)]">{title}</h1>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+        <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
+        <p className="mt-1 text-sm text-foreground-secondary">
           {editMode
             ? "Adjust this alert rule · changes apply on the next evaluation cycle."
             : "Create an alert rule · saved monitors are evaluated continuously and notify configured channels."}

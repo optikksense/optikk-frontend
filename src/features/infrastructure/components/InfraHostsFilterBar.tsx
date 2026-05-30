@@ -10,9 +10,9 @@ interface InfraHostsFilterBarProps {
 }
 
 const TIER_CHIPS: ReadonlyArray<{ tier: NodeHealthTier; label: string; dot: string }> = [
-  { tier: "healthy", label: "Healthy", dot: "bg-[var(--color-success)]" },
-  { tier: "degraded", label: "Degraded", dot: "bg-[var(--color-warning)]" },
-  { tier: "unhealthy", label: "Alerting", dot: "bg-[var(--color-error)]" },
+  { tier: "healthy", label: "Healthy", dot: "bg-success" },
+  { tier: "degraded", label: "Degraded", dot: "bg-warning" },
+  { tier: "unhealthy", label: "Alerting", dot: "bg-error" },
 ];
 
 function toggleTier(
@@ -27,13 +27,13 @@ function toggleTier(
 
 function SearchBox({ value, onChange }: { value: string; onChange: (next: string) => void }) {
   return (
-    <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-3.5 py-1.5">
-      <Search size={14} className="text-[var(--text-muted)]" />
+    <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5">
+      <Search size={14} className="text-foreground-muted" />
       <input
         value={value}
         onChange={(ev) => onChange(ev.target.value)}
         placeholder="Filter hosts by name or service…"
-        className="min-w-0 flex-1 bg-transparent text-[12px] text-[var(--text-primary)] outline-none"
+        className="min-w-0 flex-1 bg-transparent text-[12px] text-foreground outline-none"
       />
     </div>
   );
@@ -57,8 +57,8 @@ function TierChips({
             onClick={() => onToggle(chip.tier)}
             className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] transition-colors ${
               active
-                ? "border-[var(--color-primary)] bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)]"
-                : "border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                ? "border-primary bg-[var(--color-primary-subtle-12)] text-foreground"
+                : "border-border text-foreground-muted hover:text-foreground"
             }`}
             aria-pressed={active}
           >
@@ -84,7 +84,7 @@ function ServiceSelect({
     <select
       value={value}
       onChange={(ev) => onChange(ev.target.value)}
-      className="rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5 text-[12px] text-[var(--text-primary)] outline-none"
+      className="rounded-full border border-border bg-card px-3 py-1.5 text-[12px] text-foreground outline-none"
       aria-label="Filter by service"
     >
       <option value="">All services</option>

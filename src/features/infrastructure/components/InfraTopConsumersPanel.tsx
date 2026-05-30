@@ -30,17 +30,17 @@ function TopConsumerRow({
     <button
       type="button"
       onClick={() => onOpenHost(host.host)}
-      className="flex w-full flex-col gap-1 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-[var(--bg-card-hover)]"
+      className="flex w-full flex-col gap-1 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-card-hover"
     >
       <div className="flex items-baseline justify-between gap-2">
-        <span className="truncate font-mono text-[12px] text-[var(--text-primary)]">
+        <span className="truncate font-mono text-[12px] text-foreground">
           {host.host}
         </span>
-        <span className="flex-none font-mono text-[11.5px] text-[var(--text-secondary)]">
+        <span className="flex-none font-mono text-[11.5px] text-foreground-secondary">
           {formatPercentage(host.value, 0)}
         </span>
       </div>
-      <div className="h-[3px] w-full overflow-hidden rounded-full bg-[var(--bg-tertiary)]">
+      <div className="h-[3px] w-full overflow-hidden rounded-full bg-muted">
         <div
           style={{ width: `${barWidth}%`, backgroundColor: usageBarColor(percent) }}
           className="h-full rounded-full"
@@ -63,13 +63,13 @@ export function InfraTopConsumersPanel({
   onOpenHost,
 }: InfraTopConsumersPanelProps) {
   return (
-    <section className="flex flex-col gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-card)] p-3">
-      <header className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-caption)]">
-        <Icon size={13} className="text-[var(--text-muted)]" />
+    <section className="flex flex-col gap-2 rounded-[var(--card-radius)] border border-border bg-card p-3">
+      <header className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-foreground-caption">
+        <Icon size={13} className="text-foreground-muted" />
         {title}
       </header>
       {hosts.length === 0 ? (
-        <div className="grid h-[120px] place-items-center text-[12px] text-[var(--text-muted)]">
+        <div className="grid h-[120px] place-items-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No data"}
         </div>
       ) : (

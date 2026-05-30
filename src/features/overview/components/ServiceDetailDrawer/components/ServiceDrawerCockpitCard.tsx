@@ -18,13 +18,13 @@ function ServiceDrawerCockpitCardComponent({ serviceLabel, summaryMetrics }: Pro
     >
       <div className="flex flex-col gap-2 xl:flex-row xl:items-end xl:justify-between">
         <div className="max-w-2xl">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.1em]">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.1em]">
             Service cockpit
           </div>
-          <div className="mt-2 font-semibold text-[18px] text-[var(--text-primary)]">
+          <div className="mt-2 font-semibold text-[18px] text-foreground">
             Runtime health, tail latency, and dependency posture for {serviceLabel}.
           </div>
-          <p className="mt-2 text-[12px] text-[var(--text-secondary)] leading-6">
+          <p className="mt-2 text-[12px] text-foreground-secondary leading-6">
             Use this drawer for fast diagnostics, then jump into traces or logs for the exact window
             you want to investigate.
           </p>
@@ -32,26 +32,26 @@ function ServiceDrawerCockpitCardComponent({ serviceLabel, summaryMetrics }: Pro
         {summaryMetrics ? (
           <div className="grid gap-3 sm:grid-cols-3">
             <div>
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+              <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
                 Requests
               </div>
-              <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)]">
+              <div className="mt-1 font-semibold text-[18px] text-foreground">
                 {formatNumber(summaryMetrics.requestCount)}
               </div>
             </div>
             <div>
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+              <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
                 Errors
               </div>
-              <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)]">
+              <div className="mt-1 font-semibold text-[18px] text-foreground">
                 {formatPercentage(summaryMetrics.errorRate)}
               </div>
             </div>
             <div>
-              <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+              <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
                 P95
               </div>
-              <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)]">
+              <div className="mt-1 font-semibold text-[18px] text-foreground">
                 {formatDuration(summaryMetrics.p95Latency)}
               </div>
             </div>

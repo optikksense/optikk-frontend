@@ -47,11 +47,11 @@ const InfraSeriesList = memo(function InfraSeriesList({
   if (series.length === 0) return null;
 
   return (
-    <div className="mt-2 border-[var(--border-color)] border-t pt-2">
+    <div className="mt-2 border-border border-t pt-2">
       <div className="scrollbar-thin scrollbar-thumb-[var(--border-color)] scrollbar-track-transparent max-h-[180px] overflow-y-auto">
         <table className="w-full border-collapse text-left text-[12px]">
           <thead>
-            <tr className="border-[var(--border-color)] border-b text-[var(--text-secondary)]">
+            <tr className="border-border border-b text-foreground-secondary">
               <th className="px-2 py-1 font-medium">Name</th>
               <th className="px-2 py-1 text-right font-medium">{title}</th>
             </tr>
@@ -73,9 +73,9 @@ const InfraSeriesList = memo(function InfraSeriesList({
                   } ${isSelected ? "bg-[var(--white-04)]" : "bg-transparent"}`}
                 >
                   <td className="flex flex-col gap-1 px-2 py-1.5">
-                    <span className="font-medium text-[var(--text-primary)]">{item.label}</span>
+                    <span className="font-medium text-foreground">{item.label}</span>
                     {/* Proportional bar */}
-                    <div className="mt-0.5 h-[3px] w-full overflow-hidden rounded-full bg-[var(--bg-tertiary)]/50">
+                    <div className="mt-0.5 h-[3px] w-full overflow-hidden rounded-full bg-muted/50">
                       <div
                         style={{
                           width: `${barWidth}%`,
@@ -85,7 +85,7 @@ const InfraSeriesList = memo(function InfraSeriesList({
                       />
                     </div>
                   </td>
-                  <td className="px-2 py-1.5 text-right font-mono text-[var(--text-primary)]">
+                  <td className="px-2 py-1.5 text-right font-mono text-foreground">
                     {formatValue(item.value)}
                   </td>
                 </tr>

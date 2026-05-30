@@ -64,7 +64,7 @@ export function ServiceMapTab() {
   const isEmpty = !query.isLoading && nodes.length === 0;
 
   return (
-    <div className="flex h-[calc(100vh-260px)] min-h-[480px] flex-col overflow-hidden rounded-md border border-[var(--border-color)] bg-[var(--bg-card)]">
+    <div className="flex h-[calc(100vh-260px)] min-h-[480px] flex-col overflow-hidden rounded-md border border-border bg-card">
       <ServiceMapToolbar
         focus={effectiveFocus}
         services={services}

@@ -16,7 +16,7 @@ const LIMIT_COLUMNS: SimpleTableColumn<ConnectionLimits>[] = [
     key: "pool_name",
     width: 220,
     render: (_v, row) => (
-      <span className="font-medium text-[var(--text-primary)]">{row.pool_name || "default"}</span>
+      <span className="font-medium text-foreground">{row.pool_name || "default"}</span>
     ),
   },
   {
@@ -54,15 +54,15 @@ function LatencyP95Panel({
   emptyLabel: string;
 }) {
   return (
-    <Card padding="lg" className="min-h-[300px] border-[var(--border-color)]">
+    <Card padding="lg" className="min-h-[300px] border-border">
       <div className="mb-3">
-        <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
           {eyebrow}
         </div>
-        <div className="mt-1 font-semibold text-[15px] text-[var(--text-primary)]">{title}</div>
+        <div className="mt-1 font-semibold text-[15px] text-foreground">{title}</div>
       </div>
       {series.timestamps.length === 0 ? (
-        <div className="grid h-[220px] place-items-center text-[12px] text-[var(--text-muted)]">
+        <div className="grid h-[220px] place-items-center text-[12px] text-foreground-muted">
           {emptyLabel}
         </div>
       ) : (
@@ -122,12 +122,12 @@ function ConnectionPoolPanelComponent({ system }: { system: string }) {
           emptyLabel="No connection use-time samples."
         />
       </div>
-      <Card padding="lg" className="border-[var(--border-color)]">
+      <Card padding="lg" className="border-border">
         <div className="mb-3">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Connections
           </div>
-          <div className="mt-1 font-semibold text-[15px] text-[var(--text-primary)]">
+          <div className="mt-1 font-semibold text-[15px] text-foreground">
             Pool limits
           </div>
         </div>

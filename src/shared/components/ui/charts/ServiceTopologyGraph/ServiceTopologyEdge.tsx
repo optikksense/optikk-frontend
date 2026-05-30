@@ -62,25 +62,25 @@ export function ServiceTopologyEdge(props: EdgeProps) {
 
   const tooltip = (
     <div className="flex flex-col gap-1 text-[12px]">
-      <div className="font-semibold text-[var(--text-primary)]">
+      <div className="font-semibold text-foreground">
         {d.source} → {d.target}
       </div>
       <div className="flex justify-between gap-4">
-        <span className="text-[var(--text-muted)]">Calls</span>
+        <span className="text-foreground-muted">Calls</span>
         <span>{formatNumber(d.callCount)}</span>
       </div>
       <div className="flex justify-between gap-4">
-        <span className="text-[var(--text-muted)]">Errors</span>
+        <span className="text-foreground-muted">Errors</span>
         <span>
           {formatNumber(d.errorCount)} ({formatPct(d.errorRate)})
         </span>
       </div>
       <div className="flex justify-between gap-4">
-        <span className="text-[var(--text-muted)]">p50</span>
+        <span className="text-foreground-muted">p50</span>
         <span>{formatMs(d.p50LatencyMs)}</span>
       </div>
       <div className="flex justify-between gap-4">
-        <span className="text-[var(--text-muted)]">p95</span>
+        <span className="text-foreground-muted">p95</span>
         <span>{formatMs(d.p95LatencyMs)}</span>
       </div>
     </div>
@@ -105,10 +105,10 @@ export function ServiceTopologyEdge(props: EdgeProps) {
           className="nodrag nopan"
         >
           <Tooltip content={tooltip} placement="top">
-            <div className="rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-0.5 text-[10px] text-[var(--text-muted)] shadow-[var(--shadow-sm)]">
+            <div className="rounded-full border border-border bg-card px-2 py-0.5 text-[10px] text-foreground-muted shadow-[var(--shadow-sm)]">
               {formatNumber(d.callCount)}
               {d.errorRate > 0 ? (
-                <span className="ml-1 text-[var(--color-error)]">{formatPct(d.errorRate)}</span>
+                <span className="ml-1 text-error">{formatPct(d.errorRate)}</span>
               ) : null}
             </div>
           </Tooltip>

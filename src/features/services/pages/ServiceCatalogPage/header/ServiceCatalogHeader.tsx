@@ -13,7 +13,7 @@ interface ServiceCatalogHeaderProps {
 
 function HeaderIcon() {
   return (
-    <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)]">
+    <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-subtle-12)] text-primary">
       <Server size={18} />
     </div>
   );
@@ -26,7 +26,7 @@ function RefreshButton() {
       type="button"
       title="Refresh"
       onClick={triggerRefresh}
-      className="grid h-8 w-8 place-items-center rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+      className="grid h-8 w-8 place-items-center rounded-md border border-border bg-card text-foreground-muted hover:text-foreground"
     >
       <RefreshCw size={14} />
     </button>
@@ -54,10 +54,10 @@ export function ServiceCatalogHeader({ aggregate, environment }: ServiceCatalogH
       <div className="flex items-start gap-3">
         <HeaderIcon />
         <div>
-          <h1 className="font-bold text-[22px] text-[var(--text-primary)] leading-tight">
+          <h1 className="font-bold text-[22px] text-foreground leading-tight">
             Services
           </h1>
-          <div className="mt-1 text-[12px] text-[var(--text-muted)]">
+          <div className="mt-1 text-[12px] text-foreground-muted">
             {buildSubtitle(aggregate, environment, org)}
           </div>
         </div>

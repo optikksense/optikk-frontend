@@ -88,30 +88,30 @@ export default function PoliciesTab() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
+      <div className="rounded-lg border border-border bg-card p-4">
         <div className="text-sm font-medium">{editing ? "Edit policy" : "Create policy"}</div>
         <div className="mt-3 grid gap-2">
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             placeholder="Policy name (e.g. Page on-call for P1 payments)"
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 text-xs"
+            className="rounded border border-border bg-card px-2 py-1.5 text-xs"
           />
           <input
             value={form.matchDsl}
             onChange={(e) => setForm((f) => ({ ...f, matchDsl: e.target.value }))}
             placeholder="Match DSL (e.g. priority:P1 AND team:payments)"
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 font-mono text-xs"
+            className="rounded border border-border bg-card px-2 py-1.5 font-mono text-xs"
           />
           <textarea
             value={form.actionsJson}
             onChange={(e) => setForm((f) => ({ ...f, actionsJson: e.target.value }))}
             rows={3}
             placeholder='Actions (JSON array, e.g. [{"channel_id": 1}])'
-            className="rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2 py-1.5 font-mono text-xs"
+            className="rounded border border-border bg-card px-2 py-1.5 font-mono text-xs"
           />
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
+            <label className="flex items-center gap-1.5 text-xs text-foreground-secondary">
               <input
                 type="checkbox"
                 checked={form.enabled}
@@ -124,7 +124,7 @@ export default function PoliciesTab() {
                 <button
                   type="button"
                   onClick={() => setForm(emptyForm())}
-                  className="rounded border border-[var(--border-color)] px-3 py-1.5 text-xs hover:bg-[var(--bg-secondary)]"
+                  className="rounded border border-border px-3 py-1.5 text-xs hover:bg-secondary"
                 >
                   Cancel
                 </button>
@@ -143,17 +143,17 @@ export default function PoliciesTab() {
         {status && <div className="mt-2 text-xs text-warning">{status}</div>}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)]">
-        <div className="flex items-center justify-between border-b border-[var(--border-color)] px-4 py-3">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div>
             <div className="text-sm font-medium">Routing policies</div>
-            <div className="text-[11px] text-[var(--text-muted)]">
+            <div className="text-[11px] text-foreground-muted">
               Rules evaluated top-down · first match wins.
             </div>
           </div>
         </div>
         <table className="w-full text-sm">
-          <thead className="border-b border-[var(--border-color)] text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
+          <thead className="border-b border-border text-[11px] uppercase tracking-wider text-foreground-muted">
             <tr>
               <th className="py-2 pl-4 text-left font-medium">Policy</th>
               <th className="py-2 text-left font-medium">Match</th>
@@ -165,28 +165,28 @@ export default function PoliciesTab() {
           <tbody>
             {q.isPending && !q.data ? (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-[var(--text-muted)]">
+                <td colSpan={5} className="py-6 text-center text-xs text-foreground-muted">
                   Loading…
                 </td>
               </tr>
             ) : policies.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-[var(--text-muted)]">
+                <td colSpan={5} className="py-6 text-center text-xs text-foreground-muted">
                   No policies yet.
                 </td>
               </tr>
             ) : (
               policies.map((p, i) => (
-                <tr key={p.id} className="border-b border-[var(--border-color)] last:border-0">
+                <tr key={p.id} className="border-b border-border last:border-0">
                   <td className="py-2 pl-4">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[11px] text-[var(--text-muted)]">
+                      <span className="font-mono text-[11px] text-foreground-muted">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="text-xs font-medium">{p.name}</span>
                     </div>
                   </td>
-                  <td className="py-2 font-mono text-[11px] text-[var(--text-secondary)]">
+                  <td className="py-2 font-mono text-[11px] text-foreground-secondary">
                     {p.match_dsl}
                   </td>
                   <td className="py-2 text-right font-mono">{p.hits_30d}</td>
@@ -205,14 +205,14 @@ export default function PoliciesTab() {
                     <button
                       type="button"
                       onClick={() => setForm(formFromPolicy(p))}
-                      className="mr-1 rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] hover:bg-[var(--bg-secondary)]"
+                      className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
                     >
                       Edit
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(p.id)}
-                      className="rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] text-error hover:bg-[var(--bg-secondary)]"
+                      className="rounded border border-border px-2 py-0.5 text-[11px] text-error hover:bg-secondary"
                     >
                       Delete
                     </button>

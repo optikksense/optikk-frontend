@@ -9,10 +9,10 @@ export type EndpointRow = DeploymentCompareResponse["top_endpoints"][number];
 function EndpointCell({ row }: { row: EndpointRow }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="font-medium text-[var(--text-primary)]">
+      <span className="font-medium text-foreground">
         {row.endpoint_name || row.operation_name}
       </span>
-      <span className="text-[11px] text-[var(--text-muted)]">
+      <span className="text-[11px] text-foreground-muted">
         {row.http_method || "—"} • span {row.operation_name}
       </span>
     </div>

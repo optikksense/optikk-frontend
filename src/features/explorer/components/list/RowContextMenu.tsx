@@ -61,11 +61,11 @@ export function RowContextMenu({ x, y, items, onClose }: Props) {
       ref={ref}
       role="menu"
       style={{ position: "fixed", left: pos.left, top: pos.top, zIndex: 1000 }}
-      className="min-w-[200px] rounded-md border border-[var(--border-color)] bg-[var(--bg-secondary)] py-1 shadow-lg"
+      className="min-w-[200px] rounded-md border border-border bg-secondary py-1 shadow-lg"
     >
       {items.map((item, i) =>
         item.kind === "separator" ? (
-          <div key={`s-${i}`} className="my-1 h-px bg-[var(--border-color)]" />
+          <div key={`s-${i}`} className="my-1 h-px bg-border" />
         ) : (
           <button
             key={`a-${i}-${item.label}`}
@@ -75,12 +75,12 @@ export function RowContextMenu({ x, y, items, onClose }: Props) {
               item.onSelect();
               onClose();
             }}
-            className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] transition-colors hover:bg-[var(--bg-hover)] disabled:opacity-50 ${
-              item.destructive ? "text-[var(--color-error)]" : "text-[var(--text-primary)]"
+            className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] transition-colors hover:bg-accent disabled:opacity-50 ${
+              item.destructive ? "text-error" : "text-foreground"
             }`}
           >
             {item.icon ? (
-              <span className="flex h-3.5 w-3.5 items-center justify-center text-[var(--text-muted)]">
+              <span className="flex h-3.5 w-3.5 items-center justify-center text-foreground-muted">
                 {item.icon}
               </span>
             ) : (

@@ -28,10 +28,10 @@ function DatastoreTableCardInner<RowType extends object>({
     <PageSurface padding="lg">
       <div className="mb-3 flex items-end justify-between gap-3">
         <div>
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             {eyebrow}
           </div>
-          <div className="mt-2 font-semibold text-[18px] text-[var(--text-primary)]">{title}</div>
+          <div className="mt-2 font-semibold text-[18px] text-foreground">{title}</div>
         </div>
         {rightAdornment}
       </div>

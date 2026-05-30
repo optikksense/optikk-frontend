@@ -32,15 +32,15 @@ function MonitorsTable({ monitors }: Props) {
   const navigate = useNavigate();
   if (monitors.length === 0) {
     return (
-      <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-12 text-center text-sm text-[var(--text-muted)]">
+      <div className="rounded-lg border border-border bg-card p-12 text-center text-sm text-foreground-muted">
         No monitors match your filters.
       </div>
     );
   }
   return (
-    <div className="overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)]">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <table className="w-full text-sm">
-        <thead className="border-b border-[var(--border-color)] text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
+        <thead className="border-b border-border text-[11px] uppercase tracking-wider text-foreground-muted">
           <tr>
             <th className="py-2 pl-4 text-left font-medium">Status</th>
             <th className="py-2 text-left font-medium">Monitor</th>
@@ -57,14 +57,14 @@ function MonitorsTable({ monitors }: Props) {
             <tr
               key={m.id}
               onClick={() => navigate(dynamicNavigateOptions(`/monitors/${m.id}`))}
-              className="cursor-pointer border-b border-[var(--border-color)] last:border-0 hover:bg-[var(--bg-secondary)]"
+              className="cursor-pointer border-b border-border last:border-0 hover:bg-secondary"
             >
               <td className="py-2 pl-4">
                 <MonitorStatusBadge status={m.status} />
               </td>
               <td className="py-2 pr-3">
-                <div className="font-medium text-[var(--text-primary)]">{m.name}</div>
-                <div className="font-mono text-[10px] text-[var(--text-muted)]">m-{m.id}</div>
+                <div className="font-medium text-foreground">{m.name}</div>
+                <div className="font-mono text-[10px] text-foreground-muted">m-{m.id}</div>
               </td>
               <td className="py-2">
                 <span
@@ -76,15 +76,15 @@ function MonitorsTable({ monitors }: Props) {
               <td className="py-2">
                 <PriorityChip priority={m.priority} />
               </td>
-              <td className="py-2 font-mono text-[11px] text-[var(--text-muted)]">
+              <td className="py-2 font-mono text-[11px] text-foreground-muted">
                 {formatScope(m)}
               </td>
               <td className="py-2 text-right font-mono">{formatValue(m.current_value, m.type)}</td>
-              <td className="py-2 font-mono text-[11px] text-[var(--text-muted)]">
+              <td className="py-2 font-mono text-[11px] text-foreground-muted">
                 {m.last_evaluated_at ? new Date(m.last_evaluated_at).toLocaleTimeString() : "—"}
               </td>
               <td className="py-2 pr-4 text-right">
-                <ChevronRight size={14} className="ml-auto text-[var(--text-muted)]" />
+                <ChevronRight size={14} className="ml-auto text-foreground-muted" />
               </td>
             </tr>
           ))}

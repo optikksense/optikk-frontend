@@ -36,7 +36,7 @@ function NumericInput({
         const v = e.target.value;
         onChange(v === "" ? undefined : Number(v));
       }}
-      className="w-32 rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 font-mono text-xs"
+      className="w-32 rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
     />
   );
 }
@@ -63,7 +63,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
                   className={`rounded px-2 py-0.5 text-xs ${
                     active
                       ? "bg-primary text-white"
-                      : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
+                      : "bg-secondary text-foreground-secondary"
                   }`}
                 >
                   {cmp.label}
@@ -108,7 +108,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
             value={c.no_data_after_sec}
             onChange={(v) => update({ no_data_after_sec: v ?? 0 })}
           />
-          <span className="text-xs text-[var(--text-muted)]">seconds · treat as</span>
+          <span className="text-xs text-foreground-muted">seconds · treat as</span>
           <div className="flex items-center gap-1">
             {NO_DATA_AS.map((opt) => {
               const active = c.no_data_as === opt.id;
@@ -120,7 +120,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
                   className={`rounded px-2 py-0.5 text-xs ${
                     active
                       ? "bg-primary text-white"
-                      : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
+                      : "bg-secondary text-foreground-secondary"
                   }`}
                 >
                   {opt.label}

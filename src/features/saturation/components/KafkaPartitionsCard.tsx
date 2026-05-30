@@ -18,7 +18,7 @@ function buildColumns(scope: "topic" | "group"): SimpleTableColumn<KafkaPartitio
           key: "consumer_group",
           width: 300,
           render: (_v, row) => (
-            <span className="font-mono text-[12px] text-[var(--text-primary)]">
+            <span className="font-mono text-[12px] text-foreground">
               {row.consumer_group}
             </span>
           ),
@@ -28,7 +28,7 @@ function buildColumns(scope: "topic" | "group"): SimpleTableColumn<KafkaPartitio
           key: "topic",
           width: 300,
           render: (_v, row) => (
-            <span className="font-mono text-[12px] text-[var(--text-primary)]">{row.topic}</span>
+            <span className="font-mono text-[12px] text-foreground">{row.topic}</span>
           ),
         };
   return [
@@ -57,10 +57,10 @@ export function KafkaPartitionsCard({ rows, scope }: KafkaPartitionsCardProps) {
   return (
     <PageSurface padding="lg">
       <div className="mb-3">
-        <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
           Partitions
         </div>
-        <div className="mt-2 font-semibold text-[18px] text-[var(--text-primary)]">
+        <div className="mt-2 font-semibold text-[18px] text-foreground">
           Partition-level lag
         </div>
       </div>

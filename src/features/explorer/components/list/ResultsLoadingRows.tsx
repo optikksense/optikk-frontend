@@ -12,10 +12,10 @@ function ResultsLoadingRowsComponent({ rows = 12, rowHeight = 32 }: Props) {
         <div
           // biome-ignore lint/suspicious/noArrayIndexKey: purely visual skeleton
           key={index}
-          className="flex items-center border-[var(--border-color)] border-b px-3"
+          className="flex items-center border-border border-b px-3"
           style={{ height: rowHeight }}
         >
-          <div className="h-3 w-full animate-pulse rounded bg-[var(--bg-hover)]" />
+          <div className="h-3 w-full animate-pulse rounded bg-accent" />
         </div>
       ))}
     </div>

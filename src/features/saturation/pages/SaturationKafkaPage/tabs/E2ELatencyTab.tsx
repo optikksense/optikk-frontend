@@ -45,7 +45,7 @@ function aggregate(points: E2ELatencyPoint[]): AggregatedE2ESeries {
 function ChartBody({ series }: { series: AggregatedE2ESeries }) {
   if (series.timestamps.length === 0) {
     return (
-      <div className="grid h-[200px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted">
         No e2e latency samples in this window.
       </div>
     );

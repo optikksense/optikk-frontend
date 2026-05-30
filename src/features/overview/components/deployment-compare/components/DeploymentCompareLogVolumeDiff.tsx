@@ -29,11 +29,11 @@ function Row({
 }) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-3 py-1">
-      <span className="text-[12px] text-[var(--text-secondary)]">{label}</span>
-      <span className="font-mono text-[11px] text-[var(--text-muted)]">
+      <span className="text-[12px] text-foreground-secondary">{label}</span>
+      <span className="font-mono text-[11px] text-foreground-muted">
         {before ? formatNumber(before.total) : "—"}
       </span>
-      <span className="font-mono text-[11px] text-[var(--text-primary)]">
+      <span className="font-mono text-[11px] text-foreground">
         {formatNumber(after.total)}
       </span>
       <DeltaPill delta={diff} formatter={(value) => formatNumber(value)} invert />
@@ -61,20 +61,20 @@ function DeploymentCompareLogVolumeDiffComponent({ compare }: Props) {
   const warnBefore: WindowVolume = { ...totalBefore, total: totalBefore.warnings };
 
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="mb-3">
-        <h3 className="m-0 font-semibold text-[var(--text-primary)]">Log volume diff</h3>
-        <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
+        <h3 className="m-0 font-semibold text-foreground">Log volume diff</h3>
+        <p className="mt-1 text-[12px] text-foreground-secondary">
           Total and ERROR/WARN counts before vs after deploy ({serviceName}).
         </p>
       </div>
-      <div className="mb-2 grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-3 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+      <div className="mb-2 grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-3 text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
         <span>Severity</span>
         <span className="text-right">Before</span>
         <span className="text-right">After</span>
         <span className="text-right">Δ</span>
       </div>
-      <div className="flex flex-col divide-y divide-[var(--border-color)]">
+      <div className="flex flex-col divide-y divide-border">
         <Row label="Total" before={before} after={after} diff={delta(before, "total", after)} />
         <Row
           label="Errors"

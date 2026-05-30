@@ -45,7 +45,7 @@ function applyFilters(
 
 function EmptyState({ isPending }: { isPending: boolean }) {
   return (
-    <div className="grid h-[200px] place-items-center text-[12px] text-[var(--text-muted)]">
+    <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted">
       {isPending ? "Loading services…" : "No services match the current filters."}
     </div>
   );
@@ -92,7 +92,7 @@ export function CatalogTab() {
     <div className="flex flex-col gap-4">
       <CatalogKpiStrip aggregate={aggregate} />
       <div className="flex gap-4">
-        <div className="flex min-w-0 flex-1 flex-col gap-3 rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-3 rounded-md border border-border bg-card p-4">
           <SearchToolbar
             value={search}
             onChange={setSearch}

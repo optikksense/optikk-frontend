@@ -47,7 +47,7 @@ export default function ContainerDetailPage(): JSX.Element {
           />
         </>
       ) : (
-        <div className="rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] p-4 text-[12px] text-[var(--text-muted)]">
+        <div className="rounded-md border border-border bg-card p-4 text-[12px] text-foreground-muted">
           No pod metadata available for <span className="font-mono">{container}</span> in the
           current time range.
         </div>

@@ -10,9 +10,9 @@ interface DeltaBadgeProps {
 }
 
 const DIRECTION_CLASS: Record<"up" | "down" | "flat", string> = {
-  up: "text-[var(--color-success)]",
-  down: "text-[var(--color-error)]",
-  flat: "text-[var(--text-muted)]",
+  up: "text-success",
+  down: "text-error",
+  flat: "text-foreground-muted",
 };
 
 /** Colored signed-change indicator. Increase = red (down), decrease = green (up). */

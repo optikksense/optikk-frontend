@@ -4,7 +4,7 @@ import { ROUTES } from "@shared/constants/routes";
 
 export function LoginTopBar() {
   return (
-    <div className="flex items-center justify-end gap-2.5 text-[12.5px] text-[var(--text-muted)]">
+    <div className="flex items-center justify-end gap-2.5 text-[12.5px] text-foreground-muted">
       <span>New to Optikk?</span>
       <Link
         to={ROUTES.pricing}

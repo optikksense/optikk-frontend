@@ -51,7 +51,7 @@ function buildSeries(points: DeploymentVersionTrafficPoint[] | undefined): Chart
 function ChartBody({ data, isPending }: { data: ChartData; isPending: boolean }) {
   if (data.series.length === 0) {
     return (
-      <div className="grid h-[200px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted">
         {isPending ? "Loading…" : "No version traffic in selected range."}
       </div>
     );

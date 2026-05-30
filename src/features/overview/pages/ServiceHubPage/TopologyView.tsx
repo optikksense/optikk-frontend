@@ -67,7 +67,7 @@ function TopologyCanvas() {
   const isEmpty = !query.isLoading && nodes.length === 0;
 
   return (
-    <div className="flex h-[calc(100vh-220px)] min-h-[480px] flex-col overflow-hidden rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-card)]">
+    <div className="flex h-[calc(100vh-220px)] min-h-[480px] flex-col overflow-hidden rounded-[var(--card-radius)] border border-border bg-card">
       <TopologyToolbar
         filter={filter}
         onFilterChange={setFilter}
@@ -78,17 +78,17 @@ function TopologyCanvas() {
       />
       <div className="relative flex-1">
         {query.isLoading ? (
-          <div className="absolute inset-0 flex items-center justify-center text-[13px] text-[var(--text-muted)]">
+          <div className="absolute inset-0 flex items-center justify-center text-[13px] text-foreground-muted">
             Loading topology…
           </div>
         ) : null}
         {query.isError ? (
-          <div className="absolute inset-0 flex items-center justify-center text-[13px] text-[var(--color-error)]">
+          <div className="absolute inset-0 flex items-center justify-center text-[13px] text-error">
             Failed to load service topology.
           </div>
         ) : null}
         {isEmpty && !query.isError ? (
-          <div className="absolute inset-0 flex items-center justify-center text-[13px] text-[var(--text-muted)]">
+          <div className="absolute inset-0 flex items-center justify-center text-[13px] text-foreground-muted">
             No service activity in this time range.
           </div>
         ) : null}

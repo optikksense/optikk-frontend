@@ -20,10 +20,10 @@ interface ContainerDetailKpiCardsProps {
 type Tone = "ok" | "warn" | "err" | "neutral";
 
 const VALUE_TONE: Record<Tone, string> = {
-  ok: "text-[var(--text-primary)]",
-  warn: "text-[var(--color-warning)]",
-  err: "text-[var(--color-error)]",
-  neutral: "text-[var(--text-primary)]",
+  ok: "text-foreground",
+  warn: "text-warning",
+  err: "text-error",
+  neutral: "text-foreground",
 };
 
 function utilizationTone(v: number, warnAt: number, errAt: number): Tone {
@@ -99,8 +99,8 @@ function KpiTile({
   const valueTone: Tone = last != null ? utilizationTone(last, warnAt, errAt) : "neutral";
   const sparklineTone = last == null ? "info" : last >= errAt ? "err" : last >= warnAt ? "warn" : "info";
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] px-4 py-3">
-      <div className="text-[10.5px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+    <div className="flex flex-col gap-2 rounded-md border border-border bg-card px-4 py-3">
+      <div className="text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">
         {label}
       </div>
       <div

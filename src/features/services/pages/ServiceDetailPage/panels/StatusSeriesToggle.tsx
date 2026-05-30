@@ -16,7 +16,7 @@ interface StatusSeriesToggleProps {
 
 export function StatusSeriesToggle({ value, onChange }: StatusSeriesToggleProps) {
   return (
-    <div className="inline-flex items-center gap-0.5 rounded bg-[var(--bg-tertiary)] p-0.5">
+    <div className="inline-flex items-center gap-0.5 rounded bg-muted p-0.5">
       {OPTIONS.map((opt) => (
         <button
           key={opt.id}
@@ -25,8 +25,8 @@ export function StatusSeriesToggle({ value, onChange }: StatusSeriesToggleProps)
           className={cn(
             "rounded-[3px] px-2 py-0.5 font-medium text-[10.5px] transition-colors",
             value === opt.id
-              ? "bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[var(--shadow-sm)]"
-              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
+              : "text-foreground-muted hover:text-foreground"
           )}
         >
           {opt.label}

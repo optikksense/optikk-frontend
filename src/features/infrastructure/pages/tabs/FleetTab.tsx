@@ -176,35 +176,35 @@ export default function FleetTab() {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <Card padding="md" className="border-[var(--border-color)]">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        <Card padding="md" className="border-border">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Healthy
           </div>
-          <div className="mt-1 font-semibold text-[24px] text-[var(--text-primary)]">
+          <div className="mt-1 font-semibold text-[24px] text-foreground">
             {formatNumber(summary?.healthy_nodes ?? 0)}
           </div>
         </Card>
-        <Card padding="md" className="border-[var(--border-color)]">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        <Card padding="md" className="border-border">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Degraded
           </div>
           <div className="mt-1 font-semibold text-[24px] text-[var(--color-warning,#f79009)]">
             {formatNumber(summary?.degraded_nodes ?? 0)}
           </div>
         </Card>
-        <Card padding="md" className="border-[var(--border-color)]">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        <Card padding="md" className="border-border">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Unhealthy
           </div>
-          <div className="mt-1 font-semibold text-[24px] text-[var(--color-error)]">
+          <div className="mt-1 font-semibold text-[24px] text-error">
             {formatNumber(summary?.unhealthy_nodes ?? 0)}
           </div>
         </Card>
-        <Card padding="md" className="border-[var(--border-color)]">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        <Card padding="md" className="border-border">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Total pods
           </div>
-          <div className="mt-1 font-semibold text-[24px] text-[var(--text-primary)]">
+          <div className="mt-1 font-semibold text-[24px] text-foreground">
             {formatNumber(summary?.total_pods ?? 0)}
           </div>
         </Card>
@@ -228,7 +228,7 @@ export default function FleetTab() {
       {lens === INFRA_LENS.host ? (
         <>
           <div>
-            <h3 className="mb-2 font-semibold text-[13px] text-[var(--text-primary)]">Fleet map</h3>
+            <h3 className="mb-2 font-semibold text-[13px] text-foreground">Fleet map</h3>
             <InfraFleetMap
               nodes={filteredNodes}
               fill={fill as InfraFillMetric}
@@ -239,7 +239,7 @@ export default function FleetTab() {
           </div>
 
           <div>
-            <h3 className="mb-2 font-semibold text-[13px] text-[var(--text-primary)]">Hosts</h3>
+            <h3 className="mb-2 font-semibold text-[13px] text-foreground">Hosts</h3>
             <InfraNodesTable
               nodes={filteredNodes}
               onOpenNode={openNode}
@@ -249,10 +249,10 @@ export default function FleetTab() {
         </>
       ) : (
         <div>
-          <h3 className="mb-2 font-semibold text-[13px] text-[var(--text-primary)]">Pods</h3>
-          <p className="mb-3 text-[12px] text-[var(--text-muted)]">
+          <h3 className="mb-2 font-semibold text-[13px] text-foreground">Pods</h3>
+          <p className="mb-3 text-[12px] text-foreground-muted">
             Pods are derived from root spans with{" "}
-            <code className="rounded bg-[var(--bg-tertiary)] px-1">k8s.pod.name</code> set. Use Logs
+            <code className="rounded bg-muted px-1">k8s.pod.name</code> set. Use Logs
             to open the log explorer with a matching pod filter for the current time range.
           </p>
           <InfraPodsTable pods={filteredPods} onOpenPodLogs={openPodLogs} />

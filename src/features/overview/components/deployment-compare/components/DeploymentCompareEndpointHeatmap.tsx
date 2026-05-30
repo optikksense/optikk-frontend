@@ -28,7 +28,7 @@ function HeatCell({ value, max }: { value: number; max: number }) {
   return (
     <div
       style={{ backgroundColor: heatTone(value, max) }}
-      className="flex min-w-[72px] items-center justify-center rounded-[var(--card-radius)] border border-[var(--border-color)] px-2 py-1 font-mono text-[11px] text-[var(--text-primary)]"
+      className="flex min-w-[72px] items-center justify-center rounded-[var(--card-radius)] border border-border px-2 py-1 font-mono text-[11px] text-foreground"
     >
       {formatDuration(value)}
     </div>
@@ -38,9 +38,9 @@ function HeatCell({ value, max }: { value: number; max: number }) {
 function EndpointRow({ row, max }: { row: EndpointRow; max: number }) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 py-1">
-      <div className="min-w-0 truncate text-[12px] text-[var(--text-primary)]">
+      <div className="min-w-0 truncate text-[12px] text-foreground">
         {row.endpoint_name || row.operation_name}
-        <span className="ml-2 text-[11px] text-[var(--text-muted)]">{row.http_method || ""}</span>
+        <span className="ml-2 text-[11px] text-foreground-muted">{row.http_method || ""}</span>
       </div>
       <HeatCell value={row.before_p95_ms} max={max} />
       <HeatCell value={row.after_p95_ms} max={max} />
@@ -58,19 +58,19 @@ function DeploymentCompareEndpointHeatmapComponent({ compare }: Props) {
   if (rows.length === 0) return null;
 
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="mb-3">
-        <h3 className="m-0 font-semibold text-[var(--text-primary)]">p95 heatmap by endpoint</h3>
-        <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
+        <h3 className="m-0 font-semibold text-foreground">p95 heatmap by endpoint</h3>
+        <p className="mt-1 text-[12px] text-foreground-secondary">
           Top endpoints by post-deploy p95. Darker red = slower.
         </p>
       </div>
-      <div className="mb-2 grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+      <div className="mb-2 grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
         <span>Endpoint</span>
         <span className="text-right">Before</span>
         <span className="text-right">After</span>
       </div>
-      <div className="flex flex-col divide-y divide-[var(--border-color)]">
+      <div className="flex flex-col divide-y divide-border">
         {rows.map((row) => (
           <EndpointRow
             key={`${row.http_method}:${row.endpoint_name}:${row.operation_name}`}

@@ -9,7 +9,7 @@ const COLUMNS: SimpleTableColumn<DeployRow>[] = [
     key: "service_name",
     width: 280,
     render: (_v, row) => (
-      <span className="font-mono text-[12.5px] font-semibold text-[var(--text-primary)]">
+      <span className="font-mono text-[12.5px] font-semibold text-foreground">
         {row.service_name}
       </span>
     ),
@@ -19,7 +19,7 @@ const COLUMNS: SimpleTableColumn<DeployRow>[] = [
     key: "version",
     width: 160,
     render: (_v, row) => (
-      <span className="font-mono text-[12px] text-[var(--text-primary)]">{row.version || "—"}</span>
+      <span className="font-mono text-[12px] text-foreground">{row.version || "—"}</span>
     ),
   },
   {
@@ -27,7 +27,7 @@ const COLUMNS: SimpleTableColumn<DeployRow>[] = [
     key: "environment",
     width: 140,
     render: (_v, row) => (
-      <span className="font-mono text-[11px] text-[var(--text-muted)]">
+      <span className="font-mono text-[11px] text-foreground-muted">
         {row.environment || "—"}
       </span>
     ),
@@ -40,7 +40,7 @@ const COLUMNS: SimpleTableColumn<DeployRow>[] = [
     sorter: (a, b) => a.deployedAtMs - b.deployedAtMs,
     defaultSortOrder: "descend",
     render: (_v, row) => (
-      <span className="font-mono text-[11px] text-[var(--text-muted)]">
+      <span className="font-mono text-[11px] text-foreground-muted">
         {relativeTimeFromIso(row.deployed_at)}
       </span>
     ),
@@ -55,7 +55,7 @@ interface RecentDeploysTableProps {
 export function RecentDeploysTable({ rows, onRowClick }: RecentDeploysTableProps) {
   if (rows.length === 0) {
     return (
-      <div className="grid h-[160px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[160px] place-items-center text-[12px] text-foreground-muted">
         No deploys.
       </div>
     );

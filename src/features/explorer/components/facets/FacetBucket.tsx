@@ -20,18 +20,18 @@ function FacetBucketComponent({ field, bucket, onInclude, onExclude, active }: P
   const isExcluded = active === "exclude";
   return (
     <div
-      className="group flex items-center justify-between gap-2 rounded px-2 py-1 hover:bg-[var(--bg-hover)]"
+      className="group flex items-center justify-between gap-2 rounded px-2 py-1 hover:bg-accent"
       data-active={active ?? "none"}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <span
-          className="truncate font-mono text-[12px] text-[var(--text-primary)]"
+          className="truncate font-mono text-[12px] text-foreground"
           title={bucket.value}
         >
           {bucket.value || "(empty)"}
         </span>
       </div>
-      <span className="shrink-0 text-[11px] text-[var(--text-muted)] tabular-nums">
+      <span className="shrink-0 text-[11px] text-foreground-muted tabular-nums">
         {bucket.count.toLocaleString()}
       </span>
       <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
@@ -40,8 +40,8 @@ function FacetBucketComponent({ field, bucket, onInclude, onExclude, active }: P
           aria-label={`Include ${field}=${bucket.value}`}
           aria-pressed={isIncluded}
           onClick={() => onInclude(field, bucket.value)}
-          className={`rounded p-1 hover:bg-[var(--bg-primary)] ${
-            isIncluded ? "text-[var(--accent)]" : "text-[var(--text-muted)]"
+          className={`rounded p-1 hover:bg-background ${
+            isIncluded ? "text-[var(--accent)]" : "text-foreground-muted"
           }`}
         >
           <Plus size={12} />
@@ -51,8 +51,8 @@ function FacetBucketComponent({ field, bucket, onInclude, onExclude, active }: P
           aria-label={`Exclude ${field}=${bucket.value}`}
           aria-pressed={isExcluded}
           onClick={() => onExclude(field, bucket.value)}
-          className={`rounded p-1 hover:bg-[var(--bg-primary)] ${
-            isExcluded ? "text-[var(--danger)]" : "text-[var(--text-muted)]"
+          className={`rounded p-1 hover:bg-background ${
+            isExcluded ? "text-error" : "text-foreground-muted"
           }`}
         >
           <Minus size={12} />

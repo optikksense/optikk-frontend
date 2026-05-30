@@ -16,7 +16,7 @@ const COLUMNS: SimpleTableColumn<KafkaGroupRow>[] = [
     key: "consumer_group",
     width: 280,
     render: (_v, row) => (
-      <span className="truncate font-mono text-[12px] text-[var(--text-primary)]">
+      <span className="truncate font-mono text-[12px] text-foreground">
         {row.consumer_group}
       </span>
     ),
@@ -66,7 +66,7 @@ export function ConsumerGroupsTable() {
       padded={false}
     >
       {rows.length === 0 ? (
-        <div className="px-4 py-8 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="px-4 py-8 text-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No consumer groups in window."}
         </div>
       ) : (

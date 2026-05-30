@@ -10,13 +10,13 @@ export function HostDetailSystemMetrics({ host }: HostDetailSystemMetricsProps) 
   return (
     <section className="flex flex-col gap-3">
       <header>
-        <div className="font-semibold text-[13px] text-[var(--text-primary)]">System metrics</div>
-        <div className="text-[11px] text-[var(--text-muted)]">
+        <div className="font-semibold text-[13px] text-foreground">System metrics</div>
+        <div className="text-[11px] text-foreground-muted">
           CPU · memory · disk · network — last 1 hour
         </div>
       </header>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+        <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`host-cpu-${host}`}
             endpoint="/v1/infrastructure/cpu/by-instance"
@@ -27,7 +27,7 @@ export function HostDetailSystemMetrics({ host }: HostDetailSystemMetricsProps) 
             extraParams={{ host }}
           />
         </Card>
-        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+        <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`host-mem-${host}`}
             endpoint="/v1/infrastructure/memory/by-instance"
@@ -38,7 +38,7 @@ export function HostDetailSystemMetrics({ host }: HostDetailSystemMetricsProps) 
             extraParams={{ host }}
           />
         </Card>
-        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+        <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`host-disk-${host}`}
             endpoint="/v1/infrastructure/disk/by-instance"
@@ -49,7 +49,7 @@ export function HostDetailSystemMetrics({ host }: HostDetailSystemMetricsProps) 
             extraParams={{ host }}
           />
         </Card>
-        <Card padding="md" className="min-h-[280px] border-[var(--border-color)]">
+        <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`host-net-${host}`}
             endpoint="/v1/infrastructure/network/by-instance"

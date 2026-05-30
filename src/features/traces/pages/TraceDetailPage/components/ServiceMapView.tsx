@@ -68,7 +68,7 @@ export function ServiceMapView({ map }: Props) {
 
   if (nodes.length === 0) {
     return (
-      <div className="flex flex-1 items-center justify-center text-[13px] text-[var(--text-muted)]">
+      <div className="flex flex-1 items-center justify-center text-[13px] text-foreground-muted">
         No service map available for this trace.
       </div>
     );

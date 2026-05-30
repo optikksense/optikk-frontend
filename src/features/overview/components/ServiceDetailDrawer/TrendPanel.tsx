@@ -20,14 +20,14 @@ export function TrendPanel({
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h3 className="font-semibold text-[15px] text-[var(--text-primary)]">{title}</h3>
-          <p className="mt-1 text-[12px] text-[var(--text-secondary)] leading-5">{subtitle}</p>
+          <h3 className="font-semibold text-[15px] text-foreground">{title}</h3>
+          <p className="mt-1 text-[12px] text-foreground-secondary leading-5">{subtitle}</p>
         </div>
-        <div className="rounded-full border border-[var(--border-color)] bg-[var(--bg-hover)] px-3 py-1 font-semibold text-[12px] text-[var(--text-primary)] tracking-[0.02em]">
+        <div className="rounded-full border border-border bg-accent px-3 py-1 font-semibold text-[12px] text-foreground tracking-[0.02em]">
           {headline}
         </div>
       </div>
-      <div className="mt-5 min-h-[280px] rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-overlay)] p-3">
+      <div className="mt-5 min-h-[280px] rounded-[var(--card-radius)] border border-border bg-surface-overlay p-3">
         {children}
       </div>
     </section>

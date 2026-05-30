@@ -16,12 +16,12 @@ interface ServiceHeroHeaderProps {
 
 function Breadcrumb({ serviceName }: { serviceName: string }) {
   return (
-    <div className="mb-3 flex items-center gap-1.5 text-[12px] text-[var(--text-muted)]">
-      <Link to={ROUTES.services} className="hover:text-[var(--text-primary)]">
+    <div className="mb-3 flex items-center gap-1.5 text-[12px] text-foreground-muted">
+      <Link to={ROUTES.services} className="hover:text-foreground">
         Services
       </Link>
       <span aria-hidden="true">/</span>
-      <span className="text-[var(--text-primary)]">{serviceName}</span>
+      <span className="text-foreground">{serviceName}</span>
     </div>
   );
 }
@@ -34,7 +34,7 @@ export function ServiceHeroHeader({ serviceName, hero, instanceCount }: ServiceH
         <ServiceAvatar serviceName={serviceName} />
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex items-center gap-3">
-            <h1 className="truncate font-semibold text-[24px] text-[var(--text-primary)] leading-tight">
+            <h1 className="truncate font-semibold text-[24px] text-foreground leading-tight">
               {serviceName}
             </h1>
             <StatusPill status={hero.status} />

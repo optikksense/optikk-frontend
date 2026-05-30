@@ -12,13 +12,13 @@ interface Props {
 
 function DeploymentCompareErrorsComponent({ compare }: Props) {
   return (
-    <Card padding="lg" className="border-[var(--border-light)]">
+    <Card padding="lg" className="border-border-light">
       <div className="mb-4 flex items-center gap-2">
-        <AlertTriangle size={16} className="text-[var(--color-warning)]" />
-        <h3 className="font-semibold text-[var(--text-primary)]">Top error regressions</h3>
+        <AlertTriangle size={16} className="text-warning" />
+        <h3 className="font-semibold text-foreground">Top error regressions</h3>
       </div>
       {compare.top_errors.length === 0 ? (
-        <div className="text-[12px] text-[var(--text-muted)]">
+        <div className="text-[12px] text-foreground-muted">
           {compare.has_baseline
             ? "No notable error regressions were found for this release."
             : "A previous deployment baseline is required to rank error regressions."}

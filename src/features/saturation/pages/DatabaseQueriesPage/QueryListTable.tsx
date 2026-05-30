@@ -33,7 +33,7 @@ const columns = [
     key: "query_text",
     width: "44%",
     render: (v: unknown) => (
-      <span className="font-mono text-[12px] text-[var(--text-primary)]">
+      <span className="font-mono text-[12px] text-foreground">
         {truncQuery(String(v ?? ""))}
       </span>
     ),
@@ -44,7 +44,7 @@ const columns = [
     key: "collection_name",
     width: "16%",
     render: (v: unknown) => (
-      <span className="text-[12px] text-[var(--text-secondary)]">{String(v ?? "—")}</span>
+      <span className="text-[12px] text-foreground-secondary">{String(v ?? "—")}</span>
     ),
   },
   {

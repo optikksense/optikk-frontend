@@ -36,7 +36,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
           value={q.service}
           onChange={(e) => update({ service: e.target.value })}
           placeholder="e.g. payment-svc"
-          className="w-72 rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 font-mono text-xs"
+          className="w-72 rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
       </FieldRow>
       <FieldRow label="Resource">
@@ -44,7 +44,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
           value={q.resource ?? ""}
           onChange={(e) => update({ resource: e.target.value })}
           placeholder="(any resource)"
-          className="w-full rounded border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1.5 font-mono text-xs"
+          className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
       </FieldRow>
       <FieldRow label="Track">
@@ -58,15 +58,15 @@ export default function APMQuery({ draft, setDraft }: Props) {
                 onClick={() => update({ track: t.id })}
                 className={`rounded border p-2 text-left transition-colors ${
                   active
-                    ? "border-primary bg-[var(--bg-secondary)]"
-                    : "border-[var(--border-color)] hover:border-[var(--text-muted)]"
+                    ? "border-primary bg-secondary"
+                    : "border-border hover:border-foreground-muted"
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium">{t.label}</span>
-                  <span className="font-mono text-[10px] text-[var(--text-muted)]">{t.unit}</span>
+                  <span className="font-mono text-[10px] text-foreground-muted">{t.unit}</span>
                 </div>
-                <div className="mt-0.5 text-[10px] text-[var(--text-muted)]">{t.desc}</div>
+                <div className="mt-0.5 text-[10px] text-foreground-muted">{t.desc}</div>
               </button>
             );
           })}
@@ -84,7 +84,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
                     ? "bg-primary text-white"
-                    : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    : "bg-secondary text-foreground-secondary hover:text-foreground"
                 }`}
               >
                 {w >= 3600 ? `${w / 3600}h` : `${w / 60}m`}

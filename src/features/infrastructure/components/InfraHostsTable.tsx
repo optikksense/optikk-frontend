@@ -7,9 +7,9 @@ import type { InfrastructureNode } from "../types";
 import { tierForNode } from "../utils/nodeHealth";
 
 const STATUS_DOT: Record<ReturnType<typeof tierForNode>, string> = {
-  healthy: "bg-[var(--color-success)]",
-  degraded: "bg-[var(--color-warning)]",
-  unhealthy: "bg-[var(--color-error)]",
+  healthy: "bg-success",
+  degraded: "bg-warning",
+  unhealthy: "bg-error",
 };
 
 function StatusDot({ node }: { node: InfrastructureNode }) {
@@ -26,7 +26,7 @@ function HostCell({ node }: { node: InfrastructureNode }) {
     <div className="flex min-w-0 items-center gap-2.5">
       <StatusDot node={node} />
       <ServiceAvatar serviceName={node.host} size={26} />
-      <span className="truncate font-mono text-[12.5px] font-semibold text-[var(--text-primary)]">
+      <span className="truncate font-mono text-[12.5px] font-semibold text-foreground">
         {node.host}
       </span>
     </div>
@@ -35,14 +35,14 @@ function HostCell({ node }: { node: InfrastructureNode }) {
 
 function ServicesCell({ node }: { node: InfrastructureNode }) {
   if (node.services.length === 0) {
-    return <span className="text-[var(--text-muted)]">—</span>;
+    return <span className="text-foreground-muted">—</span>;
   }
   const primary = node.services[0];
   const rest = node.services.length > 1 ? ` +${node.services.length - 1}` : "";
   return (
-    <span className="truncate text-[12px] text-[var(--text-primary)]">
+    <span className="truncate text-[12px] text-foreground">
       <span className="font-medium">{primary}</span>
-      {rest && <span className="text-[var(--text-muted)]">{rest}</span>}
+      {rest && <span className="text-foreground-muted">{rest}</span>}
     </span>
   );
 }
@@ -50,10 +50,10 @@ function ServicesCell({ node }: { node: InfrastructureNode }) {
 function ErrorRateCell({ rate }: { rate: number }) {
   const tone =
     rate >= 10
-      ? "text-[var(--color-error)]"
+      ? "text-error"
       : rate >= 2
-        ? "text-[var(--color-warning)]"
-        : "text-[var(--text-primary)]";
+        ? "text-warning"
+        : "text-foreground";
   return <span className={tone}>{formatPercentage(rate)}</span>;
 }
 
@@ -128,7 +128,7 @@ const COLUMNS = (
           ev.stopPropagation();
           onOpenNode(row.host);
         }}
-        className="text-[11px] text-[var(--color-primary)] hover:underline"
+        className="text-[11px] text-primary hover:underline"
       >
         Open →
       </button>
