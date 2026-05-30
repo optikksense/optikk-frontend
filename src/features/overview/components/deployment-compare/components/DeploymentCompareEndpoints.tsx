@@ -12,7 +12,7 @@ interface Props {
 
 function DeploymentCompareEndpointsComponent({ compare }: Props) {
   return (
-    <Card padding="lg" className="border-[rgba(255,255,255,0.07)]">
+    <Card padding="lg" className="border-[var(--border-light)]">
       <div className="mb-4 flex items-center gap-2">
         <GitCompare size={16} className="text-[var(--color-primary)]" />
         <h3 className="font-semibold text-[var(--text-primary)]">Endpoint regressions</h3>

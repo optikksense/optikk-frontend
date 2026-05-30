@@ -10,7 +10,7 @@ import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
-import { useAppStore, useSidebarCollapsed, useTheme } from "@store/appStore";
+import { useAppStore, useSidebarCollapsed } from "@store/appStore";
 import { useAuthStore } from "@store/authStore";
 
 export default function Sidebar() {
@@ -18,7 +18,6 @@ export default function Sidebar() {
   const location = useLocation();
   const sidebarCollapsed = useSidebarCollapsed();
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
-  const theme = useTheme();
   const logout = useAuthStore((state) => state.logout);
 
   const staticNavEntries = useMemo(
@@ -113,7 +112,6 @@ export default function Sidebar() {
         "fixed top-0 bottom-0 left-0 z-[100] flex h-screen w-[var(--space-sidebar-w,220px)] flex-col border-[var(--border-color)] border-r bg-[var(--bg-secondary)] shadow-[var(--shadow-md)] transition-[width] duration-200",
         sidebarCollapsed && "w-[var(--space-sidebar-collapsed,56px)]"
       )}
-      data-theme={theme === "light" ? "light" : undefined}
     >
       <div
         className={cn(

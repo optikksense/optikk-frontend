@@ -8,7 +8,6 @@ import type {
 } from "../../../api/saturationApi";
 
 import { formatBytesPerSecond } from "../formatUtils";
-import { placeholderSeries } from "./placeholderSeries";
 import { type Tone, toneFromHealth } from "./saturationScore";
 
 export type SubsystemCardSpec = {
@@ -20,7 +19,6 @@ export type SubsystemCardSpec = {
   statusText: string;
   primary: string;
   secondary: string;
-  series: number[];
   iconName: "kafka" | "db" | "cache";
 };
 
@@ -44,7 +42,6 @@ export function buildKafkaCardSpec(summary: KafkaSummary | undefined): Subsystem
     statusText: hasData ? "streaming" : "no data",
     primary: `${formatBytesPerSecond(bps)} traffic`,
     secondary: `${formatNumber(summary?.assigned_partitions ?? 0)} partitions assigned`,
-    series: bps > 0 ? placeholderSeries(bps, 30) : [],
     iconName: "kafka",
   };
 }
@@ -98,7 +95,6 @@ function categoryCardSpec(
     statusText: hasData ? chipStatus(tone, stats.slow, what) : "no data",
     primary: `${formatNumber(stats.qps)} qps · ${formatDuration(stats.p95)} p95`,
     secondary: `${formatPercentage(stats.errorRate, 2)} errors`,
-    series: stats.qps > 0 ? placeholderSeries(stats.qps, 30) : [],
     iconName: id === "database" ? "db" : "cache",
   };
 }

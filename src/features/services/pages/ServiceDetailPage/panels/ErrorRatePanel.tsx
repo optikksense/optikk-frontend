@@ -89,13 +89,32 @@ function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[]
   );
 }
 
+function CurrentRate({ value }: { value: number }) {
+  const tone =
+    value >= 0.02
+      ? "text-[var(--color-error)]"
+      : value >= 0.005
+        ? "text-[var(--color-warning)]"
+        : "text-[var(--text-secondary)]";
+  return <span className={`font-semibold text-[13px] ${tone}`}>{fmtPct(value, value < 0.01 ? 2 : 1)}</span>;
+}
+
 export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
   const query = useErrorRateSeries(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
   const deployPlugins = useDeployMarkers(serviceName);
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
+  const current = useMemo(() => {
+    let req = 0;
+    let err = 0;
+    for (const r of query.data ?? []) {
+      req += r.request_count;
+      err += r.error_count;
+    }
+    return req > 0 ? err / req : 0;
+  }, [query.data]);
   return (
-    <PanelCard title="Error rate" subtitle="errors / requests">
+    <PanelCard title="Error rate" subtitle="last 60m" action={<CurrentRate value={current} />}>
       <ChartBody data={data} plugins={deployPlugins} />
     </PanelCard>
   );

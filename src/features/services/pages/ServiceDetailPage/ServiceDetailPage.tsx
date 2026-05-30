@@ -4,9 +4,10 @@ import { PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 
 import { ServiceHeroHeader } from "./hero/ServiceHeroHeader";
+import { useServiceErrors } from "./hooks/useServiceErrors";
 import { useServiceHeroData } from "./hooks/useServiceHeroData";
 import { useServiceHosts } from "./hooks/useServiceHosts";
-import { useSloStats } from "./hooks/useSloStats";
+import { useTopEndpoints } from "./hooks/useTopEndpoints";
 import { ServiceKpiStrip } from "./kpi/ServiceKpiStrip";
 import { ServiceTabContent } from "./sections/ServiceTabContent";
 import { ServiceDetailTabs } from "./tabs/ServiceDetailTabs";
@@ -30,11 +31,15 @@ function useTabCounts(serviceName: string): {
   instanceCount: number | null;
 } {
   const hostsQ = useServiceHosts(serviceName);
+  const endpointsQ = useTopEndpoints(serviceName);
+  const errorsQ = useServiceErrors(serviceName);
   return useMemo(() => {
     const counts: Partial<Record<ServiceTabId, number>> = {};
     if (hostsQ.data) counts.infra = hostsQ.data.length;
+    if (endpointsQ.data) counts.endpoints = endpointsQ.data.length;
+    if (errorsQ.data) counts.errors = errorsQ.data.length;
     return { counts, instanceCount: hostsQ.data?.length ?? null };
-  }, [hostsQ.data]);
+  }, [hostsQ.data, endpointsQ.data, errorsQ.data]);
 }
 
 function ServiceDetailBody({ serviceName }: { serviceName: string }) {
@@ -42,14 +47,13 @@ function ServiceDetailBody({ serviceName }: { serviceName: string }) {
   const { startTime, endTime } = getTimeRange();
   const windowMs = Math.max(1, Number(endTime) - Number(startTime));
   const hero = useServiceHeroData(serviceName, windowMs);
-  const slo = useSloStats(serviceName);
   const { tab, setTab } = useActiveServiceTab();
   const { counts, instanceCount } = useTabCounts(serviceName);
   void timeRange;
   return (
     <div className="flex flex-col gap-4">
       <ServiceHeroHeader serviceName={serviceName} hero={hero} instanceCount={instanceCount} />
-      <ServiceKpiStrip summary={hero.summary} slo={slo.data} />
+      <ServiceKpiStrip summary={hero.summary} previous={hero.previous} />
       <ServiceDetailTabs active={tab} counts={counts} onChange={setTab} />
       <ServiceTabContent tab={tab} serviceName={serviceName} />
     </div>

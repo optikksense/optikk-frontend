@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type VisualizationTab = "flamegraph" | "timeline" | "errors" | "raw";
-export type SpanDetailTab = "info" | "logs" | "events" | "links" | "infra";
+export type VisualizationTab = "servicemap" | "timeline" | "errors" | "raw";
+export type SpanDetailTab = "overview" | "attributes" | "events" | "related";
 
 export const DRAWER_WIDTH_DEFAULT = 480;
 export const DRAWER_WIDTH_MIN = 360;
@@ -46,7 +46,7 @@ export const useTracesStore = create<TracesState>()(
       setVisualizationTab: (tab) => set({ visualizationTab: tab }),
       drawerWidthPx: DRAWER_WIDTH_DEFAULT,
       setDrawerWidthPx: (px) => set({ drawerWidthPx: clampDrawerWidth(px) }),
-      spanDetailTab: "info",
+      spanDetailTab: "overview",
       setSpanDetailTab: (tab) => set({ spanDetailTab: tab }),
       collapsedSpanIds: new Set<string>(),
       toggleCollapsedSpan: (spanId) => {

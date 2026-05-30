@@ -24,7 +24,7 @@ function SummaryCardComponent({
   return (
     <Card
       padding="lg"
-      className="border-[rgba(255,255,255,0.07)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]"
+      className="border-[var(--border-light)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]"
     >
       <div className="flex items-start justify-between gap-3">
         <div>

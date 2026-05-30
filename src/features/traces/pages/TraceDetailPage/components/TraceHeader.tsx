@@ -122,8 +122,8 @@ function TraceHeaderComponent({
             )}
             title={errored ? "Errored trace" : "OK"}
           />
-          <h1 className="m-0 text-[20px] font-semibold tracking-[-0.015em] text-[var(--text-primary)] min-w-0 break-words">
-            {rootOperation || "Trace"}
+          <h1 className="m-0 text-[20px] font-semibold tracking-[-0.015em] text-[var(--text-primary)] min-w-0 break-words font-mono">
+            {httpMethod ? `${httpMethod} ${rootOperation ?? ""}`.trim() : rootOperation || "Trace"}
           </h1>
           <div className="flex gap-1.5 flex-wrap">
             {environment && (
@@ -138,7 +138,6 @@ function TraceHeaderComponent({
               </span>
             )}
             {region && <span className={badge}>{region}</span>}
-            {httpMethod && <span className={cn(badge, "font-mono")}>{httpMethod}</span>}
             {httpStatus != null && (
               <span className={cn(badge, httpBadgeColor(httpStatus))}>{httpStatus}</span>
             )}

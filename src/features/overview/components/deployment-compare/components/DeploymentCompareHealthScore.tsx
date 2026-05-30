@@ -44,7 +44,7 @@ function DeploymentCompareHealthScoreComponent({ compare }: Props) {
   if (!compare.has_baseline) return null;
 
   return (
-    <Card padding="lg" className="border-[rgba(255,255,255,0.07)]">
+    <Card padding="lg" className="border-[var(--border-light)]">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">

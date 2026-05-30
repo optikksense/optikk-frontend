@@ -36,7 +36,7 @@ export function MetricQueryRow({
         "flex items-start gap-2 rounded-xl border border-[var(--border-color)]",
         "min-h-[48px] bg-[var(--bg-secondary)] px-3 py-2",
         "transition-colors duration-150",
-        "hover:border-[rgba(148,163,184,0.25)]"
+        "hover:border-[var(--border-color)]"
       )}
     >
       {/* Query label */}

@@ -13,12 +13,12 @@ function CurrentValueCard({ monitor }: Props) {
   const ratio = value !== undefined && alert ? value / alert : undefined;
   const color =
     monitor.status === "alert"
-      ? "text-red-500"
+      ? "text-error"
       : monitor.status === "warn"
-        ? "text-amber-500"
+        ? "text-warning"
         : monitor.status === "ok"
-          ? "text-emerald-500"
-          : "text-zinc-400";
+          ? "text-success"
+          : "text-foreground-secondary";
   const barWidth = ratio !== undefined ? Math.min(100, Math.max(0, (ratio / 2) * 100)) : 0;
   return (
     <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-4">
@@ -38,10 +38,10 @@ function CurrentValueCard({ monitor }: Props) {
         <div
           className={
             monitor.status === "alert"
-              ? "h-full bg-red-500"
+              ? "h-full bg-error"
               : monitor.status === "warn"
-                ? "h-full bg-amber-500"
-                : "h-full bg-emerald-500"
+                ? "h-full bg-warning"
+                : "h-full bg-success"
           }
           style={{ width: `${barWidth}%` }}
         />

@@ -60,8 +60,8 @@ export function FormulaRow({
         "flex min-h-[48px] items-center gap-2 rounded-xl border px-3 py-2",
         "transition-colors duration-150",
         focused
-          ? "border-[rgba(245,158,11,0.45)] bg-[rgba(245,158,11,0.06)]"
-          : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[rgba(148,163,184,0.25)]"
+          ? "border-[color-mix(in_oklch,var(--color-warning),transparent_65%)] bg-[var(--color-warning-subtle)]"
+          : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[var(--border-color)]"
       )}
     >
       {/* Formula label */}
@@ -91,8 +91,8 @@ export function FormulaRow({
               "outline-none placeholder:text-[var(--text-muted)]",
               "transition-colors duration-150",
               error
-                ? "border-[rgba(240,68,56,0.4)]"
-                : "border-[var(--border-color)] focus:border-[rgba(245,158,11,0.45)]"
+                ? "border-[color-mix(in_oklch,var(--color-error),transparent_65%)]"
+                : "border-[var(--border-color)] focus:border-[color-mix(in_oklch,var(--color-warning),transparent_65%)]"
             )}
           />
         </div>

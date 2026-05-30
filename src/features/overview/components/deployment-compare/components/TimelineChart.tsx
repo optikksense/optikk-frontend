@@ -20,7 +20,7 @@ function TimelineChartComponent({ isLoading, timeline, weightedSeries }: Props) 
     );
   }
   return (
-    <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(15,18,25,0.35)] p-3">
+    <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-overlay)] p-3">
       <ObservabilityChart
         timestamps={timeline.timestamps}
         series={weightedSeries}

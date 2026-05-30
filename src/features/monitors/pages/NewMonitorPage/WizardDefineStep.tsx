@@ -9,10 +9,10 @@ interface Props {
 }
 
 const PRIORITIES: { id: MonitorPriority; label: string; color: string }[] = [
-  { id: "P1", label: "P1 · page", color: "text-red-500 border-red-500" },
-  { id: "P2", label: "P2 · ticket", color: "text-amber-500 border-amber-500" },
-  { id: "P3", label: "P3 · notify", color: "text-zinc-400 border-zinc-500" },
-  { id: "P4", label: "P4 · info", color: "text-zinc-400 border-zinc-500" },
+  { id: "P1", label: "P1 · page", color: "text-error border-error" },
+  { id: "P2", label: "P2 · ticket", color: "text-warning border-warning" },
+  { id: "P3", label: "P3 · notify", color: "text-foreground-secondary border-border" },
+  { id: "P4", label: "P4 · info", color: "text-foreground-secondary border-border" },
 ];
 
 export default function WizardDefineStep({ draft, setDraft }: Props) {
@@ -82,7 +82,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
                 onClick={() => setDraft((d) => ({ ...d, eval_every_sec: sec }))}
                 className={`rounded px-2 py-0.5 text-xs ${
                   active
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
                 }`}
               >

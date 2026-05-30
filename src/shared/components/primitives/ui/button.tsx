@@ -42,7 +42,7 @@ function Button({
       type="button"
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center border font-medium transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(124,127,242,0.24)] focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center border font-medium transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--color-primary),transparent_65%)] focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50",
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && "w-full",

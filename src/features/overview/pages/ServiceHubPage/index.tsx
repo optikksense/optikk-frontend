@@ -30,11 +30,11 @@ function SummaryTile({
 }) {
   const toneClasses =
     tone === "success"
-      ? "border-[rgba(115,201,145,0.2)] bg-[rgba(115,201,145,0.08)]"
+      ? "border-[color-mix(in_oklch,var(--color-success),transparent_65%)] bg-[var(--color-success-subtle)]"
       : tone === "warning"
-        ? "border-[rgba(247,144,9,0.2)] bg-[rgba(247,144,9,0.08)]"
+        ? "border-[color-mix(in_oklch,var(--color-warning),transparent_65%)] bg-[var(--color-warning-subtle)]"
         : tone === "danger"
-          ? "border-[rgba(240,68,56,0.2)] bg-[rgba(240,68,56,0.08)]"
+          ? "border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-[var(--color-error-subtle)]"
           : tone === "info"
             ? "border-[var(--color-primary-subtle-22)] bg-[var(--color-primary-subtle-10)]"
             : "border-[var(--border-color)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]";
@@ -50,7 +50,7 @@ function SummaryTile({
             {value}
           </div>
         </div>
-        <div className="rounded-full border border-[var(--border-color)] bg-[rgba(255,255,255,0.04)] p-2 text-[var(--text-secondary)]">
+        <div className="rounded-full border border-[var(--border-color)] bg-[var(--bg-hover)] p-2 text-[var(--text-secondary)]">
           {icon}
         </div>
       </div>

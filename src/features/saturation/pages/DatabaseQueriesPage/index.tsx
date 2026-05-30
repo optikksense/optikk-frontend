@@ -9,7 +9,7 @@ import { useDatabaseQueriesPage } from "./useDatabaseQueriesPage";
 function ErrorBanner({ message }: { message: string }) {
   return (
     <div
-      className="rounded-md border border-red-500/35 bg-red-500/10 px-3 py-2 text-red-300 text-sm"
+      className="rounded-md border border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-[var(--color-error-subtle)] px-3 py-2 text-[var(--color-error)] text-sm"
       role="alert"
     >
       Could not load slow queries: {message}

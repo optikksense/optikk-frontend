@@ -46,7 +46,7 @@ function WaterfallRowComponent(p: WaterfallRowProps) {
     : span.barColor;
   return (
     <div
-      className="flex h-[56px] cursor-pointer border-[var(--glass-border)] border-b transition-[background-color] duration-150 hover:bg-[rgba(255,255,255,0.04)]"
+      className="flex h-[56px] cursor-pointer border-[var(--glass-border)] border-b transition-[background-color] duration-150 hover:bg-[var(--bg-hover)]"
       style={{ borderLeft, background: rowBg }}
       onClick={() => onSpanClick?.(span)}
     >

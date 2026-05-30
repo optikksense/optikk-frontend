@@ -106,7 +106,7 @@ export default function ObservabilityQueryBar({
           EXPLORER_QUERY_INNER_ROW_CLASSNAME,
           "cursor-text flex-wrap",
           step > 0 &&
-            "border-[rgba(96,165,250,0.48)] shadow-[0_0_0_1px_rgba(96,165,250,0.2),0_22px_54px_rgba(2,6,23,0.38),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            "border-[color-mix(in_oklch,var(--color-primary),transparent_65%)] shadow-[0_0_0_1px_rgba(96,165,250,0.2),0_22px_54px_rgba(2,6,23,0.38),inset_0_1px_0_rgba(255,255,255,0.05)]"
         )}
         style={{ rowGap: 4 }}
         onClick={() => {
@@ -205,7 +205,7 @@ export default function ObservabilityQueryBar({
           {hasFilters && (
             <button
               type="button"
-              className="cursor-pointer whitespace-nowrap rounded-md border-none bg-transparent px-2 py-[3px] text-[11px] text-muted-foreground transition-colors duration-100 hover:bg-[rgba(240,68,56,0.08)] hover:text-error"
+              className="cursor-pointer whitespace-nowrap rounded-md border-none bg-transparent px-2 py-[3px] text-[11px] text-muted-foreground transition-colors duration-100 hover:bg-[var(--color-error-subtle)] hover:text-error"
               onClick={(event) => {
                 event.stopPropagation();
                 clearAll();

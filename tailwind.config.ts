@@ -14,7 +14,27 @@ const config: Config = {
         input: "var(--bg-tertiary)",
         ring: "var(--color-primary)",
         background: "var(--bg-primary)",
-        foreground: "var(--text-primary)",
+        foreground: {
+          DEFAULT: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          muted: "var(--text-muted)",
+          tertiary: "var(--text-tertiary)",
+          numeric: "var(--text-numeric)",
+          caption: "var(--text-caption)",
+          label: "var(--text-label)",
+        },
+
+        // Surface scale (theme-aware backgrounds)
+        surface: {
+          DEFAULT: "var(--bg-card)",
+          canvas: "var(--bg-canvas)",
+          inset: "var(--bg-inset)",
+          hover: "var(--bg-card-hover)",
+          overlay: "var(--bg-overlay)",
+          elevated: "var(--bg-elevated)",
+          "2": "var(--surface-2-bg)",
+          "3": "var(--surface-3-bg)",
+        },
 
         primary: {
           DEFAULT: "var(--color-primary)",
@@ -47,11 +67,18 @@ const config: Config = {
           foreground: "var(--text-primary)",
         },
 
-        // Semantic colors
-        success: "var(--color-success)",
-        warning: "var(--color-warning)",
-        error: "var(--color-error)",
-        info: "var(--color-info)",
+        // Semantic colors (DEFAULT + subtle background tint)
+        success: { DEFAULT: "var(--color-success)", subtle: "var(--color-success-subtle)" },
+        warning: { DEFAULT: "var(--color-warning)", subtle: "var(--color-warning-subtle)" },
+        error: { DEFAULT: "var(--color-error)", subtle: "var(--color-error-subtle)" },
+        info: { DEFAULT: "var(--color-info)", subtle: "var(--color-info-subtle)" },
+
+        // Calm-tech status hues
+        healthy: "var(--color-healthy)",
+        degraded: "var(--color-degraded)",
+        critical: "var(--color-critical)",
+        unknown: "var(--color-unknown)",
+        stream: "var(--color-stream)",
 
         // Severity
         "severity-critical": "var(--severity-critical)",

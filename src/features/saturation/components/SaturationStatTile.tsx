@@ -16,7 +16,7 @@ export function SaturationStatTile({
   return (
     <Card
       padding="lg"
-      className="min-h-[108px] border-[var(--border-color)] bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.01))]"
+      className="min-h-[108px] border-[var(--border-color)] bg-[var(--bg-card)]"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -30,7 +30,7 @@ export function SaturationStatTile({
             <div className="mt-2 text-[11px] text-[var(--text-secondary)] leading-5">{meta}</div>
           ) : null}
         </div>
-        <div className="rounded-full border border-[var(--border-color)] bg-[rgba(255,255,255,0.04)] p-2 text-[var(--text-secondary)]">
+        <div className="rounded-full border border-[var(--border-color)] bg-[var(--bg-2)] p-2 text-[var(--text-secondary)]">
           {icon}
         </div>
       </div>

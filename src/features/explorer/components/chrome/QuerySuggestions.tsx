@@ -51,13 +51,13 @@ const ICON_MAP: Record<
 };
 
 const BADGE_TONE: Record<TypeBadge, string> = {
-  STR: "text-[#86b3ff] border-[#86b3ff]/30",
-  NUM: "text-[#f9c269] border-[#f9c269]/30",
-  ID: "text-[#bfa9ff] border-[#bfa9ff]/30",
-  TXT: "text-[#7fc8a4] border-[#7fc8a4]/30",
-  ENUM: "text-[#e6a4d4] border-[#e6a4d4]/30",
+  STR: "text-[var(--color-info)] border-[color-mix(in_oklch,var(--color-info),transparent_70%)]",
+  NUM: "text-[var(--color-warning)] border-[color-mix(in_oklch,var(--color-warning),transparent_70%)]",
+  ID: "text-[var(--accent)] border-[color-mix(in_oklch,var(--accent),transparent_70%)]",
+  TXT: "text-[var(--color-success)] border-[color-mix(in_oklch,var(--color-success),transparent_70%)]",
+  ENUM: "text-[var(--fatal-c)] border-[color-mix(in_oklch,var(--fatal-c),transparent_70%)]",
   OP: "text-[var(--text-muted)] border-[var(--border-color)]",
-  BOOL: "text-[#a4d4e6] border-[#a4d4e6]/30",
+  BOOL: "text-[var(--debug-c)] border-[color-mix(in_oklch,var(--debug-c),transparent_70%)]",
 };
 
 /** Datadog-class popover for the DSL search bar. Sectioned, badged, with footer. */

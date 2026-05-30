@@ -7,10 +7,10 @@ interface Props {
 }
 
 const COLORS: Record<string, string> = {
-  alert: "bg-red-500",
-  warn: "bg-amber-500",
-  ok: "bg-emerald-500",
-  no_data: "bg-zinc-500",
+  alert: "bg-error",
+  warn: "bg-warning",
+  ok: "bg-success",
+  no_data: "bg-foreground-muted",
 };
 
 function StatusTimelineCard({ data }: Props) {
@@ -26,7 +26,7 @@ function StatusTimelineCard({ data }: Props) {
       </div>
       <div className="mt-4 flex h-3 overflow-hidden rounded bg-[var(--bg-secondary)]">
         {bands.length === 0 ? (
-          <div className="h-full w-full bg-zinc-500/30" />
+          <div className="h-full w-full bg-accent" />
         ) : (
           bands.map((b, i) => {
             const bandStart = new Date(b.started_at).getTime();
@@ -35,7 +35,7 @@ function StatusTimelineCard({ data }: Props) {
             return (
               <div
                 key={`${b.status}-${i}`}
-                className={`h-full ${COLORS[b.status] ?? "bg-zinc-500"}`}
+                className={`h-full ${COLORS[b.status] ?? "bg-foreground-muted"}`}
                 style={{ width: `${width}%` }}
               />
             );

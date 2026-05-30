@@ -118,7 +118,7 @@ function DetailHeader({
               Edit monitor
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="text-red-400"
+              className="text-error"
               onSelect={() => {
                 setMenuOpen(false);
                 setConfirmOpen(true);
@@ -149,7 +149,7 @@ function DetailHeader({
               type="button"
               disabled={deleting}
               onClick={onDelete}
-              className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
+              className="rounded bg-error px-3 py-1.5 text-sm font-medium text-white hover:bg-error disabled:opacity-60"
             >
               {deleting ? "Deleting…" : "Delete"}
             </button>
@@ -160,7 +160,7 @@ function DetailHeader({
           Delete <span className="font-medium text-[var(--text-primary)]">{monitor.name}</span>?
           This stops all evaluation and notifications for this monitor and cannot be undone.
         </p>
-        {deleteError && <p className="mt-2 text-xs text-red-400">{deleteError}</p>}
+        {deleteError && <p className="mt-2 text-xs text-error">{deleteError}</p>}
       </Modal>
     </div>
   );

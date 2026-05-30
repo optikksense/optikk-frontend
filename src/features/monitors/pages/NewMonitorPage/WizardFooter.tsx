@@ -31,10 +31,10 @@ function TestReadout({ result }: { readonly result: TestResult }) {
       <span
         className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
           result.would_decide_as === "alert"
-            ? "bg-red-500/15 text-red-500"
+            ? "bg-error-subtle text-error"
             : result.would_decide_as === "warn"
-              ? "bg-amber-500/15 text-amber-500"
-              : "bg-emerald-500/15 text-emerald-500"
+              ? "bg-warning-subtle text-warning"
+              : "bg-success-subtle text-success"
         }`}
       >
         would decide: {result.would_decide_as}
@@ -60,14 +60,14 @@ export default function WizardFooter({
       {(testResult || testError) && (
         <div>
           {testResult && <TestReadout result={testResult} />}
-          {testError && <div className="text-[11px] text-red-400">{testError}</div>}
+          {testError && <div className="text-[11px] text-error">{testError}</div>}
         </div>
       )}
       <div className="flex items-center gap-3">
         <div className="text-xs text-[var(--text-muted)]">
           Monitor will be evaluated every <span className="font-mono">{evalEverySec}s</span>
         </div>
-        {error && <div className="text-xs text-red-400">{error}</div>}
+        {error && <div className="text-xs text-error">{error}</div>}
         <div className="ml-auto flex items-center gap-2">
           {editMode && (
             <button
@@ -91,7 +91,7 @@ export default function WizardFooter({
             type="button"
             disabled={saving}
             onClick={onSave}
-            className="flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+            className="flex items-center gap-1.5 rounded bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary disabled:opacity-60"
           >
             <Check size={13} />
             {saving ? "Saving…" : editMode ? "Save changes" : "Save monitor"}

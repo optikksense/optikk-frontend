@@ -22,7 +22,7 @@ function RunbookCard({ monitor }: Props) {
             href={monitor.runbook_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded bg-[var(--bg-secondary)] px-3 py-2 text-xs text-blue-400 hover:underline"
+            className="flex items-center gap-2 rounded bg-[var(--bg-secondary)] px-3 py-2 text-xs text-primary hover:underline"
           >
             <ExternalLink size={12} />
             Open runbook

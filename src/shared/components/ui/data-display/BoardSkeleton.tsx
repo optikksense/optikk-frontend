@@ -56,7 +56,7 @@ export default function BoardSkeleton({
         <div className="min-w-full" style={{ width: "max-content", minWidth: tableMinWidth }}>
           {/* header */}
           <div
-            className="sticky top-0 z-20 flex select-none border-[color:var(--glass-border)] border-b bg-[rgba(255,255,255,0.02)] p-0 font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.05em]"
+            className="sticky top-0 z-20 flex select-none border-[color:var(--glass-border)] border-b bg-[var(--bg-hover)] p-0 font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.05em]"
             style={{ width: "max-content", minWidth: "100%" }}
           >
             {fixedColumns.map((column) => (

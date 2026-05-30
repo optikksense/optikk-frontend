@@ -1,6 +1,7 @@
 import { RefreshCw, Server } from "lucide-react";
 
 import { useAppStore } from "@store/appStore";
+import { useAuthUser } from "@store/authStore";
 
 import { fmtNum } from "../../ServiceDetailPage/formatters";
 import type { CatalogAggregate } from "../hooks/useCatalogAggregate";
@@ -32,8 +33,13 @@ function RefreshButton() {
   );
 }
 
-function buildSubtitle(aggregate: CatalogAggregate, environment?: string | null): string {
+function buildSubtitle(
+  aggregate: CatalogAggregate,
+  environment?: string | null,
+  org?: string | null
+): string {
   const parts: string[] = [];
+  if (org) parts.push(org);
   if (environment) parts.push(environment);
   parts.push(`${aggregate.totalServices} services`);
   parts.push(`${fmtNum(aggregate.totalRps)} rps total`);
@@ -41,6 +47,8 @@ function buildSubtitle(aggregate: CatalogAggregate, environment?: string | null)
 }
 
 export function ServiceCatalogHeader({ aggregate, environment }: ServiceCatalogHeaderProps) {
+  const user = useAuthUser();
+  const org = user?.teams?.[0]?.orgName ?? null;
   return (
     <header className="flex items-start justify-between gap-3">
       <div className="flex items-start gap-3">
@@ -50,7 +58,7 @@ export function ServiceCatalogHeader({ aggregate, environment }: ServiceCatalogH
             Services
           </h1>
           <div className="mt-1 text-[12px] text-[var(--text-muted)]">
-            {buildSubtitle(aggregate, environment)}
+            {buildSubtitle(aggregate, environment, org)}
           </div>
         </div>
       </div>

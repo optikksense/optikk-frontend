@@ -62,7 +62,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
                   onClick={() => update({ comparator: cmp.id })}
                   className={`rounded px-2 py-0.5 text-xs ${
                     active
-                      ? "bg-blue-600 text-white"
+                      ? "bg-primary text-white"
                       : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
                   }`}
                 >
@@ -80,7 +80,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
             value={c.alert_threshold}
             onChange={(v) => update({ alert_threshold: v })}
           />
-          <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] text-red-500">
+          <span className="rounded bg-error-subtle px-1.5 py-0.5 text-[10px] text-error">
             critical
           </span>
         </div>
@@ -91,7 +91,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
             value={c.warn_threshold}
             onChange={(v) => update({ warn_threshold: v })}
           />
-          <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] text-amber-500">
+          <span className="rounded bg-warning-subtle px-1.5 py-0.5 text-[10px] text-warning">
             warn
           </span>
         </div>
@@ -119,7 +119,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
                   onClick={() => update({ no_data_as: opt.id })}
                   className={`rounded px-2 py-0.5 text-xs ${
                     active
-                      ? "bg-blue-600 text-white"
+                      ? "bg-primary text-white"
                       : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
                   }`}
                 >

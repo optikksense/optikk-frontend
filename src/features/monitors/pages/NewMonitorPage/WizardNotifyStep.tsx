@@ -35,7 +35,7 @@ function ChannelChip({
       onClick={onToggle}
       className={`rounded border px-2.5 py-1 text-xs ${
         selected
-          ? "border-blue-500 bg-blue-500/15 text-[var(--text-primary)]"
+          ? "border-primary bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)]"
           : "border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-secondary)]"
       }`}
     >
@@ -61,7 +61,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
               <button
                 type="button"
                 onClick={() => navigate({ to: "/monitors/notifications" })}
-                className="text-blue-400 underline"
+                className="text-primary underline"
               >
                 add one
               </button>
@@ -85,7 +85,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
           <button
             type="button"
             onClick={() => navigate({ to: "/monitors/notifications" })}
-            className="ml-2 text-[11px] text-blue-400 underline"
+            className="ml-2 text-[11px] text-primary underline"
           >
             manage channels →
           </button>
@@ -119,7 +119,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
                 }
                 className={`rounded px-2 py-0.5 text-xs ${
                   active
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
                 }`}
               >

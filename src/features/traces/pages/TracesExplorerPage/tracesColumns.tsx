@@ -51,7 +51,7 @@ export function buildTraceColumns(): readonly ColumnDef<TraceSummary>[] {
       key: "has_error",
       label: "Error",
       width: 72,
-      render: (row) => (row.has_error ? <span className="text-[#e8494d] text-xs">●</span> : null),
+      render: (row) => (row.has_error ? <span className="text-[var(--color-error)] text-xs">●</span> : null),
     },
     {
       key: "environment",
@@ -111,15 +111,15 @@ function StatusDot({ status, hasError }: { status: string | undefined; hasError:
   if (hasError || status?.toUpperCase() === "ERROR") {
     dotColor = "#e8494d";
     label = "Error";
-    textColor = "text-red-400";
+    textColor = "text-error";
   } else if (!status || status.toUpperCase() === "UNSET") {
     dotColor = "#7e8ea0";
     label = "Unset";
-    textColor = "text-slate-400";
+    textColor = "text-foreground-secondary";
   } else {
     dotColor = "#73bf69";
     label = "OK";
-    textColor = "text-emerald-400";
+    textColor = "text-success";
   }
 
   return (

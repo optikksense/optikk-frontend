@@ -58,7 +58,7 @@ function HitNav({
       <button
         type="button"
         onClick={onPrev}
-        className="rounded px-1 hover:bg-[rgba(255,255,255,0.05)]"
+        className="rounded px-1 hover:bg-[var(--bg-hover)]"
       >
         ↑
       </button>
@@ -66,7 +66,7 @@ function HitNav({
       <button
         type="button"
         onClick={onNext}
-        className="rounded px-1 hover:bg-[rgba(255,255,255,0.05)]"
+        className="rounded px-1 hover:bg-[var(--bg-hover)]"
       >
         ↓
       </button>
@@ -122,13 +122,13 @@ function PathLegend({
     <span className="ml-auto flex items-center gap-2.5 text-[11px] text-[var(--text-muted)]">
       {hasCritical ? (
         <span className="flex items-center gap-1">
-          <span className="inline-block h-[3px] w-3 rounded-sm bg-[#f59e0b]" />
+          <span className="inline-block h-[3px] w-3 rounded-sm bg-[var(--color-warning)]" />
           Critical path
         </span>
       ) : null}
       {hasErrorPath ? (
         <span className="flex items-center gap-1">
-          <span className="inline-block h-[3px] w-3 rounded-sm bg-[#f04438]" />
+          <span className="inline-block h-[3px] w-3 rounded-sm bg-[var(--color-error)]" />
           Error path
         </span>
       ) : null}

@@ -44,7 +44,7 @@ export function MetricSegmentedControl<T extends string>({
               "flex items-center gap-1.5 border-r font-medium transition-colors duration-150 last:border-r-0",
               heightClass,
               active
-                ? "border-[rgba(77,166,200,0.45)] bg-[rgba(77,166,200,0.14)] text-[var(--text-primary)]"
+                ? "border-[color-mix(in_oklch,var(--color-info),transparent_65%)] bg-[var(--color-info-subtle)] text-[var(--text-primary)]"
                 : "border-[var(--border-color)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]"
             )}
           >

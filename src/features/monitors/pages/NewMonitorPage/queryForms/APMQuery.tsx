@@ -58,7 +58,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
                 onClick={() => update({ track: t.id })}
                 className={`rounded border p-2 text-left transition-colors ${
                   active
-                    ? "border-violet-500 bg-[var(--bg-secondary)]"
+                    ? "border-primary bg-[var(--bg-secondary)]"
                     : "border-[var(--border-color)] hover:border-[var(--text-muted)]"
                 }`}
               >
@@ -83,7 +83,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
                 onClick={() => update({ window_sec: w })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >

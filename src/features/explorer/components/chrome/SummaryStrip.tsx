@@ -35,11 +35,11 @@ function SummaryStripComponent({ kpis }: Props) {
 function toneClass(tone: SummaryKPI["tone"]): string {
   switch (tone) {
     case "error":
-      return "text-[#e8494d]";
+      return "text-[var(--color-error)]";
     case "warn":
-      return "text-[#e0b400]";
+      return "text-[var(--color-warning)]";
     case "success":
-      return "text-[#73bf69]";
+      return "text-[var(--color-success)]";
     default:
       return "text-[var(--text-primary)]";
   }

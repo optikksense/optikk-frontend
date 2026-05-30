@@ -83,7 +83,7 @@ export default function MonitorDetailPage() {
           <button
             type="button"
             onClick={() => navigate({ to: "/monitors" })}
-            className="text-blue-400 underline"
+            className="text-primary underline"
           >
             Back to monitors
           </button>
@@ -103,12 +103,12 @@ export default function MonitorDetailPage() {
   if (detailQ.isError || !detailQ.data) {
     return (
       <PageShell>
-        <div className="p-8 text-sm text-red-400">
+        <div className="p-8 text-sm text-error">
           Failed to load monitor.{" "}
           <button
             type="button"
             onClick={() => detailQ.refetch()}
-            className="text-blue-400 underline"
+            className="text-primary underline"
           >
             Retry
           </button>

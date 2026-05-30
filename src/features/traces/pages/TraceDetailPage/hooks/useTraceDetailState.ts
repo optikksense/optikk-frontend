@@ -6,11 +6,8 @@ import { useAppStore } from "@store/appStore";
 import { useTraceDetailData } from "../../../hooks/useTraceDetailData";
 import { useTraceDetailEnhanced } from "../../../hooks/useTraceDetailEnhanced";
 import { useTraceErrors } from "../../../hooks/useTraceErrors";
-import { useTraceFlamegraph } from "../../../hooks/useTraceFlamegraph";
-import { useTraceHotSpans } from "../../../hooks/useTraceHotSpans";
-import { useTracePhaseBreakdown } from "../../../hooks/useTracePhaseBreakdown";
 import { useTraceServiceMap } from "../../../hooks/useTraceServiceMap";
-import { useTracesStore } from "../../../store/tracesStore";
+import { type VisualizationTab, useTracesStore } from "../../../store/tracesStore";
 import { computeTraceTimeBounds } from "../utils";
 
 export function useTraceDetailState() {
@@ -18,7 +15,15 @@ export function useTraceDetailState() {
   const traceIdParam = traceId ?? "";
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
 
-  const activeTab = useTracesStore((s) => s.visualizationTab);
+  const rawActiveTab = useTracesStore((s) => s.visualizationTab);
+  // Coerce any stale persisted tab (e.g. the removed "flamegraph") to a valid one.
+  const activeTab: VisualizationTab =
+    rawActiveTab === "servicemap" ||
+    rawActiveTab === "timeline" ||
+    rawActiveTab === "errors" ||
+    rawActiveTab === "raw"
+      ? rawActiveTab
+      : "timeline";
   const setActiveTab = useTracesStore((s) => s.setVisualizationTab);
   const spanDetailTab = useTracesStore((s) => s.spanDetailTab);
 
@@ -31,21 +36,14 @@ export function useTraceDetailState() {
 
   const traceTimeBounds = useMemo(() => computeTraceTimeBounds(data.spans), [data.spans]);
 
-  // Lazy: only fetch flamegraph when its viz tab is selected.
-  const flamegraph = useTraceFlamegraph(traceIdParam, activeTab === "flamegraph");
-
-  // Service-time breakdown + per-trace error groups (previously-unused endpoints).
+  // Per-trace service map (services + service-to-service call edges) for the
+  // Service map tab. Immutable per trace.
   const serviceMap = useTraceServiceMap(traceIdParam);
   // Error groups only matter when the errors tab is open.
   const traceErrors = useTraceErrors(traceIdParam, activeTab === "errors");
-  // Top-3 hot spans by self-time, derived from flamegraph frames (eager, cached).
-  const hotSpans = useTraceHotSpans(traceIdParam);
-  // Self-time grouped by execution phase, from the same cached frames.
-  const phaseBreakdown = useTracePhaseBreakdown(traceIdParam);
 
-  // The enhanced data hook gates `related-traces` on activeDetailTab === "related".
-  // Our Links tab folds in related traces, so map "links" → "related" for that one switch.
-  const enhancedTab = spanDetailTab === "links" ? "related" : "attributes";
+  // The enhanced data hook gates `related-traces` on the Related drawer tab.
+  const enhancedTab = spanDetailTab === "related" ? "related" : "attributes";
 
   const enhanced = useTraceDetailEnhanced(
     traceIdParam,
@@ -64,10 +62,7 @@ export function useTraceDetailState() {
     setActiveTab,
     data,
     enhanced,
-    flamegraph,
     serviceMap,
     traceErrors,
-    hotSpans,
-    phaseBreakdown,
   };
 }

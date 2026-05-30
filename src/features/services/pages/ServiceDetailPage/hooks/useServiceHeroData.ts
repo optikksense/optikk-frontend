@@ -23,6 +23,7 @@ export interface HeroDeployment {
 
 export interface HeroData {
   readonly summary: ServiceSummary | null;
+  readonly previous: ServiceSummary | null;
   readonly deployment: HeroDeployment | null;
   readonly status: HeroStatus;
   readonly loading: boolean;
@@ -71,6 +72,7 @@ export function useServiceHeroData(serviceName: string, windowMs: number): HeroD
   );
   return {
     summary: summaryQ.summary,
+    previous: summaryQ.previous,
     deployment: mergeDeployment(versionQ.data, latest),
     status: classifyStatus(summaryQ.summary),
     loading: summaryQ.isPending || versionQ.isPending || latestQ.isPending,

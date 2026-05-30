@@ -12,9 +12,9 @@ interface Props {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  metric: "text-blue-400",
-  apm: "text-violet-400",
-  log: "text-amber-500",
+  metric: "text-primary",
+  apm: "text-primary",
+  log: "text-warning",
 };
 
 function formatScope(m: Monitor): string {

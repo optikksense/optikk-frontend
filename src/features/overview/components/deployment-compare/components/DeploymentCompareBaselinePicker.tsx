@@ -55,7 +55,7 @@ function DeploymentCompareBaselinePickerComponent({
   if (deployments.length <= 1) return null;
 
   return (
-    <Card padding="md" className="border-[rgba(255,255,255,0.07)]">
+    <Card padding="md" className="border-[var(--border-light)]">
       <label className="flex flex-wrap items-center gap-2 text-[12px]">
         <span className="text-[var(--text-secondary)]">Compare against baseline:</span>
         <select

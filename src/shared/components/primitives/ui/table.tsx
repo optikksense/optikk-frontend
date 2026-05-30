@@ -32,7 +32,7 @@ function TableRow({ className, ref, ...props }: React.ComponentPropsWithRef<"tr"
     <tr
       ref={ref}
       className={cn(
-        "border-[var(--border-color)] border-b transition-colors hover:bg-[var(--color-primary-subtle-05)] data-[state=selected]:bg-[var(--color-primary-subtle-08)] [&:nth-child(even)]:bg-[rgba(255,255,255,0.012)]",
+        "border-[var(--border-color)] border-b transition-colors hover:bg-[var(--color-primary-subtle-05)] data-[state=selected]:bg-[var(--color-primary-subtle-08)] [&:nth-child(even)]:bg-[var(--bg-hover)]",
         className
       )}
       {...props}

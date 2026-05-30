@@ -45,7 +45,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
                 onClick={() => update({ group_by: g })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
                 }`}
               >
@@ -66,7 +66,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
                 onClick={() => update({ window_sec: w })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
                 }`}
               >

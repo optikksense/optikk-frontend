@@ -113,7 +113,7 @@ export function ObservabilityDetailPanel({
         </div>
         <button
           type="button"
-          className="flex cursor-pointer items-center rounded-md border-none bg-transparent p-2 text-muted-foreground transition-all duration-100 hover:bg-[rgba(255,255,255,0.08)] hover:text-white"
+          className="flex cursor-pointer items-center rounded-md border-none bg-transparent p-2 text-muted-foreground transition-all duration-100 hover:bg-[var(--bg-hover)] hover:text-white"
           onClick={onClose}
         >
           <X size={18} />
@@ -135,7 +135,7 @@ export function ObservabilityDetailPanel({
 
       {/* Summary */}
       {(summary || summaryNode) && (
-        <div className="max-h-[110px] shrink-0 overflow-y-auto break-all border-[color:var(--glass-border)] border-b bg-[rgba(255,255,255,0.015)] px-5 py-3 font-mono text-[color:var(--text-secondary)] text-xs leading-[1.65]">
+        <div className="max-h-[110px] shrink-0 overflow-y-auto break-all border-[color:var(--glass-border)] border-b bg-[var(--bg-hover)] px-5 py-3 font-mono text-[color:var(--text-secondary)] text-xs leading-[1.65]">
           {summaryNode || summary}
         </div>
       )}
@@ -197,7 +197,7 @@ export function ObservabilityDetailPanel({
         )}
 
         {tab === "json" && (
-          <pre className="whitespace-pre-wrap break-all rounded-[7px] border border-border bg-[rgba(255,255,255,0.02)] p-3.5 font-mono text-[11.5px] text-foreground leading-[1.65]">
+          <pre className="whitespace-pre-wrap break-all rounded-[7px] border border-border bg-[var(--bg-hover)] p-3.5 font-mono text-[11.5px] text-foreground leading-[1.65]">
             {JSON.stringify(rawData, null, 2)}
           </pre>
         )}

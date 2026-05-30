@@ -1,12 +1,11 @@
-import { KpiCard, type KpiTone } from "@shared/components/ui/dashboard/KpiCard";
+import { type KpiDelta, type KpiTone, KpiCard } from "@shared/components/ui/dashboard/KpiCard";
 
 import { fmtMs, fmtNum, fmtPct } from "../formatters";
 import type { ServiceSummary } from "../hooks/useServiceSummary";
-import type { SloStatsResponse } from "../hooks/useSloStats";
 
 interface ServiceKpiStripProps {
   readonly summary: ServiceSummary | null;
-  readonly slo: SloStatsResponse | undefined;
+  readonly previous: ServiceSummary | null;
 }
 
 function errorTone(errRate: number): KpiTone {
@@ -21,17 +20,11 @@ function p99Tone(p99Ms: number): KpiTone {
   return "ok";
 }
 
-function sloTone(budget: number | undefined): KpiTone {
-  if (budget == null) return "neutral";
-  if (budget < 0.25) return "err";
-  if (budget < 0.5) return "warn";
-  return "ok";
-}
-
-function sloBudgetLabel(slo: SloStatsResponse | undefined): string {
-  if (!slo || slo.error_budget_remaining == null) return "—";
-  const pct = Math.max(0, slo.error_budget_remaining * 100);
-  return `${pct.toFixed(0)}%`;
+function delta(now: number, prev: number | undefined): KpiDelta | null {
+  if (prev == null || prev <= 0) return null;
+  const v = ((now - prev) / prev) * 100;
+  if (Math.abs(v) < 0.5) return { label: "vs prev", direction: "flat" };
+  return { label: `${v > 0 ? "+" : ""}${v.toFixed(0)}%`, direction: v > 0 ? "up" : "down" };
 }
 
 function safeSummary(summary: ServiceSummary | null): ServiceSummary {
@@ -49,35 +42,38 @@ function safeSummary(summary: ServiceSummary | null): ServiceSummary {
   );
 }
 
-export function ServiceKpiStrip({ summary, slo }: ServiceKpiStripProps) {
+export function ServiceKpiStrip({ summary, previous }: ServiceKpiStripProps) {
   const s = safeSummary(summary);
+  const errorsPerSec = s.errorRate * s.rps;
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
       <KpiCard
         label="Request rate"
         value={fmtNum(s.rps)}
         secondary="rps"
-        subtext={`${fmtNum(s.requestCount)} requests`}
+        delta={delta(s.rps, previous?.rps)}
       />
       <KpiCard
         label="Error rate"
         value={fmtPct(s.errorRate, s.errorRate < 0.001 ? 3 : 2)}
         tone={errorTone(s.errorRate)}
-        subtext={`${fmtNum(s.errorCount)} errors`}
+        subtext={`${fmtNum(errorsPerSec)} errors/s`}
       />
-      <KpiCard label="p50" value={fmtMs(s.p50Ms)} subtext="median" />
-      <KpiCard label="p95" value={fmtMs(s.p95Ms)} subtext="95th percentile" />
+      <KpiCard
+        label="p50"
+        value={fmtMs(s.p50Ms)}
+        subtext={previous ? `baseline ${fmtMs(previous.p50Ms)}` : "median"}
+      />
+      <KpiCard
+        label="p95"
+        value={fmtMs(s.p95Ms)}
+        subtext={previous ? `baseline ${fmtMs(previous.p95Ms)}` : "95th percentile"}
+      />
       <KpiCard
         label="p99"
         value={fmtMs(s.p99Ms)}
         tone={p99Tone(s.p99Ms)}
-        subtext="99th percentile"
-      />
-      <KpiCard
-        label="SLO budget"
-        value={sloBudgetLabel(slo)}
-        tone={sloTone(slo?.error_budget_remaining)}
-        subtext="error-budget remaining"
+        delta={delta(s.p99Ms, previous?.p99Ms)}
       />
     </div>
   );

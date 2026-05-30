@@ -58,7 +58,7 @@ function DeploymentCompareEndpointHeatmapComponent({ compare }: Props) {
   if (rows.length === 0) return null;
 
   return (
-    <Card padding="lg" className="border-[rgba(255,255,255,0.07)]">
+    <Card padding="lg" className="border-[var(--border-light)]">
       <div className="mb-3">
         <h3 className="m-0 font-semibold text-[var(--text-primary)]">p95 heatmap by endpoint</h3>
         <p className="mt-1 text-[12px] text-[var(--text-secondary)]">

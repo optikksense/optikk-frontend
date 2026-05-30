@@ -59,7 +59,7 @@ function ResultsColumnPickerImpl<Row>({ columns, config, onChange, trigger }: Pr
                 onDragStart={() => setDragIndex(index)}
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={() => onDrop(index)}
-                className="flex items-center gap-2 rounded px-2 py-1 hover:bg-[rgba(255,255,255,0.04)]"
+                className="flex items-center gap-2 rounded px-2 py-1 hover:bg-[var(--bg-hover)]"
               >
                 <GripVertical size={12} className="cursor-grab text-[var(--text-muted)]" />
                 <input

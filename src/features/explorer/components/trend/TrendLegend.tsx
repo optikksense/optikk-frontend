@@ -32,7 +32,7 @@ function TrendLegendComponent({ items, zoomed, onResetZoom }: Props) {
         <button
           type="button"
           onClick={onResetZoom}
-          className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] text-[var(--text-secondary)] hover:bg-[rgba(255,255,255,0.06)] hover:text-[var(--text-primary)]"
+          className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
         >
           <RotateCcw size={11} />
           Reset zoom

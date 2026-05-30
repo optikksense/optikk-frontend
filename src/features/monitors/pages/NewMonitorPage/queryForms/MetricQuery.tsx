@@ -44,7 +44,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
                 onClick={() => update({ aggregation: a })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >
@@ -62,7 +62,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
                 onClick={() => update({ window_sec: w })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >

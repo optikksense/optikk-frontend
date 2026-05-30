@@ -20,7 +20,7 @@ export default function SaturationPage(): JSX.Element {
 
       {model.error ? (
         <div
-          className="rounded-lg border border-[oklch(0.7_0.2_25_/_0.35)] bg-[oklch(0.7_0.2_25_/_0.08)] px-[14px] py-[10px] text-[12.5px] text-[var(--err-c)]"
+          className="rounded-lg border border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-[var(--color-error-subtle)] px-[14px] py-[10px] text-[12.5px] text-[var(--color-error)]"
           role="alert"
         >
           Could not load saturation data: {model.error.message}

@@ -41,7 +41,7 @@ export function DatabasePageHeader({ summary, degraded }: DatabasePageHeaderProp
   return (
     <header className="flex items-start justify-between gap-3">
       <div className="flex items-start gap-3">
-        <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-bg,rgba(59,130,246,0.12))] text-[var(--color-primary,#3b82f6)]">
+        <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-bg)] text-[var(--color-primary)]">
           <Database size={18} />
         </div>
         <div>

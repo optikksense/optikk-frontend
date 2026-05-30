@@ -67,7 +67,7 @@ export function MetricSelector({ value, onChange }: MetricSelectorProps) {
             "flex h-8 min-w-[200px] flex-1 items-center gap-2 rounded-[var(--card-radius)]",
             "border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3",
             "text-[12px] transition-colors duration-150",
-            "hover:border-[rgba(148,163,184,0.25)]",
+            "hover:border-[var(--border-color)]",
             value ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"
           )}
         >
@@ -112,7 +112,7 @@ export function MetricSelector({ value, onChange }: MetricSelectorProps) {
                     "flex w-full items-center gap-2 rounded-md px-2 py-1.5",
                     "text-left text-[12px] transition-colors duration-100",
                     m.name === value
-                      ? "bg-[rgba(77,166,200,0.14)] text-[var(--text-primary)]"
+                      ? "bg-[var(--color-info-subtle)] text-[var(--text-primary)]"
                       : "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
                   )}
                 >

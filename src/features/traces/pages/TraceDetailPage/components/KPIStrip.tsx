@@ -21,37 +21,27 @@ interface Props {
   readonly p95Ms?: number;
 }
 
-interface RootSelfTimeResult {
-  readonly selfMs: number;
-  readonly root: TraceRecord | null;
-}
-
-function computeRootSelfTime(spans: readonly TraceRecord[]): RootSelfTimeResult {
-  const root = spans.find((s) => !s.parent_span_id) ?? null;
-  if (!root) return { selfMs: 0, root: null };
-  const rootStart = root.start_time ? new Date(root.start_time).getTime() : 0;
-  const rootEnd = root.end_time ? new Date(root.end_time).getTime() : 0;
-  const rootDur = Math.max(0, rootEnd - rootStart);
-  if (!rootDur) return { selfMs: 0, root };
-
-  // merge direct-child intervals, subtract from root
-  const children = spans
-    .filter((s) => s.parent_span_id === root.span_id)
-    .map((s) => ({
-      start: s.start_time ? new Date(s.start_time).getTime() : 0,
-      end: s.end_time ? new Date(s.end_time).getTime() : 0,
-    }))
-    .filter((iv) => iv.end > iv.start)
-    .sort((a, b) => a.start - b.start);
-
-  let merged = 0;
-  let lastEnd = 0;
-  for (const iv of children) {
-    const s = Math.max(iv.start, lastEnd);
-    if (iv.end > s) merged += iv.end - s;
-    lastEnd = Math.max(lastEnd, iv.end);
-  }
-  return { selfMs: Math.max(0, rootDur - merged), root };
+/** Deepest span nesting level in the trace (root = depth 1). */
+function computeMaxDepth(spans: readonly TraceRecord[]): number {
+  if (spans.length === 0) return 0;
+  const byId = new Map<string, TraceRecord>();
+  for (const s of spans) byId.set(s.span_id, s);
+  const depthCache = new Map<string, number>();
+  const depthOf = (span: TraceRecord, seen: Set<string>): number => {
+    const cached = depthCache.get(span.span_id);
+    if (cached != null) return cached;
+    const parentId = span.parent_span_id;
+    let d = 1;
+    if (parentId && byId.has(parentId) && !seen.has(parentId)) {
+      seen.add(span.span_id);
+      d = depthOf(byId.get(parentId)!, seen) + 1;
+    }
+    depthCache.set(span.span_id, d);
+    return d;
+  };
+  let max = 1;
+  for (const s of spans) max = Math.max(max, depthOf(s, new Set<string>([s.span_id])));
+  return max;
 }
 
 function summarizeCriticalPath(
@@ -100,8 +90,7 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
   const services = stats.services.size;
   const okCount = Math.max(0, totalSpans - errors);
 
-  const { selfMs } = useMemo(() => computeRootSelfTime(spans), [spans]);
-  const selfPct = stats.duration > 0 ? (selfMs / stats.duration) * 100 : 0;
+  const maxDepth = useMemo(() => computeMaxDepth(spans), [spans]);
 
   const critical = useMemo(
     () => summarizeCriticalPath(spans, criticalPathSpanIds, stats.duration),
@@ -116,7 +105,7 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
       className="grid gap-px bg-[var(--border-color)] border-b border-[var(--border-color)]"
       style={{
         gridTemplateColumns:
-          "minmax(220px, 1.4fr) minmax(110px, 0.7fr) minmax(120px, 0.7fr) minmax(140px, 0.9fr) minmax(260px, 2fr)",
+          "minmax(220px, 1.4fr) minmax(110px, 0.7fr) minmax(150px, 0.9fr) minmax(260px, 2fr)",
       }}
     >
       <div className={cn(kpiBase, "bg-[var(--bg-secondary)]")}>
@@ -146,17 +135,11 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
       </div>
 
       <div className={kpiBase}>
-        <div className={kpiK}>Services</div>
-        <div className={kpiV}>{services}</div>
-        <div className={kpiSub}>
-          {totalSpans} span{totalSpans === 1 ? "" : "s"}
+        <div className={kpiK}>Spans · Services</div>
+        <div className={kpiV}>
+          {totalSpans} <span className="text-[var(--text-muted)]">·</span> {services}
         </div>
-      </div>
-
-      <div className={kpiBase}>
-        <div className={kpiK}>Self time (root)</div>
-        <div className={kpiV}>{formatDuration(selfMs)}</div>
-        <div className={kpiSub}>{selfPct.toFixed(1)}% of total</div>
+        <div className={kpiSub}>depth {maxDepth}</div>
       </div>
 
       <div className={cn(kpiBase, "gap-1.5")}>

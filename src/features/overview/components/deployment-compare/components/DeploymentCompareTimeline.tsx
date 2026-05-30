@@ -26,7 +26,7 @@ function DeploymentCompareTimelineComponent({ compare, isLoading, timeline }: Pr
   );
 
   return (
-    <Card padding="lg" className="border-[rgba(255,255,255,0.07)]">
+    <Card padding="lg" className="border-[var(--border-light)]">
       <TimelineHeader version={version} />
       <TimelineChart isLoading={isLoading} timeline={timeline} weightedSeries={weightedSeries} />
     </Card>

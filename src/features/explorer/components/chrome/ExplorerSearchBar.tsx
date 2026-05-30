@@ -18,7 +18,7 @@ function FilterChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border-color)] bg-[rgba(255,255,255,0.04)] px-2 py-1 text-[12px] text-[var(--text-secondary)]">
+    <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-hover)] px-2 py-1 text-[12px] text-[var(--text-secondary)]">
       <span className="font-mono text-[11px] text-[var(--text-primary)]">
         {filter.field}
         {":"}

@@ -528,7 +528,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        "relative min-w-0 overflow-hidden border-[var(--border-color)] border-b bg-[rgba(255,255,255,0.015)] font-medium text-[11px] text-[var(--text-secondary)] normal-case tracking-[0.01em]",
+                        "relative min-w-0 overflow-hidden border-[var(--border-color)] border-b bg-[var(--bg-hover)] font-medium text-[11px] text-[var(--text-secondary)] normal-case tracking-[0.01em]",
                         headRowClasses[size],
                         header.column.getCanSort() && "cursor-pointer select-none",
                         meta?.sticky && "z-[11] bg-[var(--bg-secondary)]",

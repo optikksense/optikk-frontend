@@ -14,21 +14,33 @@ interface Props {
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
 }
 
+// Theme-aware chip tones. Strings stay fully static (no helper) so Tailwind's JIT
+// can detect the arbitrary color-mix utilities. Hues come from the theme-aware
+// semantic + OKLCH log-level tokens, so chips read correctly in light and dark.
 const CHIP_TONE: Record<string, string> = {
-  Common: "border-[#86b3ff]/40 bg-[#86b3ff]/10 text-[#cfe0ff]",
-  Identifiers: "border-[#bfa9ff]/40 bg-[#bfa9ff]/10 text-[#dccff7]",
-  Resource: "border-[#7fc8a4]/40 bg-[#7fc8a4]/10 text-[#cfe6dc]",
-  Attributes: "border-[#e6a4d4]/40 bg-[#e6a4d4]/10 text-[#f4d2e7]",
-  Search: "border-[#f9c269]/40 bg-[#f9c269]/10 text-[#f4dba6]",
+  Common:
+    "border-[color-mix(in_oklch,var(--color-info),transparent_55%)] bg-[color-mix(in_oklch,var(--color-info),transparent_90%)] text-[var(--color-info)]",
+  Identifiers:
+    "border-[color-mix(in_oklch,var(--accent),transparent_55%)] bg-[color-mix(in_oklch,var(--accent),transparent_90%)] text-[var(--accent)]",
+  Resource:
+    "border-[color-mix(in_oklch,var(--color-success),transparent_55%)] bg-[color-mix(in_oklch,var(--color-success),transparent_90%)] text-[var(--color-success)]",
+  Attributes:
+    "border-[color-mix(in_oklch,var(--fatal-c),transparent_55%)] bg-[color-mix(in_oklch,var(--fatal-c),transparent_90%)] text-[var(--fatal-c)]",
+  Search:
+    "border-[color-mix(in_oklch,var(--color-warning),transparent_55%)] bg-[color-mix(in_oklch,var(--color-warning),transparent_90%)] text-[var(--color-warning)]",
 };
 
 const SEVERITY_TONE: Record<string, string> = {
-  TRACE: "border-[#7d8590]/50 bg-[#7d8590]/10 text-[#a6abb4]",
-  DEBUG: "border-[#86b3ff]/50 bg-[#86b3ff]/10 text-[#cfe0ff]",
-  INFO: "border-[#7fc8a4]/50 bg-[#7fc8a4]/10 text-[#cfe6dc]",
-  WARN: "border-[#f9c269]/50 bg-[#f9c269]/10 text-[#f4dba6]",
-  ERROR: "border-[#e8494d]/50 bg-[#e8494d]/10 text-[#f5b6b8]",
-  FATAL: "border-[#e8494d]/70 bg-[#e8494d]/20 text-[#f7c8ca]",
+  TRACE:
+    "border-[color-mix(in_oklch,var(--text-muted),transparent_55%)] bg-[color-mix(in_oklch,var(--text-muted),transparent_90%)] text-[var(--text-muted)]",
+  DEBUG:
+    "border-[color-mix(in_oklch,var(--debug-c),transparent_55%)] bg-[color-mix(in_oklch,var(--debug-c),transparent_90%)] text-[var(--debug-c)]",
+  INFO: "border-[color-mix(in_oklch,var(--info-c),transparent_55%)] bg-[color-mix(in_oklch,var(--info-c),transparent_90%)] text-[var(--info-c)]",
+  WARN: "border-[color-mix(in_oklch,var(--warn-c),transparent_55%)] bg-[color-mix(in_oklch,var(--warn-c),transparent_90%)] text-[var(--warn-c)]",
+  ERROR:
+    "border-[color-mix(in_oklch,var(--err-c),transparent_55%)] bg-[color-mix(in_oklch,var(--err-c),transparent_90%)] text-[var(--err-c)]",
+  FATAL:
+    "border-[color-mix(in_oklch,var(--fatal-c),transparent_40%)] bg-[color-mix(in_oklch,var(--fatal-c),transparent_82%)] text-[var(--fatal-c)]",
 };
 
 /** Composes the DSL bar with a chip strip below for visual filter editing. */

@@ -229,7 +229,7 @@ function UPlotChart({
     >
       {hoverState ? (
         <div
-          className="pointer-events-none absolute z-20 min-w-[220px] rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(20,23,31,0.96)] px-3 py-2 shadow-[var(--shadow-md)] backdrop-blur-[10px]"
+          className="pointer-events-none absolute z-20 min-w-[220px] rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-overlay)] px-3 py-2 shadow-[var(--shadow-md)] backdrop-blur-[10px]"
           style={{ left: hoverState.left, top: hoverState.top }}
         >
           {hoverState.title ? (

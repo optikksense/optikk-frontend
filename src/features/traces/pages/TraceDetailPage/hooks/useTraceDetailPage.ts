@@ -49,9 +49,7 @@ export function useTraceDetailPage() {
       onCloseSpan: actions.closeSpan,
       criticalPathSpanIds: state.enhanced.criticalPathSpanIds,
       errorPathSpanIds: state.enhanced.errorPathSpanIds,
-      flamegraphData: state.flamegraph.data ?? null,
-      flamegraphLoading: state.flamegraph.isLoading,
-      flamegraphError: state.flamegraph.isError,
+      serviceMap: state.serviceMap.data ?? null,
       errorGroups: state.traceErrors.data ?? [],
       spanAttributes: state.enhanced.spanAttributes,
       spanAttributesLoading: state.enhanced.spanAttributesLoading,
@@ -72,8 +70,5 @@ export function useTraceDetailPage() {
     traceTimeBounds: state.traceTimeBounds,
     actions,
     layoutProps,
-    serviceMapNodes: state.serviceMap.data?.nodes ?? [],
-    hotSpans: state.hotSpans,
-    phaseBreakdown: state.phaseBreakdown,
   };
 }

@@ -15,11 +15,11 @@ interface Kpi {
 
 function buildKpis(counts: MonitorListStatusCounts): Kpi[] {
   return [
-    { label: "Alerting", value: counts.alert, color: "text-red-500", sub: "needs response" },
-    { label: "Warn", value: counts.warn, color: "text-amber-500", sub: "approaching threshold" },
-    { label: "OK", value: counts.ok, color: "text-emerald-500", sub: "within bounds" },
-    { label: "No data", value: counts.no_data, color: "text-zinc-400", sub: "stopped reporting" },
-    { label: "Muted", value: counts.muted, color: "text-zinc-400", sub: "alerts suppressed" },
+    { label: "Alerting", value: counts.alert, color: "text-error", sub: "needs response" },
+    { label: "Warn", value: counts.warn, color: "text-warning", sub: "approaching threshold" },
+    { label: "OK", value: counts.ok, color: "text-success", sub: "within bounds" },
+    { label: "No data", value: counts.no_data, color: "text-foreground-secondary", sub: "stopped reporting" },
+    { label: "Muted", value: counts.muted, color: "text-foreground-secondary", sub: "alerts suppressed" },
   ];
 }
 

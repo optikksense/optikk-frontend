@@ -1,4 +1,4 @@
-import { AlertCircle, ChevronRight } from "lucide-react";
+import { AlertCircle, ChevronRight, ExternalLink } from "lucide-react";
 import { memo, useMemo } from "react";
 
 import { Skeleton } from "@/components/ui";
@@ -8,7 +8,6 @@ import type { TraceRecord } from "@shared/entities/trace/model";
 
 import type { SpanAttributes } from "../../../../types";
 
-import { AttributesTable } from "./AttributesTable";
 import { DatabaseBlock } from "./DatabaseBlock";
 import { SelfChildBar } from "./SelfChildBar";
 
@@ -20,7 +19,7 @@ interface Props {
   readonly traceStartMs?: number;
   readonly traceEndMs?: number;
   readonly onSpanClick?: (span: { span_id: string }) => void;
-  readonly onAddFilter?: (key: string, value: string) => void;
+  readonly onOpenInLogs?: () => void;
 }
 
 const PALETTE_HUES = [222, 32, 268, 174, 112, 8, 296, 56, 198, 332];
@@ -116,8 +115,10 @@ const ancLink =
   "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[11.5px] text-[var(--text-secondary)] cursor-pointer hover:bg-[var(--bg-hover)]";
 const ancHere =
   "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-[var(--color-primary-subtle-15)] text-[var(--text-primary)] text-[11.5px] border border-[var(--color-primary)]";
+const linkBtn =
+  "inline-flex items-center gap-1 text-[11.5px] text-[var(--color-primary)] hover:underline bg-transparent border-0 cursor-pointer p-0";
 
-function InfoTabComponent({
+function OverviewTabComponent({
   spanAttributes,
   loading,
   spans,
@@ -125,7 +126,7 @@ function InfoTabComponent({
   traceStartMs,
   traceEndMs,
   onSpanClick,
-  onAddFilter,
+  onOpenInLogs,
 }: Props) {
   const timing = useMemo(
     () => computeTiming(spans, selectedSpanId, traceStartMs, traceEndMs),
@@ -175,7 +176,18 @@ function InfoTabComponent({
               {spanAttributes.exceptionStacktrace}
             </pre>
           )}
+          {onOpenInLogs && (
+            <button type="button" className={linkBtn} onClick={onOpenInLogs}>
+              <ExternalLink size={12} /> View span logs
+            </button>
+          )}
         </div>
+      )}
+
+      {!hasException && onOpenInLogs && (
+        <button type="button" className={linkBtn} onClick={onOpenInLogs}>
+          <ExternalLink size={12} /> View span logs
+        </button>
       )}
 
       {span && (
@@ -268,17 +280,8 @@ function InfoTabComponent({
           />
         </div>
       )}
-
-      <div className={sect}>
-        <div className={sectT}>Attributes</div>
-        <AttributesTable
-          spanAttributes={spanAttributes?.attributesString ?? {}}
-          resourceAttributes={spanAttributes?.resourceAttributes ?? {}}
-          onAddFilter={onAddFilter}
-        />
-      </div>
     </div>
   );
 }
 
-export const InfoTab = memo(InfoTabComponent);
+export const OverviewTab = memo(OverviewTabComponent);

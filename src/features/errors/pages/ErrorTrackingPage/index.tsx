@@ -82,7 +82,7 @@ export default function ErrorTrackingPage(): JSX.Element {
 
       {groupsQ.error ? (
         <div
-          className="rounded-md border border-red-500/35 bg-red-500/10 px-3 py-2 text-red-300 text-sm"
+          className="rounded-md border border-error bg-error-subtle px-3 py-2 text-error text-sm"
           role="alert"
         >
           Could not load error groups: {(groupsQ.error as Error).message}

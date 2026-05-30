@@ -15,7 +15,7 @@ function ResultsLoadingRowsComponent({ rows = 12, rowHeight = 32 }: Props) {
           className="flex items-center border-[var(--border-color)] border-b px-3"
           style={{ height: rowHeight }}
         >
-          <div className="h-3 w-full animate-pulse rounded bg-[rgba(255,255,255,0.05)]" />
+          <div className="h-3 w-full animate-pulse rounded bg-[var(--bg-hover)]" />
         </div>
       ))}
     </div>

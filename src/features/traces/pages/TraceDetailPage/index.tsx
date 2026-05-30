@@ -3,11 +3,8 @@ import { useState } from "react";
 import { PageShell } from "@shared/components/ui";
 
 import { BottomBar } from "./components/BottomBar";
-import { HotSpansStrip } from "./components/HotSpansStrip";
 import { KPIStrip } from "./components/KPIStrip";
-import { PhaseBreakdownBar } from "./components/PhaseBreakdownBar";
 import { ServiceStrip } from "./components/ServiceStrip";
-import { ServiceTimeBar } from "./components/ServiceTimeBar";
 import {
   TraceDetailEmptySpans,
   TraceDetailError,
@@ -16,21 +13,18 @@ import {
 import { TraceDetailLayout } from "./components/TraceDetailLayout";
 import { TraceHeader } from "./components/TraceHeader";
 import { useTraceDetailPage } from "./hooks/useTraceDetailPage";
+import { useTraceOperationBaseline } from "../../hooks/useTraceOperationBaseline";
 
 export default function TraceDetailPage() {
-  const {
-    data,
-    stats,
-    resolvedTraceId,
-    traceTimeBounds,
-    actions,
-    layoutProps,
-    serviceMapNodes,
-    hotSpans,
-    phaseBreakdown,
-  } = useTraceDetailPage();
+  const { data, stats, resolvedTraceId, traceTimeBounds, actions, layoutProps } =
+    useTraceDetailPage();
   // Page-local "active service" highlight; clicking a pill drills into that service's first span.
   const [activeService, setActiveService] = useState<string | null>(null);
+  // Root operation baseline (p50/p95) for the Duration KPI "N× slower than p50".
+  const baseline = useTraceOperationBaseline(
+    data.spans[0]?.service_name,
+    data.spans[0]?.operation_name
+  );
 
   if (data.isPending)
     return (
@@ -83,13 +77,8 @@ export default function TraceDetailPage() {
         stats={stats}
         spans={data.spans}
         criticalPathSpanIds={layoutProps.criticalPathSpanIds}
-      />
-      <ServiceTimeBar nodes={serviceMapNodes} />
-      <PhaseBreakdownBar segments={phaseBreakdown} />
-      <HotSpansStrip
-        hotSpans={hotSpans}
-        selectedSpanId={data.selectedSpanId}
-        onSpanClick={actions.handleSpanClick}
+        p50Ms={baseline.data?.p50_ms}
+        p95Ms={baseline.data?.p95_ms}
       />
       <ServiceStrip
         spans={data.spans}

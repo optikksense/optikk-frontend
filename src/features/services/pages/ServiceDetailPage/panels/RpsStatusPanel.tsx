@@ -103,7 +103,7 @@ export function RpsStatusPanel({ serviceName }: { serviceName: string }) {
   return (
     <PanelCard
       title="Requests"
-      subtitle="rps by status"
+      subtitle="rps by status · last 60m"
       action={<StatusSeriesToggle value={filter} onChange={setFilter} />}
     >
       <ChartBody data={filtered} plugins={deployPlugins} />

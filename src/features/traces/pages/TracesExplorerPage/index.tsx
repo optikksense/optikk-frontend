@@ -79,7 +79,7 @@ function MainBody({ p }: { p: UseTracesExplorerPageReturn }) {
 
 function getTraceRowClassName(row: TraceSummary): string {
   return row.has_error
-    ? "border-l-2 border-red-500 bg-red-500/[0.03]"
+    ? "border-l-2 border-error bg-error/[0.03]"
     : "border-l-2 border-transparent";
 }
 

@@ -39,14 +39,14 @@ const variantClasses: Record<
     list: "flex gap-1 overflow-x-auto border-b border-[var(--border-color)] pb-1",
     item: "relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-t-[var(--card-radius)] border border-transparent font-medium transition-[background-color,border-color,color] focus-visible:outline-none",
     active:
-      "bg-[rgba(124,127,242,0.12)] text-[var(--text-primary)] border-[rgba(124,127,242,0.18)]",
+      "bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)] border-[color-mix(in_oklch,var(--color-primary),transparent_65%)]",
     inactive: "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
   },
   compact: {
     list: "flex gap-1 border-b border-[var(--border-color)] pb-1",
     item: "relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-[var(--card-radius)] border border-transparent font-medium transition-[background-color,border-color,color] focus-visible:outline-none",
     active:
-      "bg-[rgba(124,127,242,0.12)] text-[var(--text-primary)] border-[rgba(124,127,242,0.18)]",
+      "bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)] border-[color-mix(in_oklch,var(--color-primary),transparent_65%)]",
     inactive: "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
   },
 };

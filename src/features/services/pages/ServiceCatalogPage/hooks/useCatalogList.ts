@@ -7,6 +7,7 @@ import {
   deploymentsApi,
 } from "@shared/api/deployments/deploymentsApi";
 import {
+  type RedSummary,
   type RedSummaryWithComparison,
   type RequestRatePoint,
   getRedSummaryWithComparison,
@@ -17,6 +18,9 @@ import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 
 export interface UseCatalogListResult {
   readonly rows: CatalogRow[];
+  /** Prior-window RED summary, when present — powers the KPI strip deltas. */
+  readonly comparison?: RedSummary;
+  readonly windowSec: number;
   readonly isPending: boolean;
   readonly isError: boolean;
 }
@@ -47,10 +51,13 @@ export function useCatalogList(): UseCatalogListResult {
   const series = useRateSeries();
   const latest = useLatestDeploysQuery();
 
+  const windowSec = useMemo(() => {
+    const bounds = getTimeRange();
+    return Math.max(1, (Number(bounds.endTime) - Number(bounds.startTime)) / 1000);
+  }, [getTimeRange]);
+
   const rows = useMemo<CatalogRow[]>(() => {
     if (!summary.data) return [];
-    const bounds = getTimeRange();
-    const windowSec = Math.max(1, (Number(bounds.endTime) - Number(bounds.startTime)) / 1000);
     return buildCatalogRows({
       primary: summary.data.data,
       comparison: summary.data.comparison,
@@ -58,10 +65,12 @@ export function useCatalogList(): UseCatalogListResult {
       latestDeploys: latest.data ?? [],
       windowSec,
     });
-  }, [summary.data, series.data, latest.data, getTimeRange]);
+  }, [summary.data, series.data, latest.data, windowSec]);
 
   return {
     rows,
+    comparison: summary.data?.comparison,
+    windowSec,
     isPending: summary.isPending,
     isError: Boolean(summary.error || series.error || latest.error),
   };

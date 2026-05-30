@@ -3,10 +3,12 @@ import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@/
 import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
 import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
 import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
-import { ChevronDown, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Moon, RefreshCw, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useAppStore, useTeamIds } from "@store/appStore";
+import { settingsService } from "@shared/api/settingsService";
+
+import { useAppStore, useTeamIds, useTheme } from "@store/appStore";
 import { useAuthUser } from "@store/authStore";
 
 import { AUTO_REFRESH_INTERVALS } from "@config/constants";
@@ -22,6 +24,8 @@ export default function Header() {
   const setAutoRefreshInterval = useAppStore((s) => s.setAutoRefreshInterval);
   const timeRange = useAppStore((s) => s.timeRange);
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
+  const theme = useTheme();
+  const setTheme = useAppStore((s) => s.setTheme);
   const [intervalPickerOpen, setIntervalPickerOpen] = useState(false);
   const pickerRef = useRef<HTMLDivElement | null>(null);
   const { refreshLabel, triggerRefresh: triggerHeaderRefresh } = useAutoRefresh({
@@ -35,6 +39,12 @@ export default function Header() {
   const handleRefresh = () => {
     triggerHeaderRefresh();
   };
+
+  const toggleTheme = useCallback(() => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    void settingsService.updatePreferences({ theme: next }).catch(() => {});
+  }, [theme, setTheme]);
 
   const shiftTimeRange = useCallback(
     (direction: "back" | "forward") => {
@@ -118,7 +128,7 @@ export default function Header() {
 
         {/* Live indicator */}
         {isLive && (
-          <span className="inline-flex items-center gap-1 rounded-[var(--card-radius)] border border-[rgba(115,201,145,0.28)] bg-[rgba(115,201,145,0.12)] px-2.5 py-1 font-semibold text-[11px] text-[var(--color-success)] uppercase tracking-[0.06em] shadow-[var(--shadow-sm)]">
+          <span className="inline-flex items-center gap-1 rounded-[var(--card-radius)] border border-[color-mix(in_oklch,var(--color-success),transparent_65%)] bg-[var(--color-success-subtle)] px-2.5 py-1 font-semibold text-[11px] text-[var(--color-success)] uppercase tracking-[0.06em] shadow-[var(--shadow-sm)]">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-success)]" />
             Live
           </span>
@@ -199,6 +209,15 @@ export default function Header() {
             </div>
           )}
         </div>
+
+        <Tooltip content={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}>
+          <IconButton
+            icon={theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            variant="ghost"
+            label="Toggle theme"
+            onClick={toggleTheme}
+          />
+        </Tooltip>
       </div>
     </header>
   );

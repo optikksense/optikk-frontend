@@ -67,7 +67,7 @@ function WindowActionGroup({
 
 function DeploymentCompareWindowComponent({ compare, onOpen }: Props) {
   return (
-    <Card padding="lg" className="border-[rgba(255,255,255,0.07)]">
+    <Card padding="lg" className="border-[var(--border-light)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <WindowInfo compare={compare} />
         <div className="flex flex-wrap gap-2">

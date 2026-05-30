@@ -16,11 +16,11 @@ function Tabs({ tab, setTab, counts }: Props) {
       id: "triggered",
       label: "Triggered",
       badge: counts.alert + counts.warn,
-      tone: "bg-red-500/15 text-red-500",
+      tone: "bg-error-subtle text-error",
     },
-    { id: "all", label: "All", badge: counts.total, tone: "bg-zinc-500/15 text-zinc-300" },
-    { id: "muted", label: "Muted", badge: counts.muted, tone: "bg-zinc-500/15 text-zinc-300" },
-    { id: "no_data", label: "No data", badge: counts.no_data, tone: "bg-zinc-500/15 text-zinc-300" },
+    { id: "all", label: "All", badge: counts.total, tone: "bg-muted text-foreground-secondary" },
+    { id: "muted", label: "Muted", badge: counts.muted, tone: "bg-muted text-foreground-secondary" },
+    { id: "no_data", label: "No data", badge: counts.no_data, tone: "bg-muted text-foreground-secondary" },
   ];
   return (
     <div className="flex items-center gap-1 border-b border-[var(--border-color)]">
@@ -33,7 +33,7 @@ function Tabs({ tab, setTab, counts }: Props) {
             onClick={() => setTab(t.id)}
             className={`relative -mb-px flex items-center gap-2 border-b-2 px-3 py-2 text-sm transition-colors ${
               active
-                ? "border-blue-500 text-[var(--text-primary)]"
+                ? "border-primary text-[var(--text-primary)]"
                 : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >

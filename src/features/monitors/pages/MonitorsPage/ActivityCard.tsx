@@ -8,11 +8,11 @@ interface Props {
 }
 
 const KIND_COLORS: Record<string, string> = {
-  triggered: "bg-red-500",
-  recovered: "bg-emerald-500",
-  acked: "bg-blue-500",
-  muted: "bg-zinc-500",
-  test: "bg-zinc-400",
+  triggered: "bg-error",
+  recovered: "bg-success",
+  acked: "bg-primary",
+  muted: "bg-foreground-muted",
+  test: "bg-foreground-muted",
 };
 
 function timeAgo(iso: string): string {
@@ -39,7 +39,7 @@ function ActivityCard({ events, loading }: Props) {
           events.map((e) => (
             <div key={e.id} className="flex items-start gap-2">
               <span
-                className={`mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${KIND_COLORS[e.kind] ?? "bg-zinc-400"}`}
+                className={`mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${KIND_COLORS[e.kind] ?? "bg-foreground-muted"}`}
               />
               <div className="flex-1">
                 <div className="text-xs text-[var(--text-primary)]">

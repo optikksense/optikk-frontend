@@ -136,7 +136,7 @@ export function loadLegacyAppState(): PersistedAppState {
     timeRange: migrateTimeRange(readStorage(STORAGE_KEYS.TIME_RANGE)),
     sidebarCollapsed: readStorage(STORAGE_KEYS.SIDEBAR_COLLAPSED) === "true",
     autoRefreshInterval: Number(readStorage(STORAGE_KEYS.AUTO_REFRESH) ?? "10000") || 10_000,
-    theme: readStorage(STORAGE_KEYS.THEME) ?? "dark",
+    theme: readStorage(STORAGE_KEYS.THEME) ?? "light",
     notificationsEnabled: readStorage(STORAGE_KEYS.NOTIFICATIONS) !== "false",
     viewPreferences: readLegacyJSON<UserViewPreferences>(STORAGE_KEYS.VIEW_PREFS, {}),
     recentPages: [],

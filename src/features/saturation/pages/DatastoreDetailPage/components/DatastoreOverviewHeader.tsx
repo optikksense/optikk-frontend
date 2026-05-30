@@ -19,7 +19,7 @@ function DatastoreOverviewHeaderComponent({ overview }: { overview?: DatastoreOv
           endpoint, and the most likely contention sources.
         </p>
       </div>
-      <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(255,255,255,0.02)] px-4 py-3 text-[12px] text-[var(--text-secondary)]">
+      <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-2)] px-4 py-3 text-[12px] text-[var(--text-secondary)]">
         <div className="font-medium text-[var(--text-primary)]">Primary endpoint</div>
         <div className="mt-1">{overview?.top_server || "No server address detected"}</div>
         <div className="mt-2">

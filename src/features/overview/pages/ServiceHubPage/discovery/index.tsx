@@ -93,7 +93,7 @@ function DeploymentCell({
 }) {
   if (!row.latestDeployment) {
     return (
-      <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] border-dashed bg-[rgba(255,255,255,0.02)] px-3 py-2 text-left">
+      <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] border-dashed bg-[var(--bg-hover)] px-3 py-2 text-left">
         <div className="font-medium text-[12px] text-[var(--text-secondary)]">
           No deployment metadata
         </div>
@@ -298,7 +298,7 @@ export default function DiscoveryView(): JSX.Element {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(255,255,255,0.02)] px-4 py-3">
+            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-hover)] px-4 py-3">
               <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
                 Visible
               </div>
@@ -306,7 +306,7 @@ export default function DiscoveryView(): JSX.Element {
                 {formatNumber(filtered.length)}
               </div>
             </div>
-            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(255,255,255,0.02)] px-4 py-3">
+            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-hover)] px-4 py-3">
               <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
                 Recent Releases
               </div>
@@ -314,7 +314,7 @@ export default function DiscoveryView(): JSX.Element {
                 {formatNumber(recentReleases)}
               </div>
             </div>
-            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(255,255,255,0.02)] px-4 py-3">
+            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-hover)] px-4 py-3">
               <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
                 Degraded
               </div>
@@ -322,7 +322,7 @@ export default function DiscoveryView(): JSX.Element {
                 {formatNumber(rows.filter((row) => row.health !== "healthy").length)}
               </div>
             </div>
-            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(255,255,255,0.02)] px-4 py-3">
+            <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-hover)] px-4 py-3">
               <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
                 Missing Deploy
               </div>

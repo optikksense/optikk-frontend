@@ -1,4 +1,4 @@
-import { Activity, AlertCircle, Braces, Flame, Search } from "lucide-react";
+import { Activity, AlertCircle, Braces, Network, Search } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
@@ -50,9 +50,9 @@ function TraceTabBarComponent({
 
   const tabs: readonly TabSpec[] = [
     { key: "timeline", label: "Waterfall", icon: Activity, hotkey: "1" },
-    { key: "flamegraph", label: "Flame", icon: Flame, hotkey: "2" },
+    { key: "servicemap", label: "Service map", icon: Network, hotkey: "2" },
     { key: "errors", label: "Errors", icon: AlertCircle, hotkey: "3", count: errorCount },
-    { key: "raw", label: "Raw JSON", icon: Braces, hotkey: "4" },
+    { key: "raw", label: "JSON", icon: Braces, hotkey: "4" },
   ];
 
   return (

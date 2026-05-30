@@ -57,7 +57,7 @@ function impactColumns(): SimpleTableColumn<DeploymentImpactRow>[] {
 
 function DeploymentCompareImpactComponent({ serviceName, impacts, isLoading }: Props) {
   return (
-    <Card padding="lg" className="border-[rgba(255,255,255,0.07)]">
+    <Card padding="lg" className="border-[var(--border-light)]">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="m-0 font-semibold text-[var(--text-primary)]">Per-version impact</h3>
         <span className="text-[11px] text-[var(--text-muted)]">{serviceName}</span>

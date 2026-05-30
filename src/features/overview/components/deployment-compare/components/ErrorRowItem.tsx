@@ -16,7 +16,7 @@ function severityVariant(severity: string): "error" | "warning" | "default" {
 
 function ErrorRowItemComponent({ row }: { row: ErrorRow }) {
   return (
-    <div className="rounded-[var(--card-radius)] border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-3">
+    <div className="rounded-[var(--card-radius)] border border-[var(--border-light)] bg-[var(--bg-hover)] p-3">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={severityVariant(row.severity)}>{row.http_status_code || "error"}</Badge>
         <DeltaPill delta={row.delta_count} formatter={formatNumber} />

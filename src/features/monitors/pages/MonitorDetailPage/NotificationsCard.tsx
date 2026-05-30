@@ -26,7 +26,7 @@ function NotificationsCard({ monitor }: Props) {
                 <Send size={13} className="text-[var(--text-muted)]" />
                 <span className="font-mono text-xs">channel #{id}</span>
               </div>
-              <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] text-emerald-500">
+              <span className="rounded bg-success-subtle px-1.5 py-0.5 text-[10px] text-success">
                 wired
               </span>
             </div>

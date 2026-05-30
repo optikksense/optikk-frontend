@@ -101,13 +101,13 @@ export default function TemplatesTab() {
               type="button"
               disabled={saving}
               onClick={handleSubmit}
-              className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+              className="rounded bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary disabled:opacity-60"
             >
               {editing ? "Save" : "Create"}
             </button>
           </div>
         </div>
-        {status && <div className="mt-2 text-xs text-amber-500">{status}</div>}
+        {status && <div className="mt-2 text-xs text-warning">{status}</div>}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -150,7 +150,7 @@ export default function TemplatesTab() {
                 <button
                   type="button"
                   onClick={() => handleDelete(t.id)}
-                  className="rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] text-red-400 hover:bg-[var(--bg-secondary)]"
+                  className="rounded border border-[var(--border-color)] px-2 py-0.5 text-[11px] text-error hover:bg-[var(--bg-secondary)]"
                 >
                   Delete
                 </button>

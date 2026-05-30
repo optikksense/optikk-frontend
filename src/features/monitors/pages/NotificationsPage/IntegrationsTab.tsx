@@ -35,8 +35,8 @@ export default function IntegrationsTab() {
               <span
                 className={`rounded px-1.5 py-0.5 text-[10px] ${
                   connected
-                    ? "bg-emerald-500/15 text-emerald-500"
-                    : "bg-zinc-500/15 text-zinc-400"
+                    ? "bg-success-subtle text-success"
+                    : "bg-muted text-foreground-secondary"
                 }`}
               >
                 {connected ? "connected" : "install"}

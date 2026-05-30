@@ -11,33 +11,29 @@ import { PanelCard } from "./PanelCard";
 function ErrorRow({ row }: { row: ErrorGroup }) {
   const detail = ROUTES.errorGroupDetail.replace("$groupId", encodeURIComponent(row.group_id));
   return (
-    <li className="border-[var(--border-color)] border-t px-4 py-3 first:border-t-0">
-      <div className="flex items-baseline justify-between gap-3">
+    <li className="flex items-start justify-between gap-3 border-[var(--border-color)] border-t px-4 py-3 first:border-t-0">
+      <div className="min-w-0 flex-1">
         <Link
           to={detail}
-          className="truncate font-mono text-[12px] text-[var(--color-error,#ef4444)] hover:underline"
+          className="block truncate font-mono font-medium text-[12px] text-[var(--color-error,#ef4444)] hover:underline"
         >
           {row.operation_name || row.status_message || row.group_id}
         </Link>
-        <span className="shrink-0 text-[11px] text-[var(--text-muted)]">
-          last{" "}
-          <strong className="text-[var(--text-primary)]">
-            {relativeTimeFromIso(row.last_occurrence)}
-          </strong>
-        </span>
-      </div>
-      <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[11px] text-[var(--text-muted)]">
-        <span>
-          <strong className="text-[var(--text-primary)]">{fmtNum(row.error_count)}</strong>{" "}
-          occurrences
-        </span>
-        {row.http_status_code > 0 && <span>http {row.http_status_code}</span>}
-      </div>
-      {row.status_message && (
-        <div className="mt-1 truncate text-[11px] text-[var(--text-primary)]">
-          {row.status_message}
+        <div className="mt-1 flex flex-wrap items-baseline gap-x-3 text-[11px] text-[var(--text-muted)]">
+          {row.status_message && (
+            <span className="truncate text-[var(--text-secondary)]">{row.status_message}</span>
+          )}
+          {row.http_status_code > 0 && <span>http {row.http_status_code}</span>}
         </div>
-      )}
+      </div>
+      <div className="shrink-0 text-right">
+        <div className="font-semibold text-[15px] text-[var(--text-primary)] tabular-nums">
+          {fmtNum(row.error_count)}
+        </div>
+        <div className="text-[10px] text-[var(--text-muted)]">
+          last {relativeTimeFromIso(row.last_occurrence)}
+        </div>
+      </div>
     </li>
   );
 }
@@ -58,7 +54,7 @@ export function ErrorsListPanel({
   return (
     <PanelCard
       title={title}
-      subtitle={data ? `${data.length} unique error groups` : undefined}
+      subtitle={data ? `${data.length} unique · last 60m` : undefined}
       padded={false}
     >
       {rows.length === 0 ? (

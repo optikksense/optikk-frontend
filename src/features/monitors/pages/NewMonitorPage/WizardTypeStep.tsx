@@ -15,21 +15,21 @@ const TYPES: { id: MonitorType; label: string; desc: string; Icon: typeof Activi
     label: "Metric Alert",
     desc: "Alert on metric value or rate change",
     Icon: Clipboard,
-    color: "border-blue-500 text-blue-500",
+    color: "border-primary text-primary",
   },
   {
     id: "apm",
     label: "APM",
     desc: "Service errors, latency, throughput",
     Icon: Activity,
-    color: "border-violet-500 text-violet-500",
+    color: "border-primary text-primary",
   },
   {
     id: "log",
     label: "Log",
     desc: "Match against log content or count by query",
     Icon: FileText,
-    color: "border-amber-500 text-amber-500",
+    color: "border-warning text-warning",
   },
 ];
 

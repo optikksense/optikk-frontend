@@ -1,15 +1,14 @@
 import { memo } from "react";
 
-import type { TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
-import type Flamegraph from "@shared/components/ui/charts/specialized/Flamegraph";
+import type { ServiceMapResponse, TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
 import type { VisualizationTab } from "../../../store/tracesStore";
 import type { SpanEvent } from "../../../types";
 
 import { ErrorsTab } from "./ErrorsTab";
-import { FlameView } from "./FlameView";
 import { RawJsonTab } from "./RawJsonTab";
+import { ServiceMapView } from "./ServiceMapView";
 import { WaterfallView } from "./WaterfallView";
 
 interface Props {
@@ -20,9 +19,7 @@ interface Props {
   readonly onSpanClick: (span: { span_id: string }) => void;
   readonly criticalPathSpanIds: Set<string>;
   readonly errorPathSpanIds: Set<string>;
-  readonly flamegraphData: Parameters<typeof Flamegraph>[0]["data"] | null;
-  readonly flamegraphLoading: boolean;
-  readonly flamegraphError: boolean;
+  readonly serviceMap: ServiceMapResponse | null;
   readonly spanEvents?: readonly SpanEvent[];
   readonly errorGroups?: readonly TraceErrorGroup[];
 }
@@ -40,13 +37,7 @@ function VizAreaComponent(props: Props) {
           spanEvents={props.spanEvents}
         />
       )}
-      {props.activeTab === "flamegraph" && (
-        <FlameView
-          data={props.flamegraphData}
-          loading={props.flamegraphLoading}
-          error={props.flamegraphError}
-        />
-      )}
+      {props.activeTab === "servicemap" && <ServiceMapView map={props.serviceMap} />}
       {props.activeTab === "errors" && (
         <ErrorsTab
           spans={props.spans}

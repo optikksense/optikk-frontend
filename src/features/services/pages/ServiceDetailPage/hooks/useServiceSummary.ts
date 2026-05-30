@@ -2,7 +2,11 @@ import { useMemo } from "react";
 
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { type RedSummary, getRedSummary } from "@/features/overview/api/overviewRedApi";
+import {
+  type RedSummary,
+  type RedSummaryWithComparison,
+  getRedSummaryWithComparison,
+} from "@/features/services/api/serviceCatalogApi";
 
 export interface ServiceSummary {
   readonly serviceName: string;
@@ -40,15 +44,24 @@ function extractServiceRow(
   };
 }
 
+/**
+ * Per-service RED summary for the current window plus the prior comparison
+ * window (shares the catalog's `service-hub.red-summary-cmp` query so they
+ * dedupe). `previous` powers the KPI deltas and latency baselines.
+ */
 export function useServiceSummary(serviceName: string, windowMs: number) {
-  const query = useTimeRangeQuery<RedSummary>(
-    "service-detail.red-summary",
-    (_team, start, end) => getRedSummary(start, end),
+  const query = useTimeRangeQuery<RedSummaryWithComparison>(
+    "service-hub.red-summary-cmp",
+    (_team, start, end) => getRedSummaryWithComparison(start, end),
     { enabled: Boolean(serviceName) }
   );
   const summary = useMemo(
-    () => extractServiceRow(query.data, serviceName, windowMs),
+    () => extractServiceRow(query.data?.data, serviceName, windowMs),
     [query.data, serviceName, windowMs]
   );
-  return { ...query, summary };
+  const previous = useMemo(
+    () => extractServiceRow(query.data?.comparison, serviceName, windowMs),
+    [query.data, serviceName, windowMs]
+  );
+  return { ...query, summary, previous };
 }

@@ -88,7 +88,7 @@ export function LatencyPanel({ serviceName }: { serviceName: string }) {
   const deployPlugins = useDeployMarkers(serviceName);
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
   return (
-    <PanelCard title="Latency" subtitle="p50 / p95 / p99">
+    <PanelCard title="Latency" subtitle="p50 / p95 / p99 · last 60m">
       <ChartBody data={data} plugins={deployPlugins} />
     </PanelCard>
   );

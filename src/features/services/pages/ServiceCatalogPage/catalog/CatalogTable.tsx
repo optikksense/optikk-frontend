@@ -2,6 +2,7 @@ import { ChevronRight } from "lucide-react";
 
 import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 
+import { ServiceAvatar } from "../../../components/ServiceAvatar";
 import { fmtDelta, fmtMs, fmtNum, fmtPct } from "../../ServiceDetailPage/formatters";
 import { SparklineCell } from "./SparklineCell";
 import { StatusDot } from "./StatusDot";
@@ -32,8 +33,9 @@ function DeltaCell({ value }: { value: number | null }) {
 
 function NameCell({ row }: { row: CatalogRow }) {
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <div className="flex min-w-0 items-center gap-2.5">
       <StatusDot status={row.status} />
+      <ServiceAvatar serviceName={row.serviceName} size={26} />
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate text-[12.5px] font-semibold text-[var(--text-primary)]">
           {row.serviceName}

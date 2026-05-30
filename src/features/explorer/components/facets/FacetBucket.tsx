@@ -20,7 +20,7 @@ function FacetBucketComponent({ field, bucket, onInclude, onExclude, active }: P
   const isExcluded = active === "exclude";
   return (
     <div
-      className="group flex items-center justify-between gap-2 rounded px-2 py-1 hover:bg-[rgba(255,255,255,0.04)]"
+      className="group flex items-center justify-between gap-2 rounded px-2 py-1 hover:bg-[var(--bg-hover)]"
       data-active={active ?? "none"}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">

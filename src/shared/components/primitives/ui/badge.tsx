@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export type BadgeVariant = "default" | "success" | "error" | "warning" | "info";
+export type BadgeVariant = "default" | "primary" | "success" | "error" | "warning" | "info";
 
 export interface BadgeProps extends React.ComponentPropsWithRef<"div"> {
   variant?: BadgeVariant;
@@ -9,31 +9,36 @@ export interface BadgeProps extends React.ComponentPropsWithRef<"div"> {
 
 const variantClasses: Record<BadgeVariant, string> = {
   default: "bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-[var(--border-color)]",
-  success: "bg-[rgba(82,135,107,0.15)] text-[var(--color-success)] border-[rgba(82,135,107,0.3)]",
-  error: "bg-[rgba(220,38,38,0.12)] text-[var(--color-error)] border-[rgba(220,38,38,0.3)]",
-  warning: "bg-[rgba(217,119,6,0.12)] text-[var(--color-warning)] border-[rgba(217,119,6,0.3)]",
-  info: "bg-[rgba(77,166,200,0.12)] text-[var(--color-info)] border-[rgba(77,166,200,0.3)]",
+  primary:
+    "bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)] border-[color-mix(in_oklch,var(--color-primary),transparent_70%)]",
+  success:
+    "bg-[var(--color-success-subtle)] text-[var(--color-success)] border-[color-mix(in_oklch,var(--color-success),transparent_70%)]",
+  error:
+    "bg-[var(--color-error-subtle)] text-[var(--color-error)] border-[color-mix(in_oklch,var(--color-error),transparent_70%)]",
+  warning:
+    "bg-[var(--color-warning-subtle)] text-[var(--color-warning)] border-[color-mix(in_oklch,var(--color-warning),transparent_70%)]",
+  info: "bg-[var(--color-info-subtle)] text-[var(--color-info)] border-[color-mix(in_oklch,var(--color-info),transparent_70%)]",
 };
 
-const colorClasses: Record<string, string> = {
-  blue: "bg-[rgba(107,182,255,0.12)] text-[#6BB6FF] border-[rgba(107,182,255,0.28)]",
-  purple:
-    "bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)] border-[var(--color-primary-subtle-28)]",
-  green: "bg-[rgba(82,135,107,0.15)] text-[#52876B] border-[rgba(82,135,107,0.3)]",
-  red: "bg-[rgba(220,38,38,0.12)] text-[#DC2626] border-[rgba(220,38,38,0.3)]",
-  orange: "bg-[rgba(217,119,6,0.12)] text-[#D97706] border-[rgba(217,119,6,0.3)]",
-  yellow: "bg-[rgba(245,158,11,0.12)] text-[#F59E0B] border-[rgba(245,158,11,0.3)]",
+// Legacy color names map onto the theme-aware semantic variants.
+const colorAlias: Record<string, BadgeVariant> = {
+  blue: "info",
+  purple: "primary",
+  green: "success",
+  red: "error",
+  orange: "warning",
+  yellow: "warning",
 };
 
 function Badge({ variant = "default", color, className, children, ref, ...props }: BadgeProps) {
-  const classes = color ? (colorClasses[color] ?? variantClasses.default) : variantClasses[variant];
+  const resolved = color ? (colorAlias[color] ?? "default") : variant;
 
   return (
     <div
       ref={ref}
       className={cn(
         "inline-flex items-center rounded-full border px-2 py-0.5 font-medium text-[11px] leading-none",
-        classes,
+        variantClasses[resolved],
         className
       )}
       {...props}

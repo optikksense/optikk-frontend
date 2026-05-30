@@ -1,4 +1,6 @@
-/* Theme color tokens for dark (default) and light modes. */
+/* Theme color tokens — light is the default (:root); dark applies on [data-theme="dark"].
+ * Every theme-variant color token is defined in BOTH blocks. Cool-neutral neutrals + per-theme
+ * accent tuning keep the two themes consistent (Datadog-aligned schema). */
 :root {
   /* Auto-generated literal color tokens (shared) */
   --literal-hex-00758f: #00758f;
@@ -255,28 +257,40 @@
   --literal-rgba-94-96-206-0p5: rgba(94, 96, 206, 0.5);
   --literal-rgba-95-106-133-0p45: rgba(95, 106, 133, 0.45);
 
-  /* Background tokens */
-  --bg-primary: #0f1117;
-  --bg-secondary: #151821;
-  --bg-tertiary: #1c212c;
-  --bg-hover: #242a38;
-  --border-color: #2b3140;
-  --border-light: rgba(255, 255, 255, 0.08);
+  /* Background tokens — light-first, cool-neutral (Datadog-aligned) */
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #eef1f6;
+  --bg-tertiary: #e4e8ef;
+  --bg-hover: #dde2eb;
+  --border-color: #d5dae3;
+  --border-light: #e7ebf1;
 
   /* Extended background tokens */
-  --bg-canvas: #0f1117;
-  --bg-card: #171b24;
-  --bg-card-hover: #1d222e;
-  --bg-inset: #12161e;
-  --bg-overlay: rgba(15, 17, 23, 0.92);
+  --bg-canvas: #f5f7fa;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f5f7fa;
+  --bg-inset: #eef1f6;
+  --bg-overlay: rgba(245, 247, 250, 0.92);
 
-  /* Text tokens */
-  --text-primary: #e7eaf1;
-  --text-secondary: #b9c0cf;
-  --text-muted: #8e96a9;
-  --text-numeric: #f4f6fb;
-  --text-label: #8e96a9;
-  --text-caption: rgba(142, 150, 169, 0.82);
+  /* Text tokens — cool near-black scale */
+  --text-primary: #141a24;
+  --text-secondary: #4a5263;
+  --text-muted: #6b7488;
+  --text-numeric: #141a24;
+  --text-label: #6b7488;
+  --text-caption: rgba(74, 82, 99, 0.72);
+
+  /* Compatibility aliases — referenced by components but previously undefined (rendered
+   * white-alpha/dark fallbacks that broke light theme). Each aliases a theme-aware token,
+   * so a single :root definition resolves correctly in both light and dark. */
+  --text-tertiary: var(--text-muted);
+  --bg-surface: var(--bg-card);
+  --bg-elevated: var(--bg-hover);
+  --white-04: var(--bg-hover);
+  --danger: var(--color-error);
+  --color-primary-bg: var(--color-primary-subtle-12);
+  --color-error-bg: var(--color-error-subtle);
+  --color-success-bg: var(--color-success-subtle);
 
   /* Brand / semantic tokens — Optikk blue family
    * Primary action: blue-600 (#2563eb) — richer than default Tailwind blue-500.
@@ -303,35 +317,35 @@
   --color-primary-subtle-35: rgba(37, 99, 235, 0.35);
   --color-primary-subtle-45: rgba(37, 99, 235, 0.45);
   --color-primary-subtle-50: rgba(37, 99, 235, 0.5);
-  --color-success: #22c55e;
-  --color-success-subtle: rgba(34, 197, 94, 0.14);
-  --color-warning: #f59e0b;
-  --color-warning-subtle: rgba(245, 158, 11, 0.14);
-  --color-error: #ef4444;
-  --color-error-subtle: rgba(239, 68, 68, 0.14);
-  --color-info: #38bdf8;
-  --color-info-subtle: rgba(56, 189, 248, 0.14);
-  --color-stream: #38bdf8;
+  --color-success: #15803d;
+  --color-success-subtle: rgba(21, 128, 61, 0.12);
+  --color-warning: #b45309;
+  --color-warning-subtle: rgba(180, 83, 9, 0.12);
+  --color-error: #dc2626;
+  --color-error-subtle: rgba(220, 38, 38, 0.1);
+  --color-info: #0284c7;
+  --color-info-subtle: rgba(2, 132, 199, 0.12);
+  --color-stream: #0284c7;
 
   /* Calm-tech status tokens */
-  --color-healthy: #73c991;
-  --color-healthy-glow: rgba(115, 201, 145, 0.22);
-  --color-degraded: #f7b63a;
-  --color-degraded-glow: rgba(247, 182, 58, 0.2);
-  --color-critical: #f04438;
-  --color-critical-glow: rgba(240, 68, 56, 0.2);
-  --color-unknown: #6b7280;
+  --color-healthy: #2f8f53;
+  --color-healthy-glow: rgba(47, 143, 83, 0.16);
+  --color-degraded: #b45309;
+  --color-degraded-glow: rgba(180, 83, 9, 0.16);
+  --color-critical: #dc2626;
+  --color-critical-glow: rgba(220, 38, 38, 0.16);
+  --color-unknown: #6b7488;
   /* Severity tokens */
-  --severity-critical: #f04438;
-  --severity-critical-subtle: rgba(240, 68, 56, 0.14);
-  --severity-high: #f79009;
-  --severity-high-subtle: rgba(247, 144, 9, 0.14);
-  --severity-medium: #f7b63a;
-  --severity-medium-subtle: rgba(247, 182, 58, 0.16);
+  --severity-critical: #dc2626;
+  --severity-critical-subtle: rgba(220, 38, 38, 0.1);
+  --severity-high: #c2410c;
+  --severity-high-subtle: rgba(194, 65, 12, 0.1);
+  --severity-medium: #b45309;
+  --severity-medium-subtle: rgba(180, 83, 9, 0.12);
   --severity-low: var(--color-primary);
   --severity-low-subtle: var(--color-primary-subtle-18);
-  --severity-info: #67b7c9;
-  --severity-info-subtle: rgba(103, 183, 201, 0.16);
+  --severity-info: #0284c7;
+  --severity-info-subtle: rgba(2, 132, 199, 0.12);
 
   /* Chart palette — flagship blue + diverse hues
    * chart-1 is intentionally lighter than --color-primary so single-series charts
@@ -345,17 +359,17 @@
   --chart-6: #22d3ee;
   --chart-7: #f472b6;
   --chart-8: #a3e635;
-  --chart-grid: rgba(255, 255, 255, 0.1);
+  --chart-grid: rgba(20, 26, 36, 0.08);
   --chart-axis: var(--text-secondary);
   --chart-area-alpha: 0.18;
-  --chart-comparison: rgba(94, 169, 255, 0.45);
+  --chart-comparison: rgba(37, 99, 235, 0.35);
 
   /* Card / surface tokens */
   --card-radius: 8px;
   --card-padding: 16px;
-  --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
-  --card-shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.34);
-  --card-border: 1px solid rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 1px 3px rgba(20, 26, 36, 0.08), 0 1px 2px rgba(20, 26, 36, 0.04);
+  --card-shadow-hover: 0 4px 12px rgba(20, 26, 36, 0.1);
+  --card-border: 1px solid #e7ebf1;
 
   /* Layout dimension tokens */
   --space-header-h: 56px;
@@ -370,24 +384,24 @@
   --label-size: 11px;
 
   /* Scrollbar */
-  --scrollbar-track: #12161d;
-  --scrollbar-thumb: #394254;
-  --scrollbar-thumb-hover: #4a556b;
+  --scrollbar-track: #eef1f6;
+  --scrollbar-thumb: #c7cedb;
+  --scrollbar-thumb-hover: #aab3c4;
 
   /* Glass / elevation tokens */
-  --glass-bg: rgba(23, 27, 36, 0.9);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.34);
-  --glass-blur: blur(12px);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(20, 26, 36, 0.1);
+  --glass-shadow: 0 2px 8px rgba(20, 26, 36, 0.08);
+  --glass-blur: blur(16px);
 
   /* Elevation surfaces */
-  --surface-2-bg: #171b24;
-  --surface-3-bg: #1d222e;
+  --surface-2-bg: #ffffff;
+  --surface-3-bg: #f5f7fa;
 
   /* Shadow scale */
-  --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.02), 0 10px 24px rgba(0, 0, 0, 0.24);
-  --shadow-md: 0 1px 0 rgba(255, 255, 255, 0.03), 0 16px 34px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 1px 0 rgba(255, 255, 255, 0.04), 0 24px 48px rgba(0, 0, 0, 0.34);
+  --shadow-sm: 0 1px 2px rgba(20, 26, 36, 0.06), 0 0 0 1px rgba(213, 218, 227, 0.5);
+  --shadow-md: 0 4px 12px rgba(20, 26, 36, 0.08), 0 0 0 1px rgba(213, 218, 227, 0.7);
+  --shadow-lg: 0 12px 32px rgba(20, 26, 36, 0.12), 0 0 0 1px rgba(213, 218, 227, 0.7);
 
   /* Animation tokens */
   --duration-fast: 150ms;
@@ -416,7 +430,7 @@
 
   /* Gradients — blue-forward */
   --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  --gradient-text: linear-gradient(to right, rgba(230, 237, 243, 0.95), rgba(230, 237, 243, 0.6));
+  --gradient-text: linear-gradient(to right, rgba(20, 26, 36, 0.95), rgba(20, 26, 36, 0.6));
   --gradient-text-accent: linear-gradient(135deg, #5ea9ff, #38bdf8);
 
   /* Tab strip / page-tabs underline */
@@ -424,14 +438,157 @@
   --tab-underline-hover: var(--color-primary-subtle-50);
 
   /* Theme-driven toast tokens */
-  --toast-bg: #1c2128;
-  --toast-text: rgba(230, 237, 243, 0.9);
-  --toast-border: #30363d;
+  --toast-bg: #ffffff;
+  --toast-text: #141a24;
+  --toast-border: #d5dae3;
 
   /* Optikk design-handoff OKLCH tokens — additive layer used by Logs Explorer
    * and other pages adopting the design-handoff visual language. Severity hues
    * are identical across themes; surfaces/foregrounds flip per theme below. */
   --accent-h: 268;
+  --accent: oklch(0.55 0.2 var(--accent-h));
+  --accent-2: oklch(0.62 0.18 var(--accent-h));
+  --accent-bg: oklch(0.55 0.2 var(--accent-h) / 0.1);
+  --accent-ln: oklch(0.55 0.2 var(--accent-h) / 0.42);
+  --live: oklch(0.6 0.16 152);
+  --trace-c: oklch(0.52 0.1 245);
+  --debug-c: oklch(0.55 0.16 235);
+  --info-c: oklch(0.58 0.14 152);
+  --warn-c: oklch(0.58 0.15 70);
+  --err-c: oklch(0.55 0.22 25);
+  --fatal-c: oklch(0.55 0.22 330);
+
+  --bg-0: oklch(0.995 0.003 270);
+  --bg-1: oklch(0.975 0.004 270);
+  --bg-2: oklch(0.955 0.005 270);
+  --bg-3: oklch(0.925 0.006 270);
+  --bg-row-h: oklch(0.96 0.006 270);
+  --line: oklch(0.88 0.006 270);
+  --line-2: oklch(0.78 0.008 270);
+  --fg-0: oklch(0.18 0.012 270);
+  --fg-1: oklch(0.32 0.012 270);
+  --fg-2: oklch(0.5 0.01 270);
+  --fg-3: oklch(0.64 0.01 270);
+  --shadow-pop: 0 16px 40px -12px oklch(0.2 0.05 270 / 0.18), 0 0 0 1px var(--line);
+
+  /* Login-page tokens — match the Optikk handoff brand palette.
+   * "link" is brand-deep in the design (inverts on dark for legibility).
+   * "submit-fg" is the text color on the primary submit button.
+   * "focus-ring" is the input-focus shadow.
+   * "grid-line" is the soft grid overlay on the left brand panel.
+   * "headline-from/to" drives the gradient on the "Resolve before users notice." emphasis.
+   * "aside-bg" is the layered radial+linear gradient on the brand panel. */
+  --login-link: #1d4ed8;
+  --login-link-hover: #1e3a8a;
+  --login-submit-fg: #ffffff;
+  --login-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  --login-grid-line: rgba(15, 23, 42, 0.04);
+  --login-headline-from: #2563eb;
+  --login-headline-to: #6366f1;
+  --login-aside-bg: radial-gradient(900px 600px at 15% 10%, rgba(99, 102, 241, 0.1), transparent 60%),
+    radial-gradient(800px 500px at 85% 90%, rgba(37, 99, 235, 0.1), transparent 60%),
+    linear-gradient(180deg, #fafbff 0%, #f6f8fc 100%);
+
+  color-scheme: light;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* Dark Theme — cool navy, brighter accents (Datadog-aligned dark-on-toggle) */
+[data-theme="dark"] {
+  --bg-primary: #0f1117;
+  --bg-secondary: #151821;
+  --bg-tertiary: #1c212c;
+  --bg-hover: #242a38;
+  --border-color: #2b3140;
+  --border-light: rgba(255, 255, 255, 0.08);
+
+  /* Extended background tokens */
+  --bg-canvas: #0f1117;
+  --bg-card: #171b24;
+  --bg-card-hover: #1d222e;
+  --bg-inset: #12161e;
+  --bg-overlay: rgba(15, 17, 23, 0.92);
+
+  /* Text tokens */
+  --text-primary: #e7eaf1;
+  --text-secondary: #b9c0cf;
+  --text-muted: #8e96a9;
+  --text-numeric: #f4f6fb;
+  --text-label: #8e96a9;
+  --text-caption: rgba(142, 150, 169, 0.82);
+
+  /* Brand / semantic accents — brighter on dark */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #60a5fa;
+  --color-primary-active: #2563eb;
+  --color-success: #22c55e;
+  --color-success-subtle: rgba(34, 197, 94, 0.14);
+  --color-warning: #f59e0b;
+  --color-warning-subtle: rgba(245, 158, 11, 0.14);
+  --color-error: #f87171;
+  --color-error-subtle: rgba(248, 113, 113, 0.14);
+  --color-info: #38bdf8;
+  --color-info-subtle: rgba(56, 189, 248, 0.14);
+  --color-stream: #38bdf8;
+
+  /* Calm-tech status tokens */
+  --color-healthy: #73c991;
+  --color-healthy-glow: rgba(115, 201, 145, 0.22);
+  --color-degraded: #f7b63a;
+  --color-degraded-glow: rgba(247, 182, 58, 0.2);
+  --color-critical: #f04438;
+  --color-critical-glow: rgba(240, 68, 56, 0.2);
+  --color-unknown: #6b7280;
+
+  /* Severity tokens */
+  --severity-critical: #f04438;
+  --severity-critical-subtle: rgba(240, 68, 56, 0.14);
+  --severity-high: #f79009;
+  --severity-high-subtle: rgba(247, 144, 9, 0.14);
+  --severity-medium: #f7b63a;
+  --severity-medium-subtle: rgba(247, 182, 58, 0.16);
+  --severity-info: #67b7c9;
+  --severity-info-subtle: rgba(103, 183, 201, 0.16);
+
+  /* Chart */
+  --chart-grid: rgba(255, 255, 255, 0.1);
+  --chart-comparison: rgba(94, 169, 255, 0.45);
+
+  /* Card / surface shadows + border */
+  --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --card-shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.34);
+  --card-border: 1px solid rgba(255, 255, 255, 0.08);
+
+  /* Scrollbar */
+  --scrollbar-track: #12161d;
+  --scrollbar-thumb: #394254;
+  --scrollbar-thumb-hover: #4a556b;
+
+  /* Glass / elevation tokens */
+  --glass-bg: rgba(23, 27, 36, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.34);
+  --glass-blur: blur(12px);
+
+  /* Elevation surfaces */
+  --surface-2-bg: #171b24;
+  --surface-3-bg: #1d222e;
+
+  /* Shadow scale */
+  --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.02), 0 10px 24px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 1px 0 rgba(255, 255, 255, 0.03), 0 16px 34px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 1px 0 rgba(255, 255, 255, 0.04), 0 24px 48px rgba(0, 0, 0, 0.34);
+
+  /* Gradient text */
+  --gradient-text: linear-gradient(to right, rgba(230, 237, 243, 0.95), rgba(230, 237, 243, 0.6));
+
+  /* Toast */
+  --toast-bg: #1c2128;
+  --toast-text: rgba(230, 237, 243, 0.9);
+  --toast-border: #30363d;
+
+  /* Optikk design-handoff OKLCH tokens (dark) — surfaces + hues brighten */
   --accent: oklch(0.68 0.18 var(--accent-h));
   --accent-2: oklch(0.76 0.15 var(--accent-h));
   --accent-bg: oklch(0.68 0.18 var(--accent-h) / 0.16);
@@ -443,7 +600,6 @@
   --warn-c: oklch(0.84 0.16 92);
   --err-c: oklch(0.7 0.2 25);
   --fatal-c: oklch(0.66 0.22 330);
-
   --bg-0: oklch(0.135 0.008 270);
   --bg-1: oklch(0.165 0.008 270);
   --bg-2: oklch(0.205 0.008 270);
@@ -457,13 +613,7 @@
   --fg-3: oklch(0.48 0.01 270);
   --shadow-pop: 0 16px 40px -12px oklch(0 0 0 / 0.6), 0 0 0 1px var(--line);
 
-  /* Login-page tokens — match the Optikk handoff brand palette.
-   * "link" is brand-deep in the design (inverts on dark for legibility).
-   * "submit-fg" is the text color on the primary submit button.
-   * "focus-ring" is the input-focus shadow.
-   * "grid-line" is the soft grid overlay on the left brand panel.
-   * "headline-from/to" drives the gradient on the "Resolve before users notice." emphasis.
-   * "aside-bg" is the layered radial+linear gradient on the brand panel. */
+  /* Login-page tokens (dark) */
   --login-link: #93c5fd;
   --login-link-hover: #bfdbfe;
   --login-submit-fg: #0c0f14;
@@ -476,84 +626,6 @@
     linear-gradient(180deg, #0a0d12 0%, #0c0f14 100%);
 
   color-scheme: dark;
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
-}
-
-/* Light Theme — calm warm off-white palette */
-[data-theme="light"] {
-  --bg-primary: #fafaf8;
-  --bg-secondary: #f5f4f0;
-  --bg-tertiary: #eae9e4;
-  --bg-hover: #e4e3de;
-  --border-color: #d8d6d0;
-  --border-light: #eceae5;
-
-  /* Extended background tokens */
-  --bg-canvas: #fafaf8;
-  --bg-card: #f5f4f0;
-  --bg-card-hover: #eae9e4;
-  --bg-inset: #fafaf8;
-  --bg-overlay: rgba(250, 250, 248, 0.92);
-
-  --text-primary: #1c1917;
-  --text-secondary: #57534e;
-  --text-muted: #78716c;
-  --text-numeric: #1c1917;
-  --text-label: #78716c;
-  --text-caption: rgba(87, 83, 78, 0.7);
-
-  /* Glass / elevation tokens */
-  --glass-bg: rgba(245, 244, 240, 0.8);
-  --glass-border: rgba(168, 162, 158, 0.3);
-  --glass-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --glass-blur: blur(16px);
-
-  --scrollbar-track: #eae9e4;
-  --scrollbar-thumb: #c8c5bf;
-  --scrollbar-thumb-hover: #a8a49e;
-
-  --toast-bg: #f5f4f0;
-  --toast-text: #1c1917;
-  --toast-border: #d8d6d0;
-
-  /* Elevation surfaces (light) */
-  --surface-2-bg: rgba(245, 244, 240, 0.8);
-  --surface-3-bg: rgba(250, 250, 248, 0.92);
-
-  /* Shadows (light) */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(216, 214, 208, 0.5);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(216, 214, 208, 0.8);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(216, 214, 208, 0.8);
-
-  /* Optikk design-handoff OKLCH tokens (light) — surfaces flip, severity stays */
-  --bg-0: oklch(0.995 0.003 270);
-  --bg-1: oklch(0.975 0.004 270);
-  --bg-2: oklch(0.955 0.005 270);
-  --bg-3: oklch(0.925 0.006 270);
-  --bg-row-h: oklch(0.96 0.006 270);
-  --line: oklch(0.88 0.006 270);
-  --line-2: oklch(0.78 0.008 270);
-  --fg-0: oklch(0.18 0.012 270);
-  --fg-1: oklch(0.32 0.012 270);
-  --fg-2: oklch(0.5 0.01 270);
-  --fg-3: oklch(0.64 0.01 270);
-  --accent-bg: oklch(0.68 0.18 var(--accent-h) / 0.1);
-  --shadow-pop: 0 16px 40px -12px oklch(0.2 0.05 270 / 0.18), 0 0 0 1px var(--line);
-
-  /* Login-page tokens (light) — brand-deep stays standard blue; aside flips to off-white. */
-  --login-link: #1d4ed8;
-  --login-link-hover: #1e3a8a;
-  --login-submit-fg: #ffffff;
-  --login-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.15);
-  --login-grid-line: rgba(15, 23, 42, 0.04);
-  --login-headline-from: #2563eb;
-  --login-headline-to: #6366f1;
-  --login-aside-bg: radial-gradient(900px 600px at 15% 10%, rgba(99, 102, 241, 0.1), transparent 60%),
-    radial-gradient(800px 500px at 85% 90%, rgba(37, 99, 235, 0.1), transparent 60%),
-    linear-gradient(180deg, #fafbff 0%, #f6f8fc 100%);
-
-  color-scheme: light;
   color: var(--text-primary);
   background-color: var(--bg-primary);
 }
