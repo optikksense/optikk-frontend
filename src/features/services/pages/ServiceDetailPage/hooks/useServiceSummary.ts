@@ -25,7 +25,7 @@ function extractServiceRow(
   windowMs: number
 ): ServiceSummary | null {
   if (!summary || !summary.services) return null;
-  const row = (summary.services as Array<Record<string, unknown>>).find(
+  const row = summary.services.find(
     (svc) => svc.service_name === serviceName
   );
   if (!row) return null;
