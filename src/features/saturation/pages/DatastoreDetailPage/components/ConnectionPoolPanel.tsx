@@ -1,7 +1,7 @@
 import { memo } from "react";
 
-import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 import { Card, SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
+import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
 import type { ConnectionLimits } from "@/features/saturation/api/databaseConnectionsApi";
@@ -127,9 +127,7 @@ function ConnectionPoolPanelComponent({ system }: { system: string }) {
           <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Connections
           </div>
-          <div className="mt-1 font-semibold text-[15px] text-foreground">
-            Pool limits
-          </div>
+          <div className="mt-1 font-semibold text-[15px] text-foreground">Pool limits</div>
         </div>
         <SimpleTable
           dataSource={pool.limits}

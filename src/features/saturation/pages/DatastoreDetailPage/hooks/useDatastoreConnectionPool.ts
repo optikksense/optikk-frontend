@@ -31,11 +31,9 @@ function usePoolLatency(
   ) => Promise<PoolLatencyPoint[]>
 ) {
   const filters: DatabaseFilters = { db_system: system };
-  const query = useTimeRangeQuery<PoolLatencyPoint[]>(
-    key,
-    (_t, s, e) => fetcher(s, e, filters),
-    { extraKeys: [system] }
-  );
+  const query = useTimeRangeQuery<PoolLatencyPoint[]>(key, (_t, s, e) => fetcher(s, e, filters), {
+    extraKeys: [system],
+  });
   return useMemo(
     () =>
       maxLatencyByTimestamp(
@@ -108,7 +106,11 @@ export function useDatastoreConnectionPool(system: string): ConnectionPoolData {
     system,
     getConnectionCreateTime
   );
-  const useTime = usePoolLatency("saturation-datastore.conn-use-time", system, getConnectionUseTime);
+  const useTime = usePoolLatency(
+    "saturation-datastore.conn-use-time",
+    system,
+    getConnectionUseTime
+  );
 
   return {
     utilization,

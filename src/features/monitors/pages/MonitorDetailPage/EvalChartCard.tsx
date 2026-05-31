@@ -17,7 +17,9 @@ interface Point {
 
 function buildPath(points: readonly Point[]): string {
   if (points.length === 0) return "";
-  return points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
+  return points
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(2)},${p.y.toFixed(2)}`)
+    .join(" ");
 }
 
 function EvalChartCard({ data, loading }: Props) {
@@ -45,9 +47,7 @@ function EvalChartCard({ data, loading }: Props) {
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-baseline justify-between">
         <div>
-          <div className="text-sm font-medium text-foreground">
-            Evaluation · last 1 hour
-          </div>
+          <div className="font-medium text-foreground text-sm">Evaluation · last 1 hour</div>
           <div className="text-[11px] text-foreground-muted">
             line is monitor value · bands show thresholds
           </div>
@@ -65,19 +65,15 @@ function EvalChartCard({ data, loading }: Props) {
       </div>
       <div className="mt-3 h-[180px] w-full">
         {loading && !data ? (
-          <div className="flex h-full items-center justify-center text-xs text-foreground-muted">
+          <div className="flex h-full items-center justify-center text-foreground-muted text-xs">
             Loading…
           </div>
         ) : !chart ? (
-          <div className="flex h-full items-center justify-center text-xs text-foreground-muted">
+          <div className="flex h-full items-center justify-center text-foreground-muted text-xs">
             No data yet for this monitor.
           </div>
         ) : (
-          <svg
-            viewBox={`0 0 100 ${HEIGHT}`}
-            preserveAspectRatio="none"
-            className="h-full w-full"
-          >
+          <svg viewBox={`0 0 100 ${HEIGHT}`} preserveAspectRatio="none" className="h-full w-full">
             <path d={chart.area} fill="rgba(239,68,68,0.12)" stroke="none" />
             <path d={chart.path} fill="none" stroke="#ef4444" strokeWidth={0.6} />
             {chart.yWarn !== undefined && (

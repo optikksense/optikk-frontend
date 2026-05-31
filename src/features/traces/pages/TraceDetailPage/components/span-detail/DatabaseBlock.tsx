@@ -31,7 +31,7 @@ function DatabaseBlockComponent({ dbSystem, dbName, dbStatement, dbStatementNorm
       {statement && (
         <div className="col-span-2">
           <div className={`${kvK} mb-1`}>statement</div>
-          <pre className="m-0 p-3 bg-secondary border border-border rounded-md font-mono text-[11.5px] text-foreground-secondary overflow-auto whitespace-pre max-h-[180px]">
+          <pre className="m-0 max-h-[180px] overflow-auto whitespace-pre rounded-md border border-border bg-secondary p-3 font-mono text-[11.5px] text-foreground-secondary">
             {statement}
           </pre>
         </div>

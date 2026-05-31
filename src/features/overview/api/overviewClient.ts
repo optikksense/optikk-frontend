@@ -32,4 +32,3 @@ export async function getJson<T>(
   const raw = await api.get<unknown>(`${V1}${path}`, { params: rangeParams(startTime, endTime) });
   return unwrapComparisonPayload<T>(raw);
 }
-

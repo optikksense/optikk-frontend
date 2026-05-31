@@ -54,9 +54,9 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
       <FieldRow label="Send to">
         <div className="flex flex-wrap items-center gap-1.5">
           {channelsQ.isPending && !channelsQ.data ? (
-            <span className="text-xs text-foreground-muted">Loading channels…</span>
+            <span className="text-foreground-muted text-xs">Loading channels…</span>
           ) : (channelsQ.data ?? []).length === 0 ? (
-            <span className="text-xs text-foreground-muted">
+            <span className="text-foreground-muted text-xs">
               No channels yet —{" "}
               <button
                 type="button"
@@ -94,9 +94,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
       <FieldRow label="Message template">
         <textarea
           value={draft.message_body ?? ""}
-          onChange={(e) =>
-            setDraft((prev) => ({ ...prev, message_body: e.target.value }))
-          }
+          onChange={(e) => setDraft((prev) => ({ ...prev, message_body: e.target.value }))}
           rows={4}
           placeholder="Error rate {{value}}% exceeds threshold ({{threshold}}%) for {{service.name}} {{#is_alert}}@oncall{{/is_alert}}"
           className="w-full rounded border border-border bg-card px-2.5 py-2 font-mono text-xs"
@@ -118,9 +116,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
                   }))
                 }
                 className={`rounded px-2 py-0.5 text-xs ${
-                  active
-                    ? "bg-primary text-white"
-                    : "bg-secondary text-foreground-secondary"
+                  active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}
               >
                 {label}

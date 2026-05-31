@@ -10,7 +10,6 @@ import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
 import type { StatusTimeseriesPoint } from "@/features/services/api/serviceDetailApi";
 
 import { fmtNum } from "../formatters";
-import { useDeployMarkers } from "../hooks/useDeployMarkers";
 import { useStatusTimeseries } from "../hooks/useStatusTimeseries";
 import { PanelCard } from "./PanelCard";
 import { type StatusSeriesFilter, StatusSeriesToggle } from "./StatusSeriesToggle";
@@ -96,7 +95,6 @@ function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[]
 export function RpsStatusPanel({ serviceName }: { serviceName: string }) {
   const query = useStatusTimeseries(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
-  const deployPlugins = useDeployMarkers(serviceName);
   const [filter, setFilter] = useState<StatusSeriesFilter>("all");
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
   const filtered = useMemo(() => filterSeries(data, filter), [data, filter]);
@@ -106,7 +104,7 @@ export function RpsStatusPanel({ serviceName }: { serviceName: string }) {
       subtitle="rps by status · last 60m"
       action={<StatusSeriesToggle value={filter} onChange={setFilter} />}
     >
-      <ChartBody data={filtered} plugins={deployPlugins} />
+      <ChartBody data={filtered} plugins={[]} />
     </PanelCard>
   );
 }

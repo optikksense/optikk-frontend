@@ -2,11 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Check, MoreHorizontal, Pause, Pencil, Trash2 } from "lucide-react";
 import { memo, useState } from "react";
 
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  Modal,
-} from "@shared/components/primitives/ui";
+import { DropdownMenu, DropdownMenuItem, Modal } from "@shared/components/primitives/ui";
 
 import type { Monitor } from "../../api/monitorsApi";
 import MonitorStatusBadge from "../../components/MonitorStatusBadge";
@@ -22,15 +18,7 @@ interface Props {
   readonly deleteError: string | null;
 }
 
-function DetailHeader({
-  monitor,
-  onAck,
-  onMute,
-  onEdit,
-  onDelete,
-  deleting,
-  deleteError,
-}: Props) {
+function DetailHeader({ monitor, onAck, onMute, onEdit, onDelete, deleting, deleteError }: Props) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -47,15 +35,15 @@ function DetailHeader({
           Monitors
         </button>
         <span className="text-foreground-muted">/</span>
-        <span className="font-mono font-medium text-foreground">m-{monitor.id}</span>
+        <span className="font-medium font-mono text-foreground">m-{monitor.id}</span>
       </div>
       <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-3">
-            <h1 className="text-2xl font-semibold text-foreground">{monitor.name}</h1>
+            <h1 className="font-semibold text-2xl text-foreground">{monitor.name}</h1>
             <MonitorStatusBadge status={monitor.status} />
             <PriorityChip priority={monitor.priority} />
-            <span className="font-mono text-[10px] font-bold uppercase text-foreground-muted">
+            <span className="font-bold font-mono text-[10px] text-foreground-muted uppercase">
               {monitor.type}
             </span>
           </div>
@@ -149,18 +137,18 @@ function DetailHeader({
               type="button"
               disabled={deleting}
               onClick={onDelete}
-              className="rounded bg-error px-3 py-1.5 text-sm font-medium text-white hover:bg-error disabled:opacity-60"
+              className="rounded bg-error px-3 py-1.5 font-medium text-sm text-white hover:bg-error disabled:opacity-60"
             >
               {deleting ? "Deleting…" : "Delete"}
             </button>
           </>
         }
       >
-        <p className="text-sm text-foreground-secondary">
-          Delete <span className="font-medium text-foreground">{monitor.name}</span>?
-          This stops all evaluation and notifications for this monitor and cannot be undone.
+        <p className="text-foreground-secondary text-sm">
+          Delete <span className="font-medium text-foreground">{monitor.name}</span>? This stops all
+          evaluation and notifications for this monitor and cannot be undone.
         </p>
-        {deleteError && <p className="mt-2 text-xs text-error">{deleteError}</p>}
+        {deleteError && <p className="mt-2 text-error text-xs">{deleteError}</p>}
       </Modal>
     </div>
   );

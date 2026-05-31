@@ -252,8 +252,8 @@ export default function FleetTab() {
           <h3 className="mb-2 font-semibold text-[13px] text-foreground">Pods</h3>
           <p className="mb-3 text-[12px] text-foreground-muted">
             Pods are derived from root spans with{" "}
-            <code className="rounded bg-muted px-1">k8s.pod.name</code> set. Use Logs
-            to open the log explorer with a matching pod filter for the current time range.
+            <code className="rounded bg-muted px-1">k8s.pod.name</code> set. Use Logs to open the
+            log explorer with a matching pod filter for the current time range.
           </p>
           <InfraPodsTable pods={filteredPods} onOpenPodLogs={openPodLogs} />
         </div>

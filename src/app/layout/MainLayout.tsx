@@ -23,7 +23,7 @@ function ErrorFallback({
   const message = error instanceof Error ? error.message : "An unexpected error occurred";
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
-      <div className="font-medium text-lg text-error">Something went wrong</div>
+      <div className="font-medium text-error text-lg">Something went wrong</div>
       <pre className="max-w-xl overflow-auto whitespace-pre-wrap text-foreground-secondary text-sm">
         {message}
       </pre>

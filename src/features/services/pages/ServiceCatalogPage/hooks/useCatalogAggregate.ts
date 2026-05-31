@@ -69,8 +69,5 @@ export function useCatalogAggregate(
   comparison: RedSummary | undefined,
   windowSec: number
 ): CatalogAggregate {
-  return useMemo(
-    () => buildAggregate(rows, comparison, windowSec),
-    [rows, comparison, windowSec]
-  );
+  return useMemo(() => buildAggregate(rows, comparison, windowSec), [rows, comparison, windowSec]);
 }

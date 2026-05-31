@@ -19,11 +19,21 @@ function Tabs({ tab, setTab, counts }: Props) {
       tone: "bg-error-subtle text-error",
     },
     { id: "all", label: "All", badge: counts.total, tone: "bg-muted text-foreground-secondary" },
-    { id: "muted", label: "Muted", badge: counts.muted, tone: "bg-muted text-foreground-secondary" },
-    { id: "no_data", label: "No data", badge: counts.no_data, tone: "bg-muted text-foreground-secondary" },
+    {
+      id: "muted",
+      label: "Muted",
+      badge: counts.muted,
+      tone: "bg-muted text-foreground-secondary",
+    },
+    {
+      id: "no_data",
+      label: "No data",
+      badge: counts.no_data,
+      tone: "bg-muted text-foreground-secondary",
+    },
   ];
   return (
-    <div className="flex items-center gap-1 border-b border-border">
+    <div className="flex items-center gap-1 border-border border-b">
       {tabs.map((t) => {
         const active = t.id === tab;
         return (
@@ -31,7 +41,7 @@ function Tabs({ tab, setTab, counts }: Props) {
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`relative -mb-px flex items-center gap-2 border-b-2 px-3 py-2 text-sm transition-colors ${
+            className={`-mb-px relative flex items-center gap-2 border-b-2 px-3 py-2 text-sm transition-colors ${
               active
                 ? "border-primary text-foreground"
                 : "border-transparent text-foreground-muted hover:text-foreground"

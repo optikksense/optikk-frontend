@@ -22,10 +22,10 @@ function CurrentValueCard({ monitor }: Props) {
   const barWidth = ratio !== undefined ? Math.min(100, Math.max(0, (ratio / 2) * 100)) : 0;
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-sm font-medium text-foreground">Current value</div>
+      <div className="font-medium text-foreground text-sm">Current value</div>
       <div className="text-[11px] text-foreground-muted">vs alert threshold</div>
       <div className="mt-4">
-        <div className={`text-4xl font-semibold ${color}`}>
+        <div className={`font-semibold text-4xl ${color}`}>
           {value !== undefined ? value.toFixed(2) : "—"}
         </div>
         {ratio !== undefined && (

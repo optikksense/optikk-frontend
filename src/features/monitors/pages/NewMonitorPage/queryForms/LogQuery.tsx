@@ -30,7 +30,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
           value={q.query}
           onChange={(e) => update({ query: e.target.value })}
           rows={2}
-          placeholder='e.g. @level:error service:payment-svc'
+          placeholder="e.g. @level:error service:payment-svc"
           className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
       </FieldRow>
@@ -44,9 +44,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
                 type="button"
                 onClick={() => update({ group_by: g })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
-                  active
-                    ? "bg-primary text-white"
-                    : "bg-secondary text-foreground-secondary"
+                  active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}
               >
                 {g}
@@ -65,9 +63,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
                 type="button"
                 onClick={() => update({ window_sec: w })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
-                  active
-                    ? "bg-primary text-white"
-                    : "bg-secondary text-foreground-secondary"
+                  active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}
               >
                 {w >= 3600 ? `${w / 3600}h` : `${w / 60}m`}

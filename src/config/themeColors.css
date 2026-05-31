@@ -257,28 +257,28 @@
   --literal-rgba-94-96-206-0p5: rgba(94, 96, 206, 0.5);
   --literal-rgba-95-106-133-0p45: rgba(95, 106, 133, 0.45);
 
-  /* Background tokens — light-first, cool-neutral (Datadog-aligned) */
-  --bg-primary: #f5f7fa;
-  --bg-secondary: #eef1f6;
-  --bg-tertiary: #e4e8ef;
-  --bg-hover: #dde2eb;
-  --border-color: #d5dae3;
-  --border-light: #e7ebf1;
+  /* Background tokens — light-first, warm-neutral (Optikk prototype aligned) */
+  --bg-primary: #faf8f4;
+  --bg-secondary: #f6f2ec;
+  --bg-tertiary: #efeae1;
+  --bg-hover: #efeae1;
+  --border-color: #ebe5d9;
+  --border-light: #f2ede4;
 
   /* Extended background tokens */
-  --bg-canvas: #f5f7fa;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f5f7fa;
-  --bg-inset: #eef1f6;
-  --bg-overlay: rgba(245, 247, 250, 0.92);
+  --bg-canvas: #faf8f4;
+  --bg-card: #fffefb;
+  --bg-card-hover: #faf8f4;
+  --bg-inset: #f6f2ec;
+  --bg-overlay: rgba(250, 248, 244, 0.92);
 
-  /* Text tokens — cool near-black scale */
-  --text-primary: #141a24;
-  --text-secondary: #4a5263;
-  --text-muted: #6b7488;
-  --text-numeric: #141a24;
-  --text-label: #6b7488;
-  --text-caption: rgba(74, 82, 99, 0.72);
+  /* Text tokens — warm-tinted neutral scale */
+  --text-primary: #2a2520;
+  --text-secondary: #4d463d;
+  --text-muted: #6b6357;
+  --text-numeric: #2a2520;
+  --text-label: #8f857a;
+  --text-caption: rgba(42, 37, 32, 0.72);
 
   /* Compatibility aliases — referenced by components but previously undefined (rendered
    * white-alpha/dark fallbacks that broke light theme). Each aliases a theme-aware token,
@@ -395,13 +395,13 @@
   --glass-blur: blur(16px);
 
   /* Elevation surfaces */
-  --surface-2-bg: #ffffff;
-  --surface-3-bg: #f5f7fa;
+  --surface-2-bg: #fffefb;
+  --surface-3-bg: #faf8f4;
 
   /* Shadow scale */
-  --shadow-sm: 0 1px 2px rgba(20, 26, 36, 0.06), 0 0 0 1px rgba(213, 218, 227, 0.5);
-  --shadow-md: 0 4px 12px rgba(20, 26, 36, 0.08), 0 0 0 1px rgba(213, 218, 227, 0.7);
-  --shadow-lg: 0 12px 32px rgba(20, 26, 36, 0.12), 0 0 0 1px rgba(213, 218, 227, 0.7);
+  --shadow-sm: 0 1px 2px rgba(74, 55, 35, 0.05), 0 1px 1px rgba(74, 55, 35, 0.04);
+  --shadow-md: 0 8px 24px rgba(74, 55, 35, 0.07), 0 2px 6px rgba(74, 55, 35, 0.05);
+  --shadow-lg: 0 24px 48px rgba(74, 55, 35, 0.13), 0 8px 16px rgba(74, 55, 35, 0.06);
 
   /* Animation tokens */
   --duration-fast: 150ms;
@@ -458,18 +458,18 @@
   --err-c: oklch(0.55 0.22 25);
   --fatal-c: oklch(0.55 0.22 330);
 
-  --bg-0: oklch(0.995 0.003 270);
-  --bg-1: oklch(0.975 0.004 270);
-  --bg-2: oklch(0.955 0.005 270);
-  --bg-3: oklch(0.925 0.006 270);
-  --bg-row-h: oklch(0.96 0.006 270);
-  --line: oklch(0.88 0.006 270);
-  --line-2: oklch(0.78 0.008 270);
-  --fg-0: oklch(0.18 0.012 270);
-  --fg-1: oklch(0.32 0.012 270);
-  --fg-2: oklch(0.5 0.01 270);
-  --fg-3: oklch(0.64 0.01 270);
-  --shadow-pop: 0 16px 40px -12px oklch(0.2 0.05 270 / 0.18), 0 0 0 1px var(--line);
+  --bg-0: oklch(0.998 0.003 75);
+  --bg-1: oklch(0.985 0.005 75);
+  --bg-2: oklch(0.965 0.006 75);
+  --bg-3: oklch(0.935 0.008 75);
+  --bg-row-h: oklch(0.97 0.006 75);
+  --line: oklch(0.915 0.01 75);
+  --line-2: oklch(0.945 0.008 75);
+  --fg-0: oklch(0.2 0.01 75);
+  --fg-1: oklch(0.35 0.01 75);
+  --fg-2: oklch(0.48 0.01 75);
+  --fg-3: oklch(0.62 0.01 75);
+  --shadow-pop: 0 16px 40px -12px oklch(0.2 0.05 75 / 0.18), 0 0 0 1px var(--line);
 
   /* Login-page tokens — match the Optikk handoff brand palette.
    * "link" is brand-deep in the design (inverts on dark for legibility).
@@ -485,9 +485,23 @@
   --login-grid-line: rgba(15, 23, 42, 0.04);
   --login-headline-from: #2563eb;
   --login-headline-to: #6366f1;
-  --login-aside-bg: radial-gradient(900px 600px at 15% 10%, rgba(99, 102, 241, 0.1), transparent 60%),
-    radial-gradient(800px 500px at 85% 90%, rgba(37, 99, 235, 0.1), transparent 60%),
+  --login-aside-bg: radial-gradient(
+      900px 600px at 15% 10%,
+      rgba(99, 102, 241, 0.1),
+      transparent 60%
+    ), radial-gradient(800px 500px at 85% 90%, rgba(37, 99, 235, 0.1), transparent 60%),
     linear-gradient(180deg, #fafbff 0%, #f6f8fc 100%);
+
+  /* Mockup specific color variables */
+  --ok: #10b981;
+  --ok-soft: #d1fae5;
+  --warn: #eab308;
+  --warn-soft: #fef3c7;
+  --err: #ef4444;
+  --err-soft: #fee2e2;
+  --accent-violet: #6366f1;
+  --accent-violet-soft: #eef2ff;
+  --chart-1-soft: #dbeafe;
 
   color-scheme: light;
   color: var(--text-primary);
@@ -621,9 +635,23 @@
   --login-grid-line: rgba(226, 232, 240, 0.045);
   --login-headline-from: #3b82f6;
   --login-headline-to: #a78bfa;
-  --login-aside-bg: radial-gradient(900px 600px at 15% 10%, rgba(96, 165, 250, 0.1), transparent 60%),
-    radial-gradient(800px 500px at 85% 90%, rgba(167, 139, 250, 0.1), transparent 60%),
+  --login-aside-bg: radial-gradient(
+      900px 600px at 15% 10%,
+      rgba(96, 165, 250, 0.1),
+      transparent 60%
+    ), radial-gradient(800px 500px at 85% 90%, rgba(167, 139, 250, 0.1), transparent 60%),
     linear-gradient(180deg, #0a0d12 0%, #0c0f14 100%);
+
+  /* Mockup specific color variables (dark) */
+  --ok: #34d399;
+  --ok-soft: rgba(52, 211, 153, 0.16);
+  --warn: #fbbf24;
+  --warn-soft: rgba(251, 191, 36, 0.16);
+  --err: #f87171;
+  --err-soft: rgba(248, 113, 113, 0.16);
+  --accent-violet: #a78bfa;
+  --accent-violet-soft: rgba(167, 139, 250, 0.16);
+  --chart-1-soft: rgba(96, 165, 250, 0.2);
 
   color-scheme: dark;
   color: var(--text-primary);

@@ -60,14 +60,14 @@ export default function MonitorsPage() {
             <button
               type="button"
               onClick={() => navigate({ to: "/monitors/notifications" })}
-              className="rounded border border-border bg-card px-3 py-1.5 text-sm text-foreground hover:bg-secondary"
+              className="rounded border border-border bg-card px-3 py-1.5 text-foreground text-sm hover:bg-secondary"
             >
               Manage notifications
             </button>
             <button
               type="button"
               onClick={() => navigate({ to: "/monitors/new" })}
-              className="flex items-center gap-1.5 rounded bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary"
+              className="flex items-center gap-1.5 rounded bg-primary px-3 py-1.5 font-medium text-sm text-white hover:bg-primary"
             >
               <Plus size={14} />
               New monitor
@@ -87,7 +87,7 @@ export default function MonitorsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search monitors by name…"
-            className="w-72 bg-transparent text-sm text-foreground placeholder-[var(--text-muted)] outline-none"
+            className="w-72 bg-transparent text-foreground text-sm placeholder-[var(--text-muted)] outline-none"
           />
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function MonitorsPage() {
       <div className="grid grid-cols-[2fr_1fr] gap-4">
         <div>
           {listQ.isPending && monitors.length === 0 ? (
-            <div className="rounded-lg border border-border bg-card p-12 text-center text-sm text-foreground-muted">
+            <div className="rounded-lg border border-border bg-card p-12 text-center text-foreground-muted text-sm">
               Loading monitors…
             </div>
           ) : (

@@ -27,11 +27,9 @@ function formatQuery(m: Monitor): string {
 function QueryCard({ monitor }: Props) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-sm font-medium text-foreground">Query</div>
+      <div className="font-medium text-foreground text-sm">Query</div>
       <div className="mt-3 rounded border border-border bg-secondary p-3">
-        <div className="font-mono text-xs text-foreground break-words">
-          {formatQuery(monitor)}
-        </div>
+        <div className="break-words font-mono text-foreground text-xs">{formatQuery(monitor)}</div>
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2">
         <div className="rounded bg-secondary p-2.5">

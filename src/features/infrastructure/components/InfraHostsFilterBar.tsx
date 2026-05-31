@@ -97,11 +97,7 @@ function ServiceSelect({
   );
 }
 
-export function InfraHostsFilterBar({
-  value,
-  serviceOptions,
-  onChange,
-}: InfraHostsFilterBarProps) {
+export function InfraHostsFilterBar({ value, serviceOptions, onChange }: InfraHostsFilterBarProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <SearchBox value={value.search} onChange={(search) => onChange({ ...value, search })} />

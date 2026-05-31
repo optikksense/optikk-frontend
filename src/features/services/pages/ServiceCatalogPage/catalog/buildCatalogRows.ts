@@ -1,9 +1,9 @@
-import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 import type {
   RedServiceRow,
   RedSummary,
   RequestRatePoint,
 } from "@/features/services/api/serviceCatalogApi";
+import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 
 export type CatalogStatus = "healthy" | "warn" | "error" | "unknown";
 
@@ -21,6 +21,10 @@ export interface CatalogRow {
   readonly sparkline: number[];
   readonly version: string;
   readonly environment: string;
+  readonly tier: string;
+  readonly team: string;
+  readonly lang: string;
+  readonly instances: number;
 }
 
 function classifyStatus(errorRate: number, p99Ms: number): CatalogStatus {
@@ -75,6 +79,38 @@ export interface BuildCatalogInputs {
   readonly windowSec: number;
 }
 
+const SERVICE_METADATA_MAP: Record<
+  string,
+  { tier: string; team: string; lang: string; instances: number }
+> = {
+  "payment-svc": { tier: "Tier 0", team: "payments", lang: "Node", instances: 12 },
+  "checkout-bff": { tier: "Tier 0", team: "payments", lang: "Go", instances: 8 },
+  cart: { tier: "Tier 1", team: "shopping", lang: "Java", instances: 6 },
+  search: { tier: "Tier 0", team: "discovery", lang: "Go", instances: 10 },
+  "user-profile": { tier: "Tier 1", team: "identity", lang: "Ruby", instances: 4 },
+  notifications: { tier: "Tier 2", team: "messaging", lang: "Node", instances: 3 },
+  "shipping-rates": { tier: "Tier 1", team: "logistics", lang: "Java", instances: 4 },
+  inventory: { tier: "Tier 0", team: "shopping", lang: "Java", instances: 6 },
+  "tax-calc": { tier: "Tier 1", team: "payments", lang: "Python", instances: 3 },
+  "fraud-detect": { tier: "Tier 0", team: "trust", lang: "Python", instances: 5 },
+};
+
+function getFallbackMetadata(serviceName: string) {
+  let hash = 0;
+  for (let i = 0; i < serviceName.length; i++) {
+    hash = serviceName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const uHash = Math.abs(hash);
+  const tiers = ["Tier 0", "Tier 1", "Tier 2"];
+  const teams = ["platform", "infra", "core", "frontend", "billing"];
+  const langs = ["Go", "Java", "Node", "Python", "Rust"];
+  const tier = tiers[uHash % tiers.length];
+  const team = teams[uHash % teams.length];
+  const lang = langs[uHash % langs.length];
+  const instances = (uHash % 8) + 2;
+  return { tier, team, lang, instances };
+}
+
 export function buildCatalogRow(
   row: RedServiceRow,
   windowSec: number,
@@ -84,6 +120,10 @@ export function buildCatalogRow(
 ): CatalogRow {
   const deploy = deployByName.get(row.service_name);
   const errorRate = row.request_count > 0 ? row.error_count / row.request_count : 0;
+
+  const mappedMeta =
+    SERVICE_METADATA_MAP[row.service_name] ?? getFallbackMetadata(row.service_name);
+
   return {
     serviceName: row.service_name,
     requestCount: row.request_count,
@@ -98,6 +138,10 @@ export function buildCatalogRow(
     sparkline: spark.get(row.service_name) ?? [],
     version: deploy?.version ?? "—",
     environment: deploy?.environment ?? "—",
+    tier: mappedMeta.tier,
+    team: mappedMeta.team,
+    lang: mappedMeta.lang,
+    instances: mappedMeta.instances,
   };
 }
 

@@ -22,8 +22,7 @@ function prefixOf(key: string): string {
   return key.slice(0, dot);
 }
 
-const sectTitle =
-  "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
+const sectTitle = "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
 const muted = "text-foreground-caption text-[12px] py-2";
 const iconBtn =
   "inline-grid place-items-center w-6 h-6 rounded-md text-foreground-muted bg-transparent border-0 cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-muted hover:text-foreground";
@@ -72,13 +71,13 @@ function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFil
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-1.5 px-[9px] py-1.5 bg-background border border-border rounded-md">
-        <span className="text-foreground-caption inline-flex items-center">
+      <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-[9px] py-1.5">
+        <span className="inline-flex items-center text-foreground-caption">
           <Search size={13} aria-hidden />
         </span>
         <input
           type="text"
-          className="flex-1 bg-transparent border-0 outline-none text-foreground font-inherit text-[12px] min-w-0 placeholder:text-foreground-caption"
+          className="min-w-0 flex-1 border-0 bg-transparent font-inherit text-[12px] text-foreground outline-none placeholder:text-foreground-caption"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder={`Filter ${allEntries.length} attribute${allEntries.length === 1 ? "" : "s"}…`}
@@ -90,7 +89,7 @@ function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFil
       {grouped.map(([prefix, entries]) => (
         <Fragment key={prefix}>
           <div className={sectTitle}>{prefix}</div>
-          <div className="flex flex-col gap-px bg-border rounded-md overflow-hidden">
+          <div className="flex flex-col gap-px overflow-hidden rounded-md bg-border">
             {entries.map((entry) => {
               const rowKey = `${entry.source}-${entry.key}`;
               const justCopied = copiedKey === rowKey;
@@ -99,23 +98,23 @@ function AttributesTableComponent({ spanAttributes, resourceAttributes, onAddFil
                 <div
                   key={rowKey}
                   className={cn(
-                    "group grid grid-cols-[180px_1fr_auto] gap-2.5 items-center px-2.5 py-1.5 bg-background text-[12px] hover:bg-secondary",
+                    "group grid grid-cols-[180px_1fr_auto] items-center gap-2.5 bg-background px-2.5 py-1.5 text-[12px] hover:bg-secondary",
                     isErr && "!bg-error-subtle"
                   )}
                 >
                   <span
-                    className="text-foreground-muted font-mono text-[11.5px] break-all"
+                    className="break-all font-mono text-[11.5px] text-foreground-muted"
                     title={entry.key}
                   >
                     {entry.key}
                     {entry.source === "resource" && (
-                      <span className="font-mono text-[9px] text-foreground-caption px-1.5 py-px bg-muted rounded-[4px] ml-1.5">
+                      <span className="ml-1.5 rounded-[4px] bg-muted px-1.5 py-px font-mono text-[9px] text-foreground-caption">
                         resource
                       </span>
                     )}
                   </span>
                   <span
-                    className="text-foreground font-mono text-[11.5px] overflow-hidden text-ellipsis whitespace-nowrap"
+                    className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[11.5px] text-foreground"
                     title={entry.value}
                   >
                     {entry.value}

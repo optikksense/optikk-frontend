@@ -42,14 +42,14 @@ export function LoginField({
       <div className="flex items-baseline justify-between">
         <label
           htmlFor={id}
-          className="text-[11.5px] font-semibold uppercase tracking-[0.04em] text-foreground-secondary"
+          className="font-semibold text-[11.5px] text-foreground-secondary uppercase tracking-[0.04em]"
         >
           {label}
         </label>
         {hint}
       </div>
       <div className="relative">
-        <span className="pointer-events-none absolute left-[11px] top-1/2 -translate-y-1/2 text-foreground-muted">
+        <span className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-[11px] text-foreground-muted">
           {icon}
         </span>
         <input

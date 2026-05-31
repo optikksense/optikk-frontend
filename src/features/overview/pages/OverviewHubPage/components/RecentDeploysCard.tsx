@@ -2,9 +2,9 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
 import { Skeleton, Surface } from "@/components/ui";
-import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
 import { ROUTES } from "@/shared/constants/routes";
+import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 
 interface Props {
   readonly rows: readonly ServiceLatestDeployment[] | undefined;
@@ -40,7 +40,7 @@ function Row({
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
-          <span className="overflow-hidden text-ellipsis whitespace-nowrap font-mono font-medium text-[12px] text-foreground">
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap font-medium font-mono text-[12px] text-foreground">
             {row.service_name}
           </span>
           <span className="font-mono text-[10.5px] text-foreground-muted">{row.version}</span>
@@ -75,9 +75,7 @@ export default function RecentDeploysCard({ rows, loading }: Props) {
     <Surface elevation={1} padding="md" className="flex flex-col gap-3">
       <div className="flex items-end justify-between">
         <div>
-          <div className="font-semibold text-[13px] text-foreground">
-            Recent deploys
-          </div>
+          <div className="font-semibold text-[13px] text-foreground">Recent deploys</div>
           <div className="text-[11px] text-foreground-muted">Latest active version per service</div>
         </div>
         <button
@@ -93,9 +91,7 @@ export default function RecentDeploysCard({ rows, loading }: Props) {
       {loading && visible.length === 0 ? (
         <Skeleton active paragraph={{ rows: 4 }} />
       ) : visible.length === 0 ? (
-        <div className="py-6 text-center text-[12px] text-foreground-muted">
-          No recent deploys
-        </div>
+        <div className="py-6 text-center text-[12px] text-foreground-muted">No recent deploys</div>
       ) : (
         <div className="flex flex-col gap-1.5">
           {visible.map((row) => (

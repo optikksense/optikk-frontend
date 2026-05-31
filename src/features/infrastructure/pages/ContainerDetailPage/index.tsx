@@ -35,11 +35,7 @@ export default function ContainerDetailPage(): JSX.Element {
       <ContainerDetailHero container={container} pod={pod} />
       {host && serviceName ? (
         <>
-          <ContainerDetailKpiCards
-            container={container}
-            host={host}
-            serviceName={serviceName}
-          />
+          <ContainerDetailKpiCards container={container} host={host} serviceName={serviceName} />
           <ContainerDetailSystemMetrics
             container={container}
             host={host}

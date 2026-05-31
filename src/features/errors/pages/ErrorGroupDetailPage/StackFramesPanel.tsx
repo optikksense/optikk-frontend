@@ -22,7 +22,7 @@ export function StackFramesPanel({ stacktrace }: Props): JSX.Element {
         {frames.map((frame, i) => (
           <div
             key={`${i}-${frame}`}
-            className="whitespace-pre-wrap break-words border-b border-border px-3 py-1 last:border-b-0"
+            className="whitespace-pre-wrap break-words border-border border-b px-3 py-1 last:border-b-0"
           >
             {frame}
           </div>

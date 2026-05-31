@@ -39,7 +39,8 @@ export const TRACE_TREND_SERIES: readonly TrendLegendItem[] = [
 ];
 
 function parseMs(s: string): number | null {
-  const iso = s.includes("T") ? s : s.replace(" ", "T");
+  let iso = s.includes("T") ? s : s.replace(" ", "T");
+  if (!iso.endsWith("Z")) iso += "Z";
   const ms = Date.parse(iso);
   return Number.isNaN(ms) ? null : ms;
 }

@@ -11,7 +11,6 @@ interface ServiceHubTabsProps {
 const LABELS: Record<ServiceHubTab, string> = {
   catalog: "Catalog",
   map: "Service map",
-  deploys: "Deploys",
 };
 
 function TabCount({ value, isError }: { value: number; isError: boolean }) {
@@ -19,9 +18,7 @@ function TabCount({ value, isError }: { value: number; isError: boolean }) {
     <span
       className={cn(
         "ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10px]",
-        isError
-          ? "bg-error-subtle text-error"
-          : "bg-muted text-foreground-muted"
+        isError ? "bg-error-subtle text-error" : "bg-muted text-foreground-muted"
       )}
     >
       {value}
@@ -45,9 +42,9 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1 border-b-2 px-3 py-2 text-[13px] transition-colors",
+        "flex items-center gap-1 border-b-2 px-[14px] pt-[8px] pb-[10px] text-[14px] transition-colors",
         active
-          ? "border-primary text-foreground"
+          ? "border-primary font-semibold text-foreground"
           : "border-transparent text-foreground-muted hover:text-foreground"
       )}
     >

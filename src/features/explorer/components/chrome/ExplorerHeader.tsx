@@ -23,6 +23,7 @@ interface Props {
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
   readonly disableBareFreeTextFallback?: boolean;
+  readonly hideTimePicker?: boolean;
 }
 
 export const ExplorerHeader = memo(
@@ -34,7 +35,7 @@ export const ExplorerHeader = memo(
             <SearchBar props={props} inputRef={ref} />
           </div>
           {props.actions ? <div className="flex items-center gap-2">{props.actions}</div> : null}
-          <ExplorerTimePicker />
+          {!props.hideTimePicker && <ExplorerTimePicker />}
         </div>
         {props.kpiStrip ? <div>{props.kpiStrip}</div> : null}
       </header>

@@ -171,10 +171,7 @@ export async function createMonitor(payload: CreateMonitorPayload): Promise<Moni
   return unwrap<Monitor>(raw);
 }
 
-export async function updateMonitor(
-  id: number,
-  payload: CreateMonitorPayload
-): Promise<Monitor> {
+export async function updateMonitor(id: number, payload: CreateMonitorPayload): Promise<Monitor> {
   const raw = await api.put<unknown>(`${V1}/monitors/${id}`, payload);
   return unwrap<Monitor>(raw);
 }
@@ -230,10 +227,7 @@ export async function getMonitorStatusTimeline(
   return unwrap<StatusTimelineResponse>(raw);
 }
 
-export async function getMonitorsActivity(
-  sinceMs?: number,
-  limit = 20
-): Promise<MonitorEvent[]> {
+export async function getMonitorsActivity(sinceMs?: number, limit = 20): Promise<MonitorEvent[]> {
   const params: Record<string, number> = { limit };
   if (sinceMs) params.since = sinceMs;
   const raw = await api.get<unknown>(`${V1}/monitors/activity`, { params });

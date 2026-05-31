@@ -24,10 +24,7 @@ export function PageSurface({
     <Card
       elevation={elevation}
       padding={padding}
-      className={cn(
-        "border-border bg-card shadow-[var(--shadow-sm)]",
-        className
-      )}
+      className={cn("border-border bg-card shadow-[var(--shadow-sm)]", className)}
       {...props}
     >
       {children}

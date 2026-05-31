@@ -20,10 +20,8 @@ function StatusTimelineCard({ data }: Props) {
   const total = Math.max(1, end - start);
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-sm font-medium text-foreground">Status timeline · 24h</div>
-      <div className="text-[11px] text-foreground-muted">
-        green ok · yellow warn · red alert
-      </div>
+      <div className="font-medium text-foreground text-sm">Status timeline · 24h</div>
+      <div className="text-[11px] text-foreground-muted">green ok · yellow warn · red alert</div>
       <div className="mt-4 flex h-3 overflow-hidden rounded bg-secondary">
         {bands.length === 0 ? (
           <div className="h-full w-full bg-accent" />

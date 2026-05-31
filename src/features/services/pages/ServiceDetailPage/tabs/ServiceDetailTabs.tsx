@@ -11,13 +11,10 @@ interface ServiceDetailTabsProps {
 
 const LABELS: Record<ServiceTabId, string> = {
   overview: "Overview",
-  endpoints: "Endpoints",
-  traces: "Traces",
   errors: "Errors",
-  infra: "Infrastructure",
-  deploys: "Deploys",
+  traces: "Traces",
   logs: "Logs",
-  code: "Code",
+  dependencies: "Dependencies",
 };
 
 function TabCount({ value, isError }: { value: number; isError: boolean }) {

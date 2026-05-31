@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
 import type { ServiceMetricPoint } from "@/features/metrics/types";
-import { deploymentsApi } from "@shared/api/deployments/deploymentsApi";
-import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
+import { deploymentsApi } from "@shared/api/deployments/deploymentsApi";
+import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import type { UseQueryResult } from "@tanstack/react-query";

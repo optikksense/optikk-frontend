@@ -1,8 +1,8 @@
 import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
 
-import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
 import { PageSurface } from "@shared/components/ui";
+import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
 import { getChartColor } from "@shared/utils/charting";
 
 import { useMetricNames } from "../hooks/useMetricNames";

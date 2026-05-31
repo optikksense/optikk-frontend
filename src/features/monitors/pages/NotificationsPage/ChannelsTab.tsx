@@ -83,7 +83,7 @@ export default function ChannelsTab() {
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-lg border border-border bg-card p-4">
-        <div className="text-sm font-medium">{editing ? "Edit channel" : "Create channel"}</div>
+        <div className="font-medium text-sm">{editing ? "Edit channel" : "Create channel"}</div>
         <div className="mt-3 grid grid-cols-[120px_1fr_1fr_auto] items-center gap-2">
           <select
             value={form.type}
@@ -122,18 +122,18 @@ export default function ChannelsTab() {
               type="button"
               disabled={saving}
               onClick={handleSubmit}
-              className="rounded bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary disabled:opacity-60"
+              className="rounded bg-primary px-3 py-1.5 font-medium text-white text-xs hover:bg-primary disabled:opacity-60"
             >
               {editing ? "Save" : "Create"}
             </button>
           </div>
         </div>
-        {status && <div className="mt-2 text-xs text-warning">{status}</div>}
+        {status && <div className="mt-2 text-warning text-xs">{status}</div>}
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-border text-[11px] uppercase tracking-wider text-foreground-muted">
+          <thead className="border-border border-b text-[11px] text-foreground-muted uppercase tracking-wider">
             <tr>
               <th className="py-2 pl-4 text-left font-medium">Channel</th>
               <th className="py-2 text-left font-medium">Type</th>
@@ -145,31 +145,29 @@ export default function ChannelsTab() {
           <tbody>
             {channelsQ.isPending && !channelsQ.data ? (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-foreground-muted">
+                <td colSpan={5} className="py-6 text-center text-foreground-muted text-xs">
                   Loading…
                 </td>
               </tr>
             ) : (channelsQ.data ?? []).length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-foreground-muted">
+                <td colSpan={5} className="py-6 text-center text-foreground-muted text-xs">
                   No channels yet.
                 </td>
               </tr>
             ) : (
               (channelsQ.data ?? []).map((ch) => (
-                <tr key={ch.id} className="border-b border-border last:border-0">
+                <tr key={ch.id} className="border-border border-b last:border-0">
                   <td className="py-2 pl-4">
                     <div className="flex items-center gap-2">
                       <Send size={13} className="text-foreground-muted" />
                       <span className="font-mono text-xs">{ch.name}</span>
                     </div>
                   </td>
-                  <td className="py-2 font-mono text-[10px] font-bold uppercase">{ch.type}</td>
+                  <td className="py-2 font-bold font-mono text-[10px] uppercase">{ch.type}</td>
                   <td className="py-2 text-right font-mono">{ch.used_by_count}</td>
                   <td className="py-2 font-mono text-[11px] text-foreground-muted">
-                    {ch.last_delivery_at
-                      ? new Date(ch.last_delivery_at).toLocaleString()
-                      : "—"}
+                    {ch.last_delivery_at ? new Date(ch.last_delivery_at).toLocaleString() : "—"}
                   </td>
                   <td className="py-2 pr-4 text-right">
                     <button

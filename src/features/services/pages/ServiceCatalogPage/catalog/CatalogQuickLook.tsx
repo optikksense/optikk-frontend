@@ -31,9 +31,7 @@ export function CatalogQuickLook({ row, onClose, onOpenService }: Props) {
       <div className="flex items-start gap-2.5">
         <ServiceAvatar serviceName={row.serviceName} size={32} />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[14px] font-bold text-foreground">
-            {row.serviceName}
-          </div>
+          <div className="truncate font-bold text-[14px] text-foreground">{row.serviceName}</div>
           <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-foreground-muted">
             <StatusDot status={row.status} />
             <span>{statusLabel(row.status)}</span>
@@ -56,11 +54,17 @@ export function CatalogQuickLook({ row, onClose, onOpenService }: Props) {
 
       <div>
         <div className={STAT_K}>Request rate · last 1h</div>
-        <div className="mt-1 text-[14px] font-semibold text-foreground tabular-nums">
-          {fmtNum(row.rps)} <span className="text-[11px] font-normal text-foreground-muted">rps</span>
+        <div className="mt-1 font-semibold text-[14px] text-foreground tabular-nums">
+          {fmtNum(row.rps)}{" "}
+          <span className="font-normal text-[11px] text-foreground-muted">rps</span>
         </div>
         <div className="mt-1.5">
-          <SparklineCell values={row.sparkline} tone={sparkTone(row.status)} width={248} height={40} />
+          <SparklineCell
+            values={row.sparkline}
+            tone={sparkTone(row.status)}
+            width={248}
+            height={40}
+          />
         </div>
       </div>
 
@@ -86,7 +90,7 @@ export function CatalogQuickLook({ row, onClose, onOpenService }: Props) {
       <button
         type="button"
         onClick={() => onOpenService(row.serviceName)}
-        className="mt-auto inline-flex items-center justify-center gap-1.5 rounded-md border border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] px-3 py-2 text-[12px] font-medium text-primary hover:bg-[var(--color-primary-subtle-18)]"
+        className="mt-auto inline-flex items-center justify-center gap-1.5 rounded-md border border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] px-3 py-2 font-medium text-[12px] text-primary hover:bg-[var(--color-primary-subtle-18)]"
       >
         Open service <ExternalLink size={13} />
       </button>

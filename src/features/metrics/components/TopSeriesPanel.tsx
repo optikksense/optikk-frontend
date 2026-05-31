@@ -60,10 +60,7 @@ export function TopSeriesPanel({ result, unit }: TopSeriesPanelProps) {
             const pct = Math.min(100, maxValue > 0 ? (row.current / maxValue) * 100 : 0);
             const hot = pct >= 80;
             return (
-              <div
-                key={row.label}
-                className="relative overflow-hidden rounded-[5px] px-2 py-1.5"
-              >
+              <div key={row.label} className="relative overflow-hidden rounded-[5px] px-2 py-1.5">
                 <div
                   className="absolute inset-y-0 left-0"
                   style={{

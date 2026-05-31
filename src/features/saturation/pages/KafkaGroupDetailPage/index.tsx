@@ -52,9 +52,7 @@ export default function KafkaGroupDetailPage(): JSX.Element {
       title: "Topic",
       key: "topic",
       width: 260,
-      render: (_value, row) => (
-        <span className="font-medium text-foreground">{row.topic}</span>
-      ),
+      render: (_value, row) => <span className="font-medium text-foreground">{row.topic}</span>,
     },
     {
       title: "Bytes/s",

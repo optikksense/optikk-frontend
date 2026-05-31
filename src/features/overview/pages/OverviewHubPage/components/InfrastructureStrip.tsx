@@ -36,7 +36,7 @@ export default function InfrastructureStrip() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-end justify-between">
-        <span className="font-medium text-[10.5px] uppercase tracking-wider text-foreground-muted">
+        <span className="font-medium text-[10.5px] text-foreground-muted uppercase tracking-wider">
           Infrastructure
         </span>
         <button
@@ -70,9 +70,7 @@ export default function InfrastructureStrip() {
                 {tile.icon}
               </span>
               <span className="flex min-w-0 flex-col">
-                <span className="font-semibold text-[13px] text-foreground">
-                  {tile.label}
-                </span>
+                <span className="font-semibold text-[13px] text-foreground">{tile.label}</span>
                 <span className="text-[11px] text-foreground-muted">{tile.description}</span>
               </span>
             </button>

@@ -146,4 +146,3 @@ export function getProcessErrors(s: RequestTime, e: RequestTime, f?: KafkaFilter
     withFilter(s, e, f)
   );
 }
-

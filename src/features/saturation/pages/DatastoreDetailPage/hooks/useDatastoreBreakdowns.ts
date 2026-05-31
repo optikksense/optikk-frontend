@@ -13,13 +13,13 @@ import type {
   OpsSeriesPoint,
   ReadWriteSeriesPoint,
 } from "@/features/saturation/api/databaseSeriesSchemas";
+import type { DatabaseFilters } from "@/features/saturation/api/databaseSlowQueriesApi";
 import {
   getOpsByCollection,
   getOpsByNamespace,
   getOpsByOperation,
   getOpsReadVsWrite,
 } from "@/features/saturation/api/databaseVolumeApi";
-import type { DatabaseFilters } from "@/features/saturation/api/databaseSlowQueriesApi";
 import {
   type GroupedSeriesResult,
   groupSeriesByLabel,
@@ -35,11 +35,9 @@ function useLatencyP95Breakdown(
   ) => Promise<LatencySeriesPoint[]>
 ): GroupedSeriesResult {
   const filters: DatabaseFilters = { db_system: system };
-  const query = useTimeRangeQuery<LatencySeriesPoint[]>(
-    key,
-    (_t, s, e) => fetcher(s, e, filters),
-    { extraKeys: [system] }
-  );
+  const query = useTimeRangeQuery<LatencySeriesPoint[]>(key, (_t, s, e) => fetcher(s, e, filters), {
+    extraKeys: [system],
+  });
   return useMemo(
     () =>
       groupSeriesByLabel(
@@ -63,11 +61,9 @@ function useOpsBreakdown(
   ) => Promise<OpsSeriesPoint[]>
 ): GroupedSeriesResult {
   const filters: DatabaseFilters = { db_system: system };
-  const query = useTimeRangeQuery<OpsSeriesPoint[]>(
-    key,
-    (_t, s, e) => fetcher(s, e, filters),
-    { extraKeys: [system] }
-  );
+  const query = useTimeRangeQuery<OpsSeriesPoint[]>(key, (_t, s, e) => fetcher(s, e, filters), {
+    extraKeys: [system],
+  });
   return useMemo(
     () =>
       groupSeriesByLabel(

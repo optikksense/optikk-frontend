@@ -4,9 +4,6 @@ import { lazy } from "react";
 import type { DomainConfig } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
 
-const ServiceHubPage = lazy(() =>
-  import("./pages/ServiceHubPage").then((module) => ({ default: module.default }))
-);
 const ServiceHealthGridRenderer = lazy(() =>
   import("./dashboard/renderers/ServiceHealthGridRenderer").then((module) => ({
     default: module.ServiceHealthGridRenderer,
@@ -40,14 +37,14 @@ export const overviewConfig: DomainConfig = {
       group: "observe",
     },
     {
-      path: ROUTES.service,
+      path: ROUTES.services,
       label: "Service",
       icon: Server,
       group: "observe",
     },
   ],
   routes: [],
-  dashboardPages: [{ pageId: "service", page: ServiceHubPage }],
+  dashboardPages: [],
   dashboardPanels: [
     { panelType: "service-health-grid", kind: "specialized", component: ServiceHealthGridRenderer },
     { panelType: "latency-histogram", kind: "specialized", component: LatencyHistogramRenderer },

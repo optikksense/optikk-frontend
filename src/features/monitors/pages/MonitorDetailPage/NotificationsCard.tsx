@@ -11,11 +11,11 @@ function NotificationsCard({ monitor }: Props) {
   const ids = monitor.notify.channel_ids ?? [];
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-sm font-medium text-foreground">Notifications</div>
+      <div className="font-medium text-foreground text-sm">Notifications</div>
       <div className="text-[11px] text-foreground-muted">{ids.length} channels configured</div>
       <div className="mt-3 flex flex-col gap-2">
         {ids.length === 0 ? (
-          <div className="text-xs text-foreground-muted">No channels configured.</div>
+          <div className="text-foreground-muted text-xs">No channels configured.</div>
         ) : (
           ids.map((id) => (
             <div

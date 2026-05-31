@@ -54,9 +54,7 @@ export function ServiceCatalogHeader({ aggregate, environment }: ServiceCatalogH
       <div className="flex items-start gap-3">
         <HeaderIcon />
         <div>
-          <h1 className="font-bold text-[22px] text-foreground leading-tight">
-            Services
-          </h1>
+          <h1 className="font-bold text-[22px] text-foreground leading-tight">Services</h1>
           <div className="mt-1 text-[12px] text-foreground-muted">
             {buildSubtitle(aggregate, environment, org)}
           </div>

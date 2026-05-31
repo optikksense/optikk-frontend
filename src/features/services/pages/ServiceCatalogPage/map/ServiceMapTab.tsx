@@ -2,8 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 
 import {
-  type ServiceTopologyResponse,
   ServiceTopologyGraph,
+  type ServiceTopologyResponse,
   buildTopologyGraph,
   getServiceTopology,
   topologyEdgeTypes,
@@ -14,8 +14,8 @@ import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import { focusSubgraph, highestTrafficService } from "./focusSubgraph";
 import { ServiceMapToolbar } from "./ServiceMapToolbar";
+import { focusSubgraph, highestTrafficService } from "./focusSubgraph";
 
 type Hops = 1 | 2;
 
@@ -24,7 +24,10 @@ const EMPTY: ServiceTopologyResponse = { nodes: [], edges: [] };
 function StatusOverlay({ message, tone }: { message: string; tone: "muted" | "error" }) {
   const color = tone === "error" ? "var(--color-error)" : "var(--text-muted)";
   return (
-    <div className="absolute inset-0 flex items-center justify-center text-[13px]" style={{ color }}>
+    <div
+      className="absolute inset-0 flex items-center justify-center text-[13px]"
+      style={{ color }}
+    >
       {message}
     </div>
   );
@@ -64,7 +67,7 @@ export function ServiceMapTab() {
   const isEmpty = !query.isLoading && nodes.length === 0;
 
   return (
-    <div className="flex h-[calc(100vh-260px)] min-h-[480px] flex-col overflow-hidden rounded-md border border-border bg-card">
+    <div className="flex h-[calc(100vh-260px)] min-h-[480px] flex-col overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-md)]">
       <ServiceMapToolbar
         focus={effectiveFocus}
         services={services}

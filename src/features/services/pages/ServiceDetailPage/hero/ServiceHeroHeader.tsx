@@ -4,7 +4,6 @@ import { ServiceAvatar } from "@/features/services/components/ServiceAvatar";
 import { ROUTES } from "@/shared/constants/routes";
 
 import type { HeroData } from "../hooks/useServiceHeroData";
-import { HeroActions } from "./HeroActions";
 import { HeroMetaRow } from "./HeroMetaRow";
 import { StatusPill } from "./StatusPill";
 
@@ -41,7 +40,6 @@ export function ServiceHeroHeader({ serviceName, hero, instanceCount }: ServiceH
           </div>
           <HeroMetaRow hero={hero} instanceCount={instanceCount} />
         </div>
-        <HeroActions serviceName={serviceName} />
       </div>
     </header>
   );

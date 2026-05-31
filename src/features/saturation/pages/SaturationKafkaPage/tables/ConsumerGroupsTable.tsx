@@ -16,9 +16,7 @@ const COLUMNS: SimpleTableColumn<KafkaGroupRow>[] = [
     key: "consumer_group",
     width: 280,
     render: (_v, row) => (
-      <span className="truncate font-mono text-[12px] text-foreground">
-        {row.consumer_group}
-      </span>
+      <span className="truncate font-mono text-[12px] text-foreground">{row.consumer_group}</span>
     ),
   },
   {

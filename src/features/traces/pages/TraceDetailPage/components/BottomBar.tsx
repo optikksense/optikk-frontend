@@ -16,8 +16,8 @@ const kbdHint = "inline-flex gap-1 items-center";
 
 function BottomBarComponent({ traceId, spanCount, serviceCount, environment }: Props) {
   return (
-    <div className="flex items-center justify-between h-[28px] px-4 bg-secondary border-t border-border text-[11px] text-foreground-caption flex-shrink-0">
-      <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex h-[28px] flex-shrink-0 items-center justify-between border-border border-t bg-secondary px-4 text-[11px] text-foreground-caption">
+      <div className="flex flex-wrap items-center gap-2">
         <span className={botK}>trace</span>
         <span className={botV}>{traceId.slice(0, 16)}…</span>
         <span className={botSep}>·</span>
@@ -34,7 +34,7 @@ function BottomBarComponent({ traceId, spanCount, serviceCount, environment }: P
           </>
         )}
       </div>
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2">
         <span className={kbdHint}>
           <kbd className={kbd}>j</kbd>
           <kbd className={kbd}>k</kbd> navigate

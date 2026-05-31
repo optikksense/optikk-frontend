@@ -143,9 +143,7 @@ function Row({ opt, active, highlight, onHover, onSelect }: RowProps) {
       }}
       className={[
         "group flex w-full items-center gap-2 px-3 py-1.5 text-left",
-        active
-          ? "bg-secondary text-foreground"
-          : "text-foreground-secondary hover:bg-secondary",
+        active ? "bg-secondary text-foreground" : "text-foreground-secondary hover:bg-secondary",
         active ? "border-l-2 border-l-[var(--accent)]" : "border-l-2 border-l-transparent",
       ].join(" ")}
     >
@@ -190,9 +188,7 @@ function Highlighted({ text, match }: { text: string; match: string }) {
   return (
     <>
       {text.slice(0, idx)}
-      <span className="font-bold text-foreground">
-        {text.slice(idx, idx + match.length)}
-      </span>
+      <span className="font-bold text-foreground">{text.slice(idx, idx + match.length)}</span>
       {text.slice(idx + match.length)}
     </>
   );

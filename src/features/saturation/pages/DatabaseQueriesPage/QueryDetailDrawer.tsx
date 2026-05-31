@@ -28,12 +28,8 @@ function fmtCount(v: number | null | undefined): string {
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
-        {label}
-      </div>
-      <div className="mt-1 font-semibold text-[18px] text-foreground tabular-nums">
-        {value}
-      </div>
+      <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
+      <div className="mt-1 font-semibold text-[18px] text-foreground tabular-nums">{value}</div>
     </div>
   );
 }

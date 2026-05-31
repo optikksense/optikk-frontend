@@ -54,9 +54,7 @@ function TraceRow({ trace, max }: { trace: TraceRecord; max: number }) {
           </div>
         </div>
         <DurationBar ms={trace.duration_ms} max={max} />
-        <div className="font-mono text-[12px] text-foreground">
-          {fmtMs(trace.duration_ms)}
-        </div>
+        <div className="font-mono text-[12px] text-foreground">{fmtMs(trace.duration_ms)}</div>
         <div className="text-right text-[11px] text-foreground-muted">
           {relativeTimeFromIso(trace.start_time)}
         </div>

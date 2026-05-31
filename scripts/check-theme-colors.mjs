@@ -14,7 +14,7 @@
  *
  * Run: `node scripts/check-theme-colors.mjs`  (wired into `yarn ci`).
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = new URL("../src", import.meta.url).pathname;
@@ -22,7 +22,8 @@ const EXCLUDE_DIRS = ["features/marketing"];
 
 const NAMED_COLORS =
   "red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone";
-const PREFIXES = "text|bg|border|border-[tblrxyse]|ring|fill|stroke|divide|from|via|to|shadow|outline";
+const PREFIXES =
+  "text|bg|border|border-[tblrxyse]|ring|fill|stroke|divide|from|via|to|shadow|outline";
 
 const RULES = [
   {
@@ -51,7 +52,8 @@ for (const file of walk(ROOT)) {
     for (const rule of RULES) {
       rule.re.lastIndex = 0;
       const m = rule.re.exec(line);
-      if (m) violations.push(`${file.replace(`${ROOT}/`, "src/")}:${i + 1}  [${rule.name}]  ${m[0]}`);
+      if (m)
+        violations.push(`${file.replace(`${ROOT}/`, "src/")}:${i + 1}  [${rule.name}]  ${m[0]}`);
     }
   });
 }

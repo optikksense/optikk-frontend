@@ -39,9 +39,7 @@ function FacetShowAllModalComponent(props: Props) {
           aria-describedby={undefined}
         >
           <div className="flex items-center justify-between">
-            <Dialog.Title className="font-medium text-[13px] text-foreground">
-              {label}
-            </Dialog.Title>
+            <Dialog.Title className="font-medium text-[13px] text-foreground">{label}</Dialog.Title>
             <Dialog.Close
               aria-label="Close"
               className="rounded p-1 text-foreground-muted hover:text-foreground"

@@ -18,9 +18,7 @@ function buildColumns(scope: "topic" | "group"): SimpleTableColumn<KafkaPartitio
           key: "consumer_group",
           width: 300,
           render: (_v, row) => (
-            <span className="font-mono text-[12px] text-foreground">
-              {row.consumer_group}
-            </span>
+            <span className="font-mono text-[12px] text-foreground">{row.consumer_group}</span>
           ),
         }
       : {
@@ -60,9 +58,7 @@ export function KafkaPartitionsCard({ rows, scope }: KafkaPartitionsCardProps) {
         <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
           Partitions
         </div>
-        <div className="mt-2 font-semibold text-[18px] text-foreground">
-          Partition-level lag
-        </div>
+        <div className="mt-2 font-semibold text-[18px] text-foreground">Partition-level lag</div>
       </div>
       <SimpleTable
         dataSource={rows}

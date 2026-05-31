@@ -1,4 +1,4 @@
-import { type KpiDelta, type KpiTone, KpiCard } from "@shared/components/ui/dashboard/KpiCard";
+import { KpiCard, type KpiDelta, type KpiTone } from "@shared/components/ui/dashboard/KpiCard";
 
 import { fmtMs, fmtNum } from "../../ServiceDetailPage/formatters";
 import type { CatalogAggregate } from "../hooks/useCatalogAggregate";

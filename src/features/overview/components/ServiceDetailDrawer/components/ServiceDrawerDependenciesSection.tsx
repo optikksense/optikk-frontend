@@ -52,9 +52,7 @@ function ServiceDrawerDependenciesSectionComponent({
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
             <div>
-              <div className="mb-2 font-medium text-[12px] text-foreground-secondary">
-                Upstream
-              </div>
+              <div className="mb-2 font-medium text-[12px] text-foreground-secondary">Upstream</div>
               <CompactTable
                 rows={upstreamRows}
                 emptyText="No upstream callers in range."

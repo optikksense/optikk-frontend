@@ -30,9 +30,7 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
           <div className="flex flex-col gap-0.5">
             <span className="break-all">{formatEndpointLabel(row)}</span>
             {formatEndpointMeta(row) ? (
-              <span className="text-[11px] text-foreground-muted">
-                {formatEndpointMeta(row)}
-              </span>
+              <span className="text-[11px] text-foreground-muted">{formatEndpointMeta(row)}</span>
             ) : null}
           </div>
         ),

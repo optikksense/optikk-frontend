@@ -26,12 +26,7 @@ export function MetricSegmentedControl<T extends string>({
 }: MetricSegmentedControlProps<T>) {
   const heightClass = size === "sm" ? "h-7 px-2.5 text-[11px]" : "h-8 px-3 text-[12px]";
   return (
-    <div
-      className={cn(
-        "inline-flex overflow-hidden rounded-lg border border-border",
-        className
-      )}
-    >
+    <div className={cn("inline-flex overflow-hidden rounded-lg border border-border", className)}>
       {options.map((option) => {
         const active = value === option.value;
         return (

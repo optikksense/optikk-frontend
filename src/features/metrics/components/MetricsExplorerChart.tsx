@@ -168,18 +168,14 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="min-h-[400px]">
         <div className="flex h-[360px] items-center justify-center">
-          <div className="text-[13px] text-foreground-muted">
-            No data for the selected query.
-          </div>
+          <div className="text-[13px] text-foreground-muted">No data for the selected query.</div>
         </div>
       </PageSurface>
     );
   }
 
   const truncated = series.length > MAX_RENDERED_SERIES;
-  const widthAdjusted = smooth
-    ? series
-    : series.map((s) => ({ ...s, width: 1 }));
+  const widthAdjusted = smooth ? series : series.map((s) => ({ ...s, width: 1 }));
   const renderedSeries = truncated ? widthAdjusted.slice(0, MAX_RENDERED_SERIES) : widthAdjusted;
 
   return (

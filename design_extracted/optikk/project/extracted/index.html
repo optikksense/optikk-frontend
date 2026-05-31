@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>Optikk</title>
+<meta http-equiv="refresh" content="0; url=Overview.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+</head><body>
+<script>location.replace("Overview.html");</script>
+<a href="Overview.html">Open Optikk →</a>
+
+  <style>
+    #__theme-toggle{
+      position:fixed; bottom:16px; right:16px; z-index:99999;
+      background:var(--bg-card, #fff); color:var(--fg-0, #111);
+      border:1px solid var(--line, rgba(0,0,0,0.12));
+      border-radius:999px; padding:6px 12px; font:600 12px/1 Inter, system-ui, sans-serif;
+      cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.18);
+      display:inline-flex; align-items:center; gap:6px;
+      transition:transform .12s ease;
+    }
+    #__theme-toggle:hover{ transform:translateY(-1px); }
+    #__theme-toggle .__dot{ width:8px; height:8px; border-radius:50%; background:var(--brand, #3b82f6); }
+  </style>
+  <script>
+  /* Floating theme toggle — single source of truth is the documentElement[data-theme]
+     attribute, mirrored to localStorage("optikk-tweaks"). Stays in sync with the
+     in-app Tweaks panel: a MutationObserver keeps the label current when the theme
+     is changed elsewhere, and clicks broadcast "optikk:themechange" for the app. */
+  (function(){
+    function persisted(){
+      try{ var s=localStorage.getItem("optikk-tweaks"); return s?(JSON.parse(s).theme||"light"):"light"; } catch(e){ return "dark"; }
+    }
+    function current(){ return document.documentElement.getAttribute("data-theme") || persisted(); }
+    function syncLabel(){
+      var btn=document.getElementById("__theme-toggle");
+      if(!btn) return;
+      var lbl=btn.querySelector(".__label");
+      if(lbl) lbl.textContent = current()==="light" ? "Light" : "Dark";
+    }
+    function setTheme(t){
+      document.documentElement.setAttribute("data-theme", t);
+      try{
+        var s=localStorage.getItem("optikk-tweaks");
+        var obj=s?JSON.parse(s):{};
+        obj.theme=t;
+        localStorage.setItem("optikk-tweaks", JSON.stringify(obj));
+      }catch(e){}
+      window.dispatchEvent(new CustomEvent("optikk:themechange",{ detail:t }));
+    }
+    function mount(){
+      if(document.getElementById("__theme-toggle")) return;
+      var btn=document.createElement("button");
+      btn.id="__theme-toggle";
+      btn.title="Toggle theme";
+      btn.setAttribute("aria-label","Toggle theme");
+      btn.innerHTML='<span class="__dot"></span><span class="__label"></span>';
+      btn.addEventListener("click", function(){ setTheme(current()==="dark"?"light":"dark"); });
+      document.body.appendChild(btn);
+      syncLabel();
+      // Reflect theme changes made anywhere (Tweaks panel, other tabs) on the label.
+      new MutationObserver(syncLabel).observe(document.documentElement,{ attributes:true, attributeFilter:["data-theme"] });
+    }
+    if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", mount); else mount();
+  })();
+  </script>
+
+
+</body></html>

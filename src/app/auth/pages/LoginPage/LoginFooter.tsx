@@ -5,10 +5,7 @@ export function LoginFooter() {
         <span className="h-1.5 w-1.5 rounded-full bg-healthy" />
         All systems operational
       </span>
-      <a
-        href="#"
-        className="text-foreground-muted no-underline hover:text-foreground-secondary"
-      >
+      <a href="#" className="text-foreground-muted no-underline hover:text-foreground-secondary">
         v2026.5 · status →
       </a>
     </footer>

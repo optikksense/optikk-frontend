@@ -76,10 +76,8 @@ function summarizeCriticalPath(
   };
 }
 
-const kpiBase =
-  "bg-background px-[18px] py-[14px] flex flex-col gap-1 min-w-0";
-const kpiK =
-  "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
+const kpiBase = "bg-background px-[18px] py-[14px] flex flex-col gap-1 min-w-0";
+const kpiK = "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
 const kpiV =
   "text-[24px] font-semibold text-foreground tracking-[-0.015em] font-mono whitespace-nowrap [font-feature-settings:'tnum']";
 const kpiSub = "text-[11.5px] text-foreground-caption";
@@ -102,7 +100,7 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
 
   return (
     <div
-      className="grid gap-px bg-border border-b border-border"
+      className="grid gap-px border-border border-b bg-border"
       style={{
         gridTemplateColumns:
           "minmax(220px, 1.4fr) minmax(110px, 0.7fr) minmax(150px, 0.9fr) minmax(260px, 2fr)",
@@ -145,7 +143,7 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
       <div className={cn(kpiBase, "gap-1.5")}>
         <div className={kpiK}>Critical path</div>
         <div
-          className="text-[13.5px] font-medium text-foreground leading-[1.35] break-words"
+          className="break-words font-medium text-[13.5px] text-foreground leading-[1.35]"
           title={critical.label}
         >
           {critical.label || "—"}
@@ -165,34 +163,34 @@ function BaselineBar({ dur, p50, p95 }: { dur: number; p50: number; p95: number 
   const p95Pct = Math.min(100, (p95 / max) * 100);
   return (
     <div className="mt-1.5">
-      <div className="relative h-1.5 rounded-[3px] bg-muted overflow-visible">
+      <div className="relative h-1.5 overflow-visible rounded-[3px] bg-muted">
         <div
-          className="absolute top-0 left-0 h-full bg-error rounded-[3px]"
+          className="absolute top-0 left-0 h-full rounded-[3px] bg-error"
           style={{ width: `${fillPct}%` }}
         />
         <div
-          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-success rounded-[1px]"
+          className="-top-[3px] -bottom-[3px] absolute w-[1.5px] rounded-[1px] bg-success"
           style={{ left: `${p50Pct}%` }}
           title={`p50 ${formatDuration(p50)}`}
         />
         <div
-          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-warning rounded-[1px]"
+          className="-top-[3px] -bottom-[3px] absolute w-[1.5px] rounded-[1px] bg-warning"
           style={{ left: `${p95Pct}%` }}
           title={`p95 ${formatDuration(p95)}`}
         />
       </div>
-      <div className="flex gap-3 mt-1.5 text-[10.5px] text-foreground-caption font-mono">
+      <div className="mt-1.5 flex gap-3 font-mono text-[10.5px] text-foreground-caption">
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-success" />{" "}
-          p50 {formatDuration(p50)}
+          <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-success align-[1px]" /> p50{" "}
+          {formatDuration(p50)}
         </span>
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-warning" />{" "}
-          p95 {formatDuration(p95)}
+          <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-warning align-[1px]" /> p95{" "}
+          {formatDuration(p95)}
         </span>
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-error" />{" "}
-          this {formatDuration(dur)}
+          <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-error align-[1px]" /> this{" "}
+          {formatDuration(dur)}
         </span>
       </div>
     </div>

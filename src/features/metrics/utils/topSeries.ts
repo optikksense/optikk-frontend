@@ -46,7 +46,13 @@ export function buildTopSeriesRows(
   // Aggregate current value + delta per group key (average across members).
   const groups = new Map<
     string,
-    { sublabel?: string; currentSum: number; currentCount: number; deltaSum: number; deltaCount: number }
+    {
+      sublabel?: string;
+      currentSum: number;
+      currentCount: number;
+      deltaSum: number;
+      deltaCount: number;
+    }
   >();
 
   for (const series of result.series) {

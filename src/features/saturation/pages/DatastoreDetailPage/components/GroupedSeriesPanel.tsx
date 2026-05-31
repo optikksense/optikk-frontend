@@ -1,5 +1,5 @@
-import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 import { Card } from "@shared/components/primitives/ui";
+import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import type { GroupedSeriesResult } from "@/features/saturation/series/groupSeriesByLabel";
 

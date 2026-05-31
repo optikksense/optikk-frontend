@@ -56,7 +56,7 @@ function TraceTabBarComponent({
   ];
 
   return (
-    <div className="flex items-center gap-4 px-4 bg-background border-b border-border">
+    <div className="flex items-center gap-4 border-border border-b bg-background px-4">
       <div className="flex">
         {tabs.map((t) => {
           const Icon = t.icon;
@@ -67,8 +67,8 @@ function TraceTabBarComponent({
               key={t.key}
               type="button"
               className={cn(
-                "inline-flex items-center gap-[7px] px-3 py-2.5 text-[12.5px] text-foreground-muted border-0 bg-transparent cursor-pointer border-b-2 border-transparent -mb-px hover:text-foreground",
-                isActive && "text-foreground border-b-primary"
+                "-mb-px inline-flex cursor-pointer items-center gap-[7px] border-0 border-transparent border-b-2 bg-transparent px-3 py-2.5 text-[12.5px] text-foreground-muted hover:text-foreground",
+                isActive && "border-b-primary text-foreground"
               )}
               onClick={() => onActiveTabChange(t.key)}
               title={`${t.label} (${t.hotkey})`}
@@ -76,7 +76,7 @@ function TraceTabBarComponent({
               <Icon size={13} aria-hidden />
               {t.label}
               {errCount > 0 && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-px rounded-full text-[10px] font-mono bg-error-subtle text-error">
+                <span className="inline-flex items-center gap-1 rounded-full bg-error-subtle px-1.5 py-px font-mono text-[10px] text-error">
                   {errCount}
                 </span>
               )}
@@ -85,14 +85,14 @@ function TraceTabBarComponent({
         })}
       </div>
       <div className="ml-auto py-1.5">
-        <div className="flex items-center gap-1.5 w-[420px] max-w-[60vw] px-2 py-1 bg-secondary border border-border rounded-md focus-within:border-primary focus-within:bg-background focus-within:shadow-[0_0_0_3px_var(--color-primary-subtle-15)]">
-          <span className="text-foreground-caption inline-flex items-center">
+        <div className="flex w-[420px] max-w-[60vw] items-center gap-1.5 rounded-md border border-border bg-secondary px-2 py-1 focus-within:border-primary focus-within:bg-background focus-within:shadow-[0_0_0_3px_var(--color-primary-subtle-15)]">
+          <span className="inline-flex items-center text-foreground-caption">
             <Search size={13} aria-hidden />
           </span>
           <input
             ref={inputRef}
             type="search"
-            className="flex-1 bg-transparent border-0 outline-none text-foreground font-inherit text-[12.5px] min-w-0 placeholder:text-foreground-caption"
+            className="min-w-0 flex-1 border-0 bg-transparent font-inherit text-[12.5px] text-foreground outline-none placeholder:text-foreground-caption"
             placeholder="Filter spans by op, service, attribute…"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}

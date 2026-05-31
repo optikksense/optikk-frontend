@@ -30,10 +30,7 @@ function MetaLink({ label, to, value }: { label: string; to: string; value: stri
   return (
     <span className="inline-flex items-baseline gap-1 whitespace-nowrap">
       <span>{label}</span>
-      <Link
-        to={dynamicTo(to)}
-        className="font-medium font-mono text-primary hover:underline"
-      >
+      <Link to={dynamicTo(to)} className="font-medium font-mono text-primary hover:underline">
         {value}
       </Link>
     </span>

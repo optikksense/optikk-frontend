@@ -46,7 +46,7 @@ function ForgotLink() {
   return (
     <a
       href="#"
-      className="text-[11.5px] font-medium text-[var(--login-link)] no-underline hover:underline"
+      className="font-medium text-[11.5px] text-[var(--login-link)] no-underline hover:underline"
     >
       Forgot?
     </a>
@@ -66,7 +66,7 @@ function ShowHideToggle({
       onClick={() => onToggle(!show)}
       tabIndex={-1}
       aria-label={show ? "Hide password" : "Show password"}
-      className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1.5 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-foreground-muted transition-colors hover:bg-surface-inset hover:text-foreground-secondary"
+      className="-translate-y-1/2 absolute top-1/2 right-2 rounded px-1.5 py-1 font-semibold text-[11px] text-foreground-muted uppercase tracking-[0.04em] transition-colors hover:bg-surface-inset hover:text-foreground-secondary"
     >
       {show ? "Hide" : "Show"}
     </button>
@@ -77,10 +77,7 @@ function KeepSignedInRow() {
   return (
     <div className="my-1 mb-[18px] flex items-center justify-between">
       <label className="flex cursor-pointer select-none items-center gap-2 text-[13px] text-foreground-secondary">
-        <input
-          type="checkbox"
-          className="m-0 h-[14px] w-[14px] accent-[var(--color-primary)]"
-        />
+        <input type="checkbox" className="m-0 h-[14px] w-[14px] accent-[var(--color-primary)]" />
         Keep me signed in
       </label>
     </div>
@@ -93,7 +90,7 @@ function SubmitButton({ loading }: { readonly loading: boolean }) {
       data-testid="login-submit"
       type="submit"
       disabled={loading}
-      className="flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-primary bg-primary font-[inherit] text-sm font-semibold text-[var(--login-submit-fg)] transition-[background-color,border-color,transform] duration-150 hover:border-[var(--login-link)] hover:bg-[var(--login-link)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+      className="flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-primary bg-primary font-[inherit] font-semibold text-[var(--login-submit-fg)] text-sm transition-[background-color,border-color,transform] duration-150 hover:border-[var(--login-link)] hover:bg-[var(--login-link)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
     >
       {loading ? (
         <span className="h-[16px] w-[16px] animate-[spin_0.6s_linear_infinite] rounded-full border-2 border-transparent border-t-current" />
@@ -123,7 +120,7 @@ function RequestAccessLine() {
 
 function LegalLine() {
   return (
-    <p className="mx-auto mt-[22px] max-w-[320px] text-center text-[11px] leading-[1.5] text-foreground-muted">
+    <p className="mx-auto mt-[22px] max-w-[320px] text-center text-[11px] text-foreground-muted leading-[1.5]">
       By signing in you agree to Optikk&apos;s{" "}
       <Link to={ROUTES.terms} className="text-foreground-secondary underline">
         Terms of Service

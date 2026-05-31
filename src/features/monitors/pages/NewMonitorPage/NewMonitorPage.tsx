@@ -38,7 +38,7 @@ export default function NewMonitorPage() {
   if (editMode && detailQ.isPending && !detailQ.data) {
     return (
       <PageShell>
-        <div className="p-8 text-sm text-foreground-muted">Loading monitor…</div>
+        <div className="p-8 text-foreground-muted text-sm">Loading monitor…</div>
       </PageShell>
     );
   }
@@ -59,8 +59,8 @@ export default function NewMonitorPage() {
       </div>
 
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
-        <p className="mt-1 text-sm text-foreground-secondary">
+        <h1 className="font-semibold text-2xl text-foreground">{title}</h1>
+        <p className="mt-1 text-foreground-secondary text-sm">
           {editMode
             ? "Adjust this alert rule · changes apply on the next evaluation cycle."
             : "Create an alert rule · saved monitors are evaluated continuously and notify configured channels."}

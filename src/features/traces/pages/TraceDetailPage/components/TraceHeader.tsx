@@ -34,8 +34,7 @@ const crumbSep = "text-foreground-caption opacity-50";
 const badge =
   "inline-flex items-center px-2 py-[2px] text-[11px] font-medium tracking-[0.02em] bg-muted text-foreground-muted border border-border rounded-full whitespace-nowrap";
 
-const tidMonoSmall =
-  "text-foreground-secondary font-mono text-[11.5px] break-all";
+const tidMonoSmall = "text-foreground-secondary font-mono text-[11.5px] break-all";
 const tidLabel = "text-foreground-caption";
 const tidMute = "text-foreground-muted font-mono text-[11.5px]";
 
@@ -81,9 +80,9 @@ function TraceHeaderComponent({
   const errored = stats.errors > 0;
 
   return (
-    <header className="flex justify-between gap-6 px-5 pt-[14px] pb-3 bg-background border-b border-border">
+    <header className="flex justify-between gap-6 border-border border-b bg-background px-5 pt-[14px] pb-3">
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap gap-1.5 items-center text-[12px] text-foreground-caption">
+        <div className="flex flex-wrap items-center gap-1.5 text-[12px] text-foreground-caption">
           <button
             type="button"
             className={iconBtn}
@@ -109,29 +108,28 @@ function TraceHeaderComponent({
             </>
           )}
           <span className={crumbSep}>/</span>
-          <span className="text-foreground-secondary font-mono">{traceId.slice(0, 12)}…</span>
+          <span className="font-mono text-foreground-secondary">{traceId.slice(0, 12)}…</span>
         </div>
 
-        <div className="flex items-center gap-3 mt-2 flex-wrap">
+        <div className="mt-2 flex flex-wrap items-center gap-3">
           <span
             className={cn(
-              "w-2 h-2 rounded-full flex-shrink-0",
+              "h-2 w-2 flex-shrink-0 rounded-full",
               errored
                 ? "bg-error shadow-[0_0_0_4px_var(--color-error-subtle)]"
                 : "bg-success shadow-[0_0_0_4px_var(--color-success-subtle)]"
             )}
             title={errored ? "Errored trace" : "OK"}
           />
-          <h1 className="m-0 text-[20px] font-semibold tracking-[-0.015em] text-foreground min-w-0 break-words font-mono">
+          <h1 className="m-0 min-w-0 break-words font-mono font-semibold text-[20px] text-foreground tracking-[-0.015em]">
             {httpMethod ? `${httpMethod} ${rootOperation ?? ""}`.trim() : rootOperation || "Trace"}
           </h1>
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="flex flex-wrap gap-1.5">
             {environment && (
               <span
                 className={cn(
                   badge,
-                  environment === "prod" &&
-                    "text-success border-success-subtle bg-success-subtle"
+                  environment === "prod" && "border-success-subtle bg-success-subtle text-success"
                 )}
               >
                 {environment}
@@ -144,7 +142,7 @@ function TraceHeaderComponent({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap mt-2.5 text-[11.5px] text-foreground-caption">
+        <div className="mt-2.5 flex flex-wrap items-center gap-2 text-[11.5px] text-foreground-caption">
           <span className={tidLabel}>trace_id</span>
           <code className={tidMonoSmall}>{traceId}</code>
           <CopyTraceId traceId={traceId} />
@@ -158,22 +156,16 @@ function TraceHeaderComponent({
         </div>
       </div>
 
-      <div className="flex gap-1.5 items-start flex-shrink-0">
+      <div className="flex flex-shrink-0 items-start gap-1.5">
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-[11px] py-1.5 rounded-md text-[12.5px] font-medium border border-transparent bg-transparent text-foreground-secondary cursor-pointer hover:bg-muted hover:text-foreground hover:border-border"
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-transparent bg-transparent px-[11px] py-1.5 font-medium text-[12.5px] text-foreground-secondary hover:border-border hover:bg-muted hover:text-foreground"
           onClick={onOpenInLogs}
           title="View correlated logs"
         >
           <ExternalLink size={13} /> Logs
         </button>
-        <button
-          type="button"
-          className={iconBtn}
-          title="More"
-          aria-label="More options"
-          disabled
-        >
+        <button type="button" className={iconBtn} title="More" aria-label="More options" disabled>
           <MoreHorizontal size={14} />
         </button>
       </div>

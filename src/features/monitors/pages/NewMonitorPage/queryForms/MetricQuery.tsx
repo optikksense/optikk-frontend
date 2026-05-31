@@ -52,7 +52,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
               </button>
             );
           })}
-          <span className="text-xs text-foreground-muted">over</span>
+          <span className="text-foreground-muted text-xs">over</span>
           {WINDOWS.map((w) => {
             const active = q.window_sec === w;
             return (

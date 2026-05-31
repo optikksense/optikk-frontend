@@ -26,7 +26,7 @@ function HostCell({ node }: { node: InfrastructureNode }) {
     <div className="flex min-w-0 items-center gap-2.5">
       <StatusDot node={node} />
       <ServiceAvatar serviceName={node.host} size={26} />
-      <span className="truncate font-mono text-[12.5px] font-semibold text-foreground">
+      <span className="truncate font-mono font-semibold text-[12.5px] text-foreground">
         {node.host}
       </span>
     </div>
@@ -48,12 +48,7 @@ function ServicesCell({ node }: { node: InfrastructureNode }) {
 }
 
 function ErrorRateCell({ rate }: { rate: number }) {
-  const tone =
-    rate >= 10
-      ? "text-error"
-      : rate >= 2
-        ? "text-warning"
-        : "text-foreground";
+  const tone = rate >= 10 ? "text-error" : rate >= 2 ? "text-warning" : "text-foreground";
   return <span className={tone}>{formatPercentage(rate)}</span>;
 }
 
@@ -62,9 +57,7 @@ interface InfraHostsTableProps {
   readonly onOpenNode: (host: string) => void;
 }
 
-const COLUMNS = (
-  onOpenNode: (host: string) => void
-): SimpleTableColumn<InfrastructureNode>[] => [
+const COLUMNS = (onOpenNode: (host: string) => void): SimpleTableColumn<InfrastructureNode>[] => [
   {
     key: "host",
     title: "Host",

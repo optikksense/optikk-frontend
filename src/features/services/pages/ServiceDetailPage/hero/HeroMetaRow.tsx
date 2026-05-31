@@ -1,4 +1,3 @@
-import { relativeTimeFromIso } from "../formatters";
 import type { HeroData } from "../hooks/useServiceHeroData";
 
 interface HeroMetaRowProps {
@@ -13,12 +12,7 @@ interface MetaItem {
 
 function buildItems(hero: HeroMetaRowProps["hero"], instanceCount: number | null): MetaItem[] {
   const items: MetaItem[] = [];
-  if (hero.deployment?.version) items.push({ label: "version", value: hero.deployment.version });
-  if (hero.deployment?.environment)
-    items.push({ label: "env", value: hero.deployment.environment });
   if (instanceCount != null) items.push({ label: "instances", value: String(instanceCount) });
-  if (hero.deployment?.deployedAtIso)
-    items.push({ label: "last deploy", value: relativeTimeFromIso(hero.deployment.deployedAtIso) });
   return items;
 }
 

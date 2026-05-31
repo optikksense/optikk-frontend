@@ -11,8 +11,7 @@ const variantClasses: Record<NonNullable<IconButtonProps["variant"]>, string> = 
   primary: "bg-primary text-white hover:bg-primary-hover",
   secondary:
     "bg-muted text-foreground-secondary hover:bg-accent hover:text-foreground border border-border",
-  ghost:
-    "bg-transparent text-foreground-secondary hover:bg-accent hover:text-foreground",
+  ghost: "bg-transparent text-foreground-secondary hover:bg-accent hover:text-foreground",
   danger: "bg-error text-white hover:opacity-90",
 };
 

@@ -19,18 +19,14 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     title: "Service",
     key: "service_name",
     width: 180,
-    render: (_v, row) => (
-      <span className="font-medium text-foreground">{row.service_name}</span>
-    ),
+    render: (_v, row) => <span className="font-medium text-foreground">{row.service_name}</span>,
   },
   {
     title: "Operation",
     key: "operation_name",
     width: 220,
     render: (_v, row) => (
-      <span className="font-mono text-[12px] text-foreground-secondary">
-        {row.operation_name}
-      </span>
+      <span className="font-mono text-[12px] text-foreground-secondary">{row.operation_name}</span>
     ),
   },
   {
@@ -92,7 +88,7 @@ export default function ErrorTrackingPage(): JSX.Element {
       <PageSurface padding="lg">
         <SimpleTable
           columns={columns}
-          dataSource={groupsQ.data ?? []}
+          dataSource={groupsQ.data?.results ?? []}
           rowKey={(r) => r.group_id}
           pagination={{ pageSize: 25 }}
           onRow={(record) => ({

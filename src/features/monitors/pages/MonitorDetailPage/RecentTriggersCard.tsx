@@ -10,10 +10,10 @@ interface Props {
 function RecentTriggersCard({ events, loading }: Props) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-sm font-medium text-foreground">Recent triggers</div>
+      <div className="font-medium text-foreground text-sm">Recent triggers</div>
       <div className="text-[11px] text-foreground-muted">last events</div>
       <table className="mt-3 w-full text-xs">
-        <thead className="text-[10px] uppercase tracking-wider text-foreground-muted">
+        <thead className="text-[10px] text-foreground-muted uppercase tracking-wider">
           <tr>
             <th className="py-1 text-left font-medium">When</th>
             <th className="py-1 text-left font-medium">Kind</th>
@@ -36,10 +36,8 @@ function RecentTriggersCard({ events, loading }: Props) {
             </tr>
           ) : (
             events.map((e) => (
-              <tr key={e.id} className="border-t border-border">
-                <td className="py-1.5 font-mono">
-                  {new Date(e.started_at).toLocaleString()}
-                </td>
+              <tr key={e.id} className="border-border border-t">
+                <td className="py-1.5 font-mono">{new Date(e.started_at).toLocaleString()}</td>
                 <td className="py-1.5">{e.kind}</td>
                 <td className="py-1.5 text-right font-mono">
                   {e.value !== undefined ? e.value.toFixed(2) : "—"}

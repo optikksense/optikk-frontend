@@ -15,9 +15,7 @@ export const SERVER_COLUMNS: SimpleTableColumn<DatastoreServerRow>[] = [
     title: "Server",
     key: "server",
     width: 280,
-    render: (_value, row) => (
-      <span className="font-medium text-foreground">{row.server}</span>
-    ),
+    render: (_value, row) => <span className="font-medium text-foreground">{row.server}</span>,
   },
   {
     title: "p50",

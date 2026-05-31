@@ -49,40 +49,37 @@ function ErrorGroupRow({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="rounded-[10px] border border-error-subtle bg-secondary overflow-hidden">
+    <div className="overflow-hidden rounded-[10px] border border-error-subtle bg-secondary">
       <button
         type="button"
-        className="flex w-full items-center gap-2 px-3 py-2 text-left cursor-pointer hover:bg-muted"
+        className="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left hover:bg-muted"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
         <ChevronRight
           size={13}
-          className={cn(
-            "text-foreground-caption transition-transform",
-            open && "rotate-90"
-          )}
+          className={cn("text-foreground-caption transition-transform", open && "rotate-90")}
         />
-        <AlertTriangle size={13} className="text-error flex-none" />
-        <span className="font-mono text-[12.5px] text-foreground truncate">
+        <AlertTriangle size={13} className="flex-none text-error" />
+        <span className="truncate font-mono text-[12.5px] text-foreground">
           {group.exception_type || "Error"}
         </span>
-        <span className="ml-auto inline-flex items-center gap-1 px-[7px] py-[2px] rounded-full text-[10.5px] font-mono bg-error-subtle text-error">
+        <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-error-subtle px-[7px] py-[2px] font-mono text-[10.5px] text-error">
           ×{group.count}
         </span>
       </button>
       {open && (
-        <div className="flex flex-col gap-px border-t border-border">
+        <div className="flex flex-col gap-px border-border border-t">
           {group.spans.map((s) => (
             <button
               key={s.span_id}
               type="button"
-              className="flex flex-col gap-0.5 px-3 py-2 text-left cursor-pointer bg-background hover:bg-muted border-b border-border last:border-b-0"
+              className="flex cursor-pointer flex-col gap-0.5 border-border border-b bg-background px-3 py-2 text-left last:border-b-0 hover:bg-muted"
               onClick={() => onSpanClick({ span_id: s.span_id })}
             >
               <div className="flex items-center gap-2">
-                <span className="text-foreground-muted text-[11.5px]">{s.service_name}</span>
-                <span className="font-mono text-[12px] text-foreground truncate">
+                <span className="text-[11.5px] text-foreground-muted">{s.service_name}</span>
+                <span className="truncate font-mono text-[12px] text-foreground">
                   {s.operation_name}
                 </span>
                 <span className="ml-auto font-mono text-[11px] text-foreground-caption">
@@ -90,7 +87,7 @@ function ErrorGroupRow({
                 </span>
               </div>
               {(s.exception_message || s.status_message) && (
-                <div className="text-[11.5px] text-foreground-secondary leading-[1.45] break-words">
+                <div className="break-words text-[11.5px] text-foreground-secondary leading-[1.45]">
                   {s.exception_message || s.status_message}
                 </div>
               )}

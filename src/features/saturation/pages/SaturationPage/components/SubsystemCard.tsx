@@ -19,18 +19,18 @@ function SubsystemCardImpl({ spec }: Props): JSX.Element {
         <span className="inline-grid h-7 w-7 flex-shrink-0 place-items-center rounded-md bg-[var(--accent-bg)] text-primary">
           <SubsystemIcon name={spec.iconName} />
         </span>
-        <span className="text-[14px] font-semibold text-[var(--fg-0)]">{spec.label}</span>
+        <span className="font-semibold text-[14px] text-[var(--fg-0)]">{spec.label}</span>
         <span className="ml-auto">
           <StatusChip tone={spec.tone} text={spec.statusText} size="sm" />
         </span>
       </div>
-      <div className='font-["Geist_Mono",monospace] text-[11.5px] text-[var(--fg-3)]'>
+      <div className="font-['Geist_Mono',monospace] text-[11.5px] text-[var(--fg-3)]">
         {spec.sub}
       </div>
-      <div className='mt-[6px] font-["Geist_Mono",monospace] text-[18px] font-semibold tracking-[-0.01em] text-[var(--fg-0)]'>
+      <div className="mt-[6px] font-['Geist_Mono',monospace] font-semibold text-[18px] text-[var(--fg-0)] tracking-[-0.01em]">
         {spec.primary}
       </div>
-      <div className='-mt-[2px] font-["Geist_Mono",monospace] text-[11.5px] text-[var(--fg-3)]'>
+      <div className="-mt-[2px] font-['Geist_Mono',monospace] text-[11.5px] text-[var(--fg-3)]">
         {spec.secondary}
       </div>
     </a>

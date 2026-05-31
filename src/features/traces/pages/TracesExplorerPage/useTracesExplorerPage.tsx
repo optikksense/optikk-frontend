@@ -10,7 +10,6 @@ import {
   copyToClipboard,
   pushIncludeExcludeFilter,
 } from "@/features/explorer/components/list/rowContextMenuHelpers";
-import { useExplorerColumns } from "@/features/explorer/hooks/useExplorerColumns";
 import { useExplorerKeyboard } from "@/features/explorer/hooks/useExplorerKeyboard";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { toTrendBuckets } from "@/features/explorer/utils/trend";
@@ -19,13 +18,9 @@ import { formatNumber } from "@shared/utils/formatters";
 
 import { resolveTimeRangeBounds } from "@/types";
 
-import type { TraceScope } from "../../components/TraceScopeToggle";
-import type { TraceSortMode } from "../../components/TraceSortToggle";
-import { DEFAULT_TRACE_COLUMNS } from "../../config/columns";
 import { useTracesExplorer } from "../../hooks/useTracesExplorer";
 import type { TraceSummary, TracesFacetBucket } from "../../types/trace";
 import { sortTraces } from "../../utils/sortTraces";
-import { buildTraceColumns } from "./tracesColumns";
 
 /**
  * Page-level orchestration for the traces explorer. Wraps `useTracesExplorer`
@@ -37,11 +32,10 @@ export function useTracesExplorerPage() {
   const { state, query, facetsQuery, trendQuery, traces, facets, summary, trend } =
     useTracesExplorer({ include: ["summary", "facets", "trend"] });
   const navigate = useNavigate();
-  const { columns: columnConfig, setColumns } = useExplorerColumns("traces", DEFAULT_TRACE_COLUMNS);
-  const [sortMode, setSortMode] = useState<TraceSortMode>("recent");
-  const [scope, setScope] = useState<TraceScope>("traces");
-  const [focusedTraceId, setFocusedTraceId] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Pagination state for "Previous" button
+  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
 
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
   const timeRange = useTimeRange();
@@ -50,8 +44,7 @@ export function useTracesExplorerPage() {
   const facetGroups = useMemo<FacetGroupModel[]>(() => facetsToGroups(facets), [facets]);
   const kpis = useMemo<SummaryKPI[]>(() => buildKPIs(summary), [summary]);
   const trendBuckets = useMemo(() => toTrendBuckets(trend), [trend]);
-  const columnDefs = useMemo(() => buildTraceColumns(), []);
-  const sortedTraces = useMemo(() => sortTraces(traces, sortMode), [traces, sortMode]);
+  const sortedTraces = useMemo(() => sortTraces(traces, "recent"), [traces]);
   const filterKey = useMemo(() => JSON.stringify(state.filters), [state.filters]);
   const queryError = query.isError ? formatErrorForDisplay(query.error) : null;
 
@@ -69,18 +62,11 @@ export function useTracesExplorerPage() {
       state.setFilters([...state.filters, { field, op: "neq", value }]),
     [state]
   );
-  // Single click opens the right-rail quick-look; the preview's "Open trace"
-  // button performs the full navigation (mirrors the logs detail-panel flow).
-  const onRowClick = useCallback(
-    (row: TraceSummary) =>
-      setFocusedTraceId((cur) => (cur === row.trace_id ? null : row.trace_id)),
-    []
+  // Row click navigates straight to the trace detail page (matches the design).
+  const onOpenTrace = useCallback(
+    (traceId: string) => navigate({ to: `/traces/${encodeURIComponent(traceId)}` }),
+    [navigate]
   );
-  const focusedTrace = useMemo(
-    () => sortedTraces.find((t) => t.trace_id === focusedTraceId) ?? null,
-    [sortedTraces, focusedTraceId]
-  );
-  const onCloseQuickLook = useCallback(() => setFocusedTraceId(null), []);
   const onFreeText = useCallback(
     (text: string) => {
       if (!text) return;
@@ -93,7 +79,29 @@ export function useTracesExplorerPage() {
     if (facetsQuery) void facetsQuery.refetch();
     if (trendQuery) void trendQuery.refetch();
   }, [query, facetsQuery, trendQuery]);
-  const onClearFilters = useCallback(() => state.setFilters([]), [state]);
+  const onClearFilters = useCallback(() => {
+    state.setFilters([]);
+    setCursorHistory([]);
+    state.setCursor(null);
+  }, [state]);
+
+  const onNextPage = useCallback(() => {
+    if (query.data?.nextCursor) {
+      setCursorHistory((prev) => [...prev, state.cursor || ""]);
+      state.setCursor(query.data.nextCursor);
+    }
+  }, [query.data?.nextCursor, state.cursor, state.setCursor]);
+
+  const onPrevPage = useCallback(() => {
+    setCursorHistory((prev) => {
+      const next = [...prev];
+      const prevCursor = next.pop();
+      if (prevCursor !== undefined) {
+        state.setCursor(prevCursor === "" ? null : prevCursor);
+      }
+      return next;
+    });
+  }, [state.setCursor]);
 
   const getContextMenuItems = useCallback(
     (row: TraceSummary): readonly ContextMenuEntry[] =>
@@ -113,31 +121,24 @@ export function useTracesExplorerPage() {
     state,
     query,
     kpis,
+    summary,
     facetGroups,
     trendBuckets,
-    columnDefs,
-    columnConfig,
-    setColumns,
-    sortMode,
-    setSortMode,
     sortedTraces,
-    filterKey,
-    queryError,
-    scope,
-    setScope,
-    focusedTraceId,
-    focusedTrace,
-    onCloseQuickLook,
     zoomed: timeRange.kind === "absolute",
     searchInputRef,
     getContextMenuItems,
     onTimeRangeChange,
     onInclude,
     onExclude,
-    onRowClick,
+    onOpenTrace,
     onFreeText,
     onRetry,
     onClearFilters,
+    onNextPage,
+    onPrevPage,
+    hasPrevPage: cursorHistory.length > 0,
+    hasNextPage: Boolean(query.data?.nextCursor),
 
     startTime,
     endTime,

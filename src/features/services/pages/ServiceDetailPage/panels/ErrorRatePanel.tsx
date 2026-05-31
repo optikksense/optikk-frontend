@@ -10,7 +10,6 @@ import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
 import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
 
 import { fmtPct } from "../formatters";
-import { useDeployMarkers } from "../hooks/useDeployMarkers";
 import { useErrorRateSeries } from "../hooks/useErrorRateSeries";
 import { PanelCard } from "./PanelCard";
 
@@ -91,18 +90,17 @@ function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[]
 
 function CurrentRate({ value }: { value: number }) {
   const tone =
-    value >= 0.02
-      ? "text-error"
-      : value >= 0.005
-        ? "text-warning"
-        : "text-foreground-secondary";
-  return <span className={`font-semibold text-[13px] ${tone}`}>{fmtPct(value, value < 0.01 ? 2 : 1)}</span>;
+    value >= 0.02 ? "text-error" : value >= 0.005 ? "text-warning" : "text-foreground-secondary";
+  return (
+    <span className={`font-semibold text-[13px] ${tone}`}>
+      {fmtPct(value, value < 0.01 ? 2 : 1)}
+    </span>
+  );
 }
 
 export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
   const query = useErrorRateSeries(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
-  const deployPlugins = useDeployMarkers(serviceName);
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
   const current = useMemo(() => {
     let req = 0;
@@ -115,7 +113,7 @@ export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
   }, [query.data]);
   return (
     <PanelCard title="Error rate" subtitle="last 60m" action={<CurrentRate value={current} />}>
-      <ChartBody data={data} plugins={deployPlugins} />
+      <ChartBody data={data} plugins={[]} />
     </PanelCard>
   );
 }

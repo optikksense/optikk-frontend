@@ -4,7 +4,7 @@ export default function IntegrationsTab() {
   const q = useIntegrations();
   if (q.isPending && !q.data) {
     return (
-      <div className="rounded-lg border border-border bg-card p-6 text-center text-xs text-foreground-muted">
+      <div className="rounded-lg border border-border bg-card p-6 text-center text-foreground-muted text-xs">
         Loading integrations…
       </div>
     );
@@ -15,10 +15,7 @@ export default function IntegrationsTab() {
       {integrations.map((it) => {
         const connected = it.status === "connected";
         return (
-          <div
-            key={it.id}
-            className="rounded-lg border border-border bg-card p-4"
-          >
+          <div key={it.id} className="rounded-lg border border-border bg-card p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div
@@ -28,7 +25,7 @@ export default function IntegrationsTab() {
                   {it.name[0]}
                 </div>
                 <div>
-                  <div className="text-sm font-medium">{it.name}</div>
+                  <div className="font-medium text-sm">{it.name}</div>
                   <div className="mt-0.5 text-[11px] text-foreground-muted">{it.desc}</div>
                 </div>
               </div>

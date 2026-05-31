@@ -36,7 +36,11 @@ function useNodesSummary() {
   );
 }
 
-function tabCount(id: InfraTabId, hostCount: number | null, podCount: number | null): number | null {
+function tabCount(
+  id: InfraTabId,
+  hostCount: number | null,
+  podCount: number | null
+): number | null {
   if (id === INFRA_TAB.hosts) return hostCount;
   if (id === INFRA_TAB.containers) return podCount;
   return null;
@@ -104,18 +108,9 @@ export default function InfrastructureHubPage() {
 
   return (
     <PageShell>
-      <InfrastructureHubHeader
-        hostCount={hostCount}
-        podCount={podCount}
-        alertCount={alertCount}
-      />
+      <InfrastructureHubHeader hostCount={hostCount} podCount={podCount} alertCount={alertCount} />
       <InfrastructureKpiStrip summary={summary} />
-      <TabsRow
-        active={activeTab}
-        hostCount={hostCount}
-        podCount={podCount}
-        onChange={setTab}
-      />
+      <TabsRow active={activeTab} hostCount={hostCount} podCount={podCount} onChange={setTab} />
       <Suspense
         fallback={
           <div className="flex h-64 items-center justify-center text-[13px] text-foreground-muted">

@@ -30,9 +30,7 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
     <Surface elevation={1} padding="md" className="flex flex-col gap-3">
       <div className="flex items-end justify-between">
         <div>
-          <div className="font-semibold text-[13px] text-foreground">
-            System performance
-          </div>
+          <div className="font-semibold text-[13px] text-foreground">System performance</div>
           <div className="text-[11px] text-foreground-muted">
             Requests and errors over the selected time range
           </div>

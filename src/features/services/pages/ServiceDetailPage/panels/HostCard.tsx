@@ -45,9 +45,7 @@ export function HostCard({ host, isOutlier }: { host: HostForService; isOutlier?
       )}
     >
       <div className="flex items-baseline justify-between gap-2">
-        <span className="truncate font-mono text-[12px] text-foreground">
-          {host.host}
-        </span>
+        <span className="truncate font-mono text-[12px] text-foreground">{host.host}</span>
         <div className="flex shrink-0 items-center gap-1">
           {isOutlier && (
             <span

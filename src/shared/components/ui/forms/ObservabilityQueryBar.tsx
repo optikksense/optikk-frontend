@@ -113,10 +113,7 @@ export default function ObservabilityQueryBar({
           openDropdown();
         }}
       >
-        <Search
-          size={14}
-          className={cn(EXPLORER_QUERY_ICON_CLASSNAME, step > 0 && "text-info")}
-        />
+        <Search size={14} className={cn(EXPLORER_QUERY_ICON_CLASSNAME, step > 0 && "text-info")} />
         <button
           type="button"
           title="Add structured filter"

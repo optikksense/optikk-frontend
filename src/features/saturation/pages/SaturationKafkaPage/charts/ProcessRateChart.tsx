@@ -10,9 +10,7 @@ export function ProcessRateChart() {
       title="Process rate"
       subtitle="records processed / second · all groups"
       timestamps={series.timestamps}
-      series={[
-        { label: "processed/s", values: series.values, color: "var(--color-info,#3b82f6)" },
-      ]}
+      series={[{ label: "processed/s", values: series.values, color: "var(--color-info,#3b82f6)" }]}
       emptyLabel="No process-rate data in this window."
       yFormatter={(v) => fmtNum(v)}
     />

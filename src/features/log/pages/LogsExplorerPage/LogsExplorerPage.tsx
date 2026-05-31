@@ -2,9 +2,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
-import { cn } from "@/lib/utils";
 import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import { cn } from "@/lib/utils";
 
 import { resolveTimeRangeBounds } from "@/types";
 
@@ -108,7 +108,7 @@ export default function LogsExplorerPage() {
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-[var(--bg-0)] text-[13px] text-[var(--fg-1)] [font-family:Geist,'Inter_Tight',ui-sans-serif,system-ui,sans-serif] [font-feature-settings:'ss01','cv11','tnum']">
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-[14px] px-5 pb-3 pt-4">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-[14px] px-5 pt-4 pb-3">
         <LogsToolbar
           ref={searchInputRef}
           filters={state.filters}

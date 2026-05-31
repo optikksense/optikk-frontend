@@ -36,11 +36,11 @@ function SelfChildBarComponent({ selfMs, childMs }: Props) {
       </div>
       <div className="flex justify-between font-mono text-[10.5px] text-foreground-caption">
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-primary" />
+          <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-primary align-[1px]" />
           self {selfPct.toFixed(0)}%
         </span>
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-accent" />
+          <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-accent align-[1px]" />
           children {childPct.toFixed(0)}%
         </span>
       </div>

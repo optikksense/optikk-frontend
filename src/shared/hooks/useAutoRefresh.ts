@@ -88,10 +88,7 @@ export function useAutoRefresh({
     };
   }, [autoRefreshInterval]);
 
-  const refreshLabel = useMemo(
-    () => formatRelativeTime(lastRefreshAt),
-    [now, lastRefreshAt]
-  );
+  const refreshLabel = useMemo(() => formatRelativeTime(lastRefreshAt), [now, lastRefreshAt]);
 
   return { lastRefreshAt, refreshLabel, triggerRefresh };
 }

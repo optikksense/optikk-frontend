@@ -37,12 +37,7 @@ export function EmptyState({
       >
         <Icon size={compact ? 16 : 22} strokeWidth={1.75} />
       </span>
-      <div
-        className={cn(
-          "font-semibold text-foreground",
-          compact ? "text-[12px]" : "text-[14px]"
-        )}
-      >
+      <div className={cn("font-semibold text-foreground", compact ? "text-[12px]" : "text-[14px]")}>
         {title}
       </div>
       {description ? (

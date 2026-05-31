@@ -27,7 +27,7 @@ function Row({ row, onOpen }: { readonly row: ErrorHotspotRow; readonly onOpen: 
       className="flex items-center justify-between gap-3 rounded-md bg-surface-inset px-2.5 py-2 text-left transition-colors hover:bg-accent"
     >
       <div className="min-w-0 flex-1">
-        <div className="overflow-hidden text-ellipsis whitespace-nowrap font-mono font-medium text-[12px] text-foreground">
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap font-medium font-mono text-[12px] text-foreground">
           {row.operationName}
         </div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[10.5px] text-foreground-muted">

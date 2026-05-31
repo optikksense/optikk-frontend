@@ -1,8 +1,12 @@
 import { useMemo } from "react";
 
-import type { MetricExplorerResults, MetricQueryDefinition, MetricSpaceAggregation } from "../types";
-import { computeQuerySummary } from "../utils/seriesStats";
+import type {
+  MetricExplorerResults,
+  MetricQueryDefinition,
+  MetricSpaceAggregation,
+} from "../types";
 import { formatStatValue } from "../utils/formatStat";
+import { computeQuerySummary } from "../utils/seriesStats";
 import { DeltaBadge } from "./DeltaBadge";
 
 interface MetricsKpiStripProps {
@@ -29,7 +33,12 @@ export function MetricsKpiStrip({ primaryQuery, results, spaceAgg, unit }: Metri
     const summary = computeQuerySummary(result, spaceAgg);
     const valueUnit = unit ?? "";
     return [
-      { label: "current", value: formatStatValue(summary.current), unit: valueUnit, delta: summary.delta },
+      {
+        label: "current",
+        value: formatStatValue(summary.current),
+        unit: valueUnit,
+        delta: summary.delta,
+      },
       { label: "1h avg", value: formatStatValue(summary.avg), unit: valueUnit },
       { label: "1h min", value: formatStatValue(summary.min), unit: valueUnit },
       { label: "1h max", value: formatStatValue(summary.max), unit: valueUnit },
@@ -46,15 +55,13 @@ export function MetricsKpiStrip({ primaryQuery, results, spaceAgg, unit }: Metri
             {cell.label}
           </div>
           <div className="mt-0.5 flex items-baseline gap-1.5">
-            <span className="font-bold text-[20px] text-foreground tracking-[-0.01em] tabular-nums">
+            <span className="font-bold text-[20px] text-foreground tabular-nums tracking-[-0.01em]">
               {cell.value}
             </span>
             {cell.unit ? (
               <span className="text-[11px] text-foreground-muted">{cell.unit}</span>
             ) : null}
-            {cell.delta !== undefined ? (
-              <DeltaBadge delta={cell.delta} className="ml-1" />
-            ) : null}
+            {cell.delta !== undefined ? <DeltaBadge delta={cell.delta} className="ml-1" /> : null}
           </div>
         </div>
       ))}

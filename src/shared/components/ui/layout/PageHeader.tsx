@@ -59,9 +59,7 @@ export default function PageHeader({
       )}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          {icon && (
-            <div className="mt-0.5 flex items-center text-foreground-secondary">{icon}</div>
-          )}
+          {icon && <div className="mt-0.5 flex items-center text-foreground-secondary">{icon}</div>}
           <div className="min-w-0">
             <h1 className="m-0 font-semibold text-[1.625rem] text-foreground leading-[1.15] tracking-[-0.02em]">
               {title}

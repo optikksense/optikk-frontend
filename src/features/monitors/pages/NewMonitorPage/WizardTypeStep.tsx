@@ -9,7 +9,13 @@ interface Props {
   readonly onChange: (t: MonitorType) => void;
 }
 
-const TYPES: { id: MonitorType; label: string; desc: string; Icon: typeof Activity; color: string }[] = [
+const TYPES: {
+  id: MonitorType;
+  label: string;
+  desc: string;
+  Icon: typeof Activity;
+  color: string;
+}[] = [
   {
     id: "metric",
     label: "Metric Alert",
@@ -52,7 +58,7 @@ export default function WizardTypeStep({ value, onChange }: Props) {
             >
               <div className="flex items-center gap-2">
                 <t.Icon size={16} />
-                <span className="text-sm font-medium">{t.label}</span>
+                <span className="font-medium text-sm">{t.label}</span>
               </div>
               <div className="text-[11px] text-foreground-muted">{t.desc}</div>
             </button>

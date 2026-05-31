@@ -97,12 +97,11 @@ function KpiTile({
   const values = useMemo(() => extractValues(query.data), [query.data]);
   const last = lastOf(values);
   const valueTone: Tone = last != null ? utilizationTone(last, warnAt, errAt) : "neutral";
-  const sparklineTone = last == null ? "info" : last >= errAt ? "err" : last >= warnAt ? "warn" : "info";
+  const sparklineTone =
+    last == null ? "info" : last >= errAt ? "err" : last >= warnAt ? "warn" : "info";
   return (
     <div className="flex flex-col gap-2 rounded-md border border-border bg-card px-4 py-3">
-      <div className="text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">
-        {label}
-      </div>
+      <div className="text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
       <div
         className={`flex items-baseline gap-1.5 font-semibold text-[32px] leading-none ${VALUE_TONE[valueTone]}`}
       >

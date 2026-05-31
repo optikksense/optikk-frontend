@@ -25,10 +25,7 @@ const TAB_DISABLED = "text-foreground-muted cursor-not-allowed opacity-60";
 
 export function PageTabs({ items, activeKey, onChange, className }: PageTabsProps) {
   return (
-    <div
-      role="tablist"
-      className={cn("flex items-center gap-0 border-border border-b", className)}
-    >
+    <div role="tablist" className={cn("flex items-center gap-0 border-border border-b", className)}>
       {items.map((item) => {
         const isActive = item.key === activeKey;
         const content = (

@@ -33,9 +33,7 @@ function HopButton({
       onClick={onClick}
       className={cn(
         "px-2.5 py-1 text-[12px] transition-colors",
-        active
-          ? "bg-card-hover text-foreground"
-          : "text-foreground-muted hover:text-foreground"
+        active ? "bg-card-hover text-foreground" : "text-foreground-muted hover:text-foreground"
       )}
     >
       {value} hop{value > 1 ? "s" : ""}
@@ -63,7 +61,10 @@ export function ServiceMapToolbar({
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-3">
           {LEGEND.map((item) => (
-            <span key={item.label} className="flex items-center gap-1.5 text-[11px] text-foreground-muted">
+            <span
+              key={item.label}
+              className="flex items-center gap-1.5 text-[11px] text-foreground-muted"
+            >
               <span
                 className="inline-block h-2 w-2 rounded-full"
                 style={{ background: item.color }}

@@ -16,7 +16,7 @@ const COLORS: Record<string, string> = {
 function PriorityChip({ priority }: Props) {
   return (
     <span
-      className={`font-mono text-[11px] font-bold ${COLORS[priority] ?? "text-foreground-muted"}`}
+      className={`font-bold font-mono text-[11px] ${COLORS[priority] ?? "text-foreground-muted"}`}
     >
       {priority}
     </span>

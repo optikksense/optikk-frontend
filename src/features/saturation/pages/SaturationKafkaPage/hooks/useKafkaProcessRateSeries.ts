@@ -12,7 +12,12 @@ export function useKafkaProcessRateSeries() {
     (_team, s, e) => getProcessRateByGroup(s, e)
   );
   const series = useMemo(
-    () => sumByTimestamp(query.data ?? [], (r) => r.timestamp, (r) => r.rate_per_sec),
+    () =>
+      sumByTimestamp(
+        query.data ?? [],
+        (r) => r.timestamp,
+        (r) => r.rate_per_sec
+      ),
     [query.data]
   );
   return { series, isPending: query.isPending, isError: Boolean(query.error) };

@@ -5,6 +5,17 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
+  "files": {
+    "ignore": [
+      "design_extracted/**/*",
+      "design_temp",
+      "design_temp_fresh.gz",
+      "dist/**/*",
+      "node_modules/**/*",
+      "public/**/*",
+      "*.log"
+    ]
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",

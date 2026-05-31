@@ -43,7 +43,7 @@ export default function NotificationsPage() {
         icon={<Bell size={22} />}
       />
 
-      <div className="flex items-center gap-1 border-b border-border">
+      <div className="flex items-center gap-1 border-border border-b">
         {TABS.map((t) => {
           const active = t.id === tab;
           return (

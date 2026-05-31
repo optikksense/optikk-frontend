@@ -131,7 +131,15 @@ export function computeQuerySummary(
   spaceAgg: MetricSpaceAggregation
 ): QuerySummary {
   if (!result || result.series.length === 0) {
-    return { current: null, avg: null, min: null, max: null, samples: 0, cardinality: 0, delta: null };
+    return {
+      current: null,
+      avg: null,
+      min: null,
+      max: null,
+      samples: 0,
+      cardinality: 0,
+      delta: null,
+    };
   }
   const timeline = aggregatedTimeline(result, spaceAgg);
   const clean = nonNull(timeline);

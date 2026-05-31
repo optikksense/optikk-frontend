@@ -1,4 +1,3 @@
-import { ROUTES } from "@/shared/constants/routes";
 import {
   DASHBOARD_DRAWER_PARAMS,
   buildDashboardDrawerSearch,
@@ -134,8 +133,4 @@ export function buildServiceLogsSearch(
   next.delete("serviceName");
   next.set("filters", `service_name:equals:${encodeURIComponent(serviceName)}`);
   return searchParamsToObject(next);
-}
-
-export function buildLegacyServicePagePath(serviceName: string): string {
-  return `${ROUTES.service}?serviceName=${encodeURIComponent(serviceName)}`;
 }

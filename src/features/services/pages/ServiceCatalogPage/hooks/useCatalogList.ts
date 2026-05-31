@@ -3,16 +3,16 @@ import { useMemo } from "react";
 import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import {
-  type ServiceLatestDeployment,
-  deploymentsApi,
-} from "@shared/api/deployments/deploymentsApi";
-import {
   type RedSummary,
   type RedSummaryWithComparison,
   type RequestRatePoint,
   getRedSummaryWithComparison,
   getRequestRateSeries,
 } from "@/features/services/api/serviceCatalogApi";
+import {
+  type ServiceLatestDeployment,
+  deploymentsApi,
+} from "@shared/api/deployments/deploymentsApi";
 
 import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 

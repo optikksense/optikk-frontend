@@ -9,7 +9,10 @@ export interface AlignedPair {
   readonly b: number[];
 }
 
-function byTimestamp(timestamps: readonly number[], values: readonly number[]): Map<number, number> {
+function byTimestamp(
+  timestamps: readonly number[],
+  values: readonly number[]
+): Map<number, number> {
   return new Map(timestamps.map((t, i) => [t, values[i] ?? 0]));
 }
 

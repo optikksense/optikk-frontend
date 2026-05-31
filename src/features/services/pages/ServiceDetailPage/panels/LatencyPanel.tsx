@@ -10,7 +10,6 @@ import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
 import type { LatencyPercentilesPoint } from "@/features/services/api/serviceDetailApi";
 
 import { fmtMs } from "../formatters";
-import { useDeployMarkers } from "../hooks/useDeployMarkers";
 import { useLatencyPercentiles } from "../hooks/useLatencyPercentiles";
 import { PanelCard } from "./PanelCard";
 
@@ -85,11 +84,10 @@ function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[]
 export function LatencyPanel({ serviceName }: { serviceName: string }) {
   const query = useLatencyPercentiles(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
-  const deployPlugins = useDeployMarkers(serviceName);
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
   return (
     <PanelCard title="Latency" subtitle="p50 / p95 / p99 · last 60m">
-      <ChartBody data={data} plugins={deployPlugins} />
+      <ChartBody data={data} plugins={[]} />
     </PanelCard>
   );
 }

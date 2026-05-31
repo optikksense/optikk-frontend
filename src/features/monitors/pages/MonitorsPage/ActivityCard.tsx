@@ -28,13 +28,13 @@ function timeAgo(iso: string): string {
 function ActivityCard({ events, loading }: Props) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-sm font-medium text-foreground">Recent activity</div>
+      <div className="font-medium text-foreground text-sm">Recent activity</div>
       <div className="mt-0.5 text-[11px] text-foreground-muted">last 1 hour</div>
       <div className="mt-3 flex flex-col gap-2">
         {loading && events.length === 0 ? (
-          <div className="text-xs text-foreground-muted">Loading…</div>
+          <div className="text-foreground-muted text-xs">Loading…</div>
         ) : events.length === 0 ? (
-          <div className="text-xs text-foreground-muted">No recent activity.</div>
+          <div className="text-foreground-muted text-xs">No recent activity.</div>
         ) : (
           events.map((e) => (
             <div key={e.id} className="flex items-start gap-2">
@@ -42,7 +42,7 @@ function ActivityCard({ events, loading }: Props) {
                 className={`mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${KIND_COLORS[e.kind] ?? "bg-foreground-muted"}`}
               />
               <div className="flex-1">
-                <div className="text-xs text-foreground">
+                <div className="text-foreground text-xs">
                   <span className="font-medium">{e.monitor_name}</span> · {e.kind}
                 </div>
                 <div className="text-[10px] text-foreground-muted">{timeAgo(e.started_at)}</div>

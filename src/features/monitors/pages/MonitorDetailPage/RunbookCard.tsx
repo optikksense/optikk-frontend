@@ -10,9 +10,9 @@ interface Props {
 function RunbookCard({ monitor }: Props) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <div className="text-sm font-medium text-foreground">Runbook & context</div>
+      <div className="font-medium text-foreground text-sm">Runbook & context</div>
       {monitor.message_body && (
-        <div className="mt-2 whitespace-pre-line text-xs leading-6 text-foreground-muted">
+        <div className="mt-2 whitespace-pre-line text-foreground-muted text-xs leading-6">
           {monitor.message_body}
         </div>
       )}
@@ -22,7 +22,7 @@ function RunbookCard({ monitor }: Props) {
             href={monitor.runbook_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded bg-secondary px-3 py-2 text-xs text-primary hover:underline"
+            className="flex items-center gap-2 rounded bg-secondary px-3 py-2 text-primary text-xs hover:underline"
           >
             <ExternalLink size={12} />
             Open runbook

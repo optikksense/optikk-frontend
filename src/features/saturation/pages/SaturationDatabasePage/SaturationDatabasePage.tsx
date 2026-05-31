@@ -61,10 +61,7 @@ export default function SaturationDatabasePage() {
     <PageShell>
       <div className="flex flex-col gap-4">
         <DatabasePageHeader summary={summary} degraded={degraded} />
-        <SaturationSubnav
-          active="database"
-          counts={{ database: summary?.database_systems }}
-        />
+        <SaturationSubnav active="database" counts={{ database: summary?.database_systems }} />
         <DatabaseKpiStrip summary={summary} />
         <PageTabs items={tabItems} activeKey={activeTab} onChange={(k) => setTab(k as TabId)} />
         <Suspense fallback={<Loading />}>

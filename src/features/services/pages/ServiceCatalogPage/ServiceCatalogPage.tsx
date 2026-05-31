@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { PageShell } from "@shared/components/ui";
 
 import type { CatalogRow } from "./catalog/buildCatalogRows";
-import { useDeploysData } from "./deploys/useDeploysData";
 import { ServiceCatalogHeader } from "./header/ServiceCatalogHeader";
 import { useCatalogAggregate } from "./hooks/useCatalogAggregate";
 import { useCatalogList } from "./hooks/useCatalogList";
@@ -21,15 +20,13 @@ function pickEnvironment(rows: ReadonlyArray<CatalogRow>): string | null {
 function HubBody() {
   const { rows, comparison, windowSec } = useCatalogList();
   const aggregate = useCatalogAggregate(rows, comparison, windowSec);
-  const deploys = useDeploysData();
   const { tab, setTab } = useServiceHubTab();
   const environment = useMemo(() => pickEnvironment(rows), [rows]);
   const counts = {
     catalog: aggregate.totalServices,
-    deploys: deploys.inWindowCount,
   } as const;
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[22px]">
       <ServiceCatalogHeader aggregate={aggregate} environment={environment} />
       <ServiceHubTabs active={tab} counts={counts} onChange={setTab} />
       <ServiceHubTabContent tab={tab} />
@@ -39,7 +36,7 @@ function HubBody() {
 
 export default function ServiceCatalogPage() {
   return (
-    <PageShell>
+    <PageShell className="-m-4 max-md:-m-3 !gap-[22px] p-[22px_30px_40px] max-md:p-3">
       <HubBody />
     </PageShell>
   );

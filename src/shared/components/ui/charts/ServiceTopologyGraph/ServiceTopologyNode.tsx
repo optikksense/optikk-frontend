@@ -85,9 +85,7 @@ export function ServiceTopologyNode({ data }: NodeProps) {
             style={{ backgroundColor: ringColor, boxShadow: `0 0 0 3px ${ringColor}22` }}
             aria-hidden
           />
-          <span className="truncate font-semibold text-[13px] text-foreground">
-            {d.name}
-          </span>
+          <span className="truncate font-semibold text-[13px] text-foreground">{d.name}</span>
         </div>
 
         <div className="grid grid-cols-3 gap-1 text-[11px] leading-tight">

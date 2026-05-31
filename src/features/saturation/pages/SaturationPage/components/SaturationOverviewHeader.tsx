@@ -16,7 +16,7 @@ function SaturationOverviewHeaderImpl({ summary }: Props): JSX.Element {
           <Grid3x3 size={20} aria-hidden />
         </div>
         <div>
-          <h1 className="m-0 text-[20px] font-semibold tracking-[-0.012em] text-[var(--fg-0)]">
+          <h1 className="m-0 font-semibold text-[20px] text-[var(--fg-0)] tracking-[-0.012em]">
             Saturation
           </h1>
           <div className='mt-[2px] font-["Geist_Mono",monospace] text-[12px] text-[var(--fg-3)]'>

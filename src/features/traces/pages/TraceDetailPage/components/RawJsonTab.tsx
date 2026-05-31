@@ -34,9 +34,9 @@ function RawJsonTabComponent({ traceId, spans }: Props) {
   }, [json]);
 
   return (
-    <div className="p-4 flex flex-col gap-2 min-h-0 flex-1">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 p-4">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-foreground-caption text-[12px] py-2">
+        <span className="py-2 text-[12px] text-foreground-caption">
           OpenTelemetry-style trace document · {spans.length} span{spans.length === 1 ? "" : "s"}
         </span>
         <div className="flex gap-1.5">
@@ -48,7 +48,7 @@ function RawJsonTabComponent({ traceId, spans }: Props) {
           </button>
         </div>
       </div>
-      <pre className="m-0 p-3 bg-secondary border border-border rounded-md font-mono text-[11.5px] text-foreground-secondary overflow-auto flex-1 min-h-0 whitespace-pre">
+      <pre className="m-0 min-h-0 flex-1 overflow-auto whitespace-pre rounded-md border border-border bg-secondary p-3 font-mono text-[11.5px] text-foreground-secondary">
         {json}
       </pre>
     </div>

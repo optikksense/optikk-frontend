@@ -23,9 +23,7 @@ const COLUMNS: SimpleTableColumn<DatastoreSystemRow>[] = [
     width: 200,
     render: (_v, row) => (
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate font-mono text-[12px] text-foreground">
-          {row.system}
-        </span>
+        <span className="truncate font-mono text-[12px] text-foreground">{row.system}</span>
         <span className="truncate text-[11px] text-foreground-muted">{row.category}</span>
       </div>
     ),

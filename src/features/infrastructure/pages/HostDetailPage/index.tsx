@@ -6,7 +6,7 @@ import { PageShell } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
 
-import { getNodes, getNodeServices } from "../../api/hostsApi";
+import { getNodeServices, getNodes } from "../../api/hostsApi";
 import type { InfrastructureNode, InfrastructureNodeService } from "../../api/hostsApi";
 import { InfraLogsLink } from "../../components/InfraLogsLink";
 import { tierForNode } from "../../utils/nodeHealth";
@@ -104,9 +104,7 @@ export default function HostDetailPage(): JSX.Element {
       <HostDetailKpiCards host={host} />
       <HostDetailSystemMetrics host={host} />
       <section className="rounded-md border border-border bg-card p-4">
-        <div className="mb-3 font-semibold text-[13px] text-foreground">
-          Services on this host
-        </div>
+        <div className="mb-3 font-semibold text-[13px] text-foreground">Services on this host</div>
         <SimpleTable
           columns={SERVICE_COLUMNS}
           dataSource={services}

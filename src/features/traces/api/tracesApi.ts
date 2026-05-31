@@ -20,6 +20,7 @@ export interface LegacyTracesQueryParams {
   readonly status?: string;
   readonly limit?: number;
   readonly offset?: number;
+  readonly cursor?: string;
 }
 
 function buildFilters(params: LegacyTracesQueryParams): ExplorerFilter[] {
@@ -64,6 +65,7 @@ async function getTraces(
     endTime,
     filters: buildFilters(params),
     limit: params.limit ?? 50,
+    cursor: params.cursor,
     include: ["summary"],
   });
   return {

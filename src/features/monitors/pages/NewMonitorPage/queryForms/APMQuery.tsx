@@ -63,7 +63,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium">{t.label}</span>
+                  <span className="font-medium text-xs">{t.label}</span>
                   <span className="font-mono text-[10px] text-foreground-muted">{t.unit}</span>
                 </div>
                 <div className="mt-0.5 text-[10px] text-foreground-muted">{t.desc}</div>

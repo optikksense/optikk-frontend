@@ -15,10 +15,26 @@ export interface RebalanceSeries {
 }
 
 function buildSeries(rows: RebalancePoint[]): RebalanceSeries {
-  const rebalance = sumByTimestamp(rows, (r) => r.timestamp, (r) => r.rebalance_rate);
-  const join = sumByTimestamp(rows, (r) => r.timestamp, (r) => r.join_rate);
-  const sync = sumByTimestamp(rows, (r) => r.timestamp, (r) => r.sync_rate);
-  const failed = sumByTimestamp(rows, (r) => r.timestamp, (r) => r.failed_heartbeat_rate);
+  const rebalance = sumByTimestamp(
+    rows,
+    (r) => r.timestamp,
+    (r) => r.rebalance_rate
+  );
+  const join = sumByTimestamp(
+    rows,
+    (r) => r.timestamp,
+    (r) => r.join_rate
+  );
+  const sync = sumByTimestamp(
+    rows,
+    (r) => r.timestamp,
+    (r) => r.sync_rate
+  );
+  const failed = sumByTimestamp(
+    rows,
+    (r) => r.timestamp,
+    (r) => r.failed_heartbeat_rate
+  );
   const byTs = (s: typeof rebalance) => new Map(s.timestamps.map((t, i) => [t, s.values[i]]));
   const joinByTs = byTs(join);
   const syncByTs = byTs(sync);

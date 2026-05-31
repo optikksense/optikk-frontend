@@ -32,15 +32,15 @@ function LogsSummaryChipsComponent({ summary }: Props) {
       {chips.map((chip) => (
         <span
           key={chip.label}
-          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--bg-1)] px-2.5 py-1 text-xs text-[var(--fg-2)]"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--bg-1)] px-2.5 py-1 text-[var(--fg-2)] text-xs"
         >
           {chip.color ? (
             <i className="h-[7px] w-[7px] rounded-full" style={{ background: chip.color }} />
           ) : null}
-          <span className="uppercase tracking-wider text-[10px] text-[var(--fg-3)]">
+          <span className="text-[10px] text-[var(--fg-3)] uppercase tracking-wider">
             {chip.label}
           </span>
-          <span className="font-semibold tabular-nums text-[var(--fg-0)]">
+          <span className="font-semibold text-[var(--fg-0)] tabular-nums">
             {formatNumber(chip.value)}
           </span>
         </span>

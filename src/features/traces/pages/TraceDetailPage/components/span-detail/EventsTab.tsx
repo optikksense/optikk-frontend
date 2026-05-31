@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 
-import { cn } from "@/lib/utils";
 import { useTimezone } from "@/app/store/appStore";
+import { cn } from "@/lib/utils";
 
 import type { SpanEvent } from "../../../../types";
 
@@ -59,8 +59,8 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
 
   if (sorted.length === 0) {
     return (
-      <div className="p-4 flex flex-col gap-4">
-        <div className="text-foreground-caption text-[12px] py-2">
+      <div className="flex flex-col gap-4 p-4">
+        <div className="py-2 text-[12px] text-foreground-caption">
           No events recorded on this span.
         </div>
       </div>
@@ -68,18 +68,14 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
   }
 
   return (
-    <div className="p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <div className="flex flex-col">
         {sorted.map((event, i) => {
           const level = levelOf(event.eventName);
           const attrs = safeParseAttrs(event.attributes);
           const isLast = i === sorted.length - 1;
           const dotColor =
-            level === "error"
-              ? "bg-error"
-              : level === "warn"
-                ? "bg-warning"
-                : "bg-primary";
+            level === "error" ? "bg-error" : level === "warn" ? "bg-warning" : "bg-primary";
           const lvlPillColor =
             level === "error"
               ? "bg-error-subtle text-error"
@@ -92,37 +88,30 @@ function EventsTabComponent({ events, selectedSpanId }: Props) {
               className="grid grid-cols-[18px_1fr] gap-2 pb-2.5"
             >
               <div className="relative">
-                <div
-                  className={cn(
-                    "absolute top-1 left-1 w-2.5 h-2.5 rounded-full",
-                    dotColor
-                  )}
-                />
-                {!isLast && (
-                  <div className="absolute top-4 left-2 -bottom-2.5 w-0.5 bg-border" />
-                )}
+                <div className={cn("absolute top-1 left-1 h-2.5 w-2.5 rounded-full", dotColor)} />
+                {!isLast && <div className="-bottom-2.5 absolute top-4 left-2 w-0.5 bg-border" />}
               </div>
               <div className="text-[12px]">
-                <div className="flex gap-2 items-baseline flex-wrap">
+                <div className="flex flex-wrap items-baseline gap-2">
                   <span
                     className={cn(
-                      "font-mono text-[10px] px-1.5 py-px rounded-[3px] uppercase tracking-[0.04em]",
+                      "rounded-[3px] px-1.5 py-px font-mono text-[10px] uppercase tracking-[0.04em]",
                       lvlPillColor
                     )}
                   >
                     {level}
                   </span>
-                  <span className="text-foreground-caption font-mono text-[11px]">
+                  <span className="font-mono text-[11px] text-foreground-caption">
                     {formatTs(event.timestamp, tz)}
                   </span>
                   <span className="text-foreground">{event.eventName}</span>
                 </div>
                 {attrs.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1">
+                  <div className="mt-1 flex flex-wrap gap-1">
                     {attrs.map(([k, v]) => (
                       <span
                         key={k}
-                        className="bg-muted px-1.5 py-px rounded-[4px] font-mono text-[10.5px] text-foreground-secondary"
+                        className="rounded-[4px] bg-muted px-1.5 py-px font-mono text-[10.5px] text-foreground-secondary"
                       >
                         <b>{k}</b>={v}
                       </span>

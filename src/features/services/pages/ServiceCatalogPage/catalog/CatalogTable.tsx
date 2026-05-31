@@ -3,32 +3,14 @@ import { ChevronRight } from "lucide-react";
 import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 
 import { ServiceAvatar } from "../../../components/ServiceAvatar";
-import { fmtDelta, fmtMs, fmtNum, fmtPct } from "../../ServiceDetailPage/formatters";
+import { fmtMs, fmtNum, fmtPct } from "../../ServiceDetailPage/formatters";
 import { SparklineCell } from "./SparklineCell";
 import { StatusDot } from "./StatusDot";
 import type { CatalogRow } from "./buildCatalogRows";
 
 function ErrorCell({ rate }: { rate: number }) {
-  const tone =
-    rate >= 0.02
-      ? "text-error"
-      : rate >= 0.005
-        ? "text-warning"
-        : "text-foreground";
+  const tone = rate >= 0.02 ? "text-error" : rate >= 0.005 ? "text-warning" : "text-foreground";
   return <span className={tone}>{fmtPct(rate, rate < 0.001 ? 3 : 2)}</span>;
-}
-
-function DeltaCell({ value }: { value: number | null }) {
-  if (value == null) return <span className="text-foreground-muted">—</span>;
-  const formatted = fmtDelta(1 + value, 1);
-  if (!formatted) return <span className="text-foreground-muted">0%</span>;
-  const tone =
-    formatted.direction === "up"
-      ? "text-error"
-      : formatted.direction === "down"
-        ? "text-success"
-        : "text-foreground-muted";
-  return <span className={tone}>{formatted.label}</span>;
 }
 
 function NameCell({ row }: { row: CatalogRow }) {
@@ -37,12 +19,11 @@ function NameCell({ row }: { row: CatalogRow }) {
       <StatusDot status={row.status} />
       <ServiceAvatar serviceName={row.serviceName} size={26} />
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate text-[12.5px] font-semibold text-foreground">
+        <span className="truncate font-semibold text-[12.5px] text-foreground">
           {row.serviceName}
         </span>
         <span className="truncate font-mono text-[11px] text-foreground-muted">
-          {row.version}
-          {row.environment !== "—" ? ` · ${row.environment}` : ""}
+          {row.lang} · {row.instances} inst · {row.version}
         </span>
       </div>
     </div>
@@ -54,12 +35,23 @@ function sparkTone(status: CatalogRow["status"]): "info" | "warn" | "err" {
 }
 
 const COLUMNS: SimpleTableColumn<CatalogRow>[] = [
-  { title: "Service", key: "serviceName", width: 300, render: (_v, row) => <NameCell row={row} /> },
+  {
+    title: "Service",
+    key: "serviceName",
+    width: 300,
+    headerClassName:
+      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
+    cellClassName: "py-[12px] px-3",
+    render: (_v, row) => <NameCell row={row} />,
+  },
   {
     title: "RPS",
     key: "rps",
     width: 110,
     align: "right",
+    headerClassName:
+      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
+    cellClassName: "py-[12px] px-3",
     sorter: (a, b) => a.rps - b.rps,
     defaultSortOrder: "descend",
     render: (_v, row) => (
@@ -73,6 +65,9 @@ const COLUMNS: SimpleTableColumn<CatalogRow>[] = [
     key: "errorRate",
     width: 90,
     align: "right",
+    headerClassName:
+      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
+    cellClassName: "py-[12px] px-3",
     sorter: (a, b) => a.errorRate - b.errorRate,
     render: (_v, row) => (
       <span className="tabular-nums">
@@ -85,24 +80,23 @@ const COLUMNS: SimpleTableColumn<CatalogRow>[] = [
     key: "p99Ms",
     width: 100,
     align: "right",
+    headerClassName:
+      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
+    cellClassName: "py-[12px] px-3",
     sorter: (a, b) => a.p99Ms - b.p99Ms,
-    render: (_v, row) => <span className="font-mono text-[12px] tabular-nums">{fmtMs(row.p99Ms)}</span>,
+    render: (_v, row) => (
+      <span className="font-mono text-[12px] tabular-nums">{fmtMs(row.p99Ms)}</span>
+    ),
   },
   {
     title: "Last 1 hour",
     key: "sparkline",
     width: 140,
-    render: (_v, row) => <SparklineCell values={row.sparkline} tone={sparkTone(row.status)} width={120} />,
-  },
-  {
-    title: "Δ",
-    key: "p99DeltaPct",
-    width: 80,
-    align: "right",
+    headerClassName:
+      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
+    cellClassName: "py-[12px] px-3",
     render: (_v, row) => (
-      <span className="text-[12px] tabular-nums">
-        <DeltaCell value={row.p99DeltaPct} />
-      </span>
+      <SparklineCell values={row.sparkline} tone={sparkTone(row.status)} width={120} />
     ),
   },
   {
@@ -110,6 +104,9 @@ const COLUMNS: SimpleTableColumn<CatalogRow>[] = [
     key: "chevron",
     width: 40,
     align: "right",
+    headerClassName:
+      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
+    cellClassName: "py-[12px] px-3",
     render: () => <ChevronRight size={14} className="text-foreground-muted" />,
   },
 ];
@@ -126,6 +123,7 @@ export function CatalogTable({ rows, onRowClick }: CatalogTableProps) {
       dataSource={rows}
       rowKey={(r) => r.serviceName}
       pagination={{ pageSize: 50 }}
+      className="[&_table]:rounded-none [&_table]:bg-transparent [&_tr:hover_td]:bg-[var(--bg-row-hover)] [&_tr:last-child]:border-0 [&_tr:nth-child(even)]:bg-transparent [&_tr]:border-[var(--line-2)] [&_tr]:border-b [&_tr]:bg-transparent"
       onRow={(record) => ({
         onClick: () => onRowClick(record.serviceName),
         style: { cursor: "pointer" },

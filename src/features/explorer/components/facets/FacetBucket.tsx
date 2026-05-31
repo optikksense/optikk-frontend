@@ -24,10 +24,7 @@ function FacetBucketComponent({ field, bucket, onInclude, onExclude, active }: P
       data-active={active ?? "none"}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <span
-          className="truncate font-mono text-[12px] text-foreground"
-          title={bucket.value}
-        >
+        <span className="truncate font-mono text-[12px] text-foreground" title={bucket.value}>
           {bucket.value || "(empty)"}
         </span>
       </div>

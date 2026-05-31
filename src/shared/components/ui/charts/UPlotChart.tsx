@@ -91,7 +91,16 @@ function UPlotChart({
         markers?.length ?? 0,
         theme,
       ].join(":"),
-    [options.series?.length, height, fillHeight, syncKey, tooltipContent, onTimeBrush, markers, theme]
+    [
+      options.series?.length,
+      height,
+      fillHeight,
+      syncKey,
+      tooltipContent,
+      onTimeBrush,
+      markers,
+      theme,
+    ]
   );
 
   // Memoize the merged options to avoid unnecessary re-renders

@@ -27,9 +27,7 @@ const traceColumns: SimpleTableColumn<ErrorGroupTrace>[] = [
     title: "Trace",
     key: "trace_id",
     render: (_v, row) => (
-      <span className="font-mono text-[12px] text-foreground">
-        {row.trace_id.slice(0, 16)}…
-      </span>
+      <span className="font-mono text-[12px] text-foreground">{row.trace_id.slice(0, 16)}…</span>
     ),
   },
   {
@@ -63,12 +61,8 @@ const traceColumns: SimpleTableColumn<ErrorGroupTrace>[] = [
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
-        {label}
-      </div>
-      <div className="mt-1 font-semibold text-[18px] text-foreground tabular-nums">
-        {value}
-      </div>
+      <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
+      <div className="mt-1 font-semibold text-[18px] text-foreground tabular-nums">{value}</div>
     </div>
   );
 }

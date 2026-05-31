@@ -190,9 +190,7 @@ function MultiSelect({
                   <span
                     className={cn(
                       "flex h-4 w-4 items-center justify-center rounded border",
-                      selected
-                        ? "border-primary bg-primary"
-                        : "border-border"
+                      selected ? "border-primary bg-primary" : "border-border"
                     )}
                   >
                     {selected ? <Check size={10} className="text-white" /> : null}

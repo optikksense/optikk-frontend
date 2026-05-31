@@ -10,11 +10,11 @@ import { Button } from "@shared/components/primitives/ui";
 import { cn } from "@/lib/utils";
 
 import { getLogById } from "../../api/logsExplorerApi";
-import { LEVEL_DOT, levelBadgeClasses } from "../table/LogRow";
 import type { LogRecord } from "../../types/log";
 import { serviceSwatchColor } from "../../utils/serviceHue";
 import { severityStyle } from "../../utils/severity";
 import { getSpanId, getTraceId } from "../../utils/traceCorrelation";
+import { LEVEL_DOT, levelBadgeClasses } from "../table/LogRow";
 
 const ASIDE =
   "flex min-w-0 flex-col gap-3 overflow-y-auto rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] p-[14px]";
@@ -86,7 +86,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
   if (q.isError) {
     return (
       <aside className={ASIDE}>
-        <p className="text-[13px] font-medium text-[var(--err-c)]">Could not load log</p>
+        <p className="font-medium text-[13px] text-[var(--err-c)]">Could not load log</p>
         <pre className="text-[11px] text-[var(--fg-3)]">{formatErrorForDisplay(q.error)}</pre>
         <div className="flex gap-1.5">
           <Button variant="secondary" onClick={() => void q.refetch()}>
@@ -128,7 +128,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
   return (
     <aside className={ASIDE}>
       <div className="flex items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-[var(--fg-0)]">
+        <span className="inline-flex items-center gap-1.5 font-medium text-[13.5px] text-[var(--fg-0)]">
           <span
             className="h-1.5 w-1.5 shrink-0 rounded-full"
             style={{ background: serviceSwatchColor(log.service_name) }}
@@ -161,7 +161,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
         </button>
       </div>
 
-      <div className="break-words text-[13px] leading-[1.55] text-[var(--fg-0)] [font-family:'Geist_Mono',monospace]">
+      <div className="break-words text-[13px] text-[var(--fg-0)] leading-[1.55] [font-family:'Geist_Mono',monospace]">
         {log.body || "—"}
       </div>
 
@@ -185,7 +185,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
 
       {traceId ? (
         <div className="flex flex-col gap-2 rounded-[7px] border border-[var(--accent-ln)] bg-[var(--accent-bg)] p-3">
-          <div className="flex items-center gap-[7px] text-xs font-semibold text-[var(--accent-2)]">
+          <div className="flex items-center gap-[7px] font-semibold text-[var(--accent-2)] text-xs">
             <GitFork size={12} />
             Correlated with a distributed trace
           </div>
@@ -220,7 +220,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
         </div>
       ) : (
         <div className="flex flex-col gap-2 rounded-[7px] border border-[var(--line)] bg-transparent p-3">
-          <div className="flex items-center gap-[7px] text-xs font-medium text-[var(--fg-2)]">
+          <div className="flex items-center gap-[7px] font-medium text-[var(--fg-2)] text-xs">
             <GitFork size={12} />
             No trace correlation
           </div>
@@ -231,7 +231,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
         </div>
       )}
 
-      <div className="border-t border-[var(--line)] pt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-3)]">
+      <div className="border-[var(--line)] border-t pt-1.5 font-semibold text-[10.5px] text-[var(--fg-3)] uppercase tracking-[0.08em]">
         Fields
       </div>
       <div className="flex flex-col gap-px overflow-hidden rounded-md border border-[var(--line)]">
@@ -270,7 +270,7 @@ function FieldRow({ field, value }: { field: string; value: string }) {
   return (
     <div
       className={cn(
-        "group grid grid-cols-[130px_1fr_22px] items-center gap-2 bg-[var(--bg-0)] px-[10px] py-[5px] text-[11.5px] [font-family:'Geist_Mono',monospace] hover:bg-[var(--bg-2)] [&:not(:last-child)]:border-b [&:not(:last-child)]:border-[var(--line)]",
+        "group grid grid-cols-[130px_1fr_22px] items-center gap-2 bg-[var(--bg-0)] px-[10px] py-[5px] text-[11.5px] [font-family:'Geist_Mono',monospace] hover:bg-[var(--bg-2)] [&:not(:last-child)]:border-[var(--line)] [&:not(:last-child)]:border-b",
         isErr && "bg-[oklch(0.7_0.2_25/0.07)]"
       )}
     >
@@ -285,7 +285,7 @@ function FieldRow({ field, value }: { field: string; value: string }) {
       </span>
       <button
         type="button"
-        className="grid cursor-pointer place-items-center border-0 bg-transparent text-sm text-[var(--accent-2)] opacity-0 group-hover:opacity-100"
+        className="grid cursor-pointer place-items-center border-0 bg-transparent text-[var(--accent-2)] text-sm opacity-0 group-hover:opacity-100"
         title="Copy"
         onClick={onCopy}
       >

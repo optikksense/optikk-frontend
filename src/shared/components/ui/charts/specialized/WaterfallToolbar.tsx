@@ -55,19 +55,11 @@ function HitNav({
 }: { label: string; onPrev?: () => void; onNext?: () => void }) {
   return (
     <div className="flex items-center gap-1 text-[11px] text-foreground-muted">
-      <button
-        type="button"
-        onClick={onPrev}
-        className="rounded px-1 hover:bg-accent"
-      >
+      <button type="button" onClick={onPrev} className="rounded px-1 hover:bg-accent">
         ↑
       </button>
       <span>{label}</span>
-      <button
-        type="button"
-        onClick={onNext}
-        className="rounded px-1 hover:bg-accent"
-      >
+      <button type="button" onClick={onNext} className="rounded px-1 hover:bg-accent">
         ↓
       </button>
     </div>

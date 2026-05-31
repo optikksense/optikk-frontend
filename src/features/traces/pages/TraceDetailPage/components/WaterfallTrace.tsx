@@ -128,8 +128,7 @@ function matchesQuery(span: TraceRecord, q: string): boolean {
 
 const wfGrid = "grid grid-cols-[360px_1fr]";
 
-const lblBase =
-  "px-3 flex items-center gap-2 border-r border-border text-[12px] min-w-0";
+const lblBase = "px-3 flex items-center gap-2 border-r border-border text-[12px] min-w-0";
 
 function WaterfallTraceComponent({
   spans,
@@ -182,17 +181,12 @@ function WaterfallTraceComponent({
   const showCritDot = criticalPathSpanIds.size > 0;
 
   return (
-    <div className="flex flex-col min-h-0 flex-1 bg-background">
-      <div
-        className={cn(
-          wfGrid,
-          "sticky top-0 z-[5] bg-background border-b border-border"
-        )}
-      >
+    <div className="flex min-h-0 flex-1 flex-col bg-background">
+      <div className={cn(wfGrid, "sticky top-0 z-[5] border-border border-b bg-background")}>
         <div
           className={cn(
             lblBase,
-            "h-[34px] text-foreground-caption !text-[10.5px] tracking-[0.06em] uppercase"
+            "!text-[10.5px] h-[34px] text-foreground-caption uppercase tracking-[0.06em]"
           )}
         >
           Service · Operation
@@ -200,15 +194,11 @@ function WaterfallTraceComponent({
         <div className="relative h-[34px]">
           <div className="relative h-full">
             {ticks.map(({ t, pct }) => (
-              <div
-                key={t}
-                className="absolute top-0 bottom-0"
-                style={{ left: `${pct}%` }}
-              >
+              <div key={t} className="absolute top-0 bottom-0" style={{ left: `${pct}%` }}>
                 <div className="absolute top-2 bottom-2 w-px bg-border" />
                 <div
                   className={cn(
-                    "absolute bottom-[5px] -translate-x-1/2 font-mono text-[10px] text-foreground-caption whitespace-nowrap px-[3px] bg-background [font-variant-numeric:tabular-nums]",
+                    "-translate-x-1/2 absolute bottom-[5px] whitespace-nowrap bg-background px-[3px] font-mono text-[10px] text-foreground-caption [font-variant-numeric:tabular-nums]",
                     pct < 4 && "!left-0 !translate-x-0",
                     pct > 96 && "!-translate-x-full"
                   )}
@@ -221,7 +211,7 @@ function WaterfallTraceComponent({
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex min-h-0 flex-1 flex-col">
         {flat.map((row) => (
           <Row
             key={row.span.span_id}
@@ -240,7 +230,7 @@ function WaterfallTraceComponent({
         ))}
       </div>
 
-      <div className="flex gap-4 px-4 py-2.5 border-t border-border text-[11px] text-foreground-caption bg-background">
+      <div className="flex gap-4 border-border border-t bg-background px-4 py-2.5 text-[11px] text-foreground-caption">
         <span>
           Showing {flat.length} of {spans.length} span{spans.length === 1 ? "" : "s"}
         </span>
@@ -295,7 +285,7 @@ function Row({
     <div
       className={cn(
         wfGrid,
-        "cursor-pointer transition-[background] duration-[0.08s] ease border-b border-[color-mix(in_oklch,var(--border-color),transparent_70%)] h-[28px] hover:bg-secondary",
+        "ease h-[28px] cursor-pointer border-[color-mix(in_oklch,var(--border-color),transparent_70%)] border-b transition-[background] duration-[0.08s] hover:bg-secondary",
         isSelected && "bg-[var(--color-primary-subtle-15)]",
         dim && "opacity-[0.35]"
       )}
@@ -307,16 +297,13 @@ function Row({
       }}
     >
       <div
-        className={cn(
-          lblBase,
-          isSelected && "shadow-[inset_2px_0_0_var(--color-primary)]"
-        )}
+        className={cn(lblBase, isSelected && "shadow-[inset_2px_0_0_var(--color-primary)]")}
         style={{ paddingLeft: 8 + depth * 14 }}
       >
         <button
           type="button"
           className={cn(
-            "w-[14px] h-[14px] inline-grid place-items-center text-foreground-caption rounded-[3px] bg-transparent border-0 cursor-pointer transition-transform duration-[0.12s] ease flex-none hover:bg-muted hover:text-foreground",
+            "ease inline-grid h-[14px] w-[14px] flex-none cursor-pointer place-items-center rounded-[3px] border-0 bg-transparent text-foreground-caption transition-transform duration-[0.12s] hover:bg-muted hover:text-foreground",
             !hasChildren && "invisible",
             collapsed && "[&_svg]:-rotate-90"
           )}
@@ -329,44 +316,44 @@ function Row({
           {hasChildren && <ChevronDown size={12} />}
         </button>
         <span
-          className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0"
+          className="inline-block h-[7px] w-[7px] flex-none shrink-0 grow-0 basis-[7px] rounded-full"
           style={{ background: swatchColor }}
         />
         <span
-          className="text-foreground-muted text-[11.5px] flex-none max-w-[110px] overflow-hidden text-ellipsis whitespace-nowrap"
+          className="max-w-[110px] flex-none overflow-hidden text-ellipsis whitespace-nowrap text-[11.5px] text-foreground-muted"
           title={span.service_name}
         >
           {span.service_name || "—"}
           {isCrit && (
             <span
               aria-hidden
-              className="inline-block w-1 h-1 rounded-full ml-1.5 align-[2px] bg-degraded"
+              className="ml-1.5 inline-block h-1 w-1 rounded-full bg-degraded align-[2px]"
             />
           )}
         </span>
         <span
-          className="text-foreground text-[12.5px] overflow-hidden text-ellipsis whitespace-nowrap min-w-0"
+          className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[12.5px] text-foreground"
           title={span.operation_name}
         >
           {span.operation_name || "(no name)"}
         </span>
         {isErr && (
-          <span className="inline-flex items-center gap-[3px] text-[10px] px-1.5 py-px rounded-full ml-auto font-mono flex-none bg-error-subtle text-error">
+          <span className="ml-auto inline-flex flex-none items-center gap-[3px] rounded-full bg-error-subtle px-1.5 py-px font-mono text-[10px] text-error">
             <AlertCircle size={9} /> error
           </span>
         )}
         {!isErr && isErrPath && (
-          <span className="inline-flex items-center gap-[3px] text-[10px] px-1.5 py-px rounded-full ml-auto font-mono flex-none bg-warning-subtle text-warning">
+          <span className="ml-auto inline-flex flex-none items-center gap-[3px] rounded-full bg-warning-subtle px-1.5 py-px font-mono text-[10px] text-warning">
             <RotateCw size={9} /> err-path
           </span>
         )}
       </div>
 
-      <div className="px-3 pr-6 relative min-w-0">
+      <div className="relative min-w-0 px-3 pr-6">
         <div className="relative h-full">
           <div
             className={cn(
-              "absolute top-1/2 -translate-y-1/2 h-3.5 rounded-[3px] shadow-[0_1px_0_oklch(1_0_0/0.08)_inset,0_1px_2px_oklch(0_0_0/0.25)]",
+              "-translate-y-1/2 absolute top-1/2 h-3.5 rounded-[3px] shadow-[0_1px_0_oklch(1_0_0/0.08)_inset,0_1px_2px_oklch(0_0_0/0.25)]",
               isErr &&
                 "!bg-error !shadow-[0_0_0_1px_var(--color-error-subtle),0_1px_2px_oklch(0_0_0/0.3)]",
               isCrit && "outline outline-1 outline-degraded outline-offset-1"
@@ -380,7 +367,7 @@ function Row({
           />
           <span
             className={cn(
-              "absolute top-1/2 -translate-y-1/2 font-mono text-[10.5px] whitespace-nowrap pointer-events-none [font-variant-numeric:tabular-nums] font-medium",
+              "-translate-y-1/2 pointer-events-none absolute top-1/2 whitespace-nowrap font-medium font-mono text-[10.5px] [font-variant-numeric:tabular-nums]",
               isSelected ? "text-foreground" : "text-foreground-secondary"
             )}
             style={
@@ -405,7 +392,7 @@ function Row({
               <span
                 key={`${ev.tMs}-${i}`}
                 className={cn(
-                  "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-background pointer-events-auto z-[1]",
+                  "-translate-x-1/2 -translate-y-1/2 pointer-events-auto absolute top-1/2 z-[1] h-2 w-2 rounded-full border-2 border-background",
                   dotBg
                 )}
                 style={{ left: `${pct}%` }}

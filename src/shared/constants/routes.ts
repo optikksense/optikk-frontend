@@ -10,7 +10,6 @@ export const ROUTES = {
   terms: "/terms",
   security: "/security",
   overview: "/overview",
-  service: "/service",
   services: "/services",
   serviceMap: "/service-map",
   deployments: "/deployments",

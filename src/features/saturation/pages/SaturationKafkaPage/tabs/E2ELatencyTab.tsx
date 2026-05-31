@@ -36,9 +36,9 @@ function aggregate(points: E2ELatencyPoint[]): AggregatedE2ESeries {
   const timestamps = Array.from(map.keys()).sort((a, b) => a - b);
   return {
     timestamps,
-    publishP95: timestamps.map((t) => (map.get(t)!.publishSum / map.get(t)!.count) || 0),
-    receiveP95: timestamps.map((t) => (map.get(t)!.receiveSum / map.get(t)!.count) || 0),
-    processP95: timestamps.map((t) => (map.get(t)!.processSum / map.get(t)!.count) || 0),
+    publishP95: timestamps.map((t) => map.get(t)!.publishSum / map.get(t)!.count || 0),
+    receiveP95: timestamps.map((t) => map.get(t)!.receiveSum / map.get(t)!.count || 0),
+    processP95: timestamps.map((t) => map.get(t)!.processSum / map.get(t)!.count || 0),
   };
 }
 

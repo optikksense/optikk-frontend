@@ -22,7 +22,7 @@ function ResourceFacetComponent({ field, label, values, onInclude, onExclude }: 
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-3)]">
+      <div className="font-semibold text-[10.5px] text-[var(--fg-3)] uppercase tracking-[0.08em]">
         {label}
       </div>
       {visible.map((item) => (
@@ -55,7 +55,7 @@ function ResourceFacetComponent({ field, label, values, onInclude, onExclude }: 
         <button
           type="button"
           onClick={() => setShowAll(!showAll)}
-          className="cursor-pointer border-0 bg-transparent px-[6px] py-1 text-left text-xs text-[var(--accent-2)] hover:underline"
+          className="cursor-pointer border-0 bg-transparent px-[6px] py-1 text-left text-[var(--accent-2)] text-xs hover:underline"
         >
           {showAll ? "Show less" : `Show all ${values.length}`}
         </button>

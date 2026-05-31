@@ -85,9 +85,7 @@ function KpiTile({ label, endpoint, metricKey, host, tone }: KpiTileProps) {
   const sparklineTone = last == null ? "info" : last >= 90 ? "err" : last >= 75 ? "warn" : "info";
   return (
     <div className="flex flex-col gap-2 rounded-md border border-border bg-card px-4 py-3">
-      <div className="text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">
-        {label}
-      </div>
+      <div className="text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
       <div
         className={`flex items-baseline gap-1.5 font-semibold text-[32px] leading-none ${VALUE_TONE[valueTone]}`}
       >

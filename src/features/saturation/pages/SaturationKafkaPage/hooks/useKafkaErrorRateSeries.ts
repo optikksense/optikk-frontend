@@ -12,7 +12,12 @@ type ErrorFetcher = (s: RequestTime, e: RequestTime) => Promise<ErrorRatePoint[]
 export function useKafkaErrorRateSeries(key: string, fetcher: ErrorFetcher) {
   const query = useTimeRangeQuery<ErrorRatePoint[]>(key, (_team, s, e) => fetcher(s, e));
   const series = useMemo(
-    () => sumByTimestamp(query.data ?? [], (r) => r.timestamp, (r) => r.error_rate),
+    () =>
+      sumByTimestamp(
+        query.data ?? [],
+        (r) => r.timestamp,
+        (r) => r.error_rate
+      ),
     [query.data]
   );
   return { series, isPending: query.isPending, isError: Boolean(query.error) };

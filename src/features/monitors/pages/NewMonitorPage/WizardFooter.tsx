@@ -25,11 +25,10 @@ function TestReadout({ result }: { readonly result: TestResult }) {
         threshold <span className="text-foreground">{result.threshold}</span>
       </span>
       <span className="font-mono text-foreground-secondary">
-        has data{" "}
-        <span className="text-foreground">{result.has_data ? "yes" : "no"}</span>
+        has data <span className="text-foreground">{result.has_data ? "yes" : "no"}</span>
       </span>
       <span
-        className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
+        className={`rounded px-1.5 py-0.5 font-medium text-[10px] ${
           result.would_decide_as === "alert"
             ? "bg-error-subtle text-error"
             : result.would_decide_as === "warn"
@@ -56,7 +55,7 @@ export default function WizardFooter({
   onTest,
 }: Props) {
   return (
-    <div className="sticky bottom-0 -mx-6 -mb-10 mt-4 flex flex-col gap-2 border-t border-border bg-card px-6 py-3">
+    <div className="-mx-6 -mb-10 sticky bottom-0 mt-4 flex flex-col gap-2 border-border border-t bg-card px-6 py-3">
       {(testResult || testError) && (
         <div>
           {testResult && <TestReadout result={testResult} />}
@@ -64,10 +63,10 @@ export default function WizardFooter({
         </div>
       )}
       <div className="flex items-center gap-3">
-        <div className="text-xs text-foreground-muted">
+        <div className="text-foreground-muted text-xs">
           Monitor will be evaluated every <span className="font-mono">{evalEverySec}s</span>
         </div>
-        {error && <div className="text-xs text-error">{error}</div>}
+        {error && <div className="text-error text-xs">{error}</div>}
         <div className="ml-auto flex items-center gap-2">
           {editMode && (
             <button
@@ -91,7 +90,7 @@ export default function WizardFooter({
             type="button"
             disabled={saving}
             onClick={onSave}
-            className="flex items-center gap-1.5 rounded bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary disabled:opacity-60"
+            className="flex items-center gap-1.5 rounded bg-primary px-3 py-1.5 font-medium text-sm text-white hover:bg-primary disabled:opacity-60"
           >
             <Check size={13} />
             {saving ? "Saving…" : editMode ? "Save changes" : "Save monitor"}

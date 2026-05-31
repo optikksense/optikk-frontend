@@ -13,8 +13,8 @@ import { InfraTopConsumersSidebar } from "../../components/InfraTopConsumersSide
 import type { InfrastructureNode } from "../../types";
 import {
   EMPTY_NODE_FILTER,
-  filterNodes,
   type NodeFilterState,
+  filterNodes,
   serviceOptions,
 } from "../../utils/filterNodes";
 

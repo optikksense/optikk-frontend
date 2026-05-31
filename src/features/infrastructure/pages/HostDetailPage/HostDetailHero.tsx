@@ -15,7 +15,10 @@ interface HostDetailHeroProps {
   readonly status: HostStatus;
 }
 
-const STATUS_PILL: Record<HostStatus, { variant: "success" | "warning" | "error" | "neutral"; label: string }> = {
+const STATUS_PILL: Record<
+  HostStatus,
+  { variant: "success" | "warning" | "error" | "neutral"; label: string }
+> = {
   healthy: { variant: "success", label: "Healthy" },
   warn: { variant: "warning", label: "Warn" },
   alerting: { variant: "error", label: "Alerting" },

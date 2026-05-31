@@ -88,9 +88,7 @@ export async function deleteChannel(id: number): Promise<void> {
   await api.delete<unknown>(`${V1}/notifications/channels/${id}`);
 }
 
-export async function testChannel(
-  id: number
-): Promise<{ ok: boolean; error_text?: string }> {
+export async function testChannel(id: number): Promise<{ ok: boolean; error_text?: string }> {
   const raw = await api.post<unknown>(`${V1}/notifications/channels/${id}/test`, {});
   return unwrap(raw);
 }

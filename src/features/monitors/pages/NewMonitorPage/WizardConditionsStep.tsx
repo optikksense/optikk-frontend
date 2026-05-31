@@ -61,9 +61,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
                   type="button"
                   onClick={() => update({ comparator: cmp.id })}
                   className={`rounded px-2 py-0.5 text-xs ${
-                    active
-                      ? "bg-primary text-white"
-                      : "bg-secondary text-foreground-secondary"
+                    active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                   }`}
                 >
                   {cmp.label}
@@ -87,10 +85,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Warn threshold">
         <div className="flex items-center gap-2">
-          <NumericInput
-            value={c.warn_threshold}
-            onChange={(v) => update({ warn_threshold: v })}
-          />
+          <NumericInput value={c.warn_threshold} onChange={(v) => update({ warn_threshold: v })} />
           <span className="rounded bg-warning-subtle px-1.5 py-0.5 text-[10px] text-warning">
             warn
           </span>
@@ -108,7 +103,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
             value={c.no_data_after_sec}
             onChange={(v) => update({ no_data_after_sec: v ?? 0 })}
           />
-          <span className="text-xs text-foreground-muted">seconds · treat as</span>
+          <span className="text-foreground-muted text-xs">seconds · treat as</span>
           <div className="flex items-center gap-1">
             {NO_DATA_AS.map((opt) => {
               const active = c.no_data_as === opt.id;
@@ -118,9 +113,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
                   type="button"
                   onClick={() => update({ no_data_as: opt.id })}
                   className={`rounded px-2 py-0.5 text-xs ${
-                    active
-                      ? "bg-primary text-white"
-                      : "bg-secondary text-foreground-secondary"
+                    active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                   }`}
                 >
                   {opt.label}

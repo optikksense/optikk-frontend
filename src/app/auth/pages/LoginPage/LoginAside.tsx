@@ -25,8 +25,8 @@ export function LoginAside() {
           See every signal. <em>Resolve before users notice.</em>
         </h1>
         <p className="aside-sub">
-          Metrics, traces, logs, and LLM telemetry — unified in one workspace
-          and tied back to the services and hosts that produced them.
+          Metrics, traces, logs, and LLM telemetry — unified in one workspace and tied back to the
+          services and hosts that produced them.
         </p>
 
         {/* Telemetry preview tile */}

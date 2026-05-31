@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import type { Template } from "../../api/notificationsApi";
-import { useTemplates } from "../../hooks/useNotifications";
 import { useTemplateMutations } from "../../hooks/useNotificationMutations";
+import { useTemplates } from "../../hooks/useNotifications";
 
 interface TemplateForm {
   id: number | null;
@@ -66,7 +66,7 @@ export default function TemplatesTab() {
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-lg border border-border bg-card p-4">
-        <div className="text-sm font-medium">{editing ? "Edit template" : "Create template"}</div>
+        <div className="font-medium text-sm">{editing ? "Edit template" : "Create template"}</div>
         <div className="mt-3 grid gap-2">
           <input
             value={form.name}
@@ -101,32 +101,29 @@ export default function TemplatesTab() {
               type="button"
               disabled={saving}
               onClick={handleSubmit}
-              className="rounded bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary disabled:opacity-60"
+              className="rounded bg-primary px-3 py-1.5 font-medium text-white text-xs hover:bg-primary disabled:opacity-60"
             >
               {editing ? "Save" : "Create"}
             </button>
           </div>
         </div>
-        {status && <div className="mt-2 text-xs text-warning">{status}</div>}
+        {status && <div className="mt-2 text-warning text-xs">{status}</div>}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         {q.isPending && !q.data ? (
-          <div className="col-span-2 rounded-lg border border-border bg-card p-6 text-center text-xs text-foreground-muted">
+          <div className="col-span-2 rounded-lg border border-border bg-card p-6 text-center text-foreground-muted text-xs">
             Loading templates…
           </div>
         ) : templates.length === 0 ? (
-          <div className="col-span-2 rounded-lg border border-dashed border-border p-8 text-center text-sm text-foreground-muted">
+          <div className="col-span-2 rounded-lg border border-border border-dashed p-8 text-center text-foreground-muted text-sm">
             No templates yet. Create one above to customize notification message bodies.
           </div>
         ) : (
           templates.map((t) => (
-            <div
-              key={t.id}
-              className="rounded-lg border border-border bg-card p-4"
-            >
+            <div key={t.id} className="rounded-lg border border-border bg-card p-4">
               <div className="flex items-baseline justify-between">
-                <div className="text-sm font-medium">{t.name}</div>
+                <div className="font-medium text-sm">{t.name}</div>
                 <span className="font-mono text-[10px] text-foreground-muted">
                   {t.used_count} in use
                 </span>

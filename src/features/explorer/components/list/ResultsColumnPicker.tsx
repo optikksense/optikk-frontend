@@ -68,9 +68,7 @@ function ResultsColumnPickerImpl<Row>({ columns, config, onChange, trigger }: Pr
                   onChange={() => onToggle(entry.key)}
                   className="accent-[var(--accent)]"
                 />
-                <span className="text-[12px] text-foreground">
-                  {column?.label ?? entry.key}
-                </span>
+                <span className="text-[12px] text-foreground">{column?.label ?? entry.key}</span>
               </label>
             );
           })}

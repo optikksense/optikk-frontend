@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
 
+import { useTraceOperationBaseline } from "../../hooks/useTraceOperationBaseline";
 import { BottomBar } from "./components/BottomBar";
 import { KPIStrip } from "./components/KPIStrip";
 import { ServiceStrip } from "./components/ServiceStrip";
@@ -13,7 +14,6 @@ import {
 import { TraceDetailLayout } from "./components/TraceDetailLayout";
 import { TraceHeader } from "./components/TraceHeader";
 import { useTraceDetailPage } from "./hooks/useTraceDetailPage";
-import { useTraceOperationBaseline } from "../../hooks/useTraceOperationBaseline";
 
 export default function TraceDetailPage() {
   const { data, stats, resolvedTraceId, traceTimeBounds, actions, layoutProps } =
@@ -61,7 +61,7 @@ export default function TraceDetailPage() {
   };
 
   return (
-    <PageShell className="flex min-h-0 flex-1 flex-col bg-background text-foreground-secondary [font-feature-settings:'tnum'] !gap-0 !pb-0 h-full min-h-[calc(100vh-var(--space-header-h,56px)-2rem)]">
+    <PageShell className="!gap-0 !pb-0 flex h-full min-h-0 min-h-[calc(100vh-var(--space-header-h,56px)-2rem)] flex-1 flex-col bg-background text-foreground-secondary [font-feature-settings:'tnum']">
       <TraceHeader
         traceId={resolvedTraceId}
         stats={stats}

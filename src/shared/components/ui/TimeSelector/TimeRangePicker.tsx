@@ -230,9 +230,7 @@ export default function TimeRangePicker() {
                             <span
                               className={cn(
                                 "font-semibold text-[13px] leading-tight",
-                                active
-                                  ? "text-primary"
-                                  : "text-foreground group-hover:text-primary"
+                                active ? "text-primary" : "text-foreground group-hover:text-primary"
                               )}
                             >
                               {item.label}

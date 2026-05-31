@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import type { Policy } from "../../api/notificationsApi";
-import { usePolicies } from "../../hooks/useNotifications";
 import { usePolicyMutations } from "../../hooks/useNotificationMutations";
+import { usePolicies } from "../../hooks/useNotifications";
 
 interface PolicyForm {
   id: number | null;
@@ -89,7 +89,7 @@ export default function PoliciesTab() {
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-lg border border-border bg-card p-4">
-        <div className="text-sm font-medium">{editing ? "Edit policy" : "Create policy"}</div>
+        <div className="font-medium text-sm">{editing ? "Edit policy" : "Create policy"}</div>
         <div className="mt-3 grid gap-2">
           <input
             value={form.name}
@@ -111,7 +111,7 @@ export default function PoliciesTab() {
             className="rounded border border-border bg-card px-2 py-1.5 font-mono text-xs"
           />
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-1.5 text-xs text-foreground-secondary">
+            <label className="flex items-center gap-1.5 text-foreground-secondary text-xs">
               <input
                 type="checkbox"
                 checked={form.enabled}
@@ -133,27 +133,27 @@ export default function PoliciesTab() {
                 type="button"
                 disabled={saving}
                 onClick={handleSubmit}
-                className="rounded bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary disabled:opacity-60"
+                className="rounded bg-primary px-3 py-1.5 font-medium text-white text-xs hover:bg-primary disabled:opacity-60"
               >
                 {editing ? "Save" : "Create"}
               </button>
             </div>
           </div>
         </div>
-        {status && <div className="mt-2 text-xs text-warning">{status}</div>}
+        {status && <div className="mt-2 text-warning text-xs">{status}</div>}
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div className="flex items-center justify-between border-border border-b px-4 py-3">
           <div>
-            <div className="text-sm font-medium">Routing policies</div>
+            <div className="font-medium text-sm">Routing policies</div>
             <div className="text-[11px] text-foreground-muted">
               Rules evaluated top-down · first match wins.
             </div>
           </div>
         </div>
         <table className="w-full text-sm">
-          <thead className="border-b border-border text-[11px] uppercase tracking-wider text-foreground-muted">
+          <thead className="border-border border-b text-[11px] text-foreground-muted uppercase tracking-wider">
             <tr>
               <th className="py-2 pl-4 text-left font-medium">Policy</th>
               <th className="py-2 text-left font-medium">Match</th>
@@ -165,25 +165,25 @@ export default function PoliciesTab() {
           <tbody>
             {q.isPending && !q.data ? (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-foreground-muted">
+                <td colSpan={5} className="py-6 text-center text-foreground-muted text-xs">
                   Loading…
                 </td>
               </tr>
             ) : policies.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-foreground-muted">
+                <td colSpan={5} className="py-6 text-center text-foreground-muted text-xs">
                   No policies yet.
                 </td>
               </tr>
             ) : (
               policies.map((p, i) => (
-                <tr key={p.id} className="border-b border-border last:border-0">
+                <tr key={p.id} className="border-border border-b last:border-0">
                   <td className="py-2 pl-4">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-[11px] text-foreground-muted">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="text-xs font-medium">{p.name}</span>
+                      <span className="font-medium text-xs">{p.name}</span>
                     </div>
                   </td>
                   <td className="py-2 font-mono text-[11px] text-foreground-secondary">

@@ -105,8 +105,7 @@ export function useWizardState(initial?: CreateMonitorPayload) {
     }
   }, [initial]);
 
-  const setType = (type: MonitorType) =>
-    setDraft((prev) => applyTypeDefaults(prev, type));
+  const setType = (type: MonitorType) => setDraft((prev) => applyTypeDefaults(prev, type));
 
   return { draft, setDraft, setType };
 }

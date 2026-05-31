@@ -33,7 +33,7 @@ function Tile({ cell, onOpen }: { readonly cell: ServiceHealthCell; readonly onO
         {cell.name}
       </span>
       <span className="flex flex-col">
-        <span className="font-mono font-bold text-[13px] leading-none">
+        <span className="font-bold font-mono text-[13px] leading-none">
           {rateLabel(cell.requestCount)}
         </span>
         <span className="font-mono text-[10px] opacity-90">
@@ -93,9 +93,7 @@ export default function ServiceHealthGrid({ cells, limit = 15 }: Props) {
     <Surface elevation={1} padding="md" className="flex flex-col gap-3">
       <div className="flex items-end justify-between">
         <div>
-          <div className="font-semibold text-[13px] text-foreground">
-            Service health
-          </div>
+          <div className="font-semibold text-[13px] text-foreground">Service health</div>
           <div className="text-[11px] text-foreground-muted">
             {cells.length} services · click any tile to inspect
           </div>

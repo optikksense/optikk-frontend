@@ -16,7 +16,7 @@ export function EnvFilterPill({ value, options, onChange }: EnvFilterPillProps) 
         value={value}
         onChange={(ev) => onChange(ev.target.value)}
         className={cn(
-          "rounded border border-transparent bg-transparent text-[11.5px] font-medium text-foreground outline-none",
+          "rounded border border-transparent bg-transparent font-medium text-[11.5px] text-foreground outline-none",
           "hover:border-border focus:border-primary"
         )}
       >

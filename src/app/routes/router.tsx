@@ -12,7 +12,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import { buildLegacyRedirects } from "./legacyRedirects";
 import { buildMarketingRoutes } from "./marketingRoutes";
 
-const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPage"));
 const ServiceDetailPage = lazy(
   () => import("@/features/services/pages/ServiceDetailPage/ServiceDetailPage")
 );
@@ -36,9 +35,7 @@ const HostDetailPage = lazy(() => import("@/features/infrastructure/pages/HostDe
 const ContainerDetailPage = lazy(
   () => import("@/features/infrastructure/pages/ContainerDetailPage")
 );
-const MonitorsPage = lazy(
-  () => import("@/features/monitors/pages/MonitorsPage/MonitorsPage")
-);
+const MonitorsPage = lazy(() => import("@/features/monitors/pages/MonitorsPage/MonitorsPage"));
 const MonitorDetailPage = lazy(
   () => import("@/features/monitors/pages/MonitorDetailPage/MonitorDetailPage")
 );
@@ -102,7 +99,6 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
 
 const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
-const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
 const serviceDetailRoute = createProtected(ROUTES.serviceDetail, ServiceDetailPage);
 const databaseQueriesRoute = createProtected(ROUTES.saturationDatabaseQueries, DatabaseQueriesPage);
 const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, SaturationKafkaPage);
@@ -115,11 +111,7 @@ const serviceMapRoute = createProtected(
   () => null,
   `${ROUTES.services}?tab=map`
 );
-const deploymentsRoute = createProtected(
-  ROUTES.deployments,
-  () => null,
-  `${ROUTES.services}?tab=deploys`
-);
+const deploymentsRoute = createProtected(ROUTES.deployments, () => null, ROUTES.services);
 const hostDetailRoute = createProtected(ROUTES.hostDetail, HostDetailPage);
 const containerDetailRoute = createProtected(ROUTES.containerDetail, ContainerDetailPage);
 
@@ -159,7 +151,6 @@ const routeTree = rootRoute.addChildren([
     ...protectedExplorerRoutes,
     overviewRoute,
     infrastructureRoute,
-    serviceRoute,
     serviceDetailRoute,
     databaseQueriesRoute,
     kafkaOverviewRoute,

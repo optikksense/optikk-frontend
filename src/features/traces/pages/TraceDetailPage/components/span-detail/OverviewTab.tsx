@@ -159,20 +159,20 @@ function OverviewTabComponent({
   return (
     <div className={pane}>
       {hasException && (
-        <div className="rounded-[10px] p-3 bg-error-subtle border border-error-subtle flex flex-col gap-1.5">
-          <div className="flex items-center gap-1.5 text-error font-semibold text-[12.5px]">
+        <div className="flex flex-col gap-1.5 rounded-[10px] border border-error-subtle bg-error-subtle p-3">
+          <div className="flex items-center gap-1.5 font-semibold text-[12.5px] text-error">
             <AlertCircle size={13} /> Span errored
             {spanAttributes?.exceptionType && (
               <span className={`${sdKind} ml-1`}>{spanAttributes.exceptionType}</span>
             )}
           </div>
           {spanAttributes?.exceptionMessage && (
-            <div className="text-foreground-secondary text-[12.5px] leading-[1.5]">
+            <div className="text-[12.5px] text-foreground-secondary leading-[1.5]">
               {spanAttributes.exceptionMessage}
             </div>
           )}
           {spanAttributes?.exceptionStacktrace && (
-            <pre className="m-0 p-3 bg-secondary border border-border rounded-md font-mono text-[11px] text-foreground-secondary overflow-auto whitespace-pre max-h-[200px] mt-1">
+            <pre className="m-0 mt-1 max-h-[200px] overflow-auto whitespace-pre rounded-md border border-border bg-secondary p-3 font-mono text-[11px] text-foreground-secondary">
               {spanAttributes.exceptionStacktrace}
             </pre>
           )}
@@ -205,20 +205,20 @@ function OverviewTabComponent({
                   title={`${a.service_name} · ${a.operation_name}`}
                 >
                   <span
-                    className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0"
+                    className="inline-block h-[7px] w-[7px] flex-none shrink-0 grow-0 basis-[7px] rounded-full"
                     style={{ background: `oklch(0.62 0.14 ${svcHue(a.service_name || "")})` }}
                   />
                   <span className={ancSvc}>{a.service_name || "—"}</span>
                   <span className={ancOp}>{a.operation_name || "(no name)"}</span>
                 </button>
-                <span className="text-foreground-caption inline-flex">
+                <span className="inline-flex text-foreground-caption">
                   <ChevronRight size={11} />
                 </span>
               </span>
             ))}
             <span className={ancHere}>
               <span
-                className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0"
+                className="inline-block h-[7px] w-[7px] flex-none shrink-0 grow-0 basis-[7px] rounded-full"
                 style={{ background: `oklch(0.62 0.14 ${svcHue(span.service_name || "")})` }}
               />
               <span className={ancSvc}>{span.service_name || "—"}</span>
@@ -265,7 +265,10 @@ function OverviewTabComponent({
               </div>
             )}
           </div>
-          <SelfChildBar selfMs={timing.selfMs} childMs={Math.max(0, timing.durMs - timing.selfMs)} />
+          <SelfChildBar
+            selfMs={timing.selfMs}
+            childMs={Math.max(0, timing.durMs - timing.selfMs)}
+          />
         </div>
       )}
 

@@ -35,10 +35,8 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
                 key={p.id}
                 type="button"
                 onClick={() => setDraft((d) => ({ ...d, priority: p.id }))}
-                className={`rounded border px-3 py-1 text-xs font-medium ${
-                  active
-                    ? `${p.color} bg-secondary`
-                    : "border-border text-foreground-secondary"
+                className={`rounded border px-3 py-1 font-medium text-xs ${
+                  active ? `${p.color} bg-secondary` : "border-border text-foreground-secondary"
                 }`}
               >
                 {p.label}
@@ -81,9 +79,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
                 type="button"
                 onClick={() => setDraft((d) => ({ ...d, eval_every_sec: sec }))}
                 className={`rounded px-2 py-0.5 text-xs ${
-                  active
-                    ? "bg-primary text-white"
-                    : "bg-secondary text-foreground-secondary"
+                  active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}
               >
                 {sec >= 3600 ? `${sec / 3600}h` : `${sec / 60}m`}

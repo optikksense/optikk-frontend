@@ -118,9 +118,7 @@ function LogsTrendChartComponent({
   const barW = Math.max(MIN_BAR_W, (bucketMs / spanMs) * innerW - 1);
   const xOf = (ts: number) => PAD_L + ((ts - tsMin) / spanMs) * innerW;
 
-  const max = isEmpty
-    ? 1
-    : Math.max(1, ...buckets.map((d) => d.debug + d.info + d.warn + d.err));
+  const max = isEmpty ? 1 : Math.max(1, ...buckets.map((d) => d.debug + d.info + d.warn + d.err));
   const yScale = (v: number) => (v / max) * innerH;
   const yOf = (v: number) => PAD_T + innerH - yScale(v);
 
@@ -234,23 +232,23 @@ function LogsTrendChartComponent({
   const tipY = PAD_T + 4;
 
   return (
-    <div className="rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] pb-2 pl-[18px] pr-[18px] pt-[14px]">
+    <div className="rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] pt-[14px] pr-[18px] pb-2 pl-[18px]">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-semibold text-[var(--fg-0)]">Log Volume Over Time</span>
+        <span className="font-semibold text-[var(--fg-0)] text-sm">Log Volume Over Time</span>
         <div className="flex gap-4">
-          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
+          <span className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
             <i className="h-[7px] w-[7px] rounded-full" style={{ background: DEBUG_COLOR }} />
             Debug
           </span>
-          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
+          <span className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
             <i className="h-[7px] w-[7px] rounded-full" style={{ background: INFO_COLOR }} />
             Info
           </span>
-          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
+          <span className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
             <i className="h-[7px] w-[7px] rounded-full" style={{ background: WARN_COLOR }} />
             Warnings
           </span>
-          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
+          <span className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
             <i className="h-[7px] w-[7px] rounded-full" style={{ background: ERROR_COLOR }} />
             Errors
           </span>
@@ -340,7 +338,7 @@ function LogsTrendChartComponent({
                     y={yi}
                     width={barW}
                     height={hi}
-                    className="transition-opacity duration-[120ms] [[data-theme=light]_&]:opacity-75 group-hover:opacity-[0.85]"
+                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85] [[data-theme=light]_&]:opacity-75"
                     style={{ fill: INFO_COLOR, opacity: 0.7 }}
                   />
                 ) : null}

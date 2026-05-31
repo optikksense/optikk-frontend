@@ -28,18 +28,14 @@ export function InfrastructureHubHeader({
       </div>
       <div className="min-w-0">
         <div className="flex items-center gap-3">
-          <h1 className="font-bold text-[22px] text-foreground leading-tight">
-            Infrastructure
-          </h1>
+          <h1 className="font-bold text-[22px] text-foreground leading-tight">Infrastructure</h1>
           {alertCount != null && alertCount > 0 && (
             <Pill variant="warning" dot>
               {alertCount} in alert
             </Pill>
           )}
         </div>
-        {subtitle && (
-          <div className="mt-1 text-[12px] text-foreground-muted">{subtitle}</div>
-        )}
+        {subtitle && <div className="mt-1 text-[12px] text-foreground-muted">{subtitle}</div>}
       </div>
     </header>
   );
