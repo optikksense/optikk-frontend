@@ -3,9 +3,11 @@ import { useMemo } from "react";
 
 import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { buildLogsHubHref, podEqualsFilter } from "@shared/observability/deepLinks";
+import { dynamicTo } from "@shared/utils/navigation";
+import { ROUTES } from "@/shared/constants/routes";
 
 import { getFleetPods } from "../../api/hostsApi";
-import InfraPodsTable from "../../components/InfraPodsTable";
+import InfraPodsTable, { getPodDetails } from "../../components/InfraPodsTable";
 import type { FleetPod } from "../../types";
 
 interface HostDetailContainersProps {
@@ -23,14 +25,23 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
     [podsQ.data, host]
   );
 
-  const onOpenPodLogs = (podName: string): void => {
-    const { startTime, endTime } = getTimeRange();
+  const processedPods = useMemo(() => {
+    return pods.map((p) => {
+      const details = getPodDetails(p.pod_name, p.host, p.error_rate);
+      return {
+        ...p,
+        ...details,
+      };
+    });
+  }, [pods]);
+
+  const onOpenHost = (h: string) => {
+    navigate({ to: dynamicTo(ROUTES.hostDetail.replace("$host", encodeURIComponent(h))) });
+  };
+
+  const onOpenContainer = (container: string) => {
     navigate({
-      to: buildLogsHubHref({
-        filters: [podEqualsFilter(podName)],
-        fromMs: Number(startTime),
-        toMs: Number(endTime),
-      }) as never,
+      to: dynamicTo(ROUTES.containerDetail.replace("$container", encodeURIComponent(container))),
     });
   };
 
@@ -44,7 +55,11 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
             : "No containers reported on this host in the current time range."}
         </div>
       ) : (
-        <InfraPodsTable pods={pods} onOpenPodLogs={onOpenPodLogs} />
+        <InfraPodsTable
+          pods={processedPods}
+          onOpenContainer={onOpenContainer}
+          onOpenHost={onOpenHost}
+        />
       )}
     </section>
   );

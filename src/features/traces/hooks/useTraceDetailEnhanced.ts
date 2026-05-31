@@ -1,4 +1,4 @@
-import { tracesService } from "@shared/api/tracesService";
+import { tracesService } from "../api/tracesApi";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useMemo } from "react";
 import type {
@@ -7,8 +7,6 @@ import type {
   RelatedTrace,
   SpanAttributes,
   SpanEvent,
-  SpanKindDuration,
-  SpanSelfTime,
 } from "../types";
 
 /**
@@ -38,13 +36,6 @@ export function useTraceDetailEnhanced(
     queryKey: ["trace-error-path", traceId],
     queryFn: () => tracesService.getErrorPath(traceId),
     enabled,
-  });
-
-  // Span kind breakdown — only when detail drawer is open
-  const { data: spanKindData } = useStandardQuery({
-    queryKey: ["trace-span-kind-breakdown", traceId],
-    queryFn: () => tracesService.getSpanKindBreakdown(traceId),
-    enabled: enabled && !!selectedSpanId,
   });
 
   // Events — load eagerly when any span is selected (unified scroll panel)
@@ -112,17 +103,6 @@ export function useTraceDetailEnhanced(
     return new Set(arr.map((s) => s.spanId));
   }, [errorPathData]);
 
-  const spanKindBreakdown = useMemo<SpanKindDuration[]>(
-    () =>
-      spanKindData?.map((item) => ({
-        spanKind: item.span_kind,
-        totalDurationMs: item.total_duration_ms,
-        spanCount: item.span_count,
-        pctOfTrace: item.pct_of_trace,
-      })) ?? [],
-    [spanKindData]
-  );
-
   const spanEvents = useMemo<SpanEvent[]>(
     () =>
       spanEventsData?.map((item) => ({
@@ -134,8 +114,6 @@ export function useTraceDetailEnhanced(
       })) ?? [],
     [spanEventsData]
   );
-
-  const spanSelfTimes: SpanSelfTime[] = [];
 
   const relatedTraces = useMemo<RelatedTrace[]>(
     () =>
@@ -180,9 +158,7 @@ export function useTraceDetailEnhanced(
   return {
     criticalPathSpanIds,
     errorPathSpanIds,
-    spanKindBreakdown,
     spanEvents,
-    spanSelfTimes,
     relatedTraces,
     spanAttributes,
     spanAttributesLoading: spanAttributesPending,

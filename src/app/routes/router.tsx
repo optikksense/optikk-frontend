@@ -19,7 +19,6 @@ const InfrastructureHubPage = lazy(
   () => import("@/features/infrastructure/pages/InfrastructureHubPage")
 );
 const OverviewHubPage = lazy(() => import("@/features/overview/pages/OverviewHubPage"));
-const DatabaseQueriesPage = lazy(() => import("@/features/saturation/pages/DatabaseQueriesPage"));
 const SaturationKafkaPage = lazy(
   () => import("@/features/saturation/pages/SaturationKafkaPage/SaturationKafkaPage")
 );
@@ -100,7 +99,6 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
 const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
 const serviceDetailRoute = createProtected(ROUTES.serviceDetail, ServiceDetailPage);
-const databaseQueriesRoute = createProtected(ROUTES.saturationDatabaseQueries, DatabaseQueriesPage);
 const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, SaturationKafkaPage);
 const saturationDatabaseRoute = createProtected(ROUTES.saturationDatabase, SaturationDatabasePage);
 const errorTrackingRoute = createProtected(ROUTES.errors, ErrorTrackingPage);
@@ -152,7 +150,6 @@ const routeTree = rootRoute.addChildren([
     overviewRoute,
     infrastructureRoute,
     serviceDetailRoute,
-    databaseQueriesRoute,
     kafkaOverviewRoute,
     saturationDatabaseRoute,
     errorTrackingRoute,

@@ -1,7 +1,6 @@
 import { Suspense, lazy, useMemo } from "react";
 
 import { PageShell } from "@shared/components/ui";
-import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
@@ -9,18 +8,13 @@ import { getNodesSummary } from "../api/hostsApi";
 import { INFRA_TAB, type InfraTabId, URL_TAB } from "../constants";
 import type { InfrastructureNodeSummary } from "../types";
 import { InfrastructureHubHeader } from "./InfrastructureHubHeader";
-import { InfrastructureKpiStrip } from "./InfrastructureKpiStrip";
 
 const HostsTab = lazy(() => import("./tabs/HostsTab"));
 const ContainersTab = lazy(() => import("./tabs/ContainersTab"));
-const NetworkTab = lazy(() => import("./tabs/NetworkTab"));
-const FleetTab = lazy(() => import("./tabs/FleetTab"));
 
 const TAB_ITEMS: { id: InfraTabId; label: string }[] = [
   { id: INFRA_TAB.hosts, label: "Hosts" },
   { id: INFRA_TAB.containers, label: "Containers" },
-  { id: INFRA_TAB.network, label: "Network" },
-  { id: INFRA_TAB.hostMap, label: "Host map" },
 ];
 
 function parseTab(raw: string | null): InfraTabId {
@@ -109,7 +103,6 @@ export default function InfrastructureHubPage() {
   return (
     <PageShell>
       <InfrastructureHubHeader hostCount={hostCount} podCount={podCount} alertCount={alertCount} />
-      <InfrastructureKpiStrip summary={summary} />
       <TabsRow active={activeTab} hostCount={hostCount} podCount={podCount} onChange={setTab} />
       <Suspense
         fallback={
@@ -120,10 +113,7 @@ export default function InfrastructureHubPage() {
       >
         {activeTab === INFRA_TAB.hosts ? <HostsTab /> : null}
         {activeTab === INFRA_TAB.containers ? <ContainersTab /> : null}
-        {activeTab === INFRA_TAB.network ? <NetworkTab /> : null}
-        {activeTab === INFRA_TAB.hostMap ? <FleetTab /> : null}
       </Suspense>
-      <DashboardEntityDrawer />
     </PageShell>
   );
 }

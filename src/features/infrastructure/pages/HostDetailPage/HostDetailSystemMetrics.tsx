@@ -38,28 +38,6 @@ export function HostDetailSystemMetrics({ host }: HostDetailSystemMetricsProps) 
             extraParams={{ host }}
           />
         </Card>
-        <Card padding="md" className="min-h-[280px] border-border">
-          <InfraMultiSeriesChart
-            queryKey={`host-disk-${host}`}
-            endpoint="/v1/infrastructure/disk/by-instance"
-            title="Disk"
-            groupByField="host"
-            valueField="value"
-            formatType="percentage"
-            extraParams={{ host }}
-          />
-        </Card>
-        <Card padding="md" className="min-h-[280px] border-border">
-          <InfraMultiSeriesChart
-            queryKey={`host-net-${host}`}
-            endpoint="/v1/infrastructure/network/by-instance"
-            title="Network"
-            groupByField="host"
-            valueField="value"
-            formatType="bytes"
-            extraParams={{ host }}
-          />
-        </Card>
       </div>
     </section>
   );

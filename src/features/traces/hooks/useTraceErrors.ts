@@ -1,4 +1,4 @@
-import { tracesService } from "@shared/api/tracesService";
+import { tracesService } from "../api/tracesApi";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 
 /**

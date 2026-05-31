@@ -7,11 +7,7 @@ import {
   groupFetchesSchema,
   groupHealthSchema,
   groupPartitionsSchema,
-  groupTopicSchema,
-  kafkaPartitionRowSchema,
   topicConsumersSchema,
-  topicGroupLagSchema,
-  topicGroupThroughputSchema,
   topicLagSchema,
   topicThroughputSchema,
 } from "./kafkaExplorerSchemas";
@@ -20,16 +16,10 @@ import type {
   GroupFetchesRow,
   GroupHealthRow,
   GroupPartitionsRow,
-  GroupTopicRow,
-  KafkaGroupOverview,
   KafkaGroupRow,
-  KafkaPartitionRow,
   KafkaSummary,
-  KafkaTopicOverview,
   KafkaTopicRow,
   TopicConsumersRow,
-  TopicGroupLagRow,
-  TopicGroupThroughputRow,
   TopicLagRow,
   TopicThroughputRow,
 } from "./kafkaExplorerSchemas";
@@ -161,32 +151,6 @@ export function getGroupHealth(
   );
 }
 
-// ----------------- DETAIL INTERSECTIONS -----------------
-
-export function getTopicGroupThroughput(
-  topic: string,
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<TopicGroupThroughputRow[]> {
-  return getSaturation(
-    "/saturation/kafka/topic/groups/throughput",
-    z.array(topicGroupThroughputSchema),
-    topicParams(topic, startTime, endTime)
-  );
-}
-
-export function getTopicGroupLag(
-  topic: string,
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<TopicGroupLagRow[]> {
-  return getSaturation(
-    "/saturation/kafka/topic/groups/lag",
-    z.array(topicGroupLagSchema),
-    topicParams(topic, startTime, endTime)
-  );
-}
-
 export async function getKafkaTopics(
   startTime: RequestTime,
   endTime: RequestTime
@@ -242,108 +206,4 @@ export async function getKafkaGroups(
     ...row,
     topic_count: 0, // Fallback since it's not trivially available in the split domains
   })) as KafkaGroupRow[];
-}
-
-export async function getKafkaTopicOverview(
-  topic: string,
-  startTime: RequestTime,
-  endTime: RequestTime
-) {
-  const [throughput, lag, consumers] = await Promise.all([
-    getTopicThroughput(startTime, endTime, topic),
-    getTopicLag(startTime, endTime, topic),
-    getTopicConsumers(startTime, endTime, topic),
-  ]);
-
-  const summary = {
-    ...throughput[0],
-    ...lag[0],
-    ...consumers[0],
-    topic,
-  } as KafkaTopicRow;
-
-  return { topic, summary, trend: [] };
-}
-
-export async function getKafkaGroupOverview(
-  group: string,
-  startTime: RequestTime,
-  endTime: RequestTime
-) {
-  const [partitions, commits, fetches, health] = await Promise.all([
-    getGroupPartitions(startTime, endTime, group),
-    getGroupCommits(startTime, endTime, group),
-    getGroupFetches(startTime, endTime, group),
-    getGroupHealth(startTime, endTime, group),
-  ]);
-
-  const summary = {
-    ...partitions[0],
-    ...commits[0],
-    ...fetches[0],
-    ...health[0],
-    consumer_group: group,
-    topic_count: 0,
-  } as KafkaGroupRow;
-
-  return { consumer_group: group, summary, trend: [] };
-}
-
-export async function getKafkaTopicGroups(
-  topic: string,
-  startTime: RequestTime,
-  endTime: RequestTime
-) {
-  const [throughput, lag] = await Promise.all([
-    getTopicGroupThroughput(topic, startTime, endTime),
-    getTopicGroupLag(topic, startTime, endTime),
-  ]);
-
-  const map = new Map<string, any>();
-
-  for (const t of throughput) {
-    map.set(t.consumer_group, { ...map.get(t.consumer_group), ...t });
-  }
-  for (const l of lag) {
-    map.set(l.consumer_group, { ...map.get(l.consumer_group), ...l });
-  }
-
-  return Array.from(map.values());
-}
-
-export function getKafkaGroupTopics(
-  group: string,
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<GroupTopicRow[]> {
-  return getSaturation(
-    "/saturation/kafka/group/topics",
-    z.array(groupTopicSchema),
-    groupParams(group, startTime, endTime)
-  );
-}
-
-// Keep partition legacy endpoint since we didn't rewrite it in the backend yet
-export function getKafkaTopicPartitions(
-  topic: string,
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<KafkaPartitionRow[]> {
-  return getSaturation(
-    "/saturation/kafka/topic/partitions",
-    z.array(kafkaPartitionRowSchema),
-    topicParams(topic, startTime, endTime)
-  );
-}
-
-export function getKafkaGroupPartitions(
-  group: string,
-  startTime: RequestTime,
-  endTime: RequestTime
-): Promise<KafkaPartitionRow[]> {
-  return getSaturation(
-    "/saturation/kafka/group/partitions",
-    z.array(kafkaPartitionRowSchema),
-    groupParams(group, startTime, endTime)
-  );
 }

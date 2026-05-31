@@ -1,94 +1,388 @@
-import { tracesService } from "@shared/api/tracesService";
-/**
- * Retargeted shim — preserves the legacy `tracesApi.getTraces` / `getTraceSpans`
- * signatures used by overview dashboards (ServicePage, deployment-compare)
- * while forwarding requests through the new `tracesExplorerApi.query`.
- *
- * Dashboards use a narrow slice of params (services, status, limit, offset);
- * this file translates that shape into the `ExplorerFilter[]` the new
- * backend querycompiler accepts. Keep external signatures stable.
- */
-import type { TraceRecord, TracesResponse } from "@shared/entities/trace/model";
+import { API_CONFIG } from "@config/apiConfig";
+import api from "@shared/api/api/client";
+import { validateResponse } from "@shared/api/utils/validate";
+import { z } from "zod";
 
-import type { ExplorerFilter } from "@/features/explorer/types";
+import type { TraceSummary, TracesQueryRequest, TracesQueryResponse } from "../types/trace";
+import {
+	criticalPathSpanSchema,
+	errorPathSpanSchema,
+	relatedTraceSchema,
+	serviceMapResponseSchema,
+	spanAttributesSchema,
+	spanEventSchema,
+	spanRecordSchema,
+	traceErrorGroupSchema,
+} from "@shared/api/schemas/tracesSchemas";
+import type {
+	CriticalPathSpanRecord,
+	ErrorPathSpanRecord,
+	RelatedTraceRecord,
+	ServiceMapResponse,
+	SpanAttributesRecord,
+	SpanEventRecord,
+	SpanRecord,
+	TraceErrorGroup,
+} from "@shared/api/schemas/tracesSchemas";
 
-import type { TraceSummary } from "../types/trace";
-import { tracesExplorerApi } from "./tracesExplorerApi";
+const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export interface LegacyTracesQueryParams {
-  readonly services?: readonly string[];
-  readonly status?: string;
-  readonly limit?: number;
-  readonly offset?: number;
-  readonly cursor?: string;
+// ==========================================
+// Traces Query & Explorer Schemas & Helpers
+// ==========================================
+
+export const warningSchema = z.object({ code: z.string(), message: z.string() }).strict();
+
+export function normalizeWarnings(
+  raw: readonly (string | z.infer<typeof warningSchema>)[] | undefined
+): TracesQueryResponse["warnings"] {
+  if (!raw?.length) return undefined;
+  return raw.map((item) => (typeof item === "string" ? { code: "query", message: item } : item));
 }
 
-function buildFilters(params: LegacyTracesQueryParams): ExplorerFilter[] {
-  const filters: ExplorerFilter[] = [];
-  for (const service of params.services ?? []) {
-    if (service) {
-      filters.push({ field: "service_name", op: "eq", value: service });
+function extractNextCursor(pageInfo: unknown): string | undefined {
+  if (pageInfo && typeof pageInfo === "object" && "nextCursor" in pageInfo) {
+    const c = (pageInfo as { nextCursor?: string }).nextCursor;
+    return c && c !== "" ? c : undefined;
+  }
+  return undefined;
+}
+
+/** Backend `explorer.Trace` / traces_index row (`internal/modules/traces/explorer/models.go`). */
+export const rawTraceRowSchema = z
+  .object({
+    trace_id: z.string(),
+    start_ms: z.coerce.number(),
+    end_ms: z.coerce.number(),
+    duration_ms: z.coerce.number(),
+    root_service: z.string(),
+    root_operation: z.string(),
+    root_status: z.string().optional(),
+    root_http_method: z.string().optional(),
+    root_http_status: z.string().optional(),
+    span_count: z.coerce.number(),
+    has_error: z.coerce.boolean(),
+    error_count: z.coerce.number(),
+    service_set: z.array(z.string()).optional(),
+    truncated: z.coerce.boolean().optional(),
+  })
+  .strict();
+
+function normalizeHttpStatus(v: string | undefined): string | undefined {
+  if (v == null || v === "" || v === "0") return undefined;
+  return v;
+}
+
+export function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSummary {
+  const durationNs = Math.round(row.duration_ms * 1_000_000);
+  return {
+    trace_id: row.trace_id,
+    team_id: 0,
+    start_ms: row.start_ms,
+    end_ms: row.end_ms,
+    duration_ns: durationNs,
+    root_service: row.root_service,
+    root_operation: row.root_operation,
+    root_status: row.root_status ?? "",
+    root_http_method: row.root_http_method,
+    root_http_status: normalizeHttpStatus(row.root_http_status),
+    root_endpoint: undefined,
+    span_count: row.span_count,
+    has_error: row.has_error,
+    error_count: row.error_count,
+    environment: undefined,
+    service_set: row.service_set,
+    truncated: row.truncated,
+  };
+}
+
+const facetBucketSchema = z
+  .object({
+    value: z.string(),
+    count: z.coerce.number(),
+  })
+  .strict();
+
+const facetBucketsArraySchema = z
+  .union([z.array(facetBucketSchema), z.null()])
+  .transform((v) => v ?? []);
+
+const rawFacetsSchema = z
+  .object({
+    service: facetBucketsArraySchema.optional(),
+    operation: facetBucketsArraySchema.optional(),
+    http_method: facetBucketsArraySchema.optional(),
+    http_status: facetBucketsArraySchema.optional(),
+    status: facetBucketsArraySchema.optional(),
+  })
+  .strict()
+  .partial()
+  .nullable()
+  .optional();
+
+function normalizeFacets(raw: z.infer<typeof rawFacetsSchema>): TracesQueryResponse["facets"] {
+  if (raw == null) return undefined;
+  const out: Record<string, Array<{ value: string; count: number }>> = {};
+  for (const [k, arr] of Object.entries(raw)) {
+    if (arr.length > 0) {
+      out[k] = arr.map((b) => ({ value: b.value, count: b.count }));
     }
   }
-  if (params.status) {
-    filters.push({ field: "status", op: "eq", value: params.status });
-  }
-  return filters;
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
-function toTraceRecord(summary: TraceSummary): TraceRecord {
-  return {
-    span_id: "",
-    trace_id: summary.trace_id,
-    service_name: summary.root_service,
-    operation_name: summary.root_operation,
-    start_time: new Date(summary.start_ms).toISOString(),
-    end_time: new Date(summary.end_ms).toISOString(),
-    duration_ms: summary.duration_ns / 1_000_000,
-    status: summary.root_status,
-    span_kind: "SERVER",
-    http_method: summary.root_http_method,
-    http_status_code: summary.root_http_status
-      ? Number.parseInt(summary.root_http_status, 10) || undefined
-      : undefined,
-  };
-}
+const rawSummarySchema = z
+  .object({
+    total_traces: z.coerce.number(),
+    total_errors: z.coerce.number(),
+    total_duration_ns: z.coerce.number().optional(),
+  })
+  .strict();
 
-async function getTraces(
-  _teamId: number | null,
-  startTime: number,
-  endTime: number,
-  params: LegacyTracesQueryParams = {}
-): Promise<TracesResponse> {
-  const response = await tracesExplorerApi.query({
-    startTime,
-    endTime,
-    filters: buildFilters(params),
-    limit: params.limit ?? 50,
-    cursor: params.cursor,
-    include: ["summary"],
+const rawTrendRowSchema = z
+  .object({
+    time_bucket: z.string(),
+    total: z.coerce.number(),
+    errors: z.coerce.number(),
+  })
+  .strict();
+
+const tracesQueryResponseSchema = z
+  .object({
+    results: z.union([z.array(rawTraceRowSchema), z.null()]).transform((v) => v ?? []),
+    pageInfo: z.unknown().optional(),
+    summary: rawSummarySchema.nullable().optional(),
+    facets: rawFacetsSchema,
+    trend: z.union([z.array(rawTrendRowSchema), z.null()]).optional(),
+    warnings: z.array(z.union([z.string(), warningSchema])).optional(),
+  })
+  .strict()
+  .transform((r) => {
+    const out: TracesQueryResponse = {
+      traces: r.results.map(normalizeTraceSummary),
+      nextCursor: extractNextCursor(r.pageInfo),
+      summary:
+        r.summary != null
+          ? { total: r.summary.total_traces, errors: r.summary.total_errors }
+          : undefined,
+      facets: normalizeFacets(r.facets ?? undefined),
+      trend: r.trend?.map((b) => ({
+        time_bucket: b.time_bucket,
+        total: b.total,
+        errors: b.errors,
+        warnings: 0,
+      })),
+      warnings: normalizeWarnings(r.warnings),
+    };
+    return out;
   });
-  return {
-    traces: response.traces.map(toTraceRecord),
-    has_more: Boolean(response.nextCursor),
-    next_cursor: response.nextCursor,
-    limit: params.limit,
-    summary: response.summary
-      ? {
-          total_traces: response.summary.total,
-          error_traces: response.summary.errors,
-          avg_duration: 0,
-          p50_duration: 0,
-          p95_duration: 0,
-          p99_duration: 0,
-        }
-      : undefined,
+
+function logDevSnippet(raw: unknown, err: unknown) {
+  if (!import.meta.env.DEV) return;
+  let snippet: string;
+  try {
+    snippet = JSON.stringify(raw).slice(0, 800);
+  } catch {
+    snippet = String(raw).slice(0, 800);
+  }
+  console.warn("[traces/query] validateResponse failed — check API contract vs Zod schema.", {
+    snippet,
+    error: err,
+  });
+}
+
+// ==========================================
+// Traces API Functions
+// ==========================================
+
+export async function query(body: TracesQueryRequest): Promise<TracesQueryResponse> {
+  const { include: _ignore, ...reqBody } = body;
+  const raw = await api.post<unknown>(`${BASE}/traces/query`, reqBody);
+
+  if (
+    import.meta.env.DEV &&
+    body.startTime > 0 &&
+    body.endTime > body.startTime &&
+    body.endTime < 1e12
+  ) {
+    console.warn(
+      "[traces/query] startTime/endTime look like seconds, not ms — queries may return no rows.",
+      { startTime: body.startTime, endTime: body.endTime }
+    );
+  }
+
+  try {
+    return validateResponse(tracesQueryResponseSchema, raw);
+  } catch (err) {
+    logDevSnippet(raw, err);
+    throw err;
+  }
+}
+
+export async function queryFacets(body: TracesQueryRequest) {
+  const { include: _ignore, ...reqBody } = body;
+  const raw = await api.post<unknown>(`${BASE}/traces/facets`, reqBody);
+  const validated = validateResponse(rawFacetsSchema, raw);
+  return normalizeFacets(validated);
+}
+
+export async function queryTrend(body: TracesQueryRequest) {
+  const { include: _ignore, ...reqBody } = body;
+  const raw = await api.post<unknown>(`${BASE}/traces/trend`, reqBody);
+  const validated = validateResponse(z.union([z.array(rawTrendRowSchema), z.null()]), raw) ?? [];
+  return validated.map((b) => ({
+    time_bucket: b.time_bucket,
+    total: b.total,
+    errors: b.errors,
+    warnings: 0,
+  }));
+}
+
+export async function getById(traceId: string): Promise<TraceSummary> {
+  const raw = await api.get<unknown>(`${BASE}/traces/${encodeURIComponent(traceId)}`);
+  const row = validateResponse(rawTraceRowSchema, raw);
+  return normalizeTraceSummary(row);
+}
+
+// ==========================================
+// Suggest Request, Response Schemas & Functions
+// ==========================================
+
+export interface SuggestRequest {
+  readonly startTime: number;
+  readonly endTime: number;
+  readonly field: string;
+  readonly prefix?: string;
+  readonly limit?: number;
+}
+
+export interface SuggestionItem {
+  readonly value: string;
+  readonly count: number;
+}
+
+const suggestionSchema = z
+  .object({
+    value: z.string(),
+    count: z.coerce.number(),
+  })
+  .strict();
+
+const suggestResponseSchema = z
+  .object({
+    suggestions: z.union([z.array(suggestionSchema), z.null()]).transform((v) => v ?? []),
+  })
+  .strict();
+
+export async function fetchSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
+  const body = {
+    startTime: req.startTime,
+    endTime: req.endTime,
+    field: req.field,
+    prefix: req.prefix ?? "",
+    limit: req.limit ?? 10,
   };
+  const raw = await api.post<unknown>(`${BASE}/traces/suggest`, body);
+  return validateResponse(suggestResponseSchema, raw).suggestions;
 }
 
-/** TraceDetailPage still owns the spans endpoint via `tracesService`; forward. */
-function getTraceSpans(teamId: number | null, traceId: string) {
-  return tracesService.getTraceSpans(teamId, traceId);
+// ==========================================
+// Traces Service Detail Functions & Wrapper
+// ==========================================
+
+const spanListSchema = z.array(spanRecordSchema);
+
+/** Wire item for GET /traces/:traceId/spans (tracedetail SpanListItem). */
+const traceSpanListItemSchema = z
+  .object({
+    span_id: z.string(),
+    parent_span_id: z.string().optional(),
+    trace_id: z.string(),
+    service_name: z.string(),
+    operation_name: z.string(),
+    kind: z.string().optional().default(""),
+    status_code: z.string().optional().default(""),
+    has_error: z.boolean().optional().default(false),
+    duration_ms: z.coerce.number(),
+    start_ns: z.coerce.number(),
+  })
+  .strict();
+
+/** Backend sends `{ spans: [...] }`; some paths emit `null` or omit `spans` for empty results. */
+const traceSpansEnvelopeSchema = z
+  .object({
+    spans: z
+      .array(traceSpanListItemSchema)
+      .nullish()
+      .transform((v) => v ?? []),
+  })
+  .strict();
+
+export async function getTraceSpans(_teamId: number | null, traceId: string): Promise<SpanRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/spans`);
+  if (Array.isArray(data)) {
+    return validateResponse(spanListSchema, data);
+  }
+  const { spans } = validateResponse(traceSpansEnvelopeSchema, data);
+  return spans as unknown as SpanRecord[];
 }
 
-export const tracesApi = { getTraces, getTraceSpans };
+export async function getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/span-events`);
+  return validateResponse(z.array(spanEventSchema), data);
+}
+
+export async function getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
+  return validateResponse(z.array(criticalPathSpanSchema), data);
+}
+
+export async function getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/error-path`);
+  return validateResponse(z.array(errorPathSpanSchema), data);
+}
+
+export async function getSpanAttributes(traceId: string, spanId: string): Promise<SpanAttributesRecord> {
+  const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`);
+  return validateResponse(spanAttributesSchema, data);
+}
+
+export async function getRelatedTraces(
+  traceId: string,
+  serviceName?: string,
+  operationName?: string,
+  startMs?: number,
+  endMs?: number
+): Promise<RelatedTraceRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/related`, {
+    params: {
+      service: serviceName,
+      operation: operationName,
+      startTime: startMs,
+      endTime: endMs,
+    },
+  });
+  return validateResponse(z.array(relatedTraceSchema), data);
+}
+
+export async function getServiceMap(traceId: string): Promise<ServiceMapResponse> {
+  const data = await api.get(`${BASE}/traces/${traceId}/service-map`);
+  return validateResponse(serviceMapResponseSchema, data);
+}
+
+export async function getTraceErrors(traceId: string): Promise<TraceErrorGroup[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/errors`);
+  return validateResponse(z.array(traceErrorGroupSchema), data);
+}
+
+/** Wrapper compatibility object. */
+export const tracesService = {
+  getTraceSpans,
+  getSpanEvents,
+  getCriticalPath,
+  getErrorPath,
+  getSpanAttributes,
+  getRelatedTraces,
+  getServiceMap,
+  getTraceErrors,
+};

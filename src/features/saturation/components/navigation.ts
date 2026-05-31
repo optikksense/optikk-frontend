@@ -67,37 +67,3 @@ export function buildSaturationTracesSearch(
   else next.delete("filters");
   return searchParamsToObject(next);
 }
-
-export function resolveLegacySaturationPath(
-  entity: string | null,
-  id: string | null
-): { to: string; search?: Record<string, string | string[]> } | null {
-  if (!entity || !id) return null;
-
-  if (entity === "databaseSystem") {
-    return {
-      to: ROUTES.saturationDatastoreDetail.replace("$system", encodeURIComponent(id)),
-    };
-  }
-
-  if (entity === "redisInstance") {
-    return {
-      to: ROUTES.saturationDatastoreDetail.replace("$system", "redis"),
-      search: { instance: id },
-    };
-  }
-
-  if (entity === "kafkaTopic") {
-    return {
-      to: ROUTES.saturationKafkaTopicDetail.replace("$topic", encodeURIComponent(id)),
-    };
-  }
-
-  if (entity === "kafkaGroup") {
-    return {
-      to: ROUTES.saturationKafkaGroupDetail.replace("$groupId", encodeURIComponent(id)),
-    };
-  }
-
-  return null;
-}

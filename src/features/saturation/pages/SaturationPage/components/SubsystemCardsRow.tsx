@@ -9,7 +9,7 @@ type Props = {
 
 function SubsystemCardsRowImpl({ cards }: Props): JSX.Element {
   return (
-    <div className="grid grid-cols-3 gap-[14px] [&>*]:min-w-0">
+    <div className="grid grid-cols-5 gap-[14px] [&>*]:min-w-0">
       {cards.map((spec) => (
         <SubsystemCard key={spec.id} spec={spec} />
       ))}

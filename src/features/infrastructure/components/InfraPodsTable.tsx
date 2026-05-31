@@ -1,118 +1,302 @@
-import { Link } from "@tanstack/react-router";
-
-import {
-  Badge,
-  Button,
-  SimpleTable,
-  type SimpleTableColumn,
-} from "@shared/components/primitives/ui";
-import {
-  formatDuration,
-  formatNumber,
-  formatPercentage,
-  formatRelativeTime,
-} from "@shared/utils/formatters";
-import { dynamicTo } from "@shared/utils/navigation";
-
-import { ROUTES } from "@/shared/constants/routes";
+import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 import type { FleetPod } from "../types";
-import { tierForPod } from "../utils/podHealth";
-
-const TIER_BADGE: Record<ReturnType<typeof tierForPod>, "success" | "warning" | "error"> = {
-  healthy: "success",
-  degraded: "warning",
-  unhealthy: "error",
-};
 
 interface InfraPodsTableProps {
-  readonly pods: readonly FleetPod[];
-  readonly onOpenPodLogs: (podName: string) => void;
+  readonly pods: readonly (FleetPod & {
+    readonly status: "running" | "pending" | "terminating" | "crashloop" | "oomkilled";
+    readonly ns: string;
+    readonly img: string;
+    readonly age: string;
+    readonly cpu: number;
+    readonly mem: number;
+    readonly restarts: number;
+  })[];
+  readonly onOpenContainer: (container: string) => void;
+  readonly onOpenHost: (host: string) => void;
 }
 
-export default function InfraPodsTable({ pods, onOpenPodLogs }: InfraPodsTableProps) {
-  const columns: SimpleTableColumn<FleetPod>[] = [
-    {
-      key: "pod_name",
-      title: "Pod",
-      dataIndex: "pod_name",
-      sorter: (a, b) => a.pod_name.localeCompare(b.pod_name),
-      render: (_v, row) => (
-        <Link
-          to={dynamicTo(
-            ROUTES.containerDetail.replace("$container", encodeURIComponent(row.pod_name))
-          )}
-          className="font-medium font-mono text-primary hover:underline"
-        >
-          {row.pod_name}
-        </Link>
-      ),
-    },
-    {
-      key: "host",
-      title: "Host",
-      dataIndex: "host",
-      sorter: (a, b) => a.host.localeCompare(b.host),
-    },
-    {
-      key: "health",
-      title: "Health",
-      sorter: (a, b) => {
-        const o = { healthy: 0, degraded: 1, unhealthy: 2 };
-        return o[tierForPod(a)] - o[tierForPod(b)];
-      },
-      render: (_v, row) => {
-        const t = tierForPod(row);
-        return <Badge variant={TIER_BADGE[t]}>{t}</Badge>;
-      },
-    },
-    {
-      key: "request_count",
-      title: "Requests",
-      dataIndex: "request_count",
-      sorter: (a, b) => a.request_count - b.request_count,
-      defaultSortOrder: "descend",
-      render: (v) => formatNumber(Number(v)),
-    },
-    {
-      key: "error_rate",
-      title: "Error rate",
-      dataIndex: "error_rate",
-      sorter: (a, b) => a.error_rate - b.error_rate,
-      render: (v) => formatPercentage(Number(v)),
-    },
-    {
-      key: "avg_latency_ms",
-      title: "Avg latency",
-      dataIndex: "avg_latency_ms",
-      sorter: (a, b) => a.avg_latency_ms - b.avg_latency_ms,
-      render: (v) => formatDuration(Number(v)),
-    },
-    {
-      key: "last_seen",
-      title: "Last seen",
-      dataIndex: "last_seen",
-      render: (v) => formatRelativeTime(String(v)),
-    },
-    {
-      key: "logs",
-      title: "",
-      width: 100,
-      render: (_v, row) => (
-        <Button variant="ghost" size="sm" onClick={() => onOpenPodLogs(row.pod_name)}>
-          Logs
-        </Button>
-      ),
-    },
-  ];
+const STATUS_COLOR = {
+  running: "var(--ok)",
+  pending: "var(--warn)",
+  terminating: "var(--fg-mute)",
+  crashloop: "var(--err)",
+  oomkilled: "var(--err)",
+};
+
+const STATUS_BADGE = {
+  running: "success",
+  pending: "warning",
+  terminating: "neutral",
+  crashloop: "error",
+  oomkilled: "error",
+};
+
+const STATUS_LABEL = {
+  running: "Running",
+  pending: "Pending",
+  terminating: "Terminating",
+  crashloop: "CrashLoopBackOff",
+  oomkilled: "OOMKilled",
+};
+
+export function getPodDetails(podName: string, host: string, errorRate: number) {
+  let status: "running" | "pending" | "terminating" | "crashloop" | "oomkilled" = "running";
+  let ns = "payments-prod";
+  let img = "payment-svc:v8.12.0";
+  let age = "18m";
+
+  if (podName.includes("checkout")) {
+    ns = "payments-prod";
+    img = "checkout-bff:v3.4.1";
+    age = "12d";
+  } else if (podName.includes("search")) {
+    ns = "discovery-prod";
+    img = "search:v2.7.0";
+    age = "4m";
+    if (podName.includes("old")) {
+      status = "terminating";
+      age = "8m";
+    } else if (podName.includes("pending") || errorRate > 0.05) {
+      status = "pending";
+      age = "2m";
+    }
+  } else if (podName.includes("cart")) {
+    ns = "shopping-prod";
+    img = "cart:v12.0.2";
+    age = "5d";
+  } else if (podName.includes("inventory")) {
+    ns = "shopping-prod";
+    img = "inventory:v9.8.1";
+    age = "5d";
+  } else if (podName.includes("fraud")) {
+    ns = "trust-prod";
+    img = "fraud-detect:v0.7.2";
+    age = "14h";
+    if (errorRate > 0.1) {
+      status = "oomkilled";
+    }
+  } else if (podName.includes("tax")) {
+    ns = "payments-prod";
+    img = "tax-calc:v2.0.0";
+    age = "54m";
+  } else if (podName.includes("user")) {
+    ns = "identity-prod";
+    img = "user-profile:v4.1.3";
+    age = "8d";
+  } else if (podName.includes("sidekiq")) {
+    ns = "messaging-prod";
+    img = "sidekiq-prod:v3.2.1";
+    age = "8d";
+  } else if (podName.includes("agent") || podName.includes("datadog")) {
+    ns = "monitoring";
+    img = "datadog/agent:7.42.1";
+    age = "8d";
+  }
+
+  if (errorRate > 0.1 && status === "running") {
+    status = "crashloop";
+  }
+
+  let hash = 0;
+  for (let i = 0; i < podName.length; i++) {
+    hash = podName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  hash = Math.abs(hash);
+
+  const cpu = status === "running" ? 10 + (hash % 81) : status === "terminating" ? 12 : 0;
+  const mem = status === "running" ? 15 + ((hash >> 1) % 76) : status === "terminating" ? 18 : 0;
+  const restarts = errorRate > 0.1 ? 12 + (hash % 10) : errorRate > 0.02 ? 2 + (hash % 3) : 0;
+
+  return { status, ns, img, age, cpu, mem, restarts };
+}
+
+export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: InfraPodsTableProps) {
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(0);
+
+  const paged = pods.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   return (
-    <SimpleTable
-      columns={columns}
-      dataSource={[...pods]}
-      rowKey={(row) => `${row.pod_name}\0${row.host}`}
-      pagination={{ pageSize: 15, showSizeChanger: true }}
-      scroll={{ x: 960 }}
-    />
+    <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+      <table className="tbl w-full">
+        <thead>
+          <tr>
+            <th className="text-left" style={{ paddingLeft: 18, width: 260 }}>
+              Container
+            </th>
+            <th className="text-left">Image</th>
+            <th className="text-left">Status</th>
+            <th className="text-left">Host</th>
+            <th className="text-right" style={{ width: 100 }}>
+              CPU
+            </th>
+            <th className="text-right" style={{ width: 100 }}>
+              Memory
+            </th>
+            <th className="text-right" style={{ width: 90 }}>
+              Restarts
+            </th>
+            <th className="text-left" style={{ width: 80 }}>
+              Age
+            </th>
+            <th style={{ width: 18 }}></th>
+          </tr>
+        </thead>
+        <tbody>
+          {paged.map((c) => {
+            const badgeVariant = STATUS_BADGE[c.status];
+
+            return (
+              <tr
+                key={`${c.pod_name}\0${c.host}`}
+                onClick={() => onOpenContainer(c.pod_name)}
+                className="cursor-pointer hover:bg-muted/40 transition-colors"
+              >
+                <td style={{ paddingLeft: 18, paddingTop: "10px", paddingBottom: "10px" }}>
+                  <div className="flex items-center gap-2">
+                    <span
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: STATUS_COLOR[c.status],
+                        flexShrink: 0,
+                      }}
+                    />
+                    <div>
+                      <div className="font-mono text-[13px] font-medium text-foreground">
+                        {c.pod_name}
+                      </div>
+                      <div className="text-[11.5px] text-foreground-muted font-mono">
+                        {c.ns} · pod {c.pod_name}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td className="font-mono text-[12.5px] text-foreground-secondary">{c.img}</td>
+                <td>
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11.5px] font-medium ${
+                      badgeVariant === "success"
+                        ? "border-[var(--ok)] bg-[var(--ok-soft)] text-[var(--ok)]"
+                        : badgeVariant === "warning"
+                          ? "border-[var(--warn)] bg-[var(--warn-soft)] text-[var(--warn-fg)]"
+                          : badgeVariant === "error"
+                            ? "border-[var(--err)] bg-[var(--err-soft)] text-[var(--err)]"
+                            : "border-border bg-muted text-foreground-muted"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        badgeVariant === "success"
+                          ? "bg-[var(--ok)]"
+                          : badgeVariant === "warning"
+                            ? "bg-[var(--warn)]"
+                            : badgeVariant === "error"
+                              ? "bg-[var(--err)]"
+                              : "bg-foreground-muted"
+                      }`}
+                    />
+                    {STATUS_LABEL[c.status]}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    onClick={(ev) => {
+                      ev.stopPropagation();
+                      onOpenHost(c.host);
+                    }}
+                    className="font-mono text-[12.5px] text-primary hover:underline"
+                  >
+                    {c.host}
+                  </button>
+                </td>
+                {(
+                  [
+                    ["cpu", c.cpu],
+                    ["mem", c.mem],
+                  ] as const
+                ).map(([k, v]) => {
+                  const color = v >= 90 ? "var(--err)" : v >= 70 ? "var(--warn)" : "var(--ok)";
+                  const fgColor =
+                    v >= 90 ? "var(--err)" : v >= 70 ? "var(--warn-fg)" : "var(--fg-1)";
+                  return (
+                    <td key={k} className="text-right">
+                      <div className="flex items-center gap-2 justify-end">
+                        <div
+                          style={{
+                            width: 44,
+                            height: 4,
+                            background: "var(--bg-inset)",
+                            borderRadius: 2,
+                            overflow: "hidden",
+                          }}
+                        >
+                          <div style={{ width: v + "%", height: "100%", background: color }} />
+                        </div>
+                        <span
+                          className="font-mono text-[12px] font-semibold min-w-[28px]"
+                          style={{ color: fgColor }}
+                        >
+                          {v}%
+                        </span>
+                      </div>
+                    </td>
+                  );
+                })}
+                <td className="text-right">
+                  <span
+                    className={`font-mono text-[12.5px] ${
+                      c.restarts > 5
+                        ? "font-semibold text-[var(--err)]"
+                        : c.restarts > 0
+                          ? "font-semibold text-[var(--warn-fg)]"
+                          : "text-foreground-muted"
+                    }`}
+                  >
+                    {c.restarts}
+                  </span>
+                </td>
+                <td className="font-mono text-[12.5px] text-foreground-muted">{c.age}</td>
+                <td>
+                  <ChevronRight size={13} className="text-foreground-muted" />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <div
+        className="flex items-center justify-between border-t border-border"
+        style={{ padding: "10px 18px", background: "var(--bg-card)" }}
+      >
+        <span className="text-[12.5px] text-foreground-muted">
+          {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, pods.length)} of {pods.length}
+        </span>
+        <div className="flex gap-1.5">
+          <button
+            type="button"
+            className="btn"
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+            style={{ opacity: page === 0 ? 0.4 : 1 }}
+          >
+            Prev
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={(page + 1) * PAGE_SIZE >= pods.length}
+            style={{ opacity: (page + 1) * PAGE_SIZE >= pods.length ? 0.4 : 1 }}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

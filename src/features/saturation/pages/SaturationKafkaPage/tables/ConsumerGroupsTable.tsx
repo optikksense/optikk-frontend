@@ -1,12 +1,8 @@
-import { useNavigate } from "@tanstack/react-router";
-
 import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import type { KafkaGroupRow } from "@/features/saturation/api/kafkaExplorerSchemas";
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
-import { ROUTES } from "@/shared/constants/routes";
 
 import { useKafkaConsumerGroupsTable } from "../hooks/useKafkaConsumerGroupsTable";
 
@@ -54,7 +50,6 @@ const COLUMNS: SimpleTableColumn<KafkaGroupRow>[] = [
 ];
 
 export function ConsumerGroupsTable() {
-  const navigate = useNavigate();
   const { data, isPending } = useKafkaConsumerGroupsTable();
   const rows = data ?? [];
   return (
@@ -73,18 +68,6 @@ export function ConsumerGroupsTable() {
           dataSource={rows}
           rowKey={(r) => r.consumer_group}
           pagination={{ pageSize: 50 }}
-          onRow={(record) => ({
-            onClick: () =>
-              navigate(
-                dynamicNavigateOptions(
-                  ROUTES.saturationKafkaGroupDetail.replace(
-                    "$groupId",
-                    encodeURIComponent(record.consumer_group)
-                  )
-                )
-              ),
-            style: { cursor: "pointer" },
-          })}
         />
       )}
     </PanelCard>

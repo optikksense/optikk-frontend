@@ -1,7 +1,6 @@
 import { memo } from "react";
 
 import type { SubsystemCardSpec } from "../view-models/subsystemSpecs";
-import { StatusChip } from "./StatusChip";
 import { SubsystemIcon } from "./SubsystemIcon";
 
 type Props = {
@@ -20,9 +19,6 @@ function SubsystemCardImpl({ spec }: Props): JSX.Element {
           <SubsystemIcon name={spec.iconName} />
         </span>
         <span className="font-semibold text-[14px] text-[var(--fg-0)]">{spec.label}</span>
-        <span className="ml-auto">
-          <StatusChip tone={spec.tone} text={spec.statusText} size="sm" />
-        </span>
       </div>
       <div className="font-['Geist_Mono',monospace] text-[11.5px] text-[var(--fg-3)]">
         {spec.sub}

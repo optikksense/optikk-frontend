@@ -103,10 +103,6 @@ export function buildDatabaseCardSpec(rows: DatastoreSystemRow[]): SubsystemCard
   return categoryCardSpec("database", "Database", categorizedRows(rows, "database"));
 }
 
-export function buildRedisCardSpec(rows: DatastoreSystemRow[]): SubsystemCardSpec {
-  return categoryCardSpec("redis", "Redis", categorizedRows(rows, "redis"));
-}
-
 export type OverviewSummary = {
   totalSystems: number;
   totalQueries: number;

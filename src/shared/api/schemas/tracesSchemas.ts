@@ -61,21 +61,6 @@ export const tracesSummarySchema = z
     p99_duration: 0,
   });
 
-/** GET /traces/:traceId/flamegraph — matches backend FlamegraphFrame */
-export const flamegraphFrameSchema = z
-  .object({
-    span_id: z.string(),
-    name: z.string(),
-    service: z.string(),
-    operation: z.string(),
-    duration_ms: z.number(),
-    self_time_ms: z.number(),
-    level: z.number().int(),
-    span_kind: z.string(),
-    has_error: z.boolean(),
-  })
-  .strict();
-
 export const traceLogSchema = z
   .object({
     id: z.string().default(""),
@@ -118,31 +103,12 @@ export const spanEventSchema = z
   })
   .strict();
 
-export const spanKindDurationSchema = z
-  .object({
-    span_kind: z.string(),
-    total_duration_ms: z.number(),
-    span_count: z.number(),
-    pct_of_trace: z.number(),
-  })
-  .strict();
-
 export const criticalPathSpanSchema = z
   .object({
     span_id: z.string(),
     operation_name: z.string(),
     service_name: z.string(),
     duration_ms: z.number(),
-  })
-  .strict();
-
-export const spanSelfTimeSchema = z
-  .object({
-    span_id: z.string(),
-    operation_name: z.string(),
-    total_duration_ms: z.number(),
-    self_time_ms: z.number(),
-    child_time_ms: z.number(),
   })
   .strict();
 
@@ -203,13 +169,10 @@ export const relatedTraceSchema = z
 export type TraceRecord = z.infer<typeof traceRecordSchema>;
 export type SpanRecord = z.infer<typeof spanRecordSchema>;
 export type TracesSummary = z.infer<typeof tracesSummarySchema>;
-export type FlamegraphFrame = z.infer<typeof flamegraphFrameSchema>;
 export type TraceLog = z.infer<typeof traceLogSchema>;
 export type TraceLogsResponse = z.infer<typeof traceLogsResponseSchema>;
 export type SpanEventRecord = z.infer<typeof spanEventSchema>;
-export type SpanKindDurationRecord = z.infer<typeof spanKindDurationSchema>;
 export type CriticalPathSpanRecord = z.infer<typeof criticalPathSpanSchema>;
-export type SpanSelfTimeRecord = z.infer<typeof spanSelfTimeSchema>;
 export type ErrorPathSpanRecord = z.infer<typeof errorPathSpanSchema>;
 export type SpanAttributesRecord = z.infer<typeof spanAttributesSchema>;
 export type RelatedTraceRecord = z.infer<typeof relatedTraceSchema>;

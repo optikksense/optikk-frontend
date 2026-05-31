@@ -31,10 +31,6 @@ export function getApdex(startTime: RequestTime, endTime: RequestTime): Promise<
   return getJson("/spans/red/apdex", startTime, endTime);
 }
 
-export function getRedP95Series(startTime: RequestTime, endTime: RequestTime): Promise<unknown[]> {
-  return getJson("/spans/red/p95-latency", startTime, endTime);
-}
-
 export function getRedRequestRateSeries(
   startTime: RequestTime,
   endTime: RequestTime

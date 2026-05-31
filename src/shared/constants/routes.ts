@@ -26,12 +26,8 @@ export const ROUTES = {
   errors: "/errors",
   errorGroupDetail: "/errors/$groupId",
   saturation: "/saturation",
-  saturationDatastoreDetail: "/saturation/datastores/$system",
   saturationDatabase: "/saturation/database",
-  saturationDatabaseQueries: "/saturation/database/queries",
   saturationKafkaOverview: "/saturation/kafka",
-  saturationKafkaTopicDetail: "/saturation/kafka/topics/$topic",
-  saturationKafkaGroupDetail: "/saturation/kafka/groups/$groupId",
 
   monitors: "/monitors",
   monitorsNew: "/monitors/new",

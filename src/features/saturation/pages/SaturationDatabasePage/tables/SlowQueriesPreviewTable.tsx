@@ -1,12 +1,8 @@
-import { Link } from "@tanstack/react-router";
-
 import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
-import { dynamicTo } from "@shared/utils/navigation";
 
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
-import { ROUTES } from "@/shared/constants/routes";
 
 import { useDatabaseSlowQueriesPreview } from "../hooks/useDatabaseSlowQueriesPreview";
 
@@ -50,25 +46,13 @@ const COLUMNS: SimpleTableColumn<SlowQueryPatternRow>[] = [
   },
 ];
 
-function ViewAllAction() {
-  return (
-    <Link
-      to={dynamicTo(ROUTES.saturationDatabaseQueries)}
-      className="text-[11px] text-[var(--color-primary,#3b82f6)] hover:underline"
-    >
-      View all →
-    </Link>
-  );
-}
-
 export function SlowQueriesPreviewTable() {
   const { data, isPending } = useDatabaseSlowQueriesPreview(8);
   const rows = data ?? [];
   return (
     <PanelCard
-      title="Slow queries"
+      title="Top queries by total time"
       subtitle={data ? `top ${Math.min(rows.length, 8)} by p99` : undefined}
-      action={<ViewAllAction />}
       padded={false}
     >
       {rows.length === 0 ? (
