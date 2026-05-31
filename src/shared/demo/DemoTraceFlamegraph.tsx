@@ -24,12 +24,12 @@ export default function DemoTraceFlamegraph() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between text-[12px]">
-        <span className="font-mono text-[var(--text-primary)]">{rootName}</span>
-        <span className="text-[var(--text-muted)]">
+        <span className="font-mono text-foreground">{rootName}</span>
+        <span className="text-foreground-muted">
           {totalMs}ms · {spans.length} spans · trace_id=8f3c…
         </span>
       </div>
-      <div className="overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-3">
+      <div className="overflow-hidden rounded-lg border border-border bg-muted p-3">
         <div className="flex flex-col gap-1">
           {spans.map((span, i) => {
             const color = SERVICE_COLOR[span.service] ?? "#8B7FFF";
@@ -41,12 +41,12 @@ export default function DemoTraceFlamegraph() {
                 style={{ gridTemplateColumns: "180px 1fr 60px" }}
               >
                 <div
-                  className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[11px] text-[var(--text-primary)]"
+                  className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[11px] text-foreground"
                   style={{ paddingLeft: span.depth * 12 }}
                 >
                   {span.name}
                 </div>
-                <div className="relative h-5 rounded bg-[var(--bg-secondary)]">
+                <div className="relative h-5 rounded bg-secondary">
                   <div
                     className="absolute top-0 h-full rounded"
                     style={{
@@ -57,7 +57,7 @@ export default function DemoTraceFlamegraph() {
                     }}
                   />
                 </div>
-                <div className="text-right font-mono text-[11px] text-[var(--text-muted)] tabular-nums">
+                <div className="text-right font-mono text-[11px] text-foreground-muted tabular-nums">
                   {span.durMs}ms
                 </div>
               </div>

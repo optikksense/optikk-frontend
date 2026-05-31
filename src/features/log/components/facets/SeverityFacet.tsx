@@ -26,7 +26,7 @@ function SeverityFacetComponent({ labels, onInclude }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-3)]">
+      <div className="font-semibold text-[10.5px] text-[var(--fg-3)] uppercase tracking-[0.08em]">
         Severity
       </div>
       <div className="flex h-[6px] overflow-hidden rounded-[3px]">
@@ -52,10 +52,7 @@ function SeverityFacetComponent({ labels, onInclude }: Props) {
                   : `Filter to ${s.label.toUpperCase()}`
               }
             >
-              <span
-                className="h-2 w-2 rounded-full"
-                style={{ background: SEV_TOKEN[s.slug] }}
-              />
+              <span className="h-2 w-2 rounded-full" style={{ background: SEV_TOKEN[s.slug] }} />
               <span>{s.label}</span>
             </button>
           );

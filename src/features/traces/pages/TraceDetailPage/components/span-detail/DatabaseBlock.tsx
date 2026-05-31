@@ -7,8 +7,8 @@ interface Props {
   readonly dbStatementNormalized?: string;
 }
 
-const kvK = "text-[11px] text-[var(--text-caption)]";
-const kvV = "text-[12px] text-[var(--text-primary)] font-mono break-words";
+const kvK = "text-[11px] text-foreground-caption";
+const kvV = "text-[12px] text-foreground font-mono break-words";
 
 function DatabaseBlockComponent({ dbSystem, dbName, dbStatement, dbStatementNormalized }: Props) {
   const statement = dbStatement || dbStatementNormalized;
@@ -31,7 +31,7 @@ function DatabaseBlockComponent({ dbSystem, dbName, dbStatement, dbStatementNorm
       {statement && (
         <div className="col-span-2">
           <div className={`${kvK} mb-1`}>statement</div>
-          <pre className="m-0 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md font-mono text-[11.5px] text-[var(--text-secondary)] overflow-auto whitespace-pre max-h-[180px]">
+          <pre className="m-0 max-h-[180px] overflow-auto whitespace-pre rounded-md border border-border bg-secondary p-3 font-mono text-[11.5px] text-foreground-secondary">
             {statement}
           </pre>
         </div>

@@ -9,7 +9,7 @@ export function Separator({ orientation = "horizontal", className, ...props }: S
     <div
       aria-hidden="true"
       className={cn(
-        "shrink-0 bg-[var(--border-color)]",
+        "shrink-0 bg-border",
         orientation === "horizontal" ? "h-px w-full" : "h-full w-px",
         className
       )}

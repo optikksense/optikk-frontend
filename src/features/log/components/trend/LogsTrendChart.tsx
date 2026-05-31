@@ -1,9 +1,9 @@
 import { memo, useMemo, useRef, useState } from "react";
 
 import { useTimezone } from "@/app/store/appStore";
-import { aggregateSeverityTrend, toTrendBuckets } from "@/features/explorer/utils/trend";
 
 import type { LogsTrendBucket } from "../../api/logsAnalyticsApi";
+import { severityColor } from "../../utils/severity";
 
 interface Props {
   readonly trend: readonly LogsTrendBucket[] | undefined;
@@ -15,9 +15,26 @@ interface Props {
 
 interface ChartBucket {
   readonly ts: number;
+  readonly debug: number;
   readonly info: number;
   readonly warn: number;
   readonly err: number;
+}
+
+// Stacked severity series, bottom → top. Colors come from the shared severity
+// palette (see utils/severity.ts) keyed by severity_bucket.
+const DEBUG_COLOR = severityColor(1);
+const INFO_COLOR = severityColor(2);
+const WARN_COLOR = severityColor(3);
+const ERROR_COLOR = severityColor(4);
+
+function parseBucketMs(time_bucket: string, idx: number): number {
+  const iso = time_bucket.includes("T") ? time_bucket : time_bucket.replace(" ", "T");
+  // Backend grain is UTC; append Z when the string carries no zone so Date
+  // parses it as UTC rather than local.
+  const utc = /[zZ]|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso}Z`;
+  const ms = Date.parse(utc);
+  return Number.isNaN(ms) ? idx : ms;
 }
 
 const W = 1000;
@@ -75,18 +92,16 @@ function LogsTrendChartComponent({
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
   const buckets = useMemo<readonly ChartBucket[]>(() => {
-    const aggregated = toTrendBuckets(aggregateSeverityTrend(trend));
-    return aggregated.map((b) => {
-      const errors = b.counts.errors ?? 0;
-      const warnings = b.counts.warnings ?? 0;
-      const total = b.counts.total ?? 0;
-      return {
-        ts: b.ts,
-        info: Math.max(0, total - errors - warnings),
-        warn: warnings,
-        err: errors,
-      };
-    });
+    if (!trend || trend.length === 0) return [];
+    return trend
+      .map((b, idx) => ({
+        ts: parseBucketMs(b.time_bucket, idx),
+        debug: b.debug,
+        info: b.info,
+        warn: b.warn,
+        err: b.error,
+      }))
+      .sort((a, b) => a.ts - b.ts);
   }, [trend]);
 
   const innerW = W - PAD_L - PAD_R;
@@ -103,7 +118,7 @@ function LogsTrendChartComponent({
   const barW = Math.max(MIN_BAR_W, (bucketMs / spanMs) * innerW - 1);
   const xOf = (ts: number) => PAD_L + ((ts - tsMin) / spanMs) * innerW;
 
-  const max = isEmpty ? 1 : Math.max(1, ...buckets.map((d) => d.info + d.warn + d.err));
+  const max = isEmpty ? 1 : Math.max(1, ...buckets.map((d) => d.debug + d.info + d.warn + d.err));
   const yScale = (v: number) => (v / max) * innerH;
   const yOf = (v: number) => PAD_T + innerH - yScale(v);
 
@@ -206,38 +221,35 @@ function LogsTrendChartComponent({
 
   const hoverBucket = hoverIdx != null ? buckets[hoverIdx] : null;
   const hoverX = hoverBucket ? xOf(hoverBucket.ts) + barW / 2 : null;
-  const tipTotal = hoverBucket ? hoverBucket.info + hoverBucket.warn + hoverBucket.err : 0;
+  const tipTotal = hoverBucket
+    ? hoverBucket.debug + hoverBucket.info + hoverBucket.warn + hoverBucket.err
+    : 0;
   // Tooltip width / height in viewBox units. Switch sides when near right edge.
   const TIP_W = 168;
-  const TIP_H = 64;
+  const TIP_H = 80;
   const tipX =
     hoverX != null ? (hoverX + TIP_W + 12 > W - PAD_R ? hoverX - TIP_W - 8 : hoverX + 8) : 0;
   const tipY = PAD_T + 4;
 
   return (
-    <div className="rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] pb-2 pl-[18px] pr-[18px] pt-[14px]">
+    <div className="rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] pt-[14px] pr-[18px] pb-2 pl-[18px]">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-semibold text-[var(--fg-0)]">Log Volume Over Time</span>
+        <span className="font-semibold text-[var(--fg-0)] text-sm">Log Volume Over Time</span>
         <div className="flex gap-4">
-          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
-            <i
-              className="h-[7px] w-[7px] rounded-full"
-              style={{ background: "var(--info-c)" }}
-            />
-            Info / Debug
+          <span className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
+            <i className="h-[7px] w-[7px] rounded-full" style={{ background: DEBUG_COLOR }} />
+            Debug
           </span>
-          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
-            <i
-              className="h-[7px] w-[7px] rounded-full"
-              style={{ background: "var(--warn-c)" }}
-            />
+          <span className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
+            <i className="h-[7px] w-[7px] rounded-full" style={{ background: INFO_COLOR }} />
+            Info
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
+            <i className="h-[7px] w-[7px] rounded-full" style={{ background: WARN_COLOR }} />
             Warnings
           </span>
-          <span className="inline-flex items-center gap-1.5 text-xs text-[var(--fg-2)]">
-            <i
-              className="h-[7px] w-[7px] rounded-full"
-              style={{ background: "var(--err-c)" }}
-            />
+          <span className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
+            <i className="h-[7px] w-[7px] rounded-full" style={{ background: ERROR_COLOR }} />
             Errors
           </span>
         </div>
@@ -297,24 +309,37 @@ function LogsTrendChartComponent({
         {!isEmpty &&
           buckets.map((d) => {
             if (d.ts < tsMin || d.ts > tsMax) return null;
-            if (d.info + d.warn + d.err === 0) return null;
+            if (d.debug + d.info + d.warn + d.err === 0) return null;
             const x = xOf(d.ts);
+            const hd = yScale(d.debug);
             const hi = yScale(d.info);
             const hw = yScale(d.warn);
             const he = yScale(d.err);
-            const yi = PAD_T + innerH - hi;
+            // Stack bottom → top: debug, info, warn, error.
+            const yd = PAD_T + innerH - hd;
+            const yi = yd - hi;
             const yw = yi - hw;
             const ye = yw - he;
             return (
               <g key={d.ts} className="group">
+                {hd > 0 ? (
+                  <rect
+                    x={x}
+                    y={yd}
+                    width={barW}
+                    height={hd}
+                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85]"
+                    style={{ fill: DEBUG_COLOR, opacity: 0.55 }}
+                  />
+                ) : null}
                 {hi > 0 ? (
                   <rect
                     x={x}
                     y={yi}
                     width={barW}
                     height={hi}
-                    className="transition-opacity duration-[120ms] [[data-theme=light]_&]:opacity-75 group-hover:opacity-[0.85]"
-                    style={{ fill: "var(--info-c)", opacity: 0.55 }}
+                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85] [[data-theme=light]_&]:opacity-75"
+                    style={{ fill: INFO_COLOR, opacity: 0.7 }}
                   />
                 ) : null}
                 {hw > 0 ? (
@@ -324,7 +349,7 @@ function LogsTrendChartComponent({
                     width={barW}
                     height={hw}
                     className="transition-opacity duration-[120ms] group-hover:opacity-[0.85]"
-                    style={{ fill: "var(--warn-c)" }}
+                    style={{ fill: WARN_COLOR }}
                   />
                 ) : null}
                 {he > 0 ? (
@@ -334,7 +359,7 @@ function LogsTrendChartComponent({
                     width={barW}
                     height={he}
                     className="transition-opacity duration-[120ms] group-hover:opacity-[0.85]"
-                    style={{ fill: "var(--err-c)" }}
+                    style={{ fill: ERROR_COLOR }}
                   />
                 ) : null}
               </g>
@@ -434,10 +459,24 @@ function LogsTrendChartComponent({
               {tooltipFmt.format(new Date(hoverBucket.ts))}
             </text>
             <g>
-              <circle cx={tipX + 12} cy={tipY + 30} r={3} fill="var(--info-c)" />
+              <circle cx={tipX + 12} cy={tipY + 30} r={3} fill={DEBUG_COLOR} />
               <text
                 x={tipX + 22}
                 y={tipY + 33}
+                style={{
+                  fill: "var(--fg-0)",
+                  fontFamily: "'Geist Mono', monospace",
+                  fontSize: 11,
+                }}
+              >
+                debug {hoverBucket.debug.toLocaleString()}
+              </text>
+            </g>
+            <g>
+              <circle cx={tipX + 12} cy={tipY + 42} r={3} fill={INFO_COLOR} />
+              <text
+                x={tipX + 22}
+                y={tipY + 45}
                 style={{
                   fill: "var(--fg-0)",
                   fontFamily: "'Geist Mono', monospace",
@@ -448,10 +487,10 @@ function LogsTrendChartComponent({
               </text>
             </g>
             <g>
-              <circle cx={tipX + 12} cy={tipY + 42} r={3} fill="var(--warn-c)" />
+              <circle cx={tipX + 12} cy={tipY + 54} r={3} fill={WARN_COLOR} />
               <text
                 x={tipX + 22}
-                y={tipY + 45}
+                y={tipY + 57}
                 style={{
                   fill: "var(--fg-0)",
                   fontFamily: "'Geist Mono', monospace",
@@ -462,10 +501,10 @@ function LogsTrendChartComponent({
               </text>
             </g>
             <g>
-              <circle cx={tipX + 12} cy={tipY + 54} r={3} fill="var(--err-c)" />
+              <circle cx={tipX + 12} cy={tipY + 66} r={3} fill={ERROR_COLOR} />
               <text
                 x={tipX + 22}
-                y={tipY + 57}
+                y={tipY + 69}
                 style={{
                   fill: "var(--fg-0)",
                   fontFamily: "'Geist Mono', monospace",

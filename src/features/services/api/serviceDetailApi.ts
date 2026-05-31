@@ -62,6 +62,17 @@ export interface TopEndpoint {
   readonly p99_ms: number;
 }
 
+export interface PageInfo {
+  readonly hasMore: boolean;
+  readonly nextCursor?: string;
+  readonly limit: number;
+}
+
+export interface PaginatedResponse<T> {
+  readonly results: T;
+  readonly pageInfo: PageInfo;
+}
+
 export interface ComparisonPayload<T> {
   readonly data: T;
   readonly comparison?: T;
@@ -88,11 +99,55 @@ export function getTopEndpoints(
   e: RequestTime,
   serviceName: string,
   limit = 50,
-  compareTo?: "previous_period"
-): Promise<ComparisonPayload<TopEndpoint[]>> {
-  const params = buildParams(s, e, serviceName, { limit });
+  compareTo?: "previous_period",
+  cursor?: string
+): Promise<ComparisonPayload<PaginatedResponse<TopEndpoint[]>>> {
+  const params = buildParams(s, e, serviceName, { limit, cursor });
   if (compareTo) params.compareTo = compareTo;
   return api
     .get<unknown>(`${V1}/spans/red/top-endpoints`, { params })
-    .then((raw) => raw as ComparisonPayload<TopEndpoint[]>);
+    .then((raw) => raw as ComparisonPayload<PaginatedResponse<TopEndpoint[]>>);
+}
+
+export interface ServiceSummaryResponse {
+  readonly service_name: string;
+  readonly request_count: number;
+  readonly error_count: number;
+  readonly rps: number;
+  readonly error_rate: number;
+  readonly p50_ms: number;
+  readonly p95_ms: number;
+  readonly p99_ms: number;
+  readonly cpu_utilization: number;
+  readonly memory_utilization: number;
+  readonly disk_utilization: number;
+}
+
+export interface SaturationTimeSeriesPoint {
+  readonly timestamp: string;
+  readonly value: number;
+}
+
+export function getServiceSummary(
+  s: RequestTime,
+  e: RequestTime,
+  serviceName: string,
+  compareTo?: "previous_period"
+): Promise<ComparisonPayload<ServiceSummaryResponse>> {
+  const params = buildParams(s, e, "", { compareTo });
+  return api
+    .get<unknown>(`${V1}/spans/red/services/${encodeURIComponent(serviceName)}/summary`, { params })
+    .then((raw) => raw as ComparisonPayload<ServiceSummaryResponse>);
+}
+
+export function getServiceSaturationTimeseries(
+  s: RequestTime,
+  e: RequestTime,
+  serviceName: string
+): Promise<SaturationTimeSeriesPoint[]> {
+  const params = buildParams(s, e, "");
+  return getJson<SaturationTimeSeriesPoint[]>(
+    `/spans/red/services/${encodeURIComponent(serviceName)}/saturation-timeseries`,
+    params
+  );
 }

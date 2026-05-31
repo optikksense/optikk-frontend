@@ -16,23 +16,23 @@ export interface PillProps extends React.ComponentPropsWithRef<"span"> {
 }
 
 const VARIANT_CLASS: Record<PillVariant, string> = {
-  neutral: "bg-[var(--bg-tertiary)] text-[var(--text-secondary)]",
-  primary: "bg-[var(--color-primary-subtle-12)] text-[var(--color-primary)]",
-  success: "bg-[var(--color-success-subtle)] text-[var(--color-success)]",
-  warning: "bg-[var(--color-warning-subtle)] text-[var(--color-warning)]",
-  error: "bg-[var(--color-error-subtle)] text-[var(--color-error)]",
-  info: "bg-[var(--color-info-subtle)] text-[var(--color-info)]",
-  stream: "bg-[var(--color-info-subtle)] text-[var(--color-stream)]",
+  neutral: "bg-muted text-foreground-secondary",
+  primary: "bg-[var(--color-primary-subtle-12)] text-primary",
+  success: "bg-success-subtle text-success",
+  warning: "bg-warning-subtle text-warning",
+  error: "bg-error-subtle text-error",
+  info: "bg-info-subtle text-info",
+  stream: "bg-info-subtle text-stream",
 };
 
 const DOT_CLASS: Record<PillVariant, string> = {
-  neutral: "bg-[var(--text-muted)]",
-  primary: "bg-[var(--color-primary)]",
-  success: "bg-[var(--color-success)]",
-  warning: "bg-[var(--color-warning)]",
-  error: "bg-[var(--color-error)]",
-  info: "bg-[var(--color-info)]",
-  stream: "bg-[var(--color-stream)] animate-pulse",
+  neutral: "bg-foreground-muted",
+  primary: "bg-primary",
+  success: "bg-success",
+  warning: "bg-warning",
+  error: "bg-error",
+  info: "bg-info",
+  stream: "bg-stream animate-pulse",
 };
 
 const SIZE_CLASS: Record<NonNullable<PillProps["size"]>, string> = {

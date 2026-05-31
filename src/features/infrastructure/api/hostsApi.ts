@@ -2,6 +2,8 @@ import api from "@/shared/api/api/client";
 import type { RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
 
+import type { FleetPod } from "../types";
+
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export interface InfrastructureNode {
@@ -60,4 +62,11 @@ export function getNodeServices(
     `${V1}/infrastructure/nodes/${encodeURIComponent(host)}/services`,
     { params: range(s, e) }
   );
+}
+
+export async function getFleetPods(s: RequestTime, e: RequestTime): Promise<FleetPod[]> {
+  const data = await api.get<FleetPod[]>(`${V1}/infrastructure/fleet/pods`, {
+    params: range(s, e),
+  });
+  return Array.isArray(data) ? data : [];
 }

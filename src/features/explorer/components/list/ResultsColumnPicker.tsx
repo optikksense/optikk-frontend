@@ -45,9 +45,9 @@ function ResultsColumnPickerImpl<Row>({ columns, config, onChange, trigger }: Pr
         <Popover.Content
           align="end"
           sideOffset={6}
-          className="z-50 flex w-64 flex-col gap-1 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] p-2 shadow-lg"
+          className="z-50 flex w-64 flex-col gap-1 rounded-md border border-border bg-background p-2 shadow-lg"
         >
-          <span className="px-2 py-1 font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-wider">
+          <span className="px-2 py-1 font-semibold text-[11px] text-foreground-secondary uppercase tracking-wider">
             Columns
           </span>
           {config.map((entry, index) => {
@@ -59,18 +59,16 @@ function ResultsColumnPickerImpl<Row>({ columns, config, onChange, trigger }: Pr
                 onDragStart={() => setDragIndex(index)}
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={() => onDrop(index)}
-                className="flex items-center gap-2 rounded px-2 py-1 hover:bg-[rgba(255,255,255,0.04)]"
+                className="flex items-center gap-2 rounded px-2 py-1 hover:bg-accent"
               >
-                <GripVertical size={12} className="cursor-grab text-[var(--text-muted)]" />
+                <GripVertical size={12} className="cursor-grab text-foreground-muted" />
                 <input
                   type="checkbox"
                   checked={entry.visible}
                   onChange={() => onToggle(entry.key)}
                   className="accent-[var(--accent)]"
                 />
-                <span className="text-[12px] text-[var(--text-primary)]">
-                  {column?.label ?? entry.key}
-                </span>
+                <span className="text-[12px] text-foreground">{column?.label ?? entry.key}</span>
               </label>
             );
           })}

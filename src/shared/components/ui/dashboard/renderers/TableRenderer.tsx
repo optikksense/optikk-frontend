@@ -58,7 +58,7 @@ export function TableRenderer({
                 e.preventDefault();
                 navigate({ to: `/traces/${val}` });
               }}
-              className="group flex cursor-pointer items-center gap-1 text-[var(--color-primary)] hover:underline"
+              className="group flex cursor-pointer items-center gap-1 text-primary hover:underline"
             >
               {String(val)}
             </span>

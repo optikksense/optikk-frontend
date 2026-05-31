@@ -86,7 +86,7 @@ function SpanDrawerComponent({ open, widthPx, minPx, maxPx, onResize, onClose, c
     <aside
       aria-label="Span detail"
       style={{ width: widthPx }}
-      className="absolute top-0 right-0 bottom-0 z-30 flex flex-col border-[var(--border-color)] border-l bg-[var(--bg-primary)] shadow-[-4px_0_16px_rgba(0,0,0,0.25)]"
+      className="absolute top-0 right-0 bottom-0 z-30 flex flex-col border-border border-l bg-background shadow-[-4px_0_16px_rgba(0,0,0,0.25)]"
     >
       <div
         role="separator"

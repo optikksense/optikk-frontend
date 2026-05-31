@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import type uPlot from "uplot";
 
 import ObservabilityChart, {
   type ObservabilityChartSeries,
@@ -11,11 +12,12 @@ import type { StatusTimeseriesPoint } from "@/features/services/api/serviceDetai
 import { fmtNum } from "../formatters";
 import { useStatusTimeseries } from "../hooks/useStatusTimeseries";
 import { PanelCard } from "./PanelCard";
+import { type StatusSeriesFilter, StatusSeriesToggle } from "./StatusSeriesToggle";
 
 const COLORS = {
-  s2xx: "var(--color-healthy,#73c991)",
-  s4xx: "var(--color-degraded,#f7b63a)",
-  s5xx: "var(--color-critical,#f04438)",
+  s2xx: "var(--color-healthy)",
+  s4xx: "var(--color-degraded)",
+  s5xx: "var(--color-critical)",
 };
 
 interface ChartData {
@@ -38,7 +40,6 @@ function buildSeries(rows: StatusTimeseriesPoint[] | undefined, timeBuckets: str
     };
   }
 
-  // Build lookup maps from API rows keyed by normalized timestamp
   const map2xx: Record<string, number> = {};
   const map4xx: Record<string, number> = {};
   const map5xx: Record<string, number> = {};
@@ -63,10 +64,18 @@ function buildSeries(rows: StatusTimeseriesPoint[] | undefined, timeBuckets: str
   };
 }
 
-function ChartBody({ data }: { data: ChartData }) {
+function filterSeries(data: ChartData, filter: StatusSeriesFilter): ChartData {
+  if (filter === "all") return data;
+  return {
+    timestamps: data.timestamps,
+    series: data.series.filter((s) => s.label === filter),
+  };
+}
+
+function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
   if (data.timestamps.length === 0) {
     return (
-      <div className="grid h-[180px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[180px] place-items-center text-[12px] text-foreground-muted">
         No request traffic in this window.
       </div>
     );
@@ -78,6 +87,7 @@ function ChartBody({ data }: { data: ChartData }) {
       series={data.series}
       height={200}
       yFormatter={(v) => fmtNum(v)}
+      plugins={plugins}
     />
   );
 }
@@ -85,10 +95,16 @@ function ChartBody({ data }: { data: ChartData }) {
 export function RpsStatusPanel({ serviceName }: { serviceName: string }) {
   const query = useStatusTimeseries(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
+  const [filter, setFilter] = useState<StatusSeriesFilter>("all");
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
+  const filtered = useMemo(() => filterSeries(data, filter), [data, filter]);
   return (
-    <PanelCard title="Requests" subtitle="rps by status">
-      <ChartBody data={data} />
+    <PanelCard
+      title="Requests"
+      subtitle="rps by status · last 60m"
+      action={<StatusSeriesToggle value={filter} onChange={setFilter} />}
+    >
+      <ChartBody data={filtered} plugins={[]} />
     </PanelCard>
   );
 }

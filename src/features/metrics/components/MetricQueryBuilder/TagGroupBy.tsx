@@ -45,8 +45,8 @@ export function TagGroupBy({ metricName, groupBy, onChange }: TagGroupByProps) {
           key={key}
           className={cn(
             "inline-flex items-center gap-1 rounded-lg border px-2 py-1",
-            "border-[var(--border-color)] bg-[var(--bg-tertiary)]",
-            "text-[12px] text-[var(--text-secondary)]",
+            "border-border bg-muted",
+            "text-[12px] text-foreground-secondary",
             "fade-in-0 zoom-in-95 animate-in duration-150"
           )}
         >
@@ -71,8 +71,8 @@ export function TagGroupBy({ metricName, groupBy, onChange }: TagGroupByProps) {
               type="button"
               className={cn(
                 "inline-flex h-6 items-center gap-1 rounded-md px-1.5",
-                "text-[11px] text-[var(--text-muted)]",
-                "hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]",
+                "text-[11px] text-foreground-muted",
+                "hover:bg-accent hover:text-foreground-secondary",
                 "transition-colors duration-100"
               )}
             >
@@ -97,8 +97,8 @@ export function TagGroupBy({ metricName, groupBy, onChange }: TagGroupByProps) {
                 "h-8 rounded-[var(--card-radius)] px-3 font-medium text-[12px]",
                 "transition-colors duration-150",
                 selectedKey
-                  ? "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]"
-                  : "cursor-not-allowed bg-[var(--bg-tertiary)] text-[var(--text-muted)]"
+                  ? "bg-primary text-white hover:bg-primary-hover"
+                  : "cursor-not-allowed bg-muted text-foreground-muted"
               )}
             >
               Add group

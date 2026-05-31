@@ -10,7 +10,7 @@ export interface SkeletonProps {
 }
 
 function SkeletonLine({ className }: { className?: string }) {
-  return <div className={cn("h-4 animate-pulse rounded bg-[var(--bg-hover)]", className)} />;
+  return <div className={cn("h-4 animate-pulse rounded bg-accent", className)} />;
 }
 
 function Skeleton({ active = true, count, paragraph, className, height }: SkeletonProps) {
@@ -23,7 +23,7 @@ function Skeleton({ active = true, count, paragraph, className, height }: Skelet
   if (height) {
     return (
       <div
-        className={cn("animate-pulse rounded bg-[var(--bg-hover)]", className)}
+        className={cn("animate-pulse rounded bg-accent", className)}
         style={{ height: typeof height === "number" ? `${height}px` : height }}
       />
     );

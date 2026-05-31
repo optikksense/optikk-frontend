@@ -7,9 +7,9 @@ export interface CardProps extends React.ComponentPropsWithRef<"div"> {
 
 const elevationClasses: Record<NonNullable<CardProps["elevation"]>, string> = {
   0: "bg-transparent",
-  1: "bg-[var(--bg-card)] border border-[var(--border-color)] shadow-[var(--shadow-sm)]",
-  2: "bg-[var(--surface-2-bg)] border border-[var(--border-color)] shadow-[var(--shadow-md)]",
-  3: "bg-[var(--surface-3-bg)] border border-[var(--border-color)] shadow-[var(--shadow-lg)]",
+  1: "bg-card border border-border shadow-[var(--shadow-sm)]",
+  2: "bg-surface-2 border border-border shadow-[var(--shadow-md)]",
+  3: "bg-surface-3 border border-border shadow-[var(--shadow-lg)]",
 };
 
 const paddingClasses: Record<NonNullable<CardProps["padding"]>, string> = {

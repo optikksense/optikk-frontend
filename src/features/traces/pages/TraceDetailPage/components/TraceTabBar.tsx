@@ -1,4 +1,4 @@
-import { Activity, AlertCircle, Braces, Flame, Search } from "lucide-react";
+import { Activity, AlertCircle, Braces, Network, Search } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
@@ -22,7 +22,7 @@ interface TabSpec {
 }
 
 const kbd =
-  "inline-grid place-items-center min-w-[16px] h-[16px] px-1 font-mono text-[10px] text-[var(--text-muted)] bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-[4px]";
+  "inline-grid place-items-center min-w-[16px] h-[16px] px-1 font-mono text-[10px] text-foreground-muted bg-muted border border-border rounded-[4px]";
 
 function TraceTabBarComponent({
   activeTab,
@@ -50,13 +50,13 @@ function TraceTabBarComponent({
 
   const tabs: readonly TabSpec[] = [
     { key: "timeline", label: "Waterfall", icon: Activity, hotkey: "1" },
-    { key: "flamegraph", label: "Flame", icon: Flame, hotkey: "2" },
+    { key: "servicemap", label: "Service map", icon: Network, hotkey: "2" },
     { key: "errors", label: "Errors", icon: AlertCircle, hotkey: "3", count: errorCount },
-    { key: "raw", label: "Raw JSON", icon: Braces, hotkey: "4" },
+    { key: "raw", label: "JSON", icon: Braces, hotkey: "4" },
   ];
 
   return (
-    <div className="flex items-center gap-4 px-4 bg-[var(--bg-primary)] border-b border-[var(--border-color)]">
+    <div className="flex items-center gap-4 border-border border-b bg-background px-4">
       <div className="flex">
         {tabs.map((t) => {
           const Icon = t.icon;
@@ -67,8 +67,8 @@ function TraceTabBarComponent({
               key={t.key}
               type="button"
               className={cn(
-                "inline-flex items-center gap-[7px] px-3 py-2.5 text-[12.5px] text-[var(--text-muted)] border-0 bg-transparent cursor-pointer border-b-2 border-transparent -mb-px hover:text-[var(--text-primary)]",
-                isActive && "text-[var(--text-primary)] border-b-[var(--color-primary)]"
+                "-mb-px inline-flex cursor-pointer items-center gap-[7px] border-0 border-transparent border-b-2 bg-transparent px-3 py-2.5 text-[12.5px] text-foreground-muted hover:text-foreground",
+                isActive && "border-b-primary text-foreground"
               )}
               onClick={() => onActiveTabChange(t.key)}
               title={`${t.label} (${t.hotkey})`}
@@ -76,7 +76,7 @@ function TraceTabBarComponent({
               <Icon size={13} aria-hidden />
               {t.label}
               {errCount > 0 && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-px rounded-full text-[10px] font-mono bg-[var(--color-error-subtle)] text-[var(--color-error)]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-error-subtle px-1.5 py-px font-mono text-[10px] text-error">
                   {errCount}
                 </span>
               )}
@@ -85,14 +85,14 @@ function TraceTabBarComponent({
         })}
       </div>
       <div className="ml-auto py-1.5">
-        <div className="flex items-center gap-1.5 w-[420px] max-w-[60vw] px-2 py-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md focus-within:border-[var(--color-primary)] focus-within:bg-[var(--bg-primary)] focus-within:shadow-[0_0_0_3px_var(--color-primary-subtle-15)]">
-          <span className="text-[var(--text-caption)] inline-flex items-center">
+        <div className="flex w-[420px] max-w-[60vw] items-center gap-1.5 rounded-md border border-border bg-secondary px-2 py-1 focus-within:border-primary focus-within:bg-background focus-within:shadow-[0_0_0_3px_var(--color-primary-subtle-15)]">
+          <span className="inline-flex items-center text-foreground-caption">
             <Search size={13} aria-hidden />
           </span>
           <input
             ref={inputRef}
             type="search"
-            className="flex-1 bg-transparent border-0 outline-none text-[var(--text-primary)] font-inherit text-[12.5px] min-w-0 placeholder:text-[var(--text-caption)]"
+            className="min-w-0 flex-1 border-0 bg-transparent font-inherit text-[12.5px] text-foreground outline-none placeholder:text-foreground-caption"
             placeholder="Filter spans by op, service, attribute…"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}

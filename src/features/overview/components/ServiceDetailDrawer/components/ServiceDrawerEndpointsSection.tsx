@@ -20,7 +20,7 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
         key: "method",
         label: "Method",
         render: (row) => (
-          <span className="font-medium text-[var(--text-secondary)]">{row.http_method || "—"}</span>
+          <span className="font-medium text-foreground-secondary">{row.http_method || "—"}</span>
         ),
       },
       {
@@ -30,9 +30,7 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
           <div className="flex flex-col gap-0.5">
             <span className="break-all">{formatEndpointLabel(row)}</span>
             {formatEndpointMeta(row) ? (
-              <span className="text-[11px] text-[var(--text-muted)]">
-                {formatEndpointMeta(row)}
-              </span>
+              <span className="text-[11px] text-foreground-muted">{formatEndpointMeta(row)}</span>
             ) : null}
           </div>
         ),
@@ -77,11 +75,11 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
         subtitle="Most active endpoints for this service in the current window."
       >
         {isError ? (
-          <div className="text-[12px] text-[var(--text-muted)]">
+          <div className="text-[12px] text-foreground-muted">
             Endpoint breakdown is unavailable.
           </div>
         ) : isLoading ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Loading endpoints…</div>
+          <div className="text-[12px] text-foreground-muted">Loading endpoints…</div>
         ) : (
           <CompactTable<EndpointRow & { id: string }>
             rows={endpointRows}

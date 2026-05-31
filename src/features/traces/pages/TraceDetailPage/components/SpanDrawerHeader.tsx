@@ -26,23 +26,21 @@ interface Props {
 }
 
 const iconBtn =
-  "inline-grid place-items-center w-6 h-6 rounded-md text-[var(--text-muted)] bg-transparent border-0 cursor-pointer hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]";
+  "inline-grid place-items-center w-6 h-6 rounded-md text-foreground-muted bg-transparent border-0 cursor-pointer hover:bg-muted hover:text-foreground";
 
 const sdKind =
-  "font-mono text-[10.5px] text-[var(--text-caption)] px-1.5 py-px bg-[var(--bg-tertiary)] rounded-[4px]";
+  "font-mono text-[10.5px] text-foreground-caption px-1.5 py-px bg-muted rounded-[4px]";
 
 const sdPillBase =
   "inline-flex items-center gap-1 px-[7px] py-[2px] rounded-full text-[10.5px] font-mono";
 
-const statKey =
-  "text-[10.5px] text-[var(--text-caption)] uppercase tracking-[0.05em]";
-const statVal =
-  "text-[13px] text-[var(--text-primary)] font-mono [font-feature-settings:'tnum']";
+const statKey = "text-[10.5px] text-foreground-caption uppercase tracking-[0.05em]";
+const statVal = "text-[13px] text-foreground font-mono [font-feature-settings:'tnum']";
 
 function statusColor(httpStatus: number | undefined): string {
   if (httpStatus == null) return "";
-  if (httpStatus >= 500) return "!text-[var(--color-error)]";
-  if (httpStatus >= 400) return "!text-[var(--color-warning)]";
+  if (httpStatus >= 500) return "!text-error";
+  if (httpStatus >= 400) return "!text-warning";
   return "";
 }
 
@@ -87,19 +85,17 @@ export const SpanDrawerHeader = forwardRef<HTMLDivElement, Props>(function SpanD
     <div
       ref={ref}
       tabIndex={-1}
-      className="px-4 py-3.5 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] flex flex-col gap-2.5 outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-primary)]"
+      className="flex flex-col gap-2.5 border-border border-b bg-secondary px-4 py-3.5 outline-none focus-visible:ring-1 focus-visible:ring-primary"
     >
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-[var(--text-primary)] text-[12.5px] font-medium">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="font-medium text-[12.5px] text-foreground">
           {span.service_name || "unknown"}
         </span>
         {span.span_kind && <span className={sdKind}>{span.span_kind}</span>}
         <span
           className={cn(
             sdPillBase,
-            isError
-              ? "bg-[var(--color-error-subtle)] text-[var(--color-error)]"
-              : "bg-[var(--color-success-subtle)] text-[var(--color-success)]"
+            isError ? "bg-error-subtle text-error" : "bg-success-subtle text-success"
           )}
         >
           {isError ? "error" : "ok"}
@@ -108,7 +104,7 @@ export const SpanDrawerHeader = forwardRef<HTMLDivElement, Props>(function SpanD
           <span
             className={cn(
               sdPillBase,
-              "bg-[color-mix(in_oklch,var(--color-degraded),transparent_84%)] text-[var(--color-degraded)]"
+              "bg-[color-mix(in_oklch,var(--color-degraded),transparent_84%)] text-degraded"
             )}
             title="This span is on the trace's critical path"
           >
@@ -125,39 +121,34 @@ export const SpanDrawerHeader = forwardRef<HTMLDivElement, Props>(function SpanD
         >
           {copied ? <Check size={12} /> : <Copy size={12} />}
         </button>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close span detail"
-          className={iconBtn}
-        >
+        <button type="button" onClick={onClose} aria-label="Close span detail" className={iconBtn}>
           <X size={14} />
         </button>
       </div>
 
-      <h2 className="m-0 text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em] leading-[1.3] break-words">
+      <h2 className="m-0 break-words font-semibold text-[16px] text-foreground leading-[1.3] tracking-[-0.01em]">
         {span.operation_name || "(no operation)"}
       </h2>
 
       {traceWindow > 0 && (
         <div className="flex flex-col gap-1">
-          <div className="relative h-1.5 rounded-[3px] bg-[var(--bg-tertiary)]">
+          <div className="relative h-1.5 rounded-[3px] bg-muted">
             <div
               className={cn(
                 "absolute top-0 h-full rounded-[3px]",
-                isError ? "bg-[var(--color-error)]" : "bg-[var(--color-primary)]"
+                isError ? "bg-error" : "bg-primary"
               )}
               style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
             />
           </div>
-          <div className="flex justify-between font-mono text-[10px] text-[var(--text-caption)]">
+          <div className="flex justify-between font-mono text-[10px] text-foreground-caption">
             <span>+{formatDuration(offsetMs)}</span>
             <span>{formatDuration(traceWindow)}</span>
           </div>
         </div>
       )}
 
-      <div className="grid gap-x-4 gap-y-2.5 grid-cols-[repeat(auto-fit,minmax(80px,1fr))]">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-x-4 gap-y-2.5">
         <div>
           <div className={statKey}>Duration</div>
           <div className={statVal}>{formatDuration(dur)}</div>

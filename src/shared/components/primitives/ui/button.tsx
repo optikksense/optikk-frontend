@@ -10,13 +10,11 @@ export interface ButtonProps extends React.ComponentPropsWithRef<"button"> {
 
 const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
-    "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] border-transparent shadow-[var(--shadow-sm)]",
-  secondary:
-    "bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] border-[var(--border-color)] shadow-[var(--shadow-sm)]",
+    "bg-primary text-white hover:bg-primary-hover border-transparent shadow-[var(--shadow-sm)]",
+  secondary: "bg-muted text-foreground hover:bg-accent border-border shadow-[var(--shadow-sm)]",
   ghost:
-    "bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] border-transparent",
-  danger:
-    "bg-[var(--color-error)] text-white hover:opacity-90 border-transparent shadow-[var(--shadow-sm)]",
+    "bg-transparent text-foreground-secondary hover:bg-accent hover:text-foreground border-transparent",
+  danger: "bg-error text-white hover:opacity-90 border-transparent shadow-[var(--shadow-sm)]",
 };
 
 const sizeClasses: Record<NonNullable<ButtonProps["size"]>, string> = {
@@ -42,7 +40,7 @@ function Button({
       type="button"
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center border font-medium transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(124,127,242,0.24)] focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center border font-medium transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--color-primary),transparent_65%)] focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50",
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && "w-full",

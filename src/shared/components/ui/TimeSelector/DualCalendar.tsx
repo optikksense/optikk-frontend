@@ -36,11 +36,11 @@ export function DualCalendar({
           <button
             type="button"
             onClick={prevMonth}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-none bg-transparent text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-none bg-transparent text-foreground-secondary transition-colors hover:bg-muted hover:text-foreground"
           >
             <ChevronLeft size={14} />
           </button>
-          <span className="font-semibold text-[13px] text-[var(--text-primary)]">
+          <span className="font-semibold text-[13px] text-foreground">
             {format(leftMonth, "MMMM yyyy")}
           </span>
           <div className="w-6" />
@@ -57,19 +57,19 @@ export function DualCalendar({
       </div>
 
       {/* Divider */}
-      <div className="w-px self-stretch bg-[var(--border-color)]" />
+      <div className="w-px self-stretch bg-border" />
 
       {/* Right month */}
       <div className="flex flex-1 flex-col">
         <div className="mb-2 flex items-center justify-between">
           <div className="w-6" />
-          <span className="font-semibold text-[13px] text-[var(--text-primary)]">
+          <span className="font-semibold text-[13px] text-foreground">
             {format(rightMonth, "MMMM yyyy")}
           </span>
           <button
             type="button"
             onClick={nextMonth}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-none bg-transparent text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-none bg-transparent text-foreground-secondary transition-colors hover:bg-muted hover:text-foreground"
           >
             <ChevronRight size={14} />
           </button>

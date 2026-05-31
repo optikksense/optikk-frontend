@@ -13,7 +13,7 @@ import { useDatabaseSystems } from "../hooks/useDatabaseSystems";
 function errTone(rate: number): string {
   if (rate >= 0.02) return "text-[var(--color-error,#ef4444)]";
   if (rate >= 0.005) return "text-[var(--color-warning,#f59e0b)]";
-  return "text-[var(--text-primary)]";
+  return "text-foreground";
 }
 
 const COLUMNS: SimpleTableColumn<DatastoreSystemRow>[] = [
@@ -23,10 +23,8 @@ const COLUMNS: SimpleTableColumn<DatastoreSystemRow>[] = [
     width: 200,
     render: (_v, row) => (
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate font-mono text-[12px] text-[var(--text-primary)]">
-          {row.system}
-        </span>
-        <span className="truncate text-[11px] text-[var(--text-muted)]">{row.category}</span>
+        <span className="truncate font-mono text-[12px] text-foreground">{row.system}</span>
+        <span className="truncate text-[11px] text-foreground-muted">{row.category}</span>
       </div>
     ),
   },
@@ -86,7 +84,7 @@ export function SystemsTable() {
       padded={false}
     >
       {rows.length === 0 ? (
-        <div className="px-4 py-8 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="px-4 py-8 text-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No database systems in window."}
         </div>
       ) : (

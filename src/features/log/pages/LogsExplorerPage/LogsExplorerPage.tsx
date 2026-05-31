@@ -2,9 +2,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
-import { cn } from "@/lib/utils";
 import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import { cn } from "@/lib/utils";
 
 import { resolveTimeRangeBounds } from "@/types";
 
@@ -22,6 +22,7 @@ import { LogsTableFooter } from "../../components/table/LogsTableFooter";
 import { LogsTableToolbar } from "../../components/table/LogsTableToolbar";
 import { LogsActions } from "../../components/toolbar/LogsActions";
 import { LogsToolbar } from "../../components/toolbar/LogsToolbar";
+import { LogsSummaryChips } from "../../components/trend/LogsSummaryChips";
 import { LogsTrendChart } from "../../components/trend/LogsTrendChart";
 
 function extractSearchTerm(filters: readonly ExplorerFilter[]): string | undefined {
@@ -66,7 +67,7 @@ function buildValueSuggestions(
  */
 export default function LogsExplorerPage() {
   const navigate = useNavigate();
-  const { state, list, trend, facets } = useLogsExplorer();
+  const { state, list, summary, trend, facets } = useLogsExplorer();
   const timeRange = useTimeRange();
   const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
@@ -107,7 +108,7 @@ export default function LogsExplorerPage() {
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-[var(--bg-0)] text-[13px] text-[var(--fg-1)] [font-family:Geist,'Inter_Tight',ui-sans-serif,system-ui,sans-serif] [font-feature-settings:'ss01','cv11','tnum']">
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-[14px] px-5 pb-3 pt-4">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-[14px] px-5 pt-4 pb-3">
         <LogsToolbar
           ref={searchInputRef}
           filters={state.filters}
@@ -131,6 +132,7 @@ export default function LogsExplorerPage() {
           />
 
           <div className="flex min-h-0 min-w-0 flex-col gap-3">
+            <LogsSummaryChips summary={summary.data} />
             <LogsTrendChart
               trend={trend.data}
               zoomed={timeRange.kind === "absolute"}

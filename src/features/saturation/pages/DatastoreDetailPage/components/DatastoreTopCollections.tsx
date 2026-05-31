@@ -8,9 +8,9 @@ type Collection = NonNullable<DatastoreOverview["top_collections"]>[number];
 
 function CollectionCard({ collection }: { collection: Collection }) {
   return (
-    <div className="rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[rgba(255,255,255,0.02)] px-4 py-3">
-      <div className="font-medium text-[var(--text-primary)]">{collection.collection_name}</div>
-      <div className="mt-2 text-[12px] text-[var(--text-secondary)]">
+    <div className="rounded-[var(--card-radius)] border border-border bg-[var(--bg-2)] px-4 py-3">
+      <div className="font-medium text-foreground">{collection.collection_name}</div>
+      <div className="mt-2 text-[12px] text-foreground-secondary">
         {formatDuration(collection.p99_ms)} p99 • {formatNumber(collection.ops_per_sec)} ops/s
       </div>
     </div>

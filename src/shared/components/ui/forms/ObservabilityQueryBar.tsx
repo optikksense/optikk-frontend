@@ -106,21 +106,18 @@ export default function ObservabilityQueryBar({
           EXPLORER_QUERY_INNER_ROW_CLASSNAME,
           "cursor-text flex-wrap",
           step > 0 &&
-            "border-[rgba(96,165,250,0.48)] shadow-[0_0_0_1px_rgba(96,165,250,0.2),0_22px_54px_rgba(2,6,23,0.38),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            "border-[color-mix(in_oklch,var(--color-primary),transparent_65%)] shadow-[0_0_0_1px_rgba(96,165,250,0.2),0_22px_54px_rgba(2,6,23,0.38),inset_0_1px_0_rgba(255,255,255,0.05)]"
         )}
         style={{ rowGap: 4 }}
         onClick={() => {
           openDropdown();
         }}
       >
-        <Search
-          size={14}
-          className={cn(EXPLORER_QUERY_ICON_CLASSNAME, step > 0 && "text-[var(--color-info)]")}
-        />
+        <Search size={14} className={cn(EXPLORER_QUERY_ICON_CLASSNAME, step > 0 && "text-info")} />
         <button
           type="button"
           title="Add structured filter"
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors hover:border-[var(--color-primary-subtle-28)] hover:text-[var(--text-primary)]"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-foreground-secondary transition-colors hover:border-[var(--color-primary-subtle-28)] hover:text-foreground"
           onClick={(event) => {
             event.stopPropagation();
             openDropdown();
@@ -134,7 +131,7 @@ export default function ObservabilityQueryBar({
           {filters.map((filter, index) => (
             <span
               key={index}
-              className="inline-flex animate-oqb-pill-in items-center gap-[3px] whitespace-nowrap rounded-2xl border border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] px-[10px] py-[2px] pr-2 text-[11px] text-[var(--color-primary)]"
+              className="inline-flex animate-oqb-pill-in items-center gap-[3px] whitespace-nowrap rounded-2xl border border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] px-[10px] py-[2px] pr-2 text-[11px] text-primary"
             >
               {filter.fieldGroup && (
                 <span className="mr-[1px] text-[10px] opacity-40">{filter.fieldGroup} /</span>
@@ -143,10 +140,10 @@ export default function ObservabilityQueryBar({
               <span className="mx-0.5 font-mono opacity-50">
                 {filter.operatorSymbol || filter.operator}
               </span>
-              <span className="font-semibold text-[var(--text-primary)]">"{filter.value}"</span>
+              <span className="font-semibold text-foreground">"{filter.value}"</span>
               <button
                 type="button"
-                className="flex cursor-pointer border-none bg-transparent pl-0.5 text-[var(--color-primary)] leading-none opacity-55 transition-opacity duration-100 hover:opacity-100"
+                className="flex cursor-pointer border-none bg-transparent pl-0.5 text-primary leading-none opacity-55 transition-opacity duration-100 hover:opacity-100"
                 onClick={(event) => {
                   event.stopPropagation();
                   removeFilter(index);
@@ -159,12 +156,12 @@ export default function ObservabilityQueryBar({
           ))}
 
           {step >= 2 && pendingField && (
-            <span className="inline-flex animate-oqb-pill-in items-center gap-[3px] whitespace-nowrap rounded-2xl border border-[var(--color-primary-subtle-28)] border-dashed bg-[var(--color-primary-subtle-08)] px-[10px] py-[2px] pr-2 text-[11px] text-[var(--color-primary)]">
+            <span className="inline-flex animate-oqb-pill-in items-center gap-[3px] whitespace-nowrap rounded-2xl border border-[var(--color-primary-subtle-28)] border-dashed bg-[var(--color-primary-subtle-08)] px-[10px] py-[2px] pr-2 text-[11px] text-primary">
               <span className="opacity-75">{pendingField.label}</span>
               {pendingOp && <span className="mx-0.5 font-mono opacity-50">{pendingOp.symbol}</span>}
               <button
                 type="button"
-                className="flex cursor-pointer border-none bg-transparent pl-0.5 text-[var(--color-primary)] leading-none opacity-55 transition-opacity duration-100 hover:opacity-100"
+                className="flex cursor-pointer border-none bg-transparent pl-0.5 text-primary leading-none opacity-55 transition-opacity duration-100 hover:opacity-100"
                 onClick={(event) => {
                   event.stopPropagation();
                   actions.closeDropdown();
@@ -196,7 +193,7 @@ export default function ObservabilityQueryBar({
         >
           {filters.length > 0 && (
             <span
-              className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--color-primary-subtle-25)] font-bold text-[10px] text-[var(--color-primary)]"
+              className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--color-primary-subtle-25)] font-bold text-[10px] text-primary"
               title={`${filters.length} active filter${filters.length !== 1 ? "s" : ""}`}
             >
               {filters.length}
@@ -205,7 +202,7 @@ export default function ObservabilityQueryBar({
           {hasFilters && (
             <button
               type="button"
-              className="cursor-pointer whitespace-nowrap rounded-md border-none bg-transparent px-2 py-[3px] text-[11px] text-muted-foreground transition-colors duration-100 hover:bg-[rgba(240,68,56,0.08)] hover:text-error"
+              className="cursor-pointer whitespace-nowrap rounded-md border-none bg-transparent px-2 py-[3px] text-[11px] text-muted-foreground transition-colors duration-100 hover:bg-error-subtle hover:text-error"
               onClick={(event) => {
                 event.stopPropagation();
                 clearAll();

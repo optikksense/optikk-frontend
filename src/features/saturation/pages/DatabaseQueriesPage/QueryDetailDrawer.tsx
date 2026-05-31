@@ -28,12 +28,8 @@ function fmtCount(v: number | null | undefined): string {
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
-        {label}
-      </div>
-      <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)] tabular-nums">
-        {value}
-      </div>
+      <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
+      <div className="mt-1 font-semibold text-[18px] text-foreground tabular-nums">{value}</div>
     </div>
   );
 }
@@ -44,10 +40,10 @@ function DrawerBody({ query }: { query: SlowQueryPatternRow }) {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Surface elevation={1} padding="sm">
-        <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
           Query text
         </div>
-        <pre className="mt-2 whitespace-pre-wrap break-words font-mono text-[12px] text-[var(--text-primary)]">
+        <pre className="mt-2 whitespace-pre-wrap break-words font-mono text-[12px] text-foreground">
           {query.query_text}
         </pre>
       </Surface>
@@ -62,10 +58,10 @@ function DrawerBody({ query }: { query: SlowQueryPatternRow }) {
         </div>
       </Surface>
       <Surface elevation={1} padding="sm">
-        <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+        <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
           Collection
         </div>
-        <div className="mt-1 font-mono text-[13px] text-[var(--text-primary)]">
+        <div className="mt-1 font-mono text-[13px] text-foreground">
           {query.collection_name || "—"}
         </div>
       </Surface>

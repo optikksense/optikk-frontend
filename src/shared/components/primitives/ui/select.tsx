@@ -67,9 +67,9 @@ function Select({
       >
         <SelectPrimitive.Trigger
           className={cn(
-            "inline-flex w-full items-center justify-between gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] outline-none transition-[background-color,border-color,box-shadow] hover:border-[var(--color-primary-subtle-50)] focus:ring-2 focus:ring-[var(--color-primary-subtle-18)]",
+            "inline-flex w-full items-center justify-between gap-2 rounded-[var(--card-radius)] border border-border bg-muted text-foreground shadow-[var(--shadow-sm)] outline-none transition-[background-color,border-color,box-shadow] hover:border-[var(--color-primary-subtle-50)] focus:ring-2 focus:ring-[var(--color-primary-subtle-18)]",
             sizeClasses[size],
-            !selectedLabel && "text-[var(--text-muted)]"
+            !selectedLabel && "text-foreground-muted"
           )}
         >
           <SelectPrimitive.Value placeholder={placeholder} />
@@ -81,7 +81,7 @@ function Select({
           <SelectPrimitive.Content
             position="popper"
             sideOffset={4}
-            className="data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 z-50 min-w-[140px] overflow-hidden rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-[var(--shadow-md)] data-[state=closed]:animate-out data-[state=open]:animate-in"
+            className="data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 z-50 min-w-[140px] overflow-hidden rounded-[var(--card-radius)] border border-border bg-secondary shadow-[var(--shadow-md)] data-[state=closed]:animate-out data-[state=open]:animate-in"
           >
             <SelectPrimitive.Viewport className="max-h-60 p-1">
               {options.map((option, index) => (
@@ -89,7 +89,7 @@ function Select({
                   key={`${option.label}-${index}`}
                   value={String(option.value)}
                   className={cn(
-                    "relative flex w-full cursor-default select-none items-center rounded-md py-2 pr-2.5 pl-8 text-[13px] outline-none transition-colors focus:bg-[var(--bg-hover)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    "relative flex w-full cursor-default select-none items-center rounded-md py-2 pr-2.5 pl-8 text-[13px] outline-none transition-colors focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                   )}
                 >
                   <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
@@ -161,9 +161,9 @@ function MultiSelect({
         type="button"
         onClick={() => setOpen((c) => !c)}
         className={cn(
-          "inline-flex w-full items-center justify-between gap-2 rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] hover:border-[var(--color-primary-subtle-50)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-subtle-18)]",
+          "inline-flex w-full items-center justify-between gap-2 rounded-[var(--card-radius)] border border-border bg-muted text-foreground shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] hover:border-[var(--color-primary-subtle-50)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-subtle-18)]",
           sizeClasses[size],
-          selectedLabels.length === 0 && "text-[var(--text-muted)]"
+          selectedLabels.length === 0 && "text-foreground-muted"
         )}
       >
         <span className="truncate">{displayText}</span>
@@ -173,7 +173,7 @@ function MultiSelect({
         />
       </button>
       {open ? (
-        <div className="absolute z-50 mt-1 w-full min-w-[140px] overflow-hidden rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-[var(--shadow-md)]">
+        <div className="absolute z-50 mt-1 w-full min-w-[140px] overflow-hidden rounded-[var(--card-radius)] border border-border bg-secondary shadow-[var(--shadow-md)]">
           <div className="max-h-60 overflow-y-auto py-1">
             {options.map((option, index) => {
               const selected = selectedValues.includes(option.value);
@@ -183,16 +183,14 @@ function MultiSelect({
                   type="button"
                   onClick={() => handleSelect(option.value)}
                   className={cn(
-                    "flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] transition-colors hover:bg-[var(--bg-hover)]",
-                    selected ? "text-[var(--color-primary)]" : "text-[var(--text-primary)]"
+                    "flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] transition-colors hover:bg-accent",
+                    selected ? "text-primary" : "text-foreground"
                   )}
                 >
                   <span
                     className={cn(
                       "flex h-4 w-4 items-center justify-center rounded border",
-                      selected
-                        ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
-                        : "border-[var(--border-color)]"
+                      selected ? "border-primary bg-primary" : "border-border"
                     )}
                   >
                     {selected ? <Check size={10} className="text-white" /> : null}

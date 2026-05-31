@@ -17,7 +17,8 @@ export interface ErrorGroup {
 }
 
 export interface ErrorGroupDetail extends ErrorGroup {
-  readonly stack_trace?: string;
+  /** Raw multi-line stacktrace from the sample exception; may be empty. */
+  readonly sample_stacktrace?: string;
   readonly exception_type?: string;
 }
 
@@ -36,9 +37,12 @@ export interface ErrorTimeSeriesPoint {
   readonly error_count: number;
 }
 
+import type { PaginatedResponse } from "@/features/services/api/serviceDetailApi";
+
 interface ErrorListParams {
   serviceName?: string;
   limit?: number;
+  cursor?: string;
   [key: string]: unknown;
 }
 
@@ -50,8 +54,8 @@ export function listErrorGroups(
   s: RequestTime,
   e: RequestTime,
   p?: ErrorListParams
-): Promise<ErrorGroup[]> {
-  return api.get<ErrorGroup[]>(`${V1}/errors/groups`, {
+): Promise<PaginatedResponse<ErrorGroup[]>> {
+  return api.get<PaginatedResponse<ErrorGroup[]>>(`${V1}/errors/groups`, {
     params: range(s, e, p),
   });
 }

@@ -34,7 +34,7 @@ function LogsFacetPanelComponent({
 
   if (collapsed) {
     return (
-      <aside className={cn(FACETS_ASIDE, "w-10 items-center justify-start !p-[6px]")}>
+      <aside className={cn(FACETS_ASIDE, "!p-[6px] w-10 items-center justify-start")}>
         <button
           type="button"
           onClick={() => setCollapsed(false)}
@@ -53,7 +53,7 @@ function LogsFacetPanelComponent({
   return (
     <aside className={FACETS_ASIDE}>
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-2)]">
+        <span className="font-semibold text-[11px] text-[var(--fg-2)] uppercase tracking-[0.08em]">
           Facets
           {activeFilterCount > 0 ? (
             <span className="ml-[6px] rounded-full bg-[var(--accent)] px-[6px] text-[10px] text-[oklch(0.99_0.005_270)]">

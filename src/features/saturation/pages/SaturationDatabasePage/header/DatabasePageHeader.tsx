@@ -1,5 +1,6 @@
 import { Database, RefreshCw } from "lucide-react";
 
+import { Pill } from "@shared/components/primitives/ui/pill";
 import { useAppStore } from "@store/appStore";
 
 import type { DatastoreSummary } from "@/features/saturation/api/datastoresExplorerSchemas";
@@ -7,6 +8,7 @@ import { fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 
 interface DatabasePageHeaderProps {
   readonly summary: DatastoreSummary | undefined;
+  readonly degraded?: { readonly label: string } | null;
 }
 
 function RefreshButton() {
@@ -16,7 +18,7 @@ function RefreshButton() {
       type="button"
       title="Refresh"
       onClick={triggerRefresh}
-      className="grid h-8 w-8 place-items-center rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+      className="grid h-8 w-8 place-items-center rounded-md border border-border bg-card text-foreground-muted hover:text-foreground"
     >
       <RefreshCw size={14} />
     </button>
@@ -25,25 +27,32 @@ function RefreshButton() {
 
 function Subtitle({ summary }: { summary: DatastoreSummary | undefined }) {
   if (!summary) {
-    return <div className="text-[12px] text-[var(--text-muted)]">Loading…</div>;
+    return <div className="text-[12px] text-foreground-muted">Loading…</div>;
   }
   return (
-    <div className="text-[12px] text-[var(--text-muted)]">
+    <div className="text-[12px] text-foreground-muted">
       {fmtNum(summary.database_systems)} database systems · {fmtNum(summary.query_count)} queries in
       window
     </div>
   );
 }
 
-export function DatabasePageHeader({ summary }: DatabasePageHeaderProps) {
+export function DatabasePageHeader({ summary, degraded }: DatabasePageHeaderProps) {
   return (
     <header className="flex items-start justify-between gap-3">
       <div className="flex items-start gap-3">
-        <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-bg,rgba(59,130,246,0.12))] text-[var(--color-primary,#3b82f6)]">
+        <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-bg)] text-primary">
           <Database size={18} />
         </div>
         <div>
-          <h1 className="font-semibold text-[20px] text-[var(--text-primary)]">Database</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-semibold text-[20px] text-foreground">Database</h1>
+            {degraded && (
+              <Pill variant="warning" dot>
+                {degraded.label}
+              </Pill>
+            )}
+          </div>
           <Subtitle summary={summary} />
         </div>
       </div>

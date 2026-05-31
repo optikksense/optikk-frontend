@@ -7,17 +7,17 @@ interface Props {
   readonly environment?: string;
 }
 
-const botK = "text-[var(--text-caption)]";
-const botV = "text-[var(--text-secondary)] font-mono";
-const botSep = "text-[var(--text-caption)] opacity-50";
+const botK = "text-foreground-caption";
+const botV = "text-foreground-secondary font-mono";
+const botSep = "text-foreground-caption opacity-50";
 const kbd =
-  "inline-grid place-items-center min-w-[16px] h-[16px] px-1 font-mono text-[9.5px] text-[var(--text-muted)] bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-[4px]";
+  "inline-grid place-items-center min-w-[16px] h-[16px] px-1 font-mono text-[9.5px] text-foreground-muted bg-muted border border-border rounded-[4px]";
 const kbdHint = "inline-flex gap-1 items-center";
 
 function BottomBarComponent({ traceId, spanCount, serviceCount, environment }: Props) {
   return (
-    <div className="flex items-center justify-between h-[28px] px-4 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] text-[11px] text-[var(--text-caption)] flex-shrink-0">
-      <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex h-[28px] flex-shrink-0 items-center justify-between border-border border-t bg-secondary px-4 text-[11px] text-foreground-caption">
+      <div className="flex flex-wrap items-center gap-2">
         <span className={botK}>trace</span>
         <span className={botV}>{traceId.slice(0, 16)}…</span>
         <span className={botSep}>·</span>
@@ -34,7 +34,7 @@ function BottomBarComponent({ traceId, spanCount, serviceCount, environment }: P
           </>
         )}
       </div>
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2">
         <span className={kbdHint}>
           <kbd className={kbd}>j</kbd>
           <kbd className={kbd}>k</kbd> navigate

@@ -35,16 +35,14 @@ function FacetShowAllModalComponent(props: Props) {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50" />
         <Dialog.Content
-          className="-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 z-50 flex max-h-[80vh] w-[480px] flex-col gap-3 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 shadow-xl"
+          className="-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 z-50 flex max-h-[80vh] w-[480px] flex-col gap-3 rounded-lg border border-border bg-background p-4 shadow-xl"
           aria-describedby={undefined}
         >
           <div className="flex items-center justify-between">
-            <Dialog.Title className="font-medium text-[13px] text-[var(--text-primary)]">
-              {label}
-            </Dialog.Title>
+            <Dialog.Title className="font-medium text-[13px] text-foreground">{label}</Dialog.Title>
             <Dialog.Close
               aria-label="Close"
-              className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              className="rounded p-1 text-foreground-muted hover:text-foreground"
             >
               <X size={14} />
             </Dialog.Close>
@@ -62,7 +60,7 @@ function FacetShowAllModalComponent(props: Props) {
               />
             ))}
             {filtered.length === 0 ? (
-              <span className="px-2 py-4 text-center text-[12px] text-[var(--text-muted)]">
+              <span className="px-2 py-4 text-center text-[12px] text-foreground-muted">
                 No matches
               </span>
             ) : null}

@@ -12,11 +12,11 @@ function SaturationOverviewHeaderImpl({ summary }: Props): JSX.Element {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4">
       <div className="flex min-w-0 items-center gap-3">
-        <div className="inline-grid h-9 w-9 place-items-center rounded-lg bg-[var(--accent-bg)] text-[var(--accent-2)]">
+        <div className="inline-grid h-9 w-9 place-items-center rounded-lg bg-[var(--accent-bg)] text-primary">
           <Grid3x3 size={20} aria-hidden />
         </div>
         <div>
-          <h1 className="m-0 text-[20px] font-semibold tracking-[-0.012em] text-[var(--fg-0)]">
+          <h1 className="m-0 font-semibold text-[20px] text-[var(--fg-0)] tracking-[-0.012em]">
             Saturation
           </h1>
           <div className='mt-[2px] font-["Geist_Mono",monospace] text-[12px] text-[var(--fg-3)]'>

@@ -19,25 +19,21 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     title: "Service",
     key: "service_name",
     width: 180,
-    render: (_v, row) => (
-      <span className="font-medium text-[var(--text-primary)]">{row.service_name}</span>
-    ),
+    render: (_v, row) => <span className="font-medium text-foreground">{row.service_name}</span>,
   },
   {
     title: "Operation",
     key: "operation_name",
     width: 220,
     render: (_v, row) => (
-      <span className="font-mono text-[12px] text-[var(--text-secondary)]">
-        {row.operation_name}
-      </span>
+      <span className="font-mono text-[12px] text-foreground-secondary">{row.operation_name}</span>
     ),
   },
   {
     title: "Status message",
     key: "status_message",
     render: (_v, row) => (
-      <span className="text-[12px] text-[var(--text-primary)]">{row.status_message || "—"}</span>
+      <span className="text-[12px] text-foreground">{row.status_message || "—"}</span>
     ),
   },
   {
@@ -61,7 +57,7 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     key: "last_occurrence",
     width: 200,
     render: (_v, row) => (
-      <span className="text-[11px] text-[var(--text-muted)]">{fmtDate(row.last_occurrence)}</span>
+      <span className="text-[11px] text-foreground-muted">{fmtDate(row.last_occurrence)}</span>
     ),
   },
 ];
@@ -82,7 +78,7 @@ export default function ErrorTrackingPage(): JSX.Element {
 
       {groupsQ.error ? (
         <div
-          className="rounded-md border border-red-500/35 bg-red-500/10 px-3 py-2 text-red-300 text-sm"
+          className="rounded-md border border-error bg-error-subtle px-3 py-2 text-error text-sm"
           role="alert"
         >
           Could not load error groups: {(groupsQ.error as Error).message}
@@ -92,7 +88,7 @@ export default function ErrorTrackingPage(): JSX.Element {
       <PageSurface padding="lg">
         <SimpleTable
           columns={columns}
-          dataSource={groupsQ.data ?? []}
+          dataSource={groupsQ.data?.results ?? []}
           rowKey={(r) => r.group_id}
           pagination={{ pageSize: 25 }}
           onRow={(record) => ({

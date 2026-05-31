@@ -11,18 +11,18 @@ interface DemoServicesGridProps {
 function Cell({ row }: { row: DemoServiceRow }) {
   const errorTone = row.errorRate > 1 ? "#F04438" : "var(--text-muted)";
   return (
-    <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-3 text-center">
+    <div className="rounded-lg border border-border bg-muted p-3 text-center">
       <HealthIndicator status={row.status} size={8} />
-      <div className="mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[12px] text-[var(--text-primary)]">
+      <div className="mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[12px] text-foreground">
         {row.name}
       </div>
-      <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+      <div className="mt-0.5 text-[11px] text-foreground-muted">
         {formatNumber(row.requestCount)} req
       </div>
       <div className="mt-0.5 text-[11px]" style={{ color: errorTone }}>
         {row.errorRate.toFixed(2)}% err
       </div>
-      <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">p95 {row.p95Latency}ms</div>
+      <div className="mt-0.5 text-[11px] text-foreground-muted">p95 {row.p95Latency}ms</div>
     </div>
   );
 }

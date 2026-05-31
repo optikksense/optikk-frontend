@@ -21,37 +21,27 @@ interface Props {
   readonly p95Ms?: number;
 }
 
-interface RootSelfTimeResult {
-  readonly selfMs: number;
-  readonly root: TraceRecord | null;
-}
-
-function computeRootSelfTime(spans: readonly TraceRecord[]): RootSelfTimeResult {
-  const root = spans.find((s) => !s.parent_span_id) ?? null;
-  if (!root) return { selfMs: 0, root: null };
-  const rootStart = root.start_time ? new Date(root.start_time).getTime() : 0;
-  const rootEnd = root.end_time ? new Date(root.end_time).getTime() : 0;
-  const rootDur = Math.max(0, rootEnd - rootStart);
-  if (!rootDur) return { selfMs: 0, root };
-
-  // merge direct-child intervals, subtract from root
-  const children = spans
-    .filter((s) => s.parent_span_id === root.span_id)
-    .map((s) => ({
-      start: s.start_time ? new Date(s.start_time).getTime() : 0,
-      end: s.end_time ? new Date(s.end_time).getTime() : 0,
-    }))
-    .filter((iv) => iv.end > iv.start)
-    .sort((a, b) => a.start - b.start);
-
-  let merged = 0;
-  let lastEnd = 0;
-  for (const iv of children) {
-    const s = Math.max(iv.start, lastEnd);
-    if (iv.end > s) merged += iv.end - s;
-    lastEnd = Math.max(lastEnd, iv.end);
-  }
-  return { selfMs: Math.max(0, rootDur - merged), root };
+/** Deepest span nesting level in the trace (root = depth 1). */
+function computeMaxDepth(spans: readonly TraceRecord[]): number {
+  if (spans.length === 0) return 0;
+  const byId = new Map<string, TraceRecord>();
+  for (const s of spans) byId.set(s.span_id, s);
+  const depthCache = new Map<string, number>();
+  const depthOf = (span: TraceRecord, seen: Set<string>): number => {
+    const cached = depthCache.get(span.span_id);
+    if (cached != null) return cached;
+    const parentId = span.parent_span_id;
+    let d = 1;
+    if (parentId && byId.has(parentId) && !seen.has(parentId)) {
+      seen.add(span.span_id);
+      d = depthOf(byId.get(parentId)!, seen) + 1;
+    }
+    depthCache.set(span.span_id, d);
+    return d;
+  };
+  let max = 1;
+  for (const s of spans) max = Math.max(max, depthOf(s, new Set<string>([s.span_id])));
+  return max;
 }
 
 function summarizeCriticalPath(
@@ -86,13 +76,11 @@ function summarizeCriticalPath(
   };
 }
 
-const kpiBase =
-  "bg-[var(--bg-primary)] px-[18px] py-[14px] flex flex-col gap-1 min-w-0";
-const kpiK =
-  "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
+const kpiBase = "bg-background px-[18px] py-[14px] flex flex-col gap-1 min-w-0";
+const kpiK = "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
 const kpiV =
-  "text-[24px] font-semibold text-[var(--text-primary)] tracking-[-0.015em] font-mono whitespace-nowrap [font-feature-settings:'tnum']";
-const kpiSub = "text-[11.5px] text-[var(--text-caption)]";
+  "text-[24px] font-semibold text-foreground tracking-[-0.015em] font-mono whitespace-nowrap [font-feature-settings:'tnum']";
+const kpiSub = "text-[11.5px] text-foreground-caption";
 
 function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: Props) {
   const errors = stats.errors;
@@ -100,8 +88,7 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
   const services = stats.services.size;
   const okCount = Math.max(0, totalSpans - errors);
 
-  const { selfMs } = useMemo(() => computeRootSelfTime(spans), [spans]);
-  const selfPct = stats.duration > 0 ? (selfMs / stats.duration) * 100 : 0;
+  const maxDepth = useMemo(() => computeMaxDepth(spans), [spans]);
 
   const critical = useMemo(
     () => summarizeCriticalPath(spans, criticalPathSpanIds, stats.duration),
@@ -113,21 +100,21 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
 
   return (
     <div
-      className="grid gap-px bg-[var(--border-color)] border-b border-[var(--border-color)]"
+      className="grid gap-px border-border border-b bg-border"
       style={{
         gridTemplateColumns:
-          "minmax(220px, 1.4fr) minmax(110px, 0.7fr) minmax(120px, 0.7fr) minmax(140px, 0.9fr) minmax(260px, 2fr)",
+          "minmax(220px, 1.4fr) minmax(110px, 0.7fr) minmax(150px, 0.9fr) minmax(260px, 2fr)",
       }}
     >
-      <div className={cn(kpiBase, "bg-[var(--bg-secondary)]")}>
+      <div className={cn(kpiBase, "bg-secondary")}>
         <div className={kpiK}>Duration</div>
         <div className={kpiV}>{formatDuration(stats.duration)}</div>
         {showBaseline && slowFactor != null && p95Ms != null && p50Ms != null ? (
           <>
             <div
               className={cn(
-                "text-[11.5px] text-[var(--text-muted)]",
-                stats.duration > p95Ms && "text-[var(--color-error)]"
+                "text-[11.5px] text-foreground-muted",
+                stats.duration > p95Ms && "text-error"
               )}
             >
               {slowFactor.toFixed(1)}× p50 · {stats.duration > p95Ms ? "above p95" : "below p95"}
@@ -141,28 +128,22 @@ function KPIStripComponent({ stats, spans, criticalPathSpanIds, p50Ms, p95Ms }: 
 
       <div className={kpiBase}>
         <div className={kpiK}>Errors</div>
-        <div className={cn(kpiV, errors > 0 && "!text-[var(--color-error)]")}>{errors}</div>
+        <div className={cn(kpiV, errors > 0 && "!text-error")}>{errors}</div>
         <div className={kpiSub}>{okCount} ok</div>
       </div>
 
       <div className={kpiBase}>
-        <div className={kpiK}>Services</div>
-        <div className={kpiV}>{services}</div>
-        <div className={kpiSub}>
-          {totalSpans} span{totalSpans === 1 ? "" : "s"}
+        <div className={kpiK}>Spans · Services</div>
+        <div className={kpiV}>
+          {totalSpans} <span className="text-foreground-muted">·</span> {services}
         </div>
-      </div>
-
-      <div className={kpiBase}>
-        <div className={kpiK}>Self time (root)</div>
-        <div className={kpiV}>{formatDuration(selfMs)}</div>
-        <div className={kpiSub}>{selfPct.toFixed(1)}% of total</div>
+        <div className={kpiSub}>depth {maxDepth}</div>
       </div>
 
       <div className={cn(kpiBase, "gap-1.5")}>
         <div className={kpiK}>Critical path</div>
         <div
-          className="text-[13.5px] font-medium text-[var(--text-primary)] leading-[1.35] break-words"
+          className="break-words font-medium text-[13.5px] text-foreground leading-[1.35]"
           title={critical.label}
         >
           {critical.label || "—"}
@@ -182,34 +163,34 @@ function BaselineBar({ dur, p50, p95 }: { dur: number; p50: number; p95: number 
   const p95Pct = Math.min(100, (p95 / max) * 100);
   return (
     <div className="mt-1.5">
-      <div className="relative h-1.5 rounded-[3px] bg-[var(--bg-tertiary)] overflow-visible">
+      <div className="relative h-1.5 overflow-visible rounded-[3px] bg-muted">
         <div
-          className="absolute top-0 left-0 h-full bg-[var(--color-error)] rounded-[3px]"
+          className="absolute top-0 left-0 h-full rounded-[3px] bg-error"
           style={{ width: `${fillPct}%` }}
         />
         <div
-          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-[var(--color-success)] rounded-[1px]"
+          className="-top-[3px] -bottom-[3px] absolute w-[1.5px] rounded-[1px] bg-success"
           style={{ left: `${p50Pct}%` }}
           title={`p50 ${formatDuration(p50)}`}
         />
         <div
-          className="absolute -top-[3px] -bottom-[3px] w-[1.5px] bg-[var(--color-warning)] rounded-[1px]"
+          className="-top-[3px] -bottom-[3px] absolute w-[1.5px] rounded-[1px] bg-warning"
           style={{ left: `${p95Pct}%` }}
           title={`p95 ${formatDuration(p95)}`}
         />
       </div>
-      <div className="flex gap-3 mt-1.5 text-[10.5px] text-[var(--text-caption)] font-mono">
+      <div className="mt-1.5 flex gap-3 font-mono text-[10.5px] text-foreground-caption">
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-success)]" />{" "}
-          p50 {formatDuration(p50)}
+          <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-success align-[1px]" /> p50{" "}
+          {formatDuration(p50)}
         </span>
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-warning)]" />{" "}
-          p95 {formatDuration(p95)}
+          <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-warning align-[1px]" /> p95{" "}
+          {formatDuration(p95)}
         </span>
         <span>
-          <i className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-[1px] bg-[var(--color-error)]" />{" "}
-          this {formatDuration(dur)}
+          <i className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-error align-[1px]" /> this{" "}
+          {formatDuration(dur)}
         </span>
       </div>
     </div>

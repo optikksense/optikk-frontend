@@ -24,7 +24,7 @@ function FacetRailComponent(props: Props) {
   );
   if (collapsed) return <CollapsedRail onExpand={() => setCollapsed(false)} />;
   return (
-    <aside className="flex w-64 shrink-0 flex-col overflow-y-auto border-[var(--border-color)] border-r bg-[var(--bg-primary)]">
+    <aside className="flex w-64 shrink-0 flex-col overflow-y-auto border-border border-r bg-background">
       <RailHeader
         activeFilterCount={props.activeFilterCount}
         onClearAll={props.onClearAll}
@@ -48,12 +48,12 @@ function FacetRailComponent(props: Props) {
 
 function CollapsedRail({ onExpand }: { onExpand: () => void }) {
   return (
-    <aside className="flex w-8 shrink-0 flex-col items-center border-[var(--border-color)] border-r bg-[var(--bg-primary)] py-2">
+    <aside className="flex w-8 shrink-0 flex-col items-center border-border border-r bg-background py-2">
       <button
         type="button"
         aria-label="Expand facets"
         onClick={onExpand}
-        className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+        className="rounded p-1 text-foreground-muted hover:text-foreground"
       >
         <PanelLeftOpen size={14} />
       </button>
@@ -74,7 +74,7 @@ function RailHeader({
   return (
     <header className="flex items-center justify-between gap-2 px-2 py-2">
       <div className="flex items-center gap-1.5">
-        <span className="font-semibold text-[11px] text-[var(--text-secondary)] uppercase tracking-wider">
+        <span className="font-semibold text-[11px] text-foreground-secondary uppercase tracking-wider">
           Facets
         </span>
         {activeFilterCount && activeFilterCount > 0 ? (
@@ -89,7 +89,7 @@ function RailHeader({
             type="button"
             aria-label="Clear all filters"
             onClick={onClearAll}
-            className="flex items-center gap-0.5 rounded px-1 text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            className="flex items-center gap-0.5 rounded px-1 text-[10px] text-foreground-muted hover:text-foreground"
           >
             <X size={11} /> Clear
           </button>
@@ -98,7 +98,7 @@ function RailHeader({
           type="button"
           aria-label="Collapse facets"
           onClick={onCollapse}
-          className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          className="rounded p-1 text-foreground-muted hover:text-foreground"
         >
           <PanelLeftClose size={14} />
         </button>
@@ -115,7 +115,7 @@ function RailSearch({ value, onChange }: { value: string; onChange: (v: string) 
         placeholder="Search facets…"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded border border-[var(--border-color)] bg-[var(--bg-secondary)] px-2 py-1 text-[11px] text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+        className="w-full rounded border border-border bg-secondary px-2 py-1 text-[11px] text-foreground outline-none focus:border-[var(--accent)]"
       />
     </div>
   );

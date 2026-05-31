@@ -42,16 +42,16 @@ export default function AlertGroupCard({ service, alerts, onAlertClick }: AlertG
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-[var(--card-radius,12px)] border border-[var(--card-border)] bg-[var(--bg-card)] shadow-[var(--card-shadow)]",
-        criticalCount > 0 && "border-l-[3px] border-l-[var(--color-critical)]"
+        "overflow-hidden rounded-[var(--card-radius,12px)] border border-[var(--card-border)] bg-card shadow-[var(--card-shadow)]",
+        criticalCount > 0 && "border-l-[3px] border-l-critical"
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-[var(--border-light)] border-b px-4 py-3">
+      <div className="flex items-center justify-between border-border-light border-b px-4 py-3">
         <span className="font-semibold text-[color:var(--text-primary)] text-[var(--text-sm,13px)]">
           {service}
         </span>
-        <span className="rounded-full bg-[var(--bg-tertiary)] px-2 py-0.5 text-[color:var(--text-secondary)] text-[var(--text-xs,11px)]">
+        <span className="rounded-full bg-muted px-2 py-0.5 text-[color:var(--text-secondary)] text-[var(--text-xs,11px)]">
           {alerts.length} alert{alerts.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -61,7 +61,7 @@ export default function AlertGroupCard({ service, alerts, onAlertClick }: AlertG
         {alerts.map((alert) => (
           <li
             key={alert.id}
-            className="flex cursor-default items-center gap-2.5 px-4 py-2 transition-[background] duration-[0.12s] hover:bg-[var(--bg-hover)]"
+            className="flex cursor-default items-center gap-2.5 px-4 py-2 transition-[background] duration-[0.12s] hover:bg-accent"
             onClick={() => onAlertClick?.(alert.id)}
             role={onAlertClick ? "button" : undefined}
             tabIndex={onAlertClick ? 0 : undefined}

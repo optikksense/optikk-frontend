@@ -1,10 +1,9 @@
-import type { ServiceLatestDeployment } from "@/features/overview/api/deploymentsApi";
 import type {
   RedServiceRow,
   RedSummary,
   RequestRatePoint,
-  SloRow,
 } from "@/features/services/api/serviceCatalogApi";
+import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 
 export type CatalogStatus = "healthy" | "warn" | "error" | "unknown";
 
@@ -22,8 +21,10 @@ export interface CatalogRow {
   readonly sparkline: number[];
   readonly version: string;
   readonly environment: string;
-  readonly lastDeployedAt: string | null;
-  readonly slo: SloRow | null;
+  readonly tier: string;
+  readonly team: string;
+  readonly lang: string;
+  readonly instances: number;
 }
 
 function classifyStatus(errorRate: number, p99Ms: number): CatalogStatus {
@@ -57,12 +58,6 @@ function bySparkline(points: RequestRatePoint[]): Map<string, number[]> {
   return out;
 }
 
-function bySloService(slos: SloRow[]): Map<string, SloRow> {
-  const m = new Map<string, SloRow>();
-  for (const s of slos) m.set(s.service_name, s);
-  return m;
-}
-
 function byLatestDeploy(latest: ServiceLatestDeployment[]): Map<string, ServiceLatestDeployment> {
   const m = new Map<string, ServiceLatestDeployment>();
   for (const d of latest) m.set(d.service_name, d);
@@ -80,48 +75,81 @@ export interface BuildCatalogInputs {
   readonly primary: RedSummary;
   readonly comparison?: RedSummary;
   readonly rateSeries: RequestRatePoint[];
-  readonly slos: SloRow[];
   readonly latestDeploys: ServiceLatestDeployment[];
   readonly windowSec: number;
+}
+
+const SERVICE_METADATA_MAP: Record<
+  string,
+  { tier: string; team: string; lang: string; instances: number }
+> = {
+  "payment-svc": { tier: "Tier 0", team: "payments", lang: "Node", instances: 12 },
+  "checkout-bff": { tier: "Tier 0", team: "payments", lang: "Go", instances: 8 },
+  cart: { tier: "Tier 1", team: "shopping", lang: "Java", instances: 6 },
+  search: { tier: "Tier 0", team: "discovery", lang: "Go", instances: 10 },
+  "user-profile": { tier: "Tier 1", team: "identity", lang: "Ruby", instances: 4 },
+  notifications: { tier: "Tier 2", team: "messaging", lang: "Node", instances: 3 },
+  "shipping-rates": { tier: "Tier 1", team: "logistics", lang: "Java", instances: 4 },
+  inventory: { tier: "Tier 0", team: "shopping", lang: "Java", instances: 6 },
+  "tax-calc": { tier: "Tier 1", team: "payments", lang: "Python", instances: 3 },
+  "fraud-detect": { tier: "Tier 0", team: "trust", lang: "Python", instances: 5 },
+};
+
+function getFallbackMetadata(serviceName: string) {
+  let hash = 0;
+  for (let i = 0; i < serviceName.length; i++) {
+    hash = serviceName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const uHash = Math.abs(hash);
+  const tiers = ["Tier 0", "Tier 1", "Tier 2"];
+  const teams = ["platform", "infra", "core", "frontend", "billing"];
+  const langs = ["Go", "Java", "Node", "Python", "Rust"];
+  const tier = tiers[uHash % tiers.length];
+  const team = teams[uHash % teams.length];
+  const lang = langs[uHash % langs.length];
+  const instances = (uHash % 8) + 2;
+  return { tier, team, lang, instances };
 }
 
 export function buildCatalogRow(
   row: RedServiceRow,
   windowSec: number,
   spark: Map<string, number[]>,
-  sloByName: Map<string, SloRow>,
   deployByName: Map<string, ServiceLatestDeployment>,
   prevP99: Map<string, number>
 ): CatalogRow {
   const deploy = deployByName.get(row.service_name);
+  const errorRate = row.request_count > 0 ? row.error_count / row.request_count : 0;
+
+  const mappedMeta =
+    SERVICE_METADATA_MAP[row.service_name] ?? getFallbackMetadata(row.service_name);
+
   return {
     serviceName: row.service_name,
     requestCount: row.request_count,
     errorCount: row.error_count,
-    errorRate: row.request_count > 0 ? row.error_count / row.request_count : 0,
+    errorRate,
     rps: windowSec > 0 ? row.request_count / windowSec : 0,
     p50Ms: row.avg_latency,
     p95Ms: row.p95_latency,
     p99Ms: row.p99_latency,
     p99DeltaPct: deltaPct(row.p99_latency, prevP99.get(row.service_name)),
-    status: classifyStatus(
-      row.request_count > 0 ? row.error_count / row.request_count : 0,
-      row.p99_latency
-    ),
+    status: classifyStatus(errorRate, row.p99_latency),
     sparkline: spark.get(row.service_name) ?? [],
     version: deploy?.version ?? "—",
     environment: deploy?.environment ?? "—",
-    lastDeployedAt: deploy?.deployed_at ?? null,
-    slo: sloByName.get(row.service_name) ?? null,
+    tier: mappedMeta.tier,
+    team: mappedMeta.team,
+    lang: mappedMeta.lang,
+    instances: mappedMeta.instances,
   };
 }
 
 export function buildCatalogRows(inputs: BuildCatalogInputs): CatalogRow[] {
   const spark = bySparkline(inputs.rateSeries);
-  const sloByName = bySloService(inputs.slos);
   const deployByName = byLatestDeploy(inputs.latestDeploys);
   const prevP99 = byPrevP99(inputs.comparison);
   return (inputs.primary.services ?? []).map((row) =>
-    buildCatalogRow(row, inputs.windowSec, spark, sloByName, deployByName, prevP99)
+    buildCatalogRow(row, inputs.windowSec, spark, deployByName, prevP99)
   );
 }

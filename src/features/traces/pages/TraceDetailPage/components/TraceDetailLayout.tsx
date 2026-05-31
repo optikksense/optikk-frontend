@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef } from "react";
 
-import type Flamegraph from "@shared/components/ui/charts/specialized/Flamegraph";
+import type { ServiceMapResponse, TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
 import {
@@ -17,11 +17,10 @@ import { SpanDrawer } from "./SpanDrawer";
 import { SpanDrawerHeader } from "./SpanDrawerHeader";
 import { TraceTabBar } from "./TraceTabBar";
 import { VizArea } from "./VizArea";
+import { AttributesTab } from "./span-detail/AttributesTab";
 import { EventsTab } from "./span-detail/EventsTab";
-import { InfoTab } from "./span-detail/InfoTab";
-import { InfraTab } from "./span-detail/InfraTab";
 import { LinksTab } from "./span-detail/LinksTab";
-import { LogsTab } from "./span-detail/LogsTab";
+import { OverviewTab } from "./span-detail/OverviewTab";
 
 interface SelectedSpan {
   readonly span_id?: string;
@@ -36,16 +35,6 @@ interface SelectedSpan {
   readonly end_time?: string;
 }
 
-interface LogEntry {
-  readonly id?: string;
-  readonly timestamp: string;
-  readonly severity_text?: string;
-  readonly body?: string;
-  readonly message?: string;
-  readonly span_id?: string;
-  readonly level?: string;
-}
-
 export interface TraceDetailLayoutProps {
   readonly activeTab: VisualizationTab;
   readonly onActiveTabChange: (tab: VisualizationTab) => void;
@@ -58,13 +47,11 @@ export interface TraceDetailLayoutProps {
   readonly onCloseSpan: () => void;
   readonly criticalPathSpanIds: Set<string>;
   readonly errorPathSpanIds: Set<string>;
-  readonly flamegraphData: Parameters<typeof Flamegraph>[0]["data"] | null;
-  readonly flamegraphLoading: boolean;
-  readonly flamegraphError: boolean;
+  readonly serviceMap: ServiceMapResponse | null;
+  readonly errorGroups: readonly TraceErrorGroup[];
   readonly spanAttributes: SpanAttributes | null;
   readonly spanAttributesLoading: boolean;
   readonly spanEvents: readonly SpanEvent[];
-  readonly traceLogs: readonly LogEntry[];
   readonly relatedTraces: readonly RelatedTrace[];
   readonly traceStartMs?: number;
   readonly traceEndMs?: number;
@@ -83,14 +70,6 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
   const activeDetailTab = useTracesStore((s) => s.spanDetailTab);
   const setActiveDetailTab = useTracesStore((s) => s.setSpanDetailTab);
 
-  const spanScopedLogsCount = useMemo(
-    () =>
-      props.selectedSpanId
-        ? props.traceLogs.filter((l) => l.span_id === props.selectedSpanId).length
-        : 0,
-    [props.traceLogs, props.selectedSpanId]
-  );
-
   const spanScopedEvents = useMemo(
     () =>
       props.selectedSpanId ? props.spanEvents.filter((e) => e.spanId === props.selectedSpanId) : [],
@@ -98,16 +77,12 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
   );
 
   const spanLinks: readonly SpanLink[] = props.spanAttributes?.links ?? [];
+  const attrCount = Object.keys(props.spanAttributes?.attributesString ?? {}).length;
+  const relatedCount = spanLinks.length + props.relatedTraces.length;
 
   const availability = useMemo(
-    () =>
-      detectTabAvailability(
-        props.spanAttributes,
-        props.spanEvents,
-        props.selectedSpanId,
-        spanScopedLogsCount
-      ),
-    [props.spanAttributes, props.spanEvents, props.selectedSpanId, spanScopedLogsCount]
+    () => detectTabAvailability(props.spanAttributes, props.spanEvents, props.selectedSpanId),
+    [props.spanAttributes, props.spanEvents, props.selectedSpanId]
   );
 
   const lastSpanIdRef = useRef<string | null>(null);
@@ -118,19 +93,16 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
     }
     if (lastSpanIdRef.current !== props.selectedSpanId && !props.spanAttributesLoading) {
       lastSpanIdRef.current = props.selectedSpanId;
-      const next = getDefaultDetailTab(props.spanAttributes, availability);
       const visibleNow: SpanDetailTab[] = [
-        "info",
-        ...(availability.hasLogs ? (["logs"] as SpanDetailTab[]) : []),
+        "overview",
+        "attributes",
         ...(availability.hasEvents ? (["events"] as SpanDetailTab[]) : []),
-        ...(availability.hasLinks ? (["links"] as SpanDetailTab[]) : []),
-        ...(availability.hasInfra ? (["infra"] as SpanDetailTab[]) : []),
+        "related",
       ];
-      if (!visibleNow.includes(activeDetailTab)) setActiveDetailTab(next);
+      if (!visibleNow.includes(activeDetailTab)) setActiveDetailTab(getDefaultDetailTab());
     }
   }, [
     props.selectedSpanId,
-    props.spanAttributes,
     props.spanAttributesLoading,
     availability,
     activeDetailTab,
@@ -150,23 +122,22 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
 
   const tabs: TabSpec[] = useMemo(
     () => [
-      { key: "info", label: "Info", visible: true },
-      { key: "logs", label: "Logs", count: spanScopedLogsCount, visible: availability.hasLogs },
+      { key: "overview", label: "Overview", visible: true },
+      { key: "attributes", label: "Attributes", count: attrCount, visible: true },
       {
         key: "events",
         label: "Events",
         count: spanScopedEvents.length,
         visible: availability.hasEvents,
       },
-      { key: "links", label: "Links", count: spanLinks.length, visible: availability.hasLinks },
-      { key: "infra", label: "Infra", visible: availability.hasInfra },
+      { key: "related", label: "Related", count: relatedCount, visible: true },
     ],
-    [availability, spanScopedLogsCount, spanScopedEvents.length, spanLinks.length]
+    [availability, spanScopedEvents.length, attrCount, relatedCount]
   );
 
   const activeTabResolved: SpanDetailTab = useMemo(() => {
     const visible = tabs.filter((t) => t.visible).map((t) => t.key);
-    return visible.includes(activeDetailTab) ? activeDetailTab : "info";
+    return visible.includes(activeDetailTab) ? activeDetailTab : "overview";
   }, [tabs, activeDetailTab]);
 
   return (
@@ -191,10 +162,9 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
             onSpanClick={props.onSpanClick}
             criticalPathSpanIds={props.criticalPathSpanIds}
             errorPathSpanIds={props.errorPathSpanIds}
-            flamegraphData={props.flamegraphData}
-            flamegraphLoading={props.flamegraphLoading}
-            flamegraphError={props.flamegraphError}
+            serviceMap={props.serviceMap}
             spanEvents={props.spanEvents}
+            errorGroups={props.errorGroups}
           />
         </div>
 
@@ -223,8 +193,8 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
                 onChange={setActiveDetailTab}
               />
               <div className="min-h-0 flex-1 overflow-y-auto">
-                {activeTabResolved === "info" && (
-                  <InfoTab
+                {activeTabResolved === "overview" && (
+                  <OverviewTab
                     spanAttributes={props.spanAttributes}
                     loading={props.spanAttributesLoading}
                     spans={props.spans}
@@ -232,24 +202,20 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
                     traceStartMs={props.traceStartMs}
                     traceEndMs={props.traceEndMs}
                     onSpanClick={props.onSpanClick}
-                    onAddFilter={props.onAddFilter}
+                    onOpenInLogs={props.onOpenSpanInLogs}
                   />
                 )}
-                {activeTabResolved === "logs" && (
-                  <LogsTab
-                    logs={props.traceLogs}
-                    selectedSpanId={props.selectedSpanId}
-                    onOpenInLogs={props.onOpenSpanInLogs}
+                {activeTabResolved === "attributes" && (
+                  <AttributesTab
+                    spanAttributes={props.spanAttributes}
+                    onAddFilter={props.onAddFilter}
                   />
                 )}
                 {activeTabResolved === "events" && (
                   <EventsTab events={props.spanEvents} selectedSpanId={props.selectedSpanId} />
                 )}
-                {activeTabResolved === "links" && (
+                {activeTabResolved === "related" && (
                   <LinksTab links={spanLinks} relatedTraces={props.relatedTraces} />
-                )}
-                {activeTabResolved === "infra" && (
-                  <InfraTab resourceAttributes={props.spanAttributes?.resourceAttributes ?? {}} />
                 )}
               </div>
             </>

@@ -10,7 +10,7 @@ import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
-import { useAppStore, useSidebarCollapsed, useTheme } from "@store/appStore";
+import { useAppStore, useSidebarCollapsed } from "@store/appStore";
 import { useAuthStore } from "@store/authStore";
 
 export default function Sidebar() {
@@ -18,7 +18,6 @@ export default function Sidebar() {
   const location = useLocation();
   const sidebarCollapsed = useSidebarCollapsed();
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
-  const theme = useTheme();
   const logout = useAuthStore((state) => state.logout);
 
   const staticNavEntries = useMemo(
@@ -63,10 +62,10 @@ export default function Sidebar() {
 
   const navItemClass = (isActive: boolean, extra?: string) =>
     cn(
-      "flex w-full items-center gap-[var(--space-sm)] whitespace-nowrap rounded-[var(--card-radius)] border border-transparent bg-transparent px-[var(--space-sm)] py-2 text-left font-medium text-[13px] text-[var(--text-secondary)] transition-[background-color,border-color,color,box-shadow]",
-      "hover:bg-white/5 hover:text-[var(--text-primary)]",
+      "flex w-full items-center gap-[var(--space-sm)] whitespace-nowrap rounded-[var(--card-radius)] border border-transparent bg-transparent px-[var(--space-sm)] py-2 text-left font-medium text-[13px] text-foreground-secondary transition-[background-color,border-color,color,box-shadow]",
+      "hover:bg-white/5 hover:text-foreground",
       isActive &&
-        "border-[var(--color-primary-subtle-20)] bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] hover:bg-[var(--color-primary-subtle-14)]",
+        "border-[var(--color-primary-subtle-20)] bg-[var(--color-primary-subtle-12)] text-foreground shadow-[var(--shadow-sm)] hover:bg-[var(--color-primary-subtle-14)]",
       sidebarCollapsed && "justify-center px-[7px]",
       extra
     );
@@ -110,14 +109,13 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed top-0 bottom-0 left-0 z-[100] flex h-screen w-[var(--space-sidebar-w,220px)] flex-col border-[var(--border-color)] border-r bg-[var(--bg-secondary)] shadow-[var(--shadow-md)] transition-[width] duration-200",
+        "fixed top-0 bottom-0 left-0 z-[100] flex h-screen w-[var(--space-sidebar-w,220px)] flex-col border-border border-r bg-secondary shadow-[var(--shadow-md)] transition-[width] duration-200",
         sidebarCollapsed && "w-[var(--space-sidebar-collapsed,56px)]"
       )}
-      data-theme={theme === "light" ? "light" : undefined}
     >
       <div
         className={cn(
-          "flex h-[var(--space-header-h,56px)] shrink-0 cursor-pointer items-center justify-center gap-3 border-[var(--border-color)] border-b px-[var(--space-lg)]",
+          "flex h-[var(--space-header-h,56px)] shrink-0 cursor-pointer items-center justify-center gap-3 border-border border-b px-[var(--space-lg)]",
           sidebarCollapsed && "px-0"
         )}
         onClick={() => navigate({ to: ROUTES.overview })}
@@ -126,7 +124,7 @@ export default function Sidebar() {
           <OptikkLogo size={22} />
         </div>
         {!sidebarCollapsed && (
-          <span className="whitespace-nowrap font-semibold text-[14px] text-[var(--text-primary)]">
+          <span className="whitespace-nowrap font-semibold text-[14px] text-foreground">
             Optikk
           </span>
         )}
@@ -141,13 +139,13 @@ export default function Sidebar() {
           {renderNavGroup("Operate", operateItems)}
         </nav>
 
-        <div className="shrink-0 border-[var(--border-color)] border-t">
+        <div className="shrink-0 border-border border-t">
           <div className="p-[var(--space-xs)]">
             <button
               type="button"
               className={cn(
                 "mb-[var(--space-xs)] flex w-full items-center gap-[var(--space-xs)] rounded-[var(--card-radius)] border px-[var(--space-sm)] py-2 text-left font-medium text-[12px] transition-[background-color,border-color,color,box-shadow]",
-                "border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-subtle-18)]",
+                "border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] text-foreground shadow-[var(--shadow-sm)] hover:border-primary hover:bg-[var(--color-primary-subtle-18)]",
                 sidebarCollapsed && "justify-center px-1.5"
               )}
               onClick={() => navigate(dynamicNavigateOptions(ROUTES.settings))}
@@ -159,7 +157,7 @@ export default function Sidebar() {
               type="button"
               className={cn(
                 "flex w-full items-center gap-[var(--space-xs)] rounded-[var(--card-radius)] px-[var(--space-sm)] py-2 text-left font-medium text-[12px] transition-[background-color,border-color,color]",
-                "border border-[var(--border-light)] bg-transparent text-[var(--text-secondary)] hover:border-[var(--border-color)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]",
+                "border border-border-light bg-transparent text-foreground-secondary hover:border-border hover:bg-accent hover:text-foreground",
                 sidebarCollapsed && "justify-center px-1.5"
               )}
               onClick={handleLogout}
@@ -171,7 +169,7 @@ export default function Sidebar() {
 
           <button
             type="button"
-            className="flex h-10 w-full items-center justify-center border-[var(--border-color)] border-t border-none bg-transparent text-[var(--text-muted)] transition-colors hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
+            className="flex h-10 w-full items-center justify-center border-border border-t border-none bg-transparent text-foreground-muted transition-colors hover:bg-white/[0.04] hover:text-foreground"
             onClick={toggleSidebar}
             aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >

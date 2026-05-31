@@ -1,12 +1,16 @@
 import { Search } from "lucide-react";
 import { useEffect, useRef } from "react";
 
+import { type StatusFilter, StatusFilterPill } from "./StatusFilterPill";
+
 interface SearchToolbarProps {
   readonly value: string;
   readonly onChange: (next: string) => void;
+  readonly status: StatusFilter;
+  readonly onStatusChange: (next: StatusFilter) => void;
 }
 
-export function SearchToolbar({ value, onChange }: SearchToolbarProps) {
+export function SearchToolbar({ value, onChange, status, onStatusChange }: SearchToolbarProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -19,18 +23,21 @@ export function SearchToolbar({ value, onChange }: SearchToolbarProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
   return (
-    <div className="flex items-center gap-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1.5">
-      <Search size={14} className="text-[var(--text-muted)]" />
-      <input
-        ref={inputRef}
-        value={value}
-        onChange={(ev) => onChange(ev.target.value)}
-        placeholder="Search services…"
-        className="flex-1 bg-transparent text-[12px] text-[var(--text-primary)] outline-none"
-      />
-      <kbd className="hidden rounded border border-[var(--border-color)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)] sm:inline">
-        /
-      </kbd>
+    <div className="flex items-center gap-2.5">
+      <div className="flex h-8 w-[320px] items-center gap-2 rounded-md border border-border bg-card px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+        <Search size={14} className="text-foreground-muted" />
+        <input
+          ref={inputRef}
+          value={value}
+          onChange={(ev) => onChange(ev.target.value)}
+          placeholder="Filter services…"
+          className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-foreground-muted"
+        />
+        <kbd className="hidden rounded border border-border px-1.5 py-0.5 text-[10px] text-foreground-muted sm:inline">
+          /
+        </kbd>
+      </div>
+      <StatusFilterPill value={status} onChange={onStatusChange} />
     </div>
   );
 }

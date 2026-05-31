@@ -12,16 +12,13 @@ import ProtectedRoute from "./ProtectedRoute";
 import { buildLegacyRedirects } from "./legacyRedirects";
 import { buildMarketingRoutes } from "./marketingRoutes";
 
-const ServiceHubPage = lazy(() => import("@/features/overview/pages/ServiceHubPage"));
 const ServiceDetailPage = lazy(
   () => import("@/features/services/pages/ServiceDetailPage/ServiceDetailPage")
 );
 const InfrastructureHubPage = lazy(
   () => import("@/features/infrastructure/pages/InfrastructureHubPage")
 );
-const OverviewHubPage = lazy(
-  () => import("@/features/overview/pages/OverviewHubPage/OverviewHubPage")
-);
+const OverviewHubPage = lazy(() => import("@/features/overview/pages/OverviewHubPage"));
 const DatabaseQueriesPage = lazy(() => import("@/features/saturation/pages/DatabaseQueriesPage"));
 const SaturationKafkaPage = lazy(
   () => import("@/features/saturation/pages/SaturationKafkaPage/SaturationKafkaPage")
@@ -34,8 +31,20 @@ const ErrorGroupDetailPage = lazy(() => import("@/features/errors/pages/ErrorGro
 const ServiceCatalogPage = lazy(
   () => import("@/features/services/pages/ServiceCatalogPage/ServiceCatalogPage")
 );
-const HostMapPage = lazy(() => import("@/features/infrastructure/pages/HostMapPage"));
 const HostDetailPage = lazy(() => import("@/features/infrastructure/pages/HostDetailPage"));
+const ContainerDetailPage = lazy(
+  () => import("@/features/infrastructure/pages/ContainerDetailPage")
+);
+const MonitorsPage = lazy(() => import("@/features/monitors/pages/MonitorsPage/MonitorsPage"));
+const MonitorDetailPage = lazy(
+  () => import("@/features/monitors/pages/MonitorDetailPage/MonitorDetailPage")
+);
+const NewMonitorPage = lazy(
+  () => import("@/features/monitors/pages/NewMonitorPage/NewMonitorPage")
+);
+const NotificationsPage = lazy(
+  () => import("@/features/monitors/pages/NotificationsPage/NotificationsPage")
+);
 
 export const rootRoute = createRootRoute({ component: AppContent });
 
@@ -90,7 +99,6 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
 
 const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
-const serviceRoute = createProtected(ROUTES.service, ServiceHubPage);
 const serviceDetailRoute = createProtected(ROUTES.serviceDetail, ServiceDetailPage);
 const databaseQueriesRoute = createProtected(ROUTES.saturationDatabaseQueries, DatabaseQueriesPage);
 const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, SaturationKafkaPage);
@@ -103,13 +111,16 @@ const serviceMapRoute = createProtected(
   () => null,
   `${ROUTES.services}?tab=map`
 );
-const deploymentsRoute = createProtected(
-  ROUTES.deployments,
-  () => null,
-  `${ROUTES.services}?tab=deploys`
-);
-const hostsRoute = createProtected(ROUTES.hosts, HostMapPage);
+const deploymentsRoute = createProtected(ROUTES.deployments, () => null, ROUTES.services);
 const hostDetailRoute = createProtected(ROUTES.hostDetail, HostDetailPage);
+const containerDetailRoute = createProtected(ROUTES.containerDetail, ContainerDetailPage);
+
+const monitorsRoute = createProtected(ROUTES.monitors, MonitorsPage);
+const monitorsNotificationsRoute = createProtected(ROUTES.monitorsNotifications, NotificationsPage);
+const monitorsNewRoute = createProtected(ROUTES.monitorsNew, NewMonitorPage);
+const monitorDetailRoute = createProtected(ROUTES.monitorDetail, MonitorDetailPage);
+const monitorEditRoute = createProtected(ROUTES.monitorEdit, NewMonitorPage);
+const alertsNewRedirect = createProtected(ROUTES.alertsNew, () => null, ROUTES.monitorsNew);
 
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
 const logsTransactionsRedirect = createProtected("/logs/transactions", () => null, ROUTES.logs);
@@ -140,7 +151,6 @@ const routeTree = rootRoute.addChildren([
     ...protectedExplorerRoutes,
     overviewRoute,
     infrastructureRoute,
-    serviceRoute,
     serviceDetailRoute,
     databaseQueriesRoute,
     kafkaOverviewRoute,
@@ -150,8 +160,14 @@ const routeTree = rootRoute.addChildren([
     servicesCatalogRoute,
     serviceMapRoute,
     deploymentsRoute,
-    hostsRoute,
     hostDetailRoute,
+    containerDetailRoute,
+    monitorsRoute,
+    monitorsNotificationsRoute,
+    monitorsNewRoute,
+    monitorDetailRoute,
+    monitorEditRoute,
+    alertsNewRedirect,
     logsPatternsRedirect,
     logsTransactionsRedirect,
     ...buildLegacyRedirects(mainLayoutRoute),

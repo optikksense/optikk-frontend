@@ -3,10 +3,12 @@ import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@/
 import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
 import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
 import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
-import { ChevronDown, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Moon, RefreshCw, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useAppStore, useTeamIds } from "@store/appStore";
+import { settingsService } from "@shared/api/settingsService";
+
+import { useAppStore, useTeamIds, useTheme } from "@store/appStore";
 import { useAuthUser } from "@store/authStore";
 
 import { AUTO_REFRESH_INTERVALS } from "@config/constants";
@@ -22,6 +24,8 @@ export default function Header() {
   const setAutoRefreshInterval = useAppStore((s) => s.setAutoRefreshInterval);
   const timeRange = useAppStore((s) => s.timeRange);
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
+  const theme = useTheme();
+  const setTheme = useAppStore((s) => s.setTheme);
   const [intervalPickerOpen, setIntervalPickerOpen] = useState(false);
   const pickerRef = useRef<HTMLDivElement | null>(null);
   const { refreshLabel, triggerRefresh: triggerHeaderRefresh } = useAutoRefresh({
@@ -35,6 +39,12 @@ export default function Header() {
   const handleRefresh = () => {
     triggerHeaderRefresh();
   };
+
+  const toggleTheme = useCallback(() => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    void settingsService.updatePreferences({ theme: next }).catch(() => {});
+  }, [theme, setTheme]);
 
   const shiftTimeRange = useCallback(
     (direction: "back" | "forward") => {
@@ -90,7 +100,7 @@ export default function Header() {
   }));
 
   return (
-    <header className="relative z-[200] flex h-[var(--space-header-h,56px)] items-center justify-between gap-3 overflow-visible border-[var(--border-color)] border-b bg-[var(--bg-overlay)] px-4 backdrop-blur-[12px] max-md:px-3">
+    <header className="relative z-[200] flex h-[var(--space-header-h,56px)] items-center justify-between gap-3 overflow-visible border-border border-b bg-surface-overlay px-4 backdrop-blur-[12px] max-md:px-3">
       <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-visible">
         {/* Shift back */}
         <Tooltip content="Shift time window back">
@@ -118,8 +128,8 @@ export default function Header() {
 
         {/* Live indicator */}
         {isLive && (
-          <span className="inline-flex items-center gap-1 rounded-[var(--card-radius)] border border-[rgba(115,201,145,0.28)] bg-[rgba(115,201,145,0.12)] px-2.5 py-1 font-semibold text-[11px] text-[var(--color-success)] uppercase tracking-[0.06em] shadow-[var(--shadow-sm)]">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-success)]" />
+          <span className="inline-flex items-center gap-1 rounded-[var(--card-radius)] border border-[color-mix(in_oklch,var(--color-success),transparent_65%)] bg-success-subtle px-2.5 py-1 font-semibold text-[11px] text-success uppercase tracking-[0.06em] shadow-[var(--shadow-sm)]">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
             Live
           </span>
         )}
@@ -128,7 +138,7 @@ export default function Header() {
       <div className="ml-auto flex min-w-0 shrink items-center gap-2.5">
         {teams.length > 0 && (
           <div className="flex min-w-0 items-center gap-2.5">
-            <span className="whitespace-nowrap text-[11px] text-[var(--text-muted)] uppercase tracking-wide max-[1240px]:hidden">
+            <span className="whitespace-nowrap text-[11px] text-foreground-muted uppercase tracking-wide max-[1240px]:hidden">
               Workspace
             </span>
             <Select
@@ -149,8 +159,8 @@ export default function Header() {
             <button
               type="button"
               className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-l-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,color] hover:bg-white/[0.06] hover:text-[var(--text-primary)]",
-                autoRefreshInterval && "text-[var(--color-primary)]"
+                "inline-flex h-9 w-9 items-center justify-center rounded-l-[var(--card-radius)] border border-border bg-muted text-foreground-secondary shadow-[var(--shadow-sm)] transition-[background-color,border-color,color] hover:bg-white/[0.06] hover:text-foreground",
+                autoRefreshInterval && "text-primary"
               )}
               onClick={handleRefresh}
             >
@@ -165,8 +175,8 @@ export default function Header() {
           <button
             type="button"
             className={cn(
-              "inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-r-[var(--card-radius)] border border-[var(--border-color)] border-l-0 bg-[var(--bg-tertiary)] pr-2.5 pl-2.5 font-medium text-[12px] text-[var(--text-muted)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,color] hover:bg-white/[0.06] hover:text-[var(--text-primary)]",
-              autoRefreshInterval && "text-[var(--color-primary)]"
+              "inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-r-[var(--card-radius)] border border-border border-l-0 bg-muted pr-2.5 pl-2.5 font-medium text-[12px] text-foreground-muted shadow-[var(--shadow-sm)] transition-[background-color,border-color,color] hover:bg-white/[0.06] hover:text-foreground",
+              autoRefreshInterval && "text-primary"
             )}
             onClick={() => setIntervalPickerOpen((v) => !v)}
           >
@@ -175,8 +185,8 @@ export default function Header() {
           </button>
 
           {intervalPickerOpen && (
-            <div className="absolute top-[calc(100%+8px)] right-0 z-[1000] min-w-[132px] overflow-hidden rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-secondary)] py-1 shadow-[var(--shadow-md)]">
-              <div className="px-3 py-1.5 font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-[0.06em]">
+            <div className="absolute top-[calc(100%+8px)] right-0 z-[1000] min-w-[132px] overflow-hidden rounded-[var(--card-radius)] border border-border bg-secondary py-1 shadow-[var(--shadow-md)]">
+              <div className="px-3 py-1.5 font-semibold text-[11px] text-foreground-muted uppercase tracking-[0.06em]">
                 Auto-refresh
               </div>
               {AUTO_REFRESH_INTERVALS.map((opt) => (
@@ -184,9 +194,9 @@ export default function Header() {
                   type="button"
                   key={opt.value}
                   className={cn(
-                    "flex w-full items-center whitespace-nowrap border-none bg-none px-3 py-2 text-left text-[12px] text-[var(--text-secondary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]",
+                    "flex w-full items-center whitespace-nowrap border-none bg-none px-3 py-2 text-left text-[12px] text-foreground-secondary transition-colors hover:bg-white/[0.06] hover:text-foreground",
                     opt.value === autoRefreshInterval &&
-                      "bg-[var(--color-primary-subtle-10)] font-semibold text-[var(--color-primary)]"
+                      "bg-[var(--color-primary-subtle-10)] font-semibold text-primary"
                   )}
                   onClick={() => {
                     setAutoRefreshInterval(opt.value);
@@ -199,6 +209,15 @@ export default function Header() {
             </div>
           )}
         </div>
+
+        <Tooltip content={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}>
+          <IconButton
+            icon={theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            variant="ghost"
+            label="Toggle theme"
+            onClick={toggleTheme}
+          />
+        </Tooltip>
       </div>
     </header>
   );

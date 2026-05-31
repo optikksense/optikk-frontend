@@ -35,42 +35,8 @@ export interface MetricValue {
   readonly value: number;
 }
 
-export interface LoadAverageResult {
-  readonly load_1m: number;
-  readonly load_5m: number;
-  readonly load_15m: number;
-}
-
-export interface NodeAllocatable {
-  readonly cpu_cores: number;
-  readonly memory_bytes: number;
-}
-
-export interface PhaseStat {
-  readonly phase: string;
-  readonly count: number;
-}
-
-export interface HistogramSummary {
-  readonly p50: number;
-  readonly p95: number;
-  readonly p99: number;
-  readonly avg: number;
-}
-
-export interface JvmCpuStats {
-  readonly cpu_time_value: number;
-  readonly recent_utilization: number;
-}
-
-export interface ReplicaStat {
-  readonly replica_set: string;
-  readonly desired: number;
-  readonly available: number;
-}
-
-export interface K8sPodRestartRow {
-  readonly pod_name: string;
-  readonly namespace: string;
-  readonly restarts: number;
+/** A host ranked by a resource metric (see GET /v1/infrastructure/{cpu,memory}/top). */
+export interface InfraTopHost {
+  readonly host: string;
+  readonly value: number;
 }

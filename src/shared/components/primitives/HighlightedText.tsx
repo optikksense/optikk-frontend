@@ -23,7 +23,7 @@ export const HighlightedText = memo(function HighlightedText({ text, match, clas
         part.kind === "match" ? (
           <mark
             key={i}
-            className="rounded-sm bg-[var(--color-primary-subtle-18)] px-[1px] text-[var(--text-primary)]"
+            className="rounded-sm bg-[var(--color-primary-subtle-18)] px-[1px] text-foreground"
           >
             {part.value}
           </mark>

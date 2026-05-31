@@ -1,96 +1,82 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { useMemo } from "react";
 
-import type { ServiceMetricPoint } from "@/features/metrics/types";
+import { Surface } from "@/components/ui";
 import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
-import { APP_COLORS } from "@config/colorLiterals";
-import { HealthIndicator } from "@shared/components/ui";
 import { formatNumber } from "@shared/utils/formatters";
 
-interface ServiceHealthGridProps {
-  readonly services: readonly ServiceMetricPoint[];
+import type { ServiceHealthCell, ServiceHealthStatus } from "../hooks/useOverviewModel";
+
+interface Props {
+  readonly cells: readonly ServiceHealthCell[];
   readonly limit?: number;
 }
 
-type HealthStatus = "healthy" | "degraded" | "unhealthy";
+const STATUS_TINT: Record<ServiceHealthStatus, string> = {
+  ok: "var(--color-healthy)",
+  warn: "var(--color-degraded)",
+  err: "var(--color-critical)",
+};
 
-interface HealthCell {
-  readonly name: string;
-  readonly status: HealthStatus;
-  readonly requestCount: number;
-  readonly errorCount: number;
-  readonly errorRate: number;
-  readonly avgLatency: number;
-  readonly p95Latency: number;
-  readonly p99Latency: number;
+function rateLabel(req: number): string {
+  return req >= 1000 ? `${(req / 1000).toFixed(1)}k` : formatNumber(req);
 }
 
-function statusFrom(errorRate: number): HealthStatus {
-  if (errorRate > 5) return "unhealthy";
-  if (errorRate > 1) return "degraded";
-  return "healthy";
-}
-
-function toCell(row: ServiceMetricPoint): HealthCell {
-  const requestCount = Number(row.request_count ?? 0);
-  const errorCount = Number(row.error_count ?? 0);
-  const errorRate = requestCount > 0 ? (errorCount / requestCount) * 100 : 0;
-  return {
-    name: String(row.service_name ?? ""),
-    status: statusFrom(errorRate),
-    requestCount,
-    errorCount,
-    errorRate,
-    avgLatency: Number(row.avg_latency ?? 0),
-    p95Latency: Number(row.p95_latency ?? 0),
-    p99Latency: Number(row.p99_latency ?? 0),
-  };
-}
-
-function Cell({ cell, onOpen }: { cell: HealthCell; onOpen: () => void }) {
-  const errorTone = cell.errorRate > 1 ? APP_COLORS.hex_f04438 : "var(--text-muted)";
+function Tile({ cell, onOpen }: { readonly cell: ServiceHealthCell; readonly onOpen: () => void }) {
   return (
     <button
       type="button"
       onClick={onOpen}
-      className="hover:-translate-y-px rounded-lg border border-[var(--border-color)] bg-[var(--bg-tertiary)] p-3 text-center transition-all duration-200 hover:border-[var(--color-primary)]"
+      className="flex min-h-[72px] flex-col justify-between rounded-md px-2.5 py-2 text-left text-white transition-opacity hover:opacity-90"
+      style={{ background: STATUS_TINT[cell.status] }}
     >
-      <HealthIndicator status={cell.status} size={8} />
-      <div className="mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[12px] text-[var(--text-primary)]">
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap font-mono font-semibold text-[11px] opacity-95">
         {cell.name}
-      </div>
-      <div className="mt-0.5 text-[11px] text-[var(--text-muted)]">
-        {formatNumber(cell.requestCount)} req
-      </div>
-      <div className="mt-0.5 text-[11px]" style={{ color: errorTone }}>
-        {Math.max(0, cell.errorRate).toFixed(2)}% err
-      </div>
+      </span>
+      <span className="flex flex-col">
+        <span className="font-bold font-mono text-[13px] leading-none">
+          {rateLabel(cell.requestCount)}
+        </span>
+        <span className="font-mono text-[10px] opacity-90">
+          {cell.errorRate.toFixed(2)}% · {Math.round(cell.p99Latency)}ms
+        </span>
+      </span>
     </button>
   );
 }
 
-export default function ServiceHealthGrid({ services, limit = 8 }: ServiceHealthGridProps) {
+function StatusLegend({ cells }: { readonly cells: readonly ServiceHealthCell[] }) {
+  const counts = cells.reduce(
+    (acc, c) => {
+      acc[c.status] += 1;
+      return acc;
+    },
+    { ok: 0, warn: 0, err: 0 } as Record<ServiceHealthStatus, number>
+  );
+  return (
+    <div className="flex items-center gap-3 text-[10.5px] text-foreground-muted">
+      <span className="flex items-center gap-1">
+        <span className="h-2 w-2 rounded-sm" style={{ background: STATUS_TINT.ok }} />
+        {counts.ok}
+      </span>
+      <span className="flex items-center gap-1">
+        <span className="h-2 w-2 rounded-sm" style={{ background: STATUS_TINT.warn }} />
+        {counts.warn}
+      </span>
+      <span className="flex items-center gap-1">
+        <span className="h-2 w-2 rounded-sm" style={{ background: STATUS_TINT.err }} />
+        {counts.err}
+      </span>
+    </div>
+  );
+}
+
+export default function ServiceHealthGrid({ cells, limit = 15 }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const cells = useMemo(
-    () =>
-      services
-        .slice(0, limit)
-        .map(toCell)
-        .filter((cell) => cell.name),
-    [services, limit]
-  );
+  const visible = cells.slice(0, limit);
 
-  if (cells.length === 0) {
-    return (
-      <div className="py-6 text-center text-[12px] text-[var(--text-muted)]">
-        No services to rank.
-      </div>
-    );
-  }
-
-  const openService = (cell: HealthCell): void => {
+  const open = (cell: ServiceHealthCell): void => {
     const search = buildServiceDrawerSearch(location.search, {
       name: cell.name,
       requestCount: cell.requestCount,
@@ -104,13 +90,28 @@ export default function ServiceHealthGrid({ services, limit = 8 }: ServiceHealth
   };
 
   return (
-    <div
-      className="grid gap-2"
-      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))" }}
-    >
-      {cells.map((cell) => (
-        <Cell key={cell.name} cell={cell} onOpen={() => openService(cell)} />
-      ))}
-    </div>
+    <Surface elevation={1} padding="md" className="flex flex-col gap-3">
+      <div className="flex items-end justify-between">
+        <div>
+          <div className="font-semibold text-[13px] text-foreground">Service health</div>
+          <div className="text-[11px] text-foreground-muted">
+            {cells.length} services · click any tile to inspect
+          </div>
+        </div>
+        <StatusLegend cells={cells} />
+      </div>
+
+      {visible.length === 0 ? (
+        <div className="py-8 text-center text-[12px] text-foreground-muted">
+          No services in the selected range
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-1.5 md:grid-cols-4 lg:grid-cols-5">
+          {visible.map((cell) => (
+            <Tile key={cell.name} cell={cell} onOpen={() => open(cell)} />
+          ))}
+        </div>
+      )}
+    </Surface>
   );
 }

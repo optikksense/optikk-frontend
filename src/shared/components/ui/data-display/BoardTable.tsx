@@ -78,7 +78,7 @@ export function BoardTable<RowType extends Record<string, unknown>>({
       function BoardHeaderComponent() {
         return (
           <div
-            className="sticky top-0 z-20 flex select-none border-[color:var(--glass-border)] border-b bg-[rgba(255,255,255,0.02)] font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.05em]"
+            className="sticky top-0 z-20 flex select-none border-[color:var(--glass-border)] border-b bg-accent font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.05em]"
             style={{ minWidth: tableMinWidth, width: "max-content" }}
           >
             {fixedColumns.map((column) => (
@@ -137,7 +137,7 @@ export function BoardTable<RowType extends Record<string, unknown>>({
           itemContent={(index, row) => (
             <div
               key={rowKey(row, index)}
-              className="flex cursor-pointer items-baseline border-[color:var(--glass-border)] border-b font-mono text-xs transition-colors duration-[80ms] ease-in-out hover:bg-[rgba(255,255,255,0.05)]"
+              className="flex cursor-pointer items-baseline border-[color:var(--glass-border)] border-b font-mono text-xs transition-colors duration-[80ms] ease-in-out hover:bg-accent"
               style={{ minWidth: tableMinWidth, width: "max-content" }}
             >
               {renderRow(row, { colWidths, visibleCols, onAddFilter })}

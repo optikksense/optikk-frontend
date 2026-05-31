@@ -12,7 +12,7 @@ function Command({
     <CommandPrimitive
       ref={ref}
       className={cn(
-        "flex h-full w-full flex-col overflow-hidden rounded-md bg-[var(--bg-secondary)] text-[var(--text-primary)]",
+        "flex h-full w-full flex-col overflow-hidden rounded-md bg-secondary text-foreground",
         className
       )}
       {...props}
@@ -93,7 +93,7 @@ function CommandSeparator({
   return (
     <CommandPrimitive.Separator
       ref={ref}
-      className={cn("-mx-1 h-px bg-[var(--border-color)]", className)}
+      className={cn("-mx-1 h-px bg-border", className)}
       {...props}
     />
   );

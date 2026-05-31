@@ -40,7 +40,7 @@ export default function InfraNodesTable({
       render: (_v, row) => (
         <button
           type="button"
-          className="text-left font-medium text-[var(--color-primary)] hover:underline"
+          className="text-left font-medium text-primary hover:underline"
           onClick={() => onOpenNode(row.host)}
         >
           {row.host}

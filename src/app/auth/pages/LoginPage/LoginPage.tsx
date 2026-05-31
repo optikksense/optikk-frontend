@@ -4,15 +4,12 @@ import { toast } from "react-hot-toast";
 
 import { useAuthError, useAuthStore, useIsAuthenticated } from "@store/authStore";
 
+import { LoginBrandPanel } from "./LoginBrandPanel";
 import { LoginFooter } from "./LoginFooter";
 import { LoginForm } from "./LoginForm";
 import { LoginHeader } from "./LoginHeader";
+import { LoginTopBar } from "./LoginTopBar";
 
-/**
- * Login page composition root.
- * Handles auth redirect and error toasting, delegates rendering
- * to LoginHeader, LoginForm, and LoginFooter.
- */
 export function LoginPage() {
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
@@ -33,12 +30,16 @@ export function LoginPage() {
   }, [error, clearError]);
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-6 py-12 max-[480px]:px-4 max-[480px]:py-8 before:absolute before:left-0 before:right-0 before:top-0 before:h-0.5 before:bg-[var(--login-accent)] before:content-['']">
-      <div className="flex w-full max-w-[480px] flex-col gap-9">
-        <LoginHeader />
-        <LoginForm />
+    <div className="grid min-h-screen grid-cols-1 bg-surface-canvas text-foreground lg:grid-cols-[1.05fr_1fr]">
+      <LoginBrandPanel />
+      <main className="grid grid-rows-[auto_1fr_auto] px-12 py-7 max-md:px-6 max-md:py-5">
+        <LoginTopBar />
+        <div className="mx-auto w-full max-w-[380px] self-center py-7">
+          <LoginHeader />
+          <LoginForm />
+        </div>
         <LoginFooter />
-      </div>
+      </main>
     </div>
   );
 }

@@ -10,16 +10,26 @@ import ObservabilityChart, {
 
 import { getChartColor } from "@shared/utils/charting";
 import { QUERY_LABEL_COLORS } from "../constants";
+import { useMetricsStore } from "../store/metricsStore";
 import type {
   ChartType,
   FormulaDefinition,
   MetricExplorerResults,
   MetricQueryDefinition,
+  MetricYAxisScale,
 } from "../types";
 import { evaluateFormula } from "../utils/formulaEvaluator";
 
 const FORMULA_COLOR = "#f59e0b";
 const MAX_RENDERED_SERIES = 100;
+
+/** Underlying renderable type for the uPlot-backed chart. "stack" renders as a
+ * filled area; "heat"/"top" are handled by sibling panels, never this chart. */
+function toRenderType(chartType: ChartType): "line" | "area" | "bar" {
+  if (chartType === "bar") return "bar";
+  if (chartType === "area" || chartType === "stack") return "area";
+  return "line";
+}
 
 interface MetricsExplorerChartProps {
   readonly queries: MetricQueryDefinition[];
@@ -61,7 +71,7 @@ function buildSeries(
         label,
         values: series.values,
         color: result.series.length > 1 ? getChartColor(colorIdx) : baseColor,
-        fill: chartType === "area",
+        fill: toRenderType(chartType) === "area",
       });
       colorIdx++;
     }
@@ -83,6 +93,14 @@ function buildSeries(
   return { timestamps, series: allSeries };
 }
 
+function percentFormatter(value: number): string {
+  return `${value.toFixed(value >= 100 ? 0 : 1)}%`;
+}
+
+function yFormatterFor(scale: MetricYAxisScale): ((value: number) => string) | undefined {
+  return scale === "percent" ? percentFormatter : undefined;
+}
+
 export function MetricsExplorerChart({
   queries,
   formulas,
@@ -92,18 +110,27 @@ export function MetricsExplorerChart({
   isError,
   onRetry,
 }: MetricsExplorerChartProps) {
+  const showLegend = useMetricsStore((s) => s.showLegend);
+  const smooth = useMetricsStore((s) => s.smooth);
+  const yAxisScale = useMetricsStore((s) => s.yAxisScale);
+
   const hasResults = results && Object.keys(results).length > 0;
   const hasActiveQuery = queries.some((q) => q.metricName);
+
+  const { timestamps, series } = useMemo(
+    () => buildSeries(queries, formulas, results ?? {}, chartType),
+    [queries, formulas, results, chartType]
+  );
 
   if (!hasActiveQuery) {
     return (
       <PageSurface padding="lg" className="flex min-h-[400px] items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-center">
-          <BarChart3 size={40} className="text-[var(--text-muted)] opacity-40" />
-          <div className="font-medium text-[14px] text-[var(--text-secondary)]">
+          <BarChart3 size={40} className="text-foreground-muted opacity-40" />
+          <div className="font-medium text-[14px] text-foreground-secondary">
             Select a metric to start exploring
           </div>
-          <div className="max-w-[320px] text-[12px] text-[var(--text-muted)]">
+          <div className="max-w-[320px] text-[12px] text-foreground-muted">
             Choose a metric name and aggregation function to visualize your data over time.
           </div>
         </div>
@@ -115,7 +142,7 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="min-h-[400px]">
         <div className="flex h-[360px] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--text-muted)] border-t-[var(--color-primary)]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-foreground-muted border-t-primary" />
         </div>
       </PageSurface>
     );
@@ -125,8 +152,8 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="min-h-[400px]">
         <div className="flex h-[360px] flex-col items-center justify-center gap-3">
-          <AlertCircle size={32} className="text-[var(--color-error)] opacity-60" />
-          <div className="text-[13px] text-[var(--color-error)]">Failed to load metrics data</div>
+          <AlertCircle size={32} className="text-error opacity-60" />
+          <div className="text-[13px] text-error">Failed to load metrics data</div>
           {onRetry && (
             <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />} onClick={onRetry}>
               Retry
@@ -141,21 +168,15 @@ export function MetricsExplorerChart({
     return (
       <PageSurface padding="lg" className="min-h-[400px]">
         <div className="flex h-[360px] items-center justify-center">
-          <div className="text-[13px] text-[var(--text-muted)]">
-            No data for the selected query.
-          </div>
+          <div className="text-[13px] text-foreground-muted">No data for the selected query.</div>
         </div>
       </PageSurface>
     );
   }
 
-  const { timestamps, series } = useMemo(
-    () => buildSeries(queries, formulas, results, chartType),
-    [queries, formulas, results, chartType]
-  );
-
   const truncated = series.length > MAX_RENDERED_SERIES;
-  const renderedSeries = truncated ? series.slice(0, MAX_RENDERED_SERIES) : series;
+  const widthAdjusted = smooth ? series : series.map((s) => ({ ...s, width: 1 }));
+  const renderedSeries = truncated ? widthAdjusted.slice(0, MAX_RENDERED_SERIES) : widthAdjusted;
 
   return (
     <PageSurface
@@ -163,7 +184,7 @@ export function MetricsExplorerChart({
       className={cn("min-h-[400px]", isLoading && "opacity-70 transition-opacity duration-200")}
     >
       {truncated ? (
-        <div className="mb-3 rounded border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2 text-[12px] text-[var(--text-secondary)]">
+        <div className="mb-3 rounded border border-border bg-secondary px-3 py-2 text-[12px] text-foreground-secondary">
           Showing first {MAX_RENDERED_SERIES} of {series.length} series. Add a filter or group-by to
           narrow results.
         </div>
@@ -171,9 +192,10 @@ export function MetricsExplorerChart({
       <ObservabilityChart
         timestamps={timestamps}
         series={renderedSeries}
-        type={chartType}
+        type={toRenderType(chartType)}
         height={360}
-        legend
+        legend={showLegend}
+        yFormatter={yFormatterFor(yAxisScale)}
       />
     </PageSurface>
   );

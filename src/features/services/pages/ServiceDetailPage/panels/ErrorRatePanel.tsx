@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import type uPlot from "uplot";
 
 import ObservabilityChart, {
   type ObservabilityChartSeries,
@@ -67,10 +68,10 @@ function buildSeries(rows: ErrorTimeSeriesPoint[] | undefined, timeBuckets: stri
   };
 }
 
-function ChartBody({ data }: { data: ChartData }) {
+function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
   if (data.timestamps.length === 0) {
     return (
-      <div className="grid h-[180px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[180px] place-items-center text-[12px] text-foreground-muted">
         No error samples in this window.
       </div>
     );
@@ -82,7 +83,18 @@ function ChartBody({ data }: { data: ChartData }) {
       series={data.series}
       height={200}
       yFormatter={(v) => fmtPct(v, v < 0.01 ? 2 : 1)}
+      plugins={plugins}
     />
+  );
+}
+
+function CurrentRate({ value }: { value: number }) {
+  const tone =
+    value >= 0.02 ? "text-error" : value >= 0.005 ? "text-warning" : "text-foreground-secondary";
+  return (
+    <span className={`font-semibold text-[13px] ${tone}`}>
+      {fmtPct(value, value < 0.01 ? 2 : 1)}
+    </span>
   );
 }
 
@@ -90,9 +102,18 @@ export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
   const query = useErrorRateSeries(serviceName);
   const { timeBuckets } = useChartTimeBuckets();
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
+  const current = useMemo(() => {
+    let req = 0;
+    let err = 0;
+    for (const r of query.data ?? []) {
+      req += r.request_count;
+      err += r.error_count;
+    }
+    return req > 0 ? err / req : 0;
+  }, [query.data]);
   return (
-    <PanelCard title="Error rate" subtitle="errors / requests">
-      <ChartBody data={data} />
+    <PanelCard title="Error rate" subtitle="last 60m" action={<CurrentRate value={current} />}>
+      <ChartBody data={data} plugins={[]} />
     </PanelCard>
   );
 }

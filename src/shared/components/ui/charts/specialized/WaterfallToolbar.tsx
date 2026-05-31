@@ -32,7 +32,7 @@ function WaterfallToolbarComponent(p: WaterfallToolbarProps) {
       {p.hitLabel ? (
         <HitNav label={p.hitLabel} onPrev={p.onJumpPrev} onNext={p.onJumpNext} />
       ) : null}
-      <label className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)]">
+      <label className="flex items-center gap-1 text-[11px] text-foreground-secondary">
         <input
           type="checkbox"
           checked={p.errorsOnly}
@@ -54,20 +54,12 @@ function HitNav({
   onNext,
 }: { label: string; onPrev?: () => void; onNext?: () => void }) {
   return (
-    <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-      <button
-        type="button"
-        onClick={onPrev}
-        className="rounded px-1 hover:bg-[rgba(255,255,255,0.05)]"
-      >
+    <div className="flex items-center gap-1 text-[11px] text-foreground-muted">
+      <button type="button" onClick={onPrev} className="rounded px-1 hover:bg-accent">
         ↑
       </button>
       <span>{label}</span>
-      <button
-        type="button"
-        onClick={onNext}
-        className="rounded px-1 hover:bg-[rgba(255,255,255,0.05)]"
-      >
+      <button type="button" onClick={onNext} className="rounded px-1 hover:bg-accent">
         ↓
       </button>
     </div>
@@ -87,7 +79,7 @@ function ServicePills({
     <div className="flex flex-wrap gap-1">
       <span
         onClick={() => onChange(null)}
-        className="cursor-pointer rounded-xl border border-[var(--glass-border)] px-2 py-0.5 text-[11px] text-[var(--text-secondary)]"
+        className="cursor-pointer rounded-xl border border-[var(--glass-border)] px-2 py-0.5 text-[11px] text-foreground-secondary"
         style={{ background: active === null ? "var(--glass-border)" : "transparent" }}
       >
         All
@@ -119,16 +111,16 @@ function PathLegend({
   hasErrorPath,
 }: { hasCritical: boolean; hasErrorPath: boolean }) {
   return (
-    <span className="ml-auto flex items-center gap-2.5 text-[11px] text-[var(--text-muted)]">
+    <span className="ml-auto flex items-center gap-2.5 text-[11px] text-foreground-muted">
       {hasCritical ? (
         <span className="flex items-center gap-1">
-          <span className="inline-block h-[3px] w-3 rounded-sm bg-[#f59e0b]" />
+          <span className="inline-block h-[3px] w-3 rounded-sm bg-warning" />
           Critical path
         </span>
       ) : null}
       {hasErrorPath ? (
         <span className="flex items-center gap-1">
-          <span className="inline-block h-[3px] w-3 rounded-sm bg-[#f04438]" />
+          <span className="inline-block h-[3px] w-3 rounded-sm bg-error" />
           Error path
         </span>
       ) : null}

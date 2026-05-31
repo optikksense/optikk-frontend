@@ -1,10 +1,10 @@
 import { getServiceErrorRate } from "@/features/errors/api/errorGroupsApi";
 import { getServiceMetrics, getTopEndpoints } from "@/features/overview/api/serviceMetricsApi";
-import { getServiceTopology } from "@/features/overview/pages/ServiceHubPage/topology/api";
 import {
   getLatencyPercentilesTimeseries,
   getStatusTimeseries,
 } from "@/features/services/api/serviceDetailApi";
+import { getServiceTopology } from "@shared/components/ui/charts/ServiceTopologyGraph";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 /**

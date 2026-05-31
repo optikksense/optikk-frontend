@@ -33,7 +33,6 @@ export type DashboardDrawerEntity =
 export const DASHBOARD_PANEL_TYPES = [
   "bar",
   "db-systems-overview",
-  "error-hotspot-ranking",
   "error-rate",
   "exception-type-line",
   "gauge",
@@ -47,7 +46,6 @@ export const DASHBOARD_PANEL_TYPES = [
   "service-catalog",
   "service-health-grid",
   "service-map",
-  "slo-indicators",
   "stat-card",
   "stat-cards-grid",
   "stat-summary",

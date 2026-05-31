@@ -1,0 +1,152 @@
+import { useNavigate, useParams } from "@tanstack/react-router";
+import { useCallback, useState } from "react";
+
+import { PageShell } from "@shared/components/ui";
+import { dynamicNavigateOptions } from "@shared/utils/navigation";
+
+import { ackMonitor, muteMonitor } from "../../api/monitorsApi";
+import {
+  useMonitorDetail,
+  useMonitorEventsQuery,
+  useMonitorSeriesQuery,
+  useStatusTimelineQuery,
+} from "../../hooks/useMonitorDetail";
+import { useDeleteMonitor } from "../../hooks/useMonitorMutations";
+
+import CurrentValueCard from "./CurrentValueCard";
+import DetailHeader from "./DetailHeader";
+import EvalChartCard from "./EvalChartCard";
+import NotificationsCard from "./NotificationsCard";
+import QueryCard from "./QueryCard";
+import RecentTriggersCard from "./RecentTriggersCard";
+import RunbookCard from "./RunbookCard";
+import StatusTimelineCard from "./StatusTimelineCard";
+
+const ONE_HOUR_MS = 60 * 60 * 1000;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+export default function MonitorDetailPage() {
+  const params = useParams({ strict: false }) as { monitorId?: string };
+  const id = params.monitorId ? Number(params.monitorId) : undefined;
+  const navigate = useNavigate();
+
+  const detailQ = useMonitorDetail(id);
+  const seriesQ = useMonitorSeriesQuery(id, ONE_HOUR_MS);
+  const timelineQ = useStatusTimelineQuery(id, ONE_DAY_MS);
+  const eventsQ = useMonitorEventsQuery(id, 10);
+  const deleteMutation = useDeleteMonitor();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleAck = useCallback(async () => {
+    if (id === undefined) return;
+    try {
+      await ackMonitor(id);
+      detailQ.refetch();
+      eventsQ.refetch();
+    } catch (err) {
+      console.error("ack failed", err);
+    }
+  }, [id, detailQ, eventsQ]);
+
+  const handleMute = useCallback(async () => {
+    if (id === undefined) return;
+    try {
+      await muteMonitor(id, 3600);
+      detailQ.refetch();
+    } catch (err) {
+      console.error("mute failed", err);
+    }
+  }, [id, detailQ]);
+
+  const handleEdit = useCallback(() => {
+    if (id === undefined) return;
+    navigate(dynamicNavigateOptions(`/monitors/${id}/edit`));
+  }, [id, navigate]);
+
+  const handleDelete = useCallback(async () => {
+    if (id === undefined) return;
+    setDeleteError(null);
+    try {
+      await deleteMutation.mutateAsync(id);
+      navigate({ to: "/monitors" });
+    } catch (err) {
+      const e = err as { response?: { data?: { error?: { message?: string } } } };
+      setDeleteError(e?.response?.data?.error?.message ?? "Failed to delete monitor");
+    }
+  }, [id, deleteMutation, navigate]);
+
+  if (id === undefined || Number.isNaN(id)) {
+    return (
+      <PageShell>
+        <div className="p-8 text-foreground-muted text-sm">
+          Invalid monitor id.{" "}
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/monitors" })}
+            className="text-primary underline"
+          >
+            Back to monitors
+          </button>
+        </div>
+      </PageShell>
+    );
+  }
+
+  if (detailQ.isPending && !detailQ.data) {
+    return (
+      <PageShell>
+        <div className="p-8 text-foreground-muted text-sm">Loading monitor…</div>
+      </PageShell>
+    );
+  }
+
+  if (detailQ.isError || !detailQ.data) {
+    return (
+      <PageShell>
+        <div className="p-8 text-error text-sm">
+          Failed to load monitor.{" "}
+          <button
+            type="button"
+            onClick={() => detailQ.refetch()}
+            className="text-primary underline"
+          >
+            Retry
+          </button>
+        </div>
+      </PageShell>
+    );
+  }
+
+  const monitor = detailQ.data;
+
+  return (
+    <PageShell>
+      <DetailHeader
+        monitor={monitor}
+        onAck={handleAck}
+        onMute={handleMute}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        deleting={deleteMutation.isPending}
+        deleteError={deleteError}
+      />
+
+      <div className="grid grid-cols-[1.5fr_1fr_1fr] gap-4">
+        <EvalChartCard data={seriesQ.data} loading={seriesQ.isPending} />
+        <CurrentValueCard monitor={monitor} />
+        <StatusTimelineCard data={timelineQ.data} />
+      </div>
+
+      <div className="grid grid-cols-[1.4fr_1fr] gap-4">
+        <div className="flex flex-col gap-4">
+          <QueryCard monitor={monitor} />
+          <RecentTriggersCard events={eventsQ.data ?? []} loading={eventsQ.isPending} />
+        </div>
+        <div className="flex flex-col gap-4">
+          <NotificationsCard monitor={monitor} />
+          <RunbookCard monitor={monitor} />
+        </div>
+      </div>
+    </PageShell>
+  );
+}

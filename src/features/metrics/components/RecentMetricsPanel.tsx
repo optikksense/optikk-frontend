@@ -1,0 +1,101 @@
+import { ChevronRight } from "lucide-react";
+import { useMemo } from "react";
+
+import { PageSurface } from "@shared/components/ui";
+import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
+import { getChartColor } from "@shared/utils/charting";
+
+import { useMetricNames } from "../hooks/useMetricNames";
+import { useMetricsStore } from "../store/metricsStore";
+import type { MetricNameEntry, MetricQueryResult } from "../types";
+
+interface RecentMetricsPanelProps {
+  /** Metric name currently driving the primary query, if any. */
+  readonly primaryMetric: string | undefined;
+  /** Result for the primary query — provides a live spark for that metric. */
+  readonly primaryResult: MetricQueryResult | undefined;
+  readonly onSelectMetric: (metricName: string) => void;
+}
+
+/** Sparkline samples for the primary query's first series, if any. */
+function primarySpark(result: MetricQueryResult | undefined): number[] | undefined {
+  const series = result?.series[0];
+  if (!series) return undefined;
+  const clean = series.values.filter((v): v is number => v != null && !Number.isNaN(v));
+  return clean.length >= 2 ? clean : undefined;
+}
+
+/** Recently queried metrics. Names persist in the metrics store; type/unit come
+ * from the metric names catalog. Clicking a row re-selects the metric. */
+export function RecentMetricsPanel({
+  primaryMetric,
+  primaryResult,
+  onSelectMetric,
+}: RecentMetricsPanelProps) {
+  const recentMetrics = useMetricsStore((s) => s.recentMetrics);
+  const { data } = useMetricNames("");
+
+  const metaByName = useMemo(() => {
+    const map = new Map<string, MetricNameEntry>();
+    for (const entry of data?.metrics ?? []) map.set(entry.name, entry);
+    return map;
+  }, [data]);
+
+  return (
+    <PageSurface padding="lg">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="font-semibold text-[15px] text-foreground tracking-[0.01em]">
+            Recent metrics
+          </div>
+          <div className="mt-0.5 text-[12px] text-foreground-muted">
+            Metrics you queried recently
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-col">
+        {recentMetrics.length === 0 ? (
+          <div className="py-8 text-center text-[12px] text-foreground-muted">
+            Query a metric to see it here.
+          </div>
+        ) : (
+          recentMetrics.map((name, i) => {
+            const meta = metaByName.get(name);
+            const spark = name === primaryMetric ? primarySpark(primaryResult) : undefined;
+            return (
+              <button
+                type="button"
+                key={name}
+                onClick={() => onSelectMetric(name)}
+                className="flex items-center gap-2.5 border-border border-b px-1 py-2 text-left last:border-b-0 hover:bg-accent"
+              >
+                <span className="h-5 w-16 shrink-0">
+                  {spark ? (
+                    <SparklineChart
+                      data={spark}
+                      color={getChartColor(i)}
+                      width={64}
+                      height={20}
+                      fill={false}
+                    />
+                  ) : null}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-mono text-[12px] text-foreground">
+                    {name}
+                  </span>
+                  <span className="mt-0.5 block text-[10.5px] text-foreground-muted">
+                    <span className="font-mono">{meta?.type ?? "metric"}</span>
+                    {meta?.unit ? ` · ${meta.unit}` : ""}
+                  </span>
+                </span>
+                <ChevronRight size={13} className="shrink-0 text-foreground-muted" />
+              </button>
+            );
+          })
+        )}
+      </div>
+    </PageSurface>
+  );
+}

@@ -29,7 +29,7 @@ function CursorPagination({
   return (
     <div
       className={cn(
-        "flex w-full min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[13px] text-[var(--text-secondary)]",
+        "flex w-full min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[13px] text-foreground-secondary",
         className
       )}
     >
@@ -39,7 +39,7 @@ function CursorPagination({
           <select
             value={pageSize}
             onChange={(event) => onPageSizeChange(Number(event.target.value))}
-            className="h-7 rounded border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-1.5 text-[12px] text-[var(--text-primary)] focus:outline-none"
+            className="h-7 rounded border border-border bg-muted px-1.5 text-[12px] text-foreground focus:outline-none"
           >
             {pageSizeOptions.map((size) => (
               <option key={size} value={size}>
@@ -52,7 +52,7 @@ function CursorPagination({
           type="button"
           disabled={!hasPrev}
           onClick={onPrev}
-          className="inline-flex h-7 w-7 items-center justify-center rounded border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] disabled:pointer-events-none disabled:opacity-40"
+          className="inline-flex h-7 w-7 items-center justify-center rounded border border-border bg-muted text-foreground-secondary transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
         >
           <ChevronLeft size={14} />
         </button>
@@ -60,7 +60,7 @@ function CursorPagination({
           type="button"
           disabled={!hasMore}
           onClick={onNext}
-          className="inline-flex h-7 w-7 items-center justify-center rounded border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] disabled:pointer-events-none disabled:opacity-40"
+          className="inline-flex h-7 w-7 items-center justify-center rounded border border-border bg-muted text-foreground-secondary transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
         >
           <ChevronRight size={14} />
         </button>

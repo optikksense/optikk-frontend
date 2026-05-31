@@ -54,7 +54,7 @@ function ResultsRowImpl<Row>({
       }
       tabIndex={onClick ? 0 : -1}
       style={{ ...extraStyle, ...(heightPx ? { height: heightPx } : undefined) }}
-      className={`flex h-7 cursor-pointer items-center gap-2 border-[var(--border-color)] border-b px-3 text-[12px] hover:bg-[rgba(255,255,255,0.04)] ${
+      className={`flex h-7 cursor-pointer items-center gap-2 border-border border-b px-3 text-[12px] hover:bg-accent ${
         selected ? "bg-[var(--color-primary-subtle-12)]" : ""
       } ${extraClassName ?? ""}`}
     >

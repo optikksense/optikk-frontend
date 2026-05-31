@@ -22,7 +22,7 @@ function SummaryStripComponent({ kpis }: Props) {
     <div className="flex flex-wrap items-center gap-4">
       {kpis.map((kpi) => (
         <div key={kpi.label} className="flex flex-col" title={kpi.hint}>
-          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
+          <span className="text-[10px] text-foreground-muted uppercase tracking-wider">
             {kpi.label}
           </span>
           <span className={`font-semibold text-base ${toneClass(kpi.tone)}`}>{kpi.value}</span>
@@ -35,13 +35,13 @@ function SummaryStripComponent({ kpis }: Props) {
 function toneClass(tone: SummaryKPI["tone"]): string {
   switch (tone) {
     case "error":
-      return "text-[#e8494d]";
+      return "text-error";
     case "warn":
-      return "text-[#e0b400]";
+      return "text-warning";
     case "success":
-      return "text-[#73bf69]";
+      return "text-success";
     default:
-      return "text-[var(--text-primary)]";
+      return "text-foreground";
   }
 }
 

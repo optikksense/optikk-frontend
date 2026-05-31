@@ -14,6 +14,8 @@ import {
   getErrorGroupTraces,
 } from "../../api/errorGroupsApi";
 
+import { StackFramesPanel } from "./StackFramesPanel";
+
 function fmtDate(iso: string): string {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -25,9 +27,7 @@ const traceColumns: SimpleTableColumn<ErrorGroupTrace>[] = [
     title: "Trace",
     key: "trace_id",
     render: (_v, row) => (
-      <span className="font-mono text-[12px] text-[var(--text-primary)]">
-        {row.trace_id.slice(0, 16)}…
-      </span>
+      <span className="font-mono text-[12px] text-foreground">{row.trace_id.slice(0, 16)}…</span>
     ),
   },
   {
@@ -35,7 +35,7 @@ const traceColumns: SimpleTableColumn<ErrorGroupTrace>[] = [
     key: "status_code",
     width: 100,
     render: (_v, row) => (
-      <span className="text-[12px] text-[var(--text-secondary)]">{row.status_code || "—"}</span>
+      <span className="text-[12px] text-foreground-secondary">{row.status_code || "—"}</span>
     ),
   },
   {
@@ -53,7 +53,7 @@ const traceColumns: SimpleTableColumn<ErrorGroupTrace>[] = [
     key: "timestamp",
     width: 200,
     render: (_v, row) => (
-      <span className="text-[11px] text-[var(--text-muted)]">{fmtDate(row.timestamp)}</span>
+      <span className="text-[11px] text-foreground-muted">{fmtDate(row.timestamp)}</span>
     ),
   },
 ];
@@ -61,12 +61,8 @@ const traceColumns: SimpleTableColumn<ErrorGroupTrace>[] = [
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
-        {label}
-      </div>
-      <div className="mt-1 font-semibold text-[18px] text-[var(--text-primary)] tabular-nums">
-        {value}
-      </div>
+      <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
+      <div className="mt-1 font-semibold text-[18px] text-foreground tabular-nums">{value}</div>
     </div>
   );
 }
@@ -113,19 +109,12 @@ export default function ErrorGroupDetailPage(): JSX.Element {
         </div>
       </Surface>
 
-      {detail?.stack_trace ? (
-        <PageSurface padding="lg">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
-            Stack trace
-          </div>
-          <pre className="mt-2 max-h-[320px] overflow-auto whitespace-pre-wrap break-words font-mono text-[12px] text-[var(--text-primary)]">
-            {detail.stack_trace}
-          </pre>
-        </PageSurface>
+      {detail?.sample_stacktrace ? (
+        <StackFramesPanel stacktrace={detail.sample_stacktrace} />
       ) : null}
 
       <PageSurface padding="lg">
-        <div className="mb-3 font-semibold text-[12px] text-[var(--text-primary)] uppercase tracking-[0.06em]">
+        <div className="mb-3 font-semibold text-[12px] text-foreground uppercase tracking-[0.06em]">
           Sample traces
         </div>
         <SimpleTable

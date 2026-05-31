@@ -5,8 +5,9 @@ import { useAppStore } from "@store/appStore";
 
 import { useTraceDetailData } from "../../../hooks/useTraceDetailData";
 import { useTraceDetailEnhanced } from "../../../hooks/useTraceDetailEnhanced";
-import { useTraceFlamegraph } from "../../../hooks/useTraceFlamegraph";
-import { useTracesStore } from "../../../store/tracesStore";
+import { useTraceErrors } from "../../../hooks/useTraceErrors";
+import { useTraceServiceMap } from "../../../hooks/useTraceServiceMap";
+import { type VisualizationTab, useTracesStore } from "../../../store/tracesStore";
 import { computeTraceTimeBounds } from "../utils";
 
 export function useTraceDetailState() {
@@ -14,7 +15,15 @@ export function useTraceDetailState() {
   const traceIdParam = traceId ?? "";
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
 
-  const activeTab = useTracesStore((s) => s.visualizationTab);
+  const rawActiveTab = useTracesStore((s) => s.visualizationTab);
+  // Coerce any stale persisted tab (e.g. the removed "flamegraph") to a valid one.
+  const activeTab: VisualizationTab =
+    rawActiveTab === "servicemap" ||
+    rawActiveTab === "timeline" ||
+    rawActiveTab === "errors" ||
+    rawActiveTab === "raw"
+      ? rawActiveTab
+      : "timeline";
   const setActiveTab = useTracesStore((s) => s.setVisualizationTab);
   const spanDetailTab = useTracesStore((s) => s.spanDetailTab);
 
@@ -27,12 +36,14 @@ export function useTraceDetailState() {
 
   const traceTimeBounds = useMemo(() => computeTraceTimeBounds(data.spans), [data.spans]);
 
-  // Lazy: only fetch flamegraph when its viz tab is selected.
-  const flamegraph = useTraceFlamegraph(traceIdParam, activeTab === "flamegraph");
+  // Per-trace service map (services + service-to-service call edges) for the
+  // Service map tab. Immutable per trace.
+  const serviceMap = useTraceServiceMap(traceIdParam);
+  // Error groups only matter when the errors tab is open.
+  const traceErrors = useTraceErrors(traceIdParam, activeTab === "errors");
 
-  // The enhanced data hook gates `related-traces` on activeDetailTab === "related".
-  // Our Links tab folds in related traces, so map "links" → "related" for that one switch.
-  const enhancedTab = spanDetailTab === "links" ? "related" : "attributes";
+  // The enhanced data hook gates `related-traces` on the Related drawer tab.
+  const enhancedTab = spanDetailTab === "related" ? "related" : "attributes";
 
   const enhanced = useTraceDetailEnhanced(
     traceIdParam,
@@ -51,6 +62,7 @@ export function useTraceDetailState() {
     setActiveTab,
     data,
     enhanced,
-    flamegraph,
+    serviceMap,
+    traceErrors,
   };
 }

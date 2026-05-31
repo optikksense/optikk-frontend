@@ -4,27 +4,27 @@ import type { HeroStatus } from "../hooks/useServiceHeroData";
 
 const TONES: Record<HeroStatus, { bg: string; text: string; dot: string; label: string }> = {
   healthy: {
-    bg: "bg-[var(--color-success-bg,rgba(16,185,129,0.12))]",
-    text: "text-[var(--color-success,#10b981)]",
-    dot: "bg-[var(--color-success,#10b981)]",
+    bg: "bg-success-subtle",
+    text: "text-success",
+    dot: "bg-success",
     label: "Healthy",
   },
   warn: {
-    bg: "bg-[var(--color-warning-bg,rgba(245,158,11,0.12))]",
-    text: "text-[var(--color-warning,#f59e0b)]",
-    dot: "bg-[var(--color-warning,#f59e0b)]",
-    label: "Warning",
+    bg: "bg-warning-subtle",
+    text: "text-warning",
+    dot: "bg-warning",
+    label: "Warn",
   },
   error: {
-    bg: "bg-[var(--color-error-bg,rgba(239,68,68,0.12))]",
-    text: "text-[var(--color-error,#ef4444)]",
-    dot: "bg-[var(--color-error,#ef4444)]",
+    bg: "bg-error-subtle",
+    text: "text-error",
+    dot: "bg-error",
     label: "Error",
   },
   unknown: {
-    bg: "bg-[var(--bg-elevated,rgba(255,255,255,0.04))]",
-    text: "text-[var(--text-muted,#94a3b8)]",
-    dot: "bg-[var(--text-muted,#94a3b8)]",
+    bg: "bg-muted",
+    text: "text-foreground-muted",
+    dot: "bg-foreground-muted",
     label: "Unknown",
   },
 };

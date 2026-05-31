@@ -3,7 +3,6 @@ import { dynamicNavigateOptions } from "@shared/utils/navigation";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import DeploymentCompareDrawer from "@/features/overview/components/DeploymentCompareDrawer";
 import ServiceDetailDrawer from "@/features/overview/components/ServiceDetailDrawer";
 import { DetailDrawer } from "@shared/components/ui/layout";
 
@@ -11,7 +10,6 @@ import { clearDashboardDrawerSearch, readDashboardDrawerState } from "./utils/da
 
 const ENTITY_LABELS: Record<string, string> = {
   databaseSystem: "Database System",
-  deployment: "Deployment",
   errorGroup: "Error Group",
   kafkaGroup: "Kafka Consumer Group",
   kafkaTopic: "Kafka Topic",
@@ -97,24 +95,6 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
     );
   }
 
-  if (drawer.entity === "deployment") {
-    return (
-      <DeploymentCompareDrawer
-        open
-        title={drawer.title}
-        initialData={drawer.data}
-        onClose={() =>
-          navigate({
-            ...dynamicNavigateOptions(
-              location.pathname + clearDashboardDrawerSearch(location.search)
-            ),
-            replace: true,
-          })
-        }
-      />
-    );
-  }
-
   return (
     <DetailDrawer
       open
@@ -133,7 +113,7 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
       sections={sections}
       extra={
         !drawer.data ? (
-          <p className="text-[var(--text-secondary)] text-sm">
+          <p className="text-foreground-secondary text-sm">
             This detail view was opened from a legacy link, so only the identifier is available
             until the parent dashboard is opened from a live row selection.
           </p>

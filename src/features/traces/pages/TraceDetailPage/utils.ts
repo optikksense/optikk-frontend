@@ -35,49 +35,21 @@ export function computeTraceTimeBounds(spans: readonly SpanLike[]): TraceTimeBou
 }
 
 interface TabAvailability {
-  readonly hasLogs: boolean;
   readonly hasEvents: boolean;
   readonly hasLinks: boolean;
-  readonly hasInfra: boolean;
 }
-
-const INFRA_KEY_PATTERNS = [
-  "host.",
-  "k8s.",
-  "cloud.",
-  "container.",
-  "service.version",
-  "deployment.environment",
-];
 
 export function detectTabAvailability(
   attrs: SpanAttributes | null,
   events: readonly SpanEvent[],
-  selectedSpanId: string | null,
-  spanScopedLogsCount: number
+  selectedSpanId: string | null
 ): TabAvailability {
-  const ra = attrs?.resourceAttributes ?? {};
-  const hasInfra = Object.keys(ra).some((k) =>
-    INFRA_KEY_PATTERNS.some((p) => k.startsWith(p) || k === p)
-  );
   const hasLinks = (attrs?.links?.length ?? 0) > 0;
   const hasEvents = !!selectedSpanId && events.some((e) => e.spanId === selectedSpanId);
-  return {
-    hasLogs: spanScopedLogsCount > 0,
-    hasEvents,
-    hasLinks,
-    hasInfra,
-  };
+  return { hasEvents, hasLinks };
 }
 
-/** Pick the smartest default tab when a new span is selected. */
-export function getDefaultDetailTab(
-  attrs: SpanAttributes | null,
-  availability: TabAvailability
-): SpanDetailTab {
-  const hasException =
-    !!attrs?.exceptionType || !!attrs?.exceptionMessage || !!attrs?.exceptionStacktrace;
-  if (hasException) return "info";
-  if (availability.hasLogs) return "logs";
-  return "info";
+/** The span drawer always opens on Overview. */
+export function getDefaultDetailTab(): SpanDetailTab {
+  return "overview";
 }

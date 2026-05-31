@@ -53,7 +53,7 @@ function Input({
       <input
         ref={inputRef}
         className={cn(
-          "w-full rounded-[var(--card-radius)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-18)]",
+          "w-full rounded-[var(--card-radius)] border border-border bg-muted text-foreground shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] placeholder:text-foreground-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-subtle-18)]",
           sizeClasses[size],
           allowClear && value ? "pr-7" : ""
         )}
@@ -65,7 +65,7 @@ function Input({
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-1.5 flex h-4 w-4 items-center justify-center rounded-[var(--card-radius)] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+          className="absolute right-1.5 flex h-4 w-4 items-center justify-center rounded-[var(--card-radius)] text-foreground-muted transition-colors hover:text-foreground"
         >
           <X size={12} />
         </button>

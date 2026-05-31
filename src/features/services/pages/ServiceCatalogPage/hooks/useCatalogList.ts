@@ -3,22 +3,24 @@ import { useMemo } from "react";
 import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import {
-  type ServiceLatestDeployment,
-  deploymentsApi,
-} from "@/features/overview/api/deploymentsApi";
-import {
+  type RedSummary,
   type RedSummaryWithComparison,
   type RequestRatePoint,
-  type SloRow,
   getRedSummaryWithComparison,
   getRequestRateSeries,
-  getSloList,
 } from "@/features/services/api/serviceCatalogApi";
+import {
+  type ServiceLatestDeployment,
+  deploymentsApi,
+} from "@shared/api/deployments/deploymentsApi";
 
 import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 
 export interface UseCatalogListResult {
   readonly rows: CatalogRow[];
+  /** Prior-window RED summary, when present — powers the KPI strip deltas. */
+  readonly comparison?: RedSummary;
+  readonly windowSec: number;
   readonly isPending: boolean;
   readonly isError: boolean;
 }
@@ -35,10 +37,6 @@ function useRateSeries() {
   );
 }
 
-function useSloListQuery() {
-  return useTimeRangeQuery<SloRow[]>("service-hub.slo-list", (_team, s, e) => getSloList(s, e));
-}
-
 function useLatestDeploysQuery() {
   return useTimeRangeQuery<ServiceLatestDeployment[]>(
     "service-hub.latest-deploys",
@@ -51,26 +49,29 @@ export function useCatalogList(): UseCatalogListResult {
   const { getTimeRange } = useTimeRange();
   const summary = useRedSummary();
   const series = useRateSeries();
-  const slos = useSloListQuery();
   const latest = useLatestDeploysQuery();
+
+  const windowSec = useMemo(() => {
+    const bounds = getTimeRange();
+    return Math.max(1, (Number(bounds.endTime) - Number(bounds.startTime)) / 1000);
+  }, [getTimeRange]);
 
   const rows = useMemo<CatalogRow[]>(() => {
     if (!summary.data) return [];
-    const bounds = getTimeRange();
-    const windowSec = Math.max(1, (Number(bounds.endTime) - Number(bounds.startTime)) / 1000);
     return buildCatalogRows({
       primary: summary.data.data,
       comparison: summary.data.comparison,
       rateSeries: series.data ?? [],
-      slos: slos.data ?? [],
       latestDeploys: latest.data ?? [],
       windowSec,
     });
-  }, [summary.data, series.data, slos.data, latest.data, getTimeRange]);
+  }, [summary.data, series.data, latest.data, windowSec]);
 
   return {
     rows,
+    comparison: summary.data?.comparison,
+    windowSec,
     isPending: summary.isPending,
-    isError: Boolean(summary.error || series.error || slos.error || latest.error),
+    isError: Boolean(summary.error || series.error || latest.error),
   };
 }

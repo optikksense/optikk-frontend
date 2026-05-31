@@ -51,13 +51,13 @@ function ServiceDrawerTrendChartsComponent({
         tone="requests"
       >
         {requestTrendError ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Request trend is unavailable.</div>
+          <div className="text-[12px] text-foreground-muted">Request trend is unavailable.</div>
         ) : requestTrendLoading ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Loading request trend…</div>
+          <div className="text-[12px] text-foreground-muted">Loading request trend…</div>
         ) : requestTrendSeries.length > 0 ? (
           <RequestChart data={requestTrendSeries} valueKey="request_count" height={260} />
         ) : (
-          <div className="text-[12px] text-[var(--text-muted)]">No request trend data.</div>
+          <div className="text-[12px] text-foreground-muted">No request trend data.</div>
         )}
       </TrendPanel>
 
@@ -68,13 +68,13 @@ function ServiceDrawerTrendChartsComponent({
         tone="errors"
       >
         {errorTrendError ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Error trend is unavailable.</div>
+          <div className="text-[12px] text-foreground-muted">Error trend is unavailable.</div>
         ) : errorTrendLoading ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Loading error trend…</div>
+          <div className="text-[12px] text-foreground-muted">Loading error trend…</div>
         ) : errorTrendSeries.length > 0 ? (
           <ErrorRateChart data={errorTrendSeries} height={260} />
         ) : (
-          <div className="text-[12px] text-[var(--text-muted)]">No error trend data.</div>
+          <div className="text-[12px] text-foreground-muted">No error trend data.</div>
         )}
       </TrendPanel>
 
@@ -85,13 +85,13 @@ function ServiceDrawerTrendChartsComponent({
         tone="latency"
       >
         {latencyTrendError ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Latency trend is unavailable.</div>
+          <div className="text-[12px] text-foreground-muted">Latency trend is unavailable.</div>
         ) : latencyTrendLoading ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Loading latency trend…</div>
+          <div className="text-[12px] text-foreground-muted">Loading latency trend…</div>
         ) : latencyTrendSeries.length > 0 ? (
           <LatencyChart data={latencyTrendSeries} valueKey="p95" height={260} />
         ) : (
-          <div className="text-[12px] text-[var(--text-muted)]">No latency trend data.</div>
+          <div className="text-[12px] text-foreground-muted">No latency trend data.</div>
         )}
       </TrendPanel>
     </div>

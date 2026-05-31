@@ -106,7 +106,7 @@ function DslBarLayout(p: LayoutProps) {
         />
       ) : null}
       {s.parsed.errors.length > 0 ? (
-        <div className="mt-1 text-[#e8494d] text-[10px]">{s.parsed.errors[0].message}</div>
+        <div className="mt-1 text-[10px] text-error">{s.parsed.errors[0].message}</div>
       ) : null}
     </div>
   );
@@ -115,9 +115,7 @@ function DslBarLayout(p: LayoutProps) {
 function inputClass(hasError: boolean): string {
   const base =
     "w-full rounded border px-2 py-1 font-mono text-[13px] outline-none focus:border-[var(--accent)]";
-  return hasError
-    ? `${base} border-[#e8494d] bg-[var(--bg-primary)]`
-    : `${base} border-[var(--border-color)] bg-[var(--bg-primary)]`;
+  return hasError ? `${base} border-error bg-background` : `${base} border-border bg-background`;
 }
 
 function popoverTitle(context: ReturnType<typeof useDslSearchBar>["context"]): string | undefined {

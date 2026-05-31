@@ -1,5 +1,5 @@
-import { ServiceTopologyMap } from "../map/ServiceTopologyMap";
+import { ServiceMapTab } from "../map/ServiceMapTab";
 
 export function MapTab() {
-  return <ServiceTopologyMap />;
+  return <ServiceMapTab />;
 }

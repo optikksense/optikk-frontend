@@ -4,10 +4,9 @@ import { PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 
 import { ServiceHeroHeader } from "./hero/ServiceHeroHeader";
+import { useServiceErrors } from "./hooks/useServiceErrors";
 import { useServiceHeroData } from "./hooks/useServiceHeroData";
 import { useServiceHosts } from "./hooks/useServiceHosts";
-import { useServiceTopology } from "./hooks/useServiceTopology";
-import { useSloStats } from "./hooks/useSloStats";
 import { ServiceKpiStrip } from "./kpi/ServiceKpiStrip";
 import { ServiceTabContent } from "./sections/ServiceTabContent";
 import { ServiceDetailTabs } from "./tabs/ServiceDetailTabs";
@@ -18,7 +17,7 @@ function InvalidIdentity() {
   return (
     <PageShell>
       <PageSurface padding="lg">
-        <div className="text-[13px] text-[var(--text-muted)]">
+        <div className="text-[13px] text-foreground-muted">
           This URL does not contain a service name.
         </div>
       </PageSurface>
@@ -31,14 +30,12 @@ function useTabCounts(serviceName: string): {
   instanceCount: number | null;
 } {
   const hostsQ = useServiceHosts(serviceName);
-  const { dependencies } = useServiceTopology(serviceName);
+  const errorsQ = useServiceErrors(serviceName);
   return useMemo(() => {
     const counts: Partial<Record<ServiceTabId, number>> = {};
-    if (hostsQ.data) counts.infra = hostsQ.data.length;
-    const deps = dependencies.upstream.length + dependencies.downstream.length;
-    if (deps > 0) counts.overview = deps;
+    if (errorsQ.data?.results) counts.errors = errorsQ.data.results.length;
     return { counts, instanceCount: hostsQ.data?.length ?? null };
-  }, [hostsQ.data, dependencies]);
+  }, [hostsQ.data, errorsQ.data]);
 }
 
 function ServiceDetailBody({ serviceName }: { serviceName: string }) {
@@ -46,14 +43,13 @@ function ServiceDetailBody({ serviceName }: { serviceName: string }) {
   const { startTime, endTime } = getTimeRange();
   const windowMs = Math.max(1, Number(endTime) - Number(startTime));
   const hero = useServiceHeroData(serviceName, windowMs);
-  const slo = useSloStats(serviceName);
   const { tab, setTab } = useActiveServiceTab();
   const { counts, instanceCount } = useTabCounts(serviceName);
   void timeRange;
   return (
     <div className="flex flex-col gap-4">
       <ServiceHeroHeader serviceName={serviceName} hero={hero} instanceCount={instanceCount} />
-      <ServiceKpiStrip summary={hero.summary} slo={slo.data} />
+      <ServiceKpiStrip serviceName={serviceName} summary={hero.summary} previous={hero.previous} />
       <ServiceDetailTabs active={tab} counts={counts} onChange={setTab} />
       <ServiceTabContent tab={tab} serviceName={serviceName} />
     </div>

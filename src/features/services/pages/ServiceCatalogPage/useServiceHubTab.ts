@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 
-export const SERVICE_HUB_TABS = ["catalog", "map", "slos", "deploys"] as const;
+export const SERVICE_HUB_TABS = ["catalog", "map"] as const;
 
 export type ServiceHubTab = (typeof SERVICE_HUB_TABS)[number];
 

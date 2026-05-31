@@ -105,20 +105,3 @@ export async function getRequestRateSeries(
   });
   return unwrapEnvelope<RequestRatePoint[]>(raw);
 }
-
-export interface SloRow {
-  readonly service_name: string;
-  readonly slo_name?: string;
-  readonly sli?: number;
-  readonly slo?: number;
-  readonly error_budget_remaining?: number;
-  readonly status?: string;
-  readonly burn_rate?: number;
-}
-
-export async function getSloList(s: RequestTime, e: RequestTime): Promise<SloRow[]> {
-  const raw = await api.get<unknown>(`${V1}/slo`, {
-    params: { startTime: s, endTime: e },
-  });
-  return unwrapEnvelope<SloRow[]>(raw);
-}

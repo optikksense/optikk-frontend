@@ -17,8 +17,8 @@ function LogsTableToolbarComponent() {
   const toggleWrapLines = useLogsExplorerStore((s) => s.toggleWrapLines);
 
   return (
-    <div className="flex shrink-0 items-center justify-between border-b border-[var(--line)] px-[18px] py-3">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--fg-2)]">
+    <div className="flex shrink-0 items-center justify-between border-[var(--line)] border-b px-[18px] py-3">
+      <span className="font-semibold text-[11px] text-[var(--fg-2)] uppercase tracking-[0.08em]">
         Results
       </span>
       <div className="flex items-center gap-1.5">

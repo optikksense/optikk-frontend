@@ -11,13 +11,10 @@ interface ServiceDetailTabsProps {
 
 const LABELS: Record<ServiceTabId, string> = {
   overview: "Overview",
-  endpoints: "Endpoints",
-  traces: "Traces",
   errors: "Errors",
-  infra: "Infrastructure",
-  deploys: "Deploys",
+  traces: "Traces",
   logs: "Logs",
-  code: "Code",
+  dependencies: "Dependencies",
 };
 
 function TabCount({ value, isError }: { value: number; isError: boolean }) {
@@ -27,7 +24,7 @@ function TabCount({ value, isError }: { value: number; isError: boolean }) {
         "ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10px]",
         isError
           ? "bg-[var(--color-error-bg,rgba(239,68,68,0.16))] text-[var(--color-error,#ef4444)]"
-          : "bg-[var(--bg-elevated,rgba(255,255,255,0.06))] text-[var(--text-muted)]"
+          : "bg-[var(--bg-elevated,rgba(255,255,255,0.06))] text-foreground-muted"
       )}
     >
       {value}
@@ -58,8 +55,8 @@ function TabButton({
       className={cn(
         "relative flex items-center gap-1 border-b-2 px-3 py-2 text-[13px] transition-colors",
         active
-          ? "border-[var(--color-primary,#3b82f6)] text-[var(--text-primary)]"
-          : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          ? "border-[var(--color-primary,#3b82f6)] text-foreground"
+          : "border-transparent text-foreground-muted hover:text-foreground"
       )}
     >
       {label}
@@ -75,7 +72,7 @@ export function ServiceDetailTabs({
   onChange,
 }: ServiceDetailTabsProps) {
   return (
-    <nav className="flex border-[var(--border-color)] border-b">
+    <nav className="flex border-border border-b">
       {SERVICE_TAB_IDS.map((id) => (
         <TabButton
           key={id}

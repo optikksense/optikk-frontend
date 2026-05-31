@@ -33,10 +33,10 @@ export function MetricQueryRow({
   return (
     <div
       className={cn(
-        "flex items-start gap-2 rounded-xl border border-[var(--border-color)]",
-        "min-h-[48px] bg-[var(--bg-secondary)] px-3 py-2",
+        "flex items-start gap-2 rounded-xl border border-border",
+        "min-h-[48px] bg-secondary px-3 py-2",
         "transition-colors duration-150",
-        "hover:border-[rgba(148,163,184,0.25)]"
+        "hover:border-border"
       )}
     >
       {/* Query label */}
@@ -63,7 +63,7 @@ export function MetricQueryRow({
               filters={[...query.where]}
               onChange={onWhereChange}
             />
-            <div className="h-4 w-px bg-[var(--border-color)]" />
+            <div className="h-4 w-px bg-border" />
             <TagGroupBy
               metricName={query.metricName}
               groupBy={[...query.groupBy]}
@@ -78,9 +78,9 @@ export function MetricQueryRow({
         <button
           type="button"
           onClick={onRemove}
-          className="mt-1 shrink-0 rounded-md p-1 opacity-50 transition-all duration-100 hover:bg-[var(--bg-hover)] hover:opacity-100"
+          className="mt-1 shrink-0 rounded-md p-1 opacity-50 transition-all duration-100 hover:bg-accent hover:opacity-100"
         >
-          <X size={14} className="text-[var(--text-muted)]" />
+          <X size={14} className="text-foreground-muted" />
         </button>
       )}
     </div>

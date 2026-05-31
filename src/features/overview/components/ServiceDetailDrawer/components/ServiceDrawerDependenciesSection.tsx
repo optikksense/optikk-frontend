@@ -46,15 +46,13 @@ function ServiceDrawerDependenciesSectionComponent({
         subtitle="Top upstream and downstream relationships for this service."
       >
         {isError ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Dependency map is unavailable.</div>
+          <div className="text-[12px] text-foreground-muted">Dependency map is unavailable.</div>
         ) : isLoading ? (
-          <div className="text-[12px] text-[var(--text-muted)]">Loading dependencies…</div>
+          <div className="text-[12px] text-foreground-muted">Loading dependencies…</div>
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
             <div>
-              <div className="mb-2 font-medium text-[12px] text-[var(--text-secondary)]">
-                Upstream
-              </div>
+              <div className="mb-2 font-medium text-[12px] text-foreground-secondary">Upstream</div>
               <CompactTable
                 rows={upstreamRows}
                 emptyText="No upstream callers in range."
@@ -62,7 +60,7 @@ function ServiceDrawerDependenciesSectionComponent({
               />
             </div>
             <div>
-              <div className="mb-2 font-medium text-[12px] text-[var(--text-secondary)]">
+              <div className="mb-2 font-medium text-[12px] text-foreground-secondary">
                 Downstream
               </div>
               <CompactTable

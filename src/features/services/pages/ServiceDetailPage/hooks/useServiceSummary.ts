@@ -2,7 +2,11 @@ import { useMemo } from "react";
 
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { type RedSummary, getRedSummary } from "@/features/overview/api/overviewRedApi";
+import {
+  type ComparisonPayload,
+  type ServiceSummaryResponse,
+  getServiceSummary,
+} from "@/features/services/api/serviceDetailApi";
 
 export interface ServiceSummary {
   readonly serviceName: string;
@@ -13,42 +17,39 @@ export interface ServiceSummary {
   readonly p95Ms: number;
   readonly p99Ms: number;
   readonly rps: number;
+  readonly cpuUtilization: number;
+  readonly memoryUtilization: number;
+  readonly diskUtilization: number;
 }
 
-function extractServiceRow(
-  summary: RedSummary | undefined,
-  serviceName: string,
-  windowMs: number
-): ServiceSummary | null {
-  if (!summary || !summary.services) return null;
-  const row = (summary.services as Array<Record<string, unknown>>).find(
-    (svc) => svc.service_name === serviceName
-  );
+function extractServiceRow(row: ServiceSummaryResponse | undefined): ServiceSummary | null {
   if (!row) return null;
-  const reqCount = Number(row.request_count ?? 0);
-  const errCount = Number(row.error_count ?? 0);
-  const seconds = Math.max(1, windowMs / 1000);
   return {
-    serviceName,
-    requestCount: reqCount,
-    errorCount: errCount,
-    errorRate: reqCount > 0 ? errCount / reqCount : 0,
-    p50Ms: Number(row.avg_latency ?? 0),
-    p95Ms: Number(row.p95_latency ?? 0),
-    p99Ms: Number(row.p99_latency ?? 0),
-    rps: reqCount / seconds,
+    serviceName: row.service_name,
+    requestCount: Number(row.request_count ?? 0),
+    errorCount: Number(row.error_count ?? 0),
+    errorRate: Number(row.error_rate ?? 0) / 100, // percentage (0-100) -> decimal (0-1)
+    p50Ms: Number(row.p50_ms ?? 0),
+    p95Ms: Number(row.p95_ms ?? 0),
+    p99Ms: Number(row.p99_ms ?? 0),
+    rps: Number(row.rps ?? 0),
+    cpuUtilization: Number(row.cpu_utilization ?? 0),
+    memoryUtilization: Number(row.memory_utilization ?? 0),
+    diskUtilization: Number(row.disk_utilization ?? 0),
   };
 }
 
-export function useServiceSummary(serviceName: string, windowMs: number) {
-  const query = useTimeRangeQuery<RedSummary>(
-    "service-detail.red-summary",
-    (_team, start, end) => getRedSummary(start, end),
+/**
+ * Per-service summary for the current window plus the prior comparison window.
+ * `previous` powers the KPI deltas and latency baselines.
+ */
+export function useServiceSummary(serviceName: string, _windowMs?: number) {
+  const query = useTimeRangeQuery<ComparisonPayload<ServiceSummaryResponse>>(
+    `service-detail.summary:${serviceName}`,
+    (_team, start, end) => getServiceSummary(start, end, serviceName, "previous_period"),
     { enabled: Boolean(serviceName) }
   );
-  const summary = useMemo(
-    () => extractServiceRow(query.data, serviceName, windowMs),
-    [query.data, serviceName, windowMs]
-  );
-  return { ...query, summary };
+  const summary = useMemo(() => extractServiceRow(query.data?.data), [query.data]);
+  const previous = useMemo(() => extractServiceRow(query.data?.comparison), [query.data]);
+  return { ...query, summary, previous };
 }

@@ -57,7 +57,7 @@ export default function HealthRing({
     <button
       type="button"
       className={cn(
-        "inline-flex flex-shrink-0 cursor-pointer flex-col items-center gap-1.5 rounded-lg border-0 bg-transparent transition-[background] duration-150 ease-out hover:bg-[var(--bg-hover)]"
+        "inline-flex flex-shrink-0 cursor-pointer flex-col items-center gap-1.5 rounded-lg border-0 bg-transparent transition-[background] duration-150 ease-out hover:bg-accent"
       )}
       title={tooltip ? `${serviceName}: ${tooltip}` : serviceName}
       onClick={() => onClick?.(serviceName)}

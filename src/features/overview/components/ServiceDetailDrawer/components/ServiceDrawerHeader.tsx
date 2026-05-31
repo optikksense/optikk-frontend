@@ -29,17 +29,17 @@ function ServiceDrawerHeaderComponent({
       <div className="flex w-full flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <DrawerTitle className="flex items-center gap-2 text-[var(--text-primary)]">
+            <DrawerTitle className="flex items-center gap-2 text-foreground">
               <Server size={18} className="shrink-0" />
               <span className="truncate">{serviceLabel || "Service"}</span>
             </DrawerTitle>
-            <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
+            <p className="mt-1 text-[12px] text-foreground-secondary">
               Frontend-owned service detail drawer with quick diagnostics and workflow links.
             </p>
           </div>
           <DrawerClose
             aria-label="Close"
-            className="shrink-0 rounded-[var(--card-radius)] border border-[var(--border-color)] px-3 py-1 text-[18px] text-[var(--text-secondary)] leading-none transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+            className="shrink-0 rounded-[var(--card-radius)] border border-border px-3 py-1 text-[18px] text-foreground-secondary leading-none transition-colors hover:bg-accent hover:text-foreground"
           >
             &times;
           </DrawerClose>
@@ -91,7 +91,7 @@ function ServiceDrawerHeaderComponent({
             <a
               key={link.href}
               href={link.href}
-              className="rounded-full border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-3 py-1 text-[11px] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              className="rounded-full border border-border bg-muted px-3 py-1 text-[11px] text-foreground-secondary transition-colors hover:bg-accent hover:text-foreground"
             >
               {link.label}
             </a>

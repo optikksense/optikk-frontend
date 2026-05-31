@@ -51,28 +51,28 @@ const ICON_MAP: Record<
 };
 
 const BADGE_TONE: Record<TypeBadge, string> = {
-  STR: "text-[#86b3ff] border-[#86b3ff]/30",
-  NUM: "text-[#f9c269] border-[#f9c269]/30",
-  ID: "text-[#bfa9ff] border-[#bfa9ff]/30",
-  TXT: "text-[#7fc8a4] border-[#7fc8a4]/30",
-  ENUM: "text-[#e6a4d4] border-[#e6a4d4]/30",
-  OP: "text-[var(--text-muted)] border-[var(--border-color)]",
-  BOOL: "text-[#a4d4e6] border-[#a4d4e6]/30",
+  STR: "text-info border-[color-mix(in_oklch,var(--color-info),transparent_70%)]",
+  NUM: "text-warning border-[color-mix(in_oklch,var(--color-warning),transparent_70%)]",
+  ID: "text-[var(--accent)] border-[color-mix(in_oklch,var(--accent),transparent_70%)]",
+  TXT: "text-success border-[color-mix(in_oklch,var(--color-success),transparent_70%)]",
+  ENUM: "text-[var(--fatal-c)] border-[color-mix(in_oklch,var(--fatal-c),transparent_70%)]",
+  OP: "text-foreground-muted border-border",
+  BOOL: "text-[var(--debug-c)] border-[color-mix(in_oklch,var(--debug-c),transparent_70%)]",
 };
 
 /** Datadog-class popover for the DSL search bar. Sectioned, badged, with footer. */
 function QuerySuggestionsComponent(p: Props) {
   if (!p.loading && p.options.length === 0) return null;
   return (
-    <div className="absolute z-30 mt-1 flex w-[480px] max-w-[calc(100vw-32px)] flex-col rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-2xl">
+    <div className="absolute z-30 mt-1 flex w-[480px] max-w-[calc(100vw-32px)] flex-col rounded-md border border-border bg-background shadow-2xl">
       {p.title ? (
-        <div className="border-[var(--border-color)] border-b px-3 py-1.5 font-semibold text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
+        <div className="border-border border-b px-3 py-1.5 font-semibold text-[10px] text-foreground-muted uppercase tracking-wider">
           {p.title}
         </div>
       ) : null}
       <div className="max-h-[420px] overflow-y-auto py-1">
         {p.loading ? (
-          <div className="px-3 py-2 text-[11px] text-[var(--text-muted)]">Loading…</div>
+          <div className="px-3 py-2 text-[11px] text-foreground-muted">Loading…</div>
         ) : (
           <ul className="flex flex-col">
             {p.options.map((opt, i) => (
@@ -92,7 +92,7 @@ function QuerySuggestionsComponent(p: Props) {
           </ul>
         )}
       </div>
-      <div className="flex items-center justify-between gap-3 border-[var(--border-color)] border-t px-3 py-1.5 text-[10px] text-[var(--text-muted)]">
+      <div className="flex items-center justify-between gap-3 border-border border-t px-3 py-1.5 text-[10px] text-foreground-muted">
         <span>
           <Kbd>Tab</Kbd> / <Kbd>↵</Kbd> accept
         </span>
@@ -115,7 +115,7 @@ function sectionHeader(opt: SuggestionOption, i: number, all: readonly Suggestio
   return (
     <li
       aria-hidden="true"
-      className={`px-3 ${i === 0 ? "pt-1" : "pt-2"} pb-0.5 font-semibold text-[10px] text-[var(--text-muted)] uppercase tracking-wider`}
+      className={`px-3 ${i === 0 ? "pt-1" : "pt-2"} pb-0.5 font-semibold text-[10px] text-foreground-muted uppercase tracking-wider`}
     >
       {cur}
     </li>
@@ -143,14 +143,12 @@ function Row({ opt, active, highlight, onHover, onSelect }: RowProps) {
       }}
       className={[
         "group flex w-full items-center gap-2 px-3 py-1.5 text-left",
-        active
-          ? "bg-[var(--bg-secondary)] text-[var(--text-primary)]"
-          : "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]",
+        active ? "bg-secondary text-foreground" : "text-foreground-secondary hover:bg-secondary",
         active ? "border-l-2 border-l-[var(--accent)]" : "border-l-2 border-l-transparent",
       ].join(" ")}
     >
       {Icon ? (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center text-[var(--text-muted)]">
+        <span className="flex h-4 w-4 shrink-0 items-center justify-center text-foreground-muted">
           <Icon size={12} />
         </span>
       ) : (
@@ -161,11 +159,11 @@ function Row({ opt, active, highlight, onHover, onSelect }: RowProps) {
           <Highlighted text={label} match={highlight} />
         </span>
         {opt.description ? (
-          <span className="truncate text-[10.5px] text-[var(--text-muted)]">{opt.description}</span>
+          <span className="truncate text-[10.5px] text-foreground-muted">{opt.description}</span>
         ) : null}
       </span>
       {opt.hint ? (
-        <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{opt.hint}</span>
+        <span className="shrink-0 text-[10px] text-foreground-muted">{opt.hint}</span>
       ) : null}
       {opt.typeBadge ? (
         <span
@@ -175,7 +173,7 @@ function Row({ opt, active, highlight, onHover, onSelect }: RowProps) {
         </span>
       ) : null}
       <span
-        className={`shrink-0 text-[var(--text-muted)] ${active ? "opacity-100" : "opacity-0 group-hover:opacity-50"}`}
+        className={`shrink-0 text-foreground-muted ${active ? "opacity-100" : "opacity-0 group-hover:opacity-50"}`}
       >
         <CornerDownLeft size={11} />
       </span>
@@ -190,9 +188,7 @@ function Highlighted({ text, match }: { text: string; match: string }) {
   return (
     <>
       {text.slice(0, idx)}
-      <span className="font-bold text-[var(--text-primary)]">
-        {text.slice(idx, idx + match.length)}
-      </span>
+      <span className="font-bold text-foreground">{text.slice(idx, idx + match.length)}</span>
       {text.slice(idx + match.length)}
     </>
   );
@@ -200,7 +196,7 @@ function Highlighted({ text, match }: { text: string; match: string }) {
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="inline-flex items-center rounded border border-[var(--border-color)] bg-[var(--bg-secondary)] px-1 py-px font-mono text-[9.5px] text-[var(--text-secondary)]">
+    <kbd className="inline-flex items-center rounded border border-border bg-secondary px-1 py-px font-mono text-[9.5px] text-foreground-secondary">
       {children}
     </kbd>
   );

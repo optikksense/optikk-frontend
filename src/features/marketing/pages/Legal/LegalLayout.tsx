@@ -33,7 +33,7 @@ const PAGING_BTN_BASE =
 function LegalSidebar({ currentKey }: { readonly currentKey: LegalKey }) {
   return (
     <nav
-      className="flex flex-col gap-2 sticky top-[100px] h-fit max-md:static max-md:flex-row max-md:overflow-x-auto max-md:border-b max-md:border-[var(--border-color)] max-md:pb-4 max-md:mb-2"
+      className="sticky top-[100px] flex h-fit flex-col gap-2 max-md:static max-md:mb-2 max-md:flex-row max-md:overflow-x-auto max-md:border-[var(--border-color)] max-md:border-b max-md:pb-4"
       aria-label="Legal Documents"
     >
       {LEGAL_PAGES.map((page) => {
@@ -58,16 +58,13 @@ function LegalPaging({ currentKey }: { readonly currentKey: LegalKey }) {
   const nextPage = currentIndex < LEGAL_PAGES.length - 1 ? LEGAL_PAGES[currentIndex + 1] : null;
 
   return (
-    <div className="flex justify-between items-center mt-14 pt-8 border-t border-[var(--border-color)] gap-4">
+    <div className="mt-14 flex items-center justify-between gap-4 border-[var(--border-color)] border-t pt-8">
       {prevPage ? (
-        <Link
-          to={dynamicTo(prevPage.to)}
-          className={`${PAGING_BTN_BASE} items-start text-left`}
-        >
-          <span className="text-[11px] uppercase tracking-[0.05em] text-[var(--text-muted)]">
+        <Link to={dynamicTo(prevPage.to)} className={`${PAGING_BTN_BASE} items-start text-left`}>
+          <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.05em]">
             Previous
           </span>
-          <span className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+          <span className="flex items-center gap-1.5 font-semibold text-[var(--text-primary)] text-sm">
             <ArrowLeft size={16} />
             {prevPage.label}
           </span>
@@ -77,14 +74,11 @@ function LegalPaging({ currentKey }: { readonly currentKey: LegalKey }) {
       )}
 
       {nextPage ? (
-        <Link
-          to={dynamicTo(nextPage.to)}
-          className={`${PAGING_BTN_BASE} items-end text-right`}
-        >
-          <span className="text-[11px] uppercase tracking-[0.05em] text-[var(--text-muted)]">
+        <Link to={dynamicTo(nextPage.to)} className={`${PAGING_BTN_BASE} items-end text-right`}>
+          <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.05em]">
             Next
           </span>
-          <span className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+          <span className="flex items-center gap-1.5 font-semibold text-[var(--text-primary)] text-sm">
             {nextPage.label}
             <ArrowRight size={16} />
           </span>
@@ -110,20 +104,18 @@ export function LegalLayout({ currentKey, title, lastUpdated, children }: LegalL
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-10 max-w-[1100px] mx-auto px-5 pt-12 pb-24">
+    <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-10 px-5 pt-12 pb-24 md:grid-cols-[240px_1fr]">
       <LegalSidebar currentKey={currentKey} />
       <article className="min-w-0">
-        <header className="mb-8 pb-6 border-b border-[var(--border-color)]">
-          <h1 className="text-[32px] font-extrabold text-[var(--text-primary)] m-0 mb-2 tracking-[-0.02em]">
+        <header className="mb-8 border-[var(--border-color)] border-b pb-6">
+          <h1 className="m-0 mb-2 font-extrabold text-[32px] text-[var(--text-primary)] tracking-[-0.02em]">
             {title}
           </h1>
           <time className="text-[13px] text-[var(--text-muted)]" dateTime={lastUpdated}>
             Last updated: {lastUpdated}
           </time>
         </header>
-        <section
-          className="text-base leading-[1.7] text-[var(--text-secondary)] [&_h2]:text-xl [&_h2]:font-[750] [&_h2]:text-[var(--text-primary)] [&_h2]:mt-9 [&_h2]:mb-4 [&_h2]:tracking-[-0.01em] [&_p]:mb-4 [&_ul]:mb-5 [&_ul]:pl-5 [&_ol]:mb-5 [&_ol]:pl-5 [&_li]:mb-2"
-        >
+        <section className="text-[var(--text-secondary)] text-base leading-[1.7] [&_h2]:mt-9 [&_h2]:mb-4 [&_h2]:font-[750] [&_h2]:text-[var(--text-primary)] [&_h2]:text-xl [&_h2]:tracking-[-0.01em] [&_li]:mb-2 [&_ol]:mb-5 [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:mb-5 [&_ul]:pl-5">
           {children}
         </section>
         <LegalPaging currentKey={currentKey} />

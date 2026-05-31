@@ -42,7 +42,10 @@ export const TIME_STEP_OPTIONS: { label: string; value: TimeStep }[] = [
 export const CHART_TYPE_OPTIONS: { label: string; value: ChartType }[] = [
   { label: "Line", value: "line" },
   { label: "Area", value: "area" },
-  { label: "Bar", value: "bar" },
+  { label: "Bars", value: "bar" },
+  { label: "Stack", value: "stack" },
+  { label: "Heat", value: "heat" },
+  { label: "Top-list", value: "top" },
 ];
 
 export const SPACE_AGGREGATION_OPTIONS: { label: string; value: MetricSpaceAggregation }[] = [

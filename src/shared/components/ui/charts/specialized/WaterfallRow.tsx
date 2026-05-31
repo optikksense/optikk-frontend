@@ -46,7 +46,7 @@ function WaterfallRowComponent(p: WaterfallRowProps) {
     : span.barColor;
   return (
     <div
-      className="flex h-[56px] cursor-pointer border-[var(--glass-border)] border-b transition-[background-color] duration-150 hover:bg-[rgba(255,255,255,0.04)]"
+      className="flex h-[56px] cursor-pointer border-[var(--glass-border)] border-b transition-[background-color] duration-150 hover:bg-accent"
       style={{ borderLeft, background: rowBg }}
       onClick={() => onSpanClick?.(span)}
     >
@@ -56,7 +56,7 @@ function WaterfallRowComponent(p: WaterfallRowProps) {
         isCollapsed={isCollapsed}
         onToggleCollapse={onToggleCollapse}
       />
-      <div className="flex w-[60px] min-w-[60px] items-center justify-end border-[var(--glass-border)] border-r px-2 text-[11px] text-[var(--text-muted)] tabular-nums">
+      <div className="flex w-[60px] min-w-[60px] items-center justify-end border-[var(--glass-border)] border-r px-2 text-[11px] text-foreground-muted tabular-nums">
         {span.durationPct}%
       </div>
       <div className="relative flex-1 py-3">
@@ -106,7 +106,7 @@ function RowLabel({
                 e.stopPropagation();
                 onToggleCollapse?.(span.span_id);
               }}
-              className="flex h-3 w-3 items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              className="flex h-3 w-3 items-center justify-center rounded text-foreground-muted hover:text-foreground"
             >
               <Chevron size={12} />
             </button>
@@ -121,11 +121,11 @@ function RowLabel({
               {kind.slice(0, 3)}
             </span>
           ) : null}
-          <span className="font-medium text-[11px] text-[var(--text-muted)] uppercase tracking-[0.3px]">
+          <span className="font-medium text-[11px] text-foreground-muted uppercase tracking-[0.3px]">
             {span.service_name}
           </span>
         </div>
-        <span className="overflow-hidden text-ellipsis whitespace-nowrap font-normal text-[13px] text-[var(--text-primary)]">
+        <span className="overflow-hidden text-ellipsis whitespace-nowrap font-normal text-[13px] text-foreground">
           {span.operation_name}
         </span>
       </div>

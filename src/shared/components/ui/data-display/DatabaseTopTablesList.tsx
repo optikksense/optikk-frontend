@@ -68,7 +68,7 @@ export default function DatabaseTopTablesList({
   if (tables.length === 0) return null;
 
   return (
-    <div style={{ marginTop: 0, borderTop: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}` }}>
+    <div style={{ marginTop: 0, borderTop: "1px solid var(--border-color)" }}>
       <div
         style={{
           maxHeight: "280px",
@@ -88,8 +88,8 @@ export default function DatabaseTopTablesList({
           <thead>
             <tr
               style={{
-                color: APP_COLORS.hex_8e8e8e,
-                borderBottom: `1px solid ${APP_COLORS.rgba_255_255_255_0p05}`,
+                color: "var(--text-muted)",
+                borderBottom: "1px solid var(--border-color)",
               }}
             >
               <th style={{ padding: "6px 8px", fontWeight: 500 }}>Table / Collection</th>
@@ -105,15 +105,15 @@ export default function DatabaseTopTablesList({
               const tableKey = table.key ?? `${table.table_name ?? "unknown"}-${index}`;
               const isSelected = selectedTables.includes(tableKey);
               const isFaded = selectedTables.length > 0 && !isSelected;
-              const selectedBg = APP_COLORS.rgba_94_96_206_0p2;
-              const hoverBg = APP_COLORS.rgba_255_255_255_0p05;
+              const selectedBg = "var(--color-primary-subtle-20)";
+              const hoverBg = "var(--bg-hover)";
               const latency = table.avg_query_latency_ms ?? 0;
               const latencyColor =
                 latency > 100
                   ? APP_COLORS.hex_f04438
                   : latency > 50
                     ? APP_COLORS.hex_f79009
-                    : APP_COLORS.hex_e0e0e0;
+                    : "var(--text-primary)";
               const seriesColor = CHART_COLORS[index % CHART_COLORS.length];
               const badgeColor = getBadgeColor(table.db_system);
 
@@ -157,7 +157,7 @@ export default function DatabaseTopTablesList({
                       }}
                     />
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                      <span style={{ color: APP_COLORS.hex_e0e0e0, fontWeight: 500 }}>
+                      <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>
                         {table.table_name || "unknown"}
                       </span>
                       {table.service_name && table.service_name !== "unknown" && (
@@ -192,7 +192,7 @@ export default function DatabaseTopTablesList({
                     style={{
                       padding: "5px 8px",
                       textAlign: "right",
-                      color: APP_COLORS.hex_e0e0e0,
+                      color: "var(--text-primary)",
                     }}
                   >
                     {formatNumber(table.query_count ?? 0)}

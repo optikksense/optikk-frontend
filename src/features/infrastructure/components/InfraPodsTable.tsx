@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 import {
   Badge,
   Button,
@@ -10,6 +12,9 @@ import {
   formatPercentage,
   formatRelativeTime,
 } from "@shared/utils/formatters";
+import { dynamicTo } from "@shared/utils/navigation";
+
+import { ROUTES } from "@/shared/constants/routes";
 
 import type { FleetPod } from "../types";
 import { tierForPod } from "../utils/podHealth";
@@ -33,7 +38,14 @@ export default function InfraPodsTable({ pods, onOpenPodLogs }: InfraPodsTablePr
       dataIndex: "pod_name",
       sorter: (a, b) => a.pod_name.localeCompare(b.pod_name),
       render: (_v, row) => (
-        <span className="font-medium text-[var(--text-primary)]">{row.pod_name}</span>
+        <Link
+          to={dynamicTo(
+            ROUTES.containerDetail.replace("$container", encodeURIComponent(row.pod_name))
+          )}
+          className="font-medium font-mono text-primary hover:underline"
+        >
+          {row.pod_name}
+        </Link>
       ),
     },
     {

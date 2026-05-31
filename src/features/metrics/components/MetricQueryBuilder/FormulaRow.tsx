@@ -60,8 +60,8 @@ export function FormulaRow({
         "flex min-h-[48px] items-center gap-2 rounded-xl border px-3 py-2",
         "transition-colors duration-150",
         focused
-          ? "border-[rgba(245,158,11,0.45)] bg-[rgba(245,158,11,0.06)]"
-          : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[rgba(148,163,184,0.25)]"
+          ? "border-[color-mix(in_oklch,var(--color-warning),transparent_65%)] bg-warning-subtle"
+          : "border-border bg-secondary hover:border-border"
       )}
     >
       {/* Formula label */}
@@ -75,7 +75,7 @@ export function FormulaRow({
       {/* Formula input */}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-center gap-2">
-          <span className="shrink-0 font-semibold text-[11px] text-[var(--text-muted)] uppercase tracking-wide">
+          <span className="shrink-0 font-semibold text-[11px] text-foreground-muted uppercase tracking-wide">
             Formula
           </span>
           <input
@@ -86,26 +86,26 @@ export function FormulaRow({
             onBlur={() => setFocused(false)}
             placeholder="e.g. a / b * 100"
             className={cn(
-              "h-7 flex-1 rounded-md border bg-[var(--bg-tertiary)] px-2",
-              "font-mono text-[12px] text-[var(--text-primary)]",
-              "outline-none placeholder:text-[var(--text-muted)]",
+              "h-7 flex-1 rounded-md border bg-muted px-2",
+              "font-mono text-[12px] text-foreground",
+              "outline-none placeholder:text-foreground-muted",
               "transition-colors duration-150",
               error
-                ? "border-[rgba(240,68,56,0.4)]"
-                : "border-[var(--border-color)] focus:border-[rgba(245,158,11,0.45)]"
+                ? "border-[color-mix(in_oklch,var(--color-error),transparent_65%)]"
+                : "border-border focus:border-[color-mix(in_oklch,var(--color-warning),transparent_65%)]"
             )}
           />
         </div>
-        {error && <span className="pl-[52px] text-[10px] text-[var(--color-error)]">{error}</span>}
+        {error && <span className="pl-[52px] text-[10px] text-error">{error}</span>}
       </div>
 
       {/* Remove button */}
       <button
         type="button"
         onClick={onRemove}
-        className="shrink-0 rounded-md p-1 opacity-50 transition-all duration-100 hover:bg-[var(--bg-hover)] hover:opacity-100"
+        className="shrink-0 rounded-md p-1 opacity-50 transition-all duration-100 hover:bg-accent hover:opacity-100"
       >
-        <X size={14} className="text-[var(--text-muted)]" />
+        <X size={14} className="text-foreground-muted" />
       </button>
     </div>
   );

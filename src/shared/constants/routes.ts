@@ -10,7 +10,6 @@ export const ROUTES = {
   terms: "/terms",
   security: "/security",
   overview: "/overview",
-  service: "/service",
   services: "/services",
   serviceMap: "/service-map",
   deployments: "/deployments",
@@ -23,6 +22,7 @@ export const ROUTES = {
   infrastructure: "/infrastructure",
   hosts: "/infrastructure/hosts",
   hostDetail: "/infrastructure/hosts/$host",
+  containerDetail: "/infrastructure/containers/$container",
   errors: "/errors",
   errorGroupDetail: "/errors/$groupId",
   saturation: "/saturation",
@@ -32,6 +32,13 @@ export const ROUTES = {
   saturationKafkaOverview: "/saturation/kafka",
   saturationKafkaTopicDetail: "/saturation/kafka/topics/$topic",
   saturationKafkaGroupDetail: "/saturation/kafka/groups/$groupId",
+
+  monitors: "/monitors",
+  monitorsNew: "/monitors/new",
+  monitorDetail: "/monitors/$monitorId",
+  monitorEdit: "/monitors/$monitorId/edit",
+  monitorsNotifications: "/monitors/notifications",
+  alertsNew: "/alerts/new",
 
   settings: "/settings",
 } as const;

@@ -1,11 +1,10 @@
 export const INFRA_DOMAIN_KEY = "infrastructure" as const;
 
 export const INFRA_TAB = {
-  fleet: "fleet",
-  resources: "resources",
-  kubernetes: "kubernetes",
-  jvm: "jvm",
-  nodes: "nodes",
+  hosts: "hosts",
+  containers: "containers",
+  network: "network",
+  hostMap: "host-map",
 } as const;
 
 export type InfraTabId = (typeof INFRA_TAB)[keyof typeof INFRA_TAB];

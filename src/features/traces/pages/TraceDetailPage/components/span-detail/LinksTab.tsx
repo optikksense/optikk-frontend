@@ -13,20 +13,19 @@ interface Props {
 const pane = "p-4 flex flex-col gap-4";
 const sect = "flex flex-col gap-2";
 const sectH = "flex items-center justify-between gap-2";
-const sectT = "text-[10.5px] tracking-[0.06em] uppercase text-[var(--text-caption)]";
+const sectT = "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
 const ctxRow =
-  "grid grid-cols-[10px_110px_1fr_auto] gap-2 px-2.5 py-1.5 items-center bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-md text-[11.5px] text-left cursor-pointer hover:bg-[var(--bg-tertiary)]";
-const ctxSvc = "text-[var(--text-secondary)]";
-const ctxOp =
-  "text-[var(--text-primary)] font-mono overflow-hidden text-ellipsis whitespace-nowrap";
-const ctxDur = "text-[var(--text-muted)] font-mono";
+  "grid grid-cols-[10px_110px_1fr_auto] gap-2 px-2.5 py-1.5 items-center bg-background border border-border rounded-md text-[11.5px] text-left cursor-pointer hover:bg-muted";
+const ctxSvc = "text-foreground-secondary";
+const ctxOp = "text-foreground font-mono overflow-hidden text-ellipsis whitespace-nowrap";
+const ctxDur = "text-foreground-muted font-mono";
 
 function LinksTabComponent({ links, relatedTraces }: Props) {
   const hasAny = links.length > 0 || relatedTraces.length > 0;
   if (!hasAny) {
     return (
       <div className={pane}>
-        <div className="text-[var(--text-caption)] text-[12px] py-2">
+        <div className="py-2 text-[12px] text-foreground-caption">
           No span links or related traces.
         </div>
       </div>
@@ -47,7 +46,7 @@ function LinksTabComponent({ links, relatedTraces }: Props) {
                 href={`/traces/${link.traceId}?span=${link.spanId}`}
                 className={ctxRow}
               >
-                <span className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0 bg-[var(--color-primary)]" />
+                <span className="inline-block h-[7px] w-[7px] flex-none shrink-0 grow-0 basis-[7px] rounded-full bg-primary" />
                 <span className={ctxSvc}>trace</span>
                 <span className={ctxOp}>
                   {link.traceId.slice(0, 12)}… · span {link.spanId.slice(0, 8)}…
@@ -71,7 +70,7 @@ function LinksTabComponent({ links, relatedTraces }: Props) {
                 href={`/traces/${rt.traceId}`}
                 className={ctxRow}
               >
-                <span className="w-[7px] h-[7px] rounded-full inline-block flex-none basis-[7px] grow-0 shrink-0 bg-[var(--color-primary)]" />
+                <span className="inline-block h-[7px] w-[7px] flex-none shrink-0 grow-0 basis-[7px] rounded-full bg-primary" />
                 <span className={ctxSvc}>{rt.serviceName}</span>
                 <span className={ctxOp}>{rt.operationName}</span>
                 <span className={ctxDur}>{formatDuration(rt.durationMs)}</span>

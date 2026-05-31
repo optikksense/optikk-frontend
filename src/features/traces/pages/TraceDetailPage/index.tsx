@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
 
+import { useTraceOperationBaseline } from "../../hooks/useTraceOperationBaseline";
 import { BottomBar } from "./components/BottomBar";
 import { KPIStrip } from "./components/KPIStrip";
 import { ServiceStrip } from "./components/ServiceStrip";
@@ -19,6 +20,11 @@ export default function TraceDetailPage() {
     useTraceDetailPage();
   // Page-local "active service" highlight; clicking a pill drills into that service's first span.
   const [activeService, setActiveService] = useState<string | null>(null);
+  // Root operation baseline (p50/p95) for the Duration KPI "N× slower than p50".
+  const baseline = useTraceOperationBaseline(
+    data.spans[0]?.service_name,
+    data.spans[0]?.operation_name
+  );
 
   if (data.isPending)
     return (
@@ -55,7 +61,7 @@ export default function TraceDetailPage() {
   };
 
   return (
-    <PageShell className="flex min-h-0 flex-1 flex-col bg-[var(--bg-primary)] text-[var(--text-secondary)] [font-feature-settings:'tnum'] !gap-0 !pb-0 h-full min-h-[calc(100vh-var(--space-header-h,56px)-2rem)]">
+    <PageShell className="!gap-0 !pb-0 flex h-full min-h-0 min-h-[calc(100vh-var(--space-header-h,56px)-2rem)] flex-1 flex-col bg-background text-foreground-secondary [font-feature-settings:'tnum']">
       <TraceHeader
         traceId={resolvedTraceId}
         stats={stats}
@@ -71,6 +77,8 @@ export default function TraceDetailPage() {
         stats={stats}
         spans={data.spans}
         criticalPathSpanIds={layoutProps.criticalPathSpanIds}
+        p50Ms={baseline.data?.p50_ms}
+        p95Ms={baseline.data?.p95_ms}
       />
       <ServiceStrip
         spans={data.spans}

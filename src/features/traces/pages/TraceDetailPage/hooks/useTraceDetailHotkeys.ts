@@ -26,7 +26,7 @@ interface Args {
  * - `/`             focus the waterfall search input
  * - `c`             copy the trace ID
  * - `e`             cycle through error spans (next)
- * - `1` / `2`       switch viz: Waterfall / Flame Graph
+ * - `1` / `2`       switch viz: Waterfall / Service map
  * - `↑` / `↓`       previous / next span (in span order)
  * - `j` / `k`       next / previous span (vim-style aliases)
  * - `[` / `]`       shrink / grow drawer width by 40px
@@ -61,7 +61,7 @@ export function useTraceDetailHotkeys({
           return onSetViz("timeline");
         case "2":
           e.preventDefault();
-          return onSetViz("flamegraph");
+          return onSetViz("servicemap");
         case "ArrowDown":
         case "j":
           return moveSpan(e, spans, selectedSpanId, 1, onSelectSpan);

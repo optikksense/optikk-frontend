@@ -13,6 +13,7 @@ import {
 
 import type { GroupTopicRow } from "../../api/kafkaExplorerSchemas";
 import { saturationApi } from "../../api/saturationApi";
+import { KafkaPartitionsCard } from "../../components/KafkaPartitionsCard";
 import { SaturationStatTile } from "../../components/SaturationStatTile";
 
 function formatBytesPerSecond(value: number): string {
@@ -39,15 +40,19 @@ export default function KafkaGroupDetailPage(): JSX.Element {
       saturationApi.getKafkaGroupTopics(groupId, teamId, startTime, endTime),
     { extraKeys: [groupId] }
   );
+  const partitionsQuery = useTimeRangeQuery(
+    "saturation-kafka-group-partitions",
+    (teamId, startTime, endTime) =>
+      saturationApi.getKafkaGroupPartitions(groupId, teamId, startTime, endTime),
+    { extraKeys: [groupId] }
+  );
 
   const topicColumns: SimpleTableColumn<GroupTopicRow>[] = [
     {
       title: "Topic",
       key: "topic",
       width: 260,
-      render: (_value, row) => (
-        <span className="font-medium text-[var(--text-primary)]">{row.topic}</span>
-      ),
+      render: (_value, row) => <span className="font-medium text-foreground">{row.topic}</span>,
     },
     {
       title: "Bytes/s",
@@ -150,10 +155,10 @@ export default function KafkaGroupDetailPage(): JSX.Element {
 
       <PageSurface padding="lg">
         <div className="mb-3">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-[0.08em]">
+          <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">
             Topics
           </div>
-          <div className="mt-2 font-semibold text-[18px] text-[var(--text-primary)]">
+          <div className="mt-2 font-semibold text-[18px] text-foreground">
             Topics handled by this consumer group
           </div>
         </div>
@@ -165,6 +170,8 @@ export default function KafkaGroupDetailPage(): JSX.Element {
           scroll={{ x: 1060 }}
         />
       </PageSurface>
+
+      <KafkaPartitionsCard rows={partitionsQuery.data ?? []} scope="group" />
     </PageShell>
   );
 }

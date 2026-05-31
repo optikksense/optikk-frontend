@@ -15,9 +15,7 @@ export const SERVER_COLUMNS: SimpleTableColumn<DatastoreServerRow>[] = [
     title: "Server",
     key: "server",
     width: 280,
-    render: (_value, row) => (
-      <span className="font-medium text-[var(--text-primary)]">{row.server}</span>
-    ),
+    render: (_value, row) => <span className="font-medium text-foreground">{row.server}</span>,
   },
   {
     title: "p50",
@@ -48,7 +46,7 @@ export const NAMESPACE_COLUMNS: SimpleTableColumn<DatastoreNamespaceRow>[] = [
     key: "namespace",
     width: 280,
     render: (_value, row) => (
-      <span className="font-medium text-[var(--text-primary)]">{row.namespace || "—"}</span>
+      <span className="font-medium text-foreground">{row.namespace || "—"}</span>
     ),
   },
   {
@@ -66,7 +64,7 @@ export const OPERATION_COLUMNS: SimpleTableColumn<DatastoreOperationRow>[] = [
     key: "operation",
     width: 240,
     render: (_value, row) => (
-      <span className="font-medium text-[var(--text-primary)]">{row.operation || "unknown"}</span>
+      <span className="font-medium text-foreground">{row.operation || "unknown"}</span>
     ),
   },
   {
@@ -98,7 +96,7 @@ export const ERROR_COLUMNS: SimpleTableColumn<DatastoreErrorRow>[] = [
     key: "error_type",
     width: 300,
     render: (_value, row) => (
-      <span className="font-medium text-[var(--text-primary)]">{row.error_type || "unknown"}</span>
+      <span className="font-medium text-foreground">{row.error_type || "unknown"}</span>
     ),
   },
   {
@@ -116,7 +114,7 @@ export const CONNECTION_COLUMNS: SimpleTableColumn<DatastoreConnectionRow>[] = [
     key: "pool_name",
     width: 220,
     render: (_value, row) => (
-      <span className="font-medium text-[var(--text-primary)]">{row.pool_name || "default"}</span>
+      <span className="font-medium text-foreground">{row.pool_name || "default"}</span>
     ),
   },
   {
@@ -163,10 +161,10 @@ export const SLOW_QUERY_COLUMNS: SimpleTableColumn<SlowQueryPattern>[] = [
     width: 520,
     render: (_value, row) => (
       <div className="flex flex-col gap-1">
-        <span className="line-clamp-2 font-medium text-[var(--text-primary)]">
+        <span className="line-clamp-2 font-medium text-foreground">
           {row.query_text || "No query text"}
         </span>
-        <span className="text-[11px] text-[var(--text-muted)]">
+        <span className="text-[11px] text-foreground-muted">
           {row.collection_name ? `Collection ${row.collection_name}` : "Command-level telemetry"}
         </span>
       </div>

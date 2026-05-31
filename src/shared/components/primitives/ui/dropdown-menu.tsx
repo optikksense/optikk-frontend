@@ -20,7 +20,7 @@ function DropdownMenu({ open, onOpenChange, trigger, children, className }: Drop
           align="end"
           sideOffset={8}
           className={cn(
-            "z-50 min-w-[10rem] rounded-md border border-[var(--border-color)] bg-[var(--bg-secondary)] p-1 shadow-lg outline-none",
+            "z-50 min-w-[10rem] rounded-md border border-border bg-secondary p-1 shadow-lg outline-none",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=open]:animate-in",
             className
           )}
@@ -46,7 +46,7 @@ function DropdownMenuItem({
     <DropdownMenuPrimitive.Item
       ref={ref}
       className={cn(
-        "flex w-full cursor-default select-none items-center rounded px-2 py-1.5 text-left text-sm outline-none transition-colors focus:bg-[var(--bg-hover)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "flex w-full cursor-default select-none items-center rounded px-2 py-1.5 text-left text-sm outline-none transition-colors focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         inset && "pl-8",
         className
       )}
@@ -67,7 +67,7 @@ function DropdownMenuSeparator({
   return (
     <DropdownMenuPrimitive.Separator
       ref={ref}
-      className={cn("my-1 h-px bg-[var(--border-color)]", className)}
+      className={cn("my-1 h-px bg-border", className)}
       {...props}
     />
   );
@@ -88,7 +88,7 @@ function DropdownMenuSubTrigger({
     <button
       type="button"
       className={cn(
-        "flex w-full items-center rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-[var(--bg-hover)]",
+        "flex w-full items-center rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent",
         className
       )}
       {...props}

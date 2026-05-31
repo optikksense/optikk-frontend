@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import type uPlot from "uplot";
 
 import ObservabilityChart, {
   type ObservabilityChartSeries,
@@ -61,10 +62,10 @@ function buildSeries(
   };
 }
 
-function ChartBody({ data }: { data: ChartData }) {
+function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
   if (data.timestamps.length === 0) {
     return (
-      <div className="grid h-[180px] place-items-center text-[12px] text-[var(--text-muted)]">
+      <div className="grid h-[180px] place-items-center text-[12px] text-foreground-muted">
         No latency samples in this window.
       </div>
     );
@@ -75,6 +76,7 @@ function ChartBody({ data }: { data: ChartData }) {
       series={data.series}
       height={200}
       yFormatter={(v) => fmtMs(v)}
+      plugins={plugins}
     />
   );
 }
@@ -84,8 +86,8 @@ export function LatencyPanel({ serviceName }: { serviceName: string }) {
   const { timeBuckets } = useChartTimeBuckets();
   const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
   return (
-    <PanelCard title="Latency" subtitle="p50 / p95 / p99">
-      <ChartBody data={data} />
+    <PanelCard title="Latency" subtitle="p50 / p95 / p99 · last 60m">
+      <ChartBody data={data} plugins={[]} />
     </PanelCard>
   );
 }

@@ -9,7 +9,7 @@ interface Props {
 }
 
 const btnSmGhost =
-  "px-2.5 py-[5px] text-[11.5px] rounded-[5px] bg-transparent text-[var(--text-muted)] border border-transparent cursor-pointer hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]";
+  "px-2.5 py-[5px] text-[11.5px] rounded-[5px] bg-transparent text-foreground-muted border border-transparent cursor-pointer hover:bg-muted hover:text-foreground";
 
 function RawJsonTabComponent({ traceId, spans }: Props) {
   const json = useMemo(
@@ -34,9 +34,9 @@ function RawJsonTabComponent({ traceId, spans }: Props) {
   }, [json]);
 
   return (
-    <div className="p-4 flex flex-col gap-2 min-h-0 flex-1">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 p-4">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[var(--text-caption)] text-[12px] py-2">
+        <span className="py-2 text-[12px] text-foreground-caption">
           OpenTelemetry-style trace document · {spans.length} span{spans.length === 1 ? "" : "s"}
         </span>
         <div className="flex gap-1.5">
@@ -48,7 +48,7 @@ function RawJsonTabComponent({ traceId, spans }: Props) {
           </button>
         </div>
       </div>
-      <pre className="m-0 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md font-mono text-[11.5px] text-[var(--text-secondary)] overflow-auto flex-1 min-h-0 whitespace-pre">
+      <pre className="m-0 min-h-0 flex-1 overflow-auto whitespace-pre rounded-md border border-border bg-secondary p-3 font-mono text-[11.5px] text-foreground-secondary">
         {json}
       </pre>
     </div>

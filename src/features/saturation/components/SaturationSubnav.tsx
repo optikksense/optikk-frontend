@@ -25,7 +25,7 @@ const ITEMS: ReadonlyArray<Item> = [
 
 function Count({ value }: { value: number }) {
   return (
-    <span className="ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full bg-[var(--bg-elevated,rgba(255,255,255,0.06))] px-1 text-[10px] text-[var(--text-muted)]">
+    <span className="ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full bg-[var(--bg-2)] px-1 text-[10px] text-foreground-muted">
       {value}
     </span>
   );
@@ -33,7 +33,7 @@ function Count({ value }: { value: number }) {
 
 export function SaturationSubnav({ active, counts }: SaturationSubnavProps) {
   return (
-    <nav className="flex border-[var(--border-color)] border-b" aria-label="Saturation sections">
+    <nav className="flex border-border border-b" aria-label="Saturation sections">
       {ITEMS.map((item) => {
         const isActive = active === item.id;
         const count = counts?.[item.id];
@@ -44,8 +44,8 @@ export function SaturationSubnav({ active, counts }: SaturationSubnavProps) {
             className={cn(
               "flex items-center gap-1 border-b-2 px-3 py-2 text-[13px] transition-colors",
               isActive
-                ? "border-[var(--color-primary,#3b82f6)] text-[var(--text-primary)]"
-                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                ? "border-primary text-foreground"
+                : "border-transparent text-foreground-muted hover:text-foreground"
             )}
           >
             {item.label}

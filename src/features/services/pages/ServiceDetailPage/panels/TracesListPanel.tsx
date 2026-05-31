@@ -39,25 +39,23 @@ function DurationBar({ ms, max }: { ms: number; max: number }) {
 function TraceRow({ trace, max }: { trace: TraceRecord; max: number }) {
   const detail = ROUTES.traceDetail.replace("$traceId", encodeURIComponent(trace.trace_id));
   return (
-    <li className="border-[var(--border-color)] border-t first:border-t-0">
+    <li className="border-border border-t first:border-t-0">
       <Link
         to={detail}
         className="grid grid-cols-[auto_minmax(0,1.5fr)_minmax(120px,1fr)_auto_auto] items-center gap-3 px-4 py-3 text-[12px] hover:bg-[var(--bg-elevated,rgba(255,255,255,0.04))]"
       >
         <StatusDot status={trace.status} />
         <div className="min-w-0">
-          <div className="truncate font-mono text-[12px] text-[var(--text-primary)]">
+          <div className="truncate font-mono text-[12px] text-foreground">
             {trace.operation_name}
           </div>
-          <div className="truncate font-mono text-[11px] text-[var(--text-muted)]">
+          <div className="truncate font-mono text-[11px] text-foreground-muted">
             {trace.trace_id}
           </div>
         </div>
         <DurationBar ms={trace.duration_ms} max={max} />
-        <div className="font-mono text-[12px] text-[var(--text-primary)]">
-          {fmtMs(trace.duration_ms)}
-        </div>
-        <div className="text-right text-[11px] text-[var(--text-muted)]">
+        <div className="font-mono text-[12px] text-foreground">{fmtMs(trace.duration_ms)}</div>
+        <div className="text-right text-[11px] text-foreground-muted">
           {relativeTimeFromIso(trace.start_time)}
         </div>
       </Link>
@@ -86,7 +84,7 @@ export function TracesListPanel({
       padded={false}
     >
       {traces.length === 0 ? (
-        <div className="px-4 py-8 text-center text-[12px] text-[var(--text-muted)]">
+        <div className="px-4 py-8 text-center text-[12px] text-foreground-muted">
           {isPending ? "Loading…" : "No traces in selected range."}
         </div>
       ) : (

@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
-import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 import { useExplorerState } from "@/features/explorer/hooks/useExplorerState";
 import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
+import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import {
   type LogsAnalyticsArgs,
   type LogsFacets,
+  type LogsSummary,
   type LogsTrendBucket,
   getLogsFacets,
+  getLogsSummary,
   getLogsTrend,
 } from "../api/logsAnalyticsApi";
 import { queryLogs } from "../api/logsQueryApi";
@@ -130,6 +132,12 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
     refetch: () => listQuery.refetch(),
   };
 
+  const summary = useStandardQuery<LogsSummary>({
+    queryKey: [...analyticsBaseKey, "summary"],
+    queryFn: () => getLogsSummary(buildAnalyticsArgs()),
+    enabled: args.enabled ?? true,
+  });
+
   const trend = useStandardQuery<readonly LogsTrendBucket[]>({
     queryKey: [...analyticsBaseKey, "trend"],
     queryFn: () => getLogsTrend(buildAnalyticsArgs()),
@@ -142,7 +150,7 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
     enabled: args.enabled ?? true,
   });
 
-  return { state: explorerState, list, trend, facets };
+  return { state: explorerState, list, summary, trend, facets };
 }
 
 export type UseLogsExplorerReturn = ReturnType<typeof useLogsExplorer>;

@@ -39,7 +39,7 @@ function Switch({
         disabled={disabled}
         className={cn(
           "peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-          "data-[state=checked]:bg-[var(--color-primary)] data-[state=unchecked]:bg-[var(--bg-hover)]"
+          "data-[state=checked]:bg-primary data-[state=unchecked]:bg-accent"
         )}
       >
         <SwitchPrimitive.Thumb
@@ -49,7 +49,7 @@ function Switch({
           )}
         />
       </SwitchPrimitive.Root>
-      {label ? <span className="text-[13px] text-[var(--text-secondary)]">{label}</span> : null}
+      {label ? <span className="text-[13px] text-foreground-secondary">{label}</span> : null}
     </label>
   );
 }
