@@ -8,17 +8,11 @@ import type { ServiceSummarySnapshot } from "../types";
 type Props = {
   summaryMetrics: ServiceSummarySnapshot | null;
   summaryLoading: boolean;
-  requestSparkline: number[];
-  errorSparkline: number[];
-  latencySparkline: number[];
 };
 
 function ServiceDrawerStatGridComponent({
   summaryMetrics,
   summaryLoading,
-  requestSparkline,
-  errorSparkline,
-  latencySparkline,
 }: Props) {
   return (
     <div id="service-drawer-overview" className="scroll-mt-24">
@@ -29,7 +23,7 @@ function ServiceDrawerStatGridComponent({
             value: summaryMetrics?.requestCount ?? 0,
             formatter: formatNumber,
           }}
-          visuals={{ sparklineData: requestSparkline, loading: summaryLoading }}
+          visuals={{ loading: summaryLoading }}
         />
         <StatCard
           metric={{
@@ -37,7 +31,7 @@ function ServiceDrawerStatGridComponent({
             value: summaryMetrics?.errorRate ?? 0,
             formatter: (value) => formatPercentage(Number(value)),
           }}
-          visuals={{ sparklineData: errorSparkline, loading: summaryLoading }}
+          visuals={{ loading: summaryLoading }}
         />
         <StatCard
           metric={{
@@ -45,7 +39,7 @@ function ServiceDrawerStatGridComponent({
             value: summaryMetrics?.avgLatency ?? 0,
             formatter: formatDuration,
           }}
-          visuals={{ sparklineData: latencySparkline, loading: summaryLoading }}
+          visuals={{ loading: summaryLoading }}
         />
         <StatCard
           metric={{
@@ -53,7 +47,7 @@ function ServiceDrawerStatGridComponent({
             value: summaryMetrics?.p95Latency ?? 0,
             formatter: formatDuration,
           }}
-          visuals={{ sparklineData: latencySparkline, loading: summaryLoading }}
+          visuals={{ loading: summaryLoading }}
         />
       </div>
     </div>

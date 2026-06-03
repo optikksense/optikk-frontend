@@ -11,7 +11,6 @@ const FOOTER_GROUPS = [
     title: "Product",
     links: [
       { label: "Platform", path: "/features" },
-      { label: "Pricing", path: "/pricing" },
       { label: "Architecture", path: "/architecture" },
       { label: "Self-host", path: "/self-host" },
     ],

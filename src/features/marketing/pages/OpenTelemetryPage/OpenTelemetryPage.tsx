@@ -122,7 +122,7 @@ export default function OpenTelemetryPage() {
           </>
         }
         subtitle="Optikk is OpenTelemetry-native. No proprietary agent, no SDK to vendor in, no schema mapping. The OTLP spec is the integration."
-        primaryCta={{ label: "Start free", path: "/login", variant: "grad" }}
+        primaryCta={{ label: "Self-host now", path: "/self-host", variant: "grad" }}
         secondaryCta={{ label: "View architecture", path: "/architecture", variant: "secondary" }}
         meta={["OTLP gRPC + HTTP", "Traces · metrics · logs", "All major SDKs"]}
       />
@@ -195,12 +195,12 @@ export default function OpenTelemetryPage() {
         eyebrow="Try it"
         title={
           <>
-            Free ingest token waiting.{" "}
+            Start self-hosting today.{" "}
             <span style={{ color: "#fdba74" }}>4 minutes to first span.</span>
           </>
         }
-        subtitle="Optikk gives you 5 GiB/day of logs, 50M DPM, and 5 GiB/day of trace data free, forever. No card."
-        primary={{ label: "Get your token", path: "/login" }}
+        subtitle="Deploy Optikk in your private cloud or local infrastructure. Our Helm chart gets you up and running in under 5 minutes."
+        primary={{ label: "Self-host now", path: "/self-host" }}
         secondary={{ label: "Architecture", path: "/architecture", variant: "secondary" }}
       />
     </>

@@ -70,15 +70,15 @@ const PILLARS = [
   },
   {
     icon: Shield,
-    title: "Self-host or SaaS",
-    body: "Run in our cloud, your VPC, or fully air-gapped. Same product, same pricing model, your choice of blast radius.",
+    title: "Flexible Deployments",
+    body: "Run in your private cloud, VPC, or fully air-gapped. Select the blast radius you can defend, with complete code parity.",
     link: { label: "Deployment options", path: "/self-host" },
     variant: "grad" as const,
   },
   {
     icon: Github,
     title: "Open source at the core",
-    body: "Engine, scheduler, and frontend dashboard are Apache 2.0. Self-host the whole stack from public repos — Cloud just runs the same code for you.",
+    body: "Engine, scheduler, and frontend dashboard are Apache 2.0. Self-host the whole stack from public repos with a single helm command.",
     link: { label: "View on GitHub", path: OSS.org },
   },
 ];
@@ -109,10 +109,6 @@ const COMPARE_ROWS = [
     cells: [false, true, false, "partial"] as const,
   },
   {
-    label: "Predictable per-GiB pricing",
-    cells: [false, true, false, false] as const,
-  },
-  {
     label: "Free tag cardinality",
     cells: [false, true, "partial", "partial"] as const,
   },
@@ -129,10 +125,10 @@ export default function HomePage() {
             Observability the way <GradientText>developers actually use it.</GradientText>
           </>
         }
-        subtitle="Unified logs, metrics, and traces with native OpenTelemetry. Instant live tail, intelligent context graphs, and AI SRE on top. Self-hostable in your VPC or fully managed in the cloud."
-        primaryCta={{ label: "Start free", path: "/login", variant: "grad" }}
+        subtitle="Unified logs, metrics, and traces with native OpenTelemetry. Instant live tail, intelligent context graphs, and AI SRE on top. Run fully self-hosted in your VPC or private cloud."
+        primaryCta={{ label: "Self-host now", path: "/self-host", variant: "grad" }}
         secondaryCta={{ label: "Read the docs", path: "/opentelemetry", variant: "secondary" }}
-        meta={["Apache 2.0 licensed", "No credit card", "5-minute setup"]}
+        meta={["Apache 2.0 licensed", "Kubernetes native", "5-minute setup"]}
         visual={
           <Screenshot
             name="overview"
@@ -153,9 +149,9 @@ export default function HomePage() {
           <MetricsStrip
             metrics={[
               { value: 10, suffix: "M", label: "spans / second", grad: true },
-              { value: 0.05, decimals: 2, prefix: "$", suffix: " / GiB", label: "log ingest" },
+              { value: 100, suffix: "%", label: "open source" },
               { value: 200, prefix: "<", suffix: "ms", label: "p99 query latency" },
-              { value: 25, suffix: "× cheaper", label: "than Datadog at scale" },
+              { value: 15, suffix: "×", label: "telemetry compression" },
             ]}
           />
         </div>
@@ -258,8 +254,8 @@ export default function HomePage() {
                 body: "Drop-in for Prometheus queries, alerts, and Grafana dashboards. Migrate at your own pace.",
               },
               {
-                title: "Per-DPM pricing, no cardinality tax",
-                body: "Tags are free. Stop dropping labels just to keep the bill manageable.",
+                title: "Unlimited cardinality, no tag tax",
+                body: "Tags are free. Stop dropping labels just to keep your dashboards fast.",
               },
               {
                 title: "Recording rules + AI baselines",
@@ -429,7 +425,7 @@ export default function HomePage() {
                 Same telemetry. <GradientText>Less lock-in.</GradientText>
               </>
             }
-            lede="Datadog and New Relic ship great UIs on proprietary, black-box systems. Optikk gives you a unified, open-source platform that you can run in your own VPC or use in our cloud, with zero vendor lock-in."
+            lede="Datadog and New Relic ship great UIs on proprietary, black-box systems. Optikk gives you a unified, open-source platform that you can run in your own VPC or private cloud, with zero vendor lock-in."
             align="center"
           />
           <ComparisonTable
@@ -486,9 +482,9 @@ export default function HomePage() {
             <span style={{ color: "#fdba74" }}>Never re-do observability again.</span>
           </>
         }
-        subtitle="Optikk is free up to 5 GiB/day of logs and 50M DPM. Bring your OTel collector. Bring your team. Ship faster on Monday."
-        primary={{ label: "Start free", path: "/login" }}
-        secondary={{ label: "Talk to engineering", path: "/self-host", variant: "secondary" }}
+        subtitle="Optikk is fully open source under the Apache 2.0 license. Bring your OTel collector. Bring your team. Ship faster on Monday."
+        primary={{ label: "Self-host now", path: "/self-host" }}
+        secondary={{ label: "Read the docs", path: "/opentelemetry", variant: "secondary" }}
       />
     </>
   );

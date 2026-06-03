@@ -100,21 +100,6 @@ export function useServiceDetailDrawerModel(
     [dependenciesQuery.data?.edges, serviceName]
   );
 
-  const requestSparkline = useMemo(
-    () => requestTrendSeries.map((r) => Number(r.request_count ?? 0)),
-    [requestTrendSeries]
-  );
-
-  const errorSparkline = useMemo(
-    () => errorTrendSeries.map((r) => Number(r.error_rate ?? 0)),
-    [errorTrendSeries]
-  );
-
-  const latencySparkline = useMemo(
-    () => latencyTrendSeries.map((r) => Number(r.p95 ?? 0)),
-    [latencyTrendSeries]
-  );
-
   const openTraces = useCallback((): void => {
     navigate(
       dynamicNavigateOptions(ROUTES.traces, buildServiceTracesSearch(location.search, serviceName))
@@ -156,9 +141,6 @@ export function useServiceDetailDrawerModel(
     endpointRows,
     upstreamRows,
     downstreamRows,
-    requestSparkline,
-    errorSparkline,
-    latencySparkline,
     openTraces,
     openLogs,
     openFullView,

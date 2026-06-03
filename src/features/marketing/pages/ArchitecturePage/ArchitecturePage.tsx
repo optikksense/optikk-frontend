@@ -350,7 +350,7 @@ PUBLISH livetail:tenant:acme:logs:service=checkout,level=ERROR {
             <span style={{ color: "#fdba74" }}>Bring an OTel collector.</span>
           </>
         }
-        subtitle="Self-host on Kubernetes (Helm bundles Kafka, ClickHouse, MySQL, Redis) or run on Optikk Cloud. Same components, same pricing."
+        subtitle="Self-host on Kubernetes (Helm bundles Kafka, ClickHouse, MySQL, Redis) to run completely in your own infrastructure with zero vendor lock-in."
         primary={{ label: "Self-host options", path: "/self-host" }}
         secondary={{ label: "OpenTelemetry setup", path: "/opentelemetry", variant: "secondary" }}
       />

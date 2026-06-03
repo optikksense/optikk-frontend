@@ -1194,6 +1194,15 @@
     transparent;
 }
 
+.m-code-body code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: inherit;
+  font-family: inherit;
+}
+
 .m-code-body .tok-c {
   color: #6b7c95;
 }

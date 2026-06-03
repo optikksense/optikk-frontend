@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Check, Cloud, ServerCog, ShieldCheck } from "lucide-react";
+import { Check, Database, Layers, ServerCog, ShieldCheck, Terminal } from "lucide-react";
 
 import { dynamicTo } from "@/shared/utils/navigation";
 
@@ -16,72 +16,72 @@ import { SectionHeader } from "../../sections/SectionHeader";
 
 const MODES = [
   {
-    icon: Cloud,
-    name: "Optikk Cloud",
-    pitch: "Fully managed. SOC 2 Type II. EU / US / APAC.",
+    icon: Terminal,
+    name: "Docker Compose (Local)",
+    pitch: "Perfect for local development, testing, and small telemetry volumes.",
     features: [
-      "5-min onboarding",
-      "Auto-scaling ingest + query",
-      "99.95% SLA",
-      "Pager rotation handled",
+      "Up in 10 seconds via docker-compose",
+      "Includes mock generator feeds",
+      "Zero external dependencies required",
+      "Ideal for laptop/sandbox environments",
     ],
-    cta: { label: "Start free", path: "/login" },
+    cta: { label: "View Compose config", path: OSS.frontend },
   },
   {
     icon: ServerCog,
-    name: "Bring Your Own Cloud",
-    pitch: "Data plane in your VPC. Control plane in ours. Same SLA.",
+    name: "Kubernetes (Helm)",
+    pitch: "Production-scale deployment with bundled analytical infrastructure.",
     features: [
-      "Your Kafka, your ClickHouse, your KMS keys",
-      "No telemetry leaves your VPC",
-      "Engineer-attached for first 30 days",
-      "EU / US data residency",
+      "Bundles Kafka, ClickHouse, MySQL, Redis",
+      "Stateless ingestion autoscaling",
+      "Built-in data retention policies",
+      "Rolling upgrades supported out-of-the-box",
     ],
-    cta: { label: "Get a demo", path: "mailto:ramantayal12@gmail.com?subject=BYOC" },
+    cta: { label: "Read Helm guide", path: "/architecture" },
     featured: true,
   },
   {
-    icon: ShieldCheck,
-    name: "Self-host (OSS)",
-    pitch: "Apache 2.0 Helm chart on your Kubernetes. Fully offline supported.",
+    icon: Layers,
+    name: "Terraform (IaC)",
+    pitch: "Deploy into your cloud VPC utilizing managed infrastructure services.",
     features: [
-      "Public repos · no license keys",
-      "Air-gapped binaries available",
-      "Customer-owned upgrade cadence",
-      "FedRAMP-aligned controls",
+      "Integrates MSK, RDS, and ElastiCache",
+      "Fully isolated private networking",
+      "IAM-based access controls",
+      "S3 / GCS deep-storage integration",
     ],
-    cta: { label: "View on GitHub", path: OSS.org },
+    cta: { label: "View TF modules", path: OSS.org },
   },
 ];
 
-const ENTERPRISE = [
+const FEATURES = [
   {
     icon: ShieldCheck,
-    title: "Data residency, real",
-    body: "Pick a region; pick a Kafka cluster and a ClickHouse cluster. Telemetry never leaves the boundary. Audited via deployment manifest.",
+    title: "Data residency by default",
+    body: "Run within your security boundary. S3, Kafka, ClickHouse, MySQL, and Redis remain completely within your VPC.",
   },
   {
     icon: ServerCog,
-    title: "Identity that fits IT",
-    body: "SAML SSO, SCIM provisioning, SCIM deprovisioning, IDP group → role mapping. On every plan.",
+    title: "Built-in SSO",
+    body: "Connect your existing identity providers using SAML SSO and IDP group mapping. Secure by default, no paywalls.",
   },
   {
-    icon: Cloud,
-    title: "Retention without anxiety",
-    body: "Tier hot data in ClickHouse, warm in compressed parts, cold in object-storage archive. 7-year compliance retention supported.",
+    icon: Database,
+    title: "Retention tiering",
+    body: "Store hot data in ClickHouse, warm in compressed storage parts, and cold in S3/GCS buckets. Keep up to 7 years of history.",
   },
   {
-    icon: ShieldCheck,
-    title: "Support that owns outcomes",
-    body: "Named SRE for first 90 days. 15-minute response on P1. Optional white-glove on-call coverage.",
+    icon: Terminal,
+    title: "AI SRE integrated",
+    body: "Grounded AI diagnostic helpers ship natively in the core. Get summaries and diagnostics on your telemetry graph.",
   },
 ];
 
 const FAQS = [
   {
-    question: "What's the difference between BYOC and self-host?",
+    question: "Do you offer commercial support?",
     answer:
-      "BYOC = Optikk's control plane manages a data plane that runs in your VPC. Self-host = you operate both. BYOC is more like SaaS-with-data-residency; self-host is more like Postgres-you-host. Air-gapped customers pick self-host.",
+      "Optikk is 100% open source under the Apache 2.0 license. We do not offer paid commercial support plans or proprietary add-ons. All features, databases, and setups are fully available to the community for free.",
   },
   {
     question: "How big does the Kubernetes cluster need to be?",
@@ -89,14 +89,14 @@ const FAQS = [
       "For up to 10 TB/day of telemetry: a 12-node Kubernetes cluster (8 vCPU / 32 GiB nodes) with a 6-broker Kafka, a 6-shard ClickHouse, a managed or self-run MySQL, and a 3-node Redis. The Helm chart bundles all of it; we provide sizing worksheets for higher scales.",
   },
   {
-    question: "Do you support FedRAMP / HIPAA?",
+    question: "Do you support HIPAA / compliance?",
     answer:
-      "We support customers in HIPAA contexts via BAA on Cloud and BYOC. FedRAMP authorization is in progress for 2026; the self-host distribution ships the same control set today.",
+      "Yes. Since you host the entire platform in your own infrastructure, all data stays within your compliance boundary. Optikk is fully compatible with HIPAA, SOC 2, and FedRAMP requirements when deployed inside your audited environment.",
   },
   {
-    question: "Is the self-host edition crippled vs Cloud?",
+    question: "Is there a paid enterprise edition?",
     answer:
-      "No. Same engine, same UI, same AI SRE. The only difference is who owns the operational toil. Pricing also matches — we don't charge a self-host premium.",
+      "No, Optikk is fully committed to open source. There are no closed-source enterprise forks or feature-gated editions. Every capability (including SAML SSO, clustering, and AI SRE) is included in the open-source repository.",
   },
 ];
 
@@ -110,10 +110,10 @@ export default function SelfHostPage() {
             Run Optikk where your data <GradientText>is supposed to live.</GradientText>
           </>
         }
-        subtitle="Cloud, your VPC, or fully air-gapped. Same engine, same AI SRE, same per-GiB pricing. Pick the blast radius you can defend."
+        subtitle="Run Optikk fully self-hosted in your Kubernetes cluster, private cloud, or air-gapped environments. Same engine, same AI SRE, complete data control."
         primaryCta={{
-          label: "Talk to engineering",
-          path: "mailto:ramantayal12@gmail.com",
+          label: "View on GitHub",
+          path: OSS.org,
           variant: "grad",
         }}
         secondaryCta={{ label: "Architecture", path: "/architecture", variant: "secondary" }}
@@ -167,15 +167,15 @@ export default function SelfHostPage() {
       <section className="m-section" id="security">
         <div className="m-container">
           <SectionHeader
-            eyebrow="Enterprise foundation"
+            eyebrow="Open source foundation"
             title={
               <>
-                What we ship to <GradientText>every team</GradientText>, not just enterprise.
+                What we build into <GradientText>the core</GradientText>, free forever.
               </>
             }
-            lede="No upcharge for the bits that should be defaults: SSO, residency, audit logs, retention. They're in the box from day one."
+            lede="No paywalls for the bits that should be defaults: SSO, audit logs, custom retention, and high-availability setups. They're in the box from day one."
           />
-          <FeatureGrid items={ENTERPRISE} />
+          <FeatureGrid items={FEATURES} />
         </div>
       </section>
 
@@ -189,7 +189,7 @@ export default function SelfHostPage() {
                   Install in one command. <GradientText>Customize the rest in YAML.</GradientText>
                 </>
               }
-              lede="One Helm chart bundles Kafka, ClickHouse, MySQL, and Redis. Point it at a Kubernetes cluster and a license key — the chart handles the rest, including rolling upgrades."
+              lede="One Helm chart bundles Kafka, ClickHouse, MySQL, and Redis. Point it at a Kubernetes cluster — the chart handles the rest, including rolling upgrades."
               align="left"
             />
           </Reveal>
@@ -200,7 +200,6 @@ export default function SelfHostPage() {
                 content: `helm repo add optikk https://charts.optikk.dev
 helm install optikk optikk/optikk \\
   --namespace optikk --create-namespace \\
-  --set license.key=$OPTIKK_LICENSE \\
   --set kafka.brokers=6 \\
   --set clickhouse.shards=6 \\
   --set mysql.replicas=2 \\
@@ -219,7 +218,6 @@ helm install optikk optikk/optikk \\
   clickhouse_subnets = aws_subnet.optikk.*.id
   mysql_endpoint    = aws_rds_cluster.optikk.endpoint
   redis_endpoint    = aws_elasticache_replication_group.optikk.primary_endpoint_address
-  license           = var.optikk_license
 }`,
               },
             ]}
@@ -237,11 +235,11 @@ helm install optikk optikk/optikk \\
       <CTA
         title={
           <>
-            Pick the deployment. <span style={{ color: "#fdba74" }}>We bring the engineers.</span>
+            Deploy in minutes. <span style={{ color: "#fdba74" }}>Own your telemetry.</span>
           </>
         }
-        subtitle="Send us your environment shape and we'll have a sizing doc back within a business day."
-        primary={{ label: "ramantayal12@gmail.com", path: "mailto:ramantayal12@gmail.com" }}
+        subtitle="Join our community of developers self-hosting Optikk. Sizing documentation and Helm charts are available on GitHub."
+        primary={{ label: "View on GitHub", path: OSS.org }}
         secondary={{ label: "Read architecture", path: "/architecture", variant: "secondary" }}
       />
     </>

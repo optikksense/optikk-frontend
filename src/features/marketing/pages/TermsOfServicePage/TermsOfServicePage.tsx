@@ -37,23 +37,12 @@ export default function TermsOfServicePage() {
         <li>Scan, test, or probe the vulnerability of our systems without prior authorization.</li>
       </ul>
 
-      <h2>4. Fees, Billing, and Metering</h2>
+      <h2>4. Self-Hosted Licensing</h2>
       <p>
-        Our Service is billed dynamically based on your actual ingestion rates of logs, metrics, and
-        traces, as described on our Pricing Page.
+        Optikk is fully open source under the Apache License 2.0. The software, engine, scheduler,
+        and dashboards are provided free of charge, and you may compile, deploy, and self-host the
+        Service within your own infrastructure without fees, license keys, or usage caps.
       </p>
-      <ul>
-        <li>
-          Free tier usage (up to 5 GiB/day logs, 50M DPM metrics, 5 GiB/day traces) is provided at
-          no charge.
-        </li>
-        <li>You will be billed monthly for any ingestion exceeding the free tier allotment.</li>
-        <li>
-          You are responsible for all applicable taxes and billing fees associated with your
-          account.
-        </li>
-        <li>All payments are non-refundable unless stated otherwise.</li>
-      </ul>
 
       <h2>5. Intellectual Property</h2>
       <p>

@@ -78,7 +78,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
 
       computedNodes.push({
         name: edge.source,
-        sub: `upstream · ${edge.call_count} rps`,
+        sub: `upstream · ${edge.call_count} calls`,
         x: 30,
         y,
         status,
@@ -90,7 +90,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
         path,
         width: Math.max(2, Math.min(6, edge.call_count / 1000)),
         color: status === "err" ? "var(--err)" : status === "warn" ? "var(--warn)" : "var(--ok)",
-        label: `${fmtNum(edge.call_count)} rps`,
+        label: `${fmtNum(edge.call_count)} calls`,
         lx: 280,
         ly: y + 20,
         dur: "3s",
@@ -114,7 +114,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
 
       computedNodes.push({
         name: edge.target,
-        sub: `downstream · ${edge.call_count} rps`,
+        sub: `downstream · ${edge.call_count} calls`,
         x: 670,
         y,
         status,
@@ -126,7 +126,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
         path,
         width: Math.max(2, Math.min(6, edge.call_count / 1000)),
         color: status === "err" ? "var(--err)" : status === "warn" ? "var(--warn)" : "var(--ok)",
-        label: `${fmtNum(edge.call_count)} rps`,
+        label: `${fmtNum(edge.call_count)} calls`,
         lx: 600,
         ly: y + 20,
         dur: "2.8s",
@@ -435,7 +435,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
                     </span>
                   </div>
                   <div className="mt-0.5 text-[10.5px] text-foreground-muted">
-                    upstream · {fmtNum(d.callCount)} rps
+                    upstream · {fmtNum(d.callCount)} calls
                   </div>
                 </div>
                 <div className="text-right">
@@ -472,7 +472,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
                     </span>
                   </div>
                   <div className="mt-0.5 text-[10.5px] text-foreground-muted">
-                    downstream · {fmtNum(d.callCount)} rps
+                    downstream · {fmtNum(d.callCount)} calls
                   </div>
                 </div>
                 <div className="text-right">

@@ -54,9 +54,6 @@ export default function ServiceDetailDrawer({
           <ServiceDrawerStatGrid
             summaryMetrics={model.summaryMetrics}
             summaryLoading={model.summaryLoading}
-            requestSparkline={model.requestSparkline}
-            errorSparkline={model.errorSparkline}
-            latencySparkline={model.latencySparkline}
           />
 
           <ServiceDrawerMetricBanners

@@ -31,7 +31,13 @@ export function ErrorsKpiStrip({ kpis }: { kpis: ErrorsKpis }): JSX.Element {
         tone="err"
         sparkline={
           kpis.totalErrorsSeries.length >= 2 ? (
-            <SparklineCell values={kpis.totalErrorsSeries} tone="err" width={80} height={24} />
+            <SparklineCell
+              values={kpis.totalErrorsSeries}
+              tone="err"
+              width={80}
+              height={24}
+              className="h-full w-full"
+            />
           ) : undefined
         }
       />

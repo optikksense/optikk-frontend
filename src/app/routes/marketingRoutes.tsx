@@ -12,7 +12,6 @@ const MarketingLayout = lazy(() => import("@/features/marketing/MarketingLayout"
 
 const HomePageLazy = lazy(() => import("@/features/marketing/pages/HomePage/HomePage"));
 const FeaturesPageLazy = lazy(() => import("@/features/marketing/pages/FeaturesPage/FeaturesPage"));
-const PricingPageLazy = lazy(() => import("@/features/marketing/pages/PricingPage/PricingPage"));
 const OpenTelemetryPageLazy = lazy(
   () => import("@/features/marketing/pages/OpenTelemetryPage/OpenTelemetryPage")
 );
@@ -64,13 +63,9 @@ function buildPricingRoute(layoutRoute: any) {
   return createRoute({
     getParentRoute: () => layoutRoute,
     path: ROUTES.pricing.replace(/^\//, ""),
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <PricingPageLazy />
-        </PageTransition>
-      </Suspense>
-    ),
+    loader: () => {
+      throw redirect({ to: ROUTES.selfHost, replace: true });
+    },
   });
 }
 
@@ -199,7 +194,7 @@ export function buildMarketingRoutes(parent: () => typeof rootRoute) {
     getParentRoute: parent,
     path: "product",
     loader: () => {
-      throw redirect({ to: ROUTES.pricing, replace: true });
+      throw redirect({ to: ROUTES.selfHost, replace: true });
     },
   });
 

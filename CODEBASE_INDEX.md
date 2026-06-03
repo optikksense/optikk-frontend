@@ -49,7 +49,7 @@ Marketing pages are rendered through a dedicated layout and bespoke page compone
 
 - `/` → [HomePage.tsx](src/features/marketing/pages/HomePage/HomePage.tsx)
 - `/features` → [FeaturesPage.tsx](src/features/marketing/pages/FeaturesPage/FeaturesPage.tsx)
-- `/pricing` → [PricingPage.tsx](src/features/marketing/pages/PricingPage/PricingPage.tsx)
+- `/pricing` → redirects to `/self-host` (defined in [marketingRoutes.tsx](src/app/routes/marketingRoutes.tsx))
 - `/opentelemetry` → [OpenTelemetryPage.tsx](src/features/marketing/pages/OpenTelemetryPage/OpenTelemetryPage.tsx)
 - `/self-host` → [SelfHostPage.tsx](src/features/marketing/pages/SelfHostPage/SelfHostPage.tsx)
 - `/architecture` → [ArchitecturePage.tsx](src/features/marketing/pages/ArchitecturePage/ArchitecturePage.tsx)

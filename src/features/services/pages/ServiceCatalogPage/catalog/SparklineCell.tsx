@@ -1,8 +1,11 @@
+import { cn } from "@/lib/utils";
+
 interface SparklineCellProps {
   readonly values: number[];
   readonly tone?: "info" | "warn" | "err";
   readonly width?: number;
   readonly height?: number;
+  readonly className?: string;
 }
 
 const TONE_LINE: Record<NonNullable<SparklineCellProps["tone"]>, string> = {
@@ -37,6 +40,7 @@ export function SparklineCell({
   tone = "info",
   width = 86,
   height = 22,
+  className,
 }: SparklineCellProps) {
   if (!values || values.length < 2) {
     return <span className="text-[11px] text-foreground-muted">—</span>;
@@ -49,6 +53,7 @@ export function SparklineCell({
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
       role="presentation"
+      className={cn("block max-w-full", className)}
     >
       <path d={area} fill={TONE_FILL[tone]} />
       <path d={line} fill="none" stroke={TONE_LINE[tone]} strokeWidth={1.25} />

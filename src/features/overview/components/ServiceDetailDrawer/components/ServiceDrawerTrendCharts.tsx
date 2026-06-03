@@ -15,7 +15,12 @@ type ErrorPoint = {
   error_count: number;
   error_rate: number;
 };
-type LatencyPoint = { timestamp: string; p95: number };
+type LatencyPoint = {
+  timestamp: string;
+  p50_ms: number;
+  p95_ms: number;
+  p99_ms: number;
+};
 
 type Props = {
   summaryMetrics: ServiceSummarySnapshot | null;
@@ -89,7 +94,7 @@ function ServiceDrawerTrendChartsComponent({
         ) : latencyTrendLoading ? (
           <div className="text-[12px] text-foreground-muted">Loading latency trend…</div>
         ) : latencyTrendSeries.length > 0 ? (
-          <LatencyChart data={latencyTrendSeries} valueKey="p95" height={260} />
+          <LatencyChart data={latencyTrendSeries} valueKey="p95_ms" height={260} />
         ) : (
           <div className="text-[12px] text-foreground-muted">No latency trend data.</div>
         )}
