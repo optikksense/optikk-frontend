@@ -1,6 +1,7 @@
 import { memo } from "react";
 
-import type { ServiceMapResponse, TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
+import type { TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
+import type { ServiceTopologyResponse } from "@shared/components/ui/charts/ServiceTopologyGraph";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
 import type { VisualizationTab } from "../../../store/tracesStore";
@@ -19,7 +20,7 @@ interface Props {
   readonly onSpanClick: (span: { span_id: string }) => void;
   readonly criticalPathSpanIds: Set<string>;
   readonly errorPathSpanIds: Set<string>;
-  readonly serviceMap: ServiceMapResponse | null;
+  readonly serviceMap: ServiceTopologyResponse | null;
   readonly spanEvents?: readonly SpanEvent[];
   readonly errorGroups?: readonly TraceErrorGroup[];
 }

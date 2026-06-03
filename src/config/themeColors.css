@@ -495,10 +495,13 @@
   /* Mockup specific color variables */
   --ok: #10b981;
   --ok-soft: #d1fae5;
+  --ok-fg: #065f46;
   --warn: #eab308;
   --warn-soft: #fef3c7;
+  --warn-fg: #92400e;
   --err: #ef4444;
   --err-soft: #fee2e2;
+  --err-fg: #991b1b;
   --accent-violet: #6366f1;
   --accent-violet-soft: #eef2ff;
   --chart-1-soft: #dbeafe;
@@ -645,10 +648,13 @@
   /* Mockup specific color variables (dark) */
   --ok: #34d399;
   --ok-soft: rgba(52, 211, 153, 0.16);
+  --ok-fg: #a7f3d0;
   --warn: #fbbf24;
   --warn-soft: rgba(251, 191, 36, 0.16);
+  --warn-fg: #fde68a;
   --err: #f87171;
   --err-soft: rgba(248, 113, 113, 0.16);
+  --err-fg: #fecaca;
   --accent-violet: #a78bfa;
   --accent-violet-soft: rgba(167, 139, 250, 0.16);
   --chart-1-soft: rgba(96, 165, 250, 0.2);

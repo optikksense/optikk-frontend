@@ -1,38 +1,30 @@
-import { Activity, AlertOctagon, Gauge, Smile } from "lucide-react";
+import { useMemo } from "react";
 
-import type { RedSummary } from "@/features/overview/api/overviewHubApi";
+import type { FleetRedMetrics } from "@/features/overview/api/overviewHubApi";
+import { APP_COLORS } from "@config/colorLiterals";
 import StatCard from "@shared/components/ui/cards/StatCard";
+import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
+import { alignChartData } from "@shared/utils/chartDataUtils";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
 import { num } from "../hooks/mappers";
+import type { PerformanceSeries } from "../hooks/useOverviewModel";
 
 interface Props {
-  readonly summary: RedSummary | undefined;
-  readonly apdex: number | null | undefined;
+  readonly summary: FleetRedMetrics | undefined;
+  readonly performance: PerformanceSeries;
   readonly loading: boolean;
 }
 
-function colorForErrorPct(pct: number): string {
-  if (pct > 5) return "var(--color-error)";
-  if (pct > 1) return "var(--color-warning)";
-  return "var(--text-muted)";
-}
+export default function OverviewHero({ summary, performance, loading }: Props) {
+  const { timeBuckets } = useChartTimeBuckets();
 
-// Apdex bands: ≥0.94 excellent, ≥0.85 good, ≥0.7 fair, else poor.
-function colorForApdex(score: number): string {
-  if (score >= 0.94) return "var(--color-healthy)";
-  if (score >= 0.7) return "var(--color-warning)";
-  return "var(--color-error)";
-}
-
-export default function OverviewHero({ summary, apdex, loading }: Props) {
   const totalReq = num(summary?.total_span_count);
   const errPct = num(summary?.avg_error_pct);
   const errCount = num(summary?.total_errors);
-  const hasApdex = apdex !== null && apdex !== undefined;
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       <StatCard
         metric={{
           title: "Requests",
@@ -41,8 +33,6 @@ export default function OverviewHero({ summary, apdex, loading }: Props) {
         }}
         visuals={{
           loading,
-          icon: <Activity size={18} />,
-          iconColor: "var(--color-primary)",
         }}
       />
       <StatCard
@@ -53,9 +43,23 @@ export default function OverviewHero({ summary, apdex, loading }: Props) {
         }}
         visuals={{
           loading,
-          icon: <AlertOctagon size={18} />,
-          iconColor: colorForErrorPct(errPct),
         }}
+      />
+      <StatCard
+        metric={{
+          title: "Latency p50",
+          value: loading ? "—" : formatDuration(summary?.avg_p50_ms),
+          description: loading ? undefined : "median latency",
+        }}
+        visuals={{ loading }}
+      />
+      <StatCard
+        metric={{
+          title: "Latency p95",
+          value: loading ? "—" : formatDuration(summary?.avg_p95_ms),
+          description: loading ? undefined : "upper latency",
+        }}
+        visuals={{ loading }}
       />
       <StatCard
         metric={{
@@ -63,19 +67,7 @@ export default function OverviewHero({ summary, apdex, loading }: Props) {
           value: loading ? "—" : formatDuration(summary?.avg_p99_ms),
           description: loading ? undefined : "tail latency",
         }}
-        visuals={{ loading, icon: <Gauge size={18} />, iconColor: "var(--text-muted)" }}
-      />
-      <StatCard
-        metric={{
-          title: "Apdex",
-          value: loading || !hasApdex ? "—" : apdex.toFixed(2),
-          description: loading ? undefined : "satisfaction (300ms / 1.2s)",
-        }}
-        visuals={{
-          loading,
-          icon: <Smile size={18} />,
-          iconColor: hasApdex ? colorForApdex(apdex) : "var(--text-muted)",
-        }}
+        visuals={{ loading }}
       />
     </div>
   );

@@ -38,7 +38,7 @@ function RankBarRowImpl(props: RankBarRowProps): JSX.Element {
         <div className="relative h-2 min-w-[80px] overflow-hidden rounded bg-[var(--bg-2)]">
           <div
             className={cn(
-              "absolute inset-y-0 left-0 rounded-[3px] transition-[width] duration-[250ms]",
+              "absolute inset-y-0 left-0 rounded-[3px] transition-[width] duration-250",
               fillToneClass(tone)
             )}
             style={{ width: `${widthPct}%` }}

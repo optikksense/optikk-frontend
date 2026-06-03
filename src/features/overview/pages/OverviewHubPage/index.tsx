@@ -1,63 +1,69 @@
-import { LayoutDashboard } from "lucide-react";
-
 import { PageHeader, PageShell } from "@shared/components/ui";
 import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
 import { useInView } from "@shared/hooks/useInView";
 
 import InfrastructureStrip from "./components/InfrastructureStrip";
 import OverviewHero from "./components/OverviewHero";
-import RecentDeploysCard from "./components/RecentDeploysCard";
 import ServiceHealthGrid from "./components/ServiceHealthGrid";
 import SystemPerformanceCard from "./components/SystemPerformanceCard";
 import TopErrorsCard from "./components/TopErrorsCard";
 import {
-  useOverviewApdexQuery,
   useOverviewPerformanceQuery,
   useOverviewSummaryQuery,
   usePerformanceSeries,
   useRankedErrorRows,
-  useRecentDeploysQuery,
   useServiceHealthCells,
   useTopErrorsQuery,
 } from "./hooks/useOverviewModel";
 
+function DegradedBadge({ count }: { readonly count: number }) {
+  if (count <= 0) return null;
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--warn-soft)] px-2 py-0.5 align-middle font-semibold text-[12px] text-[var(--warn-fg)]">
+      <span className="h-1.5 w-1.5 rounded-full bg-[var(--warn)]" />
+      {count} {count === 1 ? "service" : "services"} degraded
+    </span>
+  );
+}
+
 export default function OverviewHubPage() {
   const summaryQ = useOverviewSummaryQuery();
-  const apdexQ = useOverviewApdexQuery();
   const { ref: belowRef, inView: belowInView } = useInView<HTMLDivElement>();
 
-  const performanceQ = useOverviewPerformanceQuery(belowInView);
+  const performanceQ = useOverviewPerformanceQuery(true);
   const errorsQ = useTopErrorsQuery(belowInView);
-  const deploysQ = useRecentDeploysQuery(belowInView);
 
   const summary = summaryQ.data;
   const summaryLoading = summaryQ.isPending && !summaryQ.data;
 
-  const performance = usePerformanceSeries(performanceQ.data?.rr, performanceQ.data?.er);
+  const performance = usePerformanceSeries(performanceQ.data?.pr);
   const healthCells = useServiceHealthCells(summary?.services);
   const topErrors = useRankedErrorRows(errorsQ.data);
 
   const serviceCount = summary?.service_count ?? healthCells.length;
+  const degradedCount = healthCells.filter((c) => c.status !== "ok").length;
 
   return (
     <PageShell>
       <PageHeader
-        title="Overview"
+        title={
+          <span className="inline-flex flex-wrap items-baseline gap-3">
+            Overview
+            <DegradedBadge count={degradedCount} />
+          </span>
+        }
         subtitle={`${serviceCount || 0} services · golden signals for the selected time range`}
-        icon={<LayoutDashboard size={22} />}
       />
 
-      <OverviewHero summary={summary} apdex={apdexQ.data} loading={summaryLoading} />
+      <OverviewHero summary={summary} performance={performance} loading={summaryLoading} />
 
       <div ref={belowRef} className="flex flex-col gap-3">
-        <SystemPerformanceCard series={performance} loading={performanceQ.isPending} />
-
-        <ServiceHealthGrid cells={healthCells} />
-
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-          <TopErrorsCard rows={topErrors} loading={errorsQ.isPending} />
-          <RecentDeploysCard rows={deploysQ.data} loading={deploysQ.isPending} />
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1.5fr_1fr]">
+          <SystemPerformanceCard series={performance} loading={performanceQ.isPending} />
+          <ServiceHealthGrid cells={healthCells} />
         </div>
+
+        <TopErrorsCard rows={topErrors} loading={errorsQ.isPending} />
 
         <InfrastructureStrip />
       </div>

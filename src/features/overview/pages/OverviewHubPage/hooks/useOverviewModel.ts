@@ -3,11 +3,13 @@ import { useMemo } from "react";
 import type { ServiceMetricPoint } from "@/features/metrics/types";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
-import { deploymentsApi } from "@shared/api/deployments/deploymentsApi";
-import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import type { UseQueryResult } from "@tanstack/react-query";
+
+import { tsMs } from "@shared/utils/chartDataUtils";
+
+import type { DashboardRecord } from "@/types/dashboardConfig";
 
 import { mapRedErrorPctRows, mapRedRequestRateRows, num } from "./mappers";
 
@@ -26,6 +28,7 @@ export interface ServiceHealthCell {
 
 export interface ErrorHotspotRow {
   readonly key: string;
+  readonly groupId: string;
   readonly serviceName: string;
   readonly operationName: string;
   readonly errorCount: number;
@@ -58,33 +61,7 @@ function toCell(row: ServiceMetricPoint): ServiceHealthCell {
 export function useOverviewSummaryQuery() {
   return useTimeRangeQuery(
     "overview-summary",
-    (_team, start, end) => overviewHubApi.getRedSummary(start, end),
-    { staleTime: OVERVIEW_QUERY_STALE_MS }
-  );
-}
-
-/**
- * Fleet-wide Apdex for the hero KPI. The backend returns one row per service;
- * we fold them into a single score weighted by request volume
- * (apdex = (satisfied + 0.5·tolerating) / total).
- */
-export function useOverviewApdexQuery(): UseQueryResult<number | null> {
-  return useTimeRangeQuery<number | null>(
-    "overview-apdex",
-    async (_team, start, end) => {
-      const rows = await overviewHubApi.getApdex(start, end);
-      if (!rows || rows.length === 0) return null;
-      let satisfied = 0;
-      let tolerating = 0;
-      let total = 0;
-      for (const r of rows) {
-        satisfied += num(r.satisfied);
-        tolerating += num(r.tolerating);
-        total += num(r.satisfied) + num(r.tolerating) + num(r.frustrated);
-      }
-      if (total === 0) return null;
-      return (satisfied + tolerating * 0.5) / total;
-    },
+    (_team, start, end) => overviewHubApi.getFleetRedMetrics(start, end),
     { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
 }
@@ -93,11 +70,8 @@ export function useOverviewPerformanceQuery(enabled: boolean) {
   return useTimeRangeQuery(
     "overview-performance",
     async (_team, start, end) => {
-      const [rr, er] = await Promise.all([
-        overviewHubApi.getRedRequestRateSeries(start, end),
-        overviewHubApi.getRedErrorRateSeries(start, end),
-      ]);
-      return { rr, er };
+      const pr = await overviewHubApi.getPerformanceSeries(start, end);
+      return { pr };
     },
     { staleTime: OVERVIEW_QUERY_STALE_MS, enabled }
   );
@@ -114,6 +88,7 @@ export function useTopErrorsQuery(enabled: boolean): UseQueryResult<ErrorHotspot
         const totalCount = num(r.total_count);
         return {
           key: `${r.service_name}::${r.operation_name}`,
+          groupId: String(r.group_id ?? ""),
           serviceName: String(r.service_name ?? "unknown"),
           operationName: String(r.operation_name ?? "unknown"),
           errorCount,
@@ -126,35 +101,30 @@ export function useTopErrorsQuery(enabled: boolean): UseQueryResult<ErrorHotspot
   );
 }
 
-export function useRecentDeploysQuery(enabled: boolean): UseQueryResult<ServiceLatestDeployment[]> {
-  return useTimeRangeQuery<ServiceLatestDeployment[]>(
-    "overview-recent-deploys",
-    () => deploymentsApi.getLatestByService(),
-    { staleTime: OVERVIEW_QUERY_STALE_MS, enabled }
-  );
-}
-
 export interface PerformanceSeries {
   readonly requestSeries: Record<string, Array<Record<string, unknown>>>;
   readonly errorSeries: Record<string, Array<Record<string, unknown>>>;
+  readonly requestRows: DashboardRecord[];
+  readonly errorRows: DashboardRecord[];
   readonly hasRequests: boolean;
   readonly hasErrors: boolean;
 }
 
 export function usePerformanceSeries(
-  rrRaw: unknown[] | undefined,
-  erRaw: unknown[] | undefined
+  prRaw: unknown[] | undefined
 ): PerformanceSeries {
   return useMemo(() => {
-    const rrRows = mapRedRequestRateRows(rrRaw ?? []);
-    const erRows = mapRedErrorPctRows(erRaw ?? []);
+    const rrRows = mapRedRequestRateRows(prRaw ?? []);
+    const erRows = mapRedErrorPctRows(prRaw ?? []);
     return {
       requestSeries: groupTimeseries(rrRows, "service_name"),
       errorSeries: groupTimeseries(erRows, "service_name"),
+      requestRows: rrRows,
+      errorRows: erRows,
       hasRequests: rrRows.length > 0,
       hasErrors: erRows.length > 0,
     };
-  }, [rrRaw, erRaw]);
+  }, [prRaw]);
 }
 
 export function useServiceHealthCells(

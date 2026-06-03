@@ -178,32 +178,6 @@ export type SpanAttributesRecord = z.infer<typeof spanAttributesSchema>;
 export type RelatedTraceRecord = z.infer<typeof relatedTraceSchema>;
 export type SpanLinkRecord = z.infer<typeof spanLinkSchema>;
 
-export const serviceMapNodeSchema = z
-  .object({
-    service: z.string(),
-    span_count: z.coerce.number(),
-    error_count: z.coerce.number(),
-    total_ms: z.coerce.number(),
-  })
-  .strict();
-
-export const serviceMapEdgeSchema = z
-  .object({
-    from: z.string(),
-    to: z.string(),
-    call_count: z.coerce.number(),
-    error_count: z.coerce.number(),
-    total_ms: z.coerce.number(),
-  })
-  .strict();
-
-export const serviceMapResponseSchema = z
-  .object({
-    nodes: z.union([z.array(serviceMapNodeSchema), z.null()]).transform((v) => v ?? []),
-    edges: z.union([z.array(serviceMapEdgeSchema), z.null()]).transform((v) => v ?? []),
-  })
-  .strict();
-
 export const traceErrorSpanSchema = z
   .object({
     span_id: z.string(),
@@ -224,7 +198,4 @@ export const traceErrorGroupSchema = z
   })
   .strict();
 
-export type ServiceMapNode = z.infer<typeof serviceMapNodeSchema>;
-export type ServiceMapEdge = z.infer<typeof serviceMapEdgeSchema>;
-export type ServiceMapResponse = z.infer<typeof serviceMapResponseSchema>;
 export type TraceErrorGroup = z.infer<typeof traceErrorGroupSchema>;

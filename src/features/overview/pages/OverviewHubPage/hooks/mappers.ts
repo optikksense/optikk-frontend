@@ -17,7 +17,7 @@ export function mapRedRequestRateRows(rows: unknown[]): DashboardRecord[] {
     return {
       timestamp: str(r.timestamp ?? r.time_bucket),
       service_name: str(r.service_name ?? r.serviceName),
-      value: num(r.rps ?? r.value ?? r.request_count),
+      value: num(r.request_count ?? r.value ?? r.rps),
       request_count: num(r.request_count ?? r.rps),
     };
   });

@@ -2,6 +2,8 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
+import { useChartTimeBuckets } from "@/shared/hooks/useChartTimeBuckets";
+import { alignChartData } from "@/shared/utils/chartDataUtils";
 import { dynamicNavigateOptions, dynamicTo } from "@/shared/utils/navigation";
 
 import { buildServiceLogsSearch, buildServiceTracesSearch } from "../../serviceDrawerState";
@@ -24,6 +26,7 @@ export function useServiceDetailDrawerModel(
   const navigate = useNavigate();
   const location = useLocation();
   const normalizedServiceName = normalizeServiceKey(serviceName);
+  const { timeBuckets } = useChartTimeBuckets();
 
   const {
     metricsQuery,
@@ -101,23 +104,18 @@ export function useServiceDetailDrawerModel(
   );
 
   const requestSparkline = useMemo(
-    () => requestTrendSeries.map((point) => Number(point.request_count ?? 0)),
-    [requestTrendSeries]
+    () => alignChartData(requestTrendSeries, ["request_count"], timeBuckets),
+    [requestTrendSeries, timeBuckets]
   );
 
   const errorSparkline = useMemo(
-    () =>
-      errorTrendSeries.map((point) => {
-        const requests = Number(point.request_count ?? 0);
-        const errors = Number(point.error_count ?? 0);
-        return requests > 0 ? (errors * 100) / requests : 0;
-      }),
-    [errorTrendSeries]
+    () => alignChartData(errorTrendSeries, ["error_rate"], timeBuckets),
+    [errorTrendSeries, timeBuckets]
   );
 
   const latencySparkline = useMemo(
-    () => latencyTrendSeries.map((point) => Number(point.p95 ?? 0)),
-    [latencyTrendSeries]
+    () => alignChartData(latencyTrendSeries, ["p95"], timeBuckets),
+    [latencyTrendSeries, timeBuckets]
   );
 
   const openTraces = useCallback((): void => {

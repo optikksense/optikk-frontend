@@ -21,14 +21,14 @@ interface LegalLayoutProps {
 }
 
 const SIDEBAR_LINK_BASE =
-  "flex items-center px-4 py-2.5 rounded-lg text-sm font-medium no-underline whitespace-nowrap transition-all duration-[var(--duration-fast)] ease-[var(--ease-default)]";
+  "flex items-center px-4 py-2.5 rounded-lg text-sm font-medium no-underline whitespace-nowrap transition-all duration-fast ease-default";
 const SIDEBAR_LINK_INACTIVE =
   "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]";
 const SIDEBAR_LINK_ACTIVE =
   "text-[var(--color-primary-on-bg)] bg-[var(--color-primary)] font-semibold";
 
 const PAGING_BTN_BASE =
-  "flex flex-col gap-1 px-5 py-4 border border-[var(--border-color)] rounded-xl no-underline max-w-[260px] flex-1 transition-all duration-[var(--duration-fast)] ease-[var(--ease-default)] hover:border-[var(--color-primary)] hover:bg-[var(--bg-secondary)]";
+  "flex flex-col gap-1 px-5 py-4 border border-[var(--border-color)] rounded-xl no-underline max-w-[260px] flex-1 transition-all duration-fast ease-default hover:border-[var(--color-primary)] hover:bg-[var(--bg-secondary)]";
 
 function LegalSidebar({ currentKey }: { readonly currentKey: LegalKey }) {
   return (

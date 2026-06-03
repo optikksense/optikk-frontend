@@ -8,7 +8,6 @@ import {
 	criticalPathSpanSchema,
 	errorPathSpanSchema,
 	relatedTraceSchema,
-	serviceMapResponseSchema,
 	spanAttributesSchema,
 	spanEventSchema,
 	spanRecordSchema,
@@ -18,12 +17,15 @@ import type {
 	CriticalPathSpanRecord,
 	ErrorPathSpanRecord,
 	RelatedTraceRecord,
-	ServiceMapResponse,
 	SpanAttributesRecord,
 	SpanEventRecord,
 	SpanRecord,
 	TraceErrorGroup,
 } from "@shared/api/schemas/tracesSchemas";
+import {
+	type ServiceTopologyResponse,
+	topologyResponseSchema,
+} from "@shared/components/ui/charts/ServiceTopologyGraph";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -365,9 +367,46 @@ export async function getRelatedTraces(
   return validateResponse(z.array(relatedTraceSchema), data);
 }
 
-export async function getServiceMap(traceId: string): Promise<ServiceMapResponse> {
+export async function getServiceMap(traceId: string): Promise<ServiceTopologyResponse> {
   const data = await api.get(`${BASE}/traces/${traceId}/service-map`);
-  return validateResponse(serviceMapResponseSchema, data);
+  return topologyResponseSchema.parse(data ?? { nodes: [], edges: [] });
+}
+
+/** Per-service p95/p99 baseline from the RED summary, keyed by service name. */
+export interface ServiceLatencyBaseline {
+  readonly p95: number;
+  readonly p99: number;
+}
+
+const redLatencySummarySchema = z
+  .object({
+    services: z
+      .array(
+        z
+          .object({
+            service_name: z.string(),
+            p95_latency: z.coerce.number().default(0),
+            p99_latency: z.coerce.number().default(0),
+          })
+          .passthrough()
+      )
+      .default([]),
+  })
+  .passthrough();
+
+export async function getServiceLatencyBaselines(
+  startMs: number,
+  endMs: number
+): Promise<Map<string, ServiceLatencyBaseline>> {
+  const data = await api.get(`${BASE}/spans/red/summary`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
+  const parsed = redLatencySummarySchema.parse(data ?? {});
+  const out = new Map<string, ServiceLatencyBaseline>();
+  for (const s of parsed.services) {
+    out.set(s.service_name, { p95: s.p95_latency, p99: s.p99_latency });
+  }
+  return out;
 }
 
 export async function getTraceErrors(traceId: string): Promise<TraceErrorGroup[]> {
@@ -384,5 +423,6 @@ export const tracesService = {
   getSpanAttributes,
   getRelatedTraces,
   getServiceMap,
+  getServiceLatencyBaselines,
   getTraceErrors,
 };

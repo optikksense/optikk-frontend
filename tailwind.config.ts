@@ -193,6 +193,18 @@ const config: Config = {
           to: { opacity: "1", maxHeight: "600px" },
         },
       },
+      transitionDuration: {
+        "80": "80ms",
+        "120": "120ms",
+        "250": "250ms",
+        fast: "var(--duration-fast)",
+        normal: "var(--duration-normal)",
+        slow: "var(--duration-slow)",
+      },
+      transitionTimingFunction: {
+        default: "var(--ease-default)",
+        spring: "var(--ease-spring)",
+      },
     },
   },
   plugins: [tailwindcssAnimate],

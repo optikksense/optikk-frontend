@@ -13,7 +13,6 @@ import { getServiceTopology } from "@shared/components/ui/charts/ServiceTopology
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-
 interface RouteTopRow {
   readonly service_name?: string;
   readonly http_route?: string;
@@ -43,7 +42,6 @@ export async function getServiceMetrics(
     p99_latency: node.p99_latency_ms,
   }));
 }
-
 
 export async function getTopEndpoints(
   s: RequestTime,

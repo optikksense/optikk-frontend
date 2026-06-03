@@ -61,7 +61,7 @@ export default function AlertGroupCard({ service, alerts, onAlertClick }: AlertG
         {alerts.map((alert) => (
           <li
             key={alert.id}
-            className="flex cursor-default items-center gap-2.5 px-4 py-2 transition-[background] duration-[0.12s] hover:bg-accent"
+            className="flex cursor-default items-center gap-2.5 px-4 py-2 transition-[background] duration-120 hover:bg-accent"
             onClick={() => onAlertClick?.(alert.id)}
             role={onAlertClick ? "button" : undefined}
             tabIndex={onAlertClick ? 0 : undefined}
