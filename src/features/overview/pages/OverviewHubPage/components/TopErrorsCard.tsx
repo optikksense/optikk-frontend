@@ -1,8 +1,7 @@
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
 import { Skeleton, Surface } from "@/components/ui";
-import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
 import { ROUTES } from "@/shared/constants/routes";
 import { formatNumber, formatPercentage } from "@shared/utils/formatters";
 
@@ -14,9 +13,9 @@ interface Props {
 }
 
 function severityColor(rate: number): string {
-  if (rate >= 5) return "var(--color-critical)";
-  if (rate >= 1) return "var(--color-degraded)";
-  return "var(--color-info)";
+  if (rate >= 5) return "var(--err)";
+  if (rate >= 1) return "var(--warn)";
+  return "var(--text-secondary)";
 }
 
 function Row({ row, onOpen }: { readonly row: ErrorHotspotRow; readonly onOpen: () => void }) {
@@ -51,11 +50,10 @@ function Row({ row, onOpen }: { readonly row: ErrorHotspotRow; readonly onOpen: 
 
 export default function TopErrorsCard({ rows, loading }: Props) {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const open = (row: ErrorHotspotRow): void => {
-    const search = buildServiceDrawerSearch(location.search, row.serviceName);
-    navigate({ to: location.pathname + search });
+    if (!row.groupId) return;
+    navigate({ to: `/errors/${encodeURIComponent(row.groupId)}` });
   };
 
   return (

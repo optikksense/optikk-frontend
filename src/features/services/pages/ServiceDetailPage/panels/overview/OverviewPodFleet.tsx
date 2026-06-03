@@ -50,8 +50,8 @@ export function OverviewPodFleet({ serviceName }: { serviceName: string }) {
                   ? "var(--warn)"
                   : "var(--ok)";
 
-            const cpu = pod.cpu_pct ?? 0;
-            const mem = pod.mem_pct ?? 0;
+            const cpu = pod.cpu;
+            const mem = pod.mem;
 
             return (
               <div

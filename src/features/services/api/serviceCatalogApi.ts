@@ -60,7 +60,7 @@ export interface RedServiceRow {
   readonly p99_latency: number;
 }
 
-export interface RedSummary {
+export interface ServiceCatalogRedSummary {
   readonly service_count: number;
   readonly total_span_count: number;
   readonly total_errors: number;
@@ -73,8 +73,8 @@ export interface RedSummary {
 }
 
 export interface RedSummaryWithComparison {
-  readonly data: RedSummary;
-  readonly comparison?: RedSummary;
+  readonly data: ServiceCatalogRedSummary;
+  readonly comparison?: ServiceCatalogRedSummary;
 }
 
 export async function getRedSummaryWithComparison(
@@ -87,7 +87,7 @@ export async function getRedSummaryWithComparison(
   if (typeof raw === "object" && raw !== null && "data" in (raw as Record<string, unknown>)) {
     return raw as RedSummaryWithComparison;
   }
-  return { data: raw as RedSummary };
+  return { data: raw as ServiceCatalogRedSummary };
 }
 
 export interface RequestRatePoint {

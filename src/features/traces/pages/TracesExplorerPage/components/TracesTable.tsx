@@ -41,22 +41,43 @@ export function TracesTable({
         <thead className="font-semibold text-[11.5px] text-foreground-muted uppercase tracking-[0.06em]">
           <tr style={{ borderBottom: "1px solid var(--line-2)" }}>
             <th className="py-2.5 pl-[18px]">
-              <div className="resize-x overflow-hidden whitespace-nowrap" style={{ width: 110 }}>Time</div>
+              <div className="resize-x overflow-hidden whitespace-nowrap" style={{ width: 110 }}>
+                Time
+              </div>
             </th>
             <th className="py-2.5">
-              <div className="resize-x overflow-hidden whitespace-nowrap" style={{ minWidth: 150 }}>Operation</div>
+              <div className="resize-x overflow-hidden whitespace-nowrap" style={{ minWidth: 150 }}>
+                Operation
+              </div>
             </th>
             <th className="py-2.5 text-right">
-              <div className="resize-x overflow-hidden whitespace-nowrap ml-auto" style={{ width: 90 }}>Duration</div>
+              <div
+                className="resize-x overflow-hidden whitespace-nowrap ml-auto"
+                style={{ width: 90 }}
+              >
+                Duration
+              </div>
             </th>
             <th className="px-3 py-2.5">
-              <div className="resize-x overflow-hidden whitespace-nowrap" style={{ minWidth: 150, width: "100%" }}>Latency bar</div>
+              <div
+                className="resize-x overflow-hidden whitespace-nowrap"
+                style={{ minWidth: 150, width: "100%" }}
+              >
+                Latency bar
+              </div>
             </th>
             <th className="py-2.5">
-              <div className="resize-x overflow-hidden whitespace-nowrap" style={{ width: 80 }}>Status</div>
+              <div className="resize-x overflow-hidden whitespace-nowrap" style={{ width: 80 }}>
+                Status
+              </div>
             </th>
             <th className="py-2.5 text-right">
-              <div className="resize-x overflow-hidden whitespace-nowrap ml-auto" style={{ width: 56 }}>Spans</div>
+              <div
+                className="resize-x overflow-hidden whitespace-nowrap ml-auto"
+                style={{ width: 56 }}
+              >
+                Spans
+              </div>
             </th>
             <th className="w-[18px] py-2.5" />
           </tr>

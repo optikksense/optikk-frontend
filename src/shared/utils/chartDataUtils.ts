@@ -19,7 +19,6 @@ export function tsMs(ts: string | number | null | undefined): number {
   return Number.isNaN(ms) ? Number.NaN : ms;
 }
 
-/** Return the first non-empty value from `row[key]` across the given key aliases. */
 export function firstValue<T>(row: unknown, keys: string[], fallback: T): T {
   if (!row || typeof row !== "object") return fallback;
   const record = row as Record<string, unknown>;
@@ -31,3 +30,5 @@ export function firstValue<T>(row: unknown, keys: string[], fallback: T): T {
   }
   return fallback;
 }
+
+

@@ -1,4 +1,4 @@
-import type { HostForService } from "@/features/services/api/serviceHostsApi";
+import type { Host } from "@/features/infrastructure/api/hostsApi";
 
 function median(values: number[]): number {
   if (values.length === 0) return 0;
@@ -12,16 +12,18 @@ function median(values: number[]): number {
  * rest of the fleet — purely from the RED metrics already fetched (no extra
  * call). Only meaningful with ≥3 instances; below that we flag nothing.
  */
-export function outlierHostIds(hosts: readonly HostForService[]): ReadonlySet<string> {
+export function outlierHostIds(hosts: readonly Host[]): ReadonlySet<string> {
   if (hosts.length < 3) return new Set();
-  const medErr = median(hosts.map((h) => h.error_rate));
-  const medP99 = median(hosts.map((h) => h.p99_ms));
+  const medErr = median(hosts.map((h) => h.error_rate ?? 0));
+  const medP99 = median(hosts.map((h) => h.p99_ms ?? 0));
   const errThreshold = Math.max(medErr * 2, 0.02);
   const p99Threshold = medP99 * 1.75;
   const out = new Set<string>();
   for (const h of hosts) {
-    const errOutlier = h.error_rate >= errThreshold && h.error_rate > 0;
-    const p99Outlier = medP99 > 0 && h.p99_ms >= p99Threshold;
+    const errRate = h.error_rate ?? 0;
+    const p99 = h.p99_ms ?? 0;
+    const errOutlier = errRate >= errThreshold && errRate > 0;
+    const p99Outlier = medP99 > 0 && p99 >= p99Threshold;
     if (errOutlier || p99Outlier) out.add(h.host);
   }
   return out;

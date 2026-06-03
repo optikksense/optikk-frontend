@@ -100,7 +100,7 @@ function KpiTile({ label, endpoint, metricKey, host, tone }: KpiTileProps) {
 
 export function HostDetailKpiCards({ host }: HostDetailKpiCardsProps) {
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
       <KpiTile
         label="CPU"
         endpoint="/v1/infrastructure/cpu/by-instance"
@@ -114,13 +114,6 @@ export function HostDetailKpiCards({ host }: HostDetailKpiCardsProps) {
         metricKey="memory"
         host={host}
         tone={memoryTone}
-      />
-      <KpiTile
-        label="Disk"
-        endpoint="/v1/infrastructure/disk/by-instance"
-        metricKey="disk"
-        host={host}
-        tone={diskTone}
       />
     </div>
   );

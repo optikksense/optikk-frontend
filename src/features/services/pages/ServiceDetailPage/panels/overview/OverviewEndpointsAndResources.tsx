@@ -42,8 +42,8 @@ export function OverviewEndpointsAndResources({ serviceName }: { serviceName: st
       return { maxCpu: 0, maxMem: 0, totalPods: 0 };
     }
 
-    const cpuPcts = list.map((h) => h.cpu_pct ?? 0);
-    const memPcts = list.map((h) => h.mem_pct ?? 0);
+    const cpuPcts = list.map((h) => h.cpu);
+    const memPcts = list.map((h) => h.mem);
 
     return {
       maxCpu: Math.max(...cpuPcts),

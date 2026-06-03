@@ -1,12 +1,14 @@
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 
 import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
-import { dynamicTo } from "@shared/utils/navigation";
 
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
+import { queryFingerprintId } from "@/features/saturation/utils/queryFingerprintId";
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
 import { ROUTES } from "@/shared/constants/routes";
+import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
 import { useDatabaseSlowQueriesPreview } from "../hooks/useDatabaseSlowQueriesPreview";
 
@@ -48,27 +50,22 @@ const COLUMNS: SimpleTableColumn<SlowQueryPatternRow>[] = [
     sorter: (a, b) => a.call_count - b.call_count,
     render: (_v, row) => <span className="font-mono">{fmtNum(row.call_count)}</span>,
   },
+  {
+    title: "",
+    key: "chevron",
+    width: 34,
+    render: () => <ChevronRight size={14} className="text-foreground-muted" />,
+  },
 ];
 
-function ViewAllAction() {
-  return (
-    <Link
-      to={dynamicTo(ROUTES.saturationDatabaseQueries)}
-      className="text-[11px] text-[var(--color-primary,#3b82f6)] hover:underline"
-    >
-      View all →
-    </Link>
-  );
-}
-
 export function SlowQueriesPreviewTable() {
+  const navigate = useNavigate();
   const { data, isPending } = useDatabaseSlowQueriesPreview(8);
   const rows = data ?? [];
   return (
     <PanelCard
-      title="Slow queries"
+      title="Top queries by total time"
       subtitle={data ? `top ${Math.min(rows.length, 8)} by p99` : undefined}
-      action={<ViewAllAction />}
       padded={false}
     >
       {rows.length === 0 ? (
@@ -80,6 +77,15 @@ export function SlowQueriesPreviewTable() {
           columns={COLUMNS}
           dataSource={rows}
           rowKey={(r, i) => `${r.collection_name}::${i}`}
+          onRow={(row) => ({
+            onClick: () =>
+              navigate(
+                dynamicNavigateOptions(
+                  ROUTES.saturationDatabaseQuery.replace("$queryId", queryFingerprintId(row))
+                )
+              ),
+            style: { cursor: "pointer" },
+          })}
         />
       )}
     </PanelCard>

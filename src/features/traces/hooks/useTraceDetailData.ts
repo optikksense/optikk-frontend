@@ -1,5 +1,5 @@
 import { getTraceLogs } from "@/features/log/api/traceLogsApi";
-import { tracesService } from "@shared/api/tracesService";
+import { tracesService } from "../api/tracesApi";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";

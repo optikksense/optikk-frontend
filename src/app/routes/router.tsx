@@ -19,12 +19,14 @@ const InfrastructureHubPage = lazy(
   () => import("@/features/infrastructure/pages/InfrastructureHubPage")
 );
 const OverviewHubPage = lazy(() => import("@/features/overview/pages/OverviewHubPage"));
-const DatabaseQueriesPage = lazy(() => import("@/features/saturation/pages/DatabaseQueriesPage"));
 const SaturationKafkaPage = lazy(
   () => import("@/features/saturation/pages/SaturationKafkaPage/SaturationKafkaPage")
 );
 const SaturationDatabasePage = lazy(
   () => import("@/features/saturation/pages/SaturationDatabasePage/SaturationDatabasePage")
+);
+const SaturationDatabaseQueryPage = lazy(
+  () => import("@/features/saturation/pages/SaturationDatabaseQueryPage")
 );
 const ErrorTrackingPage = lazy(() => import("@/features/errors/pages/ErrorTrackingPage"));
 const ErrorGroupDetailPage = lazy(() => import("@/features/errors/pages/ErrorGroupDetailPage"));
@@ -100,9 +102,12 @@ const protectedExplorerRoutes = getExplorerRoutes().map((route) =>
 const overviewRoute = createProtected(ROUTES.overview, OverviewHubPage);
 const infrastructureRoute = createProtected(ROUTES.infrastructure, InfrastructureHubPage);
 const serviceDetailRoute = createProtected(ROUTES.serviceDetail, ServiceDetailPage);
-const databaseQueriesRoute = createProtected(ROUTES.saturationDatabaseQueries, DatabaseQueriesPage);
 const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, SaturationKafkaPage);
 const saturationDatabaseRoute = createProtected(ROUTES.saturationDatabase, SaturationDatabasePage);
+const saturationDatabaseQueryRoute = createProtected(
+  ROUTES.saturationDatabaseQuery,
+  SaturationDatabaseQueryPage
+);
 const errorTrackingRoute = createProtected(ROUTES.errors, ErrorTrackingPage);
 const errorGroupDetailRoute = createProtected(ROUTES.errorGroupDetail, ErrorGroupDetailPage);
 const servicesCatalogRoute = createProtected(ROUTES.services, ServiceCatalogPage);
@@ -152,9 +157,9 @@ const routeTree = rootRoute.addChildren([
     overviewRoute,
     infrastructureRoute,
     serviceDetailRoute,
-    databaseQueriesRoute,
     kafkaOverviewRoute,
     saturationDatabaseRoute,
+    saturationDatabaseQueryRoute,
     errorTrackingRoute,
     errorGroupDetailRoute,
     servicesCatalogRoute,

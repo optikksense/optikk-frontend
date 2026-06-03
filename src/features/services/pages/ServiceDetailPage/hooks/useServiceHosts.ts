@@ -1,11 +1,11 @@
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { type HostForService, getHostsForService } from "@/features/services/api/serviceHostsApi";
+import { type Host, getHosts } from "@/features/infrastructure/api/hostsApi";
 
 export function useServiceHosts(serviceName: string) {
-  return useTimeRangeQuery<HostForService[]>(
+  return useTimeRangeQuery<Host[]>(
     "service-detail.hosts",
-    (_team, start, end) => getHostsForService(start, end, serviceName),
+    (_team, start, end) => getHosts(start, end, serviceName),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
   );
 }

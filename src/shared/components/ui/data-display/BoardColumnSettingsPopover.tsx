@@ -56,7 +56,7 @@ export default function BoardColumnSettingsPopover({
                   onClick={() => onToggle(column.key)}
                 >
                   <span
-                    className={`flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded border text-[9px] transition-all duration-[0.12s] ${
+                    className={`flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded border text-[9px] transition-all duration-120 ${
                       checked ? "border-primary bg-primary text-white" : "border-border"
                     }`}
                     style={{ borderWidth: "1.5px" }}

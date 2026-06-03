@@ -4,8 +4,7 @@ import type uPlot from "uplot";
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
-import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { tsMs } from "@shared/utils/chartDataUtils";
 
 import type { LatencyPercentilesPoint } from "@/features/services/api/serviceDetailApi";
 
@@ -19,45 +18,17 @@ interface ChartData {
 }
 
 function buildSeries(
-  rows: LatencyPercentilesPoint[] | undefined,
-  timeBuckets: string[]
+  rows: LatencyPercentilesPoint[] | undefined
 ): ChartData {
-  const timestamps = timeBuckets.map((t) => tsMs(t) / 1000);
-
-  if (!rows || rows.length === 0) {
-    const zeros = timestamps.map(() => 0);
-    return {
-      timestamps,
-      series: [
-        { label: "p50", values: [...zeros], color: "var(--color-healthy,#73c991)" },
-        { label: "p95", values: [...zeros], color: "var(--color-degraded,#f7b63a)" },
-        { label: "p99", values: [...zeros], color: "var(--color-critical,#f04438)" },
-      ],
-    };
-  }
-
-  // Build lookup maps from API rows keyed by normalized timestamp
-  const mapP50: Record<string, number> = {};
-  const mapP95: Record<string, number> = {};
-  const mapP99: Record<string, number> = {};
-  for (const r of rows) {
-    const key = tsKey(r.timestamp);
-    // Use max for latency when multiple rows hit the same bucket
-    mapP50[key] = Math.max(mapP50[key] ?? 0, r.p50_ms);
-    mapP95[key] = Math.max(mapP95[key] ?? 0, r.p95_ms);
-    mapP99[key] = Math.max(mapP99[key] ?? 0, r.p99_ms);
-  }
-
-  const p50 = timeBuckets.map((t) => mapP50[tsKey(t)] ?? 0);
-  const p95 = timeBuckets.map((t) => mapP95[tsKey(t)] ?? 0);
-  const p99 = timeBuckets.map((t) => mapP99[tsKey(t)] ?? 0);
+  const activeRows = rows ?? [];
+  const timestamps = activeRows.map((r) => tsMs(r.timestamp) / 1000);
 
   return {
     timestamps,
     series: [
-      { label: "p50", values: p50, color: "var(--color-healthy,#73c991)" },
-      { label: "p95", values: p95, color: "var(--color-degraded,#f7b63a)" },
-      { label: "p99", values: p99, color: "var(--color-critical,#f04438)" },
+      { label: "p50", values: activeRows.map((r) => r.p50_ms), color: "var(--color-healthy,#73c991)" },
+      { label: "p95", values: activeRows.map((r) => r.p95_ms), color: "var(--color-degraded,#f7b63a)" },
+      { label: "p99", values: activeRows.map((r) => r.p99_ms), color: "var(--color-critical,#f04438)" },
     ],
   };
 }
@@ -83,8 +54,7 @@ function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[]
 
 export function LatencyPanel({ serviceName }: { serviceName: string }) {
   const query = useLatencyPercentiles(serviceName);
-  const { timeBuckets } = useChartTimeBuckets();
-  const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
+  const data = useMemo(() => buildSeries(query.data), [query.data]);
   return (
     <PanelCard title="Latency" subtitle="p50 / p95 / p99 · last 60m">
       <ChartBody data={data} plugins={[]} />

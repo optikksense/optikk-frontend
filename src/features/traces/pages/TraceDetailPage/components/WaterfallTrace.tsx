@@ -285,7 +285,7 @@ function Row({
     <div
       className={cn(
         wfGrid,
-        "ease h-[28px] cursor-pointer border-[color-mix(in_oklch,var(--border-color),transparent_70%)] border-b transition-[background] duration-[0.08s] hover:bg-secondary",
+        "ease h-[28px] cursor-pointer border-[color-mix(in_oklch,var(--border-color),transparent_70%)] border-b transition-[background] duration-80 hover:bg-secondary",
         isSelected && "bg-[var(--color-primary-subtle-15)]",
         dim && "opacity-[0.35]"
       )}
@@ -303,7 +303,7 @@ function Row({
         <button
           type="button"
           className={cn(
-            "ease inline-grid h-[14px] w-[14px] flex-none cursor-pointer place-items-center rounded-[3px] border-0 bg-transparent text-foreground-caption transition-transform duration-[0.12s] hover:bg-muted hover:text-foreground",
+            "ease inline-grid h-[14px] w-[14px] flex-none cursor-pointer place-items-center rounded-[3px] border-0 bg-transparent text-foreground-caption transition-transform duration-120 hover:bg-muted hover:text-foreground",
             !hasChildren && "invisible",
             collapsed && "[&_svg]:-rotate-90"
           )}

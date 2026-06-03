@@ -1,6 +1,7 @@
 import { memo, useEffect, useMemo, useRef } from "react";
 
-import type { ServiceMapResponse, TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
+import type { TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
+import type { ServiceTopologyResponse } from "@shared/components/ui/charts/ServiceTopologyGraph";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
 import {
@@ -47,7 +48,7 @@ export interface TraceDetailLayoutProps {
   readonly onCloseSpan: () => void;
   readonly criticalPathSpanIds: Set<string>;
   readonly errorPathSpanIds: Set<string>;
-  readonly serviceMap: ServiceMapResponse | null;
+  readonly serviceMap: ServiceTopologyResponse | null;
   readonly errorGroups: readonly TraceErrorGroup[];
   readonly spanAttributes: SpanAttributes | null;
   readonly spanAttributesLoading: boolean;

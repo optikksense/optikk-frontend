@@ -72,7 +72,6 @@ export function buildLatencyTrendSeries(points: readonly LatencyPercentilesPoint
     p50_ms: point.p50_ms,
     p95_ms: point.p95_ms,
     p99_ms: point.p99_ms,
-    p95: point.p95_ms, // for sparkline compatibility
   }));
 }
 

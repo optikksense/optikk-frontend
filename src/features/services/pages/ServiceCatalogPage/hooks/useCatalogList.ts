@@ -3,9 +3,9 @@ import { useMemo } from "react";
 import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import {
-  type RedSummary,
   type RedSummaryWithComparison,
   type RequestRatePoint,
+  type ServiceCatalogRedSummary,
   getRedSummaryWithComparison,
   getRequestRateSeries,
 } from "@/features/services/api/serviceCatalogApi";
@@ -19,7 +19,7 @@ import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 export interface UseCatalogListResult {
   readonly rows: CatalogRow[];
   /** Prior-window RED summary, when present — powers the KPI strip deltas. */
-  readonly comparison?: RedSummary;
+  readonly comparison?: ServiceCatalogRedSummary;
   readonly windowSec: number;
   readonly isPending: boolean;
   readonly isError: boolean;

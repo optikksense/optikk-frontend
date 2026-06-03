@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { RedSummary } from "@/features/services/api/serviceCatalogApi";
+import type { ServiceCatalogRedSummary } from "@/features/services/api/serviceCatalogApi";
 
 import type { CatalogRow } from "../catalog/buildCatalogRows";
 
@@ -32,7 +32,7 @@ function deltaPct(now: number, prev: number): number | null {
 
 function buildAggregate(
   rows: ReadonlyArray<CatalogRow>,
-  comparison: RedSummary | undefined,
+  comparison: ServiceCatalogRedSummary | undefined,
   windowSec: number
 ): CatalogAggregate {
   let totalRps = 0;
@@ -66,7 +66,7 @@ function buildAggregate(
 
 export function useCatalogAggregate(
   rows: ReadonlyArray<CatalogRow>,
-  comparison: RedSummary | undefined,
+  comparison: ServiceCatalogRedSummary | undefined,
   windowSec: number
 ): CatalogAggregate {
   return useMemo(() => buildAggregate(rows, comparison, windowSec), [rows, comparison, windowSec]);

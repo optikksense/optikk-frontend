@@ -137,7 +137,7 @@ export function BoardTable<RowType extends Record<string, unknown>>({
           itemContent={(index, row) => (
             <div
               key={rowKey(row, index)}
-              className="flex cursor-pointer items-baseline border-[color:var(--glass-border)] border-b font-mono text-xs transition-colors duration-[80ms] ease-in-out hover:bg-accent"
+              className="flex cursor-pointer items-baseline border-[color:var(--glass-border)] border-b font-mono text-xs transition-colors duration-80 ease-in-out hover:bg-accent"
               style={{ minWidth: tableMinWidth, width: "max-content" }}
             >
               {renderRow(row, { colWidths, visibleCols, onAddFilter })}

@@ -5,7 +5,7 @@ import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
 import { useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
-import { type SuggestionItem, fetchSuggestions } from "../search/suggestApi";
+import { type SuggestionItem, fetchSuggestions } from "@/features/traces/api/tracesApi";
 
 interface Args {
   readonly field: string | null;

@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 
-import type { HostForService } from "@/features/services/api/serviceHostsApi";
+import type { Host, HostStatus } from "@/features/infrastructure/api/hostsApi";
 
 import { fmtMs, fmtNum, fmtPct, relativeTimeFromIso } from "../formatters";
 
-const STATUS_BORDER: Record<HostForService["status"], string> = {
+const STATUS_BORDER: Record<HostStatus, string> = {
   healthy: "border-border",
   warn: "border-[var(--color-warning,#f59e0b)]/40",
   error: "border-[var(--color-error,#ef4444)]/40",
@@ -36,12 +36,14 @@ function formatPct(value: number | undefined): string {
   return `${value.toFixed(0)}%`;
 }
 
-export function HostCard({ host, isOutlier }: { host: HostForService; isOutlier?: boolean }) {
+export function HostCard({ host, isOutlier }: { host: Host; isOutlier?: boolean }) {
+  const errorRate = host.error_rate ?? 0;
+  const p99Ms = host.p99_ms ?? 0;
   return (
     <article
       className={cn(
         "flex flex-col gap-2 rounded-md border bg-card px-3 py-2.5",
-        STATUS_BORDER[host.status]
+        STATUS_BORDER[host.status ?? "healthy"]
       )}
     >
       <div className="flex items-baseline justify-between gap-2">
@@ -63,18 +65,14 @@ export function HostCard({ host, isOutlier }: { host: HostForService; isOutlier?
         </div>
       </div>
       <div className="grid grid-cols-1 gap-y-1">
-        <HostStat label="CPU" value={formatPct(host.cpu_pct)} />
-        <HostStat label="Mem" value={formatPct(host.mem_pct)} />
-        <HostStat label="Rate" value={`${fmtNum(host.rps)}/s`} />
-        <HostStat
-          label="Errors"
-          value={fmtPct(host.error_rate, 2)}
-          tone={errorTone(host.error_rate)}
-        />
-        <HostStat label="p99" value={fmtMs(host.p99_ms)} tone={p99Tone(host.p99_ms)} />
+        <HostStat label="CPU" value={formatPct(host.cpu)} />
+        <HostStat label="Mem" value={formatPct(host.mem)} />
+        <HostStat label="Rate" value={`${fmtNum(host.rps ?? 0)}/s`} />
+        <HostStat label="Errors" value={fmtPct(errorRate, 2)} tone={errorTone(errorRate)} />
+        <HostStat label="p99" value={fmtMs(p99Ms)} tone={p99Tone(p99Ms)} />
       </div>
       <div className="text-right text-[10px] text-foreground-muted">
-        seen {relativeTimeFromIso(host.last_seen)}
+        seen {relativeTimeFromIso(host.last_seen ?? "")}
       </div>
     </article>
   );

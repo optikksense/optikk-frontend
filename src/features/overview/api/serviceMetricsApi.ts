@@ -13,43 +13,6 @@ import { getServiceTopology } from "@shared/components/ui/charts/ServiceTopology
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export interface RequestRatePoint {
-  readonly timestamp: string;
-  readonly requestCount: number;
-}
-
-export interface ErrorRatePoint {
-  readonly timestamp: string;
-  readonly requestCount: number;
-  readonly errorCount: number;
-  readonly errorRate: number;
-}
-
-export interface P95LatencyPoint {
-  readonly timestamp: string;
-  readonly p95: number;
-}
-
-interface ServerRatePoint {
-  readonly timestamp?: string;
-  readonly service_name?: string;
-  readonly rps?: number;
-}
-
-interface ServerLatencyPoint {
-  readonly timestamp?: string;
-  readonly service_name?: string;
-  readonly p95_ms?: number;
-}
-
-interface ServerErrorPoint {
-  readonly timestamp?: string;
-  readonly service_name?: string;
-  readonly request_count?: number;
-  readonly error_count?: number;
-  readonly error_rate?: number;
-}
-
 interface RouteTopRow {
   readonly service_name?: string;
   readonly http_route?: string;
@@ -77,50 +40,6 @@ export async function getServiceMetrics(
     p50_latency: node.p50_latency_ms,
     p95_latency: node.p95_latency_ms,
     p99_latency: node.p99_latency_ms,
-  }));
-}
-
-export async function getRequestRateTimeseries(
-  s: RequestTime,
-  e: RequestTime,
-  serviceName?: string
-): Promise<RequestRatePoint[]> {
-  const data = await api.get<ServerRatePoint[]>(`${V1}/spans/red/request-rate`, {
-    params: range(s, e, serviceName ? { serviceName } : undefined),
-  });
-  return (data ?? []).map((p) => ({
-    timestamp: p.timestamp ?? "",
-    requestCount: Math.round(Number(p.rps ?? 0) * 60),
-  }));
-}
-
-export async function getErrorRateTimeseries(
-  s: RequestTime,
-  e: RequestTime,
-  serviceName?: string
-): Promise<ErrorRatePoint[]> {
-  const data = await api.get<ServerErrorPoint[]>(`${V1}/errors/service-error-rate`, {
-    params: range(s, e, serviceName ? { serviceName } : undefined),
-  });
-  return (data ?? []).map((p) => ({
-    timestamp: p.timestamp ?? "",
-    requestCount: Number(p.request_count ?? 0),
-    errorCount: Number(p.error_count ?? 0),
-    errorRate: Number(p.error_rate ?? 0),
-  }));
-}
-
-export async function getP95LatencyTimeseries(
-  s: RequestTime,
-  e: RequestTime,
-  serviceName?: string
-): Promise<P95LatencyPoint[]> {
-  const data = await api.get<ServerLatencyPoint[]>(`${V1}/spans/red/p95-latency`, {
-    params: range(s, e, serviceName ? { serviceName } : undefined),
-  });
-  return (data ?? []).map((p) => ({
-    timestamp: p.timestamp ?? "",
-    p95: Number(p.p95_ms ?? 0),
   }));
 }
 

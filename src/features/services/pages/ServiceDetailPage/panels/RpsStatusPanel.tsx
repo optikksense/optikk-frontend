@@ -4,8 +4,7 @@ import type uPlot from "uplot";
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
-import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { tsMs } from "@shared/utils/chartDataUtils";
 
 import type { StatusTimeseriesPoint } from "@/features/services/api/serviceDetailApi";
 
@@ -25,41 +24,16 @@ interface ChartData {
   series: ObservabilityChartSeries[];
 }
 
-function buildSeries(rows: StatusTimeseriesPoint[] | undefined, timeBuckets: string[]): ChartData {
-  const timestamps = timeBuckets.map((t) => tsMs(t) / 1000);
-
-  if (!rows || rows.length === 0) {
-    const zeros = timestamps.map(() => 0);
-    return {
-      timestamps,
-      series: [
-        { label: "2xx", values: [...zeros], color: COLORS.s2xx, fill: true },
-        { label: "4xx", values: [...zeros], color: COLORS.s4xx, fill: true },
-        { label: "5xx", values: [...zeros], color: COLORS.s5xx, fill: true },
-      ],
-    };
-  }
-
-  const map2xx: Record<string, number> = {};
-  const map4xx: Record<string, number> = {};
-  const map5xx: Record<string, number> = {};
-  for (const r of rows) {
-    const key = tsKey(r.timestamp);
-    map2xx[key] = (map2xx[key] ?? 0) + r.status_2xx;
-    map4xx[key] = (map4xx[key] ?? 0) + r.status_4xx;
-    map5xx[key] = (map5xx[key] ?? 0) + r.status_5xx;
-  }
-
-  const s2xx = timeBuckets.map((t) => map2xx[tsKey(t)] ?? 0);
-  const s4xx = timeBuckets.map((t) => map4xx[tsKey(t)] ?? 0);
-  const s5xx = timeBuckets.map((t) => map5xx[tsKey(t)] ?? 0);
+function buildSeries(rows: StatusTimeseriesPoint[] | undefined): ChartData {
+  const activeRows = rows ?? [];
+  const timestamps = activeRows.map((r) => tsMs(r.timestamp) / 1000);
 
   return {
     timestamps,
     series: [
-      { label: "2xx", values: s2xx, color: COLORS.s2xx, fill: true },
-      { label: "4xx", values: s4xx, color: COLORS.s4xx, fill: true },
-      { label: "5xx", values: s5xx, color: COLORS.s5xx, fill: true },
+      { label: "2xx", values: activeRows.map((r) => r.status_2xx), color: COLORS.s2xx, fill: true },
+      { label: "4xx", values: activeRows.map((r) => r.status_4xx), color: COLORS.s4xx, fill: true },
+      { label: "5xx", values: activeRows.map((r) => r.status_5xx), color: COLORS.s5xx, fill: true },
     ],
   };
 }
@@ -94,9 +68,8 @@ function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[]
 
 export function RpsStatusPanel({ serviceName }: { serviceName: string }) {
   const query = useStatusTimeseries(serviceName);
-  const { timeBuckets } = useChartTimeBuckets();
   const [filter, setFilter] = useState<StatusSeriesFilter>("all");
-  const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
+  const data = useMemo(() => buildSeries(query.data), [query.data]);
   const filtered = useMemo(() => filterSeries(data, filter), [data, filter]);
   return (
     <PanelCard

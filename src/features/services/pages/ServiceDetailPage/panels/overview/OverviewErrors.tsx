@@ -1,5 +1,5 @@
-import { getErrorGroupDetail } from "@/features/errors/api/errorGroupsApi";
-import { useQuery } from "@tanstack/react-query";
+import { getErrorGroupLatestOccurrence } from "@/features/errors/api/errorGroupsApi";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { fmtNum, relativeTimeFromIso } from "../../formatters";
@@ -38,12 +38,12 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
   const errorsList = results;
   const topGroupId = errorsList[0]?.group_id ?? "";
 
-  // Query details for the top error group (to get its real stacktrace)
-  const detailQ = useQuery({
-    queryKey: ["service-detail.error-group-top-detail", topGroupId],
-    queryFn: () => getErrorGroupDetail(topGroupId),
-    enabled: Boolean(topGroupId),
-  });
+  // Latest occurrence of the top error group (to get its real stacktrace)
+  const detailQ = useTimeRangeQuery(
+    "service-detail.error-group-top-latest",
+    (_team, start, end) => getErrorGroupLatestOccurrence(topGroupId, start, end),
+    { extraKeys: [topGroupId], enabled: Boolean(topGroupId) }
+  );
 
   const totalErrors = useMemo(() => {
     return errorsList.reduce((sum, e) => sum + e.error_count, 0);
@@ -51,7 +51,7 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
 
   // Parse stacktrace string into clean frames
   const stackFrames = useMemo(() => {
-    const stack = detailQ.data?.sample_stacktrace;
+    const stack = detailQ.data?.stacktrace;
     if (!stack) return [];
 
     return stack

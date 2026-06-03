@@ -16,10 +16,49 @@ export interface ErrorGroup {
   readonly sample_trace_id: string;
 }
 
-export interface ErrorGroupDetail extends ErrorGroup {
-  /** Raw multi-line stacktrace from the sample exception; may be empty. */
-  readonly sample_stacktrace?: string;
+/**
+ * Group-level identity + aggregates. Per-occurrence details (stacktrace, message,
+ * trace_id, request context) come from {@link getErrorGroupLatestOccurrence}.
+ */
+export interface ErrorGroupDetail {
+  readonly group_id: string;
+  readonly service_name: string;
+  readonly operation_name: string;
+  readonly http_status_code: number;
+  readonly error_count: number;
+  readonly last_occurrence: string;
+  readonly first_occurrence: string;
   readonly exception_type?: string;
+}
+
+/** The single most recent error span of a group — drives the banner, stack trace and request context. */
+export interface ErrorLatestOccurrence {
+  readonly trace_id: string;
+  readonly span_id: string;
+  readonly timestamp: string;
+  readonly duration_ms: number;
+  readonly message: string;
+  readonly stacktrace?: string;
+  readonly http_method: string;
+  readonly http_route: string;
+  readonly http_status_code: string;
+  readonly service_version: string;
+  readonly environment: string;
+  readonly pod: string;
+  readonly host: string;
+}
+
+/** One value within a facet dimension, with its share of the group's errors. */
+export interface ErrorFacet {
+  readonly name: string;
+  readonly count: number;
+  readonly pct: number;
+}
+
+/** Distribution of a group's errors across one tag dimension (e.g. `pod`). */
+export interface ErrorFacetGroup {
+  readonly key: string;
+  readonly facets: ErrorFacet[];
 }
 
 export interface ErrorGroupTrace {
@@ -60,19 +99,47 @@ export function listErrorGroups(
   });
 }
 
-export function getErrorGroupDetail(groupId: string): Promise<ErrorGroupDetail> {
-  return api.get<ErrorGroupDetail>(`${V1}/errors/groups/${encodeURIComponent(groupId)}`);
+export function getErrorGroupDetail(
+  groupId: string,
+  s: RequestTime,
+  e: RequestTime
+): Promise<ErrorGroupDetail> {
+  return api.get<ErrorGroupDetail>(`${V1}/errors/groups/${encodeURIComponent(groupId)}`, {
+    params: range(s, e),
+  });
+}
+
+export function getErrorGroupLatestOccurrence(
+  groupId: string,
+  s: RequestTime,
+  e: RequestTime
+): Promise<ErrorLatestOccurrence | null> {
+  return api.get<ErrorLatestOccurrence | null>(
+    `${V1}/errors/groups/${encodeURIComponent(groupId)}/latest-occurrence`,
+    { params: range(s, e) }
+  );
+}
+
+export function getErrorGroupFacets(
+  groupId: string,
+  s: RequestTime,
+  e: RequestTime
+): Promise<ErrorFacetGroup[]> {
+  return api.get<ErrorFacetGroup[]>(`${V1}/errors/groups/${encodeURIComponent(groupId)}/facets`, {
+    params: range(s, e),
+  });
 }
 
 export function getErrorGroupTraces(
   groupId: string,
   s: RequestTime,
   e: RequestTime,
-  limit = 50
-): Promise<ErrorGroupTrace[]> {
-  return api.get<ErrorGroupTrace[]>(`${V1}/errors/groups/${encodeURIComponent(groupId)}/traces`, {
-    params: range(s, e, { limit }),
-  });
+  p?: { limit?: number; cursor?: string }
+): Promise<PaginatedResponse<ErrorGroupTrace[]>> {
+  return api.get<PaginatedResponse<ErrorGroupTrace[]>>(
+    `${V1}/errors/groups/${encodeURIComponent(groupId)}/traces`,
+    { params: range(s, e, { limit: 20, ...p }) }
+  );
 }
 
 export function getErrorGroupTimeseries(

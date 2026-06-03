@@ -60,7 +60,7 @@ export function KpiCard({
             <span className="font-normal text-[13px] text-foreground-muted">{secondary}</span>
           )}
         </div>
-        {sparkline && <div className="h-6 w-20 flex-shrink-0">{sparkline}</div>}
+        {sparkline && <div className="h-[24px] w-[80px] flex-shrink-0">{sparkline}</div>}
       </div>
       <div className="flex items-baseline gap-2 text-[11px] text-foreground-muted">
         {subtext && <span>{subtext}</span>}

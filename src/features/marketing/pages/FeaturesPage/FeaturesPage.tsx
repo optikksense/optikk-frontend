@@ -24,12 +24,12 @@ export default function FeaturesPage() {
         eyebrow="The platform"
         title={
           <>
-            Every signal, <GradientText>one query language, one bill.</GradientText>
+            Every signal, <GradientText>one query language, one database.</GradientText>
           </>
         }
-        subtitle="Logs, traces, metrics, profiles, RUM, and LLM spans land in the same lake. Optikk lets you cross-reference them at warehouse speed."
-        primaryCta={{ label: "Start free", path: "/login", variant: "grad" }}
-        secondaryCta={{ label: "See pricing", path: "/pricing", variant: "secondary" }}
+        subtitle="Logs, traces, metrics, profiles, RUM, and LLM spans land in the same ClickHouse lake. Optikk lets you cross-reference them at warehouse speed."
+        primaryCta={{ label: "Self-host now", path: "/self-host", variant: "grad" }}
+        secondaryCta={{ label: "Read the docs", path: "/opentelemetry", variant: "secondary" }}
       />
 
       <div className="m-container" style={{ position: "relative" }}>
@@ -91,7 +91,7 @@ export default function FeaturesPage() {
             eyebrow="Distributed tracing"
             title={
               <>
-                Datadog-parity span explorer. <GradientText>Without the Datadog bill.</GradientText>
+                Datadog-parity span explorer. <GradientText>Without the vendor lock-in.</GradientText>
               </>
             }
             body="Flame graphs, span diff, latency heatmaps, service maps, and a 10-tab span drawer (overview, children, logs, code, profile, AI explanation, related deploys, errors, queries, tags)."
@@ -134,8 +134,8 @@ export default function FeaturesPage() {
             body="Ingest OTLP + Prometheus + StatsD side by side. Run PromQL queries on a year of data, including high-cardinality labels."
             list={[
               {
-                title: "Per-DPM, no cardinality tax",
-                body: "Tags are free. Stop dropping labels just to keep your bill flat.",
+                title: "Unlimited cardinality, no tag tax",
+                body: "Tags are free. Stop dropping labels just to keep your dashboards fast.",
               },
               {
                 title: "Recording rules and SLOs in YAML",
@@ -254,10 +254,10 @@ export default function FeaturesPage() {
             eyebrow="LLM observability"
             title={
               <>
-                Trace every prompt. <GradientText>See cost the way you see latency.</GradientText>
+                Trace every prompt. <GradientText>See tokens the way you see latency.</GradientText>
               </>
             }
-            body="Optikk treats LLM calls as spans: prompts, tool calls, function results, and final completions. Cost, tokens, and grading are first-class attributes."
+            body="Optikk treats LLM calls as spans: prompts, tool calls, function results, and final completions. Tokens, latency, and grading are first-class attributes."
             list={[
               {
                 title: "Prompt → tool → answer waterfall",
@@ -268,8 +268,8 @@ export default function FeaturesPage() {
                 body: "Wire your judges in once. Every production call is graded; every regression is bisectable.",
               },
               {
-                title: "Cost by user, tenant, feature",
-                body: "Group by any attribute. Find the 0.1% of users driving 40% of OpenAI spend.",
+                title: "Token volume by user, tenant, feature",
+                body: "Group by any attribute. Find the 0.1% of users driving 40% of OpenAI token usage.",
               },
             ]}
             visual={
@@ -364,12 +364,12 @@ export default function FeaturesPage() {
         title={
           <>
             See it on your own telemetry.{" "}
-            <span style={{ color: "#fdba74" }}>Free tier, no demo required.</span>
+            <span style={{ color: "#fdba74" }}>100% open source, no demo required.</span>
           </>
         }
-        subtitle="Free up to 5 GiB/day. OTel collector setup takes about 4 minutes."
-        primary={{ label: "Start free", path: "/login" }}
-        secondary={{ label: "Get a guided tour", path: "/self-host", variant: "secondary" }}
+        subtitle="Fully self-hostable in under 5 minutes with our Helm chart."
+        primary={{ label: "Self-host now", path: "/self-host" }}
+        secondary={{ label: "Read architecture", path: "/architecture", variant: "secondary" }}
       />
     </>
   );

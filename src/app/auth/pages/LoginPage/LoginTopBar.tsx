@@ -7,10 +7,10 @@ export function LoginTopBar() {
     <div className="flex items-center justify-end gap-2.5 text-[12.5px] text-foreground-muted">
       <span>New to Optikk?</span>
       <Link
-        to={ROUTES.pricing}
+        to={ROUTES.selfHost}
         className="font-semibold text-[var(--login-link)] no-underline hover:underline"
       >
-        Start a free trial →
+        Self-host now →
       </Link>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Navigate, createRoute, redirect, useParams } from "@tanstack/react-router";
+import { Navigate, createRoute, redirect } from "@tanstack/react-router";
 import type { RootRoute } from "@tanstack/react-router";
 
 import { ROUTES } from "@/shared/constants/routes";
@@ -7,32 +7,10 @@ import { dynamicTo } from "@/shared/utils/navigation";
 
 import LegacyDashboardDetailRedirect from "./LegacyDashboardDetailRedirect";
 
+// Legacy per-datastore / per-redis detail URLs now forward to the Database hub
+// (the standalone detail pages were removed in the saturation simplification).
 function LegacySaturationDatabaseRedirect() {
-  const params = useParams({ strict: false });
-  const dbSystem = typeof params.dbSystem === "string" ? params.dbSystem : "";
-  return (
-    <Navigate
-      to={dynamicTo(
-        ROUTES.saturationDatastoreDetail.replace(
-          "$system",
-          encodeURIComponent(dbSystem || "unknown")
-        )
-      )}
-      replace
-    />
-  );
-}
-
-function LegacySaturationRedisRedirect() {
-  const params = useParams({ strict: false });
-  const instance = typeof params.instance === "string" ? params.instance : "";
-  return (
-    <Navigate
-      to={dynamicTo(ROUTES.saturationDatastoreDetail.replace("$system", "redis"))}
-      search={instance ? ({ instance } as Record<string, unknown>) : undefined}
-      replace
-    />
-  );
+  return <Navigate to={dynamicTo(ROUTES.saturationDatabase)} replace />;
 }
 
 function toNestedRoutePath(path: string): string {
@@ -90,7 +68,7 @@ export function buildLegacyRedirects(mainLayoutRoute: any) {
     createRoute({
       getParentRoute: parent,
       path: "saturation/redis/$instance",
-      component: LegacySaturationRedisRedirect,
+      component: LegacySaturationDatabaseRedirect,
     }),
   ];
 }

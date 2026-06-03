@@ -1,7 +1,7 @@
 import type {
   RedServiceRow,
-  RedSummary,
   RequestRatePoint,
+  ServiceCatalogRedSummary,
 } from "@/features/services/api/serviceCatalogApi";
 import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
 
@@ -64,7 +64,7 @@ function byLatestDeploy(latest: ServiceLatestDeployment[]): Map<string, ServiceL
   return m;
 }
 
-function byPrevP99(prev: RedSummary | undefined): Map<string, number> {
+function byPrevP99(prev: ServiceCatalogRedSummary | undefined): Map<string, number> {
   const m = new Map<string, number>();
   if (!prev) return m;
   for (const row of prev.services ?? []) m.set(row.service_name, row.p99_latency);
@@ -72,8 +72,8 @@ function byPrevP99(prev: RedSummary | undefined): Map<string, number> {
 }
 
 export interface BuildCatalogInputs {
-  readonly primary: RedSummary;
-  readonly comparison?: RedSummary;
+  readonly primary: ServiceCatalogRedSummary;
+  readonly comparison?: ServiceCatalogRedSummary;
   readonly rateSeries: RequestRatePoint[];
   readonly latestDeploys: ServiceLatestDeployment[];
   readonly windowSec: number;

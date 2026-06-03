@@ -73,6 +73,7 @@ export default function InfrastructureStrip() {
                 <span className="font-semibold text-[13px] text-foreground">{tile.label}</span>
                 <span className="text-[11px] text-foreground-muted">{tile.description}</span>
               </span>
+              <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-[var(--color-unknown)]" />
             </button>
           </Surface>
         ))}

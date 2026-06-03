@@ -1,20 +1,23 @@
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { AlertOctagon } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { SimpleTable, type SimpleTableColumn, Surface } from "@shared/components/primitives/ui";
+import { Surface } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
 
 import {
-  type ErrorGroupTrace,
   getErrorGroupDetail,
+  getErrorGroupFacets,
+  getErrorGroupLatestOccurrence,
   getErrorGroupTimeseries,
   getErrorGroupTraces,
 } from "../../api/errorGroupsApi";
 
-import { StackFramesPanel } from "./StackFramesPanel";
+import { RequestContextCard } from "./RequestContextCard";
+import { TracesPanel } from "./TracesPanel";
+import { WhereItHappensCard } from "./WhereItHappensCard";
 
 function fmtDate(iso: string): string {
   if (!iso) return "—";
@@ -22,112 +25,150 @@ function fmtDate(iso: string): string {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleString();
 }
 
-const traceColumns: SimpleTableColumn<ErrorGroupTrace>[] = [
-  {
-    title: "Trace",
-    key: "trace_id",
-    render: (_v, row) => (
-      <span className="font-mono text-[12px] text-foreground">{row.trace_id.slice(0, 16)}…</span>
-    ),
-  },
-  {
-    title: "Status",
-    key: "status_code",
-    width: 100,
-    render: (_v, row) => (
-      <span className="text-[12px] text-foreground-secondary">{row.status_code || "—"}</span>
-    ),
-  },
-  {
-    title: "Duration",
-    key: "duration_ms",
-    width: 120,
-    align: "right",
-    render: (_v, row) =>
-      row.duration_ms >= 1000
-        ? `${(row.duration_ms / 1000).toFixed(2)}s`
-        : `${Math.round(row.duration_ms)}ms`,
-  },
-  {
-    title: "Timestamp",
-    key: "timestamp",
-    width: 200,
-    render: (_v, row) => (
-      <span className="text-[11px] text-foreground-muted">{fmtDate(row.timestamp)}</span>
-    ),
-  },
-];
-
-function StatTile({ label, value }: { label: string; value: string }) {
+function MetaStat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div>
       <div className="text-[11px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
-      <div className="mt-1 font-semibold text-[18px] text-foreground tabular-nums">{value}</div>
+      <div className="mt-1 flex items-baseline gap-2">
+        <span className="font-bold text-[17px] text-foreground tabular-nums tracking-[-0.01em]">
+          {value}
+        </span>
+        {sub ? <span className="text-[12.5px] text-foreground-muted">{sub}</span> : null}
+      </div>
     </div>
+  );
+}
+
+/** Error-volume bars, one per timeseries bucket, scaled to the window's peak. */
+function OccurrenceTimeline({ counts }: { counts: number[] }) {
+  const max = Math.max(1, ...counts);
+  return (
+    <PageSurface padding="lg">
+      <div className="font-semibold text-[13px] text-foreground">Occurrences over time</div>
+      <div className="mt-0.5 text-[12px] text-foreground-muted">
+        Error volume · grouped by minute
+      </div>
+      <div className="mt-4 flex h-[150px] items-end gap-[2px]">
+        {counts.length === 0 ? (
+          <div className="flex h-full w-full items-center justify-center text-[12px] text-foreground-muted">
+            No occurrences in this window.
+          </div>
+        ) : (
+          counts.map((c, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-t-[2px] bg-[var(--err)] opacity-75"
+              style={{ height: `${6 + (c / max) * 134}px` }}
+              title={`${c}`}
+            />
+          ))
+        )}
+      </div>
+    </PageSurface>
   );
 }
 
 export default function ErrorGroupDetailPage(): JSX.Element {
   const params = useParams({ strict: false });
-  const navigate = useNavigate();
   const groupId = decodeURIComponent(typeof params.groupId === "string" ? params.groupId : "");
 
-  const detailQ = useStandardQuery({
-    queryKey: ["error-group-detail", groupId],
-    queryFn: () => getErrorGroupDetail(groupId),
-    enabled: !!groupId,
-  });
+  const detailQ = useTimeRangeQuery(
+    `error-group-detail-${groupId}`,
+    (_t, s, e) => getErrorGroupDetail(groupId, Number(s), Number(e)),
+    { extraKeys: [groupId], enabled: !!groupId }
+  );
+  const occurrenceQ = useTimeRangeQuery(
+    `error-group-latest-${groupId}`,
+    (_t, s, e) => getErrorGroupLatestOccurrence(groupId, Number(s), Number(e)),
+    { extraKeys: [groupId], enabled: !!groupId }
+  );
+  const timeseriesQ = useTimeRangeQuery(
+    `error-group-ts-${groupId}`,
+    (_t, s, e) => getErrorGroupTimeseries(groupId, Number(s), Number(e)),
+    { extraKeys: [groupId], enabled: !!groupId }
+  );
+  const facetsQ = useTimeRangeQuery(
+    `error-group-facets-${groupId}`,
+    (_t, s, e) => getErrorGroupFacets(groupId, Number(s), Number(e)),
+    { extraKeys: [groupId], enabled: !!groupId }
+  );
+  const [tracePage, setTracePage] = useState(0);
+  const [traceCursors, setTraceCursors] = useState<Record<number, string>>({});
+  const traceCursor = tracePage > 0 ? traceCursors[tracePage - 1] : undefined;
 
-  const timeseriesQ = useTimeRangeQuery(`error-group-ts-${groupId}`, (_t, s, e) =>
-    getErrorGroupTimeseries(groupId, Number(s), Number(e))
+  const tracesQ = useTimeRangeQuery(
+    `error-group-traces-${groupId}`,
+    (_t, s, e) => getErrorGroupTraces(groupId, Number(s), Number(e), { cursor: traceCursor }),
+    { extraKeys: [groupId, tracePage, traceCursor], enabled: !!groupId }
   );
 
-  const tracesQ = useTimeRangeQuery(`error-group-traces-${groupId}`, (_t, s, e) =>
-    getErrorGroupTraces(groupId, Number(s), Number(e), 50)
-  );
+  const traceResults = tracesQ.data?.results ?? [];
+  const traceHasMore = tracesQ.data?.pageInfo?.hasMore ?? false;
+  const traceNextCursor = tracesQ.data?.pageInfo?.nextCursor;
+
+  useEffect(() => {
+    if (traceNextCursor) {
+      setTraceCursors((prev) => ({ ...prev, [tracePage]: traceNextCursor }));
+    }
+  }, [traceNextCursor, tracePage]);
 
   const detail = detailQ.data;
-  const totalErrors = timeseriesQ.data?.reduce((acc, p) => acc + (p.error_count ?? 0), 0) ?? 0;
+  const occurrence = occurrenceQ.data;
+  const points = timeseriesQ.data ?? [];
+
+  const totalErrors = detail?.error_count ?? points.reduce((a, p) => a + (p.error_count ?? 0), 0);
+  const cutoff = Date.now() - 3_600_000;
+  const lastHour = points.reduce(
+    (a, p) => (new Date(p.timestamp).getTime() >= cutoff ? a + (p.error_count ?? 0) : a),
+    0
+  );
+
+  const title = detail?.exception_type || detail?.operation_name || groupId;
 
   return (
     <PageShell>
       <PageHeader
-        title={detail?.exception_type || detail?.status_message || "Error group"}
+        title={
+          <span className="flex items-center gap-2.5">
+            <span
+              className="h-2.5 w-2.5 rounded-full bg-[var(--err)]"
+              style={{ boxShadow: "0 0 0 4px var(--err-soft)" }}
+            />
+            <span className="font-mono">{title}</span>
+          </span>
+        }
         subtitle={detail ? `${detail.service_name} · ${detail.operation_name}` : "Loading…"}
-        icon={<AlertOctagon size={24} />}
+        icon={<AlertOctagon size={24} className="text-[var(--err)]" />}
       />
 
+      {/* Impact strip */}
       <Surface elevation={1} padding="md">
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <StatTile label="Service" value={detail?.service_name ?? "—"} />
-          <StatTile label="HTTP status" value={detail?.http_status_code?.toString() ?? "—"} />
-          <StatTile label="Errors in window" value={formatNumber(totalErrors)} />
-          <StatTile
-            label="Last seen"
-            value={detail?.last_occurrence ? fmtDate(detail.last_occurrence) : "—"}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <MetaStat label="First seen" value={fmtDate(detail?.first_occurrence ?? "")} />
+          <MetaStat label="Last seen" value={fmtDate(detail?.last_occurrence ?? "")} />
+          <MetaStat
+            label="Occurrences"
+            value={formatNumber(totalErrors)}
+            sub={`${formatNumber(lastHour)} in 1h`}
           />
         </div>
       </Surface>
 
-      {detail?.sample_stacktrace ? (
-        <StackFramesPanel stacktrace={detail.sample_stacktrace} />
-      ) : null}
+      <OccurrenceTimeline counts={points.map((p) => p.error_count ?? 0)} />
 
-      <PageSurface padding="lg">
-        <div className="mb-3 font-semibold text-[12px] text-foreground uppercase tracking-[0.06em]">
-          Sample traces
-        </div>
-        <SimpleTable
-          columns={traceColumns}
-          dataSource={tracesQ.data ?? []}
-          rowKey={(r) => `${r.trace_id}::${r.span_id}`}
-          pagination={{ pageSize: 10 }}
-          onRow={(record) => ({
-            onClick: () => navigate({ to: `/traces/${encodeURIComponent(record.trace_id)}` }),
-            style: { cursor: "pointer" },
-          })}
-        />
-      </PageSurface>
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[1.55fr_1fr]">
+        <RequestContextCard occurrence={occurrence} />
+        <WhereItHappensCard groups={facetsQ.data ?? []} />
+      </div>
+
+      <TracesPanel
+        traces={traceResults}
+        loading={tracesQ.isPending}
+        page={tracePage}
+        hasMore={traceHasMore}
+        onPrev={() => setTracePage((p) => Math.max(0, p - 1))}
+        onNext={() => setTracePage((p) => p + 1)}
+      />
     </PageShell>
   );
 }

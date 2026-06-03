@@ -3,27 +3,20 @@
  * consumed by the Overview page. Each underlying module owns a backend
  * boundary:
  *
- *   overviewRedApi    → `/spans/red/*` + `/errors/service-error-rate`
+ *   overviewRedApi    → `/spans/red/*`
  *   overviewErrorsApi → `/spans/exception-rate-by-type`, `/spans/error-hotspot`
  */
 
-import { getErrorHotspot, getExceptionRateByType } from "./overviewErrorsApi";
+import { getErrorHotspot } from "./overviewErrorsApi";
 import {
-  getApdex,
-  getRedErrorRateSeries,
-  getRedP95Series,
-  getRedRequestRateSeries,
-  getRedSummary,
+  getFleetRedMetrics,
+  getPerformanceSeries,
 } from "./overviewRedApi";
 
-export type { ApdexScore, RedSummary } from "./overviewRedApi";
+export type { FleetRedMetrics } from "./overviewRedApi";
 
 export const overviewHubApi = {
-  getRedSummary,
-  getApdex,
-  getRedP95Series,
-  getRedRequestRateSeries,
-  getRedErrorRateSeries,
-  getExceptionRateByType,
+  getFleetRedMetrics,
+  getPerformanceSeries,
   getErrorHotspot,
 };

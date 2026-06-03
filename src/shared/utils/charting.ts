@@ -51,19 +51,3 @@ export function formatChartLabels<T extends object>(
   });
 }
 
-/** Generate time bucket strings spanning [startMs, endMs]. */
-export function generateTimeBuckets(startMs: number, endMs: number): string[] {
-  const rangeMs = endMs - startMs;
-  let stepMs: number;
-
-  if (rangeMs <= 3 * 3600000) stepMs = 60000;
-  else if (rangeMs <= 86400000) stepMs = 300000;
-  else stepMs = 3600000;
-
-  const alignedStart = Math.floor(startMs / stepMs) * stepMs;
-  const buckets: string[] = [];
-  for (let t = alignedStart; t <= endMs; t += stepMs) {
-    buckets.push(new Date(t).toISOString());
-  }
-  return buckets;
-}

@@ -107,12 +107,12 @@ function SubmitButton({ loading }: { readonly loading: boolean }) {
 function RequestAccessLine() {
   return (
     <p className="mt-4 text-center text-[12.5px] text-foreground-muted">
-      Don&apos;t have an account?{" "}
+      Want to deploy your own instance?{" "}
       <Link
-        to={ROUTES.pricing}
+        to={ROUTES.selfHost}
         className="font-semibold text-[var(--login-link)] no-underline hover:underline"
       >
-        Request access
+        Self-host now
       </Link>
     </p>
   );

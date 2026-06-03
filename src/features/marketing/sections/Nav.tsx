@@ -11,7 +11,6 @@ import { useGitHubStars } from "../hooks/useGitHubStars";
 
 const NAV_LINKS = [
   { label: "Platform", path: "/features" },
-  { label: "Pricing", path: "/pricing" },
   { label: "Architecture", path: "/architecture" },
   { label: "OpenTelemetry", path: "/opentelemetry" },
   { label: "Self-host", path: "/self-host" },
@@ -98,8 +97,8 @@ export function Nav() {
           <Link to={dynamicTo("/login")} className="m-btn m-btn-ghost m-btn-sm">
             Sign in
           </Link>
-          <Link to={dynamicTo("/login")} className="m-btn m-btn-primary m-btn-sm">
-            Start free
+          <Link to={dynamicTo("/self-host")} className="m-btn m-btn-primary m-btn-sm">
+            Self-host
           </Link>
           <button
             type="button"

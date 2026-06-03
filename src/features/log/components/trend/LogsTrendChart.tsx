@@ -328,7 +328,7 @@ function LogsTrendChartComponent({
                     y={yd}
                     width={barW}
                     height={hd}
-                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85]"
+                    className="transition-opacity duration-120 group-hover:opacity-[0.85]"
                     style={{ fill: DEBUG_COLOR, opacity: 0.55 }}
                   />
                 ) : null}
@@ -338,7 +338,7 @@ function LogsTrendChartComponent({
                     y={yi}
                     width={barW}
                     height={hi}
-                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85] [[data-theme=light]_&]:opacity-75"
+                    className="transition-opacity duration-120 group-hover:opacity-[0.85] [[data-theme=light]_&]:opacity-75"
                     style={{ fill: INFO_COLOR, opacity: 0.7 }}
                   />
                 ) : null}
@@ -348,7 +348,7 @@ function LogsTrendChartComponent({
                     y={yw}
                     width={barW}
                     height={hw}
-                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85]"
+                    className="transition-opacity duration-120 group-hover:opacity-[0.85]"
                     style={{ fill: WARN_COLOR }}
                   />
                 ) : null}
@@ -358,7 +358,7 @@ function LogsTrendChartComponent({
                     y={ye}
                     width={barW}
                     height={he}
-                    className="transition-opacity duration-[120ms] group-hover:opacity-[0.85]"
+                    className="transition-opacity duration-120 group-hover:opacity-[0.85]"
                     style={{ fill: ERROR_COLOR }}
                   />
                 ) : null}

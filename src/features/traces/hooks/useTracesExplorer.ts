@@ -5,7 +5,7 @@ import { useExplorerQuery } from "@/features/explorer/hooks/useExplorerQuery";
 import { useExplorerState } from "@/features/explorer/hooks/useExplorerState";
 import type { ExplorerIncludeFlag } from "@/features/explorer/types";
 
-import { tracesExplorerApi } from "../api/tracesExplorerApi";
+import { query, queryFacets, queryTrend } from "../api/tracesApi";
 import type { TracesQueryResponse } from "../types/trace";
 
 interface UseTracesExplorerArgs {
@@ -24,17 +24,17 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     () => args.include ?? ["summary"],
     [args.include]
   );
-  const query = useExplorerQuery<TracesQueryResponse>({
+  const explorerQuery = useExplorerQuery<TracesQueryResponse>({
     scope: "traces",
     filters: state.filters,
     cursor: state.cursor,
     limit: args.limit ?? 50,
     include,
     enabled: args.enabled,
-    fetcher: tracesExplorerApi.query,
+    fetcher: query,
   });
 
-  const { startTime, endTime, teamId, refreshKey } = query;
+  const { startTime, endTime, teamId, refreshKey } = explorerQuery;
 
   const needsFacets = include.includes("facets");
   const facetsQuery = useStandardQuery({
@@ -49,7 +49,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
       JSON.stringify(state.filters),
     ],
     queryFn: () =>
-      tracesExplorerApi.queryFacets({ startTime, endTime, filters: state.filters, limit: 0 }),
+      queryFacets({ startTime, endTime, filters: state.filters, limit: 0 }),
     enabled: (args.enabled ?? true) && needsFacets,
   });
 
@@ -66,7 +66,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
       JSON.stringify(state.filters),
     ],
     queryFn: () =>
-      tracesExplorerApi.queryTrend({ startTime, endTime, filters: state.filters, limit: 0 }),
+      queryTrend({ startTime, endTime, filters: state.filters, limit: 0 }),
     enabled: (args.enabled ?? true) && needsTrend,
   });
 
@@ -80,14 +80,14 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
 
   return {
     state,
-    query,
+    query: explorerQuery,
     facetsQuery,
     trendQuery,
-    traces: query.data?.traces ?? [],
-    nextCursor: query.data?.nextCursor ?? null,
+    traces: explorerQuery.data?.traces ?? [],
+    nextCursor: explorerQuery.data?.nextCursor ?? null,
     summary,
     facets: facetsQuery.data,
     trend: trendQuery.data,
-    warnings: query.data?.warnings ?? [],
+    warnings: explorerQuery.data?.warnings ?? [],
   };
 }

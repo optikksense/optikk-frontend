@@ -1,12 +1,8 @@
-import { useNavigate } from "@tanstack/react-router";
-
 import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import type { KafkaTopicRow } from "@/features/saturation/api/kafkaExplorerSchemas";
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
-import { ROUTES } from "@/shared/constants/routes";
 
 import { useKafkaTopicsTable } from "../hooks/useKafkaTopicsTable";
 
@@ -61,7 +57,6 @@ const COLUMNS: SimpleTableColumn<KafkaTopicRow>[] = [
 ];
 
 export function TopicsTable() {
-  const navigate = useNavigate();
   const { data, isPending } = useKafkaTopicsTable();
   const rows = data ?? [];
   return (
@@ -76,18 +71,6 @@ export function TopicsTable() {
           dataSource={rows}
           rowKey={(r) => r.topic}
           pagination={{ pageSize: 50 }}
-          onRow={(record) => ({
-            onClick: () =>
-              navigate(
-                dynamicNavigateOptions(
-                  ROUTES.saturationKafkaTopicDetail.replace(
-                    "$topic",
-                    encodeURIComponent(record.topic)
-                  )
-                )
-              ),
-            style: { cursor: "pointer" },
-          })}
         />
       )}
     </PanelCard>

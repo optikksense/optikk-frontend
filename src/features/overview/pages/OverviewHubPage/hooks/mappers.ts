@@ -16,8 +16,7 @@ export function mapRedRequestRateRows(rows: unknown[]): DashboardRecord[] {
     const r = row as Record<string, unknown>;
     return {
       timestamp: str(r.timestamp ?? r.time_bucket),
-      service_name: str(r.service_name ?? r.serviceName),
-      value: num(r.rps ?? r.value ?? r.request_count),
+      value: num(r.request_count ?? r.value ?? r.rps),
       request_count: num(r.request_count ?? r.rps),
     };
   });
@@ -30,7 +29,6 @@ export function mapRedErrorPctRows(rows: unknown[]): DashboardRecord[] {
     const pct = num(r.error_pct ?? r.error_rate);
     return {
       timestamp: str(r.timestamp ?? r.time_bucket),
-      service_name: str(r.service_name ?? r.serviceName),
       error_pct: pct,
       error_rate: pct,
       error_count: num(r.error_count),

@@ -34,9 +34,3 @@ export interface FleetPod {
 export interface MetricValue {
   readonly value: number;
 }
-
-/** A host ranked by a resource metric (see GET /v1/infrastructure/{cpu,memory}/top). */
-export interface InfraTopHost {
-  readonly host: string;
-  readonly value: number;
-}

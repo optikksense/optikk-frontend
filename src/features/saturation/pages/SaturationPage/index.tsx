@@ -1,9 +1,9 @@
 import { SaturationSubnav } from "@/features/saturation/components/SaturationSubnav";
 
+import { FleetMap } from "./components/FleetMap";
+import { MostSaturatedHostsTable } from "./components/MostSaturatedHostsTable";
 import { SaturationOverviewHeader } from "./components/SaturationOverviewHeader";
 import { SubsystemCardsRow } from "./components/SubsystemCardsRow";
-import { TopKafkaTopicsCard } from "./components/TopKafkaTopicsCard";
-import { WorstSystemsTable } from "./components/WorstSystemsTable";
 import { useSaturationOverviewModel } from "./hooks/useSaturationOverviewModel";
 
 export default function SaturationPage(): JSX.Element {
@@ -26,8 +26,8 @@ export default function SaturationPage(): JSX.Element {
       ) : null}
 
       <SubsystemCardsRow cards={model.cards} />
-      <WorstSystemsTable rows={model.worstSystems} />
-      <TopKafkaTopicsCard topics={model.topTopics} />
+      <FleetMap hosts={model.hosts} />
+      <MostSaturatedHostsTable rows={model.topHosts} />
     </div>
   );
 }

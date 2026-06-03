@@ -11,10 +11,18 @@ interface Props {
   readonly limit?: number;
 }
 
-const STATUS_TINT: Record<ServiceHealthStatus, string> = {
-  ok: "var(--color-healthy)",
-  warn: "var(--color-degraded)",
-  err: "var(--color-critical)",
+// Soft-tinted tile background + matching foreground text (design palette).
+const STATUS_TILE: Record<ServiceHealthStatus, string> = {
+  ok: "bg-[var(--ok-soft)] text-[var(--ok-fg)]",
+  warn: "bg-[var(--warn-soft)] text-[var(--warn-fg)]",
+  err: "bg-[var(--err-soft)] text-[var(--err-fg)]",
+};
+
+// Solid status dots for the legend.
+const STATUS_DOT: Record<ServiceHealthStatus, string> = {
+  ok: "bg-[var(--ok)]",
+  warn: "bg-[var(--warn)]",
+  err: "bg-[var(--err)]",
 };
 
 function rateLabel(req: number): string {
@@ -26,17 +34,16 @@ function Tile({ cell, onOpen }: { readonly cell: ServiceHealthCell; readonly onO
     <button
       type="button"
       onClick={onOpen}
-      className="flex min-h-[72px] flex-col justify-between rounded-md px-2.5 py-2 text-left text-white transition-opacity hover:opacity-90"
-      style={{ background: STATUS_TINT[cell.status] }}
+      className={`flex min-h-[72px] flex-col justify-between rounded-md px-2.5 py-2 text-left transition-opacity hover:opacity-90 ${STATUS_TILE[cell.status]}`}
     >
-      <span className="overflow-hidden text-ellipsis whitespace-nowrap font-mono font-semibold text-[11px] opacity-95">
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap font-mono font-semibold text-[11px]">
         {cell.name}
       </span>
       <span className="flex flex-col">
         <span className="font-bold font-mono text-[13px] leading-none">
           {rateLabel(cell.requestCount)}
         </span>
-        <span className="font-mono text-[10px] opacity-90">
+        <span className="font-mono text-[10px] opacity-70">
           {cell.errorRate.toFixed(2)}% · {Math.round(cell.p99Latency)}ms
         </span>
       </span>
@@ -55,15 +62,15 @@ function StatusLegend({ cells }: { readonly cells: readonly ServiceHealthCell[] 
   return (
     <div className="flex items-center gap-3 text-[10.5px] text-foreground-muted">
       <span className="flex items-center gap-1">
-        <span className="h-2 w-2 rounded-sm" style={{ background: STATUS_TINT.ok }} />
+        <span className={`h-2 w-2 rounded-sm ${STATUS_DOT.ok}`} />
         {counts.ok}
       </span>
       <span className="flex items-center gap-1">
-        <span className="h-2 w-2 rounded-sm" style={{ background: STATUS_TINT.warn }} />
+        <span className={`h-2 w-2 rounded-sm ${STATUS_DOT.warn}`} />
         {counts.warn}
       </span>
       <span className="flex items-center gap-1">
-        <span className="h-2 w-2 rounded-sm" style={{ background: STATUS_TINT.err }} />
+        <span className={`h-2 w-2 rounded-sm ${STATUS_DOT.err}`} />
         {counts.err}
       </span>
     </div>
