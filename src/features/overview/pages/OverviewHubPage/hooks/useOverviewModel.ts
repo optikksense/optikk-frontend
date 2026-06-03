@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { ServiceMetricPoint } from "@/features/metrics/types";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
-import { groupTimeseries } from "@shared/components/ui/dashboard/utils/dashboardListBuilders";
+
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import type { UseQueryResult } from "@tanstack/react-query";
 
@@ -102,8 +102,6 @@ export function useTopErrorsQuery(enabled: boolean): UseQueryResult<ErrorHotspot
 }
 
 export interface PerformanceSeries {
-  readonly requestSeries: Record<string, Array<Record<string, unknown>>>;
-  readonly errorSeries: Record<string, Array<Record<string, unknown>>>;
   readonly requestRows: DashboardRecord[];
   readonly errorRows: DashboardRecord[];
   readonly hasRequests: boolean;
@@ -117,8 +115,6 @@ export function usePerformanceSeries(
     const rrRows = mapRedRequestRateRows(prRaw ?? []);
     const erRows = mapRedErrorPctRows(prRaw ?? []);
     return {
-      requestSeries: groupTimeseries(rrRows, "service_name"),
-      errorSeries: groupTimeseries(erRows, "service_name"),
       requestRows: rrRows,
       errorRows: erRows,
       hasRequests: rrRows.length > 0,

@@ -3,8 +3,7 @@ import { useMemo } from "react";
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
-import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { tsMs } from "@shared/utils/chartDataUtils";
 
 import type { SaturationTimeSeriesPoint } from "@/features/services/api/serviceDetailApi";
 
@@ -17,23 +16,12 @@ function fmtSat(v: number): string {
   return `${v.toFixed(1)}%`;
 }
 
-function buildValues(
-  rows: SaturationTimeSeriesPoint[] | undefined,
-  timeBuckets: string[]
-): number[] {
-  const byBucket: Record<string, number> = {};
-  for (const r of rows ?? []) {
-    byBucket[tsKey(r.timestamp)] = r.value;
-  }
-  return timeBuckets.map((t) => byBucket[tsKey(t)] ?? 0);
-}
-
 export function SaturationSignal({ serviceName }: { serviceName: string }) {
   const query = useServiceSaturation(serviceName);
-  const { timeBuckets } = useChartTimeBuckets();
 
-  const timestamps = useMemo(() => timeBuckets.map((t) => tsMs(t) / 1000), [timeBuckets]);
-  const values = useMemo(() => buildValues(query.data, timeBuckets), [query.data, timeBuckets]);
+  const activeRows = query.data ?? [];
+  const timestamps = useMemo(() => activeRows.map((r) => tsMs(r.timestamp) / 1000), [activeRows]);
+  const values = useMemo(() => activeRows.map((r) => r.value), [activeRows]);
 
   const latest = values.length ? values[values.length - 1] : 0;
   const series: ObservabilityChartSeries[] = [

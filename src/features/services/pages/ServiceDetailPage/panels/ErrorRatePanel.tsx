@@ -4,8 +4,7 @@ import type uPlot from "uplot";
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
-import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { tsMs } from "@shared/utils/chartDataUtils";
 
 import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
 
@@ -18,49 +17,16 @@ interface ChartData {
   series: ObservabilityChartSeries[];
 }
 
-function buildSeries(rows: ErrorTimeSeriesPoint[] | undefined, timeBuckets: string[]): ChartData {
-  const timestamps = timeBuckets.map((t) => tsMs(t) / 1000);
-
-  if (!rows || rows.length === 0) {
-    return {
-      timestamps,
-      series: [
-        {
-          label: "error rate",
-          values: timestamps.map(() => 0),
-          color: "var(--color-critical,#f04438)",
-          fill: true,
-        },
-      ],
-    };
-  }
-
-  // Build lookup map from API rows keyed by normalized timestamp
-  const dataMap: Record<string, { requests: number; errors: number }> = {};
-  for (const r of rows) {
-    if (!r.timestamp) continue;
-    const key = tsKey(r.timestamp);
-    const existing = dataMap[key];
-    if (existing) {
-      existing.requests += r.request_count;
-      existing.errors += r.error_count;
-    } else {
-      dataMap[key] = { requests: r.request_count, errors: r.error_count };
-    }
-  }
-
-  const values = timeBuckets.map((t) => {
-    const entry = dataMap[tsKey(t)];
-    if (!entry || !entry.requests) return 0;
-    return entry.errors / entry.requests;
-  });
+function buildSeries(rows: ErrorTimeSeriesPoint[] | undefined): ChartData {
+  const activeRows = rows ?? [];
+  const timestamps = activeRows.map((r) => tsMs(r.timestamp) / 1000);
 
   return {
     timestamps,
     series: [
       {
         label: "error rate",
-        values,
+        values: activeRows.map((r) => (r.request_count ? r.error_count / r.request_count : 0)),
         color: "var(--color-critical,#f04438)",
         fill: true,
       },
@@ -100,8 +66,7 @@ function CurrentRate({ value }: { value: number }) {
 
 export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
   const query = useErrorRateSeries(serviceName);
-  const { timeBuckets } = useChartTimeBuckets();
-  const data = useMemo(() => buildSeries(query.data, timeBuckets), [query.data, timeBuckets]);
+  const data = useMemo(() => buildSeries(query.data), [query.data]);
   const current = useMemo(() => {
     let req = 0;
     let err = 0;

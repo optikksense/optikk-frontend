@@ -4,7 +4,6 @@ import "uplot/dist/uPlot.min.css";
 import "./uplot.css";
 
 import { cn } from "@/lib/utils";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
 import { resolveThemeColor } from "@shared/utils/chartTheme";
 import { useTheme } from "@store/appStore";
 
@@ -421,5 +420,4 @@ export function uBars(label: string, color: string): uPlot.Series {
   };
 }
 
-/** Re-export the time bucket hook for chart consumers. */
-export { useChartTimeBuckets };
+

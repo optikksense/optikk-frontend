@@ -3,8 +3,7 @@ import { useMemo } from "react";
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
-import { tsKey, tsMs } from "@shared/utils/chartDataUtils";
+import { tsMs } from "@shared/utils/chartDataUtils";
 
 import type { StatusTimeseriesPoint } from "@/features/services/api/serviceDetailApi";
 
@@ -13,21 +12,12 @@ import { useStatusTimeseries } from "../../../hooks/useStatusTimeseries";
 import { PanelCard } from "../../PanelCard";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
-function buildValues(rows: StatusTimeseriesPoint[] | undefined, timeBuckets: string[]): number[] {
-  const totals: Record<string, number> = {};
-  for (const r of rows ?? []) {
-    const key = tsKey(r.timestamp);
-    totals[key] = (totals[key] ?? 0) + r.status_2xx + r.status_4xx + r.status_5xx + r.status_other;
-  }
-  return timeBuckets.map((t) => totals[tsKey(t)] ?? 0);
-}
-
 export function RequestRateSignal({ serviceName }: { serviceName: string }) {
   const query = useStatusTimeseries(serviceName);
-  const { timeBuckets } = useChartTimeBuckets();
 
-  const timestamps = useMemo(() => timeBuckets.map((t) => tsMs(t) / 1000), [timeBuckets]);
-  const values = useMemo(() => buildValues(query.data, timeBuckets), [query.data, timeBuckets]);
+  const activeRows = query.data ?? [];
+  const timestamps = useMemo(() => activeRows.map((r) => tsMs(r.timestamp) / 1000), [activeRows]);
+  const values = useMemo(() => activeRows.map((r) => r.status_2xx + r.status_4xx + r.status_5xx + r.status_other), [activeRows]);
 
   const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
   const series: ObservabilityChartSeries[] = [

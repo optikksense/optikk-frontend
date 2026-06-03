@@ -4,8 +4,7 @@ import "uplot/dist/uPlot.min.css";
 
 import { Surface } from "@/components/ui";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
-import { alignChartData, tsMs } from "@shared/utils/chartDataUtils";
+import { tsMs } from "@shared/utils/chartDataUtils";
 import { resolveThemeColor } from "@shared/utils/chartTheme";
 import { useTheme } from "@store/appStore";
 
@@ -27,7 +26,6 @@ function formatAxisValue(value: number | null | undefined): string {
 }
 
 export default function SystemPerformanceCard({ series, loading }: Props) {
-  const { timeBuckets } = useChartTimeBuckets();
   const theme = useTheme();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<uPlot | null>(null);
@@ -48,16 +46,31 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
   );
   const errorColor = useMemo(() => resolveThemeColor("var(--err)", "#ef4444"), [theme]);
 
-  // Process data streams
-  const timestamps = useMemo(() => timeBuckets.map((t) => tsMs(t) / 1000), [timeBuckets]);
-  const reqValues = useMemo(
-    () => alignChartData(series.requestRows, ["request_count", "value", "rps"], timeBuckets),
-    [series.requestRows, timeBuckets]
-  );
-  const errValues = useMemo(
-    () => alignChartData(series.errorRows, ["error_count"], timeBuckets),
-    [series.errorRows, timeBuckets]
-  );
+  // Build chart data directly from backend rows — no frontend bucketing.
+  // Backend sends one row per timestamp (pre-aggregated across services).
+  const { timestamps, reqValues, errValues } = useMemo(() => {
+    const reqByTs = new Map<number, number>();
+    const errByTs = new Map<number, number>();
+
+    for (const row of series.requestRows) {
+      const t = Math.floor(tsMs(row.timestamp as string) / 1000);
+      if (!Number.isFinite(t)) continue;
+      reqByTs.set(t, (reqByTs.get(t) ?? 0) + Number(row.request_count ?? row.value ?? 0));
+    }
+    for (const row of series.errorRows) {
+      const t = Math.floor(tsMs(row.timestamp as string) / 1000);
+      if (!Number.isFinite(t)) continue;
+      errByTs.set(t, (errByTs.get(t) ?? 0) + Number(row.error_count ?? 0));
+    }
+
+    const allTs = [...new Set([...reqByTs.keys(), ...errByTs.keys()])].sort((a, b) => a - b);
+
+    return {
+      timestamps: allTs,
+      reqValues: allTs.map((t) => reqByTs.get(t) ?? 0),
+      errValues: allTs.map((t) => errByTs.get(t) ?? 0),
+    };
+  }, [series.requestRows, series.errorRows]);
 
   const alignedData = useMemo<uPlot.AlignedData>(
     () => [timestamps, reqValues, errValues],

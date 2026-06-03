@@ -51,22 +51,3 @@ export function formatChartLabels<T extends object>(
   });
 }
 
-/** Generate time bucket strings spanning [startMs, endMs]. */
-export function generateTimeBuckets(startMs: number, endMs: number): string[] {
-  const rangeMs = endMs - startMs;
-  let stepMs: number;
-
-  // Grain tiers mirror the backend DisplayGrain so the frontend bucket grid
-  // aligns 1:1 with the buckets the API returns (≤3h→1m, ≤24h→5m, ≤7d→1h, else 1d).
-  if (rangeMs <= 3 * 3600000) stepMs = 60000;
-  else if (rangeMs <= 86400000) stepMs = 300000;
-  else if (rangeMs <= 7 * 86400000) stepMs = 3600000;
-  else stepMs = 86400000;
-
-  const alignedStart = Math.floor(startMs / stepMs) * stepMs;
-  const buckets: string[] = [];
-  for (let t = alignedStart; t <= endMs; t += stepMs) {
-    buckets.push(new Date(t).toISOString());
-  }
-  return buckets;
-}

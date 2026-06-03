@@ -3,8 +3,6 @@ import { useMemo } from "react";
 import type { FleetRedMetrics } from "@/features/overview/api/overviewHubApi";
 import { APP_COLORS } from "@config/colorLiterals";
 import StatCard from "@shared/components/ui/cards/StatCard";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
-import { alignChartData } from "@shared/utils/chartDataUtils";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
 import { num } from "../hooks/mappers";
@@ -17,7 +15,6 @@ interface Props {
 }
 
 export default function OverviewHero({ summary, performance, loading }: Props) {
-  const { timeBuckets } = useChartTimeBuckets();
 
   const totalReq = num(summary?.total_span_count);
   const errPct = num(summary?.avg_error_pct);

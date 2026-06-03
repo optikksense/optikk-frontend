@@ -6,7 +6,6 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { firstValue } from "@shared/utils/chartDataUtils";
 
 import { CHART_COLORS } from "@config/constants";
-import { useChartTimeBuckets } from "@shared/hooks/useChartTimeBuckets";
 import { formatBytes, formatDuration, formatPercentage } from "@shared/utils/formatters";
 
 import { infraGet } from "../api/infrastructureApi";
@@ -51,7 +50,6 @@ export default memo(function InfraMultiSeriesChart({
   formatType = "number",
   extraParams,
 }: InfraMultiSeriesChartProps) {
-  const { timeBuckets } = useChartTimeBuckets();
   const [selectedSeries, setSelectedSeries] = useState<string[]>([]);
 
   const toggleSeries = (key: string) => {
@@ -122,7 +120,7 @@ export default memo(function InfraMultiSeriesChart({
     );
   }
 
-  if (!hasData && timeBuckets.length === 0) {
+  if (!hasData) {
     return (
       <div className="flex h-[260px] items-center justify-center text-[13px] text-foreground-muted">
         No data in range
