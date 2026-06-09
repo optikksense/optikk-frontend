@@ -15,7 +15,6 @@ interface Props {
 }
 
 export default function OverviewHero({ summary, performance, loading }: Props) {
-
   const totalReq = num(summary?.total_span_count);
   const errPct = num(summary?.avg_error_pct);
   const errCount = num(summary?.total_errors);

@@ -60,7 +60,7 @@ export function InfraHostsFilterBar({ hosts, value, onChange }: InfraHostsFilter
                   className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[13px] hover:bg-muted"
                 >
                   <Search size={12} className="text-foreground-muted" />
-                  <span className="font-mono text-primary flex-none">{k}:</span>
+                  <span className="flex-none font-mono text-primary">{k}:</span>
                   <span className="text-foreground">{v}</span>
                 </button>
               );

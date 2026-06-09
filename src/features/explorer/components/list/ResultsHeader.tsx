@@ -16,6 +16,7 @@ function ResultsHeaderImpl<Row>({ columns, config, onOpenPicker, trailing }: Pro
   return (
     <div
       role="row"
+      tabIndex={-1}
       className="sticky top-0 z-10 flex h-8 items-center gap-2 border-border border-b bg-secondary px-3 font-semibold text-[11px] text-foreground-secondary uppercase tracking-wider"
     >
       {visibleConfig.map((entry) => {

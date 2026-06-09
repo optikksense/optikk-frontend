@@ -17,7 +17,10 @@ export function RequestRateSignal({ serviceName }: { serviceName: string }) {
 
   const activeRows = query.data ?? [];
   const timestamps = useMemo(() => activeRows.map((r) => tsMs(r.timestamp) / 1000), [activeRows]);
-  const values = useMemo(() => activeRows.map((r) => r.status_2xx + r.status_4xx + r.status_5xx + r.status_other), [activeRows]);
+  const values = useMemo(
+    () => activeRows.map((r) => r.status_2xx + r.status_4xx + r.status_5xx + r.status_other),
+    [activeRows]
+  );
 
   const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
   const series: ObservabilityChartSeries[] = [

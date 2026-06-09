@@ -24,7 +24,9 @@ export default memo(function ExceptionTypeLineChart({
       selectedEndpoints.length > 0 ? groups.filter((g) => selectedEndpoints.includes(g)) : groups;
 
     const firstGroupRows = groupMap[activeGroups[0]] ?? [];
-    const activeTimestamps = firstGroupRows.map((row) => tsMs(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "") / 1000).filter((t) => !Number.isNaN(t));
+    const activeTimestamps = firstGroupRows
+      .map((row) => tsMs(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "") / 1000)
+      .filter((t) => !Number.isNaN(t));
 
     const seriesList = activeGroups.map((exceptionType, idx) => {
       const rows = groupMap[exceptionType] || [];

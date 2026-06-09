@@ -78,7 +78,7 @@ export function LoginAside() {
 /* ── Decorative sparkline SVG ────────────────────────────── */
 function SparklineSvg() {
   return (
-    <svg className="aside-spark" viewBox="0 0 400 64" fill="none">
+    <svg className="aside-spark" viewBox="0 0 400 64" fill="none" aria-hidden="true">
       {/* Area fill */}
       <path
         d="M0 52 C20 48 40 40 60 38 C80 36 100 42 120 36 C140 30 160 24 180 22 C200 20 220 26 240 24 C260 22 280 16 300 18 C320 20 340 14 360 12 C380 10 400 8 400 8 L400 64 L0 64 Z"

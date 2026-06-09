@@ -196,12 +196,17 @@ function UPlotChart({
     const measuredHeight = fillHeight ? Math.max(el.clientHeight || height, 180) : height;
     const opts = { ...mergedOptions, width: el.clientWidth, height: measuredHeight };
 
-    console.log("DEBUG: UPlotChart instantiating uPlot with options:", opts, "data:", dataRef.current);
+    console.log(
+      "DEBUG: UPlotChart instantiating uPlot with options:",
+      opts,
+      "data:",
+      dataRef.current
+    );
     const u = new uPlot(opts, dataRef.current, el);
     chartRef.current = u;
     console.log("DEBUG: UPlotChart scales after mount:", {
       x: { min: u.scales.x?.min, max: u.scales.x?.max },
-      y: { min: u.scales.y?.min, max: u.scales.y?.max }
+      y: { min: u.scales.y?.min, max: u.scales.y?.max },
     });
 
     const ro = new ResizeObserver((entries) => {
@@ -241,12 +246,12 @@ function UPlotChart({
     console.log("DEBUG: UPlotChart setData updating with data:", data);
     console.log("DEBUG: UPlotChart setData updating. Scale before:", {
       x: { min: u.scales.x?.min, max: u.scales.x?.max },
-      y: { min: u.scales.y?.min, max: u.scales.y?.max }
+      y: { min: u.scales.y?.min, max: u.scales.y?.max },
     });
     u.setData(data, true);
     console.log("DEBUG: UPlotChart setData updated. Scale after:", {
       x: { min: u.scales.x?.min, max: u.scales.x?.max },
-      y: { min: u.scales.y?.min, max: u.scales.y?.max }
+      y: { min: u.scales.y?.min, max: u.scales.y?.max },
     });
   }, [data]);
 
@@ -419,5 +424,3 @@ export function uBars(label: string, color: string): uPlot.Series {
     paths: uPlot.paths.bars?.({ size: [0.6], radius: 2 }),
   };
 }
-
-

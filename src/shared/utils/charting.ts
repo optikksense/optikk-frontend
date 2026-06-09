@@ -50,4 +50,3 @@ export function formatChartLabels<T extends object>(
     return date.toLocaleDateString([], { month: "short", day: "numeric" });
   });
 }
-

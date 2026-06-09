@@ -4,9 +4,7 @@ import { APP_COLORS } from "@config/colorLiterals";
 import { firstValue, tsMs } from "@shared/utils/chartDataUtils";
 import { getChartColor } from "@shared/utils/charting";
 
-import ObservabilityChart, {
-  type ObservabilityChartSeries,
-} from "../ObservabilityChart";
+import ObservabilityChart, { type ObservabilityChartSeries } from "../ObservabilityChart";
 
 interface EndpointData {
   key?: string;
@@ -80,7 +78,9 @@ export default memo(function LatencyChart({
         .slice(0, 10);
 
       const firstSvc = activeEntries[0]?.[1] ?? [];
-      activeTimestamps = firstSvc.map((row) => tsMs(firstValue(row, ["timestamp", "time_bucket", "timeBucket"], "")) / 1000).filter((t) => !Number.isNaN(t));
+      activeTimestamps = firstSvc
+        .map((row) => tsMs(firstValue(row, ["timestamp", "time_bucket", "timeBucket"], "")) / 1000)
+        .filter((t) => !Number.isNaN(t));
 
       seriesList = activeEntries.map(([svcName, rows], idx) => {
         const values = rows.map((row) => {
@@ -95,7 +95,9 @@ export default memo(function LatencyChart({
         return { label: svcName, values, color: getChartColor(idx), fill: false };
       });
     } else {
-      activeTimestamps = data.map((d) => tsMs(firstValue(d, ["timestamp", "time_bucket", "timeBucket"], "")) / 1000).filter((t) => !Number.isNaN(t));
+      activeTimestamps = data
+        .map((d) => tsMs(firstValue(d, ["timestamp", "time_bucket", "timeBucket"], "")) / 1000)
+        .filter((t) => !Number.isNaN(t));
       if (data.length > 0 && firstValue(data[0], ["value"], null) !== null) {
         seriesList = [
           {
@@ -104,7 +106,14 @@ export default memo(function LatencyChart({
               Number(
                 firstValue(
                   d,
-                  ["value", valueKey, "avg_latency", "avgLatency", "avg_latency_ms", "avgLatencyMs"],
+                  [
+                    "value",
+                    valueKey,
+                    "avg_latency",
+                    "avgLatency",
+                    "avg_latency_ms",
+                    "avgLatencyMs",
+                  ],
                   0
                 )
               )
@@ -117,19 +126,25 @@ export default memo(function LatencyChart({
         seriesList = [
           {
             label: "P50",
-            values: data.map((d) => Number(firstValue(d, ["p50_ms", "p50", "p50_latency", "p50Latency"], 0))),
+            values: data.map((d) =>
+              Number(firstValue(d, ["p50_ms", "p50", "p50_latency", "p50Latency"], 0))
+            ),
             color: APP_COLORS.hex_73c991,
             fill: false,
           },
           {
             label: "P95",
-            values: data.map((d) => Number(firstValue(d, ["p95_ms", "p95", "p95_latency", "p95Latency"], 0))),
+            values: data.map((d) =>
+              Number(firstValue(d, ["p95_ms", "p95", "p95_latency", "p95Latency"], 0))
+            ),
             color: APP_COLORS.hex_f79009,
             fill: false,
           },
           {
             label: "P99",
-            values: data.map((d) => Number(firstValue(d, ["p99_ms", "p99", "p99_latency", "p99Latency"], 0))),
+            values: data.map((d) =>
+              Number(firstValue(d, ["p99_ms", "p99", "p99_latency", "p99Latency"], 0))
+            ),
             color: APP_COLORS.hex_f04438,
             fill: false,
           },

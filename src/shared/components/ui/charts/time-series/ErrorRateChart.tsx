@@ -4,9 +4,7 @@ import { APP_COLORS } from "@config/colorLiterals";
 import { firstValue, tsMs } from "@shared/utils/chartDataUtils";
 import { getChartColor } from "@shared/utils/charting";
 
-import ObservabilityChart, {
-  type ObservabilityChartSeries,
-} from "../ObservabilityChart";
+import ObservabilityChart, { type ObservabilityChartSeries } from "../ObservabilityChart";
 
 type ChartRow = Record<string, unknown>;
 
@@ -43,7 +41,9 @@ export default memo(function ErrorRateChart({
         .slice(0, 10);
 
       const firstSvc = activeEntries[0]?.[1] ?? [];
-      activeTimestamps = firstSvc.map((row) => tsMs(firstValue(row, ["timestamp", "time_bucket"], "")) / 1000).filter((t) => !Number.isNaN(t));
+      activeTimestamps = firstSvc
+        .map((row) => tsMs(firstValue(row, ["timestamp", "time_bucket"], "")) / 1000)
+        .filter((t) => !Number.isNaN(t));
 
       seriesList = activeEntries.map(([svcName, rows], idx) => {
         const values = rows.map((row) => {
@@ -54,7 +54,9 @@ export default memo(function ErrorRateChart({
         return { label: svcName, values, color: getChartColor(idx), fill: false };
       });
     } else {
-      activeTimestamps = data.map((d) => tsMs(firstValue(d, ["timestamp", "time_bucket"], "")) / 1000).filter((t) => !Number.isNaN(t));
+      activeTimestamps = data
+        .map((d) => tsMs(firstValue(d, ["timestamp", "time_bucket"], "")) / 1000)
+        .filter((t) => !Number.isNaN(t));
       seriesList = [
         {
           label: datasetLabel,
@@ -91,7 +93,15 @@ export default memo(function ErrorRateChart({
     });
 
     return { timestamps: activeTimestamps, chartData: seriesList };
-  }, [data, selectedEndpoints, serviceTimeseriesMap, hasServiceData, targetThreshold, datasetLabel, color]);
+  }, [
+    data,
+    selectedEndpoints,
+    serviceTimeseriesMap,
+    hasServiceData,
+    targetThreshold,
+    datasetLabel,
+    color,
+  ]);
 
   const maxDataVal = useMemo(() => {
     let max = 0;

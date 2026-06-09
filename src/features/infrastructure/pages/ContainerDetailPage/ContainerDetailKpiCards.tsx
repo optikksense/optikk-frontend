@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { firstValue } from "@shared/utils/chartDataUtils";
 
-import { SparklineCell } from "@/features/services/pages/ServiceCatalogPage/catalog/SparklineCell";
+import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 
 import { infraGet } from "../../api/infrastructureApi";
 

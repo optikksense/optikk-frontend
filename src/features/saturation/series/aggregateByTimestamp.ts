@@ -15,17 +15,17 @@ function toUnixSeconds(timestamp: string): number {
   return Math.floor(new Date(timestamp).getTime() / 1000);
 }
 
-/** Sum `valueOf(row)` across all rows sharing a timestamp, returning a sorted timeline. */
+/** Sum `getValue(row)` across all rows sharing a timestamp, returning a sorted timeline. */
 export function sumByTimestamp<TRow>(
   rows: readonly TRow[],
   timestampOf: (row: TRow) => string,
-  valueOf: (row: TRow) => number | null | undefined
+  getValue: (row: TRow) => number | null | undefined
 ): AggregatedSeries {
   const map = new Map<number, number>();
   for (const row of rows) {
     const ts = toUnixSeconds(timestampOf(row));
     if (!Number.isFinite(ts)) continue;
-    map.set(ts, (map.get(ts) ?? 0) + (valueOf(row) ?? 0));
+    map.set(ts, (map.get(ts) ?? 0) + (getValue(row) ?? 0));
   }
   const timestamps = Array.from(map.keys()).sort((a, b) => a - b);
   return { timestamps, values: timestamps.map((t) => map.get(t) ?? 0) };

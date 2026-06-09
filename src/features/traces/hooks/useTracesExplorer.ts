@@ -48,8 +48,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
       endTime,
       JSON.stringify(state.filters),
     ],
-    queryFn: () =>
-      queryFacets({ startTime, endTime, filters: state.filters, limit: 0 }),
+    queryFn: () => queryFacets({ startTime, endTime, filters: state.filters, limit: 0 }),
     enabled: (args.enabled ?? true) && needsFacets,
   });
 
@@ -65,8 +64,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
       endTime,
       JSON.stringify(state.filters),
     ],
-    queryFn: () =>
-      queryTrend({ startTime, endTime, filters: state.filters, limit: 0 }),
+    queryFn: () => queryTrend({ startTime, endTime, filters: state.filters, limit: 0 }),
     enabled: (args.enabled ?? true) && needsTrend,
   });
 

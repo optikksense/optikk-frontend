@@ -77,6 +77,7 @@ This is **mandatory**, not optional. The documentation must always reflect the c
 - **No `as any`** — use `dynamicNavigateOptions` / `dynamicTo` for router casts, `Record<string, unknown>` for data, `unknown as { keys: ... }` for Zod internals.
 - **API naming**: GET operations use `get*` prefix (not `fetch*`); `fetch*` is reserved for the Fetch API itself.
 - **Prefer `useStandardQuery`** over raw `useQuery` for consistent defaults.
+- **One home per formatter**: display formatting (`formatNumber`, `formatDuration`, `formatRelativeTime`, …) imports from `@shared/utils/formatters` — never define a local `format*`/`timeAgo` helper in a component (enforced by `yarn check:dupes`).
 
 ## Engineering principles
 

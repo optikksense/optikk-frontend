@@ -10,10 +10,7 @@ type Props = {
   summaryLoading: boolean;
 };
 
-function ServiceDrawerStatGridComponent({
-  summaryMetrics,
-  summaryLoading,
-}: Props) {
+function ServiceDrawerStatGridComponent({ summaryMetrics, summaryLoading }: Props) {
   return (
     <div id="service-drawer-overview" className="scroll-mt-24">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

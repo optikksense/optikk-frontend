@@ -10,7 +10,6 @@ function ResultsLoadingRowsComponent({ rows = 12, rowHeight = 32 }: Props) {
     <div aria-busy className="flex flex-col" role="status">
       {Array.from({ length: rows }).map((_, index) => (
         <div
-          // biome-ignore lint/suspicious/noArrayIndexKey: purely visual skeleton
           key={index}
           className="flex items-center border-border border-b px-3"
           style={{ height: rowHeight }}

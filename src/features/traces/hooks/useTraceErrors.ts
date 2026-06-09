@@ -1,5 +1,5 @@
-import { tracesService } from "../api/tracesApi";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
+import { tracesService } from "../api/tracesApi";
 
 /**
  * Per-trace error groups, grouped by exception type with the offending spans.

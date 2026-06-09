@@ -108,9 +108,7 @@ export interface PerformanceSeries {
   readonly hasErrors: boolean;
 }
 
-export function usePerformanceSeries(
-  prRaw: unknown[] | undefined
-): PerformanceSeries {
+export function usePerformanceSeries(prRaw: unknown[] | undefined): PerformanceSeries {
   return useMemo(() => {
     const rrRows = mapRedRequestRateRows(prRaw ?? []);
     const erRows = mapRedErrorPctRows(prRaw ?? []);

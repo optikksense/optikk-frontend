@@ -127,12 +127,30 @@ interface DispatchCtx {
 }
 
 function dispatchFilter(field: string, op: string, value: string, ctx: DispatchCtx): void {
-  if (field.startsWith("@")) return handleAttribute(field.slice(1), op, value, ctx);
-  if (field === "search" || field === "body") return handleSearch(op, value, ctx);
-  if (field === "trace_id") return handleSingle(ctx, "traceId", value);
-  if (field === "span_id") return handleSingle(ctx, "spanId", value);
-  if (field === "severity_text") return handleSeverity(op, value, ctx);
-  if (RESOURCE_DIMS.has(field)) return handleResourceDim(field, op, value, ctx);
+  if (field.startsWith("@")) {
+    handleAttribute(field.slice(1), op, value, ctx);
+    return;
+  }
+  if (field === "search" || field === "body") {
+    handleSearch(op, value, ctx);
+    return;
+  }
+  if (field === "trace_id") {
+    handleSingle(ctx, "traceId", value);
+    return;
+  }
+  if (field === "span_id") {
+    handleSingle(ctx, "spanId", value);
+    return;
+  }
+  if (field === "severity_text") {
+    handleSeverity(op, value, ctx);
+    return;
+  }
+  if (RESOURCE_DIMS.has(field)) {
+    handleResourceDim(field, op, value, ctx);
+    return;
+  }
   ctx.warnings.push({
     code: "unknown_field",
     field,
@@ -141,7 +159,10 @@ function dispatchFilter(field: string, op: string, value: string, ctx: DispatchC
 }
 
 function handleResourceDim(field: string, op: string, value: string, ctx: DispatchCtx): void {
-  if (op === "eq") return appendArr(ctx.body, RESOURCE_INCLUDE[field], value);
+  if (op === "eq") {
+    appendArr(ctx.body, RESOURCE_INCLUDE[field], value);
+    return;
+  }
   if (op === "neq") {
     const key = RESOURCE_EXCLUDE[field];
     if (!key) {
@@ -152,7 +173,8 @@ function handleResourceDim(field: string, op: string, value: string, ctx: Dispat
       });
       return;
     }
-    return appendArr(ctx.body, key, value);
+    appendArr(ctx.body, key, value);
+    return;
   }
   ctx.warnings.push({
     code: "unsupported_op",
@@ -162,8 +184,14 @@ function handleResourceDim(field: string, op: string, value: string, ctx: Dispat
 }
 
 function handleSeverity(op: string, value: string, ctx: DispatchCtx): void {
-  if (op === "eq") return appendArr(ctx.body, "severities", value);
-  if (op === "neq") return appendArr(ctx.body, "excludeSeverities", value);
+  if (op === "eq") {
+    appendArr(ctx.body, "severities", value);
+    return;
+  }
+  if (op === "neq") {
+    appendArr(ctx.body, "excludeSeverities", value);
+    return;
+  }
   ctx.warnings.push({
     code: "unsupported_op",
     field: "severity_text",

@@ -1,8 +1,8 @@
 import { ExternalLink, X } from "lucide-react";
 
+import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 import { ServiceAvatar } from "../../../components/ServiceAvatar";
 import { fmtMs, fmtNum, fmtPct } from "../../ServiceDetailPage/formatters";
-import { SparklineCell } from "./SparklineCell";
 import { StatusDot } from "./StatusDot";
 import type { CatalogRow } from "./buildCatalogRows";
 

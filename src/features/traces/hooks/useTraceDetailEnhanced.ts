@@ -1,6 +1,6 @@
-import { tracesService } from "../api/tracesApi";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useMemo } from "react";
+import { tracesService } from "../api/tracesApi";
 import type {
   CriticalPathSpan,
   ErrorPathSpan,

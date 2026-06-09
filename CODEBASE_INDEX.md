@@ -115,6 +115,8 @@ The current frontend owns significant page composition and interaction logic dir
 - **Panel registry**: `src/shared/components/ui/dashboard/dashboardPanelRegistry.tsx` — 12 built-in + 10 domain panels
 - **Built-in panels**: `builtInDashboardPanels.tsx` — request, error-rate, latency, exception-type-line (base-chart); table, bar, gauge, heatmap, pie, stat-cards-grid (specialized); stat-card, stat-summary (self-contained)
 - **Charts**: `src/shared/components/ui/charts/` — `UPlotChart` (use `setData()` for flicker-free refresh), `ObservabilityChart`, `time-series/`, `distributions/`, `micro/`, `specialized/`
+- **Sparklines (3 layers, each justified)**: `micro/SparklineChart` (uPlot canvas micro-chart) ← wrapped by `primitives/ui/table-sparkline` (`TableSparkline`, trend-colored table cell); `micro/SparklineCell` (pure-SVG tone-tinted area sparkline for KPI cards/tables — promoted from `features/services` so errors/infrastructure no longer cross-feature import it)
+- **Formatters**: [src/shared/utils/formatters.ts](src/shared/utils/formatters.ts) is the single home for display formatting (`formatNumber`, `formatDuration`, `formatRelativeTime`, …). The only sanctioned local copy is `ServiceTopologyGraph/format.ts` (visual-exact lowercase-`k` compact format). Enforced by `yarn check:dupes`.
 - **Live tail**: [src/shared/hooks/useSocketStream.ts](src/shared/hooks/useSocketStream.ts) (core WebSocket), `src/features/explorer-core/hooks/useLiveTailStream.ts` (wrapper with teamId)
 - **Explorer core**: `src/features/explorer-core/` — shared analytics, facets, visualizations for Logs/Traces/Metrics explorers
 - **Navigation utils**: [src/shared/utils/navigation.ts](src/shared/utils/navigation.ts) — `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` for TanStack Router dynamic-path navigation (replaces scattered `as any` casts)
@@ -189,10 +191,11 @@ From [package.json](package.json):
 - `yarn type-check`
 - `yarn lint`
 - `yarn check:colors` — theme-color guardrail; fails on Tailwind named colors / raw hex / rgba in `className` (see color contract above)
+- `yarn check:dupes` — duplication guardrail ([scripts/check-duplication.mjs](scripts/check-duplication.mjs)); fails on local re-definitions of the shared formatters outside their sanctioned homes
 - `yarn build`
 - `yarn deploy:firebase` — compiles with Vite and deploys to Firebase Hosting
 - `yarn preview`
-- `yarn ci` — `type-check && lint && check:colors && build`
+- `yarn ci` — `type-check && lint && check:colors && check:dupes && build`. The repo is fully lint-clean (biome, 0 errors) as of 2026-06 — keep it that way: run `yarn lint:fix` before committing.
 
 ## Cross-repo docs
 

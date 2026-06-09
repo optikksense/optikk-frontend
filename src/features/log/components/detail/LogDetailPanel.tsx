@@ -1,3 +1,4 @@
+import { formatRelativeTime } from "@shared/utils/formatters";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Copy, GitFork, Link2, X } from "lucide-react";
@@ -40,17 +41,6 @@ function formatTime(iso: string): string {
   } catch {
     return iso;
   }
-}
-
-function relativeTime(iso: string): string {
-  const d = new Date(iso).getTime();
-  if (Number.isNaN(d)) return "";
-  const diffSec = Math.round((Date.now() - d) / 1000);
-  const a = Math.abs(diffSec);
-  if (a < 60) return `${a}s ago`;
-  if (a < 3600) return `${Math.round(a / 60)}m ago`;
-  if (a < 86400) return `${Math.round(a / 3600)}h ago`;
-  return `${Math.round(a / 86400)}d ago`;
 }
 
 function flattenAttrs(log: LogRecord): Array<[string, string]> {
@@ -168,7 +158,7 @@ function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
       <div className="flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-[var(--fg-3)] [font-family:'Geist_Mono',monospace] [&_b]:font-medium [&_b]:text-[var(--fg-1)]">
         <span>{formatTime(log.timestamp)}</span>
         <span>·</span>
-        <span>{relativeTime(log.timestamp)}</span>
+        <span>{formatRelativeTime(log.timestamp)}</span>
         {log.host ? (
           <>
             <span>·</span>

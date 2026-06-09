@@ -1,7 +1,7 @@
 import { KpiCard } from "@shared/components/ui/dashboard/KpiCard";
 import { formatNumber } from "@shared/utils/formatters";
 
-import { SparklineCell } from "@/features/services/pages/ServiceCatalogPage/catalog/SparklineCell";
+import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 
 export interface ErrorsKpis {
   /** Sum of error counts over the volume series in the selected range. */

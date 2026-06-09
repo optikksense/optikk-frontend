@@ -17,18 +17,28 @@ interface ChartData {
   series: ObservabilityChartSeries[];
 }
 
-function buildSeries(
-  rows: LatencyPercentilesPoint[] | undefined
-): ChartData {
+function buildSeries(rows: LatencyPercentilesPoint[] | undefined): ChartData {
   const activeRows = rows ?? [];
   const timestamps = activeRows.map((r) => tsMs(r.timestamp) / 1000);
 
   return {
     timestamps,
     series: [
-      { label: "p50", values: activeRows.map((r) => r.p50_ms), color: "var(--color-healthy,#73c991)" },
-      { label: "p95", values: activeRows.map((r) => r.p95_ms), color: "var(--color-degraded,#f7b63a)" },
-      { label: "p99", values: activeRows.map((r) => r.p99_ms), color: "var(--color-critical,#f04438)" },
+      {
+        label: "p50",
+        values: activeRows.map((r) => r.p50_ms),
+        color: "var(--color-healthy,#73c991)",
+      },
+      {
+        label: "p95",
+        values: activeRows.map((r) => r.p95_ms),
+        color: "var(--color-degraded,#f7b63a)",
+      },
+      {
+        label: "p99",
+        values: activeRows.map((r) => r.p99_ms),
+        color: "var(--color-critical,#f04438)",
+      },
     ],
   };
 }

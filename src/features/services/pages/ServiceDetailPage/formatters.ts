@@ -1,3 +1,5 @@
+import { formatRelativeTime } from "@shared/utils/formatters";
+
 // Shared formatters for the Service Detail page. Mirror the prototype's
 // `sdNum`, `sdMs`, `sdPct`, `sdDelta` helpers so number rendering matches
 // the design pixel-for-pixel.
@@ -42,12 +44,6 @@ export function ratioFromCounts(numerator: number, denominator: number): number 
 }
 
 export function relativeTimeFromIso(iso: string | undefined | null): string {
-  if (!iso) return "—";
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "—";
-  const deltaSec = Math.max(0, (Date.now() - date.getTime()) / 1000);
-  if (deltaSec < 60) return `${Math.round(deltaSec)}s ago`;
-  if (deltaSec < 3600) return `${Math.round(deltaSec / 60)}m ago`;
-  if (deltaSec < 86400) return `${Math.round(deltaSec / 3600)}h ago`;
-  return `${Math.round(deltaSec / 86400)}d ago`;
+  if (!iso) return "\u2014";
+  return formatRelativeTime(iso);
 }

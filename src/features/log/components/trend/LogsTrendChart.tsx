@@ -256,6 +256,8 @@ function LogsTrendChartComponent({
       </div>
       <svg
         ref={svgRef}
+        role="img"
+        aria-label="Log volume trend"
         className="block h-[180px] w-full"
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"

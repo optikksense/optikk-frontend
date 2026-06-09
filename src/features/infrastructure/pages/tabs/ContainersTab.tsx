@@ -9,8 +9,8 @@ import { ROUTES } from "@/shared/constants/routes";
 
 import { getFleetPods } from "../../api/hostsApi";
 import InfraPodsTable from "../../components/InfraPodsTable";
-import type { FleetPod } from "../../types";
 import { getPodDetails } from "../../components/InfraPodsTable";
+import type { FleetPod } from "../../types";
 
 function KpiCard({
   label,
@@ -168,7 +168,7 @@ export default function ContainersTab() {
       {/* Containers table */}
       <div className="min-w-0">
         {filtered.length === 0 ? (
-          <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted bg-card border border-border rounded-md">
+          <div className="grid h-[200px] place-items-center rounded-md border border-border bg-card text-[12px] text-foreground-muted">
             {query.isPending ? "Loading containers…" : "No containers match the current filter."}
           </div>
         ) : (
@@ -181,22 +181,22 @@ export default function ContainersTab() {
       </div>
 
       {/* Bottom cards grid */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mt-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Top CPU Containers */}
         <div className="rounded-md border border-border bg-card p-4">
-          <div className="text-[13px] font-bold text-foreground leading-tight">
+          <div className="font-bold text-[13px] text-foreground leading-tight">
             Top CPU containers
           </div>
-          <div className="text-[11.5px] text-foreground-muted mt-0.5">last 1 hour</div>
+          <div className="mt-0.5 text-[11.5px] text-foreground-muted">last 1 hour</div>
           <div className="mt-3 flex flex-col gap-1.5">
             {topCpuContainers.map((c) => (
               <button
                 key={c.pod_name}
                 type="button"
                 onClick={() => onOpenContainer(c.pod_name)}
-                className="flex items-center justify-between rounded-md p-1.5 hover:bg-muted text-left transition-colors"
+                className="flex items-center justify-between rounded-md p-1.5 text-left transition-colors hover:bg-muted"
               >
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex min-w-0 items-center gap-2">
                   <span
                     style={{
                       width: 7,
@@ -206,12 +206,12 @@ export default function ContainersTab() {
                       flexShrink: 0,
                     }}
                   />
-                  <span className="font-mono text-[12.5px] font-medium text-foreground truncate">
+                  <span className="truncate font-medium font-mono text-[12.5px] text-foreground">
                     {c.pod_name}
                   </span>
                 </div>
                 <span
-                  className="font-mono text-[12.5px] font-semibold"
+                  className="font-mono font-semibold text-[12.5px]"
                   style={{ color: c.cpu >= 90 ? "var(--err)" : "var(--warn-fg)" }}
                 >
                   {c.cpu}%
@@ -223,19 +223,19 @@ export default function ContainersTab() {
 
         {/* Top Memory Containers */}
         <div className="rounded-md border border-border bg-card p-4">
-          <div className="text-[13px] font-bold text-foreground leading-tight">
+          <div className="font-bold text-[13px] text-foreground leading-tight">
             Top memory containers
           </div>
-          <div className="text-[11.5px] text-foreground-muted mt-0.5">last 1 hour</div>
+          <div className="mt-0.5 text-[11.5px] text-foreground-muted">last 1 hour</div>
           <div className="mt-3 flex flex-col gap-1.5">
             {topMemContainers.map((c) => (
               <button
                 key={c.pod_name}
                 type="button"
                 onClick={() => onOpenContainer(c.pod_name)}
-                className="flex items-center justify-between rounded-md p-1.5 hover:bg-muted text-left transition-colors"
+                className="flex items-center justify-between rounded-md p-1.5 text-left transition-colors hover:bg-muted"
               >
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex min-w-0 items-center gap-2">
                   <span
                     style={{
                       width: 7,
@@ -245,12 +245,12 @@ export default function ContainersTab() {
                       flexShrink: 0,
                     }}
                   />
-                  <span className="font-mono text-[12.5px] font-medium text-foreground truncate">
+                  <span className="truncate font-medium font-mono text-[12.5px] text-foreground">
                     {c.pod_name}
                   </span>
                 </div>
                 <span
-                  className="font-mono text-[12.5px] font-semibold"
+                  className="font-mono font-semibold text-[12.5px]"
                   style={{ color: c.mem >= 90 ? "var(--err)" : "var(--warn-fg)" }}
                 >
                   {c.mem}%

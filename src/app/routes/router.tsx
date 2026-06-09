@@ -65,14 +65,8 @@ function toNestedRoutePath(path: string): string {
   return path.startsWith("/") ? path.slice(1) : path;
 }
 
-function createProtected(
-  path: string,
-  // biome-ignore lint/suspicious/noExplicitAny: router dispatch accepts heterogeneous page components
-  PageComponent: ComponentType<any>,
-  fallbackPath?: string
-) {
+function createProtected(path: string, PageComponent: ComponentType<any>, fallbackPath?: string) {
   if (fallbackPath) {
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack Router infers heterogeneous route types that don't unify under createProtected's signature
     return createRoute({
       getParentRoute: () => mainLayoutRoute,
       path: toNestedRoutePath(path),
@@ -81,7 +75,6 @@ function createProtected(
       },
     }) as any;
   }
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack Router infers heterogeneous route types that don't unify under createProtected's signature
   return createRoute({
     getParentRoute: () => mainLayoutRoute,
     path: toNestedRoutePath(path),

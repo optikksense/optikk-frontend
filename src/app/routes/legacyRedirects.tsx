@@ -27,7 +27,6 @@ function createLegacyDetailRedirect(
   tab?: string
 ) {
   return createRoute({
-    // biome-ignore lint/suspicious/noExplicitAny: tanstack router parent type chain is heterogeneous
     getParentRoute: parent as any,
     path: toNestedRoutePath(path),
     component: () => (
@@ -41,7 +40,6 @@ function createLegacyDetailRedirect(
   });
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: tanstack router heterogeneous parent
 export function buildLegacyRedirects(mainLayoutRoute: any) {
   const parent = () => mainLayoutRoute;
   return [

@@ -52,7 +52,7 @@ export function TracesTable({
             </th>
             <th className="py-2.5 text-right">
               <div
-                className="resize-x overflow-hidden whitespace-nowrap ml-auto"
+                className="ml-auto resize-x overflow-hidden whitespace-nowrap"
                 style={{ width: 90 }}
               >
                 Duration
@@ -73,7 +73,7 @@ export function TracesTable({
             </th>
             <th className="py-2.5 text-right">
               <div
-                className="resize-x overflow-hidden whitespace-nowrap ml-auto"
+                className="ml-auto resize-x overflow-hidden whitespace-nowrap"
                 style={{ width: 56 }}
               >
                 Spans
@@ -97,7 +97,7 @@ export function TracesTable({
                 style={{ borderBottom: "1px solid var(--line-2)" }}
               >
                 <td className="py-2 pl-[18px]">
-                  <div className="font-mono text-[12.5px] text-foreground-secondary whitespace-nowrap truncate max-w-full">
+                  <div className="max-w-full truncate whitespace-nowrap font-mono text-[12.5px] text-foreground-secondary">
                     {formatTimestamp(t.start_ms)}
                   </div>
                   <div className="font-mono text-[12px] text-foreground-muted">

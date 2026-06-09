@@ -1,10 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 
+import { ROUTES } from "@/shared/constants/routes";
 import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { buildLogsHubHref, podEqualsFilter } from "@shared/observability/deepLinks";
 import { dynamicTo } from "@shared/utils/navigation";
-import { ROUTES } from "@/shared/constants/routes";
 
 import { getFleetPods } from "../../api/hostsApi";
 import InfraPodsTable, { getPodDetails } from "../../components/InfraPodsTable";

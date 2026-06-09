@@ -90,6 +90,7 @@ function SpanDrawerComponent({ open, widthPx, minPx, maxPx, onResize, onClose, c
     >
       <div
         role="separator"
+        tabIndex={-1}
         aria-orientation="vertical"
         aria-label="Resize span detail"
         onPointerDown={onHandlePointerDown}

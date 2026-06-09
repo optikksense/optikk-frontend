@@ -44,7 +44,9 @@ export default defineConfig(({ mode }) => {
           ws: true,
           configure: (proxy) => {
             proxy.on("proxyReq", (proxyReq, req) => {
-              console.log(`[Vite Proxy] ${req.method} ${req.url} -> ${proxyReq.getHeader("host")}${proxyReq.path}`);
+              console.log(
+                `[Vite Proxy] ${req.method} ${req.url} -> ${proxyReq.getHeader("host")}${proxyReq.path}`
+              );
             });
           },
         },
