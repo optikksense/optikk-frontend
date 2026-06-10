@@ -25,9 +25,25 @@ export const authPayloadSchema = z
     user: authUserSchema.optional(),
     teams: z.array(authTeamSchema).optional(),
     currentTeam: authTeamSchema.nullable().optional(),
+    accessToken: z.string().optional(),
   })
   .strict();
 
 export type AuthTeam = z.infer<typeof authTeamSchema>;
 export type AuthUser = z.infer<typeof authUserSchema>;
 export type AuthPayload = z.infer<typeof authPayloadSchema>;
+
+/** Parses an auth payload, unwrapping a success envelope if present. */
+export function normalizeAuthPayload(response: unknown): AuthPayload | null {
+  if (!response || typeof response !== "object") {
+    return null;
+  }
+
+  const payload = response as Record<string, unknown>;
+
+  if (payload.success === true && payload.data && typeof payload.data === "object") {
+    return authPayloadSchema.safeParse(payload.data).data ?? null;
+  }
+
+  return authPayloadSchema.safeParse(payload).data ?? null;
+}

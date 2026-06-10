@@ -162,7 +162,7 @@ Channel transports: only **Slack** is wired end-to-end on the backend (`dispatch
 
 | Area | Path | Notes |
 |------|------|-------|
-| HTTP client | `src/shared/api/` | Axios client, auth integration, schemas, decode helpers |
+| HTTP client | `src/shared/api/` | Axios client, auth integration, schemas, decode helpers. Auth is JWT-based: the access token lives only in memory (`auth/tokenStore.ts`) and is attached as `Authorization: Bearer` by `api/interceptors/authInterceptor.ts`; on 401 `api/interceptors/errorInterceptor.ts` does a single-flight `POST /v1/auth/refresh` (`auth/refreshToken.ts`, bare axios + httpOnly refresh cookie, repopulates authStore) and retries once before dispatching `auth:expired`. Login response carries `accessToken` (`auth/schemas.ts` strict zod). Page reload recovers the token via the refresh cookie — no token in localStorage. |
 | UI primitives | `src/shared/components/primitives/` | Reusable lower-level UI building blocks |
 | Product UI | `src/shared/components/ui/` | Charts, dashboard runtime, feedback, tables, overlays |
 | Entities | `src/shared/entities/` | Shared log/metric/trace/user models |

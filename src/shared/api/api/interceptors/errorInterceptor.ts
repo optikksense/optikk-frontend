@@ -1,10 +1,12 @@
 import axios from "axios";
 
-import type { AxiosError, AxiosInstance } from "axios";
+import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 import { NETWORK_ERROR, UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 
 import type { ErrorCode } from "@/shared/constants/errorCodes";
+
+import { refreshAccessToken } from "@shared/api/auth/refreshToken";
 
 /**
  *
@@ -65,10 +67,6 @@ function normalizeError(error: unknown): ApiErrorShape {
       const status = axiosError.response.status;
       const data = axiosError.response.data;
 
-      if (status === 401) {
-        window.dispatchEvent(new CustomEvent("auth:expired"));
-      }
-
       return {
         status,
         code: extractApiCode(data),
@@ -107,13 +105,31 @@ function normalizeError(error: unknown): ApiErrorShape {
   };
 }
 
+type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
+
+function isAuthEndpoint(url: string | undefined): boolean {
+  return Boolean(url?.includes("/v1/auth/login") || url?.includes("/v1/auth/refresh"));
+}
+
 /**
  *
  */
 export function attachErrorInterceptor(instance: AxiosInstance): number {
   return instance.interceptors.response.use(
     (response) => response,
-    (error: unknown) => {
+    async (error: unknown) => {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        const config = error.config as RetriableConfig | undefined;
+        if (config && !config._retried && !isAuthEndpoint(config.url)) {
+          const token = await refreshAccessToken();
+          if (token != null) {
+            config._retried = true;
+            return instance.request(config);
+          }
+        }
+        window.dispatchEvent(new CustomEvent("auth:expired"));
+      }
+
       const normalized = normalizeError(error);
       console.error("[API Error]", {
         status: normalized.status,

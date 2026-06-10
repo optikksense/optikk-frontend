@@ -1,5 +1,7 @@
 import { useAppStore } from "@store/appStore";
 
+import { tokenStore } from "@shared/api/auth/tokenStore";
+
 import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 /**
@@ -12,6 +14,11 @@ export function attachAuthInterceptor(instance: AxiosInstance): number {
     headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
     headers.Pragma = "no-cache";
     headers.Expires = "0";
+
+    const token = tokenStore.get();
+    if (token != null) {
+      headers.Authorization = `Bearer ${token}`;
+    }
 
     const { selectedTeamId, selectedTeamIds } = useAppStore.getState();
     const teamIds = selectedTeamIds;

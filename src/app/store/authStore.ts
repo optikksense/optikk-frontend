@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import type { Team, User } from "@/types";
 
 import type { AuthPayload, AuthTeam } from "@shared/api/auth/authService";
+import { tokenStore } from "@shared/api/auth/tokenStore";
 import { authService } from "@shared/api/authService";
 import { queryClient } from "@shared/api/queryClient";
 
@@ -38,17 +39,6 @@ function asLoginPayload(value: unknown): AuthPayload | null {
 function getErrorMessage(error: unknown, fallback: string): string {
   if (typeof error === "object" && error !== null) {
     const record = error as Record<string, unknown>;
-
-    // Handle "hijacked" 500 responses where login succeeded but session storage failed
-    const apiData = record.data as Record<string, unknown> | undefined;
-    if (
-      record.status === 500 &&
-      apiData &&
-      typeof apiData === "object" &&
-      (apiData.success === true || (apiData.data as Record<string, unknown> | undefined)?.user)
-    ) {
-      return "Authentication succeeded, but the session could not be saved (Redis failure). Please contact your administrator.";
-    }
 
     if (typeof record.message === "string" && record.message.length > 0) {
       return record.message;
@@ -111,6 +101,7 @@ function applyAuthPayloadToState(
 function clearSessionState(
   set: (partial: Partial<AuthState> | ((state: AuthState) => Partial<AuthState>)) => void
 ): void {
+  tokenStore.clear();
   useAppStore.setState({ selectedTeamId: null, selectedTeamIds: [] });
   queryClient.clear();
   set({
