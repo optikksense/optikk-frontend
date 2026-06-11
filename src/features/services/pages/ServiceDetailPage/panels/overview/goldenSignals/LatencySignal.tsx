@@ -5,8 +5,6 @@ import ObservabilityChart, {
 } from "@shared/components/ui/charts/ObservabilityChart";
 import { tsMs } from "@shared/utils/chartDataUtils";
 
-import type { LatencyPercentilesPoint } from "@/features/services/api/serviceDetailApi";
-
 import { fmtMs } from "../../../formatters";
 import { useLatencyPercentiles } from "../../../hooks/useLatencyPercentiles";
 import { PanelCard } from "../../PanelCard";

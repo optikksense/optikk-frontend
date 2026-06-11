@@ -6,8 +6,6 @@ import { authService } from "@shared/api/auth/authService";
 import { useAppStore } from "@store/appStore";
 import { useAuthStore } from "@store/authStore";
 
-import { APP_COLORS } from "@config/colorLiterals";
-
 import type { ReactNode } from "react";
 
 interface ProtectedRouteProps {

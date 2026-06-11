@@ -49,7 +49,7 @@ function usePodSeries(
     `container-detail.${metricKey}.${pod}`,
     async (team, s, e) => {
       if (!team || !host || !pod || !serviceName) return [];
-      const data = await infraGet<ChartRow[]>(endpoint, team, Number(s), Number(e), {
+      const data = await infraGet<ChartRow[]>(endpoint, Number(s), Number(e), {
         host,
         pod,
         serviceName,

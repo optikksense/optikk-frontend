@@ -1,5 +1,5 @@
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { formatRelativeTime } from "@shared/utils/formatters";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Copy, GitFork, Link2, X } from "lucide-react";
 import { memo, useMemo } from "react";
@@ -58,7 +58,7 @@ function flattenAttrs(log: LogRecord): Array<[string, string]> {
 function LogDetailPanelComponent({ logId, onClose, onPrev, onNext }: Props) {
   const navigate = useNavigate();
 
-  const q = useQuery({
+  const q = useStandardQuery({
     queryKey: ["logs", "detail", logId],
     queryFn: () => getLogById(logId),
     enabled: Boolean(logId),

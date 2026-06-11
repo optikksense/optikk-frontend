@@ -184,7 +184,7 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
           font: "11px Inter, sans-serif",
           size: 60,
           gap: 8,
-          values: (u: uPlot, splits: number[]) => splits.map(formatAxisValue),
+          values: (_u: uPlot, splits: number[]) => splits.map(formatAxisValue),
         },
       ],
       hooks: {

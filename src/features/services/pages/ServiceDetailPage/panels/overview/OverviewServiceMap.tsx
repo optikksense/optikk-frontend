@@ -306,12 +306,6 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
 
             {/* Nodes */}
             {nodes.map((n) => {
-              const borderTheme =
-                n.status === "err"
-                  ? "stroke-[var(--err)]"
-                  : n.status === "warn"
-                    ? "stroke-[var(--warn)]"
-                    : "stroke-[var(--ok)]";
               const fillTheme =
                 n.status === "err"
                   ? "fill-[var(--err)]"

@@ -35,7 +35,6 @@ function validateExpression(expr: string, activeIds: string[]): string | null {
 }
 
 export function FormulaRow({
-  id,
   expression,
   activeQueryIds,
   onExpressionChange,

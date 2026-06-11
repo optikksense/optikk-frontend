@@ -5,8 +5,6 @@ import ObservabilityChart, {
 } from "@shared/components/ui/charts/ObservabilityChart";
 import { tsMs } from "@shared/utils/chartDataUtils";
 
-import type { StatusTimeseriesPoint } from "@/features/services/api/serviceDetailApi";
-
 import { fmtNum } from "../../../formatters";
 import { useStatusTimeseries } from "../../../hooks/useStatusTimeseries";
 import { PanelCard } from "../../PanelCard";

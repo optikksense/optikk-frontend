@@ -7,7 +7,6 @@ import ObservabilityChart from "../ObservabilityChart";
 
 export default memo(function ExceptionTypeLineChart({
   serviceTimeseriesMap = {},
-  endpoints = [],
   selectedEndpoints = [],
   height = 280,
   fillHeight = false,

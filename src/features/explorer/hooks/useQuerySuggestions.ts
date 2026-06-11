@@ -5,7 +5,7 @@ import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
 import { useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
-import { type SuggestionItem, fetchSuggestions } from "@/features/traces/api/tracesApi";
+import { type SuggestionItem, getSuggestions } from "@/features/traces/api/tracesApi";
 
 interface Args {
   readonly field: string | null;
@@ -31,7 +31,7 @@ export function useQuerySuggestions({ field, prefix, enabled }: Args) {
   return useStandardQuery<SuggestionItem[]>({
     queryKey: ["traces", "suggest", field ?? "none", debouncedPrefix, bucket],
     queryFn: () =>
-      fetchSuggestions({ startTime, endTime, field: field as string, prefix: debouncedPrefix }),
+      getSuggestions({ startTime, endTime, field: field as string, prefix: debouncedPrefix }),
     enabled: effectiveEnabled,
   });
 }

@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import type { ServiceSummary } from "./useServiceSummary";
 import { useServiceSummary } from "./useServiceSummary";
 

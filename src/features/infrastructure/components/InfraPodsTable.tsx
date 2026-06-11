@@ -41,7 +41,7 @@ const STATUS_LABEL = {
   oomkilled: "OOMKilled",
 };
 
-export function getPodDetails(podName: string, host: string, errorRate: number) {
+export function getPodDetails(podName: string, errorRate: number) {
   let status: "running" | "pending" | "terminating" | "crashloop" | "oomkilled" = "running";
   let ns = "payments-prod";
   let img = "payment-svc:v8.12.0";

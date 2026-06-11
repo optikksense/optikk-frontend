@@ -38,7 +38,7 @@ export function ServiceHeroHeader({ serviceName, hero, instanceCount }: ServiceH
             </h1>
             <StatusPill status={hero.status} />
           </div>
-          <HeroMetaRow hero={hero} instanceCount={instanceCount} />
+          <HeroMetaRow instanceCount={instanceCount} />
         </div>
       </div>
     </header>

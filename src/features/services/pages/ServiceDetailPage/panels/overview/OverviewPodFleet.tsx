@@ -1,5 +1,4 @@
 import { useNavigate } from "@tanstack/react-router";
-import { fmtNum } from "../../formatters";
 import { useServiceHosts } from "../../hooks/useServiceHosts";
 
 export function OverviewPodFleet({ serviceName }: { serviceName: string }) {

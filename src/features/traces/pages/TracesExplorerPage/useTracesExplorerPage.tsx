@@ -13,7 +13,6 @@ import {
 import { useExplorerKeyboard } from "@/features/explorer/hooks/useExplorerKeyboard";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { toTrendBuckets } from "@/features/explorer/utils/trend";
-import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 import { formatNumber } from "@shared/utils/formatters";
 
 import { resolveTimeRangeBounds } from "@/types";
@@ -45,8 +44,6 @@ export function useTracesExplorerPage() {
   const kpis = useMemo<SummaryKPI[]>(() => buildKPIs(summary), [summary]);
   const trendBuckets = useMemo(() => toTrendBuckets(trend), [trend]);
   const sortedTraces = useMemo(() => sortTraces(traces, "recent"), [traces]);
-  const filterKey = useMemo(() => JSON.stringify(state.filters), [state.filters]);
-  const queryError = query.isError ? formatErrorForDisplay(query.error) : null;
 
   const onTimeRangeChange = useCallback(
     (fromMs: number, toMs: number) => setCustomTimeRange(fromMs, toMs, "Brush"),

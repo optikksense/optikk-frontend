@@ -1,5 +1,6 @@
 import { formatRelativeTime } from "@shared/utils/formatters";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useVisibilityInterval } from "./useVisibilityInterval";
 
 interface UseAutoRefreshOptions {
   autoRefreshInterval: number;
@@ -33,60 +34,13 @@ export function useAutoRefresh({
 
   // Update "Xs ago" label periodically without re-rendering every second (avoids header flicker).
   // Skip ticks when the tab is hidden to save CPU / battery.
-  useEffect(() => {
-    let timerId: number | null = null;
-    const start = () => {
-      if (timerId != null) return;
-      timerId = window.setInterval(() => setNow(Date.now()), 5_000);
-    };
-    const stop = () => {
-      if (timerId != null) {
-        window.clearInterval(timerId);
-        timerId = null;
-      }
-    };
-    const onVisibility = () => {
-      if (document.hidden) stop();
-      else {
-        setNow(Date.now());
-        start();
-      }
-    };
-    if (!document.hidden) start();
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => {
-      stop();
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, []);
+  useVisibilityInterval(() => setNow(Date.now()), 5_000);
 
-  useEffect(() => {
-    if (!autoRefreshInterval) return;
-    let timerId: number | null = null;
-    const start = () => {
-      if (timerId != null) return;
-      timerId = window.setInterval(() => {
-        refreshRef.current();
-        setLastRefreshAt(Date.now());
-      }, autoRefreshInterval);
-    };
-    const stop = () => {
-      if (timerId != null) {
-        window.clearInterval(timerId);
-        timerId = null;
-      }
-    };
-    const onVisibility = () => {
-      if (document.hidden) stop();
-      else start();
-    };
-    if (!document.hidden) start();
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => {
-      stop();
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, [autoRefreshInterval]);
+  // Trigger refresh periodically when page is visible.
+  useVisibilityInterval(() => {
+    refreshRef.current();
+    setLastRefreshAt(Date.now());
+  }, autoRefreshInterval);
 
   const refreshLabel = useMemo(() => formatRelativeTime(lastRefreshAt), [now, lastRefreshAt]);
 

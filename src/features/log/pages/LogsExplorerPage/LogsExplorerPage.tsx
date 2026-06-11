@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
@@ -66,7 +65,6 @@ function buildValueSuggestions(
  * table, and detail panel as an inline 380px column on the right when open.
  */
 export default function LogsExplorerPage() {
-  const navigate = useNavigate();
   const { state, list, summary, trend, facets } = useLogsExplorer();
   const timeRange = useTimeRange();
   const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);

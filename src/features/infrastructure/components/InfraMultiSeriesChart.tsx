@@ -63,13 +63,7 @@ export default memo(function InfraMultiSeriesChart({
     `${queryKey}|${extraParamsKey}`,
     async (teamId, start, end) => {
       if (!teamId) return [];
-      const data = await infraGet<ChartRow[]>(
-        endpoint,
-        teamId,
-        Number(start),
-        Number(end),
-        extraParams
-      );
+      const data = await infraGet<ChartRow[]>(endpoint, Number(start), Number(end), extraParams);
       return Array.isArray(data) ? data : [];
     }
   );

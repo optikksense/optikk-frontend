@@ -2,7 +2,8 @@ import { memo, useMemo } from "react";
 import uPlot from "uplot";
 
 import { useTimezone } from "@/app/store/appStore";
-import UPlotChart, { defaultAxes } from "@shared/components/ui/charts/UPlotChart";
+import UPlotChart from "@shared/components/ui/charts/UPlotChart";
+import { defaultAxes } from "@shared/components/ui/charts/uplotHelpers";
 
 import { TrendLegend, type TrendLegendItem } from "./TrendLegend";
 

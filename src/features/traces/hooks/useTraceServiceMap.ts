@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import type { ServiceTopologyResponse } from "@shared/components/ui/charts/ServiceTopologyGraph";
-import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
-import { useQuery } from "@tanstack/react-query";
+import { useImmutableQuery } from "@shared/hooks/useImmutableQuery";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import { tracesService } from "../api/tracesApi";
 
@@ -22,7 +22,7 @@ export function useTraceServiceMap(
   endMs: number,
   latencyEnabled: boolean
 ) {
-  const mapQuery = useStandardQuery({
+  const mapQuery = useImmutableQuery({
     queryKey: ["trace-service-map", traceId],
     queryFn: () => tracesService.getServiceMap(traceId),
     enabled: !!traceId,
@@ -30,7 +30,7 @@ export function useTraceServiceMap(
 
   const fromMs = Math.floor(startMs / MINUTE_MS) * MINUTE_MS;
   const toMs = Math.ceil(endMs / MINUTE_MS) * MINUTE_MS;
-  const latencyQuery = useQuery({
+  const latencyQuery = useStandardQuery({
     queryKey: ["trace-service-latency", fromMs, toMs],
     queryFn: () => tracesService.getServiceLatencyBaselines(fromMs, toMs),
     enabled: latencyEnabled && startMs > 0 && endMs >= startMs,

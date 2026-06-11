@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 
-import { resolveTimeRangeBounds, timeRangeDurationMs } from "@/types";
+import { shiftTimeRange, zoomTimeRange } from "@shared/utils/timeBounds";
 import { useAppStore } from "@store/appStore";
 
 export interface KeyboardShortcut {
@@ -90,46 +90,29 @@ export function useKeyboardShortcuts(): UseKeyboardShortcutsResult {
 
       if (e.shiftKey && e.key === "ArrowLeft") {
         e.preventDefault();
-        const dur = timeRangeDurationMs(timeRange);
-        const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
-        const shift = Math.round(dur / 2);
-        setCustomTimeRange(startTime - shift, endTime - shift);
+        const bounds = shiftTimeRange(timeRange, "backward");
+        setCustomTimeRange(bounds.startMs, bounds.endMs);
         return;
       }
 
       if (e.shiftKey && e.key === "ArrowRight") {
         e.preventDefault();
-        const dur = timeRangeDurationMs(timeRange);
-        const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
-        const shift = Math.round(dur / 2);
-        const now = Date.now();
-        const newEnd = Math.min(endTime + shift, now);
-        const newStart = Math.min(startTime + shift, now - dur);
-        setCustomTimeRange(newStart, newEnd);
+        const bounds = shiftTimeRange(timeRange, "forward");
+        setCustomTimeRange(bounds.startMs, bounds.endMs);
         return;
       }
 
       if (e.shiftKey && e.key === "ArrowUp") {
         e.preventDefault();
-        const dur = timeRangeDurationMs(timeRange);
-        const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
-        const mid = (startTime + endTime) / 2;
-        const halfNewDur = Math.max(dur / 4, 60_000); // min 1 minute
-        setCustomTimeRange(Math.round(mid - halfNewDur), Math.round(mid + halfNewDur));
+        const bounds = zoomTimeRange(timeRange, "in");
+        setCustomTimeRange(bounds.startMs, bounds.endMs);
         return;
       }
 
       if (e.shiftKey && e.key === "ArrowDown") {
         e.preventDefault();
-        const dur = timeRangeDurationMs(timeRange);
-        const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
-        const mid = (startTime + endTime) / 2;
-        const halfNewDur = dur; // double the duration
-        const now = Date.now();
-        setCustomTimeRange(
-          Math.round(mid - halfNewDur),
-          Math.min(Math.round(mid + halfNewDur), now)
-        );
+        const bounds = zoomTimeRange(timeRange, "out");
+        setCustomTimeRange(bounds.startMs, bounds.endMs);
         return;
       }
 

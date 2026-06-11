@@ -1,4 +1,4 @@
-import { getHealthColor } from "@shared/utils/formatters";
+import { getHealthColor } from "@shared/utils/statusColors";
 
 interface HealthIndicatorProps {
   status: string;

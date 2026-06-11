@@ -1,6 +1,12 @@
 import { UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 import type { ErrorCode } from "@/shared/constants/errorCodes";
-import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
+
+export interface ApiErrorShape {
+  readonly status: number;
+  readonly code: ErrorCode;
+  readonly message: string;
+  readonly data?: unknown;
+}
 import { ZodError } from "zod";
 
 /**

@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { dynamicTo } from "@shared/utils/navigation";
 
 import { ROUTES } from "@/shared/constants/routes";
@@ -49,7 +49,7 @@ export default function ContainersTab() {
 
   const processedPods = useMemo(() => {
     return pods.map((p) => {
-      const details = getPodDetails(p.pod_name, p.host, p.error_rate);
+      const details = getPodDetails(p.pod_name, p.error_rate);
       return {
         ...p,
         ...details,

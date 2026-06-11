@@ -1,4 +1,4 @@
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { SidePanel } from "@shared/components/ui/layout";
 
 import { ServiceDrawerCockpitCard } from "./components/ServiceDrawerCockpitCard";
 import { ServiceDrawerDependenciesSection } from "./components/ServiceDrawerDependenciesSection";
@@ -20,76 +20,69 @@ export default function ServiceDetailDrawer({
   const model = useServiceDetailDrawerModel(serviceName, title, initialData);
 
   return (
-    <Drawer
+    <SidePanel
       open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen) {
-          onClose();
-        }
+      onClose={onClose}
+      mode="modal"
+      className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto z-[1100] h-auto select-text overflow-y-auto border-border border-l"
+      style={{
+        userSelect: "text",
+        WebkitUserSelect: "text",
       }}
-      direction="right"
+      width="min(980px, calc(100vw - 24px))"
     >
-      <DrawerContent
-        className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto z-[1100] h-auto select-text overflow-y-auto border-border border-l"
-        style={{
-          width: "min(980px, calc(100vw - 24px))",
-          userSelect: "text",
-          WebkitUserSelect: "text",
-        }}
-      >
-        <ServiceDrawerHeader
+      <ServiceDrawerHeader
+        serviceLabel={model.serviceLabel}
+        summaryMetrics={model.summaryMetrics}
+        onOpenTraces={model.openTraces}
+        onOpenLogs={model.openLogs}
+        onOpenFullView={model.openFullView}
+      />
+
+      <div className="flex flex-col gap-4 px-6 py-4">
+        <ServiceDrawerCockpitCard
           serviceLabel={model.serviceLabel}
           summaryMetrics={model.summaryMetrics}
-          onOpenTraces={model.openTraces}
-          onOpenLogs={model.openLogs}
-          onOpenFullView={model.openFullView}
         />
 
-        <div className="flex flex-col gap-4 px-6 py-4">
-          <ServiceDrawerCockpitCard
-            serviceLabel={model.serviceLabel}
-            summaryMetrics={model.summaryMetrics}
-          />
+        <ServiceDrawerStatGrid
+          summaryMetrics={model.summaryMetrics}
+          summaryLoading={model.summaryLoading}
+        />
 
-          <ServiceDrawerStatGrid
-            summaryMetrics={model.summaryMetrics}
-            summaryLoading={model.summaryLoading}
-          />
+        <ServiceDrawerMetricBanners
+          metricsError={model.metricsQuery.isError}
+          hasSummary={model.hasSummary}
+          summaryLoading={model.summaryLoading}
+        />
 
-          <ServiceDrawerMetricBanners
-            metricsError={model.metricsQuery.isError}
-            hasSummary={model.hasSummary}
-            summaryLoading={model.summaryLoading}
-          />
+        <ServiceDrawerTrendCharts
+          summaryMetrics={model.summaryMetrics}
+          requestTrendSeries={model.requestTrendSeries}
+          errorTrendSeries={model.errorTrendSeries}
+          latencyTrendSeries={model.latencyTrendSeries}
+          requestTrendLoading={model.requestTrendLoading}
+          errorTrendLoading={model.errorTrendLoading}
+          latencyTrendLoading={model.latencyTrendLoading}
+          requestTrendError={model.requestTrendQuery.isError}
+          errorTrendError={model.errorTrendQuery.isError}
+          latencyTrendError={model.latencyTrendQuery.isError}
+        />
 
-          <ServiceDrawerTrendCharts
-            summaryMetrics={model.summaryMetrics}
-            requestTrendSeries={model.requestTrendSeries}
-            errorTrendSeries={model.errorTrendSeries}
-            latencyTrendSeries={model.latencyTrendSeries}
-            requestTrendLoading={model.requestTrendLoading}
-            errorTrendLoading={model.errorTrendLoading}
-            latencyTrendLoading={model.latencyTrendLoading}
-            requestTrendError={model.requestTrendQuery.isError}
-            errorTrendError={model.errorTrendQuery.isError}
-            latencyTrendError={model.latencyTrendQuery.isError}
+        <div className="grid gap-4 xl:grid-cols-2">
+          <ServiceDrawerEndpointsSection
+            isError={model.endpointsQuery.isError}
+            isLoading={model.endpointsLoading}
+            endpointRows={model.endpointRows}
           />
-
-          <div className="grid gap-4 xl:grid-cols-2">
-            <ServiceDrawerEndpointsSection
-              isError={model.endpointsQuery.isError}
-              isLoading={model.endpointsLoading}
-              endpointRows={model.endpointRows}
-            />
-            <ServiceDrawerDependenciesSection
-              isError={model.dependenciesQuery.isError}
-              isLoading={model.dependenciesLoading}
-              upstreamRows={model.upstreamRows}
-              downstreamRows={model.downstreamRows}
-            />
-          </div>
+          <ServiceDrawerDependenciesSection
+            isError={model.dependenciesQuery.isError}
+            isLoading={model.dependenciesLoading}
+            upstreamRows={model.upstreamRows}
+            downstreamRows={model.downstreamRows}
+          />
         </div>
-      </DrawerContent>
-    </Drawer>
+      </div>
+    </SidePanel>
   );
 }

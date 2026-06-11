@@ -4,12 +4,7 @@ import { Virtuoso } from "react-virtuoso";
 import BoardLoadMoreFooter from "./BoardLoadMoreFooter";
 
 import type { ReactNode } from "react";
-import type {
-  BoardColumn,
-  BoardFilter,
-  BoardPaginationState,
-  RenderRowContext,
-} from "./ObservabilityDataBoard";
+import type { BoardColumn, BoardFilter, BoardPaginationState, RenderRowContext } from "./types";
 
 /**
  * Props for the shared virtualized observability board table.

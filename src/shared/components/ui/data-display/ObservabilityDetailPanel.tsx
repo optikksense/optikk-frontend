@@ -5,13 +5,7 @@ import { type ReactNode, useState } from "react";
 const EMPTY_VALUE_PLACEHOLDER = "—";
 const COPY_CONFIRMATION_DURATION_MS = 1500;
 
-type BoardFilterValue = string | number | boolean;
-
-interface BoardFilter {
-  field: string;
-  value: BoardFilterValue;
-  operator: "equals";
-}
+import type { BoardFilter, BoardFilterValue } from "./types";
 
 function isFilterValue(value: unknown): value is BoardFilterValue {
   return typeof value === "string" || typeof value === "number" || typeof value === "boolean";

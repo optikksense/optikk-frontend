@@ -7,16 +7,8 @@ import { NETWORK_ERROR, UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 import type { ErrorCode } from "@/shared/constants/errorCodes";
 
 import { refreshAccessToken } from "@shared/api/auth/refreshToken";
-
-/**
- *
- */
-export interface ApiErrorShape {
-  readonly status: number;
-  readonly code: ErrorCode;
-  readonly message: string;
-  readonly data?: unknown;
-}
+import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
+import type { ApiErrorShape } from "@shared/api/utils/errorNormalization";
 
 function extractApiCode(data: unknown): ErrorCode {
   if (typeof data !== "object" || data === null) {
@@ -90,19 +82,7 @@ function normalizeError(error: unknown): ApiErrorShape {
     };
   }
 
-  if (error instanceof Error) {
-    return {
-      status: 0,
-      code: UNKNOWN_ERROR,
-      message: error.message,
-    };
-  }
-
-  return {
-    status: 0,
-    code: UNKNOWN_ERROR,
-    message: "An unexpected error occurred",
-  };
+  return toApiErrorShape(error);
 }
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };

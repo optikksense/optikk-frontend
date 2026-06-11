@@ -276,7 +276,7 @@ const suggestResponseSchema = z
   })
   .strict();
 
-export async function fetchSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
+export async function getSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
   const body = {
     startTime: req.startTime,
     endTime: req.endTime,

@@ -2,8 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { buildLogsHubHref, podEqualsFilter } from "@shared/observability/deepLinks";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { dynamicTo } from "@shared/utils/navigation";
 
 import { getFleetPods } from "../../api/hostsApi";
@@ -16,7 +15,6 @@ interface HostDetailContainersProps {
 
 export function HostDetailContainers({ host }: HostDetailContainersProps) {
   const navigate = useNavigate();
-  const { getTimeRange } = useTimeRange();
   const podsQ = useTimeRangeQuery<FleetPod[]>("host-detail.fleet-pods", (_team, s, e) =>
     getFleetPods(s, e)
   );
@@ -27,7 +25,7 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
 
   const processedPods = useMemo(() => {
     return pods.map((p) => {
-      const details = getPodDetails(p.pod_name, p.host, p.error_rate);
+      const details = getPodDetails(p.pod_name, p.error_rate);
       return {
         ...p,
         ...details,

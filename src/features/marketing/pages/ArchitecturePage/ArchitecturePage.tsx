@@ -1,15 +1,4 @@
-import {
-  Bot,
-  Cloud,
-  Database,
-  GitBranch,
-  HardDrive,
-  Layers,
-  Network,
-  Server,
-  Workflow,
-  Zap,
-} from "lucide-react";
+import { Bot, Cloud, Database, GitBranch, HardDrive, Network, Server, Zap } from "lucide-react";
 
 import { GradientText } from "../../motion/GradientText";
 import { Reveal } from "../../motion/Reveal";

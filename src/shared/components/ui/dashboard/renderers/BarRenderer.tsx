@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 import type uPlot from "uplot";
 
-import type { DashboardExtraContext } from "@/types/dashboardConfig";
-
-import UPlotChart, { defaultAxes, uBars } from "@shared/components/ui/charts/UPlotChart";
+import UPlotChart from "@shared/components/ui/charts/UPlotChart";
+import { defaultAxes, uBars } from "@shared/components/ui/charts/uplotHelpers";
 import { getChartColor } from "@shared/utils/charting";
 
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";

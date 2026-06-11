@@ -56,12 +56,7 @@ export default function HostsTab() {
     "infrastructure.kpi.cpu-avg",
     async (teamId, start, end) => {
       if (!teamId) return { value: 0 };
-      return infraGet<MetricValue>(
-        "/v1/infrastructure/cpu/avg",
-        teamId,
-        Number(start),
-        Number(end)
-      );
+      return infraGet<MetricValue>("/v1/infrastructure/cpu/avg", Number(start), Number(end));
     }
   );
 
@@ -69,12 +64,7 @@ export default function HostsTab() {
     "infrastructure.kpi.memory-avg",
     async (teamId, start, end) => {
       if (!teamId) return { value: 0 };
-      return infraGet<MetricValue>(
-        "/v1/infrastructure/memory/avg",
-        teamId,
-        Number(start),
-        Number(end)
-      );
+      return infraGet<MetricValue>("/v1/infrastructure/memory/avg", Number(start), Number(end));
     }
   );
 

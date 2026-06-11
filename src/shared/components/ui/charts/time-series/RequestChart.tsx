@@ -49,7 +49,6 @@ function formatAxisValue(value: any) {
 
 export default memo(function RequestChart({
   data = [],
-  endpoints = [],
   selectedEndpoints = [],
   serviceTimeseriesMap = {},
   height = 280,

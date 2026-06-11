@@ -1,13 +1,6 @@
 import { Filter } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
-
-export type BoardFilterValue = string | number | boolean;
-
-export interface BoardFilter {
-  field: string;
-  value: BoardFilterValue;
-  operator: "equals";
-}
+import type { BoardFilter, BoardFilterValue } from "./types";
 
 function isFilterValue(value: unknown): value is BoardFilterValue {
   return typeof value === "string" || typeof value === "number" || typeof value === "boolean";

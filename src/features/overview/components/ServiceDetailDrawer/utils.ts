@@ -4,6 +4,7 @@ import type {
   StatusTimeseriesPoint,
 } from "@/features/services/api/serviceDetailApi";
 import type { ServiceTopologyEdge } from "@shared/components/ui/charts/ServiceTopologyGraph";
+import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 
 import type { DependencyRow, EndpointRow, ServiceSummarySnapshot } from "./types";
 
@@ -106,16 +107,14 @@ export function healthVariantForErrorRate(
   errorRate: number | undefined
 ): "success" | "warning" | "error" {
   const rate = Number(errorRate ?? 0);
-  if (rate > 5) return "error";
-  if (rate > 1) return "warning";
+  if (rate > SERVICE_HEALTH_THRESHOLDS.unhealthy) return "error";
+  if (rate > SERVICE_HEALTH_THRESHOLDS.degraded) return "warning";
   return "success";
 }
 
 export function healthLabelForErrorRate(errorRate: number | undefined): string {
   const rate = Number(errorRate ?? 0);
-  if (rate > 5) return "unhealthy";
-  if (rate > 1) return "degraded";
-  return "healthy";
+  return classifyHealth(rate, SERVICE_HEALTH_THRESHOLDS);
 }
 
 export function formatEndpointLabel(
