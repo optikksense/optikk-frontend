@@ -6,7 +6,7 @@ import { NETWORK_ERROR, UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 
 import type { ErrorCode } from "@/shared/constants/errorCodes";
 
-import { refreshAccessToken } from "@shared/api/auth/refreshToken";
+import { session } from "@shared/api/auth/session";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import type { ApiErrorShape } from "@shared/api/utils/errorNormalization";
 
@@ -101,13 +101,14 @@ export function attachErrorInterceptor(instance: AxiosInstance): number {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         const config = error.config as RetriableConfig | undefined;
         if (config && !config._retried && !isAuthEndpoint(config.url)) {
-          const token = await refreshAccessToken();
+          // Refresh failure tears the session down inside session.ts;
+          // SessionExpiryRedirect handles navigation from there.
+          const token = await session.refreshAccessToken();
           if (token != null) {
             config._retried = true;
             return instance.request(config);
           }
         }
-        window.dispatchEvent(new CustomEvent("auth:expired"));
       }
 
       const normalized = normalizeError(error);

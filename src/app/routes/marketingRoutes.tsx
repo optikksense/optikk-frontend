@@ -1,6 +1,7 @@
 import { createRoute, redirect } from "@tanstack/react-router";
 import type { ComponentType, ReactNode } from "react";
 import { Suspense, lazy } from "react";
+import { z } from "zod";
 
 import { Loading } from "@/shared/components/ui/feedback";
 import { ROUTES } from "@/shared/constants/routes";
@@ -89,6 +90,15 @@ export function buildMarketingRoutes(parent: () => typeof rootRoute) {
   return {
     marketingTree: marketingLayoutRoute.addChildren(marketingChildren),
     productRedirectRoute,
-    loginRoute: buildLazyPageRoute(parent, ROUTES.login, LoginPage),
+    loginRoute: createRoute({
+      getParentRoute: parent,
+      path: ROUTES.login.replace(/^\//, ""),
+      validateSearch: z.object({ redirect: z.string().optional() }),
+      component: () => (
+        <Suspense fallback={<Loading fullscreen />}>
+          <LoginPage />
+        </Suspense>
+      ),
+    }),
   };
 }

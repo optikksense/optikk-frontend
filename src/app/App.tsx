@@ -1,27 +1,21 @@
 import { BUILT_IN_DASHBOARD_PANELS } from "@shared/components/ui/dashboard/builtInDashboardPanels";
 import { DashboardPanelRegistryProvider } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
-import { useAuthValidation } from "@shared/hooks/useAuthValidation";
 
 import { ErrorBoundary } from "@shared/components/ui/feedback";
 import { Outlet, RouterProvider } from "@tanstack/react-router";
 import { CommandPalette } from "./layout/CommandPalette";
-import AuthExpiryListener from "./providers/AuthExpiryListener";
+import SessionExpiryRedirect from "./providers/SessionExpiryRedirect";
 import { getDashboardPanelRegistrations } from "./registry/domainRegistry";
 import { router } from "./routes/router";
 
 /**
- * Inner component rendered inside BrowserRouter so that useNavigate works.
- * Kicks off a background re-validation of the persisted session (see
- * useAuthValidation) but does NOT gate the initial render on it — protected
- * API calls independently validate the cookie, so rendering the shell
- * optimistically is safe and shaves a 200-400ms RTT off every page load.
+ * Root shell. Session validation/recovery is owned by the protected route's
+ * `beforeLoad` guard; runtime 401s are handled by SessionExpiryRedirect.
  */
 export function AppContent(): JSX.Element {
-  useAuthValidation();
-
   return (
     <>
-      <AuthExpiryListener />
+      <SessionExpiryRedirect />
       <CommandPalette />
       <Outlet />
     </>

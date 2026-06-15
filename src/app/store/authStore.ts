@@ -1,176 +1,39 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 
 import type { Team, User } from "@/types";
 
-import type { AuthPayload, AuthTeam } from "@shared/api/auth/authService";
-import { tokenStore } from "@shared/api/auth/tokenStore";
-import { authService } from "@shared/api/authService";
-import { queryClient } from "@shared/api/queryClient";
+/**
+ * Auth state only. Session lifecycle (login/logout/refresh) is owned by
+ * `@shared/api/auth/session`; nothing here touches the network or storage.
+ * Identity is never persisted — a reload rebuilds it from the refresh cookie.
+ */
 
-import { useAppStore } from "@store/appStore";
-
-import { STORAGE_KEYS } from "@config/constants";
+/** "unknown" = cold boot, recovery not attempted yet. */
+export type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
 
 interface AuthState {
+  readonly status: AuthStatus;
   readonly user: User | null;
-  readonly tenant?: { features: string[] };
-  readonly isAuthenticated: boolean;
-  readonly isLoading: boolean;
-  readonly error: string | null;
-  readonly login: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; error?: string }>;
-  readonly logout: () => Promise<void>;
-  readonly applyAuthPayload: (payload: unknown) => boolean;
+  readonly team: Team | null;
+  readonly setSession: (user: User, team: Team | null) => void;
   readonly clearSession: () => void;
-  readonly clearError: () => void;
 }
 
-function asLoginPayload(value: unknown): AuthPayload | null {
-  if (typeof value !== "object" || value === null) {
-    return null;
-  }
+export const useAuthStore = create<AuthState>()((set) => ({
+  status: "unknown",
+  user: null,
+  team: null,
 
-  return value as AuthPayload;
-}
+  setSession: (user: User, team: Team | null): void => {
+    set({ status: "authenticated", user, team });
+  },
 
-function getErrorMessage(error: unknown, fallback: string): string {
-  if (typeof error === "object" && error !== null) {
-    const record = error as Record<string, unknown>;
-
-    if (typeof record.message === "string" && record.message.length > 0) {
-      return record.message;
-    }
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return fallback;
-}
-
-function extractTeamIds(payload: AuthPayload): number[] {
-  const teams = payload.teams ?? (payload.currentTeam ? [payload.currentTeam] : []);
-  return teams
-    .map((team) => Number(team.id))
-    .filter((teamId) => Number.isFinite(teamId) && teamId > 0);
-}
-
-function toStoredTeams(payload: AuthPayload): Team[] {
-  const teams = payload.teams ?? (payload.currentTeam ? [payload.currentTeam] : []);
-  return teams.map((team: AuthTeam) => ({
-    id: Number(team.id),
-    name: team.name,
-    orgName: team.orgName,
-  }));
-}
-
-function applyAuthPayloadToState(
-  set: (partial: Partial<AuthState> | ((state: AuthState) => Partial<AuthState>)) => void,
-  payload: unknown
-): boolean {
-  const parsed = asLoginPayload(payload);
-  if (!parsed?.user) {
-    return false;
-  }
-
-  const userData: User = {
-    ...parsed.user,
-    teams: toStoredTeams(parsed),
-  };
-  const teamIds = extractTeamIds(parsed);
-
-  if (teamIds.length > 0) {
-    useAppStore.getState().setSelectedTeamIds(teamIds);
-  } else {
-    useAppStore.setState({ selectedTeamId: null, selectedTeamIds: [] });
-  }
-
-  set({
-    user: userData,
-    isAuthenticated: true,
-    isLoading: false,
-    error: null,
-  });
-  return true;
-}
-
-function clearSessionState(
-  set: (partial: Partial<AuthState> | ((state: AuthState) => Partial<AuthState>)) => void
-): void {
-  tokenStore.clear();
-  useAppStore.setState({ selectedTeamId: null, selectedTeamIds: [] });
-  queryClient.clear();
-  set({
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-    error: null,
-  });
-}
-
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      tenant: { features: ["newTraceView"] },
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
-
-      login: async (
-        email: string,
-        password: string
-      ): Promise<{ success: boolean; error?: string }> => {
-        set({ isLoading: true, error: null });
-        try {
-          const payload = await authService.login(email, password);
-          if (applyAuthPayloadToState(set, payload)) {
-            return { success: true };
-          }
-
-          const message = "Login failed";
-          set({ isLoading: false, error: message });
-          return { success: false, error: message };
-        } catch (error: unknown) {
-          const message = getErrorMessage(error, "Login failed");
-          set({ isLoading: false, error: message });
-          return { success: false, error: message };
-        }
-      },
-
-      logout: async (): Promise<void> => {
-        await authService.logout();
-        clearSessionState(set);
-      },
-
-      applyAuthPayload: (payload: unknown): boolean => applyAuthPayloadToState(set, payload),
-
-      clearSession: (): void => {
-        clearSessionState(set);
-      },
-
-      clearError: (): void => {
-        set({ error: null });
-      },
-    }),
-    {
-      name: STORAGE_KEYS.AUTH_STATE,
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    }
-  )
-);
+  clearSession: (): void => {
+    set({ status: "unauthenticated", user: null, team: null });
+  },
+}));
 
 // Computed selectors
 export const useAuthUser = () => useAuthStore((s) => s.user);
-export const useAuthTenant = () => useAuthStore((s) => s.tenant);
-export const useIsAuthenticated = () => useAuthStore((s) => s.isAuthenticated);
-export const useAuthIsLoading = () => useAuthStore((s) => s.isLoading);
-export const useAuthError = () => useAuthStore((s) => s.error);
+export const useAuthTeam = () => useAuthStore((s) => s.team);
+export const useAuthStatus = () => useAuthStore((s) => s.status);

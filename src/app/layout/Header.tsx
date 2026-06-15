@@ -1,4 +1,4 @@
-import { IconButton, Select, Tooltip } from "@/components/ui";
+import { IconButton, Tooltip } from "@/components/ui";
 import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@/types";
 import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
 import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
@@ -8,17 +8,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { settingsService } from "@shared/api/settingsService";
 
-import { useAppStore, useTeamIds, useTheme } from "@store/appStore";
-import { useAuthUser } from "@store/authStore";
+import { useAppStore, useTheme } from "@store/appStore";
+import { useAuthTeam } from "@store/authStore";
 
 import { AUTO_REFRESH_INTERVALS } from "@config/constants";
 
 import { cn } from "@/lib/utils";
 
 export default function Header() {
-  const user = useAuthUser();
-  const selectedTeamIds = useTeamIds();
-  const setSelectedTeamIds = useAppStore((s) => s.setSelectedTeamIds);
+  const team = useAuthTeam();
   const triggerRefresh = useAppStore((s) => s.triggerRefresh);
   const autoRefreshInterval = useAppStore((s) => s.autoRefreshInterval);
   const setAutoRefreshInterval = useAppStore((s) => s.setAutoRefreshInterval);
@@ -93,12 +91,6 @@ export default function Header() {
 
   const isLive = autoRefreshInterval > 0 && isRelativeRange(timeRange);
 
-  const teams = user?.teams || [];
-  const teamOptions = teams.map((team) => ({
-    label: team.orgName ? `${team.orgName} / ${team.name}` : team.name,
-    value: team.id,
-  }));
-
   return (
     <header className="relative z-[200] flex h-[var(--space-header-h,56px)] items-center justify-between gap-3 overflow-visible border-border border-b bg-surface-overlay px-4 backdrop-blur-[12px] max-md:px-3">
       <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-visible">
@@ -136,20 +128,14 @@ export default function Header() {
       </div>
 
       <div className="ml-auto flex min-w-0 shrink items-center gap-2.5">
-        {teams.length > 0 && (
+        {team && (
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="whitespace-nowrap text-[11px] text-foreground-muted uppercase tracking-wide max-[1240px]:hidden">
               Workspace
             </span>
-            <Select
-              multiple
-              value={selectedTeamIds}
-              onChange={(val) => setSelectedTeamIds(val as number[])}
-              options={teamOptions}
-              style={{ width: 220 }}
-              placeholder="Select team"
-              size="sm"
-            />
+            <span className="truncate whitespace-nowrap font-medium text-[12px] text-foreground-secondary">
+              {team.orgName ? `${team.orgName} / ${team.name}` : team.name}
+            </span>
           </div>
         )}
 

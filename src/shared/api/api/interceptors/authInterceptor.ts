@@ -1,33 +1,24 @@
-import { useAppStore } from "@store/appStore";
+import { session } from "@shared/api/auth/session";
 
-import { tokenStore } from "@shared/api/auth/tokenStore";
+import { useAppStore } from "@store/appStore";
 
 import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 /**
- *
+ * Stamps the Bearer token and team scope on every request. Only headers in
+ * the backend CORS allowlist may be added here, or cross-origin preflights
+ * fail and the browser blocks the call.
  */
 export function attachAuthInterceptor(instance: AxiosInstance): number {
   return instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    const headers = config.headers;
-
-    headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-    headers.Pragma = "no-cache";
-    headers.Expires = "0";
-
-    const token = tokenStore.get();
+    const token = session.getAccessToken();
     if (token != null) {
-      headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
-    const { selectedTeamId, selectedTeamIds } = useAppStore.getState();
-    const teamIds = selectedTeamIds;
-    const teamId = teamIds.length > 0 ? teamIds[0] : selectedTeamId;
-    if (teamId != null) {
-      headers["X-Team-Id"] = String(teamId);
-    }
-    if (teamIds.length > 1) {
-      headers["X-Team-Ids"] = teamIds.join(",");
+    const { selectedTeamId } = useAppStore.getState();
+    if (selectedTeamId != null) {
+      config.headers["X-Team-Id"] = String(selectedTeamId);
     }
 
     return config;
