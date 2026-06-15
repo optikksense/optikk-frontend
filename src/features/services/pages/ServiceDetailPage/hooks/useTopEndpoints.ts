@@ -1,7 +1,6 @@
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import {
-  type ComparisonPayload,
   type PaginatedResponse,
   type TopEndpoint,
   getTopEndpoints,

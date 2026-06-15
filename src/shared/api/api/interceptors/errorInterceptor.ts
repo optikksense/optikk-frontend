@@ -1,20 +1,14 @@
 import axios from "axios";
 
-import type { AxiosError, AxiosInstance } from "axios";
+import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 import { NETWORK_ERROR, UNKNOWN_ERROR } from "@/shared/constants/errorCodes";
 
 import type { ErrorCode } from "@/shared/constants/errorCodes";
 
-/**
- *
- */
-export interface ApiErrorShape {
-  readonly status: number;
-  readonly code: ErrorCode;
-  readonly message: string;
-  readonly data?: unknown;
-}
+import { session } from "@shared/api/auth/session";
+import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
+import type { ApiErrorShape } from "@shared/api/utils/errorNormalization";
 
 function extractApiCode(data: unknown): ErrorCode {
   if (typeof data !== "object" || data === null) {
@@ -65,10 +59,6 @@ function normalizeError(error: unknown): ApiErrorShape {
       const status = axiosError.response.status;
       const data = axiosError.response.data;
 
-      if (status === 401) {
-        window.dispatchEvent(new CustomEvent("auth:expired"));
-      }
-
       return {
         status,
         code: extractApiCode(data),
@@ -92,19 +82,13 @@ function normalizeError(error: unknown): ApiErrorShape {
     };
   }
 
-  if (error instanceof Error) {
-    return {
-      status: 0,
-      code: UNKNOWN_ERROR,
-      message: error.message,
-    };
-  }
+  return toApiErrorShape(error);
+}
 
-  return {
-    status: 0,
-    code: UNKNOWN_ERROR,
-    message: "An unexpected error occurred",
-  };
+type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
+
+function isAuthEndpoint(url: string | undefined): boolean {
+  return Boolean(url?.includes("/v1/auth/login") || url?.includes("/v1/auth/refresh"));
 }
 
 /**
@@ -113,7 +97,20 @@ function normalizeError(error: unknown): ApiErrorShape {
 export function attachErrorInterceptor(instance: AxiosInstance): number {
   return instance.interceptors.response.use(
     (response) => response,
-    (error: unknown) => {
+    async (error: unknown) => {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        const config = error.config as RetriableConfig | undefined;
+        if (config && !config._retried && !isAuthEndpoint(config.url)) {
+          // Refresh failure tears the session down inside session.ts;
+          // SessionExpiryRedirect handles navigation from there.
+          const token = await session.refreshAccessToken();
+          if (token != null) {
+            config._retried = true;
+            return instance.request(config);
+          }
+        }
+      }
+
       const normalized = normalizeError(error);
       console.error("[API Error]", {
         status: normalized.status,

@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { firstValue } from "@shared/utils/chartDataUtils";
 
-import { SparklineCell } from "@/features/services/pages/ServiceCatalogPage/catalog/SparklineCell";
+import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 
 import { infraGet } from "../../api/infrastructureApi";
 
@@ -36,12 +36,6 @@ function memoryTone(v: number): Tone {
   return "ok";
 }
 
-function diskTone(v: number): Tone {
-  if (v >= 90) return "err";
-  if (v >= 75) return "warn";
-  return "ok";
-}
-
 function normalizePercent(raw: unknown): number | null {
   const value = Number(raw);
   if (!Number.isFinite(value)) return null;
@@ -51,7 +45,7 @@ function normalizePercent(raw: unknown): number | null {
 function useHostSeries(metricKey: string, endpoint: string, host: string) {
   return useTimeRangeQuery<ChartRow[]>(`host-detail.${metricKey}.${host}`, async (team, s, e) => {
     if (!team) return [];
-    const data = await infraGet<ChartRow[]>(endpoint, team, Number(s), Number(e), { host });
+    const data = await infraGet<ChartRow[]>(endpoint, Number(s), Number(e), { host });
     return Array.isArray(data) ? data : [];
   });
 }

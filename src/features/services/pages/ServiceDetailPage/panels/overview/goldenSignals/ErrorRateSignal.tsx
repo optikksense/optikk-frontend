@@ -5,8 +5,6 @@ import ObservabilityChart, {
 } from "@shared/components/ui/charts/ObservabilityChart";
 import { tsMs } from "@shared/utils/chartDataUtils";
 
-import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
-
 import { fmtPct } from "../../../formatters";
 import { useErrorRateSeries } from "../../../hooks/useErrorRateSeries";
 import { PanelCard } from "../../PanelCard";
@@ -17,7 +15,10 @@ export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
 
   const activeRows = query.data ?? [];
   const timestamps = useMemo(() => activeRows.map((r) => tsMs(r.timestamp) / 1000), [activeRows]);
-  const values = useMemo(() => activeRows.map((r) => r.request_count ? r.error_count / r.request_count : 0), [activeRows]);
+  const values = useMemo(
+    () => activeRows.map((r) => (r.request_count ? r.error_count / r.request_count : 0)),
+    [activeRows]
+  );
 
   const overall = useMemo(() => {
     let req = 0;

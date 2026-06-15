@@ -1,3 +1,4 @@
+import { ENDPOINT_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 import { useEffect, useMemo, useState } from "react";
 import { fmtNum } from "../../formatters";
 import { useServiceHosts } from "../../hooks/useServiceHosts";
@@ -142,9 +143,10 @@ export function OverviewEndpointsAndResources({ serviceName }: { serviceName: st
                       </td>
                       <td
                         className={`px-3 py-3 text-right font-mono font-semibold text-[12.5px] tabular-nums ${
-                          r.error_rate > 2
+                          classifyHealth(r.error_rate, ENDPOINT_HEALTH_THRESHOLDS) === "unhealthy"
                             ? "text-[var(--err)]"
-                            : r.error_rate > 0.5
+                            : classifyHealth(r.error_rate, ENDPOINT_HEALTH_THRESHOLDS) ===
+                                "degraded"
                               ? "text-[var(--warn)]"
                               : "text-foreground-muted"
                         }`}

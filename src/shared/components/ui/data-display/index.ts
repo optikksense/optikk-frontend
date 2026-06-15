@@ -19,4 +19,4 @@ export type {
   BoardColumn,
   RenderRowContext,
   BoardPaginationState,
-} from "./ObservabilityDataBoard";
+} from "./types";

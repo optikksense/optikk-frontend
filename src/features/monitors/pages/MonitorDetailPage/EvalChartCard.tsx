@@ -73,7 +73,13 @@ function EvalChartCard({ data, loading }: Props) {
             No data yet for this monitor.
           </div>
         ) : (
-          <svg viewBox={`0 0 100 ${HEIGHT}`} preserveAspectRatio="none" className="h-full w-full">
+          <svg
+            viewBox={`0 0 100 ${HEIGHT}`}
+            preserveAspectRatio="none"
+            className="h-full w-full"
+            role="img"
+            aria-label="Monitor evaluation chart"
+          >
             <path d={chart.area} fill="rgba(239,68,68,0.12)" stroke="none" />
             <path d={chart.path} fill="none" stroke="#ef4444" strokeWidth={0.6} />
             {chart.yWarn !== undefined && (

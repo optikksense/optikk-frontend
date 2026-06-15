@@ -2,7 +2,6 @@ import { api } from "@shared/api/api/client";
 
 export async function infraGet<T>(
   path: string,
-  teamId: number,
   startMs: number,
   endMs: number,
   extraParams?: Record<string, string | number | undefined>

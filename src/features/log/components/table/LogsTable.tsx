@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { memo, useEffect, useRef } from "react";
+import { memo } from "react";
 
 import type { LogRecord } from "../../types/log";
 import { LogRow } from "./LogRow";
@@ -26,20 +26,13 @@ function LogsTableComponent({
   emptyTitle = "No logs found",
   emptyDescription = "Adjust filters or broaden the time range.",
 }: Props) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const firstRowId = rows[0]?.id;
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0 });
-  }, [firstRowId]);
-
   if (loading && rows.length === 0) {
     return (
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex flex-col">
         <LogsTableHeader />
         <div
           style={{
-            flex: 1,
+            minHeight: 240,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -57,11 +50,11 @@ function LogsTableComponent({
 
   if (rows.length === 0) {
     return (
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex flex-col">
         <LogsTableHeader />
         <div
           style={{
-            flex: 1,
+            minHeight: 240,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -78,9 +71,9 @@ function LogsTableComponent({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex flex-col">
       <LogsTableHeader />
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+      <div>
         {rows.map((row) => (
           <LogRow
             key={row.id}

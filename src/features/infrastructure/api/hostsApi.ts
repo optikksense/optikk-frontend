@@ -65,11 +65,7 @@ function range(s: RequestTime, e: RequestTime) {
 
 // getHosts returns the fleet host-saturation list, or — when serviceName is
 // given — the hosts running that service enriched with RED traffic.
-export function getHosts(
-  s: RequestTime,
-  e: RequestTime,
-  serviceName?: string
-): Promise<Host[]> {
+export function getHosts(s: RequestTime, e: RequestTime, serviceName?: string): Promise<Host[]> {
   return api.get<Host[]>(`${V1}/infrastructure/hosts`, {
     params: serviceName ? { ...range(s, e), service: serviceName } : range(s, e),
   });

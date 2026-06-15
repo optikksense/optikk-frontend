@@ -362,8 +362,6 @@ export const AI_KNOWN_FIELDS: readonly KnownField[] = [
   },
 ];
 
-export const KNOWN_FIELDS: readonly KnownField[] = TRACE_KNOWN_FIELDS;
-
 export const CATEGORY_ORDER: readonly FieldCategory[] = [
   "Common",
   "Identifiers",
@@ -378,7 +376,7 @@ export function knownFieldsForScope(scope: ExplorerScope | undefined): readonly 
 
 export function findKnownField(
   key: string,
-  fields: readonly KnownField[] = KNOWN_FIELDS
+  fields: readonly KnownField[] = TRACE_KNOWN_FIELDS
 ): KnownField | undefined {
   return fields.find((f) => f.key === key);
 }

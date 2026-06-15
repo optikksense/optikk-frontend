@@ -41,7 +41,7 @@ const STATUS_LABEL = {
   oomkilled: "OOMKilled",
 };
 
-export function getPodDetails(podName: string, host: string, errorRate: number) {
+export function getPodDetails(podName: string, errorRate: number) {
   let status: "running" | "pending" | "terminating" | "crashloop" | "oomkilled" = "running";
   let ns = "payments-prod";
   let img = "payment-svc:v8.12.0";
@@ -141,7 +141,7 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
             <th className="text-left" style={{ width: 80 }}>
               Age
             </th>
-            <th style={{ width: 18 }}></th>
+            <th style={{ width: 18 }} />
           </tr>
         </thead>
         <tbody>
@@ -152,7 +152,7 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
               <tr
                 key={`${c.pod_name}\0${c.host}`}
                 onClick={() => onOpenContainer(c.pod_name)}
-                className="cursor-pointer hover:bg-muted/40 transition-colors"
+                className="cursor-pointer transition-colors hover:bg-muted/40"
               >
                 <td style={{ paddingLeft: 18, paddingTop: "10px", paddingBottom: "10px" }}>
                   <div className="flex items-center gap-2">
@@ -166,10 +166,10 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
                       }}
                     />
                     <div>
-                      <div className="font-mono text-[13px] font-medium text-foreground">
+                      <div className="font-medium font-mono text-[13px] text-foreground">
                         {c.pod_name}
                       </div>
-                      <div className="text-[11.5px] text-foreground-muted font-mono">
+                      <div className="font-mono text-[11.5px] text-foreground-muted">
                         {c.ns} · pod {c.pod_name}
                       </div>
                     </div>
@@ -178,7 +178,7 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
                 <td className="font-mono text-[12.5px] text-foreground-secondary">{c.img}</td>
                 <td>
                   <span
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11.5px] font-medium ${
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-medium text-[11.5px] ${
                       badgeVariant === "success"
                         ? "border-[var(--ok)] bg-[var(--ok-soft)] text-[var(--ok)]"
                         : badgeVariant === "warning"
@@ -225,7 +225,7 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
                     v >= 90 ? "var(--err)" : v >= 70 ? "var(--warn-fg)" : "var(--fg-1)";
                   return (
                     <td key={k} className="text-right">
-                      <div className="flex items-center gap-2 justify-end">
+                      <div className="flex items-center justify-end gap-2">
                         <div
                           style={{
                             width: 44,
@@ -235,10 +235,10 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
                             overflow: "hidden",
                           }}
                         >
-                          <div style={{ width: v + "%", height: "100%", background: color }} />
+                          <div style={{ width: `${v}%`, height: "100%", background: color }} />
                         </div>
                         <span
-                          className="font-mono text-[12px] font-semibold min-w-[28px]"
+                          className="min-w-[28px] font-mono font-semibold text-[12px]"
                           style={{ color: fgColor }}
                         >
                           {v}%
@@ -270,7 +270,7 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
         </tbody>
       </table>
       <div
-        className="flex items-center justify-between border-t border-border"
+        className="flex items-center justify-between border-border border-t"
         style={{ padding: "10px 18px", background: "var(--bg-card)" }}
       >
         <span className="text-[12.5px] text-foreground-muted">

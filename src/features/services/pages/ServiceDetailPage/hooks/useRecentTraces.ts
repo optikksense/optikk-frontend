@@ -25,7 +25,7 @@ function toTraceRecord(summary: TraceSummary): TraceRecord {
 export function useRecentTraces(serviceName: string, limit = 25, cursor?: string) {
   return useTimeRangeQuery<TracesResponse>(
     "service-detail.recent-traces",
-    async (teamId, start, end) => {
+    async (_teamId, start, end) => {
       const response = await query({
         startTime: Number(start),
         endTime: Number(end),

@@ -1,4 +1,4 @@
-import { HardDrive, Link2 } from "lucide-react";
+import { Link2 } from "lucide-react";
 import { useMemo } from "react";
 
 import type { InfrastructureNodeSummary } from "../types";
@@ -64,20 +64,20 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
   const totalNodes = healthyNodes + degradedNodes + unhealthyNodes || 12;
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mt-4">
+    <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
       {/* Top CPU consumers */}
       <div className="rounded-md border border-border bg-card p-4">
-        <div className="text-[13px] font-bold text-foreground leading-tight">Top CPU consumers</div>
-        <div className="text-[11.5px] text-foreground-muted mt-0.5">fleet · last 1 hour</div>
+        <div className="font-bold text-[13px] text-foreground leading-tight">Top CPU consumers</div>
+        <div className="mt-0.5 text-[11.5px] text-foreground-muted">fleet · last 1 hour</div>
         <div className="mt-3 flex flex-col gap-1.5">
           {topCpu.map((h) => (
             <button
               key={h.id}
               type="button"
               onClick={() => onOpenHost(h.id)}
-              className="flex items-center justify-between rounded-md p-1.5 hover:bg-muted text-left transition-colors"
+              className="flex items-center justify-between rounded-md p-1.5 text-left transition-colors hover:bg-muted"
             >
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex min-w-0 items-center gap-2">
                 <span
                   style={{
                     width: 7,
@@ -87,15 +87,15 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
                     flexShrink: 0,
                   }}
                 />
-                <span className="font-mono text-[12.5px] font-medium text-foreground truncate">
+                <span className="truncate font-medium font-mono text-[12.5px] text-foreground">
                   {h.id}
                 </span>
-                <span className="font-mono text-[11.5px] text-foreground-muted truncate">
+                <span className="truncate font-mono text-[11.5px] text-foreground-muted">
                   · {h.role}
                 </span>
               </div>
               <span
-                className="font-mono text-[12.5px] font-semibold"
+                className="font-mono font-semibold text-[12.5px]"
                 style={{ color: h.cpu >= 90 ? "var(--err)" : "var(--warn-fg)" }}
               >
                 {h.cpu}%
@@ -107,19 +107,19 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
 
       {/* Top Memory consumers */}
       <div className="rounded-md border border-border bg-card p-4">
-        <div className="text-[13px] font-bold text-foreground leading-tight">
+        <div className="font-bold text-[13px] text-foreground leading-tight">
           Top memory consumers
         </div>
-        <div className="text-[11.5px] text-foreground-muted mt-0.5">fleet · last 1 hour</div>
+        <div className="mt-0.5 text-[11.5px] text-foreground-muted">fleet · last 1 hour</div>
         <div className="mt-3 flex flex-col gap-1.5">
           {topMem.map((h) => (
             <button
               key={h.id}
               type="button"
               onClick={() => onOpenHost(h.id)}
-              className="flex items-center justify-between rounded-md p-1.5 hover:bg-muted text-left transition-colors"
+              className="flex items-center justify-between rounded-md p-1.5 text-left transition-colors hover:bg-muted"
             >
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex min-w-0 items-center gap-2">
                 <span
                   style={{
                     width: 7,
@@ -129,15 +129,15 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
                     flexShrink: 0,
                   }}
                 />
-                <span className="font-mono text-[12.5px] font-medium text-foreground truncate">
+                <span className="truncate font-medium font-mono text-[12.5px] text-foreground">
                   {h.id}
                 </span>
-                <span className="font-mono text-[11.5px] text-foreground-muted truncate">
+                <span className="truncate font-mono text-[11.5px] text-foreground-muted">
                   · {h.role}
                 </span>
               </div>
               <span
-                className="font-mono text-[12.5px] font-semibold"
+                className="font-mono font-semibold text-[12.5px]"
                 style={{ color: h.mem >= 90 ? "var(--err)" : "var(--warn-fg)" }}
               >
                 {h.mem}%
@@ -148,14 +148,14 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
       </div>
 
       {/* Kubernetes Cluster */}
-      <div className="rounded-md border border-border bg-card p-4 flex flex-col">
-        <div className="text-[13px] font-bold text-foreground leading-tight">
+      <div className="flex flex-col rounded-md border border-border bg-card p-4">
+        <div className="font-bold text-[13px] text-foreground leading-tight">
           Kubernetes cluster
         </div>
-        <div className="text-[11.5px] text-foreground-muted mt-0.5">
+        <div className="mt-0.5 text-[11.5px] text-foreground-muted">
           checkout-prod-eks · 1 cluster · 3 AZs
         </div>
-        <div className="grid grid-cols-2 gap-2 mt-3 flex-1">
+        <div className="mt-3 grid flex-1 grid-cols-2 gap-2">
           {[
             { l: "Pods running", v: String(totalPods), sub: `of ${totalPods + 6}` },
             {
@@ -175,18 +175,18 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
             <div key={s.l} className="rounded-md bg-muted p-2">
               <div className="text-[11.5px] text-foreground-muted">{s.l}</div>
               <div
-                className="font-mono text-[17px] font-bold mt-0.5"
+                className="mt-0.5 font-bold font-mono text-[17px]"
                 style={{ color: s.color || "var(--fg-0)" }}
               >
                 {s.v}
               </div>
-              <div className="text-[11.5px] text-foreground-muted mt-0.5">{s.sub}</div>
+              <div className="mt-0.5 text-[11.5px] text-foreground-muted">{s.sub}</div>
             </div>
           ))}
         </div>
         <button
           type="button"
-          className="btn flex items-center justify-center gap-1.5 mt-3 w-full h-[30px]"
+          className="btn mt-3 flex h-[30px] w-full items-center justify-center gap-1.5"
         >
           <Link2 size={13} />
           Open in k8s explorer

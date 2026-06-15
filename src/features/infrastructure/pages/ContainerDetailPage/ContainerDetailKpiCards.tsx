@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { firstValue } from "@shared/utils/chartDataUtils";
 
-import { SparklineCell } from "@/features/services/pages/ServiceCatalogPage/catalog/SparklineCell";
+import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 
 import { infraGet } from "../../api/infrastructureApi";
 
@@ -49,7 +49,7 @@ function usePodSeries(
     `container-detail.${metricKey}.${pod}`,
     async (team, s, e) => {
       if (!team || !host || !pod || !serviceName) return [];
-      const data = await infraGet<ChartRow[]>(endpoint, team, Number(s), Number(e), {
+      const data = await infraGet<ChartRow[]>(endpoint, Number(s), Number(e), {
         host,
         pod,
         serviceName,

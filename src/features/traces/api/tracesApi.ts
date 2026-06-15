@@ -3,29 +3,29 @@ import api from "@shared/api/api/client";
 import { validateResponse } from "@shared/api/utils/validate";
 import { z } from "zod";
 
-import type { TraceSummary, TracesQueryRequest, TracesQueryResponse } from "../types/trace";
 import {
-	criticalPathSpanSchema,
-	errorPathSpanSchema,
-	relatedTraceSchema,
-	spanAttributesSchema,
-	spanEventSchema,
-	spanRecordSchema,
-	traceErrorGroupSchema,
+  criticalPathSpanSchema,
+  errorPathSpanSchema,
+  relatedTraceSchema,
+  spanAttributesSchema,
+  spanEventSchema,
+  spanRecordSchema,
+  traceErrorGroupSchema,
 } from "@shared/api/schemas/tracesSchemas";
 import type {
-	CriticalPathSpanRecord,
-	ErrorPathSpanRecord,
-	RelatedTraceRecord,
-	SpanAttributesRecord,
-	SpanEventRecord,
-	SpanRecord,
-	TraceErrorGroup,
+  CriticalPathSpanRecord,
+  ErrorPathSpanRecord,
+  RelatedTraceRecord,
+  SpanAttributesRecord,
+  SpanEventRecord,
+  SpanRecord,
+  TraceErrorGroup,
 } from "@shared/api/schemas/tracesSchemas";
 import {
-	type ServiceTopologyResponse,
-	topologyResponseSchema,
+  type ServiceTopologyResponse,
+  topologyResponseSchema,
 } from "@shared/components/ui/charts/ServiceTopologyGraph";
+import type { TraceSummary, TracesQueryRequest, TracesQueryResponse } from "../types/trace";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -276,7 +276,7 @@ const suggestResponseSchema = z
   })
   .strict();
 
-export async function fetchSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
+export async function getSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
   const body = {
     startTime: req.startTime,
     endTime: req.endTime,
@@ -320,7 +320,10 @@ const traceSpansEnvelopeSchema = z
   })
   .strict();
 
-export async function getTraceSpans(_teamId: number | null, traceId: string): Promise<SpanRecord[]> {
+export async function getTraceSpans(
+  _teamId: number | null,
+  traceId: string
+): Promise<SpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans`);
   if (Array.isArray(data)) {
     return validateResponse(spanListSchema, data);
@@ -344,7 +347,10 @@ export async function getErrorPath(traceId: string): Promise<ErrorPathSpanRecord
   return validateResponse(z.array(errorPathSpanSchema), data);
 }
 
-export async function getSpanAttributes(traceId: string, spanId: string): Promise<SpanAttributesRecord> {
+export async function getSpanAttributes(
+  traceId: string,
+  spanId: string
+): Promise<SpanAttributesRecord> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`);
   return validateResponse(spanAttributesSchema, data);
 }

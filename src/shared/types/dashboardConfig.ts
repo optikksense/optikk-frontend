@@ -123,45 +123,64 @@ export interface DashboardDrawerAction {
   titleField?: string;
 }
 
-export interface DashboardPanelSpec {
-  id: string;
-  panelType: DashboardPanelType;
-  layoutVariant: DashboardLayoutVariant;
-  sectionId: string;
-  order: number;
-  query?: DashboardQuerySpec;
-  layout: DashboardLayout;
-  title?: string;
-  description?: string;
-  titleIcon?: string;
-  icon?: string;
-  dataSource?: string;
-  dataKey?: string;
-  groupByKey?: string;
-  labelKey?: string;
-  xKey?: string;
-  yKey?: string;
-  endpointDataSource?: string;
-  endpointMetricsSource?: string;
-  endpointListType?: string;
-  valueField?: string;
-  valueKey?: string;
-  valueKeys?: string[];
-  bucketKey?: string;
-  datasetLabel?: string;
-  color?: string;
-  formatter?: string;
-  stacked?: boolean;
-  listSortField?: string;
-  listType?: string;
-  listTitle?: string;
-  columns?: DashboardTableColumn[];
-  drawerAction?: DashboardDrawerAction;
-  targetThreshold?: number;
-  summaryFields?: DashboardStatSummaryField[];
-  yPrefix?: string;
-  yDecimals?: number;
+export interface BasePanelSpec {
+  readonly id: string;
+  readonly panelType: DashboardPanelType;
+  readonly layoutVariant: DashboardLayoutVariant;
+  readonly sectionId: string;
+  readonly order: number;
+  readonly query?: DashboardQuerySpec;
+  readonly layout: DashboardLayout;
+  readonly title?: string;
+  readonly description?: string;
+  readonly titleIcon?: string;
+  readonly icon?: string;
+  readonly dataSource?: string;
+  readonly dataKey?: string;
 }
+
+export interface ChartPanelSpecKeys {
+  readonly xKey?: string;
+  readonly yKey?: string;
+  readonly yPrefix?: string;
+  readonly yDecimals?: number;
+  readonly stacked?: boolean;
+  readonly color?: string;
+  readonly datasetLabel?: string;
+}
+
+export interface TablePanelSpecKeys {
+  readonly columns?: DashboardTableColumn[];
+  readonly drawerAction?: DashboardDrawerAction;
+}
+
+export interface StatPanelSpecKeys {
+  readonly valueField?: string;
+  readonly valueKey?: string;
+  readonly valueKeys?: string[];
+  readonly formatter?: string;
+  readonly targetThreshold?: number;
+  readonly summaryFields?: DashboardStatSummaryField[];
+}
+
+export interface ListPanelSpecKeys {
+  readonly listSortField?: string;
+  readonly listType?: string;
+  readonly listTitle?: string;
+  readonly groupByKey?: string;
+  readonly labelKey?: string;
+  readonly endpointDataSource?: string;
+  readonly endpointMetricsSource?: string;
+  readonly endpointListType?: string;
+  readonly bucketKey?: string;
+}
+
+export interface DashboardPanelSpec
+  extends BasePanelSpec,
+    ChartPanelSpecKeys,
+    TablePanelSpecKeys,
+    StatPanelSpecKeys,
+    ListPanelSpecKeys {}
 
 export interface DefaultConfigPage {
   schemaVersion: DashboardSchemaVersion;

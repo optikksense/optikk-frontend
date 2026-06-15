@@ -8,7 +8,6 @@ import {
   isToday,
   startOfMonth,
 } from "date-fns";
-import React from "react";
 
 const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 

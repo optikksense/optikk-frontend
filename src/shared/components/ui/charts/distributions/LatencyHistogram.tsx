@@ -2,7 +2,8 @@ import { useMemo } from "react";
 
 import { APP_COLORS } from "@config/colorLiterals";
 
-import UPlotChart, { uBars } from "../UPlotChart";
+import UPlotChart from "../UPlotChart";
+import { uBars } from "../uplotHelpers";
 
 const BUCKETS = [
   { label: "0-50ms", max: 50, color: APP_COLORS.hex_73c991 },

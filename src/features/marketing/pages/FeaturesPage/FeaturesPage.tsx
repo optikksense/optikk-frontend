@@ -91,7 +91,8 @@ export default function FeaturesPage() {
             eyebrow="Distributed tracing"
             title={
               <>
-                Datadog-parity span explorer. <GradientText>Without the vendor lock-in.</GradientText>
+                Datadog-parity span explorer.{" "}
+                <GradientText>Without the vendor lock-in.</GradientText>
               </>
             }
             body="Flame graphs, span diff, latency heatmaps, service maps, and a 10-tab span drawer (overview, children, logs, code, profile, AI explanation, related deploys, errors, queries, tags)."

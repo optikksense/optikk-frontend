@@ -7,8 +7,6 @@ import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstant
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import type { UseQueryResult } from "@tanstack/react-query";
 
-import { tsMs } from "@shared/utils/chartDataUtils";
-
 import type { DashboardRecord } from "@/types/dashboardConfig";
 
 import { mapRedErrorPctRows, mapRedRequestRateRows, num } from "./mappers";
@@ -108,9 +106,7 @@ export interface PerformanceSeries {
   readonly hasErrors: boolean;
 }
 
-export function usePerformanceSeries(
-  prRaw: unknown[] | undefined
-): PerformanceSeries {
+export function usePerformanceSeries(prRaw: unknown[] | undefined): PerformanceSeries {
   return useMemo(() => {
     const rrRows = mapRedRequestRateRows(prRaw ?? []);
     const erRows = mapRedErrorPctRows(prRaw ?? []);

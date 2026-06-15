@@ -1,11 +1,7 @@
 import { create } from "zustand";
 
-type Density = "comfortable" | "compact";
-
 interface LogsExplorerState {
   expandedRows: Set<string>;
-  density: Density;
-  wrapLines: boolean;
   facetCollapsed: boolean;
   columnWidths: Record<string, number>;
 
@@ -21,8 +17,6 @@ interface LogsExplorerState {
 
   toggleRowExpanded: (id: string) => void;
   collapseAllRows: () => void;
-  setDensity: (d: Density) => void;
-  toggleWrapLines: () => void;
   setFacetCollapsed: (collapsed: boolean) => void;
   setColumnWidth: (key: string, width: number) => void;
 
@@ -39,8 +33,6 @@ interface LogsExplorerState {
 
 export const useLogsExplorerStore = create<LogsExplorerState>((set, get) => ({
   expandedRows: new Set(),
-  density: "comfortable",
-  wrapLines: false,
   facetCollapsed: false,
   columnWidths: {},
 
@@ -59,10 +51,6 @@ export const useLogsExplorerStore = create<LogsExplorerState>((set, get) => ({
     }),
 
   collapseAllRows: () => set({ expandedRows: new Set() }),
-
-  setDensity: (density) => set({ density }),
-
-  toggleWrapLines: () => set((s) => ({ wrapLines: !s.wrapLines })),
 
   setFacetCollapsed: (facetCollapsed) => set({ facetCollapsed }),
 

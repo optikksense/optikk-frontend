@@ -5,11 +5,7 @@ import type { AbsoluteTimeRange, RelativeTimeRange, TimeRange } from "@/types";
 
 import { STORAGE_KEYS } from "@config/constants";
 import type { ComparisonMode } from "@shared/components/ui/TimeSelector/constants";
-import type {
-  UserViewPreferenceKey,
-  UserViewPreferenceValue,
-  UserViewPreferences,
-} from "@shared/types/preferences";
+import type { UserViewPreferenceKey, UserViewPreferences } from "@shared/types/preferences";
 
 import {
   type PersistedAppState,

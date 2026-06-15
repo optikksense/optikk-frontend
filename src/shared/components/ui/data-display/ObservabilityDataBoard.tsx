@@ -8,6 +8,15 @@ import { useResizableColumns } from "@shared/hooks/useResizableColumns";
 import { BoardClickableCell, type BoardClickableCellProps } from "./BoardClickableCell";
 import { BoardTable } from "./BoardTable";
 import { type DetailPanelField, ObservabilityDetailPanel } from "./ObservabilityDetailPanel";
+import type {
+  BoardColumn,
+  BoardFilter,
+  BoardFilterValue,
+  BoardPaginationState,
+  ColumnWidths,
+  RenderRowContext,
+  VisibleColumns,
+} from "./types";
 
 const BOARD_ROW_HEIGHT = 32;
 const BOARD_CHROME_HEIGHT = 72;
@@ -19,35 +28,14 @@ const SKELETON_WIDTH_RANGE_PERCENT = 40;
 const SKELETON_FLEX_BASE_WIDTH_PERCENT = 55;
 const SKELETON_FLEX_WIDTH_RANGE_PERCENT = 35;
 
-export type BoardFilterValue = string | number | boolean;
-
-export interface BoardFilter {
-  field: string;
-  value: BoardFilterValue;
-  operator: "equals";
-}
-
-export interface BoardColumn {
-  key: string;
-  label: string;
-  defaultWidth?: number;
-  defaultVisible?: boolean;
-  flex?: boolean;
-}
-
-type ColumnWidths = Record<string, number>;
-type VisibleColumns = Record<string, boolean>;
+// Types are imported from ./types
 
 export interface EmptyTip {
   num?: number;
   text: ReactNode;
 }
 
-export interface RenderRowContext {
-  colWidths: ColumnWidths;
-  visibleCols: VisibleColumns;
-  onAddFilter: ((filter: BoardFilter) => void) | undefined;
-}
+// RenderRowContext is imported from ./types
 
 /**
  * Calculates board height for a fixed number of data rows.
@@ -92,11 +80,7 @@ export interface BoardDataState<RowType> {
   serverTotal?: number;
 }
 
-export interface BoardPaginationState {
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-  fetchNextPage?: () => void;
-}
+// BoardPaginationState is imported from ./types
 
 export interface BoardConfig<RowType> {
   columns?: BoardColumn[];

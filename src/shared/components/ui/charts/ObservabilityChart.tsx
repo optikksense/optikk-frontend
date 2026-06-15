@@ -3,7 +3,8 @@ import type uPlot from "uplot";
 
 import { cn } from "@/lib/utils";
 
-import UPlotChart, { defaultAxes, uLine, uBars } from "./UPlotChart";
+import UPlotChart from "./UPlotChart";
+import { defaultAxes, uBars, uLine } from "./uplotHelpers";
 
 export interface ObservabilityChartSeries {
   label: string;

@@ -56,12 +56,7 @@ export default function HostsTab() {
     "infrastructure.kpi.cpu-avg",
     async (teamId, start, end) => {
       if (!teamId) return { value: 0 };
-      return infraGet<MetricValue>(
-        "/v1/infrastructure/cpu/avg",
-        teamId,
-        Number(start),
-        Number(end)
-      );
+      return infraGet<MetricValue>("/v1/infrastructure/cpu/avg", Number(start), Number(end));
     }
   );
 
@@ -69,12 +64,7 @@ export default function HostsTab() {
     "infrastructure.kpi.memory-avg",
     async (teamId, start, end) => {
       if (!teamId) return { value: 0 };
-      return infraGet<MetricValue>(
-        "/v1/infrastructure/memory/avg",
-        teamId,
-        Number(start),
-        Number(end)
-      );
+      return infraGet<MetricValue>("/v1/infrastructure/memory/avg", Number(start), Number(end));
     }
   );
 
@@ -174,7 +164,7 @@ export default function HostsTab() {
       {/* Hosts list */}
       <div className="min-w-0">
         {filtered.length === 0 ? (
-          <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted bg-card border border-border rounded-md">
+          <div className="grid h-[200px] place-items-center rounded-md border border-border bg-card text-[12px] text-foreground-muted">
             {query.isPending ? "Loading hosts…" : "No hosts match the current filter."}
           </div>
         ) : (

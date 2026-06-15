@@ -1,6 +1,6 @@
 import type { ExplorerFilter, ExplorerFilterOp } from "../types/filters";
 
-import { KNOWN_FIELDS, type KnownField, findKnownField } from "./knownFields";
+import { type KnownField, TRACE_KNOWN_FIELDS, findKnownField } from "./knownFields";
 import { type Token, tokenizeDsl } from "./tokenizeDsl";
 
 export interface ParseError {
@@ -15,7 +15,10 @@ export interface ParseResult {
 }
 
 /** Parse a Datadog-style DSL string into explorer filters (best-effort). */
-export function parseDsl(input: string, fields: readonly KnownField[] = KNOWN_FIELDS): ParseResult {
+export function parseDsl(
+  input: string,
+  fields: readonly KnownField[] = TRACE_KNOWN_FIELDS
+): ParseResult {
   const filters: ExplorerFilter[] = [];
   const errors: ParseError[] = [];
   for (const tok of tokenizeDsl(input)) {

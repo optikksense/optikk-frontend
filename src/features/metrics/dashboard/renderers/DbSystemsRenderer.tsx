@@ -1,3 +1,4 @@
+import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Database } from "lucide-react";
 
@@ -6,6 +7,19 @@ import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboar
 import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 import { buildDashboardDrawerSearch } from "@shared/components/ui/dashboard/utils/dashboardDrawerState";
 import { formatDuration, formatNumber, normalizePercentage } from "@shared/utils/formatters";
+
+interface DbSystemRow extends Record<string, unknown> {
+  readonly db_system: string;
+  readonly avg_latency_ms?: number;
+  readonly avg_latency?: number;
+  readonly avg_query_latency_ms?: number;
+  readonly p95_latency_ms?: number;
+  readonly p95_query_latency?: number;
+  readonly p95_latency?: number;
+  readonly span_count?: number;
+  readonly query_count?: number;
+  readonly error_count?: number;
+}
 
 const DB_SYSTEM_META: Record<string, { label: string; color: string; gradient: string }> = {
   postgresql: {
@@ -71,18 +85,17 @@ function getDbMeta(system: string) {
   );
 }
 
-function n(value: any): number {
+function n(value: unknown): number {
   return value == null || Number.isNaN(Number(value)) ? 0 : Number(value);
 }
 
-function DbSystemCard({ system }: { system: any }) {
+function DbSystemCard({ system }: { system: DbSystemRow }) {
   const meta = getDbMeta(system.db_system);
   const avgLatency = n(system.avg_latency_ms ?? system.avg_latency ?? system.avg_query_latency_ms);
   const p95Latency = n(system.p95_latency_ms ?? system.p95_query_latency ?? system.p95_latency);
   const spanCount = n(system.span_count ?? system.query_count);
   const errorCount = n(system.error_count);
   const errorRate = spanCount > 0 ? normalizePercentage((errorCount / spanCount) * 100) : 0;
-  const serverAddr = system.server_address ?? system.last_seen ?? "";
 
   return (
     <div
@@ -182,9 +195,9 @@ function DbSystemCard({ system }: { system: any }) {
             <div
               style={{
                 color:
-                  errorRate > 5
+                  errorRate > SERVICE_HEALTH_THRESHOLDS.unhealthy
                     ? APP_COLORS.hex_f04438
-                    : errorRate > 1
+                    : errorRate > SERVICE_HEALTH_THRESHOLDS.degraded
                       ? APP_COLORS.hex_f79009
                       : APP_COLORS.hex_12b76a,
                 fontWeight: 600,
@@ -232,7 +245,8 @@ export function DbSystemsRenderer({
         alignContent: "start",
       }}
     >
-      {systems.map((system: any) => {
+      {systems.map((record) => {
+        const system = record as unknown as DbSystemRow;
         const search = buildDashboardDrawerSearch(
           location.search,
           chartConfig.drawerAction,

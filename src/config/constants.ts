@@ -81,8 +81,6 @@ export /**
  */
 const STORAGE_KEYS = {
   APP_STATE: "optikk_app_state",
-  AUTH_STATE: "optikk_auth_state",
-  USER_DATA: "optikk_user_data",
   TEAM_ID: "optikk_team_id",
   TEAM_IDS: "optikk_team_ids",
   TIME_RANGE: "optikk_time_range",

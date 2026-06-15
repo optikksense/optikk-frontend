@@ -1,4 +1,4 @@
-import { KNOWN_FIELDS, type KnownField, findKnownField } from "./knownFields";
+import { type KnownField, TRACE_KNOWN_FIELDS, findKnownField } from "./knownFields";
 
 export type DslCompletionKind = "field" | "value" | "attribute" | "operator" | "empty";
 
@@ -24,7 +24,7 @@ export interface DslCompletionContext {
 export function dslContextAtCaret(
   input: string,
   caret: number,
-  fields: readonly KnownField[] = KNOWN_FIELDS
+  fields: readonly KnownField[] = TRACE_KNOWN_FIELDS
 ): DslCompletionContext {
   if (input.trim() === "") {
     return { kind: "empty", tokenPrefix: "", field: null, caret, tokenStart: 0 };
@@ -109,7 +109,7 @@ function stripNegation(token: string): string {
 /** Top-K field keys matching a prefix (case-insensitive), for the field dropdown. */
 export function matchingFields(
   prefix: string,
-  fields: readonly KnownField[] = KNOWN_FIELDS
+  fields: readonly KnownField[] = TRACE_KNOWN_FIELDS
 ): readonly KnownField[] {
   if (prefix === "") return fields;
   const lower = prefix.toLowerCase();

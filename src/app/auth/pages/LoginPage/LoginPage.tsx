@@ -1,45 +1,63 @@
-import { useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { toast } from "react-hot-toast";
+import { Link } from "@tanstack/react-router";
 
-import { useAuthError, useAuthStore, useIsAuthenticated } from "@store/authStore";
+import { ROUTES } from "@shared/constants/routes";
 
 import { LoginBrandPanel } from "./LoginBrandPanel";
-import { LoginFooter } from "./LoginFooter";
 import { LoginForm } from "./LoginForm";
-import { LoginHeader } from "./LoginHeader";
-import { LoginTopBar } from "./LoginTopBar";
 
 export function LoginPage() {
-  const navigate = useNavigate();
-  const isAuthenticated = useIsAuthenticated();
-  const error = useAuthError();
-  const clearError = useAuthStore((s) => s.clearError);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate({ to: "/overview" });
-    }
-  }, [isAuthenticated, navigate]);
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-      clearError();
-    }
-  }, [error, clearError]);
-
   return (
     <div className="grid min-h-screen grid-cols-1 bg-surface-canvas text-foreground lg:grid-cols-[1.05fr_1fr]">
       <LoginBrandPanel />
       <main className="grid grid-rows-[auto_1fr_auto] px-12 py-7 max-md:px-6 max-md:py-5">
-        <LoginTopBar />
+        <TopBar />
         <div className="mx-auto w-full max-w-[380px] self-center py-7">
-          <LoginHeader />
+          <Heading />
           <LoginForm />
         </div>
-        <LoginFooter />
+        <Footer />
       </main>
     </div>
+  );
+}
+
+function TopBar() {
+  return (
+    <div className="flex items-center justify-end gap-2.5 text-[12.5px] text-foreground-muted">
+      <span>New to Optikk?</span>
+      <Link
+        to={ROUTES.selfHost}
+        className="font-semibold text-[var(--login-link)] no-underline hover:underline"
+      >
+        Self-host now →
+      </Link>
+    </div>
+  );
+}
+
+function Heading() {
+  return (
+    <header>
+      <h2 className="m-0 mb-1.5 font-bold text-2xl text-foreground tracking-[-0.015em]">
+        Sign in to Optikk
+      </h2>
+      <p className="m-0 mb-[22px] text-[13.5px] text-foreground-muted">
+        Welcome back. Pick up where your team left off.
+      </p>
+    </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="flex items-center justify-between font-mono text-[11.5px] text-foreground-muted">
+      <span className="inline-flex items-center gap-1.5 text-foreground-secondary">
+        <span className="h-1.5 w-1.5 rounded-full bg-healthy" />
+        All systems operational
+      </span>
+      <a href="#" className="text-foreground-muted no-underline hover:text-foreground-secondary">
+        v2026.5 · status →
+      </a>
+    </footer>
   );
 }

@@ -30,6 +30,7 @@ function Switch({
       )}
     >
       <SwitchPrimitive.Root
+        {...props}
         ref={ref}
         checked={checked}
         onCheckedChange={(val) => {

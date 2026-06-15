@@ -3,9 +3,7 @@ import { memo, useMemo } from "react";
 import { firstValue, tsMs } from "@shared/utils/chartDataUtils";
 import { getChartColor } from "@shared/utils/charting";
 
-import ObservabilityChart, {
-  type ObservabilityChartSeries,
-} from "../ObservabilityChart";
+import ObservabilityChart, { type ObservabilityChartSeries } from "../ObservabilityChart";
 
 interface ChartRow {
   [key: string]: unknown;
@@ -51,7 +49,6 @@ function formatAxisValue(value: any) {
 
 export default memo(function RequestChart({
   data = [],
-  endpoints = [],
   selectedEndpoints = [],
   serviceTimeseriesMap = {},
   height = 280,
@@ -74,7 +71,9 @@ export default memo(function RequestChart({
         .slice(0, 10);
 
       const firstSvc = activeEntries[0]?.[1] ?? [];
-      activeTimestamps = firstSvc.map((row) => tsMs(firstValue(row, ["timestamp", "time_bucket"], "")) / 1000).filter((t) => !Number.isNaN(t));
+      activeTimestamps = firstSvc
+        .map((row) => tsMs(firstValue(row, ["timestamp", "time_bucket"], "")) / 1000)
+        .filter((t) => !Number.isNaN(t));
 
       seriesList = activeEntries.map(([svcName, rows], idx) => {
         const values = rows.map((row) => {
@@ -83,7 +82,9 @@ export default memo(function RequestChart({
         return { label: svcName, values, color: getChartColor(idx), fill: false };
       });
     } else {
-      activeTimestamps = data.map((d) => tsMs(firstValue(d, ["timestamp", "time_bucket"], "")) / 1000).filter((t) => !Number.isNaN(t));
+      activeTimestamps = data
+        .map((d) => tsMs(firstValue(d, ["timestamp", "time_bucket"], "")) / 1000)
+        .filter((t) => !Number.isNaN(t));
       seriesList = [
         {
           label: datasetLabel,
@@ -95,7 +96,15 @@ export default memo(function RequestChart({
     }
 
     return { timestamps: activeTimestamps, chartData: seriesList };
-  }, [data, serviceTimeseriesMap, hasServiceData, selectedEndpoints, valueKey, datasetLabel, color]);
+  }, [
+    data,
+    serviceTimeseriesMap,
+    hasServiceData,
+    selectedEndpoints,
+    valueKey,
+    datasetLabel,
+    color,
+  ]);
 
   const yAxisMax = useMemo(() => {
     let maxVal = 0;

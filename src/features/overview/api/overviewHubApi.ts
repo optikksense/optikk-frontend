@@ -8,10 +8,7 @@
  */
 
 import { getErrorHotspot } from "./overviewErrorsApi";
-import {
-  getFleetRedMetrics,
-  getPerformanceSeries,
-} from "./overviewRedApi";
+import { getFleetRedMetrics, getPerformanceSeries } from "./overviewRedApi";
 
 export type { FleetRedMetrics } from "./overviewRedApi";
 

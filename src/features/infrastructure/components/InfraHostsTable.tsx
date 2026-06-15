@@ -113,7 +113,7 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
             <th className="text-left">CPU</th>
             <th className="text-left">Memory</th>
             <th className="text-left">Disk</th>
-            <th style={{ width: 18 }}></th>
+            <th style={{ width: 18 }} />
           </tr>
         </thead>
         <tbody>
@@ -126,7 +126,7 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
               <tr
                 key={n.host}
                 onClick={() => onOpenNode(n.host)}
-                className="cursor-pointer hover:bg-muted/40 transition-colors"
+                className="cursor-pointer transition-colors hover:bg-muted/40"
               >
                 <td style={{ paddingLeft: 18, paddingTop: "10px", paddingBottom: "10px" }}>
                   <div className="flex items-center gap-2">
@@ -140,7 +140,7 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
                       }}
                     />
                     <div>
-                      <div className="font-mono text-[13px] font-medium text-foreground">
+                      <div className="font-medium font-mono text-[13px] text-foreground">
                         {n.host}
                       </div>
                       <div className="text-[11.5px] text-foreground-muted">{details.ver}</div>
@@ -149,9 +149,9 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
                 </td>
                 <td>
                   <span
-                    className="font-mono text-[11px] font-bold px-1.5 py-0.5 rounded-sm"
+                    className="rounded-sm px-1.5 py-0.5 font-bold font-mono text-[11px]"
                     style={{
-                      background: KIND_BADGE[details.kind].color + "1a",
+                      background: `${KIND_BADGE[details.kind].color}1a`,
                       color: KIND_BADGE[details.kind].color,
                     }}
                   >
@@ -189,10 +189,10 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
                             overflow: "hidden",
                           }}
                         >
-                          <div style={{ width: v + "%", height: "100%", background: color }} />
+                          <div style={{ width: `${v}%`, height: "100%", background: color }} />
                         </div>
                         <span
-                          className="font-mono text-[12px] font-semibold min-w-[30px]"
+                          className="min-w-[30px] font-mono font-semibold text-[12px]"
                           style={{ color: fgColor }}
                         >
                           {v}%
@@ -210,7 +210,7 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
         </tbody>
       </table>
       <div
-        className="flex items-center justify-between border-t border-border"
+        className="flex items-center justify-between border-border border-t"
         style={{ padding: "10px 18px", background: "var(--bg-card)" }}
       >
         <span className="text-[12.5px] text-foreground-muted">

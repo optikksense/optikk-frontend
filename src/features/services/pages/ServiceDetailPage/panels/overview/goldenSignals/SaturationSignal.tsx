@@ -5,8 +5,6 @@ import ObservabilityChart, {
 } from "@shared/components/ui/charts/ObservabilityChart";
 import { tsMs } from "@shared/utils/chartDataUtils";
 
-import type { SaturationTimeSeriesPoint } from "@/features/services/api/serviceDetailApi";
-
 import { useServiceSaturation } from "../../../hooks/useServiceSaturation";
 import { PanelCard } from "../../PanelCard";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";

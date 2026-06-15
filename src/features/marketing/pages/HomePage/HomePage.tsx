@@ -1,7 +1,6 @@
 import {
   Activity,
   Bot,
-  Database,
   GitBranch,
   Github,
   Layers,

@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef } from "react";
 import { queryClient } from "@shared/api/queryClient";
 
 import { useAppStore } from "@store/appStore";
-import { useAuthStore } from "@store/authStore";
 
 import type { ReactNode } from "react";
 
@@ -14,7 +13,6 @@ interface QueryLifecycleBridgeProps {
 export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeProps): JSX.Element {
   const selectedTeamId = useAppStore((state) => state.selectedTeamId);
   const selectedTeamIds = useAppStore((state) => state.selectedTeamIds);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const teamScopeKey = useMemo(
     () => JSON.stringify({ selectedTeamId, selectedTeamIds }),
@@ -22,7 +20,6 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
   );
 
   const isFirstTeamScope = useRef(true);
-  const previousAuthState = useRef(isAuthenticated);
 
   useEffect(() => {
     if (isFirstTeamScope.current) {
@@ -33,14 +30,6 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
     void queryClient.invalidateQueries({ queryKey: ["component-query"] });
     void queryClient.invalidateQueries({ queryKey: ["datasource"] });
   }, [teamScopeKey]);
-
-  useEffect(() => {
-    if (previousAuthState.current && !isAuthenticated) {
-      queryClient.clear();
-    }
-
-    previousAuthState.current = isAuthenticated;
-  }, [isAuthenticated]);
 
   return <>{children}</>;
 }

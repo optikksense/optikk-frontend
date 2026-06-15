@@ -1,14 +1,8 @@
 import api from "@/shared/api/api/client";
 import { API_CONFIG } from "@config/apiConfig";
+import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
-
-function unwrap<T>(value: unknown): T {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) return value as T;
-  const record = value as Record<string, unknown>;
-  if ("data" in record && Object.keys(record).length <= 2) return record.data as T;
-  return value as T;
-}
 
 export type ChannelType =
   | "slack"
@@ -66,7 +60,7 @@ export interface Template {
 
 export async function listChannels(): Promise<Channel[]> {
   const raw = await api.get<unknown>(`${V1}/notifications/channels`);
-  return unwrap<Channel[]>(raw);
+  return unwrapEnvelope<Channel[]>(raw);
 }
 
 export interface CreateChannelPayload {
@@ -76,12 +70,12 @@ export interface CreateChannelPayload {
 }
 export async function createChannel(payload: CreateChannelPayload): Promise<Channel> {
   const raw = await api.post<unknown>(`${V1}/notifications/channels`, payload);
-  return unwrap<Channel>(raw);
+  return unwrapEnvelope<Channel>(raw);
 }
 
 export async function updateChannel(id: number, payload: CreateChannelPayload): Promise<Channel> {
   const raw = await api.put<unknown>(`${V1}/notifications/channels/${id}`, payload);
-  return unwrap<Channel>(raw);
+  return unwrapEnvelope<Channel>(raw);
 }
 
 export async function deleteChannel(id: number): Promise<void> {
@@ -90,21 +84,21 @@ export async function deleteChannel(id: number): Promise<void> {
 
 export async function testChannel(id: number): Promise<{ ok: boolean; error_text?: string }> {
   const raw = await api.post<unknown>(`${V1}/notifications/channels/${id}/test`, {});
-  return unwrap(raw);
+  return unwrapEnvelope(raw);
 }
 
 // Integrations -------------------------------------------------------------
 
 export async function listIntegrations(): Promise<Integration[]> {
   const raw = await api.get<unknown>(`${V1}/notifications/integrations`);
-  return unwrap<Integration[]>(raw);
+  return unwrapEnvelope<Integration[]>(raw);
 }
 
 // Policies -----------------------------------------------------------------
 
 export async function listPolicies(): Promise<Policy[]> {
   const raw = await api.get<unknown>(`${V1}/notifications/policies`);
-  return unwrap<Policy[]>(raw);
+  return unwrapEnvelope<Policy[]>(raw);
 }
 
 export interface CreatePolicyPayload {
@@ -116,11 +110,11 @@ export interface CreatePolicyPayload {
 }
 export async function createPolicy(payload: CreatePolicyPayload): Promise<Policy> {
   const raw = await api.post<unknown>(`${V1}/notifications/policies`, payload);
-  return unwrap<Policy>(raw);
+  return unwrapEnvelope<Policy>(raw);
 }
 export async function updatePolicy(id: number, payload: CreatePolicyPayload): Promise<Policy> {
   const raw = await api.put<unknown>(`${V1}/notifications/policies/${id}`, payload);
-  return unwrap<Policy>(raw);
+  return unwrapEnvelope<Policy>(raw);
 }
 export async function deletePolicy(id: number): Promise<void> {
   await api.delete<unknown>(`${V1}/notifications/policies/${id}`);
@@ -130,7 +124,7 @@ export async function deletePolicy(id: number): Promise<void> {
 
 export async function listTemplates(): Promise<Template[]> {
   const raw = await api.get<unknown>(`${V1}/notifications/templates`);
-  return unwrap<Template[]>(raw);
+  return unwrapEnvelope<Template[]>(raw);
 }
 
 export interface CreateTemplatePayload {
@@ -140,14 +134,14 @@ export interface CreateTemplatePayload {
 }
 export async function createTemplate(payload: CreateTemplatePayload): Promise<Template> {
   const raw = await api.post<unknown>(`${V1}/notifications/templates`, payload);
-  return unwrap<Template>(raw);
+  return unwrapEnvelope<Template>(raw);
 }
 export async function updateTemplate(
   id: number,
   payload: CreateTemplatePayload
 ): Promise<Template> {
   const raw = await api.put<unknown>(`${V1}/notifications/templates/${id}`, payload);
-  return unwrap<Template>(raw);
+  return unwrapEnvelope<Template>(raw);
 }
 export async function deleteTemplate(id: number): Promise<void> {
   await api.delete<unknown>(`${V1}/notifications/templates/${id}`);

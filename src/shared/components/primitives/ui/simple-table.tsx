@@ -445,7 +445,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
               </TableRow>
             ))
           }
-          itemContent={(index, row) => (
+          itemContent={(_index, row) => (
             <>
               {row.getVisibleCells().map((cell) => {
                 const meta = cell.column.columnDef.meta as ColumnMeta | undefined;

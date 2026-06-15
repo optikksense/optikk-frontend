@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
@@ -66,7 +65,6 @@ function buildValueSuggestions(
  * table, and detail panel as an inline 380px column on the right when open.
  */
 export default function LogsExplorerPage() {
-  const navigate = useNavigate();
   const { state, list, summary, trend, facets } = useLogsExplorer();
   const timeRange = useTimeRange();
   const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
@@ -131,7 +129,7 @@ export default function LogsExplorerPage() {
             onClearAll={onClearFilters}
           />
 
-          <div className="flex min-h-0 min-w-0 flex-col gap-3">
+          <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto">
             <LogsSummaryChips summary={summary.data} />
             <LogsTrendChart
               trend={trend.data}
@@ -141,7 +139,7 @@ export default function LogsExplorerPage() {
               maxTimeMs={endTime}
             />
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
+            <div className="flex shrink-0 flex-col overflow-hidden rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
               <LogsTableToolbar />
               <LogsTable
                 rows={results}

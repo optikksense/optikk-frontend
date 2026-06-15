@@ -1,21 +1,11 @@
 import api from "@/shared/api/api/client";
 import type { RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
+import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 type DetailParams = Record<string, RequestTime | string | number | undefined>;
-
-function unwrap<T>(value: unknown): T {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    return value as T;
-  }
-  const record = value as Record<string, unknown>;
-  if ("data" in record && Object.keys(record).length <= 2) {
-    return record.data as T;
-  }
-  return value as T;
-}
 
 function buildParams(
   s: RequestTime,
@@ -30,7 +20,7 @@ function buildParams(
 
 async function getJson<T>(path: string, params: DetailParams): Promise<T> {
   const raw = await api.get<unknown>(`${V1}${path}`, { params });
-  return unwrap<T>(raw);
+  return unwrapEnvelope<T>(raw);
 }
 
 export interface StatusTimeseriesPoint {

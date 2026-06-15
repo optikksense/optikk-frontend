@@ -6,9 +6,10 @@ import { getExplorerRoutes } from "@/app/registry/domainRegistry";
 import { FeatureErrorBoundary, Loading } from "@/shared/components/ui/feedback";
 import { ROUTES } from "@/shared/constants/routes";
 
+import { session } from "@shared/api/auth/session";
+
 import { AppContent } from "../App";
 import MainLayout from "../layout/MainLayout";
-import ProtectedRoute from "./ProtectedRoute";
 import { buildLegacyRedirects } from "./legacyRedirects";
 import { buildMarketingRoutes } from "./marketingRoutes";
 
@@ -50,14 +51,23 @@ const NotificationsPage = lazy(
 
 export const rootRoute = createRootRoute({ component: AppContent });
 
+// Auth gate for every protected route. Runs before render so an unrecoverable
+// session redirects to /login instead of leaving the shell blank.
 const mainLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "main-layout",
-  component: () => (
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  ),
+  beforeLoad: async ({ location }) => {
+    // A full reload wipes the in-memory access token; ensureSession recovers
+    // it via the refresh cookie before rendering so protected calls don't 401.
+    if (!(await session.ensureSession())) {
+      throw redirect({
+        to: ROUTES.login,
+        search: { redirect: location.href },
+        replace: true,
+      });
+    }
+  },
+  component: MainLayout,
 });
 
 function toNestedRoutePath(path: string): string {
@@ -65,14 +75,8 @@ function toNestedRoutePath(path: string): string {
   return path.startsWith("/") ? path.slice(1) : path;
 }
 
-function createProtected(
-  path: string,
-  // biome-ignore lint/suspicious/noExplicitAny: router dispatch accepts heterogeneous page components
-  PageComponent: ComponentType<any>,
-  fallbackPath?: string
-) {
+function createProtected(path: string, PageComponent: ComponentType<any>, fallbackPath?: string) {
   if (fallbackPath) {
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack Router infers heterogeneous route types that don't unify under createProtected's signature
     return createRoute({
       getParentRoute: () => mainLayoutRoute,
       path: toNestedRoutePath(path),
@@ -81,7 +85,6 @@ function createProtected(
       },
     }) as any;
   }
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack Router infers heterogeneous route types that don't unify under createProtected's signature
   return createRoute({
     getParentRoute: () => mainLayoutRoute,
     path: toNestedRoutePath(path),

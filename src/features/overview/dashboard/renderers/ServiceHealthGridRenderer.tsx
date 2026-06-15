@@ -6,6 +6,7 @@ import { APP_COLORS } from "@config/colorLiterals";
 import { HealthIndicator } from "@shared/components/ui";
 import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
 import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
+import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 import { formatNumber } from "@shared/utils/formatters";
 
 export function ServiceHealthGridRenderer({
@@ -18,13 +19,13 @@ export function ServiceHealthGridRenderer({
   const { data: services } = useDashboardData(chartConfig, dataSources);
 
   const serviceHealth = useMemo(() => {
-    return services.slice(0, 8).map((s: any) => {
+    return services.slice(0, 8).map((s: Record<string, unknown>) => {
       const requestCount = Number(s.request_count ?? 0);
       const errorCount = Number(s.error_count ?? 0);
       const errorRate = requestCount > 0 ? (errorCount / requestCount) * 100 : 0;
-      const status = errorRate > 5 ? "unhealthy" : errorRate > 1 ? "degraded" : "healthy";
+      const status = classifyHealth(errorRate, SERVICE_HEALTH_THRESHOLDS);
       return {
-        name: s.service_name,
+        name: String(s.service_name ?? ""),
         status,
         requestCount,
         errorCount,

@@ -1,6 +1,7 @@
 import { createRoute, redirect } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { Suspense, lazy } from "react";
+import { z } from "zod";
 
 import { Loading } from "@/shared/components/ui/feedback";
 import { ROUTES } from "@/shared/constants/routes";
@@ -31,28 +32,14 @@ function PageTransition({ children }: { children: ReactNode }) {
   return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
 }
 
-function buildHomeRoute(layoutRoute: any) {
+function buildLazyPageRoute(parentRoute: any, path: string, LazyComponent: ComponentType<any>) {
   return createRoute({
-    getParentRoute: () => layoutRoute,
-    path: "/",
+    getParentRoute: () => parentRoute,
+    path: path === "/" ? "/" : path.replace(/^\//, ""),
     component: () => (
       <Suspense fallback={<Loading fullscreen />}>
         <PageTransition>
-          <HomePageLazy />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
-function buildFeaturesRoute(layoutRoute: any) {
-  return createRoute({
-    getParentRoute: () => layoutRoute,
-    path: ROUTES.features.replace(/^\//, ""),
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <FeaturesPageLazy />
+          <LazyComponent />
         </PageTransition>
       </Suspense>
     ),
@@ -69,104 +56,6 @@ function buildPricingRoute(layoutRoute: any) {
   });
 }
 
-function buildOtelRoute(layoutRoute: any) {
-  return createRoute({
-    getParentRoute: () => layoutRoute,
-    path: ROUTES.opentelemetry.replace(/^\//, ""),
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <OpenTelemetryPageLazy />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
-function buildSelfHostRoute(layoutRoute: any) {
-  return createRoute({
-    getParentRoute: () => layoutRoute,
-    path: ROUTES.selfHost.replace(/^\//, ""),
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <SelfHostPageLazy />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
-function buildArchRoute(layoutRoute: any) {
-  return createRoute({
-    getParentRoute: () => layoutRoute,
-    path: ROUTES.architecture.replace(/^\//, ""),
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <ArchitecturePageLazy />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
-function buildPrivacyRoute(layoutRoute: any) {
-  return createRoute({
-    getParentRoute: () => layoutRoute,
-    path: ROUTES.privacy.replace(/^\//, ""),
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <PrivacyPolicyPageLazy />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
-function buildTermsRoute(layoutRoute: any) {
-  return createRoute({
-    getParentRoute: () => layoutRoute,
-    path: ROUTES.terms.replace(/^\//, ""),
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <TermsOfServicePageLazy />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
-function buildSecurityRoute(layoutRoute: any) {
-  return createRoute({
-    getParentRoute: () => layoutRoute,
-    path: ROUTES.security.replace(/^\//, ""),
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <SecurityPageLazy />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
-function buildLoginRoute(parent: any) {
-  return createRoute({
-    getParentRoute: parent,
-    path: ROUTES.login,
-    component: () => (
-      <Suspense fallback={<Loading fullscreen />}>
-        <PageTransition>
-          <LoginPage />
-        </PageTransition>
-      </Suspense>
-    ),
-  });
-}
-
 export function buildMarketingRoutes(parent: () => typeof rootRoute) {
   const marketingLayoutRoute = createRoute({
     getParentRoute: parent,
@@ -179,15 +68,15 @@ export function buildMarketingRoutes(parent: () => typeof rootRoute) {
   });
 
   const marketingChildren = [
-    buildHomeRoute(marketingLayoutRoute),
-    buildFeaturesRoute(marketingLayoutRoute),
+    buildLazyPageRoute(marketingLayoutRoute, "/", HomePageLazy),
+    buildLazyPageRoute(marketingLayoutRoute, ROUTES.features, FeaturesPageLazy),
     buildPricingRoute(marketingLayoutRoute),
-    buildOtelRoute(marketingLayoutRoute),
-    buildSelfHostRoute(marketingLayoutRoute),
-    buildArchRoute(marketingLayoutRoute),
-    buildPrivacyRoute(marketingLayoutRoute),
-    buildTermsRoute(marketingLayoutRoute),
-    buildSecurityRoute(marketingLayoutRoute),
+    buildLazyPageRoute(marketingLayoutRoute, ROUTES.opentelemetry, OpenTelemetryPageLazy),
+    buildLazyPageRoute(marketingLayoutRoute, ROUTES.selfHost, SelfHostPageLazy),
+    buildLazyPageRoute(marketingLayoutRoute, ROUTES.architecture, ArchitecturePageLazy),
+    buildLazyPageRoute(marketingLayoutRoute, ROUTES.privacy, PrivacyPolicyPageLazy),
+    buildLazyPageRoute(marketingLayoutRoute, ROUTES.terms, TermsOfServicePageLazy),
+    buildLazyPageRoute(marketingLayoutRoute, ROUTES.security, SecurityPageLazy),
   ];
 
   const productRedirectRoute = createRoute({
@@ -201,6 +90,15 @@ export function buildMarketingRoutes(parent: () => typeof rootRoute) {
   return {
     marketingTree: marketingLayoutRoute.addChildren(marketingChildren),
     productRedirectRoute,
-    loginRoute: buildLoginRoute(parent),
+    loginRoute: createRoute({
+      getParentRoute: parent,
+      path: ROUTES.login.replace(/^\//, ""),
+      validateSearch: z.object({ redirect: z.string().optional() }),
+      component: () => (
+        <Suspense fallback={<Loading fullscreen />}>
+          <LoginPage />
+        </Suspense>
+      ),
+    }),
   };
 }

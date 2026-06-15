@@ -1,4 +1,5 @@
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from "@xyflow/react";
+import { formatMs, formatNumber } from "./format";
 
 import { Tooltip } from "@shared/components/primitives/ui";
 
@@ -12,18 +13,6 @@ export interface TopologyEdgeData {
   source: string;
   target: string;
   maxCallCount: number;
-}
-
-function formatNumber(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
-  return `${Math.round(n)}`;
-}
-
-function formatMs(n: number): string {
-  if (!Number.isFinite(n) || n <= 0) return "—";
-  if (n >= 1000) return `${(n / 1000).toFixed(2)}s`;
-  return `${n.toFixed(1)}ms`;
 }
 
 function formatPct(n: number): string {

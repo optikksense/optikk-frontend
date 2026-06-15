@@ -1,7 +1,4 @@
-import { useMemo } from "react";
-
 import type { FleetRedMetrics } from "@/features/overview/api/overviewHubApi";
-import { APP_COLORS } from "@config/colorLiterals";
 import StatCard from "@shared/components/ui/cards/StatCard";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
@@ -14,8 +11,7 @@ interface Props {
   readonly loading: boolean;
 }
 
-export default function OverviewHero({ summary, performance, loading }: Props) {
-
+export default function OverviewHero({ summary, loading }: Props) {
   const totalReq = num(summary?.total_span_count);
   const errPct = num(summary?.avg_error_pct);
   const errCount = num(summary?.total_errors);

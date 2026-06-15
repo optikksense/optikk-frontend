@@ -3,7 +3,7 @@ import { Info } from "lucide-react";
 
 import type { ComponentType, ReactNode } from "react";
 
-import type { ApiErrorShape } from "@shared/api/api/interceptors/errorInterceptor";
+import type { ApiErrorShape } from "@shared/api/utils/errorNormalization";
 import ChartErrorOverlay from "@shared/components/ui/feedback/ChartErrorOverlay";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 

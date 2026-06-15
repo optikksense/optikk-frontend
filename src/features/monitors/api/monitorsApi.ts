@@ -1,14 +1,8 @@
 import api from "@/shared/api/api/client";
 import { API_CONFIG } from "@config/apiConfig";
+import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
-
-function unwrap<T>(value: unknown): T {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) return value as T;
-  const record = value as Record<string, unknown>;
-  if ("data" in record && Object.keys(record).length <= 2) return record.data as T;
-  return value as T;
-}
 
 export type MonitorType = "metric" | "apm" | "log";
 export type MonitorPriority = "P1" | "P2" | "P3" | "P4";
@@ -143,12 +137,12 @@ export interface ListMonitorsParams {
 
 export async function listMonitors(params: ListMonitorsParams = {}): Promise<MonitorListResponse> {
   const raw = await api.get<unknown>(`${V1}/monitors`, { params });
-  return unwrap<MonitorListResponse>(raw);
+  return unwrapEnvelope<MonitorListResponse>(raw);
 }
 
 export async function getMonitor(id: number): Promise<Monitor> {
   const raw = await api.get<unknown>(`${V1}/monitors/${id}`);
-  return unwrap<Monitor>(raw);
+  return unwrapEnvelope<Monitor>(raw);
 }
 
 export interface CreateMonitorPayload {
@@ -168,12 +162,12 @@ export interface CreateMonitorPayload {
 
 export async function createMonitor(payload: CreateMonitorPayload): Promise<Monitor> {
   const raw = await api.post<unknown>(`${V1}/monitors`, payload);
-  return unwrap<Monitor>(raw);
+  return unwrapEnvelope<Monitor>(raw);
 }
 
 export async function updateMonitor(id: number, payload: CreateMonitorPayload): Promise<Monitor> {
   const raw = await api.put<unknown>(`${V1}/monitors/${id}`, payload);
-  return unwrap<Monitor>(raw);
+  return unwrapEnvelope<Monitor>(raw);
 }
 
 export async function deleteMonitor(id: number): Promise<void> {
@@ -199,7 +193,7 @@ export async function testMonitor(id: number): Promise<{
   threshold: number;
 }> {
   const raw = await api.post<unknown>(`${V1}/monitors/${id}/test`, {});
-  return unwrap(raw);
+  return unwrapEnvelope(raw);
 }
 
 export async function getMonitorSeries(
@@ -209,12 +203,12 @@ export async function getMonitorSeries(
   const raw = await api.get<unknown>(`${V1}/monitors/${id}/series`, {
     params: { window_ms: windowMs },
   });
-  return unwrap<MonitorSeriesResponse>(raw);
+  return unwrapEnvelope<MonitorSeriesResponse>(raw);
 }
 
 export async function getMonitorEvents(id: number, limit = 20): Promise<MonitorEvent[]> {
   const raw = await api.get<unknown>(`${V1}/monitors/${id}/events`, { params: { limit } });
-  return unwrap<MonitorEvent[]>(raw);
+  return unwrapEnvelope<MonitorEvent[]>(raw);
 }
 
 export async function getMonitorStatusTimeline(
@@ -224,12 +218,12 @@ export async function getMonitorStatusTimeline(
   const raw = await api.get<unknown>(`${V1}/monitors/${id}/status-timeline`, {
     params: { window_ms: windowMs },
   });
-  return unwrap<StatusTimelineResponse>(raw);
+  return unwrapEnvelope<StatusTimelineResponse>(raw);
 }
 
 export async function getMonitorsActivity(sinceMs?: number, limit = 20): Promise<MonitorEvent[]> {
   const params: Record<string, number> = { limit };
   if (sinceMs) params.since = sinceMs;
   const raw = await api.get<unknown>(`${V1}/monitors/activity`, { params });
-  return unwrap<MonitorEvent[]>(raw);
+  return unwrapEnvelope<MonitorEvent[]>(raw);
 }

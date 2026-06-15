@@ -10,15 +10,15 @@ import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
+import { session } from "@shared/api/auth/session";
+
 import { useAppStore, useSidebarCollapsed } from "@store/appStore";
-import { useAuthStore } from "@store/authStore";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const sidebarCollapsed = useSidebarCollapsed();
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
-  const logout = useAuthStore((state) => state.logout);
 
   const staticNavEntries = useMemo(
     () =>
@@ -55,7 +55,7 @@ export default function Sidebar() {
   const selectedKey = getSelectedKey();
 
   const handleLogout = async () => {
-    await logout();
+    await session.logout();
     toast.success("Logged out successfully");
     navigate(dynamicNavigateOptions(ROUTES.login));
   };

@@ -2,7 +2,8 @@ import { useMemo } from "react";
 
 import { CHART_COLORS } from "@config/constants";
 
-import UPlotChart, { uLine } from "../UPlotChart";
+import UPlotChart from "../UPlotChart";
+import { uLine } from "../uplotHelpers";
 
 interface SparklineChartProps {
   data?: number[];

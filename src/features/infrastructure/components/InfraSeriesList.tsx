@@ -1,4 +1,3 @@
-import { CHART_COLORS } from "@config/constants";
 import {
   formatBytes,
   formatDuration,
