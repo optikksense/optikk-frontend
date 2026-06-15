@@ -30,3 +30,5 @@ export function firstValue<T>(row: unknown, keys: string[], fallback: T): T {
   }
   return fallback;
 }
+
+

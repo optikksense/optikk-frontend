@@ -11,6 +11,7 @@ import { getFleetPods } from "../../api/hostsApi";
 import InfraPodsTable from "../../components/InfraPodsTable";
 import { getPodDetails } from "../../components/InfraPodsTable";
 import type { FleetPod } from "../../types";
+import { getPodDetails } from "../../components/InfraPodsTable";
 
 function KpiCard({
   label,
