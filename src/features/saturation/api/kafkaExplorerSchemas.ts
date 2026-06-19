@@ -29,12 +29,22 @@ export const topicConsumersSchema = z
   })
   .strict();
 
+export const topicBacklogSchema = z
+  .object({
+    topic: stringValue,
+    partition_count: numericValue,
+    backlog: numericValue,
+  })
+  .strict();
+
 // ----------------- GROUP DOMAINS -----------------
 
 export const groupPartitionsSchema = z
   .object({
     consumer_group: stringValue,
     assigned_partitions: numericValue,
+    topic_count: integerValue,
+    members: numericValue,
   })
   .strict();
 
@@ -108,11 +118,19 @@ export const kafkaPartitionRowSchema = z
   })
   .strict();
 
+export const clusterHealthSchema = z
+  .object({
+    broker_count: numericValue,
+    active_controllers: numericValue,
+    under_replicated_partitions: integerValue,
+  })
+  .strict();
+
 export const kafkaSummarySchema = z
   .object({
     topic_count: integerValue,
     group_count: integerValue,
-    bytes_per_sec: numericValue,
+    messages_per_sec: numericValue,
     assigned_partitions: numericValue,
   })
   .strict();
@@ -146,6 +164,7 @@ export const kafkaGroupTrendPointSchema = z
 export type TopicThroughputRow = z.infer<typeof topicThroughputSchema>;
 export type TopicLagRow = z.infer<typeof topicLagSchema>;
 export type TopicConsumersRow = z.infer<typeof topicConsumersSchema>;
+export type TopicBacklogRow = z.infer<typeof topicBacklogSchema>;
 
 export type GroupPartitionsRow = z.infer<typeof groupPartitionsSchema>;
 export type GroupCommitsRow = z.infer<typeof groupCommitsSchema>;
@@ -158,10 +177,11 @@ export type GroupTopicRow = z.infer<typeof groupTopicSchema>;
 
 export type KafkaPartitionRow = z.infer<typeof kafkaPartitionRowSchema>;
 export type KafkaSummary = z.infer<typeof kafkaSummarySchema>;
+export type ClusterHealthRow = z.infer<typeof clusterHealthSchema>;
 
 // ----------------- UI JOINED TYPES -----------------
 
-export type KafkaTopicRow = TopicThroughputRow & TopicLagRow & TopicConsumersRow;
+export type KafkaTopicRow = TopicThroughputRow & TopicLagRow & TopicConsumersRow & TopicBacklogRow;
 
 export type KafkaGroupRow = GroupPartitionsRow &
   GroupCommitsRow &

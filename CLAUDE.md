@@ -1,50 +1,81 @@
-# Optikk Frontend — Claude Developer Guide
+# CLAUDE.md
 
-## Core Commands
+Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
-### Development & Build
-- Run local dev server: `yarn dev`
-- Build production assets: `yarn build`
-- Run local preview: `yarn preview`
-- Deploy to Firebase Hosting: `yarn deploy:firebase`
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
-### Linting & Formatting
-- Lint check: `yarn lint`
-- Lint fix & autoformat: `yarn lint:fix`
-- File formatting: `yarn format`
+## 1. Think Before Coding
 
-### Code Verification & CI
-- TypeScript type-check: `yarn type-check`
-- Verify theme colors rule: `yarn check:colors`
-- Verify formatter duplication: `yarn check:dupes`
-- Run full CI pipeline checks: `yarn ci`
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+
+Before implementing:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+## 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it - don't delete it.
+
+When your changes create orphans:
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+
+## 5. Engineering Principles
+- No God files/functions/variables: each file/function should own a single responsibility 
+- DRY: Single authoritative representation for each piece of knowledge.
+- SRP: A class/package should have one reason to change.
+- OCP: Open for extension, closed for modification.
+- LSP: Subtypes must be substitutable for their base types.
+- ISP: Many small, focused interfaces over one general-purpose interface.
+- DIP: Depend on abstractions, not concretions.
+
+
+## 6. Code Comments
+- Comments should be of single line and not more 80 characters, concise explainable
+
+
 
 ---
 
-## Key Development Rules & Guidelines
-
-### 1. Code Quality & Formatting
-- **Linting**: Follow strict Biome guidelines. Run `yarn lint:fix` before committing.
-- **Formatters**: All display formatting (`formatNumber`, `formatDuration`, `formatRelativeTime`) MUST be imported from `@shared/utils/formatters` (enforced by `yarn check:dupes`). Never write local formatters.
-
-### 2. Styling & Theme Colors
-- **Light Theme First**: Default is light theme. CSS variables in [src/config/themeColors.css](src/config/themeColors.css) map to [tailwind.config.ts](tailwind.config.ts).
-- **Rule**: NEVER use raw colors or Tailwind named classes (e.g., `text-red-500`, `#ff0000`, `rgba(...)`) in `className` within component files (enforced by `yarn check:colors`). Use semantic utility classes (e.g., `text-error`, `bg-surface`) or `var(--token)`.
-
-### 3. API & Query Patterns
-- **API Naming**: GET endpoints use `get*` prefix (e.g., `getOverviewSummary`). `fetch*` is reserved ONLY for the browser's Fetch API.
-- **TanStack Query**: Use the shared custom hook `useStandardQuery` instead of raw `useQuery` for default behaviors.
-- **Loading State**: Check loading via `isPending && data === undefined`. Always set `placeholderData: keepPreviousData`.
-- **Query Keys**: Dashboard queries use stable keys (no `refreshKey`). Explorer queries include `refreshKey` in `queryKey`.
-
-### 4. Router & Navigation
-- **Router Casts**: Never use `as any` for router redirects or navigation casts. Use `dynamicNavigateOptions(to, search?)` and `dynamicTo(path)` from `@shared/utils/navigation`.
-
----
-
-## Directory Reference
-- Core App & Routing: `src/app/` (routes configured in `src/app/routes/router.tsx`)
-- Product Features: `src/features/` (domain definitions, pages, state)
-- Reusable Shared Layer: `src/shared/` (primitives, shared charts, API clients, helpers)
-
-For more detailed information, see [AGENTS.md](AGENTS.md) (rules & principles) and [CODEBASE_INDEX.md](CODEBASE_INDEX.md) (features & file structure).
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.

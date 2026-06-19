@@ -384,32 +384,28 @@ export interface ServiceLatencyBaseline {
   readonly p99: number;
 }
 
-const redLatencySummarySchema = z
-  .object({
-    services: z
-      .array(
-        z
-          .object({
-            service_name: z.string(),
-            p95_latency: z.coerce.number().default(0),
-            p99_latency: z.coerce.number().default(0),
-          })
-          .passthrough()
-      )
-      .default([]),
-  })
-  .passthrough();
+const redServicesSchema = z
+  .array(
+    z
+      .object({
+        service_name: z.string(),
+        p95_latency: z.coerce.number().default(0),
+        p99_latency: z.coerce.number().default(0),
+      })
+      .passthrough()
+  )
+  .default([]);
 
 export async function getServiceLatencyBaselines(
   startMs: number,
   endMs: number
 ): Promise<Map<string, ServiceLatencyBaseline>> {
-  const data = await api.get(`${BASE}/spans/red/summary`, {
+  const data = await api.get(`${BASE}/spans/red/services`, {
     params: { startTime: startMs, endTime: endMs },
   });
-  const parsed = redLatencySummarySchema.parse(data ?? {});
+  const parsed = redServicesSchema.parse(data ?? []);
   const out = new Map<string, ServiceLatencyBaseline>();
-  for (const s of parsed.services) {
+  for (const s of parsed) {
     out.set(s.service_name, { p95: s.p95_latency, p99: s.p99_latency });
   }
   return out;

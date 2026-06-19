@@ -1,7 +1,7 @@
 import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
 
 import type { KafkaTopicRow } from "@/features/saturation/api/kafkaExplorerSchemas";
-import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
+import { fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
 
 import { useKafkaTopicsTable } from "../hooks/useKafkaTopicsTable";
@@ -21,6 +21,14 @@ const COLUMNS: SimpleTableColumn<KafkaTopicRow>[] = [
     render: (_v, row) => (
       <span className="truncate font-mono text-[12px] text-foreground">{row.topic}</span>
     ),
+  },
+  {
+    title: "Partitions",
+    key: "partition_count",
+    width: 110,
+    align: "right",
+    sorter: (a, b) => (a.partition_count ?? 0) - (b.partition_count ?? 0),
+    render: (_v, row) => fmtNum(row.partition_count ?? 0),
   },
   {
     title: "Records / s",
@@ -45,7 +53,15 @@ const COLUMNS: SimpleTableColumn<KafkaTopicRow>[] = [
     width: 110,
     align: "right",
     sorter: (a, b) => a.lag - b.lag,
-    render: (_v, row) => <span className="font-mono">{fmtMs(row.lag)}</span>,
+    render: (_v, row) => <span className="font-mono">{fmtNum(row.lag)}</span>,
+  },
+  {
+    title: "Backlog",
+    key: "backlog",
+    width: 120,
+    align: "right",
+    sorter: (a, b) => (a.backlog ?? 0) - (b.backlog ?? 0),
+    render: (_v, row) => <span className="font-mono">{fmtNum(row.backlog ?? 0)}</span>,
   },
   {
     title: "Consumers",

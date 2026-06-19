@@ -2,8 +2,9 @@ import { memo, useMemo } from "react";
 
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+
 import { CompactTable } from "../CompactTable";
-import { DrawerSection } from "../DrawerSection";
 import type { Column, EndpointRow } from "../types";
 import { formatEndpointLabel, formatEndpointMeta } from "../utils";
 
@@ -69,26 +70,22 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
   );
 
   return (
-    <div id="service-drawer-endpoints" className="scroll-mt-24">
-      <DrawerSection
-        title="Top Endpoints"
-        subtitle="Most active endpoints for this service in the current window."
-      >
-        {isError ? (
-          <div className="text-[12px] text-foreground-muted">
-            Endpoint breakdown is unavailable.
-          </div>
-        ) : isLoading ? (
-          <div className="text-[12px] text-foreground-muted">Loading endpoints…</div>
-        ) : (
-          <CompactTable<EndpointRow & { id: string }>
-            rows={endpointRows}
-            emptyText="No endpoint activity for this service."
-            columns={columns}
-          />
-        )}
-      </DrawerSection>
-    </div>
+    <DrawerSection
+      title="Top Endpoints"
+      action={<span className="text-[11.5px] text-[var(--fg-3)]">by throughput</span>}
+    >
+      {isError ? (
+        <div className="text-[12px] text-foreground-muted">Endpoint breakdown is unavailable.</div>
+      ) : isLoading ? (
+        <div className="text-[12px] text-foreground-muted">Loading endpoints…</div>
+      ) : (
+        <CompactTable<EndpointRow & { id: string }>
+          rows={endpointRows}
+          emptyText="No endpoint activity for this service."
+          columns={columns}
+        />
+      )}
+    </DrawerSection>
   );
 }
 

@@ -3,15 +3,18 @@ import { z } from "zod";
 import type { RequestTime } from "@/shared/api/service-types";
 
 import {
+  clusterHealthSchema,
   groupCommitsSchema,
   groupFetchesSchema,
   groupHealthSchema,
   groupPartitionsSchema,
+  topicBacklogSchema,
   topicConsumersSchema,
   topicLagSchema,
   topicThroughputSchema,
 } from "./kafkaExplorerSchemas";
 import type {
+  ClusterHealthRow,
   GroupCommitsRow,
   GroupFetchesRow,
   GroupHealthRow,
@@ -19,6 +22,7 @@ import type {
   KafkaGroupRow,
   KafkaSummary,
   KafkaTopicRow,
+  TopicBacklogRow,
   TopicConsumersRow,
   TopicLagRow,
   TopicThroughputRow,
@@ -45,9 +49,11 @@ export async function getKafkaSummary(
   const topic_count = throughput.length;
   const group_count = partitions.length;
 
-  let bytes_per_sec = 0;
+  // No per-topic byte-rate metric is emitted (kafkametrics receiver), so traffic
+  // is reported as message throughput from records_per_sec.
+  let messages_per_sec = 0;
   for (const t of throughput) {
-    bytes_per_sec += t.bytes_per_sec ?? 0;
+    messages_per_sec += t.records_per_sec ?? 0;
   }
 
   let assigned_partitions = 0;
@@ -58,9 +64,20 @@ export async function getKafkaSummary(
   return {
     topic_count,
     group_count,
-    bytes_per_sec,
+    messages_per_sec,
     assigned_partitions,
   };
+}
+
+export function getKafkaClusterHealth(
+  startTime: RequestTime,
+  endTime: RequestTime
+): Promise<ClusterHealthRow> {
+  return getSaturation(
+    "/saturation/kafka/cluster/health",
+    clusterHealthSchema,
+    rangeParams(startTime, endTime)
+  );
 }
 
 // ----------------- TOPIC DOMAINS -----------------
@@ -97,6 +114,18 @@ export function getTopicConsumers(
   return getSaturation(
     "/saturation/kafka/topics/consumers",
     z.array(topicConsumersSchema),
+    topic ? topicParams(topic, startTime, endTime) : rangeParams(startTime, endTime)
+  );
+}
+
+export function getTopicBacklog(
+  startTime: RequestTime,
+  endTime: RequestTime,
+  topic?: string
+): Promise<TopicBacklogRow[]> {
+  return getSaturation(
+    "/saturation/kafka/topics/backlog",
+    z.array(topicBacklogSchema),
     topic ? topicParams(topic, startTime, endTime) : rangeParams(startTime, endTime)
   );
 }
@@ -155,10 +184,11 @@ export async function getKafkaTopics(
   startTime: RequestTime,
   endTime: RequestTime
 ): Promise<KafkaTopicRow[]> {
-  const [throughput, lag, consumers] = await Promise.all([
+  const [throughput, lag, consumers, backlog] = await Promise.all([
     getTopicThroughput(startTime, endTime),
     getTopicLag(startTime, endTime),
     getTopicConsumers(startTime, endTime),
+    getTopicBacklog(startTime, endTime),
   ]);
 
   const map = new Map<string, Partial<KafkaTopicRow>>();
@@ -171,6 +201,9 @@ export async function getKafkaTopics(
   }
   for (const c of consumers) {
     map.set(c.topic, { ...map.get(c.topic), ...c });
+  }
+  for (const b of backlog) {
+    map.set(b.topic, { ...map.get(b.topic), ...b });
   }
 
   return Array.from(map.values()) as KafkaTopicRow[];
@@ -202,8 +235,6 @@ export async function getKafkaGroups(
     map.set(h.consumer_group, { ...map.get(h.consumer_group), ...h });
   }
 
-  return Array.from(map.values()).map((row) => ({
-    ...row,
-    topic_count: 0, // Fallback since it's not trivially available in the split domains
-  })) as KafkaGroupRow[];
+  // topic_count is carried by the partitions row (distinct topics per group).
+  return Array.from(map.values()) as KafkaGroupRow[];
 }

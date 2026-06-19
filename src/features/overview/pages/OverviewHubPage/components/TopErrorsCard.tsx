@@ -3,19 +3,13 @@ import { ExternalLink } from "lucide-react";
 
 import { Skeleton, Surface } from "@/components/ui";
 import { ROUTES } from "@/shared/constants/routes";
-import { formatNumber, formatPercentage } from "@shared/utils/formatters";
+import { formatNumber } from "@shared/utils/formatters";
 
 import type { ErrorHotspotRow } from "../hooks/useOverviewModel";
 
 interface Props {
   readonly rows: readonly ErrorHotspotRow[];
   readonly loading: boolean;
-}
-
-function severityColor(rate: number): string {
-  if (rate >= 5) return "var(--err)";
-  if (rate >= 1) return "var(--warn)";
-  return "var(--text-secondary)";
 }
 
 function Row({ row, onOpen }: { readonly row: ErrorHotspotRow; readonly onOpen: () => void }) {
@@ -30,19 +24,14 @@ function Row({ row, onOpen }: { readonly row: ErrorHotspotRow; readonly onOpen: 
           {row.operationName}
         </div>
         <div className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[10.5px] text-foreground-muted">
-          {row.serviceName} · {formatNumber(row.totalCount)} req
+          {row.serviceName}
         </div>
       </div>
       <div className="flex flex-col items-end">
-        <span
-          className="font-mono font-semibold text-[12px] tabular-nums"
-          style={{ color: severityColor(row.errorRate) }}
-        >
+        <span className="font-mono font-semibold text-[12px] text-error tabular-nums">
           {formatNumber(row.errorCount)}
         </span>
-        <span className="font-mono text-[10.5px] text-foreground-muted tabular-nums">
-          {formatPercentage(row.errorRate)}
-        </span>
+        <span className="font-mono text-[10.5px] text-foreground-muted tabular-nums">errors</span>
       </div>
     </button>
   );

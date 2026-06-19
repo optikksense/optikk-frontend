@@ -2,8 +2,9 @@ import { memo } from "react";
 
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+
 import { CompactTable } from "../CompactTable";
-import { DrawerSection } from "../DrawerSection";
 import type { Column, DependencyRow } from "../types";
 
 const DEPENDENCY_COLUMNS: Column<DependencyRow>[] = [
@@ -40,39 +41,32 @@ function ServiceDrawerDependenciesSectionComponent({
   downstreamRows,
 }: Props) {
   return (
-    <div id="service-drawer-dependencies" className="scroll-mt-24">
-      <DrawerSection
-        title="Dependencies"
-        subtitle="Top upstream and downstream relationships for this service."
-      >
-        {isError ? (
-          <div className="text-[12px] text-foreground-muted">Dependency map is unavailable.</div>
-        ) : isLoading ? (
-          <div className="text-[12px] text-foreground-muted">Loading dependencies…</div>
-        ) : (
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div>
-              <div className="mb-2 font-medium text-[12px] text-foreground-secondary">Upstream</div>
-              <CompactTable
-                rows={upstreamRows}
-                emptyText="No upstream callers in range."
-                columns={DEPENDENCY_COLUMNS}
-              />
-            </div>
-            <div>
-              <div className="mb-2 font-medium text-[12px] text-foreground-secondary">
-                Downstream
-              </div>
-              <CompactTable
-                rows={downstreamRows}
-                emptyText="No downstream dependencies in range."
-                columns={DEPENDENCY_COLUMNS}
-              />
-            </div>
+    <DrawerSection title="Dependencies">
+      {isError ? (
+        <div className="text-[12px] text-foreground-muted">Dependency map is unavailable.</div>
+      ) : isLoading ? (
+        <div className="text-[12px] text-foreground-muted">Loading dependencies…</div>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div>
+            <div className="mb-2 font-medium text-[12px] text-foreground-secondary">Upstream</div>
+            <CompactTable
+              rows={upstreamRows}
+              emptyText="No upstream callers in range."
+              columns={DEPENDENCY_COLUMNS}
+            />
           </div>
-        )}
-      </DrawerSection>
-    </div>
+          <div>
+            <div className="mb-2 font-medium text-[12px] text-foreground-secondary">Downstream</div>
+            <CompactTable
+              rows={downstreamRows}
+              emptyText="No downstream dependencies in range."
+              columns={DEPENDENCY_COLUMNS}
+            />
+          </div>
+        </div>
+      )}
+    </DrawerSection>
   );
 }
 

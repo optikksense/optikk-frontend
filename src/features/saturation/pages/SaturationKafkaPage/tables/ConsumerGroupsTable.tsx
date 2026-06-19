@@ -32,6 +32,14 @@ const COLUMNS: SimpleTableColumn<KafkaGroupRow>[] = [
     render: (_v, row) => fmtNum(row.assigned_partitions),
   },
   {
+    title: "Members",
+    key: "members",
+    width: 100,
+    align: "right",
+    sorter: (a, b) => a.members - b.members,
+    render: (_v, row) => fmtNum(row.members),
+  },
+  {
     title: "Commits / s",
     key: "commit_rate",
     width: 130,
@@ -41,8 +49,8 @@ const COLUMNS: SimpleTableColumn<KafkaGroupRow>[] = [
     render: (_v, row) => <span className="font-mono">{fmtNum(row.commit_rate)}</span>,
   },
   {
-    title: "Commit p95",
-    key: "commit_latency_avg_ms",
+    title: "Commit max",
+    key: "commit_latency_max_ms",
     width: 120,
     align: "right",
     render: (_v, row) => <span className="font-mono">{fmtMs(row.commit_latency_max_ms)}</span>,

@@ -30,8 +30,6 @@ export interface ErrorHotspotRow {
   readonly serviceName: string;
   readonly operationName: string;
   readonly errorCount: number;
-  readonly totalCount: number;
-  readonly errorRate: number;
 }
 
 function statusFromRate(rate: number): ServiceHealthStatus {
@@ -82,16 +80,12 @@ export function useTopErrorsQuery(enabled: boolean): UseQueryResult<ErrorHotspot
       const rows = await overviewHubApi.getErrorHotspot(start, end);
       return rows.map((raw) => {
         const r = raw as Record<string, unknown>;
-        const errorCount = num(r.error_count);
-        const totalCount = num(r.total_count);
         return {
-          key: `${r.service_name}::${r.operation_name}`,
+          key: `${r.service_name}::${r.group_id}`,
           groupId: String(r.group_id ?? ""),
           serviceName: String(r.service_name ?? "unknown"),
           operationName: String(r.operation_name ?? "unknown"),
-          errorCount,
-          totalCount,
-          errorRate: totalCount > 0 ? (errorCount / totalCount) * 100 : num(r.error_rate),
+          errorCount: num(r.error_count),
         };
       });
     },
@@ -138,8 +132,8 @@ export function useRankedErrorRows(
   return useMemo(() => {
     if (!rows || rows.length === 0) return [];
     return [...rows]
-      .filter((r) => r.errorCount > 0 || r.errorRate > 0)
-      .sort((a, b) => b.errorCount - a.errorCount || b.errorRate - a.errorRate)
+      .filter((r) => r.errorCount > 0)
+      .sort((a, b) => b.errorCount - a.errorCount)
       .slice(0, limit);
   }, [rows, limit]);
 }

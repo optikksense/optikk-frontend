@@ -7,7 +7,6 @@ import type {
   KafkaSummary,
 } from "../../../api/saturationApi";
 
-import { formatBytesPerSecond } from "../formatUtils";
 import { type Tone, toneFromHealth } from "./saturationScore";
 
 export type SubsystemCardSpec = {
@@ -22,6 +21,12 @@ export type SubsystemCardSpec = {
   iconName: "kafka" | "db" | "cache";
 };
 
+const SUBSYSTEM_ROUTES: Record<SubsystemCardSpec["id"], string> = {
+  kafka: ROUTES.saturationKafkaOverview,
+  database: ROUTES.saturationDatabase,
+  redis: ROUTES.saturation,
+};
+
 function chipStatus(tone: Tone, count: number, what: string): string {
   if (tone === "ok") return "healthy";
   if (tone === "err") return `${count} ${what} hot`;
@@ -29,18 +34,18 @@ function chipStatus(tone: Tone, count: number, what: string): string {
 }
 
 export function buildKafkaCardSpec(summary: KafkaSummary | undefined): SubsystemCardSpec {
-  const bps = summary?.bytes_per_sec ?? 0;
+  const mps = summary?.messages_per_sec ?? 0;
   const topics = summary?.topic_count ?? 0;
   const groups = summary?.group_count ?? 0;
-  const hasData = summary !== undefined && (bps > 0 || topics > 0 || groups > 0);
+  const hasData = summary !== undefined && (mps > 0 || topics > 0 || groups > 0);
   return {
     id: "kafka",
     label: "Kafka",
-    href: ROUTES.saturationKafkaOverview,
+    href: SUBSYSTEM_ROUTES.kafka,
     sub: `${formatNumber(topics)} topics · ${formatNumber(groups)} groups`,
     tone: hasData ? "ok" : "neutral",
     statusText: hasData ? "streaming" : "no data",
-    primary: `${formatBytesPerSecond(bps)} traffic`,
+    primary: `${formatNumber(mps)} msg/s traffic`,
     secondary: `${formatNumber(summary?.assigned_partitions ?? 0)} partitions assigned`,
     iconName: "kafka",
   };
@@ -89,7 +94,7 @@ function categoryCardSpec(
   return {
     id,
     label,
-    href: ROUTES.saturation,
+    href: SUBSYSTEM_ROUTES[id],
     sub: `${formatNumber(rows.length)} systems · ${formatNumber(stats.conns)} conns`,
     tone,
     statusText: hasData ? chipStatus(tone, stats.slow, what) : "no data",

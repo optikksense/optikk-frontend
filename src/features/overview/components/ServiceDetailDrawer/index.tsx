@@ -1,14 +1,39 @@
-import { SidePanel } from "@shared/components/ui/layout";
+import { ExternalLink, ScrollText, Waypoints } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
-import { ServiceDrawerCockpitCard } from "./components/ServiceDrawerCockpitCard";
+import {
+  DrawerHeader,
+  DrawerIconButton,
+  DrawerKpi,
+  DrawerMiniSignal,
+  DrawerSection,
+  DrawerShell,
+  DrawerTabs,
+} from "@shared/components/ui/overlay/detail-drawer";
+import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
+
 import { ServiceDrawerDependenciesSection } from "./components/ServiceDrawerDependenciesSection";
 import { ServiceDrawerEndpointsSection } from "./components/ServiceDrawerEndpointsSection";
-import { ServiceDrawerHeader } from "./components/ServiceDrawerHeader";
-import { ServiceDrawerMetricBanners } from "./components/ServiceDrawerMetricBanners";
-import { ServiceDrawerStatGrid } from "./components/ServiceDrawerStatGrid";
-import { ServiceDrawerTrendCharts } from "./components/ServiceDrawerTrendCharts";
 import { useServiceDetailDrawerModel } from "./hooks/useServiceDetailDrawerModel";
 import type { ServiceDetailDrawerProps } from "./types";
+import { healthLabelForErrorRate, healthVariantForErrorRate, readNumber } from "./utils";
+
+type ServiceTab = "overview" | "endpoints" | "deps";
+
+const STATUS_COLOR = {
+  success: "var(--ok)",
+  warning: "var(--warn)",
+  error: "var(--err)",
+} as const;
+
+function initialsOf(name: string): string {
+  return name
+    .split(/[-_\s]/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
 export default function ServiceDetailDrawer({
   open,
@@ -18,71 +43,240 @@ export default function ServiceDetailDrawer({
   initialData,
 }: ServiceDetailDrawerProps) {
   const model = useServiceDetailDrawerModel(serviceName, title, initialData);
+  const [tab, setTab] = useState<ServiceTab>("overview");
+  useEffect(() => {
+    if (open) setTab("overview");
+  }, [open]);
+
+  const m = model.summaryMetrics;
+  const variant = healthVariantForErrorRate(m?.errorRate);
+  const statusColor = STATUS_COLOR[variant];
+
+  const requestSpark = useMemo(
+    () => model.requestTrendSeries.map((p) => p.request_count),
+    [model.requestTrendSeries]
+  );
+  const errorSpark = useMemo(
+    () => model.errorTrendSeries.map((p) => p.error_rate),
+    [model.errorTrendSeries]
+  );
+  const latencySpark = useMemo(
+    () => model.latencyTrendSeries.map((p) => p.p99_ms),
+    [model.latencyTrendSeries]
+  );
+
+  const metaBits = useMemo(() => {
+    const out: string[] = [];
+    const version = typeof initialData?.version === "string" ? initialData.version : null;
+    const environment =
+      typeof initialData?.environment === "string" && initialData.environment !== "—"
+        ? initialData.environment
+        : null;
+    const lang = typeof initialData?.lang === "string" ? initialData.lang : null;
+    const instances = readNumber(initialData?.instances);
+    if (version) out.push(version);
+    if (environment) out.push(environment);
+    if (lang) out.push(lang);
+    if (instances != null) out.push(`${instances} inst`);
+    return out;
+  }, [initialData]);
+
+  const depsCount = model.upstreamRows.length + model.downstreamRows.length;
+
+  const footer = (
+    <>
+      <button
+        type="button"
+        onClick={model.openLogs}
+        className="inline-flex h-[30px] cursor-pointer items-center gap-1.5 rounded-md border border-[var(--line)] bg-[var(--bg-card)] px-2.5 text-[12px] text-[var(--fg-1)] hover:bg-[var(--bg-inset)] hover:text-[var(--fg-0)]"
+      >
+        <ScrollText size={13} /> Logs
+      </button>
+      <button
+        type="button"
+        onClick={model.openTraces}
+        className="inline-flex h-[30px] cursor-pointer items-center gap-1.5 rounded-md border border-[var(--line)] bg-[var(--bg-card)] px-2.5 text-[12px] text-[var(--fg-1)] hover:bg-[var(--bg-inset)] hover:text-[var(--fg-0)]"
+      >
+        <Waypoints size={13} /> Traces
+      </button>
+      <span className="flex-1" />
+      <button
+        type="button"
+        onClick={model.openFullView}
+        className="inline-flex h-[30px] cursor-pointer items-center gap-1.5 rounded-md border-0 bg-[var(--accent)] px-3 text-[12px] text-[var(--accent-fg,oklch(0.99_0.005_270))] hover:bg-[var(--accent-2)]"
+      >
+        Open service <ExternalLink size={13} />
+      </button>
+    </>
+  );
 
   return (
-    <SidePanel
+    <DrawerShell
       open={open}
       onClose={onClose}
-      mode="modal"
-      className="top-[var(--space-header-h,56px)] right-0 bottom-0 left-auto z-[1100] h-auto select-text overflow-y-auto border-border border-l"
-      style={{
-        userSelect: "text",
-        WebkitUserSelect: "text",
-      }}
-      width="min(980px, calc(100vw - 24px))"
+      width="min(620px, calc(100vw - 24px))"
+      footer={footer}
     >
-      <ServiceDrawerHeader
-        serviceLabel={model.serviceLabel}
-        summaryMetrics={model.summaryMetrics}
-        onOpenTraces={model.openTraces}
-        onOpenLogs={model.openLogs}
-        onOpenFullView={model.openFullView}
+      <DrawerHeader
+        onClose={onClose}
+        actions={
+          <DrawerIconButton
+            icon={<ExternalLink size={14} />}
+            title="Open full page"
+            onClick={model.openFullView}
+          />
+        }
+      >
+        <div className="flex items-start gap-3">
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[11px] font-semibold text-[16px] text-[var(--accent-fg,oklch(0.99_0.005_270))]"
+            style={{ background: "linear-gradient(135deg, var(--accent-violet), var(--accent))" }}
+          >
+            {initialsOf(model.serviceLabel)}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="truncate font-bold text-[17px] text-[var(--fg-0)]">
+                {model.serviceLabel}
+              </span>
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-semibold text-[11px]"
+                style={{
+                  color: statusColor,
+                  background: "var(--bg-inset)",
+                  border: `1px solid ${statusColor}`,
+                }}
+              >
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: statusColor }} />
+                {healthLabelForErrorRate(m?.errorRate)}
+              </span>
+            </div>
+            {metaBits.length > 0 && (
+              <div className="mt-1 font-mono text-[12px] text-[var(--fg-3)]">
+                {metaBits.join(" · ")}
+              </div>
+            )}
+          </div>
+        </div>
+      </DrawerHeader>
+
+      <DrawerTabs
+        tabs={[
+          { id: "overview", label: "Overview" },
+          { id: "endpoints", label: "Endpoints", badge: model.endpointRows.length || null },
+          { id: "deps", label: "Dependencies", badge: depsCount || null },
+        ]}
+        active={tab}
+        onChange={(id) => setTab(id as ServiceTab)}
       />
 
-      <div className="flex flex-col gap-4 px-6 py-4">
-        <ServiceDrawerCockpitCard
-          serviceLabel={model.serviceLabel}
-          summaryMetrics={model.summaryMetrics}
-        />
+      <div className="min-h-0 flex-1 overflow-y-auto px-[18px] py-4">
+        {tab === "overview" && (
+          <>
+            <div className="mb-5 grid grid-cols-3 gap-2.5">
+              <DrawerKpi
+                label="Requests"
+                value={formatNumber(m?.requestCount ?? 0)}
+                spark={requestSpark}
+                sparkTone="info"
+              />
+              <DrawerKpi
+                label="Error rate"
+                value={formatPercentage(m?.errorRate ?? 0)}
+                spark={errorSpark}
+                sparkTone={variant === "error" ? "err" : "warn"}
+              />
+              <DrawerKpi
+                label="Latency p99"
+                value={formatDuration(m?.p99Latency ?? 0)}
+                spark={latencySpark}
+                sparkTone="err"
+              />
+            </div>
 
-        <ServiceDrawerStatGrid
-          summaryMetrics={model.summaryMetrics}
-          summaryLoading={model.summaryLoading}
-        />
+            <DrawerSection
+              title="Golden signals"
+              action={<span className="text-[11.5px] text-[var(--fg-3)]">active range</span>}
+            >
+              <div className="grid grid-cols-2 gap-4 px-0.5 pt-0.5">
+                <DrawerMiniSignal
+                  label="Request rate"
+                  legend={formatNumber(m?.requestCount ?? 0)}
+                  values={requestSpark}
+                  tone="info"
+                />
+                <DrawerMiniSignal
+                  label="Error rate"
+                  legend={formatPercentage(m?.errorRate ?? 0)}
+                  values={errorSpark}
+                  tone={variant === "error" ? "err" : "warn"}
+                />
+                <DrawerMiniSignal
+                  label="Latency p99"
+                  legend={formatDuration(m?.p99Latency ?? 0)}
+                  values={latencySpark}
+                  tone="err"
+                />
+                <DrawerMiniSignal
+                  label="Latency p95"
+                  legend={formatDuration(m?.p95Latency ?? 0)}
+                  values={model.latencyTrendSeries.map((p) => p.p95_ms)}
+                  tone="warn"
+                />
+              </div>
+            </DrawerSection>
 
-        <ServiceDrawerMetricBanners
-          metricsError={model.metricsQuery.isError}
-          hasSummary={model.hasSummary}
-          summaryLoading={model.summaryLoading}
-        />
+            <DrawerSection title="Health">
+              {variant === "success" ? (
+                <div className="flex items-center gap-2.5 rounded-lg border border-[var(--line-2)] bg-[var(--ok-soft)] px-3 py-3 text-[13px] text-[var(--fg-0)]">
+                  <span className="h-2 w-2 rounded-full" style={{ background: "var(--ok)" }} />
+                  No active alerts · error rate within budget
+                </div>
+              ) : (
+                <div
+                  className="rounded-lg border px-3 py-3"
+                  style={{
+                    background: variant === "error" ? "var(--err-soft)" : "var(--warn-soft)",
+                    borderColor: variant === "error" ? "var(--err)" : "var(--warn)",
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className="font-semibold text-[13px]"
+                      style={{ color: variant === "error" ? "var(--err-fg)" : "var(--warn-fg)" }}
+                    >
+                      {healthLabelForErrorRate(m?.errorRate)} · error budget at risk
+                    </span>
+                    <span className="font-mono text-[12px] text-[var(--fg-2)]">
+                      {formatPercentage(m?.errorRate ?? 0)}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-[12px] text-[var(--fg-3)]">
+                    Error rate is above the healthy threshold for this service.
+                  </div>
+                </div>
+              )}
+            </DrawerSection>
+          </>
+        )}
 
-        <ServiceDrawerTrendCharts
-          summaryMetrics={model.summaryMetrics}
-          requestTrendSeries={model.requestTrendSeries}
-          errorTrendSeries={model.errorTrendSeries}
-          latencyTrendSeries={model.latencyTrendSeries}
-          requestTrendLoading={model.requestTrendLoading}
-          errorTrendLoading={model.errorTrendLoading}
-          latencyTrendLoading={model.latencyTrendLoading}
-          requestTrendError={model.requestTrendQuery.isError}
-          errorTrendError={model.errorTrendQuery.isError}
-          latencyTrendError={model.latencyTrendQuery.isError}
-        />
-
-        <div className="grid gap-4 xl:grid-cols-2">
+        {tab === "endpoints" && (
           <ServiceDrawerEndpointsSection
             isError={model.endpointsQuery.isError}
             isLoading={model.endpointsLoading}
             endpointRows={model.endpointRows}
           />
+        )}
+
+        {tab === "deps" && (
           <ServiceDrawerDependenciesSection
             isError={model.dependenciesQuery.isError}
             isLoading={model.dependenciesLoading}
             upstreamRows={model.upstreamRows}
             downstreamRows={model.downstreamRows}
           />
-        </div>
+        )}
       </div>
-    </SidePanel>
+    </DrawerShell>
   );
 }

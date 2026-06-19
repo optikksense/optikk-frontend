@@ -1,12 +1,9 @@
-import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
-import { ROUTES } from "@/shared/constants/routes";
+import ServiceDetailDrawer from "@/features/overview/components/ServiceDetailDrawer";
 
-import { CatalogQuickLook } from "../catalog/CatalogQuickLook";
 import { CatalogTable } from "../catalog/CatalogTable";
 import { SearchToolbar } from "../catalog/SearchToolbar";
 import type { StatusFilter } from "../catalog/StatusFilterPill";
@@ -45,7 +42,6 @@ function EmptyState({ isPending }: { isPending: boolean }) {
 
 export function CatalogTab() {
   const { rows, isPending } = useCatalogList();
-  const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const status = normalizeStatusFilter(params.get("status"));
   const setStatus = (next: StatusFilter) => {
@@ -64,35 +60,27 @@ export function CatalogTab() {
     [rows, selectedName]
   );
 
-  const openService = (serviceName: string) => {
-    const detail = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(serviceName));
-    navigate(dynamicNavigateOptions(detail));
-  };
-
   return (
     <div className="flex flex-col gap-[22px]">
-      <div className="flex gap-[22px]">
-        <div className="flex min-w-0 flex-1 flex-col gap-[14px] rounded-lg border border-border bg-card p-[22px_24px] shadow-[var(--shadow-md)]">
-          <SearchToolbar
-            value={search}
-            onChange={setSearch}
-            status={status}
-            onStatusChange={setStatus}
-          />
-          {filtered.length === 0 ? (
-            <EmptyState isPending={isPending} />
-          ) : (
-            <CatalogTable rows={filtered} onRowClick={setSelectedName} />
-          )}
-        </div>
-        {selected && (
-          <CatalogQuickLook
-            row={selected}
-            onClose={() => setSelectedName(null)}
-            onOpenService={openService}
-          />
+      <div className="flex min-w-0 flex-1 flex-col gap-[14px] rounded-lg border border-border bg-card p-[22px_24px] shadow-[var(--shadow-md)]">
+        <SearchToolbar
+          value={search}
+          onChange={setSearch}
+          status={status}
+          onStatusChange={setStatus}
+        />
+        {filtered.length === 0 ? (
+          <EmptyState isPending={isPending} />
+        ) : (
+          <CatalogTable rows={filtered} onRowClick={setSelectedName} />
         )}
       </div>
+      <ServiceDetailDrawer
+        open={Boolean(selectedName)}
+        serviceName={selectedName ?? ""}
+        initialData={selected as unknown as Record<string, unknown> | null}
+        onClose={() => setSelectedName(null)}
+      />
     </div>
   );
 }

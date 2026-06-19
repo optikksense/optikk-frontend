@@ -14,11 +14,15 @@ export interface FleetRedMetrics {
   services?: any[];
 }
 
-export function getFleetRedMetrics(
+export async function getFleetRedMetrics(
   startTime: RequestTime,
   endTime: RequestTime
 ): Promise<FleetRedMetrics> {
-  return getJson("/spans/red/summary", startTime, endTime);
+  const [totals, services] = await Promise.all([
+    getJson<FleetRedMetrics>("/spans/red/fleet-totals", startTime, endTime),
+    getJson<unknown[]>("/spans/red/services", startTime, endTime),
+  ]);
+  return { ...totals, services };
 }
 
 export function getPerformanceSeries(

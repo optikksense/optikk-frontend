@@ -3,7 +3,6 @@ import { useCallback, useMemo, useRef } from "react";
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
 import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
-import { cn } from "@/lib/utils";
 
 import { resolveTimeRangeBounds } from "@/types";
 
@@ -13,7 +12,7 @@ import { useLogsExplorerStore } from "../../store/logsExplorerStore";
 import type { LogRecord } from "../../types/log";
 import { SEVERITY_STYLES } from "../../utils/severity";
 
-import { LogDetailPanel } from "../../components/detail/LogDetailPanel";
+import { LogDetailDrawer } from "../../components/detail/LogDetailDrawer";
 import { LogsFacetPanel } from "../../components/facets/LogsFacetPanel";
 
 import { LogsTable } from "../../components/table/LogsTable";
@@ -115,12 +114,7 @@ export default function LogsExplorerPage() {
           valueSuggestions={valueSuggestions}
         />
 
-        <div
-          className={cn(
-            "grid min-h-0 flex-1 gap-[14px]",
-            detailOpen ? "grid-cols-[240px_1fr_380px]" : "grid-cols-[240px_1fr]"
-          )}
-        >
+        <div className="grid min-h-0 flex-1 grid-cols-[240px_1fr] gap-[14px]">
           <LogsFacetPanel
             facets={facets.data}
             onInclude={onInclude}
@@ -162,16 +156,15 @@ export default function LogsExplorerPage() {
               ) : null}
             </div>
           </div>
-
-          {detailOpen && state.detail ? (
-            <LogDetailPanel
-              logId={state.detail}
-              onClose={() => state.setDetail(null)}
-              onPrev={onDetailPrev}
-              onNext={onDetailNext}
-            />
-          ) : null}
         </div>
+
+        <LogDetailDrawer
+          logId={state.detail ?? ""}
+          open={detailOpen}
+          onClose={() => state.setDetail(null)}
+          onPrev={onDetailPrev}
+          onNext={onDetailNext}
+        />
       </div>
     </div>
   );

@@ -1,25 +1,30 @@
-import { AlertCircle, ChevronRight, ExternalLink } from "lucide-react";
+import { AlertCircle, ChevronRight } from "lucide-react";
 import { memo, useMemo } from "react";
 
 import { Skeleton } from "@/components/ui";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import type { TraceRecord } from "@shared/entities/trace/model";
 import { formatDuration } from "@shared/utils/formatters";
 
-import type { TraceRecord } from "@shared/entities/trace/model";
+import type { RelatedTrace, SpanAttributes, SpanEvent, SpanLink } from "../../../../types";
 
-import type { SpanAttributes } from "../../../../types";
-
+import { AttributesTable } from "./AttributesTable";
 import { DatabaseBlock } from "./DatabaseBlock";
 import { SelfChildBar } from "./SelfChildBar";
+import { SpanEventsSection } from "./SpanEventsSection";
+import { SpanRelatedSection } from "./SpanRelatedSection";
 
 interface Props {
   readonly spanAttributes: SpanAttributes | null;
   readonly loading: boolean;
   readonly spans: readonly TraceRecord[];
   readonly selectedSpanId: string | null;
+  readonly spanEvents: readonly SpanEvent[];
+  readonly relatedTraces: readonly RelatedTrace[];
   readonly traceStartMs?: number;
   readonly traceEndMs?: number;
   readonly onSpanClick?: (span: { span_id: string }) => void;
-  readonly onOpenInLogs?: () => void;
+  readonly onAddFilter?: (key: string, value: string) => void;
 }
 
 const PALETTE_HUES = [222, 32, 268, 174, 112, 8, 296, 56, 198, 332];
@@ -101,32 +106,24 @@ function computeTiming(
   return { selectedSpan: span, ancestors, startMs, endMs, durMs, selfMs, pctOfTrace };
 }
 
-const pane = "p-4 flex flex-col gap-4";
-const sect = "flex flex-col gap-2";
-const sectH = "flex items-center justify-between gap-2";
-const sectT = "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
-const kvK = "text-[11px] text-foreground-caption";
-const kvV = "text-[12px] text-foreground font-mono break-words";
-const ancSvc = "text-foreground-muted";
-const ancOp = "text-foreground font-mono text-[11px]";
-const sdKind =
-  "font-mono text-[10.5px] text-foreground-caption px-1.5 py-px bg-muted rounded-[4px]";
+const kvK = "text-[11px] text-[var(--fg-3)]";
+const kvV = "text-[12px] text-[var(--fg-0)] font-mono break-words";
 const ancLink =
-  "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-muted border border-border text-[11.5px] text-foreground-secondary cursor-pointer hover:bg-accent";
+  "inline-flex items-center gap-[5px] rounded-[4px] border border-[var(--line-2)] bg-[var(--bg-card)] px-[7px] py-[3px] text-[11.5px] text-[var(--fg-2)] cursor-pointer hover:bg-[var(--bg-inset)]";
 const ancHere =
-  "inline-flex items-center gap-[5px] px-[7px] py-[3px] rounded-[4px] bg-[var(--color-primary-subtle-15)] text-foreground text-[11.5px] border border-primary";
-const linkBtn =
-  "inline-flex items-center gap-1 text-[11.5px] text-primary hover:underline bg-transparent border-0 cursor-pointer p-0";
+  "inline-flex items-center gap-[5px] rounded-[4px] border border-[var(--accent)] bg-[var(--accent-bg)] px-[7px] py-[3px] text-[11.5px] text-[var(--fg-0)]";
 
-function OverviewTabComponent({
+function SpanInfoTabComponent({
   spanAttributes,
   loading,
   spans,
   selectedSpanId,
+  spanEvents,
+  relatedTraces,
   traceStartMs,
   traceEndMs,
   onSpanClick,
-  onOpenInLogs,
+  onAddFilter,
 }: Props) {
   const timing = useMemo(
     () => computeTiming(spans, selectedSpanId, traceStartMs, traceEndMs),
@@ -135,7 +132,7 @@ function OverviewTabComponent({
 
   if (loading && !spanAttributes) {
     return (
-      <div className={pane}>
+      <div className="flex flex-col gap-4">
         <Skeleton count={6} />
       </div>
     );
@@ -156,45 +153,39 @@ function OverviewTabComponent({
   const endOffsetMs = span && traceStartMs != null ? Math.max(0, timing.endMs - traceStartMs) : 0;
   const selfPct = timing.durMs > 0 ? (timing.selfMs / timing.durMs) * 100 : 0;
 
+  const links: readonly SpanLink[] = spanAttributes?.links ?? [];
+  const scopedEvents = selectedSpanId ? spanEvents.filter((e) => e.spanId === selectedSpanId) : [];
+
   return (
-    <div className={pane}>
+    <>
       {hasException && (
-        <div className="flex flex-col gap-1.5 rounded-[10px] border border-error-subtle bg-error-subtle p-3">
-          <div className="flex items-center gap-1.5 font-semibold text-[12.5px] text-error">
+        <div
+          className="mb-5 flex flex-col gap-1.5 rounded-[10px] border p-3"
+          style={{ background: "var(--err-soft)", borderColor: "var(--err)" }}
+        >
+          <div className="flex items-center gap-1.5 font-semibold text-[12.5px] text-[var(--err-fg)]">
             <AlertCircle size={13} /> Span errored
             {spanAttributes?.exceptionType && (
-              <span className={`${sdKind} ml-1`}>{spanAttributes.exceptionType}</span>
+              <span className="ml-1 rounded-[4px] bg-[var(--bg-inset)] px-1.5 py-px font-mono text-[10.5px] text-[var(--fg-3)]">
+                {spanAttributes.exceptionType}
+              </span>
             )}
           </div>
           {spanAttributes?.exceptionMessage && (
-            <div className="text-[12.5px] text-foreground-secondary leading-[1.5]">
+            <div className="text-[12.5px] text-[var(--fg-2)] leading-[1.5]">
               {spanAttributes.exceptionMessage}
             </div>
           )}
           {spanAttributes?.exceptionStacktrace && (
-            <pre className="m-0 mt-1 max-h-[200px] overflow-auto whitespace-pre rounded-md border border-border bg-secondary p-3 font-mono text-[11px] text-foreground-secondary">
+            <pre className="m-0 mt-1 max-h-[200px] overflow-auto whitespace-pre rounded-md border border-[var(--line-2)] bg-[var(--bg-inset)] p-3 font-mono text-[11px] text-[var(--fg-2)]">
               {spanAttributes.exceptionStacktrace}
             </pre>
-          )}
-          {onOpenInLogs && (
-            <button type="button" className={linkBtn} onClick={onOpenInLogs}>
-              <ExternalLink size={12} /> View span logs
-            </button>
           )}
         </div>
       )}
 
-      {!hasException && onOpenInLogs && (
-        <button type="button" className={linkBtn} onClick={onOpenInLogs}>
-          <ExternalLink size={12} /> View span logs
-        </button>
-      )}
-
       {span && (
-        <div className={sect}>
-          <div className={sectH}>
-            <div className={sectT}>Where this happens</div>
-          </div>
+        <DrawerSection title="Where this happens">
           <div className="flex flex-wrap items-center gap-1">
             {timing.ancestors.map((a) => (
               <span key={a.span_id} className="inline-flex items-center">
@@ -205,34 +196,35 @@ function OverviewTabComponent({
                   title={`${a.service_name} · ${a.operation_name}`}
                 >
                   <span
-                    className="inline-block h-[7px] w-[7px] flex-none shrink-0 grow-0 basis-[7px] rounded-full"
+                    className="h-[7px] w-[7px] shrink-0 rounded-full"
                     style={{ background: `oklch(0.62 0.14 ${svcHue(a.service_name || "")})` }}
                   />
-                  <span className={ancSvc}>{a.service_name || "—"}</span>
-                  <span className={ancOp}>{a.operation_name || "(no name)"}</span>
+                  <span className="text-[var(--fg-3)]">{a.service_name || "—"}</span>
+                  <span className="font-mono text-[11px] text-[var(--fg-0)]">
+                    {a.operation_name || "(no name)"}
+                  </span>
                 </button>
-                <span className="inline-flex text-foreground-caption">
+                <span className="inline-flex text-[var(--fg-3)]">
                   <ChevronRight size={11} />
                 </span>
               </span>
             ))}
             <span className={ancHere}>
               <span
-                className="inline-block h-[7px] w-[7px] flex-none shrink-0 grow-0 basis-[7px] rounded-full"
+                className="h-[7px] w-[7px] shrink-0 rounded-full"
                 style={{ background: `oklch(0.62 0.14 ${svcHue(span.service_name || "")})` }}
               />
-              <span className={ancSvc}>{span.service_name || "—"}</span>
-              <span className={ancOp}>{span.operation_name || "(no name)"}</span>
+              <span className="text-[var(--fg-3)]">{span.service_name || "—"}</span>
+              <span className="font-mono text-[11px] text-[var(--fg-0)]">
+                {span.operation_name || "(no name)"}
+              </span>
             </span>
           </div>
-        </div>
+        </DrawerSection>
       )}
 
       {span && timing.durMs > 0 && (
-        <div className={sect}>
-          <div className={sectH}>
-            <div className={sectT}>Timing</div>
-          </div>
+        <DrawerSection title="Timing">
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
             <div>
               <div className={kvK}>Started</div>
@@ -265,26 +257,47 @@ function OverviewTabComponent({
               </div>
             )}
           </div>
-          <SelfChildBar
-            selfMs={timing.selfMs}
-            childMs={Math.max(0, timing.durMs - timing.selfMs)}
-          />
-        </div>
+          <div className="mt-2">
+            <SelfChildBar
+              selfMs={timing.selfMs}
+              childMs={Math.max(0, timing.durMs - timing.selfMs)}
+            />
+          </div>
+        </DrawerSection>
       )}
 
       {hasDb && (
-        <div className={sect}>
-          <div className={sectT}>Database</div>
+        <DrawerSection title="Database">
           <DatabaseBlock
             dbSystem={spanAttributes?.dbSystem}
             dbName={spanAttributes?.dbName}
             dbStatement={spanAttributes?.dbStatement}
             dbStatementNormalized={spanAttributes?.dbStatementNormalized}
           />
-        </div>
+        </DrawerSection>
       )}
-    </div>
+
+      <DrawerSection title="Attributes">
+        <AttributesTable
+          spanAttributes={spanAttributes?.attributesString ?? {}}
+          resourceAttributes={spanAttributes?.resourceAttributes ?? {}}
+          onAddFilter={onAddFilter}
+        />
+      </DrawerSection>
+
+      {selectedSpanId && scopedEvents.length > 0 && (
+        <DrawerSection title={`Events · ${scopedEvents.length}`}>
+          <SpanEventsSection events={spanEvents} selectedSpanId={selectedSpanId} />
+        </DrawerSection>
+      )}
+
+      {(links.length > 0 || relatedTraces.length > 0) && (
+        <DrawerSection title="Related">
+          <SpanRelatedSection links={links} relatedTraces={relatedTraces} />
+        </DrawerSection>
+      )}
+    </>
   );
 }
 
-export const OverviewTab = memo(OverviewTabComponent);
+export const SpanInfoTab = memo(SpanInfoTabComponent);

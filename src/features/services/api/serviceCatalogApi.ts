@@ -71,13 +71,12 @@ export async function getRedSummaryWithComparison(
   s: RequestTime,
   e: RequestTime
 ): Promise<RedSummaryWithComparison> {
-  const raw = await api.get<unknown>(`${V1}/spans/red/summary`, {
-    params: { startTime: s, endTime: e, compareTo: "previous_period" },
-  });
-  if (typeof raw === "object" && raw !== null && "data" in (raw as Record<string, unknown>)) {
-    return raw as RedSummaryWithComparison;
-  }
-  return { data: raw as ServiceCatalogRedSummary };
+  const params = { startTime: s, endTime: e };
+  const [totals, services] = await Promise.all([
+    api.get<Omit<ServiceCatalogRedSummary, "services">>(`${V1}/spans/red/fleet-totals`, { params }),
+    api.get<RedServiceRow[]>(`${V1}/spans/red/services`, { params }),
+  ]);
+  return { data: { ...totals, services } };
 }
 
 export interface RequestRatePoint {

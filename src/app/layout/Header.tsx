@@ -150,11 +150,7 @@ export default function Header() {
               )}
               onClick={handleRefresh}
             >
-              <RefreshCw
-                size={14}
-                className={cn(autoRefreshInterval && "animate-spin")}
-                style={autoRefreshInterval ? { animationDuration: "2s" } : undefined}
-              />
+              <RefreshCw size={14} />
             </button>
           </Tooltip>
 

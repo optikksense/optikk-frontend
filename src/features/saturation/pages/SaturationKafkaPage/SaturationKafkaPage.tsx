@@ -3,7 +3,7 @@ import { PageShell } from "@shared/components/ui";
 import { SaturationSubnav } from "@/features/saturation/components/SaturationSubnav";
 
 import { ThroughputChart } from "./charts/ThroughputChart";
-import { BrokerCpuGrid } from "./components/BrokerCpuGrid";
+import { KafkaClusterHealth } from "./components/KafkaClusterHealth";
 import { KafkaPageHeader } from "./header/KafkaPageHeader";
 import { useKafkaConsumerLagSeries } from "./hooks/useKafkaConsumerLagSeries";
 import { useKafkaSummary } from "./hooks/useKafkaSummary";
@@ -35,7 +35,7 @@ export default function SaturationKafkaPage() {
         <KafkaKpiStrip summary={summaryQ.data} />
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
           <div className="flex flex-col gap-4">
-            <BrokerCpuGrid />
+            <KafkaClusterHealth />
             <ThroughputChart />
           </div>
           <ConsumerGroupsTable />

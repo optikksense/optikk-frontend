@@ -1,11 +1,6 @@
 import { useEffect } from "react";
 
-import {
-  DRAWER_WIDTH_MAX,
-  DRAWER_WIDTH_MIN,
-  type VisualizationTab,
-  useTracesStore,
-} from "../../../store/tracesStore";
+import type { VisualizationTab } from "../../../store/tracesStore";
 
 interface SpanLite {
   readonly span_id: string;
@@ -29,8 +24,7 @@ interface Args {
  * - `1` / `2`       switch viz: Waterfall / Service map
  * - `↑` / `↓`       previous / next span (in span order)
  * - `j` / `k`       next / previous span (vim-style aliases)
- * - `[` / `]`       shrink / grow drawer width by 40px
- * - `Escape`        close span drawer (also handled inside SpanDrawer for redundancy)
+ * - `Escape`        close span drawer (also handled inside the drawer for redundancy)
  *
  * All shortcuts are skipped when focus is inside an INPUT/TEXTAREA/contenteditable.
  */
@@ -43,9 +37,6 @@ export function useTraceDetailHotkeys({
   onCloseSpan,
   onSetViz,
 }: Args) {
-  const drawerWidth = useTracesStore((s) => s.drawerWidthPx);
-  const setDrawerWidth = useTracesStore((s) => s.setDrawerWidthPx);
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (isTypingTarget(e.target)) return;
@@ -68,12 +59,6 @@ export function useTraceDetailHotkeys({
         case "ArrowUp":
         case "k":
           return moveSpan(e, spans, selectedSpanId, -1, onSelectSpan);
-        case "[":
-          e.preventDefault();
-          return setDrawerWidth(Math.max(DRAWER_WIDTH_MIN, drawerWidth - 40));
-        case "]":
-          e.preventDefault();
-          return setDrawerWidth(Math.min(DRAWER_WIDTH_MAX, drawerWidth + 40));
         case "Escape":
           if (selectedSpanId) {
             e.preventDefault();
@@ -86,17 +71,7 @@ export function useTraceDetailHotkeys({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [
-    traceId,
-    spans,
-    errorSpanIds,
-    selectedSpanId,
-    onSelectSpan,
-    onCloseSpan,
-    onSetViz,
-    drawerWidth,
-    setDrawerWidth,
-  ]);
+  }, [traceId, spans, errorSpanIds, selectedSpanId, onSelectSpan, onCloseSpan, onSetViz]);
 }
 
 function isTypingTarget(target: EventTarget | null): boolean {

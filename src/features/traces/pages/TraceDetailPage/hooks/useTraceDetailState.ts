@@ -25,7 +25,6 @@ export function useTraceDetailState() {
       ? rawActiveTab
       : "timeline";
   const setActiveTab = useTracesStore((s) => s.setVisualizationTab);
-  const spanDetailTab = useTracesStore((s) => s.spanDetailTab);
 
   const data = useTraceDetailData(selectedTeamId, traceIdParam);
 
@@ -47,8 +46,9 @@ export function useTraceDetailState() {
   // Error groups only matter when the errors tab is open.
   const traceErrors = useTraceErrors(traceIdParam, activeTab === "errors");
 
-  // The enhanced data hook gates `related-traces` on the Related drawer tab.
-  const enhancedTab = spanDetailTab === "related" ? "related" : "attributes";
+  // The span drawer's Info tab folds in related traces, so load them whenever a
+  // span is selected (the enhanced hook gates `related-traces` on this value).
+  const enhancedTab = data.selectedSpanId ? "related" : "attributes";
 
   const enhanced = useTraceDetailEnhanced(
     traceIdParam,

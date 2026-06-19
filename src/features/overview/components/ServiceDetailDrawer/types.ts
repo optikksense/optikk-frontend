@@ -8,20 +8,6 @@ export interface ServiceDetailDrawerProps {
   initialData?: Record<string, unknown> | null;
 }
 
-export interface DrawerSectionProps {
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
-}
-
-export interface TrendPanelProps {
-  title: string;
-  subtitle: string;
-  headline: string;
-  tone?: "requests" | "errors" | "latency";
-  children: ReactNode;
-}
-
 export interface Column<Row> {
   key: string;
   label: string;

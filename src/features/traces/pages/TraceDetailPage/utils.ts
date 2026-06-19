@@ -1,6 +1,3 @@
-import type { SpanDetailTab } from "../../store/tracesStore";
-import type { SpanAttributes, SpanEvent } from "../../types";
-
 interface SpanLike {
   start_time?: string | number | null;
   end_time?: string | number | null;
@@ -32,24 +29,4 @@ export function computeTraceTimeBounds(spans: readonly SpanLike[]): TraceTimeBou
     startMs: Number.isFinite(minStart) ? minStart : undefined,
     endMs: Number.isFinite(maxEnd) ? maxEnd : undefined,
   };
-}
-
-interface TabAvailability {
-  readonly hasEvents: boolean;
-  readonly hasLinks: boolean;
-}
-
-export function detectTabAvailability(
-  attrs: SpanAttributes | null,
-  events: readonly SpanEvent[],
-  selectedSpanId: string | null
-): TabAvailability {
-  const hasLinks = (attrs?.links?.length ?? 0) > 0;
-  const hasEvents = !!selectedSpanId && events.some((e) => e.spanId === selectedSpanId);
-  return { hasEvents, hasLinks };
-}
-
-/** The span drawer always opens on Overview. */
-export function getDefaultDetailTab(): SpanDetailTab {
-  return "overview";
 }

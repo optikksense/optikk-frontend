@@ -1,4 +1,4 @@
-import { LogDetailPanel } from "@/features/log/components/detail/LogDetailPanel";
+import { LogDetailDrawer } from "@/features/log/components/detail/LogDetailDrawer";
 import { LogsTable } from "@/features/log/components/table/LogsTable";
 import { useEffect, useState } from "react";
 import { useServiceLogs } from "../hooks/useServiceLogs";
@@ -38,13 +38,7 @@ export function LogsTabPanel({ serviceName }: { serviceName: string }) {
   };
 
   return (
-    <div
-      className={
-        selectedId
-          ? "grid min-h-[500px] flex-1 grid-cols-[1fr_360px] gap-3 overflow-hidden"
-          : "flex min-h-[500px] flex-1 flex-col overflow-hidden"
-      }
-    >
+    <div className="flex min-h-[500px] flex-1 flex-col overflow-hidden">
       <div className="flex min-w-0 flex-col gap-4 rounded-lg border border-border bg-card p-5 shadow-sm">
         <div>
           <h3 className="font-semibold text-[14px] text-foreground">Service Logs</h3>
@@ -84,7 +78,11 @@ export function LogsTabPanel({ serviceName }: { serviceName: string }) {
         </div>
       </div>
 
-      {selectedId && <LogDetailPanel logId={selectedId} onClose={() => setSelectedId(null)} />}
+      <LogDetailDrawer
+        logId={selectedId ?? ""}
+        open={Boolean(selectedId)}
+        onClose={() => setSelectedId(null)}
+      />
     </div>
   );
 }
