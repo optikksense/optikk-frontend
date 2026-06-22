@@ -1,42 +1,46 @@
 import { useMemo } from "react";
 
-import ObservabilityChart, {
-  type ObservabilityChartSeries,
-} from "@shared/components/ui/charts/ObservabilityChart";
-import { tsMs } from "@shared/utils/chartDataUtils";
+import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import { fmtMs } from "../../../formatters";
-import { useLatencyPercentiles } from "../../../hooks/useLatencyPercentiles";
+import { pivotByRoute, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { PanelCard } from "../../PanelCard";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 export function LatencySignal({ serviceName }: { serviceName: string }) {
-  const query = useLatencyPercentiles(serviceName);
+  const query = useREDByEndpoint(serviceName);
+  const rows = query.data ?? [];
 
-  const activeRows = query.data ?? [];
-  const timestamps = useMemo(() => activeRows.map((r) => tsMs(r.timestamp) / 1000), [activeRows]);
-  const p50 = useMemo(() => activeRows.map((r) => r.p50_ms), [activeRows]);
-  const p95 = useMemo(() => activeRows.map((r) => r.p95_ms), [activeRows]);
-  const p99 = useMemo(() => activeRows.map((r) => r.p99_ms), [activeRows]);
+  const { timestamps, series } = useMemo(() => pivotByRoute(rows, (r) => r.p99_ms, false), [rows]);
 
-  const latestP99 = p99.length ? p99[p99.length - 1] : 0;
-  const series: ObservabilityChartSeries[] = [
-    { label: "p50", values: p50, color: "var(--color-healthy,#73c991)" },
-    { label: "p95", values: p95, color: "var(--color-degraded,#f7b63a)" },
-    { label: "p99", values: p99, color: "var(--color-critical,#f04438)" },
-  ];
+  // Latest non-null p99 across routes, for the legend.
+  const latestP99 = useMemo(() => {
+    let val = 0;
+    for (const s of series) {
+      for (let i = s.values.length - 1; i >= 0; i--) {
+        const v = s.values[i];
+        if (v != null) {
+          if (v > val) val = v;
+          break;
+        }
+      }
+    }
+    return val;
+  }, [series]);
 
   return (
     <PanelCard
       title="Latency"
-      subtitle="p50 / p95 / p99 · ms"
+      subtitle="p99 · ms · per endpoint"
       action={<SignalLegend>p99 {fmtMs(latestP99)}</SignalLegend>}
     >
       <ObservabilityChart
+        type="line"
         timestamps={timestamps}
         series={series}
         height={SIGNAL_CHART_HEIGHT}
         yFormatter={(v) => fmtMs(v)}
+        legend
       />
     </PanelCard>
   );

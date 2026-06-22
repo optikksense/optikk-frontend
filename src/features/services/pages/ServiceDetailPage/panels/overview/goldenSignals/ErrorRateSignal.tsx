@@ -1,51 +1,45 @@
 import { useMemo } from "react";
 
-import ObservabilityChart, {
-  type ObservabilityChartSeries,
-} from "@shared/components/ui/charts/ObservabilityChart";
-import { tsMs } from "@shared/utils/chartDataUtils";
+import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import { fmtPct } from "../../../formatters";
-import { useErrorRateSeries } from "../../../hooks/useErrorRateSeries";
+import { pivotByRoute, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { PanelCard } from "../../PanelCard";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
-  const query = useErrorRateSeries(serviceName);
+  const query = useREDByEndpoint(serviceName);
+  const rows = query.data ?? [];
 
-  const activeRows = query.data ?? [];
-  const timestamps = useMemo(() => activeRows.map((r) => tsMs(r.timestamp) / 1000), [activeRows]);
-  const values = useMemo(
-    () => activeRows.map((r) => (r.request_count ? r.error_count / r.request_count : 0)),
-    [activeRows]
+  const { timestamps, series } = useMemo(
+    () => pivotByRoute(rows, (r) => r.error_rate, false),
+    [rows]
   );
 
-  const overall = useMemo(() => {
-    let req = 0;
-    let err = 0;
-    for (const r of activeRows) {
-      req += r.request_count;
-      err += r.error_count;
+  // Worst current error rate across routes, for the legend.
+  const peak = useMemo(() => {
+    let max = 0;
+    for (const s of series) {
+      for (const v of s.values) {
+        if (v != null && v > max) max = v;
+      }
     }
-    return req > 0 ? err / req : 0;
-  }, [activeRows]);
-
-  const series: ObservabilityChartSeries[] = [
-    { label: "error rate", values, color: "var(--color-critical,#f04438)", fill: true },
-  ];
+    return max;
+  }, [series]);
 
   return (
     <PanelCard
       title="Error rate"
-      subtitle="%"
-      action={<SignalLegend>curr {fmtPct(overall, overall < 0.01 ? 2 : 1)}</SignalLegend>}
+      subtitle="% · per endpoint"
+      action={<SignalLegend>peak {fmtPct(peak, peak < 0.01 ? 2 : 1)}</SignalLegend>}
     >
       <ObservabilityChart
-        type="area"
+        type="line"
         timestamps={timestamps}
         series={series}
         height={SIGNAL_CHART_HEIGHT}
         yFormatter={(v) => fmtPct(v, v < 0.01 ? 2 : 1)}
+        legend
       />
     </PanelCard>
   );

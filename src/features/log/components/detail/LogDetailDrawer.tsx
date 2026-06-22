@@ -285,7 +285,9 @@ function LogDetailDrawerComponent({ logId, open, onClose, onPrev, onNext }: Prop
                       type="button"
                       onClick={() => {
                         void navigator.clipboard?.writeText(`trace_id:${traceId}`);
-                        toast.success("Trace filter copied — paste into search");
+                        toast.success("Trace filter copied — paste into search", {
+                          duration: 2000,
+                        });
                       }}
                       className="cursor-pointer border-0 bg-transparent font-mono text-[12px] text-[var(--accent-2)]"
                     >

@@ -1,42 +1,41 @@
 import { useMemo } from "react";
 
-import ObservabilityChart, {
-  type ObservabilityChartSeries,
-} from "@shared/components/ui/charts/ObservabilityChart";
-import { tsMs } from "@shared/utils/chartDataUtils";
+import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import { fmtNum } from "../../../formatters";
-import { useStatusTimeseries } from "../../../hooks/useStatusTimeseries";
+import { pivotByRoute, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { PanelCard } from "../../PanelCard";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 export function RequestRateSignal({ serviceName }: { serviceName: string }) {
-  const query = useStatusTimeseries(serviceName);
+  const query = useREDByEndpoint(serviceName);
+  const rows = query.data ?? [];
 
-  const activeRows = query.data ?? [];
-  const timestamps = useMemo(() => activeRows.map((r) => tsMs(r.timestamp) / 1000), [activeRows]);
-  const values = useMemo(
-    () => activeRows.map((r) => r.status_2xx + r.status_4xx + r.status_5xx + r.status_other),
-    [activeRows]
-  );
+  const { timestamps, series } = useMemo(() => pivotByRoute(rows, (r) => r.rps, false), [rows]);
 
-  const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-  const series: ObservabilityChartSeries[] = [
-    { label: "rps", values, color: "var(--color-info,#3b82f6)", fill: true },
-  ];
+  // Window-average rps summed across all routes.
+  const avg = useMemo(() => {
+    if (timestamps.length === 0) return 0;
+    let total = 0;
+    for (const s of series) {
+      for (const v of s.values) total += v ?? 0;
+    }
+    return total / timestamps.length;
+  }, [series, timestamps]);
 
   return (
     <PanelCard
       title="Request rate"
-      subtitle="rps"
+      subtitle="rps · per endpoint"
       action={<SignalLegend>avg {fmtNum(avg)} rps</SignalLegend>}
     >
       <ObservabilityChart
-        type="area"
+        type="line"
         timestamps={timestamps}
         series={series}
         height={SIGNAL_CHART_HEIGHT}
         yFormatter={(v) => fmtNum(v)}
+        legend
       />
     </PanelCard>
   );

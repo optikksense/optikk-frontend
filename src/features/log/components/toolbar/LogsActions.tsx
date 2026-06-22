@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 function LogsActionsComponent() {
   const onShare = useCallback(() => {
     void navigator.clipboard.writeText(window.location.href);
-    toast.success("Link copied to clipboard");
+    toast.success("Link copied to clipboard", { duration: 2000 });
   }, []);
 
   return (

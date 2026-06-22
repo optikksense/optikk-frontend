@@ -38,11 +38,33 @@ export interface LatencyPercentilesPoint {
   readonly p99_ms: number;
 }
 
+export interface EndpointRatePoint {
+  readonly timestamp: string;
+  readonly http_route: string;
+  readonly rps: number;
+  // null for buckets with no traffic, so the chart breaks the line.
+  readonly error_rate: number | null;
+  readonly p99_ms: number | null;
+}
+
 export interface TopEndpoint {
   readonly operation_name: string;
   readonly service_name: string;
   readonly span_kind: string;
   readonly http_route: string;
+  readonly rps: number;
+  readonly error_rate: number;
+  readonly error_count: number;
+  readonly total_count: number;
+  readonly p50_ms: number;
+  readonly p95_ms: number;
+  readonly p99_ms: number;
+}
+
+export interface TopDBQuery {
+  readonly operation_name: string;
+  readonly service_name: string;
+  readonly db_system: string;
   readonly rps: number;
   readonly error_rate: number;
   readonly error_count: number;
@@ -76,6 +98,14 @@ export function getStatusTimeseries(
   return getJson("/spans/red/status-timeseries", buildParams(s, e, serviceName));
 }
 
+export function getREDByEndpoint(
+  s: RequestTime,
+  e: RequestTime,
+  serviceName: string
+): Promise<EndpointRatePoint[]> {
+  return getJson("/spans/red/red-by-endpoint", buildParams(s, e, serviceName));
+}
+
 export function getLatencyPercentilesTimeseries(
   s: RequestTime,
   e: RequestTime,
@@ -97,6 +127,21 @@ export function getTopEndpoints(
   return api
     .get<unknown>(`${V1}/spans/red/top-endpoints`, { params })
     .then((raw) => raw as ComparisonPayload<PaginatedResponse<TopEndpoint[]>>);
+}
+
+export function getTopDBQueries(
+  s: RequestTime,
+  e: RequestTime,
+  serviceName: string,
+  limit = 50,
+  compareTo?: "previous_period",
+  cursor?: string
+): Promise<ComparisonPayload<PaginatedResponse<TopDBQuery[]>>> {
+  const params = buildParams(s, e, serviceName, { limit, cursor });
+  if (compareTo) params.compareTo = compareTo;
+  return api
+    .get<unknown>(`${V1}/spans/red/top-db-queries`, { params })
+    .then((raw) => raw as ComparisonPayload<PaginatedResponse<TopDBQuery[]>>);
 }
 
 export interface ServiceSummaryResponse {

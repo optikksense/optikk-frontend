@@ -45,7 +45,7 @@ export default function SettingsTeamTab({
     void navigator.clipboard
       .writeText(key)
       .then(() => {
-        toast.success("API key copied");
+        toast.success("API key copied", { duration: 2000 });
       })
       .catch(() => {
         toast.error("Unable to copy API key");

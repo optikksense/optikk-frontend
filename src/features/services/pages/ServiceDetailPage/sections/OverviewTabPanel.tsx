@@ -1,3 +1,4 @@
+import { OverviewDbQueries } from "../panels/overview/OverviewDbQueries";
 import { OverviewEndpointsAndResources } from "../panels/overview/OverviewEndpointsAndResources";
 import { OverviewErrors } from "../panels/overview/OverviewErrors";
 import { OverviewGoldenSignals } from "../panels/overview/OverviewGoldenSignals";
@@ -9,6 +10,7 @@ export function OverviewTabPanel({ serviceName }: { serviceName: string }) {
     <div className="flex flex-col gap-6">
       <OverviewGoldenSignals serviceName={serviceName} />
       <OverviewEndpointsAndResources serviceName={serviceName} />
+      <OverviewDbQueries serviceName={serviceName} />
       <OverviewPodFleet serviceName={serviceName} />
       <OverviewErrors serviceName={serviceName} />
       <OverviewRecentTraces serviceName={serviceName} />

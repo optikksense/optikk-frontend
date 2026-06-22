@@ -1,8 +1,7 @@
-import { ENDPOINT_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 import { useEffect, useMemo, useState } from "react";
-import { fmtNum } from "../../formatters";
 import { useServiceHosts } from "../../hooks/useServiceHosts";
 import { useTopEndpoints } from "../../hooks/useTopEndpoints";
+import { type TopOpRow, TopOpsTable } from "./TopOpsTable";
 
 export function OverviewEndpointsAndResources({ serviceName }: { serviceName: string }) {
   const [page, setPage] = useState(0);
@@ -53,21 +52,6 @@ export function OverviewEndpointsAndResources({ serviceName }: { serviceName: st
     };
   }, [hostsQ.data]);
 
-  const renderLatencyDelta = (val: number | null) => {
-    if (val == null || Number.isNaN(val) || val === 0) {
-      return <span className="font-mono text-[11.5px] text-foreground-muted">0%</span>;
-    }
-    const pct = val * 100;
-    const sign = pct > 0 ? "+" : "";
-    const color = pct > 0 ? "text-[var(--err)]" : "text-[var(--ok)]";
-    return (
-      <span className={`font-mono font-semibold text-[11.5px] ${color}`}>
-        {sign}
-        {pct.toFixed(1)}%
-      </span>
-    );
-  };
-
   if (loading) {
     return (
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -83,7 +67,19 @@ export function OverviewEndpointsAndResources({ serviceName }: { serviceName: st
     );
   }
 
-  const endpoints = results;
+  const endpointRows: TopOpRow[] = results.map((r, i) => {
+    const method = r.http_route ? (r.operation_name.split(" ")[0] ?? "HTTP") : "RPC";
+    return {
+      key: `${r.operation_name}-${i}`,
+      badge: method,
+      badgeVariant: method === "POST" || method === "PUT" ? "brand" : "success",
+      label: r.http_route || r.operation_name,
+      total_count: r.total_count,
+      error_rate: r.error_rate,
+      p99_ms: r.p99_ms,
+      p99_delta_pct: r.p99_delta_pct,
+    };
+  });
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -92,102 +88,19 @@ export function OverviewEndpointsAndResources({ serviceName }: { serviceName: st
         <div className="mb-4">
           <h3 className="font-semibold text-[14px] text-foreground">Top endpoints</h3>
           <p className="mt-0.5 text-[12px] text-foreground-muted">
-            Emitted HTTP endpoints, sorted by request volume
+            Inbound HTTP/RPC endpoints, sorted by request volume
           </p>
         </div>
 
-        {endpoints.length === 0 ? (
-          <div className="py-8 text-center text-[12.5px] text-foreground-muted">
-            No endpoints captured for this service.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left text-[13px]">
-              <thead>
-                <tr className="border-border/60 border-b font-semibold text-[10px] text-foreground-muted uppercase tracking-wider">
-                  <th className="px-3 py-2 pl-0">Endpoint</th>
-                  <th className="px-3 py-2 text-right">Hits</th>
-                  <th className="px-3 py-2 text-right">Errors</th>
-                  <th className="px-3 py-2 text-right">P99</th>
-                  <th className="px-3 py-2 text-right">Latency vs 1h ago</th>
-                </tr>
-              </thead>
-              <tbody>
-                {endpoints.map((r, i) => {
-                  const method = r.http_route ? (r.operation_name.split(" ")[0] ?? "HTTP") : "RPC";
-                  const route = r.http_route || r.operation_name;
-
-                  return (
-                    <tr
-                      key={i}
-                      className="border-border/40 border-b last:border-b-0 hover:bg-muted/10"
-                    >
-                      <td className="px-3 py-3 pl-0">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`rounded px-1.5 py-0.5 font-bold font-mono text-[9px] ${
-                              method === "POST" || method === "PUT"
-                                ? "bg-[var(--brand-soft)] text-[var(--brand)]"
-                                : "bg-[var(--color-success-bg)] text-[var(--color-success)]"
-                            }`}
-                          >
-                            {method}
-                          </span>
-                          <span className="max-w-[200px] truncate font-mono font-semibold text-[12px] text-foreground">
-                            {route}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 text-right font-mono text-[12.5px] tabular-nums">
-                        {fmtNum(r.total_count)}
-                      </td>
-                      <td
-                        className={`px-3 py-3 text-right font-mono font-semibold text-[12.5px] tabular-nums ${
-                          classifyHealth(r.error_rate, ENDPOINT_HEALTH_THRESHOLDS) === "unhealthy"
-                            ? "text-[var(--err)]"
-                            : classifyHealth(r.error_rate, ENDPOINT_HEALTH_THRESHOLDS) ===
-                                "degraded"
-                              ? "text-[var(--warn)]"
-                              : "text-foreground-muted"
-                        }`}
-                      >
-                        {r.error_rate.toFixed(2)}%
-                      </td>
-                      <td className="px-3 py-3 text-right font-mono font-semibold text-[12.5px] tabular-nums">
-                        {Math.round(r.p99_ms)}ms
-                      </td>
-                      <td className="px-3 py-3 text-right">
-                        {renderLatencyDelta(r.p99_delta_pct)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            <div className="mt-4 flex items-center justify-between border-border/40 border-t pt-4">
-              <div className="text-[11.5px] text-foreground-muted">Showing page {page + 1}</div>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  disabled={page === 0}
-                  onClick={handlePrev}
-                  className="inline-flex h-[26px] items-center gap-1 rounded-md border border-border bg-card px-3 font-semibold text-[11px] text-foreground-secondary hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-40"
-                >
-                  Previous
-                </button>
-                <button
-                  type="button"
-                  disabled={!hasMore}
-                  onClick={handleNext}
-                  className="inline-flex h-[26px] items-center gap-1 rounded-md border border-border bg-card px-3 font-semibold text-[11px] text-foreground-secondary hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-40"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <TopOpsTable
+          rows={endpointRows}
+          labelHeader="Endpoint"
+          emptyText="No endpoints captured for this service."
+          page={page}
+          hasMore={hasMore}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
       </div>
 
       {/* Resource Consumption */}

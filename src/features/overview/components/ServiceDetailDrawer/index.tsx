@@ -1,5 +1,5 @@
 import { ExternalLink, ScrollText, Waypoints } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import {
   DrawerHeader,
@@ -8,7 +8,6 @@ import {
   DrawerMiniSignal,
   DrawerSection,
   DrawerShell,
-  DrawerTabs,
 } from "@shared/components/ui/overlay/detail-drawer";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
@@ -17,8 +16,6 @@ import { ServiceDrawerEndpointsSection } from "./components/ServiceDrawerEndpoin
 import { useServiceDetailDrawerModel } from "./hooks/useServiceDetailDrawerModel";
 import type { ServiceDetailDrawerProps } from "./types";
 import { healthLabelForErrorRate, healthVariantForErrorRate, readNumber } from "./utils";
-
-type ServiceTab = "overview" | "endpoints" | "deps";
 
 const STATUS_COLOR = {
   success: "var(--ok)",
@@ -43,11 +40,6 @@ export default function ServiceDetailDrawer({
   initialData,
 }: ServiceDetailDrawerProps) {
   const model = useServiceDetailDrawerModel(serviceName, title, initialData);
-  const [tab, setTab] = useState<ServiceTab>("overview");
-  useEffect(() => {
-    if (open) setTab("overview");
-  }, [open]);
-
   const m = model.summaryMetrics;
   const variant = healthVariantForErrorRate(m?.errorRate);
   const statusColor = STATUS_COLOR[variant];
@@ -80,8 +72,6 @@ export default function ServiceDetailDrawer({
     if (instances != null) out.push(`${instances} inst`);
     return out;
   }, [initialData]);
-
-  const depsCount = model.upstreamRows.length + model.downstreamRows.length;
 
   const footer = (
     <>
@@ -160,122 +150,106 @@ export default function ServiceDetailDrawer({
         </div>
       </DrawerHeader>
 
-      <DrawerTabs
-        tabs={[
-          { id: "overview", label: "Overview" },
-          { id: "endpoints", label: "Endpoints", badge: model.endpointRows.length || null },
-          { id: "deps", label: "Dependencies", badge: depsCount || null },
-        ]}
-        active={tab}
-        onChange={(id) => setTab(id as ServiceTab)}
-      />
+      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-[18px] py-4">
+        <div className="flex flex-col gap-6">
+          <div className="grid grid-cols-3 gap-2.5">
+            <DrawerKpi
+              label="Requests"
+              value={formatNumber(m?.requestCount ?? 0)}
+              spark={requestSpark}
+              sparkTone="info"
+            />
+            <DrawerKpi
+              label="Error rate"
+              value={formatPercentage(m?.errorRate ?? 0)}
+              spark={errorSpark}
+              sparkTone={variant === "error" ? "err" : "warn"}
+            />
+            <DrawerKpi
+              label="Latency p99"
+              value={formatDuration(m?.p99Latency ?? 0)}
+              spark={latencySpark}
+              sparkTone="err"
+            />
+          </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-[18px] py-4">
-        {tab === "overview" && (
-          <>
-            <div className="mb-5 grid grid-cols-3 gap-2.5">
-              <DrawerKpi
-                label="Requests"
-                value={formatNumber(m?.requestCount ?? 0)}
-                spark={requestSpark}
-                sparkTone="info"
+          <DrawerSection
+            title="Golden signals"
+            action={<span className="text-[11.5px] text-[var(--fg-3)]">active range</span>}
+          >
+            <div className="grid grid-cols-2 gap-4 px-0.5 pt-0.5">
+              <DrawerMiniSignal
+                label="Request rate"
+                legend={formatNumber(m?.requestCount ?? 0)}
+                values={requestSpark}
+                tone="info"
               />
-              <DrawerKpi
+              <DrawerMiniSignal
                 label="Error rate"
-                value={formatPercentage(m?.errorRate ?? 0)}
-                spark={errorSpark}
-                sparkTone={variant === "error" ? "err" : "warn"}
+                legend={formatPercentage(m?.errorRate ?? 0)}
+                values={errorSpark}
+                tone={variant === "error" ? "err" : "warn"}
               />
-              <DrawerKpi
+              <DrawerMiniSignal
                 label="Latency p99"
-                value={formatDuration(m?.p99Latency ?? 0)}
-                spark={latencySpark}
-                sparkTone="err"
+                legend={formatDuration(m?.p99Latency ?? 0)}
+                values={latencySpark}
+                tone="err"
+              />
+              <DrawerMiniSignal
+                label="Latency p95"
+                legend={formatDuration(m?.p95Latency ?? 0)}
+                values={model.latencyTrendSeries.map((p) => p.p95_ms)}
+                tone="warn"
               />
             </div>
+          </DrawerSection>
 
-            <DrawerSection
-              title="Golden signals"
-              action={<span className="text-[11.5px] text-[var(--fg-3)]">active range</span>}
-            >
-              <div className="grid grid-cols-2 gap-4 px-0.5 pt-0.5">
-                <DrawerMiniSignal
-                  label="Request rate"
-                  legend={formatNumber(m?.requestCount ?? 0)}
-                  values={requestSpark}
-                  tone="info"
-                />
-                <DrawerMiniSignal
-                  label="Error rate"
-                  legend={formatPercentage(m?.errorRate ?? 0)}
-                  values={errorSpark}
-                  tone={variant === "error" ? "err" : "warn"}
-                />
-                <DrawerMiniSignal
-                  label="Latency p99"
-                  legend={formatDuration(m?.p99Latency ?? 0)}
-                  values={latencySpark}
-                  tone="err"
-                />
-                <DrawerMiniSignal
-                  label="Latency p95"
-                  legend={formatDuration(m?.p95Latency ?? 0)}
-                  values={model.latencyTrendSeries.map((p) => p.p95_ms)}
-                  tone="warn"
-                />
+          <DrawerSection title="Health">
+            {variant === "success" ? (
+              <div className="flex items-center gap-2.5 rounded-lg border border-[var(--line-2)] bg-[var(--ok-soft)] px-3 py-3 text-[13px] text-[var(--fg-0)]">
+                <span className="h-2 w-2 rounded-full" style={{ background: "var(--ok)" }} />
+                No active alerts · error rate within budget
               </div>
-            </DrawerSection>
-
-            <DrawerSection title="Health">
-              {variant === "success" ? (
-                <div className="flex items-center gap-2.5 rounded-lg border border-[var(--line-2)] bg-[var(--ok-soft)] px-3 py-3 text-[13px] text-[var(--fg-0)]">
-                  <span className="h-2 w-2 rounded-full" style={{ background: "var(--ok)" }} />
-                  No active alerts · error rate within budget
+            ) : (
+              <div
+                className="rounded-lg border px-3 py-3"
+                style={{
+                  background: variant === "error" ? "var(--err-soft)" : "var(--warn-soft)",
+                  borderColor: variant === "error" ? "var(--err)" : "var(--warn)",
+                }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className="font-semibold text-[13px]"
+                    style={{ color: variant === "error" ? "var(--err-fg)" : "var(--warn-fg)" }}
+                  >
+                    {healthLabelForErrorRate(m?.errorRate)} · error budget at risk
+                  </span>
+                  <span className="font-mono text-[12px] text-[var(--fg-2)]">
+                    {formatPercentage(m?.errorRate ?? 0)}
+                  </span>
                 </div>
-              ) : (
-                <div
-                  className="rounded-lg border px-3 py-3"
-                  style={{
-                    background: variant === "error" ? "var(--err-soft)" : "var(--warn-soft)",
-                    borderColor: variant === "error" ? "var(--err)" : "var(--warn)",
-                  }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span
-                      className="font-semibold text-[13px]"
-                      style={{ color: variant === "error" ? "var(--err-fg)" : "var(--warn-fg)" }}
-                    >
-                      {healthLabelForErrorRate(m?.errorRate)} · error budget at risk
-                    </span>
-                    <span className="font-mono text-[12px] text-[var(--fg-2)]">
-                      {formatPercentage(m?.errorRate ?? 0)}
-                    </span>
-                  </div>
-                  <div className="mt-1 text-[12px] text-[var(--fg-3)]">
-                    Error rate is above the healthy threshold for this service.
-                  </div>
+                <div className="mt-1 text-[12px] text-[var(--fg-3)]">
+                  Error rate is above the healthy threshold for this service.
                 </div>
-              )}
-            </DrawerSection>
-          </>
-        )}
+              </div>
+            )}
+          </DrawerSection>
+        </div>
 
-        {tab === "endpoints" && (
-          <ServiceDrawerEndpointsSection
-            isError={model.endpointsQuery.isError}
-            isLoading={model.endpointsLoading}
-            endpointRows={model.endpointRows}
-          />
-        )}
+        <ServiceDrawerEndpointsSection
+          isError={model.endpointsQuery.isError}
+          isLoading={model.endpointsLoading}
+          endpointRows={model.endpointRows}
+        />
 
-        {tab === "deps" && (
-          <ServiceDrawerDependenciesSection
-            isError={model.dependenciesQuery.isError}
-            isLoading={model.dependenciesLoading}
-            upstreamRows={model.upstreamRows}
-            downstreamRows={model.downstreamRows}
-          />
-        )}
+        <ServiceDrawerDependenciesSection
+          isError={model.dependenciesQuery.isError}
+          isLoading={model.dependenciesLoading}
+          upstreamRows={model.upstreamRows}
+          downstreamRows={model.downstreamRows}
+        />
       </div>
     </DrawerShell>
   );

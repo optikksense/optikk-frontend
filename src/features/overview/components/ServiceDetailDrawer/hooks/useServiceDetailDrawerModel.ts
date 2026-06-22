@@ -78,17 +78,26 @@ export function useServiceDetailDrawerModel(
     [latencyTrendQuery.data]
   );
 
-  const endpointRows = useMemo(
-    () =>
-      [...(endpointsQuery.data ?? [])]
-        .sort((left, right) => Number(right.request_count ?? 0) - Number(left.request_count ?? 0))
-        .slice(0, 6)
-        .map((row, index) => ({
-          ...row,
-          id: `${row.http_method}:${row.operation_name}:${index}`,
-        })),
-    [endpointsQuery.data]
-  );
+  const endpointRows = useMemo(() => {
+    const results = endpointsQuery.data?.data?.results ?? [];
+    return [...results]
+      .sort((left, right) => Number(right.total_count ?? 0) - Number(left.total_count ?? 0))
+      .slice(0, 6)
+      .map((row, index) => {
+        const method = row.http_route ? (row.operation_name.split(" ")[0] ?? "HTTP") : "RPC";
+        return {
+          id: `${method}:${row.operation_name}:${index}`,
+          service_name: row.service_name,
+          operation_name: row.operation_name,
+          endpoint_name: row.http_route,
+          http_method: method,
+          request_count: row.total_count,
+          error_count: row.error_count,
+          avg_latency: row.p50_ms,
+          p95_latency: row.p95_ms,
+        };
+      });
+  }, [endpointsQuery.data]);
 
   const upstreamRows = useMemo(
     () => buildDependencyRows(dependenciesQuery.data?.edges ?? [], serviceName, "upstream"),
@@ -118,11 +127,6 @@ export function useServiceDetailDrawerModel(
   }, [navigate, serviceName]);
 
   const serviceLabel = title?.trim() || serviceName;
-  const hasSummary = Boolean(summaryMetrics);
-  const summaryLoading = metricsQuery.isLoading && !summaryMetrics;
-  const requestTrendLoading = requestTrendQuery.isLoading && requestTrendSeries.length === 0;
-  const errorTrendLoading = errorTrendQuery.isLoading && errorTrendSeries.length === 0;
-  const latencyTrendLoading = latencyTrendQuery.isLoading && latencyTrendSeries.length === 0;
   const endpointsLoading = endpointsQuery.isLoading && endpointRows.length === 0;
   const dependenciesLoading =
     dependenciesQuery.isLoading && upstreamRows.length === 0 && downstreamRows.length === 0;
@@ -145,11 +149,6 @@ export function useServiceDetailDrawerModel(
     openLogs,
     openFullView,
     serviceLabel,
-    hasSummary,
-    summaryLoading,
-    requestTrendLoading,
-    errorTrendLoading,
-    latencyTrendLoading,
     endpointsLoading,
     dependenciesLoading,
   };
