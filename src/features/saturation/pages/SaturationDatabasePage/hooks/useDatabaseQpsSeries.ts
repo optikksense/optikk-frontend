@@ -21,9 +21,12 @@ function sumByTimestamp(rows: OpsSeriesPoint[]): QpsSeries {
   return { timestamps, opsPerSec: timestamps.map((t) => map.get(t) ?? 0) };
 }
 
-export function useDatabaseQpsSeries() {
-  const query = useTimeRangeQuery<OpsSeriesPoint[]>("saturation-db.qps", (_team, s, e) =>
-    getOpsBySystem(s, e)
+export function useDatabaseQpsSeries(system?: string) {
+  const filters = system ? { db_system: system } : undefined;
+  const query = useTimeRangeQuery<OpsSeriesPoint[]>(
+    "saturation-db.qps",
+    (_team, s, e) => getOpsBySystem(s, e, filters),
+    { extraKeys: [system ?? "all"] }
   );
   const series = useMemo(() => sumByTimestamp(query.data ?? []), [query.data]);
   return { series, isPending: query.isPending, isError: Boolean(query.error) };

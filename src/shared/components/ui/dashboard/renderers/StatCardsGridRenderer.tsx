@@ -34,7 +34,6 @@ export function StatCardsGridRenderer({
       return { totalRequests: 0, errorRate: 0, avgLatency: 0, p95Latency: 0 };
     }
 
-    // Legacy: Aggregation logic (deprecated)
     let totalRequests = 0;
     let totalErrors = 0;
     let latencySum = 0;

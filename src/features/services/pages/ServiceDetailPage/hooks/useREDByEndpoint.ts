@@ -21,8 +21,6 @@ export interface PivotedSeries {
   readonly series: ObservabilityChartSeries[];
 }
 
-// pivotByRoute turns flat (timestamp, route, value) rows into a shared time axis
-// plus one gap-filled series per route, ready for ObservabilityChart.
 export function pivotByRoute(
   rows: EndpointRatePoint[],
   pick: (row: EndpointRatePoint) => number | null,

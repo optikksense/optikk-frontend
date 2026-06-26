@@ -10,22 +10,16 @@ interface FleetDistributionPanelProps {
   readonly result: MetricQueryResult | undefined;
 }
 
-/** Density color from blue (low) to deep blue (high), matching the design legend. */
 function densityColor(count: number, max: number): string {
   if (count === 0) return "var(--bg-secondary)";
   const intensity = Math.min(count / max, 1);
-  // Interpolate light blue -> deep blue.
+
   const r = Math.round(219 - intensity * (219 - 29));
   const g = Math.round(234 - intensity * (234 - 78));
   const b = Math.round(254 - intensity * (254 - 216));
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-/**
- * Fleet distribution heatmap: bins each host series' per-bucket value into
- * eight latency bands and colors cells by how many hosts land in each band per
- * time bucket. Derived entirely from the host-grouped query result.
- */
 export function FleetDistributionPanel({ result }: FleetDistributionPanelProps) {
   const { points, bandLabels } = useMemo(() => buildFleetDistribution(result), [result]);
 
@@ -44,7 +38,6 @@ export function FleetDistributionPanel({ result }: FleetDistributionPanelProps) 
     points.find((p) => p.latency_bucket === band && Number(p.time_bucket) === bucket)?.span_count ??
     0;
 
-  // Display bands high -> low (slowest at top), matching the design.
   const displayBands = [...bandLabels].reverse();
 
   return (

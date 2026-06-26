@@ -66,7 +66,7 @@ export function CalendarMonth({
         ))}
       </div>
 
-      {/* Day cells */}
+      {}
       <div className="grid grid-cols-7 gap-y-0.5">
         {totalCells.map((day, idx) => {
           if (!day) return <div key={idx} />;

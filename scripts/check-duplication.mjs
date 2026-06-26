@@ -9,7 +9,7 @@ const GUARDED =
 
 const ALLOWED_FILES = new Set([
   "src/shared/utils/formatters.ts",
-  // Topology graph keeps its own visual-exact compact formatter.
+
   "src/shared/components/ui/charts/ServiceTopologyGraph/format.ts",
 ]);
 

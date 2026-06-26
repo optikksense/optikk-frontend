@@ -41,12 +41,6 @@ export const calculateTraceStats = (spans: TraceRecord[]): TraceStats => {
   return stats;
 };
 
-/**
- * Normalize span data from raw API response.
- *
- * Supports the compact `SpanListItem` from GET /traces/:id/spans (`start_ns`,
- * `kind`, `status_code`, `has_error`) and the legacy full span row shape.
- */
 export function normalizeSpan(span: any): TraceRecord {
   const durationMs = Number(span.duration_ms ?? 0);
   const startNsRaw = span.start_ns;
@@ -88,9 +82,6 @@ export function normalizeSpan(span: any): TraceRecord {
   };
 }
 
-/**
- * Normalize log data from raw API response.
- */
 export function normalizeTraceLog(log: any): any {
   return {
     ...log,

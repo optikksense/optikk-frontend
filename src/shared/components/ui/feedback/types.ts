@@ -11,18 +11,12 @@ export interface ErrorBoundaryProps {
   boundaryName?: string;
 }
 
-/**
- *
- */
 export interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
 }
 
-/**
- *
- */
 export interface EmptyStateProps {
   icon?: ReactNode;
   title?: ReactNode;
@@ -30,27 +24,18 @@ export interface EmptyStateProps {
   action?: ReactNode;
 }
 
-/**
- *
- */
 export interface TrendIndicatorProps {
   value?: number | null;
   inverted?: boolean;
   showValue?: boolean;
 }
 
-/**
- *
- */
 export interface LoadingProps {
   label?: string;
   size?: "small" | "default" | "large";
   fullscreen?: boolean;
 }
 
-/**
- *
- */
 export interface FeedbackSkeletonProps {
   rows?: number;
   active?: boolean;

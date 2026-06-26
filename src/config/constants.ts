@@ -3,10 +3,7 @@
  * Centralized configuration for the entire React application
  */
 
-export /**
- *
- */
-const UI_CONFIG = {
+export const UI_CONFIG = {
   THEME: {
     PRIMARY_COLOR: "#8B7FFF",
     SUCCESS_COLOR: "#73C991",
@@ -21,10 +18,7 @@ const UI_CONFIG = {
   DEFAULT_PAGE_SIZE: 20,
 };
 
-export /**
- *
- */
-const TIME_RANGES: import("@/types").RelativeTimeRange[] = [
+export const TIME_RANGES: import("@/types").RelativeTimeRange[] = [
   { kind: "relative", label: "Last 5 minutes", preset: "5m", minutes: 5 },
   { kind: "relative", label: "Last 15 minutes", preset: "15m", minutes: 15 },
   { kind: "relative", label: "Last 30 minutes", preset: "30m", minutes: 30 },
@@ -37,10 +31,7 @@ const TIME_RANGES: import("@/types").RelativeTimeRange[] = [
   { kind: "relative", label: "Last 30 days", preset: "30d", minutes: 43200 },
 ];
 
-export /**
- *
- */
-const STATUS_COLORS = {
+export const STATUS_COLORS = {
   OK: "#73C991",
   ERROR: "#F04438",
   WARNING: "#F7B63A",
@@ -48,10 +39,7 @@ const STATUS_COLORS = {
   UNKNOWN: "#6B7280",
 };
 
-export /**
- *
- */
-const LOG_LEVELS = {
+export const LOG_LEVELS = {
   TRACE: { label: "Trace", color: "#6B7280" },
   DEBUG: { label: "Debug", color: "#67B7C9" },
   INFO: { label: "Info", color: "#73C991" },
@@ -60,26 +48,20 @@ const LOG_LEVELS = {
   FATAL: { label: "Fatal", color: "#991B1B" },
 };
 
-export /**
- *
- */
-const CHART_COLORS = [
-  "#5ea9ff", // chart-1 — vibrant sky blue (flagship)
-  "#f38b6b", // chart-2 — coral / salmon
-  "#34d399", // chart-3 — emerald green
-  "#facc15", // chart-4 — golden yellow
-  "#c084fc", // chart-5 — purple
-  "#22d3ee", // chart-6 — cyan
-  "#f472b6", // chart-7 — hot pink
-  "#a3e635", // chart-8 — lime
-  "#fb923c", // extra  — orange
-  "#818cf8", // extra  — indigo
+export const CHART_COLORS = [
+  "#5ea9ff",
+  "#f38b6b",
+  "#34d399",
+  "#facc15",
+  "#c084fc",
+  "#22d3ee",
+  "#f472b6",
+  "#a3e635",
+  "#fb923c",
+  "#818cf8",
 ];
 
-export /**
- *
- */
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   APP_STATE: "optikk_app_state",
   TEAM_ID: "optikk_team_id",
   TEAM_IDS: "optikk_team_ids",
@@ -91,11 +73,7 @@ const STORAGE_KEYS = {
   VIEW_PREFS: "optikk_view_prefs",
 };
 
-// Auto-refresh interval options (value = milliseconds, 0 = off)
-export /**
- *
- */
-const AUTO_REFRESH_INTERVALS = [
+export const AUTO_REFRESH_INTERVALS = [
   { label: "Off", value: 0 },
   { label: "5s", value: 5_000 },
   { label: "10s", value: 10_000 },

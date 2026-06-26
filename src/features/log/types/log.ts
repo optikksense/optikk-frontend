@@ -28,11 +28,6 @@ export interface LogRecord {
 
 export type LogCursor = string;
 
-/**
- * `POST /api/v1/logs/query` is list-only — `summary`/`trend`/`facets` come from
- * their own peer endpoints (see logsAnalyticsApi.ts) and are fanned in
- * parallel from the page hook.
- */
 export interface LogsQueryResponse {
   readonly results: readonly LogRecord[];
   readonly cursor?: LogCursor;

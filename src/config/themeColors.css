@@ -2,7 +2,6 @@
  * Every theme-variant color token is defined in BOTH blocks. Cool-neutral neutrals + per-theme
  * accent tuning keep the two themes consistent (Datadog-aligned schema). */
 :root {
-  /* Auto-generated literal color tokens (shared) */
   --literal-hex-00758f: #00758f;
   --literal-hex-00bfb3: #00bfb3;
   --literal-hex-06aed5: #06aed5;
@@ -257,7 +256,6 @@
   --literal-rgba-94-96-206-0p5: rgba(94, 96, 206, 0.5);
   --literal-rgba-95-106-133-0p45: rgba(95, 106, 133, 0.45);
 
-  /* Background tokens — light-first, warm-neutral (Optikk prototype aligned) */
   --bg-primary: #faf8f4;
   --bg-secondary: #f6f2ec;
   --bg-tertiary: #efeae1;
@@ -265,14 +263,12 @@
   --border-color: #ebe5d9;
   --border-light: #f2ede4;
 
-  /* Extended background tokens */
   --bg-canvas: #faf8f4;
   --bg-card: #fffefb;
   --bg-card-hover: #faf8f4;
   --bg-inset: #f6f2ec;
   --bg-overlay: rgba(250, 248, 244, 0.92);
 
-  /* Text tokens — warm-tinted neutral scale */
   --text-primary: #2a2520;
   --text-secondary: #4d463d;
   --text-muted: #6b6357;
@@ -280,9 +276,6 @@
   --text-label: #8f857a;
   --text-caption: rgba(42, 37, 32, 0.72);
 
-  /* Compatibility aliases — referenced by components but previously undefined (rendered
-   * white-alpha/dark fallbacks that broke light theme). Each aliases a theme-aware token,
-   * so a single :root definition resolves correctly in both light and dark. */
   --text-tertiary: var(--text-muted);
   --bg-surface: var(--bg-card);
   --bg-elevated: var(--bg-hover);
@@ -292,11 +285,6 @@
   --color-error-bg: var(--color-error-subtle);
   --color-success-bg: var(--color-success-subtle);
 
-  /* Brand / semantic tokens — Optikk blue family
-   * Primary action: blue-600 (#2563eb) — richer than default Tailwind blue-500.
-   * Chart-blue is intentionally distinct (#5ea9ff) so CTAs don't blend into chart series.
-   * Stream/live indicator uses cyan-400 to differentiate from static UI.
-   */
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
   --color-primary-active: #1e40af;
@@ -327,7 +315,6 @@
   --color-info-subtle: rgba(2, 132, 199, 0.12);
   --color-stream: #0284c7;
 
-  /* Calm-tech status tokens */
   --color-healthy: #2f8f53;
   --color-healthy-glow: rgba(47, 143, 83, 0.16);
   --color-degraded: #b45309;
@@ -335,7 +322,7 @@
   --color-critical: #dc2626;
   --color-critical-glow: rgba(220, 38, 38, 0.16);
   --color-unknown: #6b7488;
-  /* Severity tokens */
+
   --severity-critical: #dc2626;
   --severity-critical-subtle: rgba(220, 38, 38, 0.1);
   --severity-high: #c2410c;
@@ -347,10 +334,6 @@
   --severity-info: #0284c7;
   --severity-info-subtle: rgba(2, 132, 199, 0.12);
 
-  /* Chart palette — flagship blue + diverse hues
-   * chart-1 is intentionally lighter than --color-primary so single-series charts
-   * don't look like a button. Multi-series gets full spectral coverage.
-   */
   --chart-1: #5ea9ff;
   --chart-2: #f38b6b;
   --chart-3: #34d399;
@@ -364,46 +347,38 @@
   --chart-area-alpha: 0.18;
   --chart-comparison: rgba(37, 99, 235, 0.35);
 
-  /* Card / surface tokens */
   --card-radius: 8px;
   --card-padding: 16px;
   --card-shadow: 0 1px 3px rgba(20, 26, 36, 0.08), 0 1px 2px rgba(20, 26, 36, 0.04);
   --card-shadow-hover: 0 4px 12px rgba(20, 26, 36, 0.1);
   --card-border: 1px solid #e7ebf1;
 
-  /* Layout dimension tokens */
   --space-header-h: 56px;
   --space-sidebar-w: 220px;
   --space-sidebar-collapsed: 56px;
   --space-card-inner: 16px;
   --space-section-gap: 16px;
 
-  /* Typography weight tokens */
   --metric-weight: 300;
   --label-weight: 500;
   --label-size: 11px;
 
-  /* Scrollbar */
   --scrollbar-track: #eef1f6;
   --scrollbar-thumb: #c7cedb;
   --scrollbar-thumb-hover: #aab3c4;
 
-  /* Glass / elevation tokens */
   --glass-bg: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(20, 26, 36, 0.1);
   --glass-shadow: 0 2px 8px rgba(20, 26, 36, 0.08);
   --glass-blur: blur(16px);
 
-  /* Elevation surfaces */
   --surface-2-bg: #fffefb;
   --surface-3-bg: #faf8f4;
 
-  /* Shadow scale */
   --shadow-sm: 0 1px 2px rgba(74, 55, 35, 0.05), 0 1px 1px rgba(74, 55, 35, 0.04);
   --shadow-md: 0 8px 24px rgba(74, 55, 35, 0.07), 0 2px 6px rgba(74, 55, 35, 0.05);
   --shadow-lg: 0 24px 48px rgba(74, 55, 35, 0.13), 0 8px 16px rgba(74, 55, 35, 0.06);
 
-  /* Animation tokens */
   --duration-fast: 150ms;
   --duration-normal: 250ms;
   --duration-slow: 350ms;
@@ -416,7 +391,6 @@
   --transition-shadow: box-shadow 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
   --transition-all: all 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
 
-  /* Spacing scale (comfortable = default) */
   --space-2xs: 4px;
   --space-xs: 8px;
   --space-sm: 12px;
@@ -428,23 +402,17 @@
   --space-4xl: 44px;
   --space-page: 16px;
 
-  /* Gradients — blue-forward */
   --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   --gradient-text: linear-gradient(to right, rgba(20, 26, 36, 0.95), rgba(20, 26, 36, 0.6));
   --gradient-text-accent: linear-gradient(135deg, #5ea9ff, #38bdf8);
 
-  /* Tab strip / page-tabs underline */
   --tab-underline: var(--color-primary);
   --tab-underline-hover: var(--color-primary-subtle-50);
 
-  /* Theme-driven toast tokens */
   --toast-bg: #ffffff;
   --toast-text: #141a24;
   --toast-border: #d5dae3;
 
-  /* Optikk design-handoff OKLCH tokens — additive layer used by Logs Explorer
-   * and other pages adopting the design-handoff visual language. Severity hues
-   * are identical across themes; surfaces/foregrounds flip per theme below. */
   --accent-h: 268;
   --accent: oklch(0.55 0.2 var(--accent-h));
   --accent-2: oklch(0.62 0.18 var(--accent-h));
@@ -471,13 +439,6 @@
   --fg-3: oklch(0.62 0.01 75);
   --shadow-pop: 0 16px 40px -12px oklch(0.2 0.05 75 / 0.18), 0 0 0 1px var(--line);
 
-  /* Login-page tokens — match the Optikk handoff brand palette.
-   * "link" is brand-deep in the design (inverts on dark for legibility).
-   * "submit-fg" is the text color on the primary submit button.
-   * "focus-ring" is the input-focus shadow.
-   * "grid-line" is the soft grid overlay on the left brand panel.
-   * "headline-from/to" drives the gradient on the "Resolve before users notice." emphasis.
-   * "aside-bg" is the layered radial+linear gradient on the brand panel. */
   --login-link: #1d4ed8;
   --login-link-hover: #1e3a8a;
   --login-submit-fg: #ffffff;
@@ -492,7 +453,6 @@
     ), radial-gradient(800px 500px at 85% 90%, rgba(37, 99, 235, 0.1), transparent 60%),
     linear-gradient(180deg, #fafbff 0%, #f6f8fc 100%);
 
-  /* Mockup specific color variables */
   --ok: #10b981;
   --ok-soft: #d1fae5;
   --ok-fg: #065f46;
@@ -511,7 +471,6 @@
   background-color: var(--bg-primary);
 }
 
-/* Dark Theme — cool navy, brighter accents (Datadog-aligned dark-on-toggle) */
 [data-theme="dark"] {
   --bg-primary: #0f1117;
   --bg-secondary: #151821;
@@ -520,14 +479,12 @@
   --border-color: #2b3140;
   --border-light: rgba(255, 255, 255, 0.08);
 
-  /* Extended background tokens */
   --bg-canvas: #0f1117;
   --bg-card: #171b24;
   --bg-card-hover: #1d222e;
   --bg-inset: #12161e;
   --bg-overlay: rgba(15, 17, 23, 0.92);
 
-  /* Text tokens */
   --text-primary: #e7eaf1;
   --text-secondary: #b9c0cf;
   --text-muted: #8e96a9;
@@ -535,7 +492,6 @@
   --text-label: #8e96a9;
   --text-caption: rgba(142, 150, 169, 0.82);
 
-  /* Brand / semantic accents — brighter on dark */
   --color-primary: #3b82f6;
   --color-primary-hover: #60a5fa;
   --color-primary-active: #2563eb;
@@ -549,7 +505,6 @@
   --color-info-subtle: rgba(56, 189, 248, 0.14);
   --color-stream: #38bdf8;
 
-  /* Calm-tech status tokens */
   --color-healthy: #73c991;
   --color-healthy-glow: rgba(115, 201, 145, 0.22);
   --color-degraded: #f7b63a;
@@ -558,7 +513,6 @@
   --color-critical-glow: rgba(240, 68, 56, 0.2);
   --color-unknown: #6b7280;
 
-  /* Severity tokens */
   --severity-critical: #f04438;
   --severity-critical-subtle: rgba(240, 68, 56, 0.14);
   --severity-high: #f79009;
@@ -568,44 +522,35 @@
   --severity-info: #67b7c9;
   --severity-info-subtle: rgba(103, 183, 201, 0.16);
 
-  /* Chart */
   --chart-grid: rgba(255, 255, 255, 0.1);
   --chart-comparison: rgba(94, 169, 255, 0.45);
 
-  /* Card / surface shadows + border */
   --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
   --card-shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.34);
   --card-border: 1px solid rgba(255, 255, 255, 0.08);
 
-  /* Scrollbar */
   --scrollbar-track: #12161d;
   --scrollbar-thumb: #394254;
   --scrollbar-thumb-hover: #4a556b;
 
-  /* Glass / elevation tokens */
   --glass-bg: rgba(23, 27, 36, 0.9);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.34);
   --glass-blur: blur(12px);
 
-  /* Elevation surfaces */
   --surface-2-bg: #171b24;
   --surface-3-bg: #1d222e;
 
-  /* Shadow scale */
   --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.02), 0 10px 24px rgba(0, 0, 0, 0.24);
   --shadow-md: 0 1px 0 rgba(255, 255, 255, 0.03), 0 16px 34px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 1px 0 rgba(255, 255, 255, 0.04), 0 24px 48px rgba(0, 0, 0, 0.34);
 
-  /* Gradient text */
   --gradient-text: linear-gradient(to right, rgba(230, 237, 243, 0.95), rgba(230, 237, 243, 0.6));
 
-  /* Toast */
   --toast-bg: #1c2128;
   --toast-text: rgba(230, 237, 243, 0.9);
   --toast-border: #30363d;
 
-  /* Optikk design-handoff OKLCH tokens (dark) — surfaces + hues brighten */
   --accent: oklch(0.68 0.18 var(--accent-h));
   --accent-2: oklch(0.76 0.15 var(--accent-h));
   --accent-bg: oklch(0.68 0.18 var(--accent-h) / 0.16);
@@ -630,7 +575,6 @@
   --fg-3: oklch(0.48 0.01 270);
   --shadow-pop: 0 16px 40px -12px oklch(0 0 0 / 0.6), 0 0 0 1px var(--line);
 
-  /* Login-page tokens (dark) */
   --login-link: #93c5fd;
   --login-link-hover: #bfdbfe;
   --login-submit-fg: #0c0f14;
@@ -645,7 +589,6 @@
     ), radial-gradient(800px 500px at 85% 90%, rgba(167, 139, 250, 0.1), transparent 60%),
     linear-gradient(180deg, #0a0d12 0%, #0c0f14 100%);
 
-  /* Mockup specific color variables (dark) */
   --ok: #34d399;
   --ok-soft: rgba(52, 211, 153, 0.16);
   --ok-fg: #a7f3d0;
@@ -664,7 +607,6 @@
   background-color: var(--bg-primary);
 }
 
-/* Compact density mode */
 [data-density="compact"] {
   --space-2xs: 2px;
   --space-xs: 4px;

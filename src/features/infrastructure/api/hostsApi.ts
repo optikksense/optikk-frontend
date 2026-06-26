@@ -13,12 +13,12 @@ export type HostStatus = "healthy" | "warn" | "error";
 // is scoped to a service.
 export interface Host {
   readonly host: string;
-  readonly subsystem: string; // "kafka" | "database" | "other"
+  readonly subsystem: string;
   readonly cpu: number;
   readonly mem: number;
   readonly disk: number;
   readonly saturation: number;
-  readonly tone: string; // "ok" | "warn" | "err"
+  readonly tone: string;
   readonly zone?: string;
   readonly rps?: number;
   readonly error_rate?: number;
@@ -63,8 +63,6 @@ function range(s: RequestTime, e: RequestTime) {
   return { startTime: s, endTime: e };
 }
 
-// getHosts returns the fleet host-saturation list, or — when serviceName is
-// given — the hosts running that service enriched with RED traffic.
 export function getHosts(s: RequestTime, e: RequestTime, serviceName?: string): Promise<Host[]> {
   return api.get<Host[]>(`${V1}/infrastructure/hosts`, {
     params: serviceName ? { ...range(s, e), service: serviceName } : range(s, e),

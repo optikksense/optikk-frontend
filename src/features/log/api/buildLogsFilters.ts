@@ -61,8 +61,6 @@ export interface BuildExtras {
   readonly cursor?: string;
 }
 
-// ---------- public entry ----------
-
 export function buildLogsFilters(
   filters: readonly ExplorerFilter[],
   startTime: number,
@@ -94,8 +92,6 @@ export function buildLogsFilters(
   }
   return { body, warnings };
 }
-
-// ---------- dispatch table ----------
 
 const RESOURCE_DIMS = new Set(["service_name", "host", "pod", "container", "environment"]);
 

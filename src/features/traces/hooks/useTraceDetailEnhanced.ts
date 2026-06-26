@@ -25,7 +25,6 @@ export function useTraceDetailEnhanced(
 ) {
   const enabled = !!traceId;
 
-  // Critical path + error path always load — used for waterfall span highlighting
   const { data: criticalPathData } = useStandardQuery({
     queryKey: ["trace-critical-path", traceId],
     queryFn: () => tracesService.getCriticalPath(traceId),
@@ -38,7 +37,6 @@ export function useTraceDetailEnhanced(
     enabled,
   });
 
-  // Events — load eagerly when any span is selected (unified scroll panel)
   const { data: spanEventsData } = useStandardQuery({
     queryKey: ["trace-span-events", traceId],
     queryFn: () => tracesService.getSpanEvents(traceId),

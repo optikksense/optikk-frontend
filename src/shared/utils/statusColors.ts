@@ -14,10 +14,6 @@ export function getHealthColor(status: string): string {
   return colors[status] ?? colors.unknown;
 }
 
-/**
- * Get error rate color based on threshold.
- * @param rate
- */
 export function getErrorRateColor(rate: number): string {
   if (rate > 5) return APP_COLORS.hex_f04438;
   if (rate > 1) return APP_COLORS.hex_f79009;

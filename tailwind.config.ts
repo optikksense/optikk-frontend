@@ -8,7 +8,6 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Map existing CSS variable system into Tailwind
         border: "var(--border-color)",
         "border-light": "var(--border-light)",
         input: "var(--bg-tertiary)",
@@ -24,7 +23,6 @@ const config: Config = {
           label: "var(--text-label)",
         },
 
-        // Surface scale (theme-aware backgrounds)
         surface: {
           DEFAULT: "var(--bg-card)",
           canvas: "var(--bg-canvas)",
@@ -67,27 +65,23 @@ const config: Config = {
           foreground: "var(--text-primary)",
         },
 
-        // Semantic colors (DEFAULT + subtle background tint)
         success: { DEFAULT: "var(--color-success)", subtle: "var(--color-success-subtle)" },
         warning: { DEFAULT: "var(--color-warning)", subtle: "var(--color-warning-subtle)" },
         error: { DEFAULT: "var(--color-error)", subtle: "var(--color-error-subtle)" },
         info: { DEFAULT: "var(--color-info)", subtle: "var(--color-info-subtle)" },
 
-        // Calm-tech status hues
         healthy: "var(--color-healthy)",
         degraded: "var(--color-degraded)",
         critical: "var(--color-critical)",
         unknown: "var(--color-unknown)",
         stream: "var(--color-stream)",
 
-        // Severity
         "severity-critical": "var(--severity-critical)",
         "severity-high": "var(--severity-high)",
         "severity-medium": "var(--severity-medium)",
         "severity-low": "var(--severity-low)",
         "severity-info": "var(--severity-info)",
 
-        // Chart palette
         "chart-1": "var(--chart-1)",
         "chart-2": "var(--chart-2)",
         "chart-3": "var(--chart-3)",

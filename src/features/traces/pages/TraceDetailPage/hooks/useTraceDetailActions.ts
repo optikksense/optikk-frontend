@@ -37,7 +37,7 @@ export function useTraceDetailActions({
   const handleSpanClick = useCallback(
     (span: { span_id?: string }) => {
       const id = span.span_id ?? null;
-      // Re-clicking the open span closes the drawer (toggle behavior).
+
       const next = id && id === selectedSpanId ? null : id;
       setSelectedSpanId(next);
       writeSpanQueryParam(next);
@@ -65,10 +65,6 @@ export function useTraceDetailActions({
 
   const goBack = useCallback(() => navigate({ to: "/traces" }), [navigate]);
 
-  /**
-   * Append `key:value` token to the waterfall search bar (local in-trace filter — see plan §5).
-   * Spans not matching get dimmed by the existing search highlighter.
-   */
   const addFilter = useCallback(
     (key: string, value: string) => {
       const token = `${key}:${value}`;

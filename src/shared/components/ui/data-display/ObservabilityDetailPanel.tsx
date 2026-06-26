@@ -99,7 +99,7 @@ export function ObservabilityDetailPanel({
       style={{ backdropFilter: "var(--glass-blur)", WebkitBackdropFilter: "var(--glass-blur)" }}
       onClick={(event) => event.stopPropagation()}
     >
-      {/* Header */}
+      {}
       <div className="flex shrink-0 items-center justify-between border-[color:var(--glass-border)] border-b px-5 py-[14px]">
         <div className="flex items-center gap-2 font-semibold text-[14px] text-foreground">
           {title}
@@ -114,7 +114,7 @@ export function ObservabilityDetailPanel({
         </button>
       </div>
 
-      {/* Meta bar */}
+      {}
       {metaLine && (
         <div className="flex shrink-0 items-center gap-2 border-[color:var(--glass-border)] border-b px-5 py-2 font-mono text-[11.5px] text-muted-foreground">
           <Clock size={12} />
@@ -127,21 +127,21 @@ export function ObservabilityDetailPanel({
         </div>
       )}
 
-      {/* Summary */}
+      {}
       {(summary || summaryNode) && (
         <div className="max-h-[110px] shrink-0 overflow-y-auto break-all border-[color:var(--glass-border)] border-b bg-accent px-5 py-3 font-mono text-[color:var(--text-secondary)] text-xs leading-[1.65]">
           {summaryNode || summary}
         </div>
       )}
 
-      {/* Actions */}
+      {}
       {actions && (
         <div className="flex shrink-0 flex-wrap gap-2 border-[color:var(--glass-border)] border-b px-5 py-[10px]">
           {actions}
         </div>
       )}
 
-      {/* Tabs */}
+      {}
       <Tabs
         activeKey={tab}
         onChange={(nextTab) => setTab(nextTab as "fields" | "json")}
@@ -154,7 +154,7 @@ export function ObservabilityDetailPanel({
         ]}
       />
 
-      {/* Body */}
+      {}
       <div className="flex-1 overflow-y-auto px-5 py-3">
         {tab === "fields" && (
           <div className="flex flex-col">

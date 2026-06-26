@@ -30,11 +30,9 @@ export default function TimeRangePicker() {
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
   const [selectingMode, setSelectingMode] = useState(false);
 
-  // Time input fields
   const [fromStr, setFromStr] = useState(fmtDatetime(new Date(now.getTime() - 3600000)));
   const [toStr, setToStr] = useState(fmtDatetime(now));
 
-  // Outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setOpen(false);
@@ -43,7 +41,6 @@ export default function TimeRangePicker() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Escape key
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -112,7 +109,6 @@ export default function TimeRangePicker() {
   const isActivePreset = (preset: string): boolean =>
     timeRange.kind === "relative" && timeRange.preset === preset;
 
-  // Current expression display
   const fromExpr =
     timeRange.kind === "relative"
       ? `now-${timeRange.preset}`
@@ -121,7 +117,7 @@ export default function TimeRangePicker() {
 
   return (
     <div className="relative inline-flex" ref={wrapperRef}>
-      {/* Trigger button */}
+      {}
       <button
         type="button"
         className={cn(
@@ -152,7 +148,7 @@ export default function TimeRangePicker() {
           aria-label="Time range picker"
           data-testid="time-range-dropdown"
         >
-          {/* Tabs */}
+          {}
           <div className="flex border-border border-b">
             <button
               type="button"
@@ -182,7 +178,7 @@ export default function TimeRangePicker() {
 
           {activeTab === "relative" ? (
             <div className="flex flex-col">
-              {/* Current range expression bar */}
+              {}
               <div className="border-border border-b bg-background px-4 py-3">
                 <div className="flex items-center gap-3">
                   <div className="flex-1">
@@ -205,7 +201,7 @@ export default function TimeRangePicker() {
                 </div>
               </div>
 
-              {/* Quick ranges grid by group */}
+              {}
               <div className="overflow-y-auto p-3" style={{ maxHeight: 340 }}>
                 {RANGE_GROUPS.map((group, groupIdx) => (
                   <div key={group.title} className={cn(groupIdx > 0 && "mt-3")}>
@@ -244,7 +240,6 @@ export default function TimeRangePicker() {
               </div>
             </div>
           ) : (
-            /* Absolute tab — Calendar + time inputs */
             <div className="flex flex-col">
               <DualCalendar
                 leftMonth={leftMonth}
@@ -257,7 +252,7 @@ export default function TimeRangePicker() {
                 onHoverDate={setHoverDate}
               />
 
-              {/* From / To inputs + Apply */}
+              {}
               <div className="border-border border-t px-3 pt-1 pb-3">
                 <div className="mt-3 flex gap-3">
                   <div className="flex flex-1 flex-col gap-1">

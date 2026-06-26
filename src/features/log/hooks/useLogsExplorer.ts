@@ -48,7 +48,6 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
 
-  // Zustand pagination state
   const pageIndex = useLogsExplorerStore((s) => s.pageIndex);
   const cursors = useLogsExplorerStore((s) => s.cursors);
   const hasMore = useLogsExplorerStore((s) => s.hasMore);
@@ -60,19 +59,16 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const filtersJson = useMemo(() => JSON.stringify(explorerState.filters), [explorerState.filters]);
   const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
 
-  // Base key for the list query — stable across auto-refresh
   const listBaseKey = useMemo(
     () => ["logs", teamId ?? "none", timeRangeKey, filtersJson] as const,
     [teamId, timeRangeKey, filtersJson]
   );
 
-  // Base key for analytics queries — includes refreshKey for auto-refresh
   const analyticsBaseKey = useMemo(
     () => ["logs-analytics", teamId ?? "none", refreshKey, timeRangeKey, filtersJson] as const,
     [teamId, refreshKey, timeRangeKey, filtersJson]
   );
 
-  // Reset pagination when filters or time range change
   const prevListBaseKeyRef = useRef(listBaseKey);
   useEffect(() => {
     const prev = prevListBaseKeyRef.current;
@@ -82,12 +78,6 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
     }
   }, [listBaseKey, resetPagination]);
 
-  // Analytics queries auto-refresh via refreshKey in their query key.
-  // List queries do NOT auto-refresh — cursor pagination is tied to specific
-  // time bounds and invalidation would shift the data window, corrupting cursors.
-
-  // Build analytics args at fetch time — resolves relative time ranges
-  // against the current clock so each refetch uses up-to-date bounds.
   const buildAnalyticsArgs = useCallback((): LogsAnalyticsArgs => {
     const { startTime, endTime } = resolveTimeBounds(timeRange);
     return { startTime, endTime, filters: explorerState.filters };
@@ -95,8 +85,6 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
 
   const limit = args.limit ?? DEFAULT_PAGE_SIZE;
 
-  // Single-page list query: key includes cursor so each page is its own query.
-  // Previous pages stay in TanStack cache for instant back-navigation.
   const listQuery = useStandardQuery({
     queryKey: [...listBaseKey, "list", limit, currentCursor ?? "page0"],
     queryFn: () => {
@@ -106,9 +94,6 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
     enabled: args.enabled ?? true,
   });
 
-  // Record the response cursor ONLY when the data is fresh for THIS page.
-  // `isPlaceholderData` is true when keepPreviousData is showing the old page's
-  // data during a page transition — we must NOT record that stale cursor.
   const listData = listQuery.data;
   const isPlaceholder = listQuery.isPlaceholderData;
   useEffect(() => {

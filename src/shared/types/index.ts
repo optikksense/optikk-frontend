@@ -12,33 +12,29 @@ export interface RelativeTimeRange {
 
 export interface AbsoluteTimeRange {
   kind: "absolute";
-  startMs: number; // Unix ms
-  endMs: number; // Unix ms
+  startMs: number;
+  endMs: number;
   label: string;
 }
 
 export type TimeRange = RelativeTimeRange | AbsoluteTimeRange;
 
-/** Helper to check if a range is relative */
 export function isRelativeRange(r: TimeRange): r is RelativeTimeRange {
   return r.kind === "relative";
 }
 
-/** Helper to check if a range is absolute */
 export function isAbsoluteRange(r: TimeRange): r is AbsoluteTimeRange {
   return r.kind === "absolute";
 }
 
-/** Resolve any TimeRange to absolute start/end ms bounds */
 export function resolveTimeRangeBounds(r: TimeRange): { startTime: number; endTime: number } {
   if (r.kind === "absolute") {
     return { startTime: r.startMs, endTime: r.endMs };
   }
-  const now = Math.floor(Date.now() / 10_000) * 10_000; // stabilize to 10 seconds
+  const now = Math.floor(Date.now() / 10_000) * 10_000;
   return { startTime: now - r.minutes * 60_000, endTime: now };
 }
 
-/** Compute duration in ms for any TimeRange */
 export function timeRangeDurationMs(r: TimeRange): number {
   if (r.kind === "absolute") return r.endMs - r.startMs;
   return r.minutes * 60_000;

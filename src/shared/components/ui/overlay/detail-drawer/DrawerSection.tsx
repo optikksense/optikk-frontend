@@ -10,7 +10,6 @@ interface DrawerSectionProps {
   readonly className?: string;
 }
 
-/** Section label ("label-up" style) + optional trailing action. */
 export function DrawerSection({ title, action, children, className }: DrawerSectionProps) {
   return (
     <section className={cn("mb-5", className)}>

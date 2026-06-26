@@ -51,10 +51,10 @@ export default function BoardSkeleton({
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-      {/* scroll wrapper */}
+      {}
       <div className="h-full min-w-0 overflow-auto">
         <div className="min-w-full" style={{ width: "max-content", minWidth: tableMinWidth }}>
-          {/* header */}
+          {}
           <div
             className="sticky top-0 z-20 flex select-none border-[color:var(--glass-border)] border-b bg-accent p-0 font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.05em]"
             style={{ width: "max-content", minWidth: "100%" }}
@@ -77,7 +77,7 @@ export default function BoardSkeleton({
               </div>
             )}
           </div>
-          {/* rows */}
+          {}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {Array.from({ length: rowCount }).map((_, index) => (
               <div

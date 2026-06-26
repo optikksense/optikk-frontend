@@ -62,7 +62,6 @@ interface DrawerAttrTableProps {
   readonly searchable?: boolean;
 }
 
-/** Grouped, filterable, copyable attribute table (design `DdAttrTable`). */
 export function DrawerAttrTable({ groups, searchable = true }: DrawerAttrTableProps) {
   const [q, setQ] = useState("");
   const norm = q.trim().toLowerCase();

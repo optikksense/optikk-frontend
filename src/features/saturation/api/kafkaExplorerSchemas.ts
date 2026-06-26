@@ -37,8 +37,6 @@ export const topicBacklogSchema = z
   })
   .strict();
 
-// ----------------- GROUP DOMAINS -----------------
-
 export const groupPartitionsSchema = z
   .object({
     consumer_group: stringValue,
@@ -77,8 +75,6 @@ export const groupHealthSchema = z
   })
   .strict();
 
-// ----------------- DETAIL INTERSECTIONS -----------------
-
 export const topicGroupThroughputSchema = z
   .object({
     consumer_group: stringValue,
@@ -106,8 +102,6 @@ export const groupTopicSchema = z
     lead: numericValue,
   })
   .strict();
-
-// ----------------- LEGACY & OTHERS -----------------
 
 export const kafkaPartitionRowSchema = z
   .object({
@@ -159,8 +153,6 @@ export const kafkaGroupTrendPointSchema = z
   })
   .strict();
 
-// ----------------- TYPES -----------------
-
 export type TopicThroughputRow = z.infer<typeof topicThroughputSchema>;
 export type TopicLagRow = z.infer<typeof topicLagSchema>;
 export type TopicConsumersRow = z.infer<typeof topicConsumersSchema>;
@@ -178,8 +170,6 @@ export type GroupTopicRow = z.infer<typeof groupTopicSchema>;
 export type KafkaPartitionRow = z.infer<typeof kafkaPartitionRowSchema>;
 export type KafkaSummary = z.infer<typeof kafkaSummarySchema>;
 export type ClusterHealthRow = z.infer<typeof clusterHealthSchema>;
-
-// ----------------- UI JOINED TYPES -----------------
 
 export type KafkaTopicRow = TopicThroughputRow & TopicLagRow & TopicConsumersRow & TopicBacklogRow;
 

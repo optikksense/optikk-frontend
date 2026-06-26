@@ -6,21 +6,16 @@ export interface DslCompletionContext {
   readonly kind: DslCompletionKind;
   /** Characters before the caret that belong to the current token. */
   readonly tokenPrefix: string;
-  /** For value/attribute/operator: the field key to suggest against. */
+
   readonly field: string | null;
-  /** Caret position (absolute in the full input). */
+
   readonly caret: number;
-  /** Offset where the current token started (for replace-range on accept). */
+
   readonly tokenStart: number;
-  /** Bare token under the caret that should surface a "Search body for: …" hint. */
+
   readonly bodyHintToken?: string;
 }
 
-/**
- * Classifies what the user is typing at the caret so the popover knows whether
- * to suggest field names, value options, custom attribute keys, an operator
- * for a known field, or the empty-state sections (recents / saved / templates).
- */
 export function dslContextAtCaret(
   input: string,
   caret: number,
@@ -34,8 +29,6 @@ export function dslContextAtCaret(
   const tokenStart = lastWsIdx + 1;
   const token = head.slice(tokenStart);
 
-  // Caret at end-of-input following a known key + whitespace → operator mode.
-  // e.g. "service_name " (trailing space). Token here is empty; look back to the prior token.
   if (token === "" && lastWsIdx >= 0) {
     const prev = priorToken(head, lastWsIdx);
     if (prev !== null) {
@@ -85,7 +78,6 @@ export function dslContextAtCaret(
 }
 
 function priorToken(head: string, lastWsIdx: number): string | null {
-  // Walk back from the whitespace at lastWsIdx to find the token that ended there.
   let end = lastWsIdx;
   while (end > 0 && (head[end - 1] === " " || head[end - 1] === "\t")) end -= 1;
   if (end === 0) return null;
@@ -106,7 +98,6 @@ function stripNegation(token: string): string {
   return token.startsWith("-") ? token.slice(1) : token;
 }
 
-/** Top-K field keys matching a prefix (case-insensitive), for the field dropdown. */
 export function matchingFields(
   prefix: string,
   fields: readonly KnownField[] = TRACE_KNOWN_FIELDS

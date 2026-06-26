@@ -22,11 +22,6 @@ export function toTrendBuckets(
   }));
 }
 
-/**
- * Default severity/status series palette for the trend strip. Ordered so
- * errors render on top (last in AlignedData = topmost z). Callers can pass
- * a subset when a scope only tracks totals + errors (e.g. traces).
- */
 export const LOG_TREND_SERIES: readonly TrendLegendItem[] = [
   { key: "total", label: "Total", color: "#8e96a9" },
   { key: "warnings", label: "Warnings", color: "#f2cc0c" },

@@ -103,7 +103,7 @@ export default function QueueMetricsList({
   queues = [],
   selectedQueues = [],
   onToggle,
-  type = "depth", // 'depth', 'consumerLag', 'productionRate', 'consumptionRate'
+  type = "depth",
   drawerAction,
   currentPathname = "",
   currentSearch = "",
@@ -161,7 +161,6 @@ export default function QueueMetricsList({
                 queue
               );
 
-              // Find max value in list for proportional bar calculation
               const getVal = (q: QueueMetricsItem) => {
                 if (type === "consumerLag") return q.max_consumer_lag ?? 0;
                 if (type === "productionRate") return q.avg_publish_rate ?? 0;
@@ -173,7 +172,6 @@ export default function QueueMetricsList({
               const pct = (currentVal / maxValInList) * 100;
               const barWidth = Math.max(Math.min(pct, 100), 2);
 
-              // Gradient based on type
               const barBg =
                 type === "consumerLag"
                   ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
@@ -223,7 +221,7 @@ export default function QueueMetricsList({
                         </span>
                       )}
                     </div>
-                    {/* Proportional Gradient Intensity Bar */}
+                    {}
                     <div
                       style={{
                         width: "100%",

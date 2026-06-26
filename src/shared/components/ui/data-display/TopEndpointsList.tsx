@@ -86,7 +86,7 @@ export default function TopEndpointsList({
   endpoints = [],
   selectedEndpoints = [],
   onToggle,
-  type = "requests", // 'requests', 'errorRate', 'latency'
+  type = "requests",
   drawerAction,
   currentPathname = "",
   currentSearch = "",
@@ -142,7 +142,6 @@ export default function TopEndpointsList({
                 endpoint
               );
 
-              // Find max value in list for proportional bar calculation
               const getVal = (ep: TopEndpointListItem) =>
                 type === "errorRate"
                   ? (ep.errorRate ?? ep.value ?? 0)
@@ -154,7 +153,6 @@ export default function TopEndpointsList({
               const pct = (currentVal / maxValInList) * 100;
               const barWidth = Math.max(Math.min(pct, 100), 2);
 
-              // Gradient based on type (Error rate/Hotspot uses orange->red)
               const barBg =
                 type === "errorRate"
                   ? `linear-gradient(90deg, ${APP_COLORS.hex_f79009} 0%, ${APP_COLORS.hex_f04438} 100%)`
@@ -202,7 +200,7 @@ export default function TopEndpointsList({
                         </span>
                       )}
                     </div>
-                    {/* Proportional Gradient Intensity Bar */}
+                    {}
                     <div
                       style={{
                         width: "100%",

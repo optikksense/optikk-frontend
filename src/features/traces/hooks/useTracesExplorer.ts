@@ -72,7 +72,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     if (!trendQuery.data) return undefined;
     const total = trendQuery.data.reduce((sum, b) => sum + (Number(b.total) || 0), 0);
     const errors = trendQuery.data.reduce((sum, b) => sum + (Number(b.errors) || 0), 0);
-    // ExplorerSummary expects { total: number, errors: number }
+
     return { total, errors };
   }, [trendQuery.data]);
 

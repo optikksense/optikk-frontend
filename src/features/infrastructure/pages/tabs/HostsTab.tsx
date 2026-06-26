@@ -99,7 +99,6 @@ export default function HostsTab() {
       }
       if (key === "region") {
         return nodes.filter((n) => {
-          // host id map
           const region =
             n.host.includes("2") || n.host.includes("4") || n.host.includes("worker2")
               ? "us-east-1b"
@@ -146,7 +145,7 @@ export default function HostsTab() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* KPI strip */}
+      {}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <KpiCard
           label="Hosts up"
@@ -158,10 +157,10 @@ export default function HostsTab() {
         <KpiCard label="Avg Mem" value={avgMemVal} subtext="fleet" />
       </div>
 
-      {/* Filter search bar */}
+      {}
       <InfraHostsFilterBar hosts={nodes} value={q} onChange={setQ} />
 
-      {/* Hosts list */}
+      {}
       <div className="min-w-0">
         {filtered.length === 0 ? (
           <div className="grid h-[200px] place-items-center rounded-md border border-border bg-card text-[12px] text-foreground-muted">
@@ -172,7 +171,7 @@ export default function HostsTab() {
         )}
       </div>
 
-      {/* Bottom cards panel */}
+      {}
       <InfraTopConsumersSidebar onOpenHost={onOpenNode} summary={summary} />
     </div>
   );

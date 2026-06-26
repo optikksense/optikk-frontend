@@ -55,7 +55,6 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
     };
   }, [traces]);
 
-  // Filter traces client-side
   const filteredTraces = useMemo(() => {
     return traces.filter((t) => {
       if (filter === "errors") {

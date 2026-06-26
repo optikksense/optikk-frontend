@@ -24,7 +24,6 @@ function highlight(data: unknown): string {
   );
 }
 
-/** JSON viewer with light syntax coloring + copy (design `DdJson`). */
 export function DrawerJson({ data }: DrawerJsonProps) {
   const html = useMemo(() => highlight(data), [data]);
   return (
@@ -43,7 +42,6 @@ export function DrawerJson({ data }: DrawerJsonProps) {
       </div>
       <pre
         className="m-0 overflow-x-auto whitespace-pre p-[12px_14px] font-mono text-[12px] text-[var(--fg-1)] leading-[1.55]"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: tokens-only syntax spans over JSON.stringify output
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

@@ -35,19 +35,15 @@ export function useTraceDetailState() {
 
   const traceTimeBounds = useMemo(() => computeTraceTimeBounds(data.spans), [data.spans]);
 
-  // Per-trace service map (services + service-to-service call edges) for the
-  // Service map tab, with RED p95/p99 layered in over the trace's time window.
   const serviceMap = useTraceServiceMap(
     traceIdParam,
     traceTimeBounds.startMs ?? 0,
     traceTimeBounds.endMs ?? 0,
     activeTab === "servicemap"
   );
-  // Error groups only matter when the errors tab is open.
+
   const traceErrors = useTraceErrors(traceIdParam, activeTab === "errors");
 
-  // The span drawer's Info tab folds in related traces, so load them whenever a
-  // span is selected (the enhanced hook gates `related-traces` on this value).
   const enhancedTab = data.selectedSpanId ? "related" : "attributes";
 
   const enhanced = useTraceDetailEnhanced(

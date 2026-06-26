@@ -38,7 +38,7 @@ export function OptikkLogo({ size = 24, className, title }: OptikkLogoProps) {
       {/* Rounded square background */}
       <rect width="512" height="512" rx="80" fill={`url(#${gradientId})`} />
 
-      {/* Top diamond */}
+      {}
       <polygon
         points="256,95 390,165 256,235 122,165"
         fill="none"
@@ -47,7 +47,7 @@ export function OptikkLogo({ size = 24, className, title }: OptikkLogoProps) {
         strokeLinejoin="round"
       />
 
-      {/* Middle layer */}
+      {}
       <polyline
         points="140,220 256,280 372,220"
         fill="none"
@@ -57,7 +57,7 @@ export function OptikkLogo({ size = 24, className, title }: OptikkLogoProps) {
         strokeLinejoin="round"
       />
 
-      {/* Bottom layer */}
+      {}
       <polyline
         points="140,280 256,340 372,280"
         fill="none"

@@ -220,7 +220,7 @@ export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
     telemetry.track("api_contract_violation", {
       errors: result.error.flatten(),
       endpoint: options.context,
-      version: "1.0.0", // APP_VERSION mock
+      version: "1.0.0",
     });
 
     throw createContractError(message, {

@@ -14,7 +14,7 @@ import { resolveApiBaseURL } from "../api/baseUrl";
 const teamSchema = z.object({
   id: z.number(),
   name: z.string().min(1),
-  // Backend sends these as plain strings; unset values arrive as "".
+
   slug: z.string().nullish(),
   color: z.string().nullish(),
   orgName: z.string().nullish(),
@@ -80,7 +80,6 @@ function unwrapSession(responseBody: unknown): SessionPayload {
   const candidate = envelope.success ? envelope.data.data : responseBody;
   const payload = sessionPayloadSchema.safeParse(candidate);
   if (!payload.success) {
-    // TEMP DIAGNOSTIC — remove after debugging login parse failure.
     console.error("[unwrapSession] envelope.success:", envelope.success);
     console.error("[unwrapSession] raw responseBody:", responseBody);
     console.error("[unwrapSession] candidate passed to schema:", candidate);
@@ -101,7 +100,6 @@ export const authApi = {
     }
   },
 
-  /** Exchanges the httpOnly refresh cookie for a fresh session payload. */
   async refresh(): Promise<SessionPayload> {
     try {
       const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.REFRESH);

@@ -23,7 +23,6 @@ export const LEVEL_LABEL: Record<Level, string> = {
   err: "critical",
 };
 
-// Compact rate formatting (24.1k / 1.2M), mirroring the design.
 export function fmtRate(n: number): string {
   if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
   if (n >= 1e3) return `${(n / 1e3).toFixed(n >= 1e4 ? 0 : 1)}k`;
@@ -47,12 +46,10 @@ export interface KafkaService {
   produces: { topic: string; rate: number }[];
   consumes: ServiceConsume[];
   status: Level;
-  rate: number; // total produce + consume throughput
-  errorRate: number; // worst observed
+  rate: number;
+  errorRate: number;
 }
 
-// deriveServices folds the topology into a client (service) roster so the
-// topology map, pathways table and drawers stay in sync.
 export function deriveServices(topo: KafkaTopology): KafkaService[] {
   const map = new Map<string, KafkaService>();
   const ensure = (id: string): KafkaService => {

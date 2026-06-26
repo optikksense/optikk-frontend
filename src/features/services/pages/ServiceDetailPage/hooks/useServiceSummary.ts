@@ -39,10 +39,6 @@ function extractServiceRow(row: ServiceSummaryResponse | undefined): ServiceSumm
   };
 }
 
-/**
- * Per-service summary for the current window plus the prior comparison window.
- * `previous` powers the KPI deltas and latency baselines.
- */
 export function useServiceSummary(serviceName: string, _windowMs?: number) {
   const query = useTimeRangeQuery<ComparisonPayload<ServiceSummaryResponse>>(
     `service-detail.summary:${serviceName}`,

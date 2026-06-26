@@ -8,7 +8,6 @@ export const CONFLICT = "CONFLICT" as const;
 export const RATE_LIMITED = "RATE_LIMITED" as const;
 export const PAYLOAD_TOO_LARGE = "PAYLOAD_TOO_LARGE" as const;
 
-// Server & infrastructure errors (5xx)
 export const INTERNAL_ERROR = "INTERNAL_ERROR" as const;
 export const QUERY_FAILED = "QUERY_FAILED" as const;
 export const QUERY_TIMEOUT = "QUERY_TIMEOUT" as const;
@@ -16,11 +15,9 @@ export const CONNECTION_ERROR = "CONNECTION_ERROR" as const;
 export const SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE" as const;
 export const CIRCUIT_OPEN = "CIRCUIT_OPEN" as const;
 
-// Data-level codes
 export const NO_DATA = "NO_DATA" as const;
 export const PARTIAL_DATA = "PARTIAL_DATA" as const;
 
-// Network-level (frontend-only, set by interceptor)
 export const NETWORK_ERROR = "NETWORK_ERROR" as const;
 export const REQUEST_CANCELLED = "REQUEST_CANCELLED" as const;
 export const UNKNOWN_ERROR = "UNKNOWN_ERROR" as const;
@@ -46,7 +43,6 @@ export type ErrorCode =
   | typeof REQUEST_CANCELLED
   | typeof UNKNOWN_ERROR;
 
-/** Human-readable labels for each error code */
 export const ERROR_CODE_LABELS: Record<ErrorCode, string> = {
   BAD_REQUEST: "Invalid request",
   VALIDATION_ERROR: "Validation failed",

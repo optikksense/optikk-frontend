@@ -18,7 +18,6 @@ export function HeatmapRenderer({
   const yKey = chartConfig.yKey || "service_name";
   const valueKey = chartConfig.valueKey || "error_rate";
 
-  // All useMemo calls must be before conditional returns
   const xValues = useMemo(
     () => Array.from(new Set(rows.map((r: any) => String(r[xKey] ?? "")))).slice(0, 20),
     [rows, xKey]
@@ -100,7 +99,6 @@ export function HeatmapRenderer({
     return out;
   }, [yValues, xValues, lookup]);
 
-  // Conditional return AFTER all hooks
   if (rows.length === 0) {
     return (
       <div className="text-muted" style={{ textAlign: "center", padding: 32 }}>

@@ -20,7 +20,7 @@ function ExpandedLogRowComponent({ row }: Props) {
   return (
     <div className="animate-[expandRow_200ms_ease-out] overflow-hidden border-border border-t bg-surface-inset">
       <div className="px-6 py-3">
-        {/* Full body text */}
+        {}
         <div className="group/body relative mb-3">
           <div className="flex items-center justify-between pb-1">
             <span className="font-semibold text-[10px] text-foreground-muted uppercase tracking-wider">
@@ -39,7 +39,7 @@ function ExpandedLogRowComponent({ row }: Props) {
           </pre>
         </div>
 
-        {/* JSON tree if body is valid JSON */}
+        {}
         {parsed ? (
           <div>
             <span className="mb-1.5 block font-semibold text-[10px] text-foreground-muted uppercase tracking-wider">
@@ -51,7 +51,7 @@ function ExpandedLogRowComponent({ row }: Props) {
           </div>
         ) : null}
 
-        {/* Quick attributes */}
+        {}
         {row.trace_id || row.span_id ? (
           <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1">
             {row.trace_id ? (

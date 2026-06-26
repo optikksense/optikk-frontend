@@ -14,15 +14,11 @@ export function tryParseJson(text: string): Record<string, unknown> | unknown[] 
       if (typeof parsed === "object" && parsed !== null) {
         return parsed as Record<string, unknown> | unknown[];
       }
-    } catch {
-      // not valid JSON
-    }
+    } catch {}
   }
   return null;
 }
 
-/** Quick check without parsing — cheaper for row rendering where we only
- *  need to show a JSON icon indicator. */
 export function looksLikeJson(text: string): boolean {
   const t = text.trimStart();
   return (t.startsWith("{") && t.includes(":")) || (t.startsWith("[") && t.includes(","));

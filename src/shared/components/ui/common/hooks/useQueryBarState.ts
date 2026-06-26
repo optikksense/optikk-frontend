@@ -56,7 +56,6 @@ export function useQueryBarState({
   setFilters,
   onClearAll,
 }: UseQueryBarStateOptions) {
-  // 0=closed, 1=pick field, 2=pick operator, 3=enter value
   const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
   const [pendingField, setPendingField] = useState<QueryField | null>(null);
   const [pendingOp, setPendingOp] = useState<QueryOperator | null>(null);
@@ -185,7 +184,6 @@ export function useQueryBarState({
       }
     }
 
-    // Tab to autocomplete if only one field matches
     if (step === 1 && event.key === "Tab") {
       const filtered = fieldSearch
         ? fields.filter(

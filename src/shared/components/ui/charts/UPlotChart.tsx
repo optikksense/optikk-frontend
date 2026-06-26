@@ -18,9 +18,9 @@ export interface UPlotChartProps {
   className?: string;
   /** Pass a shared uPlot.SyncPubSub instance to synchronize cursors across charts */
   syncKey?: uPlot.SyncPubSub;
-  /** Called when user drag-selects a time range on the chart */
+
   onTimeBrush?: (startMs: number, endMs: number) => void;
-  /** Vertical dashed lines (deployment markers, incidents, annotations). */
+
   markers?: readonly ChartMarker[];
   tooltipContent?: (params: { u: uPlot; idx: number; data: uPlot.AlignedData }) => {
     title?: string;
@@ -45,9 +45,6 @@ function isAlignedDataShapeCompatible(next: uPlot.AlignedData, prev: uPlot.Align
   return true;
 }
 
-/**
- * Generic uPlot wrapper with auto-resize, theme-aware defaults, and cleanup.
- */
 function UPlotChart({
   options,
   data,
@@ -62,11 +59,10 @@ function UPlotChart({
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<uPlot | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  /** Latest series for tooltips / hooks without re-merging options on every data tick */
+
   const dataRef = useRef(data);
   dataRef.current = data;
 
-  /** Theme change must rebuild the chart so draw-time color functions re-resolve. */
   const theme = useTheme();
 
   const [hoverState, setHoverState] = useState<{
@@ -76,7 +72,6 @@ function UPlotChart({
     rows: Array<{ label: string; value: string; color?: string }>;
   } | null>(null);
 
-  /** When this changes, uPlot options/geometry must be rebuilt (not just setData). */
   const structureKey = useMemo(
     () =>
       [
@@ -101,7 +96,6 @@ function UPlotChart({
     ]
   );
 
-  // Memoize the merged options to avoid unnecessary re-renders
   const mergedOptions = useMemo(() => {
     const existingHooks = options.hooks ?? {};
     const setCursorHooks = existingHooks.setCursor ?? [];
@@ -110,7 +104,7 @@ function UPlotChart({
 
     return {
       ...options,
-      width: 100, // will be resized immediately
+      width: 100,
       height: fillHeight ? Math.max(height, 180) : height,
       cursor: {
         drag: { x: true, y: false, setScale: !onTimeBrush },
@@ -127,11 +121,11 @@ function UPlotChart({
                 (u: uPlot) => {
                   const left = u.select.left;
                   const width = u.select.width;
-                  if (width < 10) return; // ignore tiny drags
+                  if (width < 10) return;
                   const startMs = u.posToVal(left, "x") * 1000;
                   const endMs = u.posToVal(left + width, "x") * 1000;
                   if (startMs < endMs) onTimeBrush(startMs, endMs);
-                  // Reset the selection rectangle
+
                   u.setSelect({ left: 0, width: 0, top: 0, height: 0 }, false);
                 },
               ]
@@ -177,10 +171,8 @@ function UPlotChart({
     };
   }, [options, height, fillHeight, tooltipContent, syncKey, onTimeBrush, markers]);
 
-  /** Bumps when `data` series shape changes so the structural effect rebuilds the chart. */
   const [dataLayoutVersion, setDataLayoutVersion] = useState(0);
 
-  /** Mount / rebuild chart when structure/options change. `data` is not a dep — data-only updates use `setData` in a separate effect. */
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -224,7 +216,6 @@ function UPlotChart({
     };
   }, [mergedOptions, height, fillHeight, structureKey, dataLayoutVersion]);
 
-  /** Data-only refetch: update series in place without destroying the canvas. */
   useEffect(() => {
     const u = chartRef.current;
     if (!u) return;

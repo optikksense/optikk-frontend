@@ -10,12 +10,6 @@ import { tracesService } from "../api/tracesApi";
 // 1-minute rollup returns the bucket(s) covering the trace.
 const MINUTE_MS = 60_000;
 
-/**
- * Per-trace service map in the shared topology shape (nodes = services with
- * span/error counts, edges = service-to-service calls). The trace itself has no
- * latency distribution, so p95/p99 are layered in from the RED summary over the
- * trace's time window, keyed by service name.
- */
 export function useTraceServiceMap(
   traceId: string,
   startMs: number,

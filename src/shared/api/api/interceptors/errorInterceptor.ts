@@ -101,8 +101,6 @@ export function attachErrorInterceptor(instance: AxiosInstance): number {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         const config = error.config as RetriableConfig | undefined;
         if (config && !config._retried && !isAuthEndpoint(config.url)) {
-          // Refresh failure tears the session down inside session.ts;
-          // SessionExpiryRedirect handles navigation from there.
           const token = await session.refreshAccessToken();
           if (token != null) {
             config._retried = true;

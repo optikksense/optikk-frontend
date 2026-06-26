@@ -11,12 +11,6 @@ interface DrawerShellProps {
   readonly footer?: ReactNode;
 }
 
-/**
- * The single modal slide-over scaffold shared by the Logs / Traces / Services
- * detail drawers. Modal mechanics (backdrop, slide-from-right, Esc, click-out)
- * come from `SidePanel mode="modal"`; this only adds the canvas column and an
- * optional sticky footer slot.
- */
 export function DrawerShell({ open, onClose, width = 560, children, footer }: DrawerShellProps) {
   return (
     <SidePanel

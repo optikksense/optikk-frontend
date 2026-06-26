@@ -46,7 +46,6 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     ),
   },
   {
-    // Server already orders by total error count over the selected range; no client sorter.
     title: "Errors",
     key: "error_count",
     width: 100,

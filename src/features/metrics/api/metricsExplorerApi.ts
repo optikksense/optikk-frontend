@@ -112,13 +112,9 @@ export interface MetricExplorerQueryRequest {
   }>;
 }
 
-// Response types (inferred from schemas)
-
 export type MetricNamesResponse = z.infer<typeof metricNamesResponseSchema>;
 export type MetricTagsResponse = z.infer<typeof metricTagsResponseSchema>;
 export type MetricsExplorerResponse = z.infer<typeof metricsExplorerResponseSchema>;
-
-// API functions
 
 export const metricsExplorerApi = {
   async getMetricNames(params: MetricNamesRequest): Promise<MetricNamesResponse> {

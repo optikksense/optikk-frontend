@@ -40,30 +40,15 @@ function endOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
 }
 
-/**
- * Parse a time expression into a TimeRange.
- *
- * Supported formats:
- * - Grafana-style: "now-6h", "now-2d", "now-30m"
- * - Preset shortcuts: "5m", "1h", "7d", "30d"
- * - Natural language: "last 2 hours", "last 30 minutes", "last 7 days"
- * - Named periods: "yesterday", "today", "this week", "last week"
- * - Day names: "last tuesday", "last monday"
- * - Absolute: "2024-03-15 14:00 to 2024-03-15 18:00"
- *
- * Returns null if the input cannot be parsed.
- */
 export function parseTimeExpression(input: string): TimeRange | null {
   const trimmed = input.trim().toLowerCase();
   if (!trimmed) return null;
 
-  // 1. Direct preset match: "5m", "1h", "7d"
   const directPreset = ALL_PRESETS.find(
     (p) => p.preset === trimmed || p.label.toLowerCase() === trimmed
   );
   if (directPreset) return directPreset;
 
-  // 2. Grafana-style: "now-6h", "now-30m", "now-2d"
   const grafanaMatch = /^now-(\d+)(m|h|d|w)$/.exec(trimmed);
   if (grafanaMatch) {
     const num = Number.parseInt(grafanaMatch[1], 10);
@@ -74,7 +59,6 @@ export function parseTimeExpression(input: string): TimeRange | null {
     }
   }
 
-  // 3. "last N <unit>" pattern
   const lastNMatch = /^last\s+(\d+)\s+(\w+)$/.exec(trimmed);
   if (lastNMatch) {
     const num = Number.parseInt(lastNMatch[1], 10);
@@ -85,7 +69,6 @@ export function parseTimeExpression(input: string): TimeRange | null {
     }
   }
 
-  // 4. "<N><unit>" shorthand: "2h", "30m", "3d"
   const shorthandMatch = /^(\d+)(m|h|d|w)$/.exec(trimmed);
   if (shorthandMatch) {
     const num = Number.parseInt(shorthandMatch[1], 10);
@@ -96,7 +79,6 @@ export function parseTimeExpression(input: string): TimeRange | null {
     }
   }
 
-  // 5. Named periods
   const now = new Date();
   switch (trimmed) {
     case "today": {
@@ -156,7 +138,6 @@ export function parseTimeExpression(input: string): TimeRange | null {
     }
   }
 
-  // 6. "last <dayname>" — e.g., "last tuesday"
   const lastDayMatch = /^last\s+(\w+)$/.exec(trimmed);
   if (lastDayMatch) {
     const dayIndex = DAY_NAMES.indexOf(lastDayMatch[1]);
@@ -175,7 +156,6 @@ export function parseTimeExpression(input: string): TimeRange | null {
     }
   }
 
-  // 7. Absolute range: "YYYY-MM-DD HH:mm to YYYY-MM-DD HH:mm"
   const toSplit = trimmed.split(/\s+to\s+/);
   if (toSplit.length === 2) {
     const startDate = new Date(toSplit[0].replace(" ", "T"));
@@ -197,10 +177,6 @@ export function parseTimeExpression(input: string): TimeRange | null {
   return null;
 }
 
-/**
- * Filter presets that match the given search query.
- * Used for the autocomplete dropdown in the time input.
- */
 export function filterPresets(query: string): RelativeTimeRange[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];

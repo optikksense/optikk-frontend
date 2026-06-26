@@ -35,11 +35,6 @@ export interface EmptyTip {
   text: ReactNode;
 }
 
-// RenderRowContext is imported from ./types
-
-/**
- * Calculates board height for a fixed number of data rows.
- */
 export function boardHeight(pageSize: number): number {
   return pageSize * BOARD_ROW_HEIGHT + BOARD_CHROME_HEIGHT;
 }
@@ -80,8 +75,6 @@ export interface BoardDataState<RowType> {
   serverTotal?: number;
 }
 
-// BoardPaginationState is imported from ./types
-
 export interface BoardConfig<RowType> {
   columns?: BoardColumn[];
   rowKey?: (row: RowType, index: number) => string | number;
@@ -106,9 +99,6 @@ export interface ObservabilityDataBoardProps<
   actions?: BoardActions<RowType>;
 }
 
-/**
- * Generic observability data board with column controls, export, and incremental loading.
- */
 export default function ObservabilityDataBoard<
   RowType extends Record<string, unknown> = Record<string, unknown>,
 >({

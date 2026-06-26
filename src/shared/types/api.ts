@@ -11,9 +11,6 @@ export interface ApiError {
   readonly data?: unknown;
 }
 
-/**
- *
- */
 export interface ApiResponseEnvelope<TData> {
   readonly success: boolean;
   readonly data: TData;

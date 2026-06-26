@@ -35,7 +35,6 @@ function FacetRow({ name, pct, count }: { name: string; pct: number; count: numb
   );
 }
 
-/** "Where it happens" — distribution of the group's errors across tag dimensions. */
 export function WhereItHappensCard({ groups }: Props): JSX.Element {
   return (
     <PageSurface padding="lg">

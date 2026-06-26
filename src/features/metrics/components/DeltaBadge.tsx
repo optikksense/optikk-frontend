@@ -15,7 +15,6 @@ const DIRECTION_CLASS: Record<"up" | "down" | "flat", string> = {
   flat: "text-foreground-muted",
 };
 
-/** Colored signed-change indicator. Increase = red (down), decrease = green (up). */
 export function DeltaBadge({ delta, label, className }: DeltaBadgeProps) {
   const direction = deltaDirection(delta);
   return (

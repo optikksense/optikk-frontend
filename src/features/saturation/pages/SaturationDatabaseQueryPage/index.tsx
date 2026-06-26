@@ -4,6 +4,7 @@ import { PageShell } from "@shared/components/ui";
 
 import { QueryDetailHeader } from "./QueryDetailHeader";
 import { QueryDetailKpiStrip } from "./QueryDetailKpiStrip";
+import { QueryLatencyBars } from "./QueryLatencyBars";
 import { useDatabaseQueryDetail } from "./hooks/useDatabaseQueryDetail";
 
 // Real-data-only drill-in for one normalized query fingerprint. The design's
@@ -20,6 +21,7 @@ export default function SaturationDatabaseQueryPage(): JSX.Element {
         <div className="flex flex-col gap-4">
           <QueryDetailHeader row={row} />
           <QueryDetailKpiStrip row={row} />
+          <QueryLatencyBars row={row} />
         </div>
       ) : (
         <div className="rounded-md border border-border bg-card p-4 text-[12px] text-foreground-muted">

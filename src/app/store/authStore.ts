@@ -33,7 +33,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 }));
 
-// Computed selectors
 export const useAuthUser = () => useAuthStore((s) => s.user);
 export const useAuthTeam = () => useAuthStore((s) => s.team);
 export const useAuthStatus = () => useAuthStore((s) => s.status);

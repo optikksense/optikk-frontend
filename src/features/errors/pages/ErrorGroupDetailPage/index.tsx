@@ -141,7 +141,7 @@ export default function ErrorGroupDetailPage(): JSX.Element {
         icon={<AlertOctagon size={24} className="text-[var(--err)]" />}
       />
 
-      {/* Impact strip */}
+      {}
       <Surface elevation={1} padding="md">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetaStat label="First seen" value={fmtDate(detail?.first_occurrence ?? "")} />

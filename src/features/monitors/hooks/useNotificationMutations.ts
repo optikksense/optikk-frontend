@@ -44,8 +44,6 @@ export function useChannelMutations() {
   return { create, update, remove };
 }
 
-// Policies ------------------------------------------------------------------
-
 export function usePolicyMutations() {
   const queryClient = useQueryClient();
   const invalidate = () => queryClient.invalidateQueries({ queryKey: POLICIES_KEY });
@@ -65,8 +63,6 @@ export function usePolicyMutations() {
 
   return { create, update, remove };
 }
-
-// Templates -----------------------------------------------------------------
 
 export function useTemplateMutations() {
   const queryClient = useQueryClient();

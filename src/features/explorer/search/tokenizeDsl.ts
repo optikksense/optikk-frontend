@@ -10,12 +10,6 @@ export interface Token {
   readonly value?: string;
 }
 
-/**
- * Lightweight Datadog-DSL tokenizer: splits on whitespace, respects double-quoted
- * phrases, and recognises `key:value` (with optional leading `-` for negation).
- * Nested quotes, AND/OR/parens — out of scope; any unmatched input becomes a
- * bare token and falls through to the search-contains fallback.
- */
 export function tokenizeDsl(input: string): readonly Token[] {
   const out: Token[] = [];
   let i = 0;

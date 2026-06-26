@@ -29,9 +29,7 @@ export function useGitHubStars() {
         setIsLoading(false);
         return;
       }
-    } catch (e) {
-      // Ignore cache errors
-    }
+    } catch (e) {}
 
     let active = true;
     fetch("https://api.github.com/orgs/optikksense/repos")
@@ -58,9 +56,7 @@ export function useGitHubStars() {
         try {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(newStars));
           sessionStorage.setItem(CACHE_TIME_KEY, String(Date.now()));
-        } catch (e) {
-          // Ignore cache errors
-        }
+        } catch (e) {}
       })
       .catch(() => {
         if (active) {

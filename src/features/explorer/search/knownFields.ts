@@ -381,7 +381,6 @@ export function findKnownField(
   return fields.find((f) => f.key === key);
 }
 
-/** Fields with backend-backed value suggestions (BE trace_suggest scalar path). */
 export const SUGGESTABLE_SCALAR_FIELDS = new Set([
   "service",
   "operation",
@@ -391,8 +390,6 @@ export const SUGGESTABLE_SCALAR_FIELDS = new Set([
   "environment",
 ]);
 
-// ---------- Operator catalogue ----------
-
 export interface OperatorOption {
   readonly insert: string;
   readonly label: string;
@@ -400,12 +397,6 @@ export interface OperatorOption {
   readonly typeBadge: TypeBadge;
 }
 
-/**
- * Operators surfaced when caret lands on a known field with no `:` typed yet.
- * `insert` is the raw token the hook hands to `applyOperator`; the special
- * value `!=` is recognised as a neq-rewrite (prefix the key with `-`). Every
- * other value is appended verbatim after the trimmed input.
- */
 export const OPERATOR_OPTIONS: readonly OperatorOption[] = [
   { insert: ":", label: ":", description: "equals — service:checkout", typeBadge: "OP" },
   { insert: "!=", label: "!=", description: "not equals — -service:checkout", typeBadge: "OP" },
@@ -420,8 +411,6 @@ export const OPERATOR_OPTIONS: readonly OperatorOption[] = [
   { insert: ":<=", label: "<=", description: "less or equal", typeBadge: "OP" },
   { insert: ":<", label: "<", description: "less than", typeBadge: "OP" },
 ];
-
-// ---------- Quick templates per scope ----------
 
 export interface QuickTemplate {
   readonly label: string;
@@ -460,7 +449,6 @@ export function quickTemplatesForScope(scope: ExplorerScope | undefined): readon
   return scope === "logs" ? QUICK_TEMPLATES_LOGS : QUICK_TEMPLATES_TRACES;
 }
 
-/** Curated popular attribute keys offered when the user types `@`. */
 export const POPULAR_ATTRIBUTE_KEYS: readonly { key: string; description: string }[] = [
   { key: "@http.status_code", description: "HTTP response status code" },
   { key: "@http.method", description: "HTTP request method" },

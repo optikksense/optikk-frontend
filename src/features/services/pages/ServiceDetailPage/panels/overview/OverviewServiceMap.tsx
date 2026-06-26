@@ -41,9 +41,8 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
 
     const focusNode = rawNodes.find((n) => n.name === selectedFocus);
 
-    // Filter upstream edges pointing to selectedFocus
     const upEdges = rawEdges.filter((e) => e.target === selectedFocus);
-    // Filter downstream edges originating from selectedFocus
+
     const downEdges = rawEdges.filter((e) => e.source === selectedFocus);
 
     const mapStatus = (rate: number): "ok" | "warn" | "err" => {
@@ -52,13 +51,11 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
       return "ok";
     };
 
-    // Calculate layout coordinates
     const computedNodes: ServiceMapNode[] = [];
     const computedEdges: ServiceMapEdge[] = [];
     const upList: any[] = [];
     const downList: any[] = [];
 
-    // Place center node
     const centerNodeStatus = focusNode ? mapStatus(focusNode.error_rate) : "ok";
     computedNodes.push({
       name: selectedFocus,
@@ -69,7 +66,6 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
       isCenter: true,
     });
 
-    // Position upstreams on the left (x = 30)
     const uCount = upEdges.length;
     upEdges.forEach((edge, i) => {
       const nodeInfo = rawNodes.find((n) => n.name === edge.source);
@@ -84,7 +80,6 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
         status,
       });
 
-      // Bezier curve from left node to center
       const path = `M 210,${y + 30} C 280,${y + 30} 280,185 350,200`;
       computedEdges.push({
         path,
@@ -105,7 +100,6 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
       });
     });
 
-    // Position downstreams on the right (x = 670)
     const dCount = downEdges.length;
     downEdges.forEach((edge, i) => {
       const nodeInfo = rawNodes.find((n) => n.name === edge.target);
@@ -120,7 +114,6 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
         status,
       });
 
-      // Bezier curve from center to right node
       const path = `M 530,210 C 600,210 600,${y + 30} 670,${y + 30}`;
       computedEdges.push({
         path,
@@ -189,7 +182,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-5 lg:grid-cols-3">
-        {/* SVG Live Map */}
+        {}
         <div className="relative rounded-lg border border-border bg-muted/10 p-2 lg:col-span-2">
           <svg
             viewBox="0 0 880 420"
@@ -216,7 +209,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
 
             <rect width="880" height="420" fill="url(#dot-grid-overview)" rx="6" />
 
-            {/* Column labels */}
+            {}
             <text
               x="120"
               y="25"
@@ -251,10 +244,10 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
               DOWNSTREAM
             </text>
 
-            {/* Edge paths and animated motion dots */}
+            {}
             {edges.map((e, idx) => (
               <g key={idx}>
-                {/* background glow */}
+                {}
                 <path
                   d={e.path}
                   stroke={e.color}
@@ -263,7 +256,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
                   fill="none"
                   strokeLinecap="round"
                 />
-                {/* flow line */}
+                {}
                 <path
                   d={e.path}
                   stroke={e.color}
@@ -272,7 +265,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
                   fill="none"
                   markerEnd="url(#arrow-flow)"
                 />
-                {/* rate label */}
+                {}
                 <text
                   x={e.lx}
                   y={e.ly}
@@ -284,7 +277,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
                 >
                   {e.label}
                 </text>
-                {/* animated dots */}
+                {}
                 <circle r="2.5" fill={e.color}>
                   <animateMotion
                     dur={e.dur}
@@ -304,7 +297,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
               </g>
             ))}
 
-            {/* Nodes */}
+            {}
             {nodes.map((n) => {
               const fillTheme =
                 n.status === "err"
@@ -391,7 +384,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
           </svg>
         </div>
 
-        {/* Dependency Side List */}
+        {}
         <div className="flex flex-col gap-3">
           <div className="font-semibold text-[11px] text-foreground-muted uppercase tracking-wider">
             Service Dependencies ({upstreamList.length + downstreamList.length})
@@ -404,7 +397,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
               </span>
             )}
 
-            {/* Upstreams */}
+            {}
             {upstreamList.map((d: any) => (
               <div
                 key={d.name}
@@ -441,7 +434,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
               </div>
             ))}
 
-            {/* Downstreams */}
+            {}
             {downstreamList.map((d: any) => (
               <div
                 key={d.name}

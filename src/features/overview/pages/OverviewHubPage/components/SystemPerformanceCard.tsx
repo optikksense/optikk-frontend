@@ -46,8 +46,6 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
   );
   const errorColor = useMemo(() => resolveThemeColor("var(--err)", "#ef4444"), [theme]);
 
-  // Build chart data directly from backend rows — no frontend bucketing.
-  // Backend sends one row per timestamp (pre-aggregated across services).
   const { timestamps, reqValues, errValues } = useMemo(() => {
     const reqByTs = new Map<number, number>();
     const errByTs = new Map<number, number>();
@@ -77,11 +75,9 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
     [timestamps, reqValues, errValues]
   );
 
-  // Keep a mutable reference of data for uPlot cursor hooks
   const currentData = useRef<uPlot.AlignedData>(alignedData);
   currentData.current = alignedData;
 
-  // Re-instantiate uPlot on mount, theme change, or empty state transitions
   useEffect(() => {
     const el = chartContainerRef.current;
     if (!el || showEmpty) return;
@@ -267,7 +263,6 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
     };
   }, [showEmpty, theme, requestColor, errorColor]);
 
-  // Data update effect
   useEffect(() => {
     const chart = chartRef.current;
     if (chart && !showEmpty) {

@@ -431,7 +431,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                         }[header.column.getIsSorted() as string] ?? ""}
                       </div>
 
-                      {/* Resize handle */}
+                      {}
                       <div
                         className="-right-1 absolute top-0 z-[12] h-full w-2 cursor-col-resize hover:bg-[var(--color-primary-subtle-18)]"
                         onMouseDown={(event) => {
@@ -561,7 +561,7 @@ function SimpleTable<RowType extends TableRowData = TableRowData>({
                         }[header.column.getIsSorted() as string] ?? ""}
                       </div>
 
-                      {/* Resize handle */}
+                      {}
                       <div
                         className="-right-1 absolute top-0 z-[12] h-full w-2 cursor-col-resize hover:bg-[var(--color-primary-subtle-18)]"
                         onMouseDown={(event) => {

@@ -156,7 +156,6 @@ export function evaluateFormula(
   const ast = parse(tokens);
   if (!ast) return timestamps.map(() => null);
 
-  // Build per-timestamp lookup for each query.
   const queryLookups: Record<string, Map<number, number>> = {};
   for (const [id, result] of Object.entries(results)) {
     const lookup = new Map<number, number>();

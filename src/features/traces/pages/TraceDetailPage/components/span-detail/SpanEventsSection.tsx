@@ -53,7 +53,6 @@ const LEVEL_DOT = {
   error: "var(--err)",
 } as const;
 
-/** Events recorded on the selected span (folded into the Info tab). */
 function SpanEventsSectionComponent({ events, selectedSpanId }: Props) {
   const tz = useTimezone();
   const sorted = useMemo(

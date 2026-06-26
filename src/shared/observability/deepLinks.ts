@@ -26,9 +26,6 @@ export function buildLogsHubHref(opts: {
   return qs.length > 0 ? `${ROUTES.logs}?${qs}` : ROUTES.logs;
 }
 
-/**
- * Builds `/traces` URL with `filters`, optional `from`/`to` (ms), matching traces explorer URL sync.
- */
 export function buildTracesHubHref(opts: {
   readonly filters: StructuredFilter[];
   readonly fromMs?: number;
@@ -49,7 +46,6 @@ export function buildTracesHubHref(opts: {
   return qs.length > 0 ? `${ROUTES.traces}?${qs}` : ROUTES.traces;
 }
 
-/** Trace explorer search pill → query string includes all GenAI-related spans. */
 export function genAiSystemSearchFilter(): StructuredFilter {
   return { field: "search", operator: "contains", value: "@gen_ai.system:*" };
 }

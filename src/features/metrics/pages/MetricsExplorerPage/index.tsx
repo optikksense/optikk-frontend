@@ -83,7 +83,7 @@ export default function MetricsExplorerPage() {
         />
       </PageSurface>
 
-      {/* Main chart + top-series row */}
+      {}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2.1fr_1fr]">
         <div className="flex flex-col gap-4">
           <PageSurface padding="lg" className="flex flex-col gap-3">
@@ -123,7 +123,7 @@ export default function MetricsExplorerPage() {
         <TopSeriesPanel result={primaryResult} unit={primaryUnit} />
       </div>
 
-      {/* Fleet distribution + recent metrics row */}
+      {}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2.1fr_1fr]">
         <FleetDistributionPanel result={primaryResult} />
         <RecentMetricsPanel
@@ -133,7 +133,7 @@ export default function MetricsExplorerPage() {
         />
       </div>
 
-      {/* Group-by breakdown table */}
+      {}
       <GroupByBreakdownTable primaryQuery={primaryQuery} result={primaryResult} />
     </PageShell>
   );

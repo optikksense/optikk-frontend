@@ -43,9 +43,6 @@ function rangeKey(timeRange: TimeRange): string {
   return `${timeRange.startMs}-${timeRange.endMs}`;
 }
 
-/**
- * Wraps React Query with team/time-range state from appStore.
- */
 export function useTimeRangeQuery<TData = unknown>(
   key: string,
   queryFn: TimeRangeQueryFunction<TData>,
@@ -71,9 +68,6 @@ export function useTimeRangeQuery<TData = unknown>(
   });
 }
 
-/**
- * Exposes time range state and a helper to compute current bounds.
- */
 export function useTimeRange(): {
   selectedTeamId: number | null;
   timeRange: TimeRange;

@@ -65,7 +65,7 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
 
   return (
     <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-      {/* Top CPU consumers */}
+      {}
       <div className="rounded-md border border-border bg-card p-4">
         <div className="font-bold text-[13px] text-foreground leading-tight">Top CPU consumers</div>
         <div className="mt-0.5 text-[11.5px] text-foreground-muted">fleet · last 1 hour</div>
@@ -105,7 +105,7 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
         </div>
       </div>
 
-      {/* Top Memory consumers */}
+      {}
       <div className="rounded-md border border-border bg-card p-4">
         <div className="font-bold text-[13px] text-foreground leading-tight">
           Top memory consumers
@@ -147,7 +147,7 @@ export function InfraTopConsumersSidebar({ onOpenHost, summary }: InfraTopConsum
         </div>
       </div>
 
-      {/* Kubernetes Cluster */}
+      {}
       <div className="flex flex-col rounded-md border border-border bg-card p-4">
         <div className="font-bold text-[13px] text-foreground leading-tight">
           Kubernetes cluster

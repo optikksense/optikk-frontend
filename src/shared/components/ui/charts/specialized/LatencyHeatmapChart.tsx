@@ -34,7 +34,7 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
     const n = Number(count) || 0;
     if (n === 0) return `var(--bg-secondary, ${APP_COLORS.hex_1a1a2e})`;
     const intensity = Math.min(n / maxCount, 1);
-    // Interpolate from blue-teal (low) to deep red (high) via orange
+
     const r = Math.round(30 + intensity * 187);
     const g = Math.round(100 * (1 - intensity));
     const b = Math.round(180 * (1 - intensity));
@@ -51,15 +51,15 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
 
   return (
     <div className="flex flex-col gap-2 py-2">
-      {/* Grid */}
+      {}
       <div className="flex flex-col gap-0.5">
         {LATENCY_BUCKETS.map((lb) => (
           <div key={lb} className="flex items-center gap-1">
-            {/* Y label */}
+            {}
             <div className="w-20 min-w-[80px] whitespace-nowrap pr-2 text-right text-[11px] text-[color:var(--text-muted)]">
               {lb}
             </div>
-            {/* Cells */}
+            {}
             <div className="flex flex-1 gap-px">
               {timeBuckets.map((tb) => {
                 const cell = data.find(
@@ -83,7 +83,7 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
         ))}
       </div>
 
-      {/* X axis */}
+      {}
       <div className="mt-0.5 flex items-start gap-1">
         <div className="w-20 min-w-[80px]" />
         <div className="flex flex-1 justify-between">
@@ -100,7 +100,7 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
         </div>
       </div>
 
-      {/* Legend */}
+      {}
       <div className="mt-1 flex items-center gap-2 pl-[84px]">
         <span className="text-[color:var(--text-muted)] text-xs">Low</span>
         <div

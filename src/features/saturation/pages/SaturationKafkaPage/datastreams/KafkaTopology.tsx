@@ -66,7 +66,6 @@ function NodeBox({ x, y, w, accent, onClick, dim, children }: NodeBoxProps) {
 export function KafkaTopology({ topo, selected, onToggleService, onOpenTopic }: Props) {
   const selSet = new Set(selected);
 
-  // Topic health from the worst consumer error on that topic.
   const topicLevel = new Map<string, Level>();
   for (const pw of topo.pathways) {
     topicLevel.set(
@@ -75,7 +74,6 @@ export function KafkaTopology({ topo, selected, onToggleService, onOpenTopic }: 
     );
   }
 
-  // In-scope topics = topics any selected client produces or consumes.
   const scopeTopics = new Set<string>();
   for (const e of topo.edges) {
     if (e.kind === "produce" && selSet.has(e.source)) scopeTopics.add(e.target);
@@ -106,7 +104,6 @@ export function KafkaTopology({ topo, selected, onToggleService, onOpenTopic }: 
     return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
   };
 
-  // Aggregate consumer-service stats for node labels.
   const consStat = new Map<string, { topics: Set<string>; rate: number; level: Level }>();
   for (const c of topo.consumers) {
     const cur = consStat.get(c.service) ?? { topics: new Set(), rate: 0, level: "ok" as Level };

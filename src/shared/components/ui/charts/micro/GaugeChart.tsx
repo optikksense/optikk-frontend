@@ -14,10 +14,6 @@ function getGaugeColor(value: number): string {
   return APP_COLORS.hex_f04438;
 }
 
-/**
- * @param props Component props.
- * @returns Premium semi-circle gauge for 0-100 values.
- */
 export default function GaugeChart({
   value = 0,
   label = "",

@@ -20,8 +20,6 @@ function createMonitorHref(primaryQuery: MetricQueryDefinition | undefined): str
   return `/monitors/new?${params.toString()}`;
 }
 
-/** Page-header actions for the metrics explorer. Export downloads the group-by
- * breakdown as CSV (fully local); Notebook / Save graph are stubs. */
 export function MetricsHeaderActions({ primaryQuery, primaryResult }: MetricsHeaderActionsProps) {
   const handleExport = useCallback(() => {
     const csv = buildBreakdownCsv(primaryResult);

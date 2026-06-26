@@ -16,20 +16,12 @@ const compactFormatter = new Intl.NumberFormat("en", {
   maximumFractionDigits: 1,
 });
 
-/**
- * Format large numbers with compact notation (K, M, B suffixes).
- * @param num
- */
 export function formatNumber(num: number | string | null | undefined): string {
   const value = Number(num);
   if (!Number.isFinite(value)) return "0";
   return compactFormatter.format(value);
 }
 
-/**
- * Format duration in milliseconds to human-readable format
- * @param ms
- */
 export function formatDuration(ms: number | string | null | undefined): string {
   let value = Number(ms);
   value = value === 0 ? 0 : value;
@@ -47,37 +39,24 @@ export function formatDuration(ms: number | string | null | undefined): string {
   return `${(value / ONE_MINUTE_MS).toFixed(2)}m`;
 }
 
-/**
- * Format timestamp to readable date/time
- * @param timestamp
- */
 export function formatTimestamp(timestamp: number | string | Date): string {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "—";
   return date.toLocaleString();
 }
 
-/**
- * Format bytes to human-readable format
- * @param bytes
- */
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return "0B";
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   const val = bytes / k ** i;
-  // Avoid trailing zero decimals for cleaner Datadog-level UI. Bytes (i=0) are rounded.
+
   const formattedVal =
     i === 0 ? Math.round(val).toString() : Number.parseFloat(val.toFixed(2)).toString();
   return `${formattedVal}${sizes[i] ?? "B"}`;
 }
 
-/**
- * Format percentage
- * @param value
- * @param clamp
- */
 export function normalizePercentage(
   value: number | string | null | undefined,
   clamp = true
@@ -86,18 +65,11 @@ export function normalizePercentage(
   raw = raw === 0 ? 0 : raw;
   if (!Number.isFinite(raw)) return 0;
 
-  // Accept both fraction form (0.72) and percentage form (72).
   const percent = raw >= 0 && raw <= 1 ? raw * 100 : raw;
   if (!clamp) return percent;
   return Math.min(Math.max(percent, 0), 100);
 }
 
-/**
- *
- * @param value
- * @param decimals
- * @param clamp
- */
 export function formatPercentage(
   value: number | string | null | undefined,
   decimals = 2,
@@ -107,10 +79,6 @@ export function formatPercentage(
   return `${percent.toFixed(decimals)}%`;
 }
 
-/**
- * Format a timestamp as relative time (e.g. "3m ago", "2h ago")
- * @param timestamp
- */
 export function formatRelativeTime(timestamp: number | string | Date): string {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "—";

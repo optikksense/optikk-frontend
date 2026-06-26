@@ -3,7 +3,6 @@ import uPlot from "uplot";
 
 /** Default axis styling matching the app's dark theme. */
 export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
-  // Resolved at render time (static strings) so charts pick up the active theme on rebuild.
   const gridColor = resolveThemeColor("--chart-grid", "rgba(255,255,255,0.10)");
   const labelColor = resolveThemeColor("--chart-axis", "#b9c0cf");
   const font = "11px Inter, sans-serif";
@@ -23,7 +22,7 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
 
         return splits.map((ts, idx) => {
           const d = new Date(ts * 1000);
-          // < 1 hour: "14:32:10"
+
           if (rangeS <= 3600) {
             return d.toLocaleTimeString(undefined, {
               hour: "2-digit",
@@ -32,7 +31,7 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
               hour12: false,
             });
           }
-          // < 24 hours: "14:30" — show date only on first label
+
           if (rangeS <= 86400) {
             const time = d.toLocaleTimeString(undefined, {
               hour: "2-digit",
@@ -48,7 +47,7 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
             }
             return time;
           }
-          // < 3 days: "May 7 14:00"
+
           if (rangeS <= 3 * 86400) {
             return d.toLocaleDateString(undefined, {
               month: "short",
@@ -58,14 +57,14 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
               hour12: false,
             });
           }
-          // < 14 days: "May 7"
+
           if (rangeS <= 14 * 86400) {
             return d.toLocaleDateString(undefined, {
               month: "short",
               day: "numeric",
             });
           }
-          // >= 14 days: "May 7"
+
           return d.toLocaleDateString(undefined, {
             month: "short",
             day: "numeric",
@@ -84,13 +83,12 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
   ];
 }
 
-/** Build a line series config for uPlot. Default fill alpha is `--chart-area-alpha` (8%). */
 export function uLine(
   label: string,
   color: string,
   opts?: { fill?: boolean; dash?: number[]; width?: number; fillAlphaHex?: string }
 ): uPlot.Series {
-  const alpha = opts?.fillAlphaHex ?? "2E"; // 0x2E ≈ 18% — readable area fill
+  const alpha = opts?.fillAlphaHex ?? "2E";
   const resolvedColor = resolveThemeColor(color, "#ffffff");
   return {
     label,
@@ -102,7 +100,6 @@ export function uLine(
   };
 }
 
-/** Comparison series — dotted, lower opacity, used for "compare to previous period". */
 export function uComparisonLine(label: string, color: string): uPlot.Series {
   return {
     label,
@@ -113,7 +110,6 @@ export function uComparisonLine(label: string, color: string): uPlot.Series {
   };
 }
 
-/** Crosshair cursor preset — dashed, primary color. Pair with `cursor: { ...ddCrosshair() }`. */
 export function ddCrosshair(): Pick<uPlot.Cursor, "points" | "x" | "y"> {
   return {
     points: { show: false },
@@ -122,7 +118,6 @@ export function ddCrosshair(): Pick<uPlot.Cursor, "points" | "x" | "y"> {
   };
 }
 
-/** Build a bars series config for uPlot. */
 export function uBars(label: string, color: string): uPlot.Series {
   const resolvedColor = resolveThemeColor(color, "#ffffff");
   return {

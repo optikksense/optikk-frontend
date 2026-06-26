@@ -93,8 +93,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
       }),
     [context, valueQuery.data, localValueSuggestions, knownFields, recents, templates]
   );
-  // `isPending` stays true while the query is `enabled: false` (react-query default),
-  // so we use `isFetching` — true only during an actual in-flight request.
+
   const isLoading =
     context.kind === "value" && localValueSuggestions.length === 0 && valueQuery.isFetching;
 
@@ -126,10 +125,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
         return;
       }
       if (decoded?.prefix === OPERATOR_PREFIX) {
-        // Operator mode: cursor is at end of input after a known key + space.
-        // Replace the trailing whitespace with `<key><insert>` so e.g.
-        // `service_name ` + `:` → `service_name:`, `!=` becomes `-service_name:`.
-        const op = decoded.value; // raw insert string from OPERATOR_OPTIONS
+        const op = decoded.value;
         const nextInput = applyOperator(input, context.field ?? "", op);
         setInput(nextInput);
         setCaret(nextInput.length);
@@ -242,7 +238,7 @@ function buildSuggestions(a: BuildArgs): readonly SuggestionOption[] {
     }
     return fieldOptions;
   }
-  // value
+
   if (a.localValues.length > 0) return a.localValues;
   return a.values.map((v) => ({
     value: v.value,
@@ -302,14 +298,9 @@ function renderInsert(context: ReturnType<typeof dslContextAtCaret>, value: stri
     const key = context.field ?? "";
     return `${key}:${quoted} `;
   }
-  return value; // field/attribute: value already contains `:` if needed
+  return value;
 }
 
-/**
- * Operator-mode insert. Caret is at end-of-input after `<key> `; we strip
- * trailing whitespace and either append the operator verbatim, or — for the
- * `!=` sentinel — prefix the trailing key with `-` and append `:`.
- */
 function applyOperator(input: string, key: string, op: string): string {
   const trimmed = input.replace(/[ \t]+$/, "");
   if (op === "!=") {

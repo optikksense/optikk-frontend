@@ -18,10 +18,8 @@ import { type SessionPayload, authApi } from "./authApi";
 let accessToken: string | null = null;
 let refreshInflight: Promise<string | null> | null = null;
 
-// One-time purge of the legacy persisted auth state.
 localStorage.removeItem("optikk_auth_state");
 
-/** One team per user: the backend returns exactly one `team`. */
 function toTeam(payload: SessionPayload): Team {
   const { id, name, orgName } = payload.team;
   return { id, name, orgName: orgName ?? null };
@@ -61,28 +59,18 @@ export const session = {
     return accessToken;
   },
 
-  /** Throws `AuthApiError` with a user-facing message on failure. */
   async login(email: string, password: string): Promise<void> {
     beginSession(await authApi.login(email, password));
   },
 
-  /** Best-effort server logout; local teardown always runs. */
   async logout(): Promise<void> {
     try {
       await authApi.logout(accessToken);
-    } catch {
-      // Cookie may already be gone; local teardown is what matters.
-    }
+    } catch {}
     endSession();
   },
 
-  /**
-   * Single-flight refresh: concurrent 401s and the route guard share one
-   * request. Failure tears the session down and resolves null.
-   */
   refreshAccessToken(): Promise<string | null> {
-    // Known logged-out (e.g. logout raced an in-flight request): don't
-    // resurrect the session with a pointless refresh attempt.
     if (useAuthStore.getState().status === "unauthenticated") {
       return Promise.resolve(null);
     }
@@ -92,7 +80,6 @@ export const session = {
     return refreshInflight;
   },
 
-  /** Route-guard entry point: true if a usable session exists or was recovered. */
   async ensureSession(): Promise<boolean> {
     if (accessToken != null) {
       return true;

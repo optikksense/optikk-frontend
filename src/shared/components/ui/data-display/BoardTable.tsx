@@ -23,10 +23,6 @@ export interface BoardTableProps<RowType> {
   pagination: BoardPaginationState;
 }
 
-/**
- * Renders the shared board header and virtualized body inside one horizontal
- * scroll container so column headers stay aligned with rows.
- */
 export function BoardTable<RowType extends Record<string, unknown>>({
   rows,
   fixedColumns,

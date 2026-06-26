@@ -18,12 +18,13 @@ function last(values: readonly number[]): number {
 
 interface DatabaseKpiStripProps {
   readonly summary: DatastoreSummary | undefined;
+  readonly system?: string;
 }
 
 // Design's two headline tiles: queries/s and p99 latency.
-export function DatabaseKpiStrip({ summary }: DatabaseKpiStripProps) {
-  const { series: qps } = useDatabaseQpsSeries();
-  const { series: lat } = useDatabaseLatencyPercentiles();
+export function DatabaseKpiStrip({ summary, system }: DatabaseKpiStripProps) {
+  const { series: qps } = useDatabaseQpsSeries(system);
+  const { series: lat } = useDatabaseLatencyPercentiles(system);
   const qpsLast = last(qps.opsPerSec);
   const p99 = last(lat.p99Ms);
   return (

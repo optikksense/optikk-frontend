@@ -24,7 +24,6 @@ function getTimestampValue(value: unknown, timestampKey: string): TimestampLike 
   return null;
 }
 
-/** Format timestamps for chart x-axis labels. */
 export function formatChartLabels<T extends object>(
   data: T[],
   timestampKey = "timestamp"

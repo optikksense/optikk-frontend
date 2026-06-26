@@ -49,7 +49,5 @@ export function clearRecent(scope: ExplorerScope): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(key(scope));
-  } catch {
-    // ignore
-  }
+  } catch {}
 }

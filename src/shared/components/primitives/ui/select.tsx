@@ -110,7 +110,6 @@ function Select({
   );
 }
 
-/** Internal multi-select using checkboxes (Radix Select doesn't support multi). */
 function MultiSelect({
   value,
   onChange,

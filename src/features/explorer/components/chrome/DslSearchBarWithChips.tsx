@@ -43,7 +43,6 @@ const SEVERITY_TONE: Record<string, string> = {
     "border-[color-mix(in_oklch,var(--fatal-c),transparent_40%)] bg-[color-mix(in_oklch,var(--fatal-c),transparent_82%)] text-[var(--fatal-c)]",
 };
 
-/** Composes the DSL bar with a chip strip below for visual filter editing. */
 function DslSearchBarWithChipsComponent(props: Props, ref: React.Ref<HTMLInputElement>) {
   const fields = knownFieldsForScope(props.scope);
   const onRemoveAt = (idx: number) => {

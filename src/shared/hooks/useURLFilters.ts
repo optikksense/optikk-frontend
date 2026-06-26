@@ -10,14 +10,8 @@ export interface StructuredFilter {
   readonly value: string;
 }
 
-/**
- *
- */
 export type URLFilterType = "string" | "string[]" | "number" | "boolean";
 
-/**
- *
- */
 export type URLFilterValue = string | string[] | number | boolean;
 
 type URLFilterValues = Record<string, URLFilterValue>;
@@ -26,14 +20,12 @@ type URLFilterSetter = (next: URLFilterValue | ((prev: URLFilterValue) => URLFil
 
 type URLFilterSetters = Record<string, URLFilterSetter>;
 
-/** Configuration for a single URL-synced filter parameter. */
 export interface URLFilterParam {
   readonly key: string;
   readonly type: URLFilterType;
   readonly defaultValue?: URLFilterValue;
 }
 
-/** Configuration for syncing filter values with the URL query string. */
 export interface URLFilterConfig {
   readonly params: URLFilterParam[];
   readonly syncStructuredFilters?: boolean;
@@ -93,7 +85,6 @@ function serialiseParamValue(value: URLFilterValue, type: URLFilterType): string
   }
 }
 
-/** Encodes structured explorer filters for the `filters` query param: `field:operator:urlEncodedValue` segments joined by `;`. */
 export function encodeStructuredFiltersParam(filters: StructuredFilter[]): string | null {
   if (filters.length === 0) {
     return null;
@@ -119,10 +110,6 @@ export function decodeStructuredFiltersParam(raw: string | null): StructuredFilt
   return filters;
 }
 
-/**
- * useURLFilters — syncs filter state to/from URL search params.
- * @param config
- */
 export function useURLFilters(config: URLFilterConfig): {
   values: URLFilterValues;
   setters: URLFilterSetters;
@@ -139,7 +126,6 @@ export function useURLFilters(config: URLFilterConfig): {
       values[param.key] = parseParamValue(searchParams.get(param.key), param.type, fallback);
     }
     return values;
-    // Initial parse runs once; subsequent URL changes are managed via state updates.
   }, []);
 
   const [values, setValues] = useState<URLFilterValues>(initialValues);
@@ -149,7 +135,6 @@ export function useURLFilters(config: URLFilterConfig): {
       return [];
     }
     return decodeStructuredFiltersParam(searchParams.get("filters"));
-    // Initial parse runs once; subsequent URL changes are managed via state updates.
   }, []);
 
   const [structuredFilters, setStructuredFilters] =
@@ -169,10 +154,8 @@ export function useURLFilters(config: URLFilterConfig): {
           (prevParams) => {
             const nextSearchParams = new URLSearchParams(prevParams);
 
-            // 1. Check if we actually need to update anything
             let hasChanges = false;
 
-            // Manage params
             for (const param of config.params) {
               const serialised = serialiseParamValue(nextValues[param.key], param.type);
               const current = prevParams.get(param.key);
@@ -186,7 +169,6 @@ export function useURLFilters(config: URLFilterConfig): {
               }
             }
 
-            // Manage filters
             if (config.syncStructuredFilters) {
               const encodedFilters = encodeStructuredFiltersParam(nextFilters);
               const current = prevParams.get("filters");
@@ -200,7 +182,6 @@ export function useURLFilters(config: URLFilterConfig): {
               }
             }
 
-            // Manage stripParams
             if (config.stripParams) {
               for (const key of config.stripParams) {
                 if (nextSearchParams.has(key)) {
@@ -222,7 +203,6 @@ export function useURLFilters(config: URLFilterConfig): {
     [config.params, config.stripParams, config.syncStructuredFilters, setSearchParams]
   );
 
-  // URL -> State sync
   useEffect(() => {
     if (isFlushingRef.current) {
       isFlushingRef.current = false;

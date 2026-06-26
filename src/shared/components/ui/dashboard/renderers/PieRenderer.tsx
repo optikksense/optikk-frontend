@@ -29,13 +29,10 @@ export function PieRenderer({
       const name = String(row[labelKey] ?? `Item ${index + 1}`);
 
       let color = getChartColor(index);
-      if (name.startsWith("2xx"))
-        color = "#10b981"; // Emerald 500 (Green)
-      else if (name.startsWith("3xx"))
-        color = "#3b82f6"; // Blue 500
-      else if (name.startsWith("4xx"))
-        color = "#ef4444"; // Red 500
-      else if (name.startsWith("5xx")) color = "#eab308"; // Yellow 500
+      if (name.startsWith("2xx")) color = "#10b981";
+      else if (name.startsWith("3xx")) color = "#3b82f6";
+      else if (name.startsWith("4xx")) color = "#ef4444";
+      else if (name.startsWith("5xx")) color = "#eab308";
 
       return {
         name,

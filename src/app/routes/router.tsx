@@ -26,6 +26,10 @@ const SaturationKafkaPage = lazy(
 const SaturationDatabasePage = lazy(
   () => import("@/features/saturation/pages/SaturationDatabasePage/SaturationDatabasePage")
 );
+const SaturationDatabaseDetailPage = lazy(
+  () =>
+    import("@/features/saturation/pages/SaturationDatabaseDetailPage/SaturationDatabaseDetailPage")
+);
 const SaturationDatabaseQueryPage = lazy(
   () => import("@/features/saturation/pages/SaturationDatabaseQueryPage")
 );
@@ -57,8 +61,6 @@ const mainLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "main-layout",
   beforeLoad: async ({ location }) => {
-    // A full reload wipes the in-memory access token; ensureSession recovers
-    // it via the refresh cookie before rendering so protected calls don't 401.
     if (!(await session.ensureSession())) {
       throw redirect({
         to: ROUTES.login,
@@ -107,6 +109,10 @@ const infrastructureRoute = createProtected(ROUTES.infrastructure, Infrastructur
 const serviceDetailRoute = createProtected(ROUTES.serviceDetail, ServiceDetailPage);
 const kafkaOverviewRoute = createProtected(ROUTES.saturationKafkaOverview, SaturationKafkaPage);
 const saturationDatabaseRoute = createProtected(ROUTES.saturationDatabase, SaturationDatabasePage);
+const saturationDatabaseDetailRoute = createProtected(
+  ROUTES.saturationDatabaseDetail,
+  SaturationDatabaseDetailPage
+);
 const saturationDatabaseQueryRoute = createProtected(
   ROUTES.saturationDatabaseQuery,
   SaturationDatabaseQueryPage
@@ -162,6 +168,7 @@ const routeTree = rootRoute.addChildren([
     serviceDetailRoute,
     kafkaOverviewRoute,
     saturationDatabaseRoute,
+    saturationDatabaseDetailRoute,
     saturationDatabaseQueryRoute,
     errorTrackingRoute,
     errorGroupDetailRoute,

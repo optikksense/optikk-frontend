@@ -5,7 +5,6 @@
    ============================================================ */
 
 .marketing-root {
-  /* Brand */
   --m-teal: #0d9488;
   --m-teal-deep: #0f766e;
   --m-blue: #2563eb;
@@ -14,42 +13,35 @@
   --m-orange-deep: #ea580c;
   --m-violet: #7c3aed;
 
-  /* Ink (text + dark surfaces) */
   --m-ink: #07111f;
   --m-ink-2: #1a2536;
   --m-ink-3: #2e3c52;
   --m-muted: #5a6b82;
   --m-muted-2: #8895a8;
 
-  /* Surfaces */
   --m-bg: #fbfbf7;
   --m-bg-warm: #f5f3ec;
   --m-surface: #ffffff;
   --m-surface-2: #f7f6f1;
   --m-surface-elev: #ffffff;
 
-  /* Lines */
   --m-line: rgba(7, 17, 31, 0.08);
   --m-line-strong: rgba(7, 17, 31, 0.14);
 
-  /* Gradient brand */
   --m-grad-brand: linear-gradient(120deg, #0d9488 0%, #2563eb 52%, #f97316 100%);
   --m-grad-soft: linear-gradient(120deg, #d9f2ee 0%, #dde8ff 52%, #ffe2cc 100%);
   --m-grad-band: linear-gradient(115deg, #07111f 0%, #122033 60%, #1c2e4a 100%);
 
-  /* Elevation */
   --m-shadow-sm: 0 1px 2px rgba(7, 17, 31, 0.04), 0 2px 6px rgba(7, 17, 31, 0.04);
   --m-shadow-md: 0 8px 24px rgba(7, 17, 31, 0.06), 0 2px 6px rgba(7, 17, 31, 0.04);
   --m-shadow-lg: 0 24px 64px rgba(7, 17, 31, 0.12), 0 8px 24px rgba(7, 17, 31, 0.08);
 
-  /* Radii */
   --m-r-sm: 10px;
   --m-r-md: 14px;
   --m-r-lg: 22px;
   --m-r-xl: 32px;
   --m-r-pill: 999px;
 
-  /* Type */
   --m-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --m-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
@@ -76,7 +68,6 @@
   max-width: 100%;
 }
 
-/* ----- Layout ----- */
 .m-container {
   width: min(1200px, calc(100% - 40px));
   margin-inline: auto;
@@ -117,7 +108,6 @@
   color: inherit;
 }
 
-/* ----- Scroll progress bar ----- */
 .m-scroll-progress {
   position: fixed;
   top: 0;
@@ -130,9 +120,6 @@
   pointer-events: none;
 }
 
-/* ============================================================
-   Navigation
-   ============================================================ */
 .m-nav {
   position: sticky;
   top: 0;
@@ -266,7 +253,6 @@
   }
 }
 
-/* Mobile drawer */
 .m-drawer {
   position: fixed;
   inset: 64px 12px auto 12px;
@@ -292,9 +278,6 @@
   background: var(--m-surface-2);
 }
 
-/* ============================================================
-   Buttons
-   ============================================================ */
 .m-btn {
   display: inline-flex;
   align-items: center;
@@ -375,9 +358,6 @@
   box-shadow: 0 14px 32px rgba(37, 99, 235, 0.32);
 }
 
-/* ============================================================
-   Typography
-   ============================================================ */
 .m-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -464,7 +444,6 @@
   font-size: 13px;
 }
 
-/* Gradient text */
 .m-grad-text {
   background: var(--m-grad-brand);
   background-size: 200% auto;
@@ -484,9 +463,6 @@
   }
 }
 
-/* ============================================================
-   Hero
-   ============================================================ */
 .m-hero {
   position: relative;
   padding: clamp(80px, 12vw, 160px) 0 clamp(48px, 7vw, 96px);
@@ -781,9 +757,6 @@
   color: #ef4444;
 }
 
-/* ============================================================
-   Logo strip / marquee
-   ============================================================ */
 .m-logos {
   padding: 36px 0;
   overflow: hidden;
@@ -861,9 +834,6 @@
   background: linear-gradient(270deg, var(--m-bg), transparent);
 }
 
-/* ============================================================
-   Metrics strip
-   ============================================================ */
 .m-metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -909,9 +879,6 @@
   letter-spacing: 0.08em;
 }
 
-/* ============================================================
-   Section header
-   ============================================================ */
 .m-section-head {
   max-width: 760px;
   margin: 0 0 56px;
@@ -925,9 +892,6 @@
   justify-items: center;
 }
 
-/* ============================================================
-   Bento / Feature Grid
-   ============================================================ */
 .m-bento {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -1035,9 +999,6 @@
   }
 }
 
-/* ============================================================
-   Split section (text + visual)
-   ============================================================ */
 .m-split {
   display: grid;
   grid-template-columns: 0.92fr 1.08fr;
@@ -1118,9 +1079,6 @@
   }
 }
 
-/* ============================================================
-   Code block
-   ============================================================ */
 .m-code {
   position: relative;
   border-radius: var(--m-r-lg);
@@ -1219,9 +1177,6 @@
   color: #d8b4fe;
 }
 
-/* ============================================================
-   Comparison table
-   ============================================================ */
 .m-compare {
   width: 100%;
   border-collapse: separate;
@@ -1279,9 +1234,6 @@
   background: rgba(13, 148, 136, 0.06);
 }
 
-/* ============================================================
-   Pricing
-   ============================================================ */
 .m-price-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1380,9 +1332,6 @@
   }
 }
 
-/* ============================================================
-   FAQ accordion
-   ============================================================ */
 .m-faq {
   display: grid;
   gap: 12px;
@@ -1440,9 +1389,6 @@
   line-height: 1.65;
 }
 
-/* ============================================================
-   CTA band
-   ============================================================ */
 .m-cta {
   position: relative;
   padding: clamp(56px, 8vw, 96px) clamp(28px, 5vw, 56px);
@@ -1516,9 +1462,6 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* ============================================================
-   Footer
-   ============================================================ */
 .m-footer {
   background: var(--m-surface);
   border-top: 1px solid var(--m-line);
@@ -1618,9 +1561,6 @@
   }
 }
 
-/* ============================================================
-   Page-specific patterns
-   ============================================================ */
 .m-anchor-nav {
   position: sticky;
   top: 80px;
@@ -1659,7 +1599,6 @@
   color: #fff;
 }
 
-/* Architecture diagram */
 .m-arch {
   position: relative;
   display: grid;
@@ -1729,7 +1668,6 @@
   }
 }
 
-/* Deployment mode cards (self-host) */
 .m-deploy-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1770,16 +1708,10 @@
   }
 }
 
-/* ============================================================
-   Counter
-   ============================================================ */
 .m-counter {
   font-variant-numeric: tabular-nums;
 }
 
-/* ============================================================
-   Reveal (framer-motion handles transforms; fallbacks here)
-   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   .marketing-root *,
   .marketing-root *::before,
@@ -1793,7 +1725,6 @@
   }
 }
 
-/* Compact responsive tightening */
 @media (max-width: 760px) {
   .m-metrics {
     grid-template-columns: repeat(2, 1fr);
@@ -1824,9 +1755,6 @@
   }
 }
 
-/* ============================================================
-   Themed marketing root (applied for Legal / Policy pages)
-   ============================================================ */
 .marketing-root-themed {
   background-color: var(--bg-primary) !important;
   color: var(--text-primary) !important;

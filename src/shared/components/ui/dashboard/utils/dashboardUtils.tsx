@@ -88,9 +88,6 @@ export function getDashboardIcon(name: string, size = 16) {
   return <IconComponent size={size} />;
 }
 
-/**
- *
- */
 export function resolveDataSourceId(chartConfig: DashboardPanelSpec): string {
   return String(chartConfig.dataSource || chartConfig.id);
 }

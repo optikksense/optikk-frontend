@@ -25,9 +25,8 @@ export function DrawerIconButton({ icon, title, onClick, accent }: DrawerIconBut
 }
 
 interface DrawerHeaderProps {
-  /** Leading slot: badges, title, meta. */
   readonly children: ReactNode;
-  /** Trailing action cluster rendered before the close button. */
+
   readonly actions?: ReactNode;
   readonly onClose: () => void;
 }

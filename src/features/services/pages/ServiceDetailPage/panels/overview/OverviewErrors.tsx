@@ -49,7 +49,6 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
     return errorsList.reduce((sum, e) => sum + e.error_count, 0);
   }, [errorsList]);
 
-  // Parse stacktrace string into clean frames
   const stackFrames = useMemo(() => {
     const stack = detailQ.data?.stacktrace;
     if (!stack) return [];
@@ -58,11 +57,8 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
       .split("\n")
       .map((line) => line.trim())
       .filter((line) => line.length > 0)
-      .slice(0, 4) // Show top 4 frames
+      .slice(0, 4)
       .map((line) => {
-        // Simple heuristic to extract file:line and method
-        // e.g. "at HttpClient.send (lib/http_client.rb:142)"
-        // or "lib/http_client.rb:142:in `send'"
         const rubyMatch = line.match(/(.+):(\d+):in `(.+)'/);
         if (rubyMatch) {
           return {

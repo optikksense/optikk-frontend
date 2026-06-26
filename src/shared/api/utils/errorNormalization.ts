@@ -44,11 +44,6 @@ export function toApiErrorShape(error: unknown): ApiErrorShape {
   };
 }
 
-/**
- * Human-readable error text for UI (drawers, banners). Handles Axios-normalized
- * `ApiErrorShape` objects (plain objects, not `Error` instances), Zod issues,
- * and standard `Error` subclasses.
- */
 export function formatErrorForDisplay(error: unknown): string {
   if (error instanceof ZodError) {
     return error.issues
@@ -68,9 +63,7 @@ export function formatErrorForDisplay(error: unknown): string {
     try {
       const extra = JSON.stringify(shape.data, null, 2);
       lines.push(extra.length > 2000 ? `${extra.slice(0, 2000)}…` : extra);
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }
   return lines.join("\n\n");
 }

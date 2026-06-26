@@ -17,18 +17,11 @@ const SEGMENTS = [
   { key: "error", label: "Error", color: "var(--color-error)" },
 ] as const;
 
-/**
- * "Trace Volume Over Time" card: each bar is positioned by its bucket
- * timestamp across the selected [start, end] window and split by HTTP status
- * class (ok/warn/error). Hovering a bucket highlights it and shows a tooltip.
- */
 export function TrendStrip({ buckets, startTime, endTime }: Props) {
   const [hover, setHover] = useState<number | null>(null);
   const maxTotal = Math.max(...buckets.map((b) => Number(b.counts?.total) || 0), 1);
   const durationMs = Math.max(endTime - startTime, 1);
 
-  // Bar width = the bucket interval (smallest gap between buckets), so bars sit
-  // at their true position on the timeline rather than being evenly packed.
   let bucketMs = 5 * 60 * 1000;
   if (buckets.length > 1) {
     let minGap = Number.POSITIVE_INFINITY;

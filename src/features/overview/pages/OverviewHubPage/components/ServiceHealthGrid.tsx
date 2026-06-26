@@ -18,7 +18,6 @@ const STATUS_TILE: Record<ServiceHealthStatus, string> = {
   err: "bg-[var(--err-soft)] text-[var(--err-fg)]",
 };
 
-// Solid status dots for the legend.
 const STATUS_DOT: Record<ServiceHealthStatus, string> = {
   ok: "bg-[var(--ok)]",
   warn: "bg-[var(--warn)]",

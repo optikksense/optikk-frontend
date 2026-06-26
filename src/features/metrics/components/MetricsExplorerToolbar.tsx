@@ -64,7 +64,7 @@ export function MetricsExplorerToolbar({
         <Switch label="Smooth" checked={smooth} onChange={(e) => setSmooth(e.target.checked)} />
       </div>
 
-      {/* Right: step + space agg + y-axis scale */}
+      {}
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1.5">
           <span className="font-semibold text-[11px] text-foreground-muted uppercase tracking-wide">

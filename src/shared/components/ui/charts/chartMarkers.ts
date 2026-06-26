@@ -9,7 +9,7 @@ export interface ChartMarker {
   readonly atSeconds: number;
   readonly label?: string;
   readonly kind?: ChartMarkerKind;
-  /** Override the color resolved from `kind`. */
+
   readonly color?: string;
 }
 
@@ -25,11 +25,6 @@ const KIND_FALLBACK: Record<ChartMarkerKind, string> = {
   annotation: "#94a3b8",
 };
 
-/**
- * Returns a uPlot `draw` hook that paints vertical dashed lines at each
- * marker's x-position. Datadog parity: deployment markers, incident pins,
- * annotations show up across the chart's plotting area.
- */
 export function buildMarkerDrawHook(markers: readonly ChartMarker[]): (u: uPlot) => void {
   return (u) => {
     if (markers.length === 0) return;

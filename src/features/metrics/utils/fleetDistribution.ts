@@ -9,11 +9,6 @@ export interface LatencyBand {
   readonly max: number;
 }
 
-/**
- * Eight latency bands matching the design (ms). Ordered low → high so the
- * heatmap renderer (which lists buckets top-to-bottom) shows fastest at the
- * bottom once bands are reversed for display.
- */
 export const FLEET_LATENCY_BANDS: readonly LatencyBand[] = [
   { label: "≤ 50ms", min: 0, max: 50 },
   { label: "50–100", min: 50, max: 100 },
@@ -29,11 +24,6 @@ function bandFor(value: number): LatencyBand | undefined {
   return FLEET_LATENCY_BANDS.find((b) => value >= b.min && value < b.max);
 }
 
-/**
- * Bin a group-by-host query into a density grid: for each timestamp bucket,
- * count how many host series fall into each latency band. Emits one data point
- * per (band × bucket) with a host count, shaped for {@link LatencyHeatmapChart}.
- */
 export function buildFleetDistribution(result: MetricQueryResult | undefined): {
   readonly points: LatencyHeatmapDataPoint[];
   readonly bandLabels: string[];

@@ -21,7 +21,6 @@ interface Props {
   readonly p95Ms?: number;
 }
 
-/** Deepest span nesting level in the trace (root = depth 1). */
 function computeMaxDepth(spans: readonly TraceRecord[]): number {
   if (spans.length === 0) return 0;
   const byId = new Map<string, TraceRecord>();

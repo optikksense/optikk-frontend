@@ -1,38 +1,95 @@
+import { Database } from "lucide-react";
+import { useMemo, useState } from "react";
+
 import { PageShell } from "@shared/components/ui";
+import { KpiCard } from "@shared/components/ui/dashboard/KpiCard";
 
+import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { SaturationSubnav } from "@/features/saturation/components/SaturationSubnav";
+import { fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 
-import { LatencyPercentilesChart } from "./charts/LatencyPercentilesChart";
-import { DatabasePageHeader } from "./header/DatabasePageHeader";
+import { instanceStatus } from "./databaseInstanceModel";
 import { useDatabaseSummary } from "./hooks/useDatabaseSummary";
-import { DatabaseKpiStrip } from "./kpi/DatabaseKpiStrip";
-import { SlowQueriesPreviewTable } from "./tables/SlowQueriesPreviewTable";
+import { useDatabaseSystemSparklines } from "./hooks/useDatabaseSystemSparklines";
+import { useDatastoreSystems } from "./hooks/useDatastoreSystems";
+import { DatabaseFilterBar } from "./list/DatabaseFilterBar";
+import { DatabaseInstancesTable } from "./list/DatabaseInstancesTable";
 
-const ERROR_RATE_DEGRADED = 0.01;
-const P95_DEGRADED_MS = 1000;
+function matchesFilters(row: DatastoreSystemRow, search: string, engine: string): boolean {
+  if (engine !== "all" && row.system !== engine) return false;
+  if (search && !row.system.toLowerCase().includes(search.toLowerCase())) return false;
+  return true;
+}
 
 export default function SaturationDatabasePage() {
   const summaryQ = useDatabaseSummary();
-  const summary = summaryQ.data;
-  const degraded =
-    summary &&
-    (summary.error_rate >= ERROR_RATE_DEGRADED || summary.p95_latency_ms >= P95_DEGRADED_MS)
-      ? {
-          label:
-            summary.error_rate >= ERROR_RATE_DEGRADED
-              ? `degraded · error rate ${(summary.error_rate * 100).toFixed(1)}%`
-              : `degraded · p95 ${Math.round(summary.p95_latency_ms)}ms`,
-        }
-      : null;
+  const systemsQ = useDatastoreSystems();
+  const sparklines = useDatabaseSystemSparklines();
+
+  const [search, setSearch] = useState("");
+  const [engine, setEngine] = useState("all");
+
+  const systems = useMemo(() => systemsQ.data ?? [], [systemsQ.data]);
+  const engines = useMemo(
+    () => Array.from(new Set(systems.map((s) => s.system))).sort(),
+    [systems]
+  );
+  const filtered = useMemo(
+    () => systems.filter((row) => matchesFilters(row, search, engine)),
+    [systems, search, engine]
+  );
+
+  const healthy = systems.filter((s) => instanceStatus(s) === "ok").length;
+  const attention = systems.length - healthy;
+  const loading = systemsQ.isPending && systemsQ.data === undefined;
 
   return (
     <PageShell>
       <div className="flex flex-col gap-4">
-        <DatabasePageHeader summary={summary} degraded={degraded} />
-        <SaturationSubnav active="database" counts={{ database: summary?.database_systems }} />
-        <DatabaseKpiStrip summary={summary} />
-        <LatencyPercentilesChart />
-        <SlowQueriesPreviewTable />
+        <header className="flex items-start gap-3">
+          <div className="grid h-9 w-9 place-items-center rounded-md bg-[var(--color-primary-bg)] text-primary">
+            <Database size={18} />
+          </div>
+          <div>
+            <h1 className="font-semibold text-[20px] text-foreground">Database Monitoring</h1>
+            <div className="text-[12px] text-foreground-muted">
+              {systems.length} instances · {engines.join(" · ") || "no engines reporting"}
+            </div>
+          </div>
+        </header>
+
+        <SaturationSubnav
+          active="database"
+          counts={{ database: summaryQ.data?.database_systems }}
+        />
+
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <KpiCard label="Instances" value={fmtNum(systems.length)} subtext="monitored" />
+          <KpiCard
+            label="Queries"
+            value={summaryQ.data ? fmtNum(summaryQ.data.query_count) : "—"}
+            subtext="in window"
+          />
+          <KpiCard label="Healthy" value={fmtNum(healthy)} tone="ok" subtext="instances" />
+          <KpiCard
+            label="Need attention"
+            value={fmtNum(attention)}
+            tone={attention > 0 ? "warn" : "ok"}
+            subtext="degraded or critical"
+          />
+        </div>
+
+        <DatabaseFilterBar
+          search={search}
+          onSearch={setSearch}
+          engine={engine}
+          onEngine={setEngine}
+          engines={engines}
+          shownCount={filtered.length}
+          totalCount={systems.length}
+        />
+
+        <DatabaseInstancesTable rows={filtered} loading={loading} sparklines={sparklines} />
       </div>
     </PageShell>
   );

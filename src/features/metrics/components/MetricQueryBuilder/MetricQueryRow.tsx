@@ -47,15 +47,15 @@ export function MetricQueryRow({
         {query.id}
       </div>
 
-      {/* Query controls */}
+      {}
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        {/* Row 1: Aggregation + Metric */}
+        {}
         <div className="flex items-center gap-2">
           <AggregationPicker value={query.aggregation} onChange={onAggregationChange} />
           <MetricSelector value={query.metricName} onChange={onMetricChange} />
         </div>
 
-        {/* Row 2: Where + Group By (only shown when metric is selected) */}
+        {}
         {query.metricName && (
           <div className="flex flex-wrap items-center gap-3">
             <TagFilter
@@ -73,7 +73,7 @@ export function MetricQueryRow({
         )}
       </div>
 
-      {/* Remove button */}
+      {}
       {canRemove && (
         <button
           type="button"

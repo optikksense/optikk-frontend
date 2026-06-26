@@ -37,7 +37,7 @@ export function zoomTimeRange(
     return { startMs: Math.round(mid - halfNewDur), endMs: Math.round(mid + halfNewDur) };
   }
 
-  const halfNewDur = dur; // double the duration
+  const halfNewDur = dur;
   const now = Date.now();
   return {
     startMs: Math.round(mid - halfNewDur),

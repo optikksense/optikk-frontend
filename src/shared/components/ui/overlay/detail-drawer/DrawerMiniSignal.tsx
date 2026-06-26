@@ -11,7 +11,6 @@ interface DrawerMiniSignalProps {
   readonly yTicks?: readonly [string, string];
 }
 
-/** Small framed area chart used in the golden-signals grid (design `DdMiniSignal`). */
 export function DrawerMiniSignal({ label, legend, values, tone, yTicks }: DrawerMiniSignalProps) {
   const hasData = values.length > 1;
   return (

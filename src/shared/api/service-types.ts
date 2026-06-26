@@ -15,12 +15,6 @@ export type QueryParamValue =
   | null
   | undefined;
 
-/**
- * Generic query-string object shape used by service methods.
- */
 export type QueryParams = Record<string, QueryParamValue>;
 
-/**
- * Start/end time value accepted by backend APIs.
- */
 export type RequestTime = string | number;

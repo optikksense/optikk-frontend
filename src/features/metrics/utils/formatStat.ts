@@ -9,17 +9,12 @@ export function formatStatValue(value: number | null): string {
   return value.toFixed(2);
 }
 
-/** Signed delta string, e.g. "+12.4" / "−3.0", using a true minus glyph. */
 export function formatDelta(delta: number | null): string {
   if (delta == null || Number.isNaN(delta)) return "—";
   const sign = delta > 0 ? "+" : delta < 0 ? "−" : "";
   return `${sign}${formatStatValue(Math.abs(delta))}`;
 }
 
-/**
- * Delta direction for coloring. For latency-like metrics an increase is "bad"
- * (down/red), a decrease is "good" (up/green); flat is neutral.
- */
 export function deltaDirection(delta: number | null): "up" | "down" | "flat" {
   if (delta == null || Number.isNaN(delta) || delta === 0) return "flat";
   return delta > 0 ? "down" : "up";

@@ -59,7 +59,7 @@ export default function Header() {
       } else {
         newStart = startTime + shiftMs;
         newEnd = Math.min(endTime + shiftMs, now);
-        // Don't let start go past now either
+
         if (newStart >= now) {
           newStart = now - durationMs;
           newEnd = now;
@@ -94,7 +94,7 @@ export default function Header() {
   return (
     <header className="relative z-[200] flex h-[var(--space-header-h,56px)] items-center justify-between gap-3 overflow-visible border-border border-b bg-surface-overlay px-4 backdrop-blur-[12px] max-md:px-3">
       <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-visible">
-        {/* Shift back */}
+        {}
         <Tooltip content="Shift time window back">
           <IconButton
             icon={<ChevronLeft size={14} />}
@@ -107,7 +107,7 @@ export default function Header() {
 
         <TimeRangePicker />
 
-        {/* Shift forward */}
+        {}
         <Tooltip content="Shift time window forward">
           <IconButton
             icon={<ChevronRight size={14} />}
@@ -118,7 +118,7 @@ export default function Header() {
           />
         </Tooltip>
 
-        {/* Live indicator */}
+        {}
         {isLive && (
           <span className="inline-flex items-center gap-1 rounded-[var(--card-radius)] border border-[color-mix(in_oklch,var(--color-success),transparent_65%)] bg-success-subtle px-2.5 py-1 font-semibold text-[11px] text-success uppercase tracking-[0.06em] shadow-[var(--shadow-sm)]">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
@@ -139,7 +139,7 @@ export default function Header() {
           </div>
         )}
 
-        {/* Combined refresh picker */}
+        {}
         <div className="relative flex items-center" ref={pickerRef}>
           <Tooltip content={`Refresh now${refreshLabel ? ` · ${refreshLabel}` : ""}`}>
             <button

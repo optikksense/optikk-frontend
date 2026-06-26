@@ -9,7 +9,6 @@ export function tsKey(ts: string | number | null | undefined): string {
   return String(ts).replace("T", " ").replace("Z", "").substring(0, 16);
 }
 
-/** Parse timestamp values robustly across API formats. Returns epoch ms. */
 export function tsMs(ts: string | number | null | undefined): number {
   if (!ts) return Number.NaN;
   const raw = String(ts).trim();

@@ -83,9 +83,9 @@ export type DashboardSectionTemplate = (typeof DASHBOARD_SECTION_TEMPLATES)[numb
 export interface DashboardLayout {
   x: number;
   y: number;
-  /** Grid width in columns (12-column model; must match backend layoutVariant footprint). */
+
   w: number;
-  /** Grid height in rows. */
+
   h: number;
 }
 

@@ -31,7 +31,6 @@ export interface ErrorGroupDetail {
   readonly exception_type?: string;
 }
 
-/** The single most recent error span of a group — drives the banner, stack trace and request context. */
 export interface ErrorLatestOccurrence {
   readonly trace_id: string;
   readonly span_id: string;
@@ -48,14 +47,12 @@ export interface ErrorLatestOccurrence {
   readonly host: string;
 }
 
-/** One value within a facet dimension, with its share of the group's errors. */
 export interface ErrorFacet {
   readonly name: string;
   readonly count: number;
   readonly pct: number;
 }
 
-/** Distribution of a group's errors across one tag dimension (e.g. `pod`). */
 export interface ErrorFacetGroup {
   readonly key: string;
   readonly facets: ErrorFacet[];

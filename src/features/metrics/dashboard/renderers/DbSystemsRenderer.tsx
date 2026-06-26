@@ -214,11 +214,6 @@ function DbSystemCard({ system }: { system: DbSystemRow }) {
   );
 }
 
-/**
- * Renders a responsive card grid of detected database systems.
- * Each card shows key metrics (queries, avg latency, p95, error rate) for one system.
- * New database types appear automatically without any code changes.
- */
 export function DbSystemsRenderer({
   chartConfig,
   dataSources,

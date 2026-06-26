@@ -18,7 +18,7 @@ interface Props {
    * scope-specific affordances (Saved Views, Share, etc). */
   readonly actions?: ReactNode;
   readonly searchPlaceholder?: string;
-  /** "dsl" renders the Datadog-style parsed query bar; "classic" keeps the chip builder. */
+
   readonly variant?: SearchBarVariant;
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;

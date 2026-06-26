@@ -33,7 +33,6 @@ export function useTracesExplorerPage() {
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Pagination state for "Previous" button
   const [cursorHistory, setCursorHistory] = useState<string[]>([]);
 
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
@@ -59,7 +58,7 @@ export function useTracesExplorerPage() {
       state.setFilters([...state.filters, { field, op: "neq", value }]),
     [state]
   );
-  // Row click navigates straight to the trace detail page (matches the design).
+
   const onOpenTrace = useCallback(
     (traceId: string) => navigate({ to: `/traces/${encodeURIComponent(traceId)}` }),
     [navigate]
@@ -144,8 +143,6 @@ export function useTracesExplorerPage() {
 
 export type UseTracesExplorerPageReturn = ReturnType<typeof useTracesExplorerPage>;
 
-// ---------- pure helpers (private to this module) ----------
-
 function facetsToGroups(
   facets: Readonly<Record<string, readonly TracesFacetBucket[]>> | undefined
 ): FacetGroupModel[] {
@@ -190,9 +187,6 @@ interface ContextMenuArgs {
   readonly openTraceDetail: (traceId: string) => void;
 }
 
-/** Datadog-style row context menu for the traces explorer. Filter actions
- *  are scoped to root_service / operation / http_method / environment when
- *  present; copy actions cover trace_id and endpoint. */
 function buildTraceContextMenu(
   row: TraceSummary,
   args: ContextMenuArgs

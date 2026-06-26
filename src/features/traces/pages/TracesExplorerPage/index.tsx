@@ -32,7 +32,7 @@ export default function TracesExplorerPage() {
         className="min-h-0 flex-1 overflow-hidden"
         style={{ display: "grid", gridTemplateColumns: "236px 1fr" }}
       >
-        {/* facets */}
+        {}
         <TracesFacetRail
           groups={p.facetGroups}
           onInclude={p.onInclude}
@@ -40,7 +40,7 @@ export default function TracesExplorerPage() {
           onClearAll={p.onClearFilters}
         />
 
-        {/* content: stat pills + volume chart + results table */}
+        {}
         <div className="overflow-y-auto bg-background" style={{ padding: "18px 22px" }}>
           <div className="flex flex-row items-center" style={{ gap: 10, marginBottom: 16 }}>
             <StatPill label="Total" value={formatNumber(p.summary?.total ?? 0)} />
@@ -69,7 +69,6 @@ export default function TracesExplorerPage() {
   );
 }
 
-/** Summary pill (Total / Errors). Single-use, kept inline per simplicity rules. */
 function StatPill({ label, value, dot }: { label: string; value: string; dot?: string }) {
   return (
     <div

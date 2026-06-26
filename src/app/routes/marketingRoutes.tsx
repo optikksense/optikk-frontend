@@ -49,8 +49,8 @@ function buildLazyPageRoute(parentRoute: any, path: string, LazyComponent: Compo
 function buildPricingRoute(layoutRoute: any) {
   return createRoute({
     getParentRoute: () => layoutRoute,
-    path: ROUTES.pricing.replace(/^\//, ""),
-    loader: () => {
+    path: ROUTES.pricing.replace(/^\
+ {4}loader: () => {
       throw redirect({ to: ROUTES.selfHost, replace: true });
     },
   });
@@ -92,8 +92,8 @@ export function buildMarketingRoutes(parent: () => typeof rootRoute) {
     productRedirectRoute,
     loginRoute: createRoute({
       getParentRoute: parent,
-      path: ROUTES.login.replace(/^\//, ""),
-      validateSearch: z.object({ redirect: z.string().optional() }),
+      path: ROUTES.login.replace(/^\
+ {6}validateSearch: z.object({ redirect: z.string().optional() }),
       component: () => (
         <Suspense fallback={<Loading fullscreen />}>
           <LoginPage />

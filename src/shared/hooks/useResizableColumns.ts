@@ -24,10 +24,6 @@ interface UseResizableColumnsResult {
   handleResizeMouseDown: (event: ReactMouseEvent<HTMLDivElement>, columnKey: string) => void;
 }
 
-/**
- * Handles mutable column width state and drag-to-resize behavior.
- * @param options Hook options.
- */
 export function useResizableColumns({
   initialWidths,
   defaultWidth = 160,

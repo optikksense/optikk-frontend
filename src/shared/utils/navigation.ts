@@ -18,10 +18,6 @@ export function dynamicNavigateOptions(
   return { to, search } as NavigateOptions;
 }
 
-/**
- * Build a `to` value suitable for TanStack Router's Navigate component
- * or navigate() call when the path is a dynamic string.
- */
 export function dynamicTo(path: string): string & {} {
   return path as string & {};
 }

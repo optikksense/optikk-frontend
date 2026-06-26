@@ -37,8 +37,8 @@ function ChartBody({
   );
 }
 
-export function LatencyPercentilesChart() {
-  const { series } = useDatabaseLatencyPercentiles();
+export function LatencyPercentilesChart({ system }: { system?: string }) {
+  const { series } = useDatabaseLatencyPercentiles(system);
   return (
     <PanelCard title="Latency percentiles" subtitle="p50 / p95 / p99">
       <ChartBody

@@ -7,28 +7,26 @@ export interface SeriesStats {
   readonly max: number;
   readonly p95: number;
   readonly p99: number;
-  /** First non-null value in the window. */
+
   readonly first: number | null;
-  /** Last non-null value in the window. */
+
   readonly last: number | null;
-  /** Count of non-null samples in the series. */
+
   readonly samples: number;
-  /** Absolute change of last vs first non-null value (null when undefined). */
+
   readonly delta: number | null;
 }
 
-/** Aggregate KPI summary across all series of a query, over the full window. */
 export interface QuerySummary {
-  /** Current value: the spatially aggregated last non-null point across series. */
   readonly current: number | null;
   readonly avg: number | null;
   readonly min: number | null;
   readonly max: number | null;
-  /** Total non-null points across every series. */
+
   readonly samples: number;
-  /** Number of series (cardinality). */
+
   readonly cardinality: number;
-  /** Aggregate delta: current vs the spatially aggregated first non-null point. */
+
   readonly delta: number | null;
 }
 
@@ -40,7 +38,6 @@ function nonNull(values: ReadonlyArray<number | null>): number[] {
   return out;
 }
 
-/** Linear-interpolated percentile (0–100) over a value array, ignoring nulls. */
 export function percentile(values: ReadonlyArray<number | null>, p: number): number {
   const clean = nonNull(values).sort((a, b) => a - b);
   if (clean.length === 0) return 0;
@@ -67,7 +64,6 @@ function lastNonNull(values: ReadonlyArray<number | null>): number | null {
   return null;
 }
 
-/** Compute summary statistics for a single series across its own value array. */
 export function computeSeriesStats(series: MetricSeriesData): SeriesStats {
   const clean = nonNull(series.values);
   const first = firstNonNull(series.values);
@@ -89,7 +85,6 @@ export function computeSeriesStats(series: MetricSeriesData): SeriesStats {
   };
 }
 
-/** Spatially aggregate a list of values across series at one time index. */
 function aggregateAcross(values: number[], spaceAgg: MetricSpaceAggregation): number | null {
   if (values.length === 0) return null;
   switch (spaceAgg) {
@@ -104,7 +99,6 @@ function aggregateAcross(values: number[], spaceAgg: MetricSpaceAggregation): nu
   }
 }
 
-/** Collect the spatially aggregated value at each timestamp index across series. */
 function aggregatedTimeline(
   result: MetricQueryResult,
   spaceAgg: MetricSpaceAggregation
@@ -122,10 +116,6 @@ function aggregatedTimeline(
   return timeline;
 }
 
-/**
- * Build the KPI summary for a query: current / 1h avg-min-max are derived from
- * the spatially aggregated timeline; samples and cardinality count raw series.
- */
 export function computeQuerySummary(
   result: MetricQueryResult | undefined,
   spaceAgg: MetricSpaceAggregation

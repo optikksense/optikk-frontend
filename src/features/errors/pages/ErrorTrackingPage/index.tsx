@@ -30,7 +30,6 @@ export default function ErrorTrackingPage(): JSX.Element {
   const [query, setQuery] = useState("");
   const cursor = page > 0 ? cursors[page - 1] : undefined;
 
-  // Switching the service filter restarts cursor pagination from the first page.
   useEffect(() => {
     setPage(0);
     setCursors({});
@@ -47,7 +46,6 @@ export default function ErrorTrackingPage(): JSX.Element {
     { extraKeys: [page, cursor, serviceFilter ?? ""] }
   );
 
-  // Capped all-groups fetch for KPIs + the service facet rail (range-scoped, unpaginated).
   const aggregateQ = useTimeRangeQuery<PaginatedResponse<ErrorGroup[]>>(
     "errors-groups-aggregate",
     (_t, s, e) => listErrorGroups(s, e, { limit: AGGREGATE_LIMIT })
@@ -97,7 +95,6 @@ export default function ErrorTrackingPage(): JSX.Element {
       .sort((a, b) => b.count - a.count);
   }, [allGroups]);
 
-  // Free-text search is page-scoped (the list endpoint has no text-query param).
   const pageRows = useMemo(() => {
     const rows = groupsQ.data?.results ?? [];
     const q = query.trim().toLowerCase();
@@ -126,7 +123,7 @@ export default function ErrorTrackingPage(): JSX.Element {
 
       <ErrorsKpiStrip kpis={kpis} />
 
-      {/* Toolbar */}
+      {}
       <div className="flex h-9 items-center gap-2 rounded-md border border-border bg-card px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
         <Search size={15} className="text-foreground-muted" />
         <input
@@ -142,7 +139,7 @@ export default function ErrorTrackingPage(): JSX.Element {
         ) : null}
       </div>
 
-      {/* Active filter chips */}
+      {}
       {serviceFilter ? (
         <div className="-mt-2 flex flex-wrap items-center gap-2">
           <span className="font-semibold text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">
@@ -170,7 +167,7 @@ export default function ErrorTrackingPage(): JSX.Element {
         </div>
       ) : null}
 
-      {/* Facets + table */}
+      {}
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[212px_1fr]">
         <ServiceFacetRail
           facets={facets}

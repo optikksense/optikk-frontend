@@ -34,14 +34,11 @@ export function pushIncludeExcludeFilter(
   });
 }
 
-/** Best-effort clipboard write. No-op when clipboard isn't available
- *  (SSR, http://, denied permission). */
 export function copyToClipboard(value: string): void {
   if (!value || typeof navigator === "undefined" || !navigator.clipboard) return;
   void navigator.clipboard.writeText(value).catch(() => undefined);
 }
 
-/** Truncate with an ellipsis to keep "Filter by service: …" labels narrow. */
 function truncatePreview(s: string, n = 32): string {
   return s.length > n ? `${s.slice(0, n - 1)}…` : s;
 }

@@ -7,14 +7,14 @@ interface TracesState {
   /** User's preferred visualization — persisted so it sticks across navigations. */
   visualizationTab: VisualizationTab;
   setVisualizationTab: (tab: VisualizationTab) => void;
-  /** Collapsed span ids in the waterfall. Ephemeral per session. */
+
   collapsedSpanIds: ReadonlySet<string>;
   toggleCollapsedSpan: (spanId: string) => void;
   clearCollapsedSpans: () => void;
-  /** Waterfall search term (ephemeral). */
+
   waterfallSearch: string;
   setWaterfallSearch: (s: string) => void;
-  /** Errors-only filter toggle (ephemeral). */
+
   waterfallErrorsOnly: boolean;
   setWaterfallErrorsOnly: (v: boolean) => void;
 }

@@ -181,7 +181,7 @@ export function TracesTable({
         </tbody>
       </table>
 
-      {/* Footer pager (explicit cursor pagination) */}
+      {}
       <div
         className="flex flex-row items-center justify-between"
         style={{ padding: "12px 16px", borderTop: "1px solid var(--line-2)" }}

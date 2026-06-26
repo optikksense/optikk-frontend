@@ -50,7 +50,6 @@ function extractNextCursor(pageInfo: unknown): string | undefined {
   return undefined;
 }
 
-/** Backend `explorer.Trace` / traces_index row (`internal/modules/traces/explorer/models.go`). */
 export const rawTraceRowSchema = z
   .object({
     trace_id: z.string(),
@@ -193,10 +192,6 @@ function logDevSnippet(raw: unknown, err: unknown) {
   });
 }
 
-// ==========================================
-// Traces API Functions
-// ==========================================
-
 export async function query(body: TracesQueryRequest): Promise<TracesQueryResponse> {
   const { include: _ignore, ...reqBody } = body;
   const raw = await api.post<unknown>(`${BASE}/traces/query`, reqBody);
@@ -246,10 +241,6 @@ export async function getById(traceId: string): Promise<TraceSummary> {
   return normalizeTraceSummary(row);
 }
 
-// ==========================================
-// Suggest Request, Response Schemas & Functions
-// ==========================================
-
 export interface SuggestRequest {
   readonly startTime: number;
   readonly endTime: number;
@@ -288,13 +279,8 @@ export async function getSuggestions(req: SuggestRequest): Promise<SuggestionIte
   return validateResponse(suggestResponseSchema, raw).suggestions;
 }
 
-// ==========================================
-// Traces Service Detail Functions & Wrapper
-// ==========================================
-
 const spanListSchema = z.array(spanRecordSchema);
 
-/** Wire item for GET /traces/:traceId/spans (tracedetail SpanListItem). */
 const traceSpanListItemSchema = z
   .object({
     span_id: z.string(),
@@ -310,7 +296,6 @@ const traceSpanListItemSchema = z
   })
   .strict();
 
-/** Backend sends `{ spans: [...] }`; some paths emit `null` or omit `spans` for empty results. */
 const traceSpansEnvelopeSchema = z
   .object({
     spans: z
@@ -378,7 +363,6 @@ export async function getServiceMap(traceId: string): Promise<ServiceTopologyRes
   return topologyResponseSchema.parse(data ?? { nodes: [], edges: [] });
 }
 
-/** Per-service p95/p99 baseline from the RED summary, keyed by service name. */
 export interface ServiceLatencyBaseline {
   readonly p95: number;
   readonly p99: number;
@@ -416,7 +400,6 @@ export async function getTraceErrors(traceId: string): Promise<TraceErrorGroup[]
   return validateResponse(z.array(traceErrorGroupSchema), data);
 }
 
-/** Wrapper compatibility object. */
 export const tracesService = {
   getTraceSpans,
   getSpanEvents,

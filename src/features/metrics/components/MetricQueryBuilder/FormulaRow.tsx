@@ -71,7 +71,7 @@ export function FormulaRow({
         <Calculator size={12} />
       </div>
 
-      {/* Formula input */}
+      {}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-center gap-2">
           <span className="shrink-0 font-semibold text-[11px] text-foreground-muted uppercase tracking-wide">
@@ -98,7 +98,7 @@ export function FormulaRow({
         {error && <span className="pl-[52px] text-[10px] text-error">{error}</span>}
       </div>
 
-      {/* Remove button */}
+      {}
       <button
         type="button"
         onClick={onRemove}

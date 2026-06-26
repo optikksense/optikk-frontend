@@ -20,7 +20,7 @@ export default function TraceDetailPage() {
     useTraceDetailPage();
   // Page-local "active service" highlight; clicking a pill drills into that service's first span.
   const [activeService, setActiveService] = useState<string | null>(null);
-  // Root operation baseline (p50/p95) for the Duration KPI "N× slower than p50".
+
   const baseline = useTraceOperationBaseline(
     data.spans[0]?.service_name,
     data.spans[0]?.operation_name

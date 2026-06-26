@@ -30,8 +30,7 @@ const ERROR_COLOR = severityColor(4);
 
 function parseBucketMs(time_bucket: string, idx: number): number {
   const iso = time_bucket.includes("T") ? time_bucket : time_bucket.replace(" ", "T");
-  // Backend grain is UTC; append Z when the string carries no zone so Date
-  // parses it as UTC rather than local.
+
   const utc = /[zZ]|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso}Z`;
   const ms = Date.parse(utc);
   return Number.isNaN(ms) ? idx : ms;
@@ -44,7 +43,7 @@ const PAD_R = 18;
 const PAD_T = 12;
 const PAD_B = 28;
 const MIN_BAR_W = 2;
-const BRUSH_THRESHOLD_PX = 8; // viewBox units (≈ same as px at 1:1 width)
+const BRUSH_THRESHOLD_PX = 8;
 
 function pickTimeFormat(spanMs: number): Intl.DateTimeFormatOptions {
   if (spanMs <= 3 * 60 * 60 * 1000) return { hour: "numeric", minute: "2-digit" };
@@ -85,8 +84,7 @@ function LogsTrendChartComponent({
 }: Props) {
   const tz = useTimezone();
   const svgRef = useRef<SVGSVGElement | null>(null);
-  // Pending = pointerdown happened but movement is still under threshold.
-  // Brushing = movement crossed threshold, capture is active.
+
   const [pending, setPending] = useState<{ x0: number } | null>(null);
   const [brush, setBrush] = useState<{ x0: number; x1: number } | null>(null);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
@@ -155,7 +153,6 @@ function LogsTrendChartComponent({
     return Math.max(PAD_L, Math.min(W - PAD_R, xVB));
   };
 
-  // Pick the bucket whose centre is closest to x (in viewBox units).
   const nearestBucketIdx = (x: number): number | null => {
     if (buckets.length === 0) return null;
     let best = 0;
@@ -171,11 +168,6 @@ function LogsTrendChartComponent({
     return best;
   };
 
-  // Pointer flow:
-  //   pointerdown → record x0 in `pending` (no capture, no brush yet)
-  //   pointermove past 8px → promote to `brush`, capture pointer
-  //   pointermove inside chart → update hoverIdx (independent of brush)
-  //   pointerup with brush → emit time range; otherwise no-op (click safe)
   const onHitPointerDown = (e: React.PointerEvent<SVGRectElement>) => {
     if (!onTimeRangeChange) return;
     e.preventDefault();
@@ -224,7 +216,7 @@ function LogsTrendChartComponent({
   const tipTotal = hoverBucket
     ? hoverBucket.debug + hoverBucket.info + hoverBucket.warn + hoverBucket.err
     : 0;
-  // Tooltip width / height in viewBox units. Switch sides when near right edge.
+
   const TIP_W = 168;
   const TIP_H = 80;
   const tipX =
@@ -262,7 +254,7 @@ function LogsTrendChartComponent({
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
       >
-        {/* Grid + axis frame — always rendered so the empty state still has scaffolding */}
+        {}
         <g>
           {ticks.map((t) => (
             <line
@@ -317,7 +309,7 @@ function LogsTrendChartComponent({
             const hi = yScale(d.info);
             const hw = yScale(d.warn);
             const he = yScale(d.err);
-            // Stack bottom → top: debug, info, warn, error.
+
             const yd = PAD_T + innerH - hd;
             const yi = yd - hi;
             const yw = yi - hw;
@@ -368,7 +360,7 @@ function LogsTrendChartComponent({
             );
           })}
 
-        {/* Incident line is always present once data exists; label is hover-only. */}
+        {}
         {incidentX != null ? (
           <line
             x1={incidentX}
@@ -393,7 +385,7 @@ function LogsTrendChartComponent({
           </text>
         ) : null}
 
-        {/* Hover guide line at nearest bucket */}
+        {}
         {hoverX != null ? (
           <line
             x1={hoverX}
@@ -410,7 +402,7 @@ function LogsTrendChartComponent({
           />
         ) : null}
 
-        {/* Brush rectangle (visible only while actively dragging) */}
+        {}
         {brush ? (
           <rect
             x={brushX}
@@ -426,7 +418,7 @@ function LogsTrendChartComponent({
           />
         ) : null}
 
-        {/* Empty state — a single em-dash, no prose */}
+        {}
         {isEmpty ? (
           <text
             x={PAD_L + innerW / 2}
@@ -438,7 +430,7 @@ function LogsTrendChartComponent({
           </text>
         ) : null}
 
-        {/* Tooltip (rendered last so it stacks on top) */}
+        {}
         {hoverBucket && hoverX != null ? (
           <g style={{ pointerEvents: "none" }}>
             <rect
@@ -519,8 +511,7 @@ function LogsTrendChartComponent({
           </g>
         ) : null}
 
-        {/* Pointer hit area — confined to the chart body so axis/header clicks
-            do nothing. Brush only emits when movement exceeds the threshold. */}
+        {}
         <rect
           className="outline-none"
           x={PAD_L}

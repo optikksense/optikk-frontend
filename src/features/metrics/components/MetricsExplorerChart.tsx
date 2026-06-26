@@ -77,7 +77,6 @@ function buildSeries(
     }
   }
 
-  // Evaluate formulas and add as additional series.
   for (const formula of formulas) {
     if (!formula.expression.trim()) continue;
     const values = evaluateFormula(formula.expression, results, timestamps);

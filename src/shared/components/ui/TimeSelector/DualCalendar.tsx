@@ -56,10 +56,10 @@ export function DualCalendar({
         />
       </div>
 
-      {/* Divider */}
+      {}
       <div className="w-px self-stretch bg-border" />
 
-      {/* Right month */}
+      {}
       <div className="flex flex-1 flex-col">
         <div className="mb-2 flex items-center justify-between">
           <div className="w-6" />

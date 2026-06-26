@@ -11,10 +11,6 @@ export type TraceId = Brand<string, "TraceId">;
 export type SpanId = Brand<string, "SpanId">;
 export type MetricId = Brand<string, "MetricId">;
 
-/**
- * Utility to cast to a branded type.
- * Use this only at the boundaries (e.g. when receiving data from API).
- */
 export function asUserId(id: string | number): UserId {
   return id as UserId;
 }

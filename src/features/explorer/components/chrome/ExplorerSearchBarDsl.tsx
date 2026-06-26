@@ -163,8 +163,6 @@ function handleKeyDown(
   }
 }
 
-/** If parsing failed or produced nothing but the input has text, fall back to a single
- * search:contains filter so the user never loses what they typed. */
 function effectiveFilters(
   s: ReturnType<typeof useDslSearchBar>,
   opts: { readonly disableBareFreeTextFallback?: boolean } = {}

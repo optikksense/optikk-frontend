@@ -32,11 +32,8 @@ export function useAutoRefresh({
     setLastRefreshAt(Date.now());
   }, []);
 
-  // Update "Xs ago" label periodically without re-rendering every second (avoids header flicker).
-  // Skip ticks when the tab is hidden to save CPU / battery.
   useVisibilityInterval(() => setNow(Date.now()), 5_000);
 
-  // Trigger refresh periodically when page is visible.
   useVisibilityInterval(() => {
     refreshRef.current();
     setLastRefreshAt(Date.now());

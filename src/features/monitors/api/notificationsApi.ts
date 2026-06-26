@@ -87,14 +87,10 @@ export async function testChannel(id: number): Promise<{ ok: boolean; error_text
   return unwrapEnvelope(raw);
 }
 
-// Integrations -------------------------------------------------------------
-
 export async function listIntegrations(): Promise<Integration[]> {
   const raw = await api.get<unknown>(`${V1}/notifications/integrations`);
   return unwrapEnvelope<Integration[]>(raw);
 }
-
-// Policies -----------------------------------------------------------------
 
 export async function listPolicies(): Promise<Policy[]> {
   const raw = await api.get<unknown>(`${V1}/notifications/policies`);
@@ -119,8 +115,6 @@ export async function updatePolicy(id: number, payload: CreatePolicyPayload): Pr
 export async function deletePolicy(id: number): Promise<void> {
   await api.delete<unknown>(`${V1}/notifications/policies/${id}`);
 }
-
-// Templates ----------------------------------------------------------------
 
 export async function listTemplates(): Promise<Template[]> {
   const raw = await api.get<unknown>(`${V1}/notifications/templates`);

@@ -49,12 +49,10 @@ function urlValueToPreset(val: string): RelativeTimeRange | null {
 function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | null {
   if (!from) return null;
 
-  // Relative: from=now-6h, to=now (or absent)
   if (from.startsWith("now-") && (!to || to === "now")) {
     return urlValueToPreset(from);
   }
 
-  // Absolute: from=<ms>, to=<ms>
   const startMs = Number(from);
   const endMs = Number(to);
   if (Number.isFinite(startMs) && Number.isFinite(endMs) && startMs < endMs) {
@@ -76,19 +74,6 @@ function timeRangeToUrlParams(r: TimeRange): { from: string; to: string } {
   return { from: String(r.startMs), to: String(r.endMs) };
 }
 
-/**
- * Source of Truth Hierarchy:
- * 1. URL params       -> source of truth for shareable state (timeRange, query, filters)
- * 2. appStore         -> cache of URL state + non-shareable UI state (panel collapse, theme)
- * 3. localStorage     -> persistence across sessions (last used timeRange default)
- *
- * Bidirectional sync between the Zustand time range and URL search params.
- * Mount once in the app shell (e.g., Header or a wrapper component).
- *
- * - On mount: URL params present -> update store. Absent -> push store to URL.
- * - On store change: replaceState to URL (no history pollution).
- * - On browser back/forward: update store from URL.
- */
 export function useTimeRangeURL(): void {
   const [searchParams, setSearchParams] = useSearchParams();
   const timeRange = useTimeRange();
@@ -98,7 +83,6 @@ export function useTimeRangeURL(): void {
   const initializedRef = useRef(false);
   const skipNextUrlUpdateRef = useRef(false);
 
-  // On mount: read URL -> store, or push store -> URL
   useEffect(() => {
     if (initializedRef.current) return;
     initializedRef.current = true;
@@ -109,12 +93,10 @@ export function useTimeRangeURL(): void {
 
     const parsed = parseUrlTimeRange(urlFrom, urlTo);
     if (parsed) {
-      // URL has time range — push to store
       skipNextUrlUpdateRef.current = true;
       setTimeRange(parsed);
       if (urlTz) setTimezone(urlTz);
     } else {
-      // No URL params — push store to URL
       const params = timeRangeToUrlParams(timeRange);
       setSearchParams(
         (prevSearchParams) => {
@@ -131,7 +113,6 @@ export function useTimeRangeURL(): void {
     }
   }, []);
 
-  // On store change: push to URL (replaceState)
   useEffect(() => {
     if (!initializedRef.current) return;
     if (skipNextUrlUpdateRef.current) {
@@ -156,7 +137,6 @@ export function useTimeRangeURL(): void {
     );
   }, [timeRange, timezone]);
 
-  // On URL change (browser back/forward): update store
   useEffect(() => {
     if (!initializedRef.current) return;
 

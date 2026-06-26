@@ -65,7 +65,6 @@ export function migrateTimeRange(value: unknown): TimeRange {
 
   const raw = value as Record<string, unknown>;
 
-  // Already new format
   if (raw.kind === "relative" && typeof raw.preset === "string") {
     const found = findPreset(raw.preset as string);
     return found ?? getDefaultTimeRange();
@@ -74,13 +73,11 @@ export function migrateTimeRange(value: unknown): TimeRange {
     return value as TimeRange;
   }
 
-  // Legacy format: { value: '1h', minutes: 60 }
   if (typeof raw.value === "string" && raw.value !== "custom") {
     const found = findPreset(raw.value as string);
     return found ?? getDefaultTimeRange();
   }
 
-  // Legacy custom: { value: 'custom', startTime, endTime }
   if (raw.value === "custom") {
     const startMs = Number(raw.startTime);
     const endMs = Number(raw.endTime);

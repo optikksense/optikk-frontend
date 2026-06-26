@@ -28,7 +28,7 @@ export interface DashboardPanelRendererProps {
   chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;
   extraContext?: DashboardExtraContext;
-  /** When true (default from shell), chart content should fill the grid tile (uPlot fillHeight, etc.). */
+
   fillHeight?: boolean;
   titleContent?: React.ReactNode;
 }

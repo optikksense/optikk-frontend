@@ -20,7 +20,6 @@ interface MetricsState {
   yAxisScale: MetricYAxisScale;
   setYAxisScale: (scale: MetricYAxisScale) => void;
 
-  // Recently queried metric names (most-recent first, capped).
   recentMetrics: string[];
   pushRecentMetric: (metricName: string) => void;
 }

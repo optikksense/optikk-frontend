@@ -12,12 +12,11 @@ import type { MetricNameEntry, MetricQueryResult } from "../types";
 interface RecentMetricsPanelProps {
   /** Metric name currently driving the primary query, if any. */
   readonly primaryMetric: string | undefined;
-  /** Result for the primary query — provides a live spark for that metric. */
+
   readonly primaryResult: MetricQueryResult | undefined;
   readonly onSelectMetric: (metricName: string) => void;
 }
 
-/** Sparkline samples for the primary query's first series, if any. */
 function primarySpark(result: MetricQueryResult | undefined): number[] | undefined {
   const series = result?.series[0];
   if (!series) return undefined;
@@ -25,8 +24,6 @@ function primarySpark(result: MetricQueryResult | undefined): number[] | undefin
   return clean.length >= 2 ? clean : undefined;
 }
 
-/** Recently queried metrics. Names persist in the metrics store; type/unit come
- * from the metric names catalog. Clicking a row re-selects the metric. */
 export function RecentMetricsPanel({
   primaryMetric,
   primaryResult,

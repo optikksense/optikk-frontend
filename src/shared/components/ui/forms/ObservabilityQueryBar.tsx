@@ -95,7 +95,7 @@ export default function ObservabilityQueryBar({
 
   return (
     <div className={cn(EXPLORER_QUERY_WRAPPER_CLASSNAME, "group", className)} ref={wrapperRef}>
-      {/* Inner input row */}
+      {}
       <div
         className={cn(
           EXPLORER_QUERY_SURFACE_CLASSNAME,
@@ -122,7 +122,7 @@ export default function ObservabilityQueryBar({
           <Plus size={14} />
         </button>
 
-        {/* Pills */}
+        {}
         <div className="flex flex-wrap items-center gap-[5px]">
           {filters.map((filter, index) => (
             <span
@@ -182,7 +182,7 @@ export default function ObservabilityQueryBar({
           }}
         />
 
-        {/* Right controls */}
+        {}
         <div
           className="ml-auto flex shrink-0 items-center gap-1.5"
           onClick={(event) => event.stopPropagation()}

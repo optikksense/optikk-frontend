@@ -34,9 +34,6 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     [spansData]
   );
 
-  // Fetch logs in parallel with spans — both key off traceIdParam, not the
-  // resolved id. The backend tolerates either form (see traceidmatch helper).
-  // Fixes the spans→logs waterfall that was costing one full RTT on every mount.
   const {
     data: logsData,
     isPending: logsLoading,

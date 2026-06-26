@@ -80,8 +80,6 @@ export function getKafkaClusterHealth(
   );
 }
 
-// ----------------- TOPIC DOMAINS -----------------
-
 export function getTopicThroughput(
   startTime: RequestTime,
   endTime: RequestTime,
@@ -129,8 +127,6 @@ export function getTopicBacklog(
     topic ? topicParams(topic, startTime, endTime) : rangeParams(startTime, endTime)
   );
 }
-
-// ----------------- GROUP DOMAINS -----------------
 
 export function getGroupPartitions(
   startTime: RequestTime,
@@ -235,6 +231,5 @@ export async function getKafkaGroups(
     map.set(h.consumer_group, { ...map.get(h.consumer_group), ...h });
   }
 
-  // topic_count is carried by the partitions row (distinct topics per group).
   return Array.from(map.values()) as KafkaGroupRow[];
 }

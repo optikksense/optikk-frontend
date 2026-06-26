@@ -29,9 +29,6 @@ export interface SettingsPreferencesResponse {
   readonly preferences: UserViewPreferences;
 }
 
-/**
- * Service wrapper for user settings endpoints.
- */
 export const settingsService = {
   async getProfile(): Promise<SettingsProfileResponse> {
     return api.get(API_CONFIG.ENDPOINTS.SETTINGS.PROFILE);

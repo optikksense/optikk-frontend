@@ -7,8 +7,8 @@ export function resolveApiBaseURL(): string {
     return API_CONFIG.BASE_URL;
   }
 
-  if (/^https?:\/\//i.test(fromEnv)) {
-    let base = fromEnv.replace(/\/+$/, "");
+  if (/^https?:\/\
+ {4}let base = fromEnv.replace(/\/+$/, "");
     if (base.endsWith("/api/v1")) {
       base = base.slice(0, -"/v1".length);
     }

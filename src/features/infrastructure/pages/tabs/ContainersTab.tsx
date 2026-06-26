@@ -85,7 +85,6 @@ export default function ContainersTab() {
     return { running, pending, crashLoop, restarts };
   }, [processedPods]);
 
-  // Bottom top CPU / Memory lists
   const topCpuContainers = useMemo(() => {
     return [...processedPods].sort((a, b) => b.cpu - a.cpu).slice(0, 6);
   }, [processedPods]);
@@ -114,7 +113,7 @@ export default function ContainersTab() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* KPI strip */}
+      {}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <KpiCard
           label="Running"
@@ -151,7 +150,7 @@ export default function ContainersTab() {
         />
       </div>
 
-      {/* Filter search bar */}
+      {}
       <div className="rounded-md border border-border bg-card p-3.5 shadow-sm">
         <div className="flex w-[320px] items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 focus-within:border-primary">
           <Search size={14} className="text-foreground-muted" />
@@ -164,7 +163,7 @@ export default function ContainersTab() {
         </div>
       </div>
 
-      {/* Containers table */}
+      {}
       <div className="min-w-0">
         {filtered.length === 0 ? (
           <div className="grid h-[200px] place-items-center rounded-md border border-border bg-card text-[12px] text-foreground-muted">
@@ -179,9 +178,9 @@ export default function ContainersTab() {
         )}
       </div>
 
-      {/* Bottom cards grid */}
+      {}
       <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {/* Top CPU Containers */}
+        {}
         <div className="rounded-md border border-border bg-card p-4">
           <div className="font-bold text-[13px] text-foreground leading-tight">
             Top CPU containers
@@ -220,7 +219,7 @@ export default function ContainersTab() {
           </div>
         </div>
 
-        {/* Top Memory Containers */}
+        {}
         <div className="rounded-md border border-border bg-card p-4">
           <div className="font-bold text-[13px] text-foreground leading-tight">
             Top memory containers

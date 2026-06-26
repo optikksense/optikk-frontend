@@ -31,9 +31,6 @@ function setOrDelete(params: URLSearchParams, key: string, value: string | null)
   return next;
 }
 
-/**
- * Canonical URL state: `filters` (base64 JSON), `mode`, `cursor`, `detail`.
- */
 export function useExplorerState(): ExplorerStateApi {
   const [params, setParams] = useSearchParamsCompat();
   const filters = useMemo(() => decodeFilters(params.get("filters")), [params]);
