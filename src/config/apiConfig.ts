@@ -18,6 +18,9 @@ export const API_ENDPOINTS = {
     SWITCH: "/v1/teams/switch",
   },
   V1_BASE: "/v1",
+  DASHBOARDS: {
+    PAGES: "/v1/dashboard-pages",
+  },
   SETTINGS: {
     PROFILE: "/v1/settings/profile",
     PREFERENCES: "/v1/settings/preferences",

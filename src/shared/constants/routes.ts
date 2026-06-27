@@ -31,12 +31,17 @@ export const ROUTES = {
   saturationDatabaseQuery: "/saturation/database/query/$queryId",
   saturationKafkaOverview: "/saturation/kafka",
 
+  ingestion: "/ingestion",
+
   monitors: "/monitors",
   monitorsNew: "/monitors/new",
   monitorDetail: "/monitors/$monitorId",
   monitorEdit: "/monitors/$monitorId/edit",
   monitorsNotifications: "/monitors/notifications",
   alertsNew: "/alerts/new",
+
+  dashboards: "/dashboards",
+  dashboardDetail: "/dashboards/$pageId",
 
   settings: "/settings",
 } as const;

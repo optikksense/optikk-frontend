@@ -52,6 +52,12 @@ const NewMonitorPage = lazy(
 const NotificationsPage = lazy(
   () => import("@/features/monitors/pages/NotificationsPage/NotificationsPage")
 );
+const DashboardsPage = lazy(
+  () => import("@/features/dashboards/pages/DashboardsPage/DashboardsPage")
+);
+const DashboardDetailPage = lazy(
+  () => import("@/features/dashboards/pages/DashboardDetailPage/DashboardDetailPage")
+);
 
 export const rootRoute = createRootRoute({ component: AppContent });
 
@@ -136,6 +142,9 @@ const monitorDetailRoute = createProtected(ROUTES.monitorDetail, MonitorDetailPa
 const monitorEditRoute = createProtected(ROUTES.monitorEdit, NewMonitorPage);
 const alertsNewRedirect = createProtected(ROUTES.alertsNew, () => null, ROUTES.monitorsNew);
 
+const dashboardsRoute = createProtected(ROUTES.dashboards, DashboardsPage);
+const dashboardDetailRoute = createProtected(ROUTES.dashboardDetail, DashboardDetailPage);
+
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
 const logsTransactionsRedirect = createProtected("/logs/transactions", () => null, ROUTES.logs);
 
@@ -183,6 +192,8 @@ const routeTree = rootRoute.addChildren([
     monitorDetailRoute,
     monitorEditRoute,
     alertsNewRedirect,
+    dashboardsRoute,
+    dashboardDetailRoute,
     logsPatternsRedirect,
     logsTransactionsRedirect,
     ...buildLegacyRedirects(mainLayoutRoute),

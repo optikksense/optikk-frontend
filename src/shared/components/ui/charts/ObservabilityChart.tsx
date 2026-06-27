@@ -46,6 +46,7 @@ function ObservabilityChart({
   legend = false,
   className,
   plugins,
+  fillTooltipZero = false,
 }: ObservabilityChartProps) {
   const alignedData = useMemo<uPlot.AlignedData>(
     () => [timestamps, ...series.map((item) => item.values)] as uPlot.AlignedData,

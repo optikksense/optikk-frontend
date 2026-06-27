@@ -4,12 +4,8 @@ import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@shared/components/primitives/ui/button";
 import { PageSurface } from "@shared/components/ui";
-import ObservabilityChart, {
-  type ObservabilityChartSeries,
-} from "@shared/components/ui/charts/ObservabilityChart";
+import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
-import { getChartColor } from "@shared/utils/charting";
-import { QUERY_LABEL_COLORS } from "../constants";
 import { useMetricsStore } from "../store/metricsStore";
 import type {
   ChartType,
@@ -18,18 +14,9 @@ import type {
   MetricQueryDefinition,
   MetricYAxisScale,
 } from "../types";
-import { evaluateFormula } from "../utils/formulaEvaluator";
+import { buildSeries, toRenderType } from "../utils/chartSeries";
 
-const FORMULA_COLOR = "#f59e0b";
 const MAX_RENDERED_SERIES = 100;
-
-/** Underlying renderable type for the uPlot-backed chart. "stack" renders as a
- * filled area; "heat"/"top" are handled by sibling panels, never this chart. */
-function toRenderType(chartType: ChartType): "line" | "area" | "bar" {
-  if (chartType === "bar") return "bar";
-  if (chartType === "area" || chartType === "stack") return "area";
-  return "line";
-}
 
 interface MetricsExplorerChartProps {
   readonly queries: MetricQueryDefinition[];
@@ -39,57 +26,6 @@ interface MetricsExplorerChartProps {
   readonly isLoading: boolean;
   readonly isError: boolean;
   readonly onRetry?: () => void;
-}
-
-function buildSeries(
-  queries: MetricQueryDefinition[],
-  formulas: FormulaDefinition[],
-  results: MetricExplorerResults,
-  chartType: ChartType
-): { timestamps: number[]; series: ObservabilityChartSeries[] } {
-  const allSeries: ObservabilityChartSeries[] = [];
-  let timestamps: number[] = [];
-  let colorIdx = 0;
-
-  for (const query of queries) {
-    const result = results[query.id];
-    if (!result) continue;
-
-    if (result.timestamps.length > timestamps.length) {
-      timestamps = result.timestamps;
-    }
-
-    const baseColor = QUERY_LABEL_COLORS[query.id] ?? getChartColor(colorIdx);
-
-    for (const series of result.series) {
-      const tagLabel = Object.values(series.tags).join(", ");
-      const label = tagLabel
-        ? `${query.id}: ${query.aggregation}(${query.metricName}) [${tagLabel}]`
-        : `${query.id}: ${query.aggregation}(${query.metricName})`;
-
-      allSeries.push({
-        label,
-        values: series.values,
-        color: result.series.length > 1 ? getChartColor(colorIdx) : baseColor,
-        fill: toRenderType(chartType) === "area",
-      });
-      colorIdx++;
-    }
-  }
-
-  for (const formula of formulas) {
-    if (!formula.expression.trim()) continue;
-    const values = evaluateFormula(formula.expression, results, timestamps);
-    allSeries.push({
-      label: `${formula.id}: ${formula.expression}`,
-      values,
-      color: FORMULA_COLOR,
-      fill: false,
-      dash: [6, 3],
-    });
-  }
-
-  return { timestamps, series: allSeries };
 }
 
 function percentFormatter(value: number): string {

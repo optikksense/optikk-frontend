@@ -109,7 +109,7 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed top-0 bottom-0 left-0 z-[100] flex h-screen w-[var(--space-sidebar-w,220px)] flex-col border-border border-r bg-secondary shadow-[var(--shadow-md)] transition-[width] duration-200",
+        "fixed top-0 bottom-0 left-0 z-30 flex h-screen w-[var(--space-sidebar-w,220px)] flex-col border-border border-r bg-secondary shadow-[var(--shadow-md)] transition-[width] duration-200",
         sidebarCollapsed && "w-[var(--space-sidebar-collapsed,56px)]"
       )}
     >

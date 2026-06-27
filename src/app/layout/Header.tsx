@@ -92,7 +92,7 @@ export default function Header() {
   const isLive = autoRefreshInterval > 0 && isRelativeRange(timeRange);
 
   return (
-    <header className="relative z-[200] flex h-[var(--space-header-h,56px)] items-center justify-between gap-3 overflow-visible border-border border-b bg-surface-overlay px-4 backdrop-blur-[12px] max-md:px-3">
+    <header className="relative z-40 flex h-[var(--space-header-h,56px)] items-center justify-between gap-3 overflow-visible border-border border-b bg-surface-overlay px-4 backdrop-blur-[12px] max-md:px-3">
       <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-visible">
         {}
         <Tooltip content="Shift time window back">

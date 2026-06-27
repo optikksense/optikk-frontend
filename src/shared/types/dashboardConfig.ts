@@ -1,3 +1,10 @@
+import type {
+  FormulaDefinition,
+  MetricQueryDefinition,
+  MetricSpaceAggregation,
+  TimeStep,
+} from "@/features/metrics/types";
+
 export type DashboardScalarValue = string | number | boolean | null;
 export type DashboardQueryParamValue =
   | DashboardScalarValue
@@ -51,6 +58,10 @@ export const DASHBOARD_PANEL_TYPES = [
   "stat-summary",
   "table",
   "trace-waterfall",
+  "metrics-timeseries",
+  "metrics-value",
+  "metrics-toplist",
+  "metrics-table",
 ] as const;
 export type DashboardPanelType = (typeof DASHBOARD_PANEL_TYPES)[number];
 export const DASHBOARD_LAYOUT_VARIANTS = [
@@ -89,10 +100,29 @@ export interface DashboardLayout {
   h: number;
 }
 
-export interface DashboardQuerySpec {
+/** Curated-endpoint widget query: points at an allowlisted GET endpoint. */
+export interface DashboardEndpointQuerySpec {
   method: string;
   endpoint: string;
   params?: Record<string, DashboardQueryParamValue>;
+}
+
+/** SigNoz-style builder query replayed through the metrics explorer engine. */
+export interface DashboardMetricsQuerySpec {
+  kind: "metrics";
+  step: TimeStep;
+  spaceAggregation: MetricSpaceAggregation;
+  queries: MetricQueryDefinition[];
+  formulas?: FormulaDefinition[];
+}
+
+export type DashboardQuerySpec = DashboardEndpointQuerySpec | DashboardMetricsQuerySpec;
+
+/** Narrows a widget query to the metrics builder variant. */
+export function isMetricsQuerySpec(
+  query: DashboardQuerySpec | undefined
+): query is DashboardMetricsQuerySpec {
+  return query != null && "kind" in query && query.kind === "metrics";
 }
 
 export interface DashboardSectionSpec {
@@ -147,6 +177,9 @@ export interface ChartPanelSpecKeys {
   readonly stacked?: boolean;
   readonly color?: string;
   readonly datasetLabel?: string;
+  // Per-widget render hints for the metrics builder variant.
+  readonly legend?: boolean;
+  readonly smooth?: boolean;
 }
 
 export interface TablePanelSpecKeys {
