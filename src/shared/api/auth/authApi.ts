@@ -34,8 +34,6 @@ const sessionPayloadSchema = z.object({
   accessToken: z.string().min(1),
 });
 
-export type SessionTeam = z.infer<typeof teamSchema>;
-export type SessionUser = z.infer<typeof userSchema>;
 export type SessionPayload = z.infer<typeof sessionPayloadSchema>;
 
 const envelopeSchema = z.object({

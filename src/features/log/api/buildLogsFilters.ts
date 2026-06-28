@@ -74,6 +74,7 @@ export function buildLogsFilters(
   const warnings: TranslationWarning[] = [];
   const searchTerms: string[] = [];
   let searchMode: "ngram" | "exact" | undefined;
+  let searchModeConflict = false;
 
   for (const filter of filters) {
     dispatchFilter(filter.field, filter.op, filter.value, {
@@ -81,7 +82,8 @@ export function buildLogsFilters(
       warnings,
       searchTerms,
       setSearchMode: (mode) => {
-        searchMode = searchMode ?? mode;
+        if (searchMode === undefined) searchMode = mode;
+        else if (searchMode !== mode) searchModeConflict = true;
       },
     });
   }
@@ -89,6 +91,14 @@ export function buildLogsFilters(
   if (searchTerms.length > 0) {
     body.search = searchTerms.join(" ");
     body.searchMode = searchMode ?? "ngram";
+    // Wire format carries one mode for the joined search; surface lossy mixing.
+    if (searchModeConflict) {
+      warnings.push({
+        code: "unsupported_op",
+        field: "search",
+        message: `Mixed exact and substring search terms — all applied as "${body.searchMode}".`,
+      });
+    }
   }
   return { body, warnings };
 }

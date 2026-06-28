@@ -63,9 +63,5 @@ export const kafkaTopologySchema = z
   })
   .strict();
 
-export type ProducerNode = z.infer<typeof producerNodeSchema>;
 export type TopicNode = z.infer<typeof topicNodeSchema>;
-export type ConsumerNode = z.infer<typeof consumerNodeSchema>;
-export type StreamEdge = z.infer<typeof streamEdgeSchema>;
-export type Pathway = z.infer<typeof pathwaySchema>;
 export type KafkaTopology = z.infer<typeof kafkaTopologySchema>;

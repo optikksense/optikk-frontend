@@ -56,7 +56,5 @@ export const latencyHeatmapBucketSchema = z
 
 export type LatencySeriesPoint = z.infer<typeof latencySeriesSchema>;
 export type OpsSeriesPoint = z.infer<typeof opsSeriesSchema>;
-export type ErrorSeriesPoint = z.infer<typeof errorSeriesSchema>;
-export type ErrorRatioPoint = z.infer<typeof errorRatioSchema>;
 export type ReadWriteSeriesPoint = z.infer<typeof readWriteSeriesSchema>;
 export type LatencyHeatmapBucket = z.infer<typeof latencyHeatmapBucketSchema>;

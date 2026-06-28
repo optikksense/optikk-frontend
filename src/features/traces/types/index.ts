@@ -1,6 +1,5 @@
 export type {
   TraceSummary,
-  TraceCursor,
   TracesQueryRequest,
   TracesFacetBucket,
   TracesQueryResponse,

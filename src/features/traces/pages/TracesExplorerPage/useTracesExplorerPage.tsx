@@ -48,15 +48,22 @@ export function useTracesExplorerPage() {
     (fromMs: number, toMs: number) => setCustomTimeRange(fromMs, toMs, "Brush"),
     [setCustomTimeRange]
   );
-  const onInclude = useCallback(
-    (field: string, value: string) =>
-      state.setFilters([...state.filters, { field, op: "eq", value }]),
+  // Changing the filter set invalidates the keyset cursor; reset pagination too.
+  const applyFilters = useCallback(
+    (next: readonly ExplorerFilter[]) => {
+      state.setFilters(next);
+      setCursorHistory([]);
+      state.setCursor(null);
+    },
     [state]
   );
+  const onInclude = useCallback(
+    (field: string, value: string) => applyFilters([...state.filters, { field, op: "eq", value }]),
+    [applyFilters, state.filters]
+  );
   const onExclude = useCallback(
-    (field: string, value: string) =>
-      state.setFilters([...state.filters, { field, op: "neq", value }]),
-    [state]
+    (field: string, value: string) => applyFilters([...state.filters, { field, op: "neq", value }]),
+    [applyFilters, state.filters]
   );
 
   const onOpenTrace = useCallback(
@@ -66,20 +73,16 @@ export function useTracesExplorerPage() {
   const onFreeText = useCallback(
     (text: string) => {
       if (!text) return;
-      state.setFilters([...state.filters, { field: "search", op: "contains", value: text }]);
+      applyFilters([...state.filters, { field: "search", op: "contains", value: text }]);
     },
-    [state]
+    [applyFilters, state.filters]
   );
   const onRetry = useCallback(() => {
     void query.refetch();
     if (facetsQuery) void facetsQuery.refetch();
     if (trendQuery) void trendQuery.refetch();
   }, [query, facetsQuery, trendQuery]);
-  const onClearFilters = useCallback(() => {
-    state.setFilters([]);
-    setCursorHistory([]);
-    state.setCursor(null);
-  }, [state]);
+  const onClearFilters = useCallback(() => applyFilters([]), [applyFilters]);
 
   const onNextPage = useCallback(() => {
     if (query.data?.nextCursor) {
@@ -103,10 +106,10 @@ export function useTracesExplorerPage() {
     (row: TraceSummary): readonly ContextMenuEntry[] =>
       buildTraceContextMenu(row, {
         filters: state.filters,
-        setFilters: state.setFilters,
+        setFilters: applyFilters,
         openTraceDetail: (id) => navigate({ to: `/traces/${encodeURIComponent(id)}` }),
       }),
-    [state, navigate]
+    [state.filters, applyFilters, navigate]
   );
 
   useExplorerKeyboard({

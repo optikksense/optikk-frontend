@@ -6,6 +6,9 @@ import { Button } from "@shared/components/primitives/ui/button";
 import { PageSurface } from "@shared/components/ui";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
+import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
+import { useTimeRange } from "@store/appStore";
+
 import { useMetricsStore } from "../store/metricsStore";
 import type {
   ChartType,
@@ -48,6 +51,8 @@ export function MetricsExplorerChart({
   const showLegend = useMetricsStore((s) => s.showLegend);
   const smooth = useMetricsStore((s) => s.smooth);
   const yAxisScale = useMetricsStore((s) => s.yAxisScale);
+  const timeRange = useTimeRange();
+  const { startTime, endTime } = resolveTimeBounds(timeRange);
 
   const hasResults = results && Object.keys(results).length > 0;
   const hasActiveQuery = queries.some((q) => q.metricName);
@@ -131,6 +136,8 @@ export function MetricsExplorerChart({
         height={360}
         legend={showLegend}
         yFormatter={yFormatterFor(yAxisScale)}
+        xMin={Math.floor(startTime / 1000)}
+        xMax={Math.floor(endTime / 1000)}
       />
     </PageSurface>
   );

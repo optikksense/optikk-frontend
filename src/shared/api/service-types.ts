@@ -15,6 +15,4 @@ export type QueryParamValue =
   | null
   | undefined;
 
-export type QueryParams = Record<string, QueryParamValue>;
-
 export type RequestTime = string | number;

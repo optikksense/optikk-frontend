@@ -31,11 +31,6 @@ export interface TraceSummary {
   readonly truncated?: boolean;
 }
 
-export interface TraceCursor {
-  readonly startMs: number;
-  readonly traceId: string;
-}
-
 export interface TracesQueryRequest {
   readonly startTime: number;
   readonly endTime: number;

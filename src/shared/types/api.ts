@@ -10,10 +10,3 @@ export interface ApiError {
   readonly details?: unknown;
   readonly data?: unknown;
 }
-
-export interface ApiResponseEnvelope<TData> {
-  readonly success: boolean;
-  readonly data: TData;
-  readonly message?: string;
-  readonly error?: ApiError;
-}

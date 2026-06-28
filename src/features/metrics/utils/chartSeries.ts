@@ -29,20 +29,33 @@ export function buildSeries(
   chartType: ChartType
 ): { timestamps: number[]; series: ObservabilityChartSeries[] } {
   const allSeries: ObservabilityChartSeries[] = [];
-  let timestamps: number[] = [];
   let colorIdx = 0;
+
+  // Build one shared x-axis (union of all result timestamps) so series from
+  // queries with differing/ragged timestamp grids stay correctly aligned.
+  const timestampSet = new Set<number>();
+  for (const query of queries) {
+    const result = results[query.id];
+    if (!result) continue;
+    for (const ts of result.timestamps) timestampSet.add(ts);
+  }
+  const timestamps = [...timestampSet].sort((a, b) => a - b);
+  const indexOfTs = new Map(timestamps.map((ts, i) => [ts, i] as const));
 
   for (const query of queries) {
     const result = results[query.id];
     if (!result) continue;
 
-    if (result.timestamps.length > timestamps.length) {
-      timestamps = result.timestamps;
-    }
-
     const baseColor = QUERY_LABEL_COLORS[query.id] ?? getChartColor(colorIdx);
 
     for (const series of result.series) {
+      // Remap this series' values onto the shared axis by timestamp.
+      const values: Array<number | null> = timestamps.map(() => null);
+      for (let i = 0; i < result.timestamps.length; i++) {
+        const idx = indexOfTs.get(result.timestamps[i]);
+        if (idx !== undefined) values[idx] = series.values[i] ?? null;
+      }
+
       const tagLabel = Object.values(series.tags).join(", ");
       const label = tagLabel
         ? `${query.id}: ${query.aggregation}(${query.metricName}) [${tagLabel}]`
@@ -50,7 +63,7 @@ export function buildSeries(
 
       allSeries.push({
         label,
-        values: series.values,
+        values,
         color: result.series.length > 1 ? getChartColor(colorIdx) : baseColor,
         fill: toRenderType(chartType) === "area",
       });

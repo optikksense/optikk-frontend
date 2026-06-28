@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { MoreHorizontal, Plus, Star, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { ROUTES } from "@/shared/constants/routes";
 import { cn } from "@/lib/utils";
+import { ROUTES } from "@/shared/constants/routes";
 import { DropdownMenu, DropdownMenuItem, Modal } from "@shared/components/primitives/ui";
 
 import type { DashboardPage } from "../../api/dashboardsApi";
@@ -26,7 +26,12 @@ export function PageCard({ page }: PageCardProps) {
 
   return (
     <div className="group relative">
-      <div className={cn("absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover:opacity-100", menuOpen && "opacity-100")}>
+      <div
+        className={cn(
+          "absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover:opacity-100",
+          menuOpen && "opacity-100"
+        )}
+      >
         <DropdownMenu
           open={menuOpen}
           onOpenChange={setMenuOpen}
@@ -58,35 +63,35 @@ export function PageCard({ page }: PageCardProps) {
         params={{ pageId: String(page.id) }}
         className="flex min-h-[180px] flex-col overflow-hidden rounded-lg border border-border bg-card no-underline transition-colors hover:border-primary/50"
       >
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <div className="flex items-start gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-primary-subtle-12)] text-primary">
-            <Icon size={17} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="truncate font-semibold text-foreground text-sm">{page.name}</div>
-            <div className="mt-0.5 text-foreground-muted text-xs">{widgetLabel}</div>
-          </div>
-          {page.is_favorite && <Star size={14} className="shrink-0 fill-warning text-warning" />}
-        </div>
-
-        {page.description && (
-          <div className="line-clamp-2 min-h-[2rem] text-foreground-secondary text-xs leading-5">
-            {page.description}
-          </div>
-        )}
-
-        <div className="mt-0.5 flex flex-wrap gap-1">
-          {page.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px] text-foreground-secondary"
-            >
-              #{tag}
+        <div className="flex flex-1 flex-col gap-2 p-4">
+          <div className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-primary-subtle-12)] text-primary">
+              <Icon size={17} />
             </span>
-          ))}
+            <div className="min-w-0 flex-1">
+              <div className="truncate font-semibold text-foreground text-sm">{page.name}</div>
+              <div className="mt-0.5 text-foreground-muted text-xs">{widgetLabel}</div>
+            </div>
+            {page.is_favorite && <Star size={14} className="shrink-0 fill-warning text-warning" />}
+          </div>
+
+          {page.description && (
+            <div className="line-clamp-2 min-h-[2rem] text-foreground-secondary text-xs leading-5">
+              {page.description}
+            </div>
+          )}
+
+          <div className="mt-0.5 flex flex-wrap gap-1">
+            {(page.tags || []).map((tag) => (
+              <span
+                key={tag}
+                className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px] text-foreground-secondary"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
 
         {page.owner && (
           <div className="flex items-center gap-2 border-border border-t bg-secondary/40 px-4 py-2.5">

@@ -215,37 +215,6 @@ export interface DashboardPanelSpec
     StatPanelSpecKeys,
     ListPanelSpecKeys {}
 
-export interface DefaultConfigPage {
-  schemaVersion: DashboardSchemaVersion;
-  id: string;
-  path: string;
-  label: string;
-  icon: string;
-  group: string;
-  order: number;
-  defaultTabId?: string;
-  navigable: boolean;
-  renderMode: DashboardRenderMode;
-  title?: string;
-  subtitle?: string;
-}
-
-export interface DefaultConfigTab {
-  id: string;
-  pageId: string;
-  label: string;
-  order: number;
-}
-
-export interface DashboardTabDocument {
-  id: string;
-  pageId: string;
-  label: string;
-  order: number;
-  sections: DashboardSectionSpec[];
-  panels: DashboardPanelSpec[];
-}
-
 export interface DataSourceSpec {
   id: string;
   endpoint: string;
@@ -258,12 +227,4 @@ export interface StatCardSpec {
   valueField: string;
   formatter?: "ms" | "bytes" | "percent1" | "number";
   icon?: string;
-}
-
-export interface TabSpec {
-  id: string;
-  label: string;
-  dataSources: DataSourceSpec[];
-  statCards?: StatCardSpec[];
-  charts: DashboardPanelSpec[];
 }

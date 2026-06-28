@@ -46,8 +46,6 @@ export const traceSummarySchema = z
   })
   .strict();
 
-export type TraceSummary = z.infer<typeof traceSummarySchema>;
-
 export const tracesResponseSchema = z
   .object({
     traces: z.array(traceRecordSchema),

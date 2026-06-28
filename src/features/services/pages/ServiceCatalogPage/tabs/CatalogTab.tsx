@@ -32,6 +32,22 @@ function applyFilters(rows: CatalogRow[], search: string, status: StatusFilter):
   });
 }
 
+// Drawer seeds its summary from snake_case keys; map the camelCase row across.
+function toDrawerInitialData(row: CatalogRow | null): Record<string, unknown> | null {
+  if (!row) return null;
+  return {
+    request_count: row.requestCount,
+    error_count: row.errorCount,
+    error_rate: row.errorRate * 100, // row is decimal (0-1); drawer expects percent
+    p95_latency: row.p95Ms,
+    p99_latency: row.p99Ms,
+    version: row.version,
+    environment: row.environment,
+    lang: row.lang,
+    instances: row.instances,
+  };
+}
+
 function EmptyState({ isPending }: { isPending: boolean }) {
   return (
     <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted">
@@ -78,7 +94,7 @@ export function CatalogTab() {
       <ServiceDetailDrawer
         open={Boolean(selectedName)}
         serviceName={selectedName ?? ""}
-        initialData={selected as unknown as Record<string, unknown> | null}
+        initialData={toDrawerInitialData(selected)}
         onClose={() => setSelectedName(null)}
       />
     </div>

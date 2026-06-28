@@ -24,14 +24,8 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export type ServiceLatestDeployment = z.infer<typeof latestDeploymentSchema>;
 export type DeploymentVersionTrafficPoint = z.infer<typeof versionTrafficPointSchema>;
-export type DeploymentCompareWindow = z.infer<typeof compareWindowSchema>;
-export type DeploymentImpactMetrics = z.infer<typeof impactMetricsSchema>;
-export type DeploymentCompareErrorRegression = z.infer<typeof compareErrorRegressionSchema>;
-export type DeploymentCompareEndpointRegression = z.infer<typeof compareEndpointRegressionSchema>;
 export type DeploymentCompareResponse = z.infer<typeof deploymentCompareSchema>;
-export type DeploymentRow = z.infer<typeof deploymentRowSchema>;
 export type DeploymentListResponse = z.infer<typeof deploymentListResponseSchema>;
-export type DeploymentImpactRow = z.infer<typeof deploymentImpactRowSchema>;
 export type DeploymentImpactResponse = z.infer<typeof deploymentImpactResponseSchema>;
 export type ActiveVersion = z.infer<typeof activeVersionSchema>;
 

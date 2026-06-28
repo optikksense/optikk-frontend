@@ -11,11 +11,6 @@ export interface MetricNameEntry {
   readonly description?: string;
 }
 
-export interface MetricTag {
-  readonly key: string;
-  readonly values: string[];
-}
-
 export type MetricAggregation =
   | "avg"
   | "sum"
@@ -79,10 +74,4 @@ export interface ServiceMetricPoint extends DomainRecord {
   p50_latency: number;
   p95_latency: number;
   p99_latency: number;
-}
-
-export interface EndpointMetricPoint extends ServiceMetricPoint {
-  operation_name: string;
-  http_method: string;
-  endpoint_name?: string;
 }

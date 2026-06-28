@@ -22,6 +22,9 @@ export interface ObservabilityChartProps {
   type?: "line" | "area" | "bar";
   height?: number;
   fillHeight?: boolean;
+  /** Pins the x-axis to the selected window (epoch-seconds), independent of data extent. */
+  xMin?: number;
+  xMax?: number;
   yMin?: number;
   yMax?: number;
   yAxisSize?: number;
@@ -38,6 +41,8 @@ function ObservabilityChart({
   type = "line",
   height = 280,
   fillHeight = false,
+  xMin,
+  xMax,
   yMin,
   yMax,
   yAxisSize = 60,
@@ -46,7 +51,6 @@ function ObservabilityChart({
   legend = false,
   className,
   plugins,
-  fillTooltipZero = false,
 }: ObservabilityChartProps) {
   const alignedData = useMemo<uPlot.AlignedData>(
     () => [timestamps, ...series.map((item) => item.values)] as uPlot.AlignedData,
@@ -67,6 +71,9 @@ function ObservabilityChart({
       legend: { show: legend },
       axes,
       scales: {
+        ...(xMin != null && xMax != null
+          ? { x: { time: true, range: [xMin, xMax] as [number, number] } }
+          : {}),
         y: {
           ...(yMin != null ? { min: yMin } : {}),
           ...(yMax != null ? { max: yMax } : {}),
@@ -87,7 +94,7 @@ function ObservabilityChart({
       ],
       ...(plugins && plugins.length > 0 ? { plugins } : {}),
     };
-  }, [legend, series, yAxisSize, yFormatter, yMin, yMax, type, plugins]);
+  }, [legend, series, yAxisSize, yFormatter, xMin, xMax, yMin, yMax, type, plugins]);
 
   const tooltipContent = useMemo(() => {
     const defaultXFormatter = (timestampSeconds: number) =>

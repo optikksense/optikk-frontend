@@ -165,9 +165,7 @@ export type GroupHealthRow = z.infer<typeof groupHealthSchema>;
 
 export type TopicGroupThroughputRow = z.infer<typeof topicGroupThroughputSchema>;
 export type TopicGroupLagRow = z.infer<typeof topicGroupLagSchema>;
-export type GroupTopicRow = z.infer<typeof groupTopicSchema>;
 
-export type KafkaPartitionRow = z.infer<typeof kafkaPartitionRowSchema>;
 export type KafkaSummary = z.infer<typeof kafkaSummarySchema>;
 export type ClusterHealthRow = z.infer<typeof clusterHealthSchema>;
 
@@ -179,17 +177,3 @@ export type KafkaGroupRow = GroupPartitionsRow &
   GroupHealthRow & {
     topic_count: number;
   };
-
-export type KafkaTopicConsumerRow = TopicGroupThroughputRow & TopicGroupLagRow;
-
-export type KafkaTopicOverview = {
-  topic: string;
-  summary: KafkaTopicRow;
-  trend: any[];
-};
-
-export type KafkaGroupOverview = {
-  consumer_group: string;
-  summary: KafkaGroupRow;
-  trend: any[];
-};

@@ -14,25 +14,13 @@ import { getDatastoreSummary, getDatastoreSystems } from "./datastoresExplorerAp
 import { getKafkaGroups, getKafkaSummary, getKafkaTopics } from "./kafkaExplorerApi";
 
 export type {
-  DatastoreCollectionSpotlight,
-  DatastoreConnectionRow,
-  DatastoreErrorRow,
-  DatastoreNamespaceRow,
-  DatastoreOperationRow,
-  DatastoreOverview,
-  DatastoreServerRow,
   DatastoreSummary,
   DatastoreSystemRow,
-  SlowQueryPattern,
 } from "./datastoresExplorerSchemas";
 export type { Host as HostSaturationRow } from "@/features/infrastructure/api/hostsApi";
 export type {
-  KafkaGroupOverview,
   KafkaGroupRow,
-  KafkaPartitionRow,
   KafkaSummary,
-  KafkaTopicConsumerRow,
-  KafkaTopicOverview,
   KafkaTopicRow,
 } from "./kafkaExplorerSchemas";
 

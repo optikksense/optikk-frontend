@@ -78,6 +78,19 @@ export interface CreateWidgetPayload {
   position?: number;
 }
 
+function normalizeWidget(widget: Dashboard): Dashboard {
+  return {
+    ...widget,
+    spec: {
+      ...widget.spec,
+      panelType: widget.spec.panelType || (widget.spec as any).type || widget.panel_type,
+      layoutVariant: widget.spec.layoutVariant || widget.layout_variant,
+      layout: widget.spec.layout || widget.layout,
+      title: widget.spec.title || widget.title,
+    },
+  };
+}
+
 export async function listDashboardPages(
   params: ListDashboardPagesParams = {}
 ): Promise<DashboardPageListResponse> {
@@ -87,7 +100,11 @@ export async function listDashboardPages(
 
 export async function getDashboardPage(id: number): Promise<DashboardPageDetail> {
   const raw = await api.get<unknown>(`${PAGES}/${id}`);
-  return unwrapEnvelope<DashboardPageDetail>(raw);
+  const detail = unwrapEnvelope<DashboardPageDetail>(raw);
+  return {
+    ...detail,
+    widgets: (detail.widgets || []).map(normalizeWidget),
+  };
 }
 
 export async function createDashboardPage(
@@ -111,7 +128,8 @@ export async function deleteDashboardPage(id: number): Promise<void> {
 
 export async function listWidgets(pageId: number): Promise<Dashboard[]> {
   const raw = await api.get<unknown>(`${PAGES}/${pageId}/dashboards`);
-  return unwrapEnvelope<{ items: Dashboard[] }>(raw).items;
+  const items = unwrapEnvelope<{ items: Dashboard[] }>(raw).items;
+  return (items || []).map(normalizeWidget);
 }
 
 export async function createWidget(
@@ -119,7 +137,7 @@ export async function createWidget(
   payload: CreateWidgetPayload
 ): Promise<Dashboard> {
   const raw = await api.post<unknown>(`${PAGES}/${pageId}/dashboards`, payload);
-  return unwrapEnvelope<Dashboard>(raw);
+  return normalizeWidget(unwrapEnvelope<Dashboard>(raw));
 }
 
 export async function updateWidget(
@@ -128,7 +146,7 @@ export async function updateWidget(
   payload: CreateWidgetPayload
 ): Promise<Dashboard> {
   const raw = await api.put<unknown>(`${PAGES}/${pageId}/dashboards/${widgetId}`, payload);
-  return unwrapEnvelope<Dashboard>(raw);
+  return normalizeWidget(unwrapEnvelope<Dashboard>(raw));
 }
 
 export async function deleteWidget(pageId: number, widgetId: number): Promise<void> {

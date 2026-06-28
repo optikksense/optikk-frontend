@@ -4,9 +4,8 @@ import { ArrowLeft, Check, Pencil, Plus, Share2, Star, Upload } from "lucide-rea
 import { useState } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { EmptyState, Loading } from "@shared/components/ui";
 import { Modal } from "@shared/components/primitives/ui";
-import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
+import { EmptyState, Loading } from "@shared/components/ui";
 import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
 
 import type {
@@ -246,7 +245,7 @@ function DetailHeader({ page, editing, onToggleEditing, onAddWidget }: DetailHea
           </h1>
         )}
         <div className="mt-1 flex flex-wrap items-center gap-1.5">
-          {page.tags.map((tag) => (
+          {(page.tags || []).map((tag) => (
             <span
               key={tag}
               className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[11px] text-foreground-secondary"
@@ -275,7 +274,6 @@ function DetailHeader({ page, editing, onToggleEditing, onAddWidget }: DetailHea
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <TimeRangePicker />
         <button
           type="button"
           title="Share"

@@ -116,6 +116,14 @@ export type MetricNamesResponse = z.infer<typeof metricNamesResponseSchema>;
 export type MetricTagsResponse = z.infer<typeof metricTagsResponseSchema>;
 export type MetricsExplorerResponse = z.infer<typeof metricsExplorerResponseSchema>;
 
+// Backend emits epoch-ms timestamps; the chart stack assumes epoch-seconds.
+function toSecondsTimestamps(response: MetricsExplorerResponse): MetricsExplorerResponse {
+  for (const result of Object.values(response.results)) {
+    result.timestamps = result.timestamps.map((ts) => Math.floor(ts / 1000));
+  }
+  return response;
+}
+
 export const metricsExplorerApi = {
   async getMetricNames(params: MetricNamesRequest): Promise<MetricNamesResponse> {
     const queryParams = new URLSearchParams({
@@ -152,10 +160,11 @@ export const metricsExplorerApi = {
 
   async query(body: MetricExplorerQueryRequest): Promise<MetricsExplorerResponse> {
     const response = await api.post(`${BASE}/metrics/explorer/query`, body);
-    return decodeApiResponse(metricsExplorerResponseSchema, response, {
+    const decoded = decodeApiResponse(metricsExplorerResponseSchema, response, {
       context: "metrics explorer query",
       expectedType: "object",
       message: "Invalid metrics explorer response",
     });
+    return toSecondsTimestamps(decoded);
   },
 };

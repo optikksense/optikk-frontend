@@ -168,7 +168,6 @@ export const relatedTraceSchema = z
 
 export type TraceRecord = z.infer<typeof traceRecordSchema>;
 export type SpanRecord = z.infer<typeof spanRecordSchema>;
-export type TracesSummary = z.infer<typeof tracesSummarySchema>;
 export type TraceLog = z.infer<typeof traceLogSchema>;
 export type TraceLogsResponse = z.infer<typeof traceLogsResponseSchema>;
 export type SpanEventRecord = z.infer<typeof spanEventSchema>;
@@ -176,7 +175,6 @@ export type CriticalPathSpanRecord = z.infer<typeof criticalPathSpanSchema>;
 export type ErrorPathSpanRecord = z.infer<typeof errorPathSpanSchema>;
 export type SpanAttributesRecord = z.infer<typeof spanAttributesSchema>;
 export type RelatedTraceRecord = z.infer<typeof relatedTraceSchema>;
-export type SpanLinkRecord = z.infer<typeof spanLinkSchema>;
 
 export const traceErrorSpanSchema = z
   .object({

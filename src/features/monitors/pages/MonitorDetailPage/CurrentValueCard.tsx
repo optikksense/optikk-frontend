@@ -10,7 +10,9 @@ function CurrentValueCard({ monitor }: Props) {
   const value = monitor.current_value;
   const alert = monitor.conditions.alert_threshold;
   const warn = monitor.conditions.warn_threshold;
-  const ratio = value !== undefined && alert ? value / alert : undefined;
+  // Ratio is only meaningful with a non-zero threshold; avoid divide-by-zero.
+  const ratio =
+    value !== undefined && alert !== undefined && alert !== 0 ? value / alert : undefined;
   const color =
     monitor.status === "alert"
       ? "text-error"
@@ -19,7 +21,15 @@ function CurrentValueCard({ monitor }: Props) {
         : monitor.status === "ok"
           ? "text-success"
           : "text-foreground-secondary";
-  const barWidth = ratio !== undefined ? Math.min(100, Math.max(0, (ratio / 2) * 100)) : 0;
+  // Fall back to status-driven fill so a firing monitor never shows an empty bar.
+  const barWidth =
+    ratio !== undefined
+      ? Math.min(100, Math.max(0, (ratio / 2) * 100))
+      : monitor.status === "alert"
+        ? 100
+        : monitor.status === "warn"
+          ? 66
+          : 0;
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="font-medium text-foreground text-sm">Current value</div>

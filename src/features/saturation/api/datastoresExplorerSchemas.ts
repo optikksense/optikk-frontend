@@ -118,11 +118,3 @@ export const slowQueryPatternSchema = z
 
 export type DatastoreSummary = z.infer<typeof datastoreSummarySchema>;
 export type DatastoreSystemRow = z.infer<typeof datastoreSystemRowSchema>;
-export type DatastoreCollectionSpotlight = z.infer<typeof datastoreCollectionSpotlightSchema>;
-export type DatastoreOverview = z.infer<typeof datastoreOverviewSchema>;
-export type DatastoreServerRow = z.infer<typeof datastoreServerRowSchema>;
-export type DatastoreNamespaceRow = z.infer<typeof datastoreNamespaceRowSchema>;
-export type DatastoreOperationRow = z.infer<typeof datastoreOperationRowSchema>;
-export type DatastoreErrorRow = z.infer<typeof datastoreErrorRowSchema>;
-export type DatastoreConnectionRow = z.infer<typeof datastoreConnectionRowSchema>;
-export type SlowQueryPattern = z.infer<typeof slowQueryPatternSchema>;

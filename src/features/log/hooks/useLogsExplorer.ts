@@ -137,5 +137,3 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
 
   return { state: explorerState, list, summary, trend, facets };
 }
-
-export type UseLogsExplorerReturn = ReturnType<typeof useLogsExplorer>;

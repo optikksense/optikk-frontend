@@ -77,11 +77,13 @@ export default memo(function InfraMultiSeriesChart({
     return Object.entries(serviceTimeseriesMap)
       .slice(0, 10)
       .map(([name, rows], idx) => {
-        // Use latest non-null value for current usage
+        // Use latest present value (a genuine 0 is valid; only skip missing samples).
         let latestValue = 0;
         for (let i = rows.length - 1; i >= 0; i--) {
-          const val = Number(firstValue(rows[i], [valueField, "value", "request_count"], 0));
-          if (Number.isFinite(val) && val !== 0) {
+          const raw = firstValue(rows[i], [valueField, "value", "request_count"], null);
+          if (raw === null) continue;
+          const val = Number(raw);
+          if (Number.isFinite(val)) {
             latestValue = val;
             break;
           }

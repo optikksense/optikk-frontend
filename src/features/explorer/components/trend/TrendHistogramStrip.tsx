@@ -88,7 +88,7 @@ function TrendHistogramStripComponent(props: Props) {
       tzDate:
         tz && tz !== "local" ? (ts: number) => uPlot.tzDate(new Date(ts * 1000), tz) : undefined,
     };
-  }, [series, tz]);
+  }, [series, tz, minTimeMs, maxTimeMs]);
   return (
     <div className="flex flex-col border-border border-b bg-background">
       {}
