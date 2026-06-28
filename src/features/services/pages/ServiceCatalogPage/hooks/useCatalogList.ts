@@ -8,11 +8,7 @@ import {
   type ServiceCatalogRedSummary,
   getRedSummaryWithComparison,
   getRequestRateSeries,
-} from "@/features/services/api/serviceCatalogApi";
-import {
-  type ServiceLatestDeployment,
-  deploymentsApi,
-} from "@shared/api/deployments/deploymentsApi";
+} from "@/features/services/api/redApi";
 
 import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 
@@ -37,19 +33,10 @@ function useRateSeries() {
   );
 }
 
-function useLatestDeploysQuery() {
-  return useTimeRangeQuery<ServiceLatestDeployment[]>(
-    "service-hub.latest-deploys",
-    () => deploymentsApi.getLatestByService(),
-    { staleTime: 60_000 }
-  );
-}
-
 export function useCatalogList(): UseCatalogListResult {
   const { getTimeRange } = useTimeRange();
   const summary = useRedSummary();
   const series = useRateSeries();
-  const latest = useLatestDeploysQuery();
 
   const windowSec = useMemo(() => {
     const bounds = getTimeRange();
@@ -62,16 +49,15 @@ export function useCatalogList(): UseCatalogListResult {
       primary: summary.data.data,
       comparison: summary.data.comparison,
       rateSeries: series.data ?? [],
-      latestDeploys: latest.data ?? [],
       windowSec,
     });
-  }, [summary.data, series.data, latest.data, windowSec]);
+  }, [summary.data, series.data, windowSec]);
 
   return {
     rows,
     comparison: summary.data?.comparison,
     windowSec,
     isPending: summary.isPending,
-    isError: Boolean(summary.error || series.error || latest.error),
+    isError: Boolean(summary.error || series.error),
   };
 }

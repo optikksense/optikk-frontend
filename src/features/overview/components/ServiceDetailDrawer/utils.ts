@@ -2,7 +2,7 @@ import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi"
 import type {
   LatencyPercentilesPoint,
   StatusTimeseriesPoint,
-} from "@/features/services/api/serviceDetailApi";
+} from "@/features/services/api/redApi";
 import type { ServiceTopologyEdge } from "@shared/components/ui/charts/ServiceTopologyGraph";
 import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 

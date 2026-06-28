@@ -1,26 +1,27 @@
 // Request & validation errors (4xx)
-export const BAD_REQUEST = "BAD_REQUEST" as const;
-export const VALIDATION_ERROR = "VALIDATION_ERROR" as const;
-export const UNAUTHORIZED = "UNAUTHORIZED" as const;
-export const FORBIDDEN = "FORBIDDEN" as const;
-export const NOT_FOUND = "NOT_FOUND" as const;
-export const CONFLICT = "CONFLICT" as const;
-export const RATE_LIMITED = "RATE_LIMITED" as const;
-export const PAYLOAD_TOO_LARGE = "PAYLOAD_TOO_LARGE" as const;
+const BAD_REQUEST = "BAD_REQUEST" as const;
+const VALIDATION_ERROR = "VALIDATION_ERROR" as const;
+const UNAUTHORIZED = "UNAUTHORIZED" as const;
+const FORBIDDEN = "FORBIDDEN" as const;
+const NOT_FOUND = "NOT_FOUND" as const;
+const CONFLICT = "CONFLICT" as const;
+const RATE_LIMITED = "RATE_LIMITED" as const;
+const PAYLOAD_TOO_LARGE = "PAYLOAD_TOO_LARGE" as const;
 
-export const INTERNAL_ERROR = "INTERNAL_ERROR" as const;
-export const QUERY_FAILED = "QUERY_FAILED" as const;
-export const QUERY_TIMEOUT = "QUERY_TIMEOUT" as const;
-export const CONNECTION_ERROR = "CONNECTION_ERROR" as const;
-export const SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE" as const;
-export const CIRCUIT_OPEN = "CIRCUIT_OPEN" as const;
+const INTERNAL_ERROR = "INTERNAL_ERROR" as const;
+const QUERY_FAILED = "QUERY_FAILED" as const;
+const QUERY_TIMEOUT = "QUERY_TIMEOUT" as const;
+const CONNECTION_ERROR = "CONNECTION_ERROR" as const;
+const SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE" as const;
+const CIRCUIT_OPEN = "CIRCUIT_OPEN" as const;
 
-export const NO_DATA = "NO_DATA" as const;
-export const PARTIAL_DATA = "PARTIAL_DATA" as const;
+const NO_DATA = "NO_DATA" as const;
+const PARTIAL_DATA = "PARTIAL_DATA" as const;
 
 export const NETWORK_ERROR = "NETWORK_ERROR" as const;
-export const REQUEST_CANCELLED = "REQUEST_CANCELLED" as const;
+const REQUEST_CANCELLED = "REQUEST_CANCELLED" as const;
 export const UNKNOWN_ERROR = "UNKNOWN_ERROR" as const;
+
 
 export type ErrorCode =
   | typeof BAD_REQUEST

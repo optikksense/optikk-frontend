@@ -131,7 +131,6 @@ const serviceMapRoute = createProtected(
   () => null,
   `${ROUTES.services}?tab=map`
 );
-const deploymentsRoute = createProtected(ROUTES.deployments, () => null, ROUTES.services);
 const hostDetailRoute = createProtected(ROUTES.hostDetail, HostDetailPage);
 const containerDetailRoute = createProtected(ROUTES.containerDetail, ContainerDetailPage);
 
@@ -183,7 +182,6 @@ const routeTree = rootRoute.addChildren([
     errorGroupDetailRoute,
     servicesCatalogRoute,
     serviceMapRoute,
-    deploymentsRoute,
     hostDetailRoute,
     containerDetailRoute,
     monitorsRoute,

@@ -2,8 +2,7 @@ import type {
   RedServiceRow,
   RequestRatePoint,
   ServiceCatalogRedSummary,
-} from "@/features/services/api/serviceCatalogApi";
-import type { ServiceLatestDeployment } from "@shared/api/deployments/deploymentsApi";
+} from "@/features/services/api/redApi";
 
 export type CatalogStatus = "healthy" | "warn" | "error" | "unknown";
 
@@ -58,12 +57,6 @@ function bySparkline(points: RequestRatePoint[]): Map<string, number[]> {
   return out;
 }
 
-function byLatestDeploy(latest: ServiceLatestDeployment[]): Map<string, ServiceLatestDeployment> {
-  const m = new Map<string, ServiceLatestDeployment>();
-  for (const d of latest) m.set(d.service_name, d);
-  return m;
-}
-
 function byPrevP99(prev: ServiceCatalogRedSummary | undefined): Map<string, number> {
   const m = new Map<string, number>();
   if (!prev) return m;
@@ -75,7 +68,6 @@ export interface BuildCatalogInputs {
   readonly primary: ServiceCatalogRedSummary;
   readonly comparison?: ServiceCatalogRedSummary;
   readonly rateSeries: RequestRatePoint[];
-  readonly latestDeploys: ServiceLatestDeployment[];
   readonly windowSec: number;
 }
 
@@ -115,10 +107,8 @@ export function buildCatalogRow(
   row: RedServiceRow,
   windowSec: number,
   spark: Map<string, number[]>,
-  deployByName: Map<string, ServiceLatestDeployment>,
   prevP99: Map<string, number>
 ): CatalogRow {
-  const deploy = deployByName.get(row.service_name);
   const errorRate = row.request_count > 0 ? row.error_count / row.request_count : 0;
 
   const mappedMeta =
@@ -136,8 +126,8 @@ export function buildCatalogRow(
     p99DeltaPct: deltaPct(row.p99_latency, prevP99.get(row.service_name)),
     status: classifyStatus(errorRate, row.p99_latency),
     sparkline: spark.get(row.service_name) ?? [],
-    version: deploy?.version ?? "—",
-    environment: deploy?.environment ?? "—",
+    version: "—",
+    environment: "—",
     tier: mappedMeta.tier,
     team: mappedMeta.team,
     lang: mappedMeta.lang,
@@ -147,9 +137,8 @@ export function buildCatalogRow(
 
 export function buildCatalogRows(inputs: BuildCatalogInputs): CatalogRow[] {
   const spark = bySparkline(inputs.rateSeries);
-  const deployByName = byLatestDeploy(inputs.latestDeploys);
   const prevP99 = byPrevP99(inputs.comparison);
   return (inputs.primary.services ?? []).map((row) =>
-    buildCatalogRow(row, inputs.windowSec, spark, deployByName, prevP99)
+    buildCatalogRow(row, inputs.windowSec, spark, prevP99)
   );
 }

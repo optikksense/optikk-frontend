@@ -18,34 +18,7 @@ const slowQueryPatternSchema = z
   })
   .strict();
 
-const slowCollectionRowSchema = z
-  .object({
-    collection_name: stringValue,
-    p99_ms: nullableNumber,
-    ops_per_sec: nullableNumber,
-    error_rate: nullableNumber,
-  })
-  .strict();
-
-const slowRatePointSchema = z
-  .object({
-    time_bucket: stringValue,
-    slow_per_sec: nullableNumber,
-  })
-  .strict();
-
-const p99ByQueryTextSchema = z
-  .object({
-    query_text: stringValue,
-    p99_ms: nullableNumber,
-    sample_count: numericValue,
-  })
-  .passthrough();
-
 export type SlowQueryPatternRow = z.infer<typeof slowQueryPatternSchema>;
-export type SlowCollectionRow = z.infer<typeof slowCollectionRowSchema>;
-export type SlowRatePoint = z.infer<typeof slowRatePointSchema>;
-export type P99ByQueryTextRow = z.infer<typeof p99ByQueryTextSchema>;
 
 export interface DatabaseFilters {
   readonly db_system?: string;
@@ -72,45 +45,6 @@ export function getSlowQueryPatterns(
   return getSaturation(
     "/saturation/database/slow-queries/patterns",
     z.array(slowQueryPatternSchema),
-    withFilters(startTime, endTime, filters, { limit })
-  );
-}
-
-export function getSlowQueryCollections(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  filters?: DatabaseFilters,
-  limit = 20
-): Promise<SlowCollectionRow[]> {
-  return getSaturation(
-    "/saturation/database/slow-queries/collections",
-    z.array(slowCollectionRowSchema),
-    withFilters(startTime, endTime, filters, { limit })
-  );
-}
-
-export function getSlowQueryRate(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  filters?: DatabaseFilters,
-  threshold_ms = 1000
-): Promise<SlowRatePoint[]> {
-  return getSaturation(
-    "/saturation/database/slow-queries/rate",
-    z.array(slowRatePointSchema),
-    withFilters(startTime, endTime, filters, { threshold_ms })
-  );
-}
-
-export function getP99ByQueryText(
-  startTime: RequestTime,
-  endTime: RequestTime,
-  filters?: DatabaseFilters,
-  limit = 50
-): Promise<P99ByQueryTextRow[]> {
-  return getSaturation(
-    "/saturation/database/slow-queries/p99-by-text",
-    z.array(p99ByQueryTextSchema),
     withFilters(startTime, endTime, filters, { limit })
   );
 }

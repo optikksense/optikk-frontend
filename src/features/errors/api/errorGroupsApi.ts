@@ -73,7 +73,7 @@ export interface ErrorTimeSeriesPoint {
   readonly error_count: number;
 }
 
-import type { PaginatedResponse } from "@/features/services/api/serviceDetailApi";
+import type { PaginatedResponse } from "@/features/services/api/redApi";
 
 interface ErrorListParams {
   serviceName?: string;

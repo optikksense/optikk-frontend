@@ -4,7 +4,7 @@ import { numericValue, stringValue } from "./saturationClient";
 
 // Mirrors query/internal/modules/saturation/kafka/topology models.
 
-export const producerNodeSchema = z
+const producerNodeSchema = z
   .object({
     service: stringValue,
     rate_per_sec: numericValue,
@@ -22,7 +22,7 @@ export const topicNodeSchema = z
   })
   .strict();
 
-export const consumerNodeSchema = z
+const consumerNodeSchema = z
   .object({
     service: stringValue,
     group: stringValue,
@@ -32,7 +32,7 @@ export const consumerNodeSchema = z
   })
   .strict();
 
-export const streamEdgeSchema = z
+const streamEdgeSchema = z
   .object({
     source: stringValue,
     target: stringValue,
@@ -41,7 +41,7 @@ export const streamEdgeSchema = z
   })
   .strict();
 
-export const pathwaySchema = z
+const pathwaySchema = z
   .object({
     producer: stringValue,
     topic: stringValue,

@@ -2,7 +2,7 @@ import type { ObservabilityChartSeries } from "@shared/components/ui/charts/Obse
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { tsMs } from "@shared/utils/chartDataUtils";
 
-import { type EndpointRatePoint, getREDByEndpoint } from "@/features/services/api/serviceDetailApi";
+import { type EndpointRatePoint, getREDByEndpoint } from "@/features/services/api/redApi";
 
 // Palette for per-route lines, cycled by route order.
 const ROUTE_COLORS = [

@@ -2,6 +2,7 @@ import { API_CONFIG } from "@config/apiConfig";
 import api from "@shared/api/api/client";
 import { validateResponse } from "@shared/api/utils/validate";
 import { z } from "zod";
+import { buildTracesFilters } from "./buildTracesFilters";
 
 import {
   criticalPathSpanSchema,
@@ -50,7 +51,7 @@ function extractNextCursor(pageInfo: unknown): string | undefined {
   return undefined;
 }
 
-export const rawTraceRowSchema = z
+const rawTraceRowSchema = z
   .object({
     trace_id: z.string(),
     start_ms: z.coerce.number(),
@@ -74,7 +75,7 @@ function normalizeHttpStatus(v: string | undefined): string | undefined {
   return v;
 }
 
-export function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSummary {
+function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSummary {
   const durationNs = Math.round(row.duration_ms * 1_000_000);
   return {
     trace_id: row.trace_id,
@@ -193,7 +194,10 @@ function logDevSnippet(raw: unknown, err: unknown) {
 }
 
 export async function query(body: TracesQueryRequest): Promise<TracesQueryResponse> {
-  const { include: _ignore, ...reqBody } = body;
+  const reqBody = buildTracesFilters(body.filters, body.startTime, body.endTime, {
+    limit: body.limit,
+    cursor: body.cursor,
+  });
   const raw = await api.post<unknown>(`${BASE}/traces/query`, reqBody);
 
   if (
@@ -217,14 +221,18 @@ export async function query(body: TracesQueryRequest): Promise<TracesQueryRespon
 }
 
 export async function queryFacets(body: TracesQueryRequest) {
-  const { include: _ignore, ...reqBody } = body;
+  const reqBody = buildTracesFilters(body.filters, body.startTime, body.endTime, {
+    limit: 0,
+  });
   const raw = await api.post<unknown>(`${BASE}/traces/facets`, reqBody);
   const validated = validateResponse(rawFacetsSchema, raw);
   return normalizeFacets(validated);
 }
 
 export async function queryTrend(body: TracesQueryRequest) {
-  const { include: _ignore, ...reqBody } = body;
+  const reqBody = buildTracesFilters(body.filters, body.startTime, body.endTime, {
+    limit: 0,
+  });
   const raw = await api.post<unknown>(`${BASE}/traces/trend`, reqBody);
   const validated = validateResponse(z.union([z.array(rawTrendRowSchema), z.null()]), raw) ?? [];
   return validated.map((b) => ({
@@ -233,12 +241,6 @@ export async function queryTrend(body: TracesQueryRequest) {
     errors: b.errors,
     warnings: 0,
   }));
-}
-
-export async function getById(traceId: string): Promise<TraceSummary> {
-  const raw = await api.get<unknown>(`${BASE}/traces/${encodeURIComponent(traceId)}`);
-  const row = validateResponse(rawTraceRowSchema, raw);
-  return normalizeTraceSummary(row);
 }
 
 export interface SuggestRequest {
@@ -305,7 +307,7 @@ const traceSpansEnvelopeSchema = z
   })
   .strict();
 
-export async function getTraceSpans(
+async function getTraceSpans(
   _teamId: number | null,
   traceId: string
 ): Promise<SpanRecord[]> {
@@ -317,22 +319,22 @@ export async function getTraceSpans(
   return spans as unknown as SpanRecord[];
 }
 
-export async function getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {
+async function getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/span-events`);
   return validateResponse(z.array(spanEventSchema), data);
 }
 
-export async function getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
+async function getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
   return validateResponse(z.array(criticalPathSpanSchema), data);
 }
 
-export async function getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
+async function getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/error-path`);
   return validateResponse(z.array(errorPathSpanSchema), data);
 }
 
-export async function getSpanAttributes(
+async function getSpanAttributes(
   traceId: string,
   spanId: string
 ): Promise<SpanAttributesRecord> {
@@ -340,7 +342,7 @@ export async function getSpanAttributes(
   return validateResponse(spanAttributesSchema, data);
 }
 
-export async function getRelatedTraces(
+async function getRelatedTraces(
   traceId: string,
   serviceName?: string,
   operationName?: string,
@@ -358,7 +360,7 @@ export async function getRelatedTraces(
   return validateResponse(z.array(relatedTraceSchema), data);
 }
 
-export async function getServiceMap(traceId: string): Promise<ServiceTopologyResponse> {
+async function getServiceMap(traceId: string): Promise<ServiceTopologyResponse> {
   const data = await api.get(`${BASE}/traces/${traceId}/service-map`);
   return topologyResponseSchema.parse(data ?? { nodes: [], edges: [] });
 }
@@ -380,7 +382,7 @@ const redServicesSchema = z
   )
   .default([]);
 
-export async function getServiceLatencyBaselines(
+async function getServiceLatencyBaselines(
   startMs: number,
   endMs: number
 ): Promise<Map<string, ServiceLatencyBaseline>> {
@@ -395,7 +397,7 @@ export async function getServiceLatencyBaselines(
   return out;
 }
 
-export async function getTraceErrors(traceId: string): Promise<TraceErrorGroup[]> {
+async function getTraceErrors(traceId: string): Promise<TraceErrorGroup[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/errors`);
   return validateResponse(z.array(traceErrorGroupSchema), data);
 }

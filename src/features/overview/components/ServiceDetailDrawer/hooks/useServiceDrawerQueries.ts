@@ -4,7 +4,7 @@ import {
   getLatencyPercentilesTimeseries,
   getStatusTimeseries,
   getTopEndpoints,
-} from "@/features/services/api/serviceDetailApi";
+} from "@/features/services/api/redApi";
 import { getServiceTopology } from "@shared/components/ui/charts/ServiceTopologyGraph";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 

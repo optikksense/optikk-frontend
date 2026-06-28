@@ -1,7 +1,7 @@
 import {
   type SaturationTimeSeriesPoint,
   getServiceSaturationTimeseries,
-} from "@/features/services/api/serviceDetailApi";
+} from "@/features/services/api/redApi";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 export function useServiceSaturation(serviceName: string) {

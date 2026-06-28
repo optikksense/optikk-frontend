@@ -4,7 +4,7 @@ import {
   type PaginatedResponse,
   type TopDBQuery,
   getTopDBQueries,
-} from "@/features/services/api/serviceDetailApi";
+} from "@/features/services/api/redApi";
 
 export interface DBQueryWithDelta extends TopDBQuery {
   readonly p99_delta_pct: number | null;

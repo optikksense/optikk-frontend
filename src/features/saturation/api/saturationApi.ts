@@ -11,18 +11,14 @@ import type { RequestTime } from "@/shared/api/service-types";
 import { getHosts } from "@/features/infrastructure/api/hostsApi";
 
 import { getDatastoreSummary, getDatastoreSystems } from "./datastoresExplorerApi";
-import { getKafkaGroups, getKafkaSummary, getKafkaTopics } from "./kafkaExplorerApi";
+import { getKafkaSummary } from "./kafkaExplorerApi";
 
 export type {
   DatastoreSummary,
   DatastoreSystemRow,
 } from "./datastoresExplorerSchemas";
 export type { Host as HostSaturationRow } from "@/features/infrastructure/api/hostsApi";
-export type {
-  KafkaGroupRow,
-  KafkaSummary,
-  KafkaTopicRow,
-} from "./kafkaExplorerSchemas";
+export type { KafkaSummary } from "./kafkaExplorerSchemas";
 
 type R = RequestTime;
 type T = number | null;
@@ -34,6 +30,4 @@ export const saturationApi = {
   getDatastoreSystems: (_t: T, s: R, e: R) => getDatastoreSystems(s, e),
 
   getKafkaSummary: (_t: T, s: R, e: R) => getKafkaSummary(s, e),
-  getKafkaTopics: (_t: T, s: R, e: R) => getKafkaTopics(s, e),
-  getKafkaGroups: (_t: T, s: R, e: R) => getKafkaGroups(s, e),
 };

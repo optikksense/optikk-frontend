@@ -18,12 +18,14 @@ export async function getFleetRedMetrics(
   startTime: RequestTime,
   endTime: RequestTime
 ): Promise<FleetRedMetrics> {
-  const [totals, services] = await Promise.all([
-    getJson<FleetRedMetrics>("/spans/red/fleet-totals", startTime, endTime),
-    getJson<unknown[]>("/spans/red/services", startTime, endTime),
-  ]);
-  return { ...totals, services };
+  const overview = await getJson<{ totals: FleetRedMetrics; services: unknown[] }>(
+    "/spans/red/fleet-overview",
+    startTime,
+    endTime
+  );
+  return { ...overview.totals, services: overview.services };
 }
+
 
 export function getPerformanceSeries(
   startTime: RequestTime,

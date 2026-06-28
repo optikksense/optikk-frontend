@@ -12,7 +12,6 @@ export const ROUTES = {
   overview: "/overview",
   services: "/services",
   serviceMap: "/service-map",
-  deployments: "/deployments",
   serviceDetail: "/services/$serviceName",
   logs: "/logs",
   traces: "/traces",

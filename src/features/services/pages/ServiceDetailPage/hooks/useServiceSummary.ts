@@ -6,7 +6,7 @@ import {
   type ComparisonPayload,
   type ServiceSummaryResponse,
   getServiceSummary,
-} from "@/features/services/api/serviceDetailApi";
+} from "@/features/services/api/redApi";
 
 export interface ServiceSummary {
   readonly serviceName: string;

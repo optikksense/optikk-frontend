@@ -4,7 +4,7 @@ import {
   type PaginatedResponse,
   type TopEndpoint,
   getTopEndpoints,
-} from "@/features/services/api/serviceDetailApi";
+} from "@/features/services/api/redApi";
 
 export interface EndpointWithDelta extends TopEndpoint {
   readonly p99_delta_pct: number | null;
