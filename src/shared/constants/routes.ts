@@ -16,6 +16,7 @@ export const ROUTES = {
   logs: "/logs",
   traces: "/traces",
   traceDetail: "/traces/$traceId",
+  llm: "/llm",
   traceCompare: "/traces/compare",
   metrics: "/metrics",
   infrastructure: "/infrastructure",

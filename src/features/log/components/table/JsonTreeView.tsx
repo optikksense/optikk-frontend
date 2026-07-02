@@ -1,76 +1,176 @@
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChevronDown, ChevronRight, Copy } from "lucide-react";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 
 interface Props {
   readonly data: Record<string, unknown> | unknown[];
-  readonly depth?: number;
 }
 
-/** Recursively renders a collapsible JSON tree with syntax coloring. */
-function JsonTreeViewComponent({ data, depth = 0 }: Props) {
-  const entries = Array.isArray(data)
-    ? data.map((v, i) => [String(i), v] as const)
-    : Object.entries(data);
+type FlatNode = {
+  id: string;
+  nodeKey: string;
+  value: unknown;
+  depth: number;
+  isExpandable: boolean;
+  isArray: boolean;
+  count: number;
+};
+
+function flattenTree(
+  data: Record<string, unknown> | unknown[],
+  expandedIds: Set<string>
+): FlatNode[] {
+  const result: FlatNode[] = [];
+
+  function traverse(obj: unknown, currentPath: string, depth: number, key: string) {
+    const isObject = typeof obj === "object" && obj !== null;
+    if (isObject) {
+      const isArray = Array.isArray(obj);
+      const entries = isArray ? (obj as unknown[]).map((v, i) => [String(i), v] as const) : Object.entries(obj as object);
+      
+      result.push({
+        id: currentPath,
+        nodeKey: key,
+        value: obj,
+        depth,
+        isExpandable: true,
+        isArray,
+        count: entries.length,
+      });
+
+      if (expandedIds.has(currentPath)) {
+        for (const [childKey, childValue] of entries) {
+          traverse(childValue, `${currentPath}.${childKey}`, depth + 1, childKey);
+        }
+      }
+    } else {
+      result.push({
+        id: currentPath,
+        nodeKey: key,
+        value: obj,
+        depth,
+        isExpandable: false,
+        isArray: false,
+        count: 0,
+      });
+    }
+  }
+
+  // Start traversing from root items
+  const entries = Array.isArray(data) ? data.map((v, i) => [String(i), v] as const) : Object.entries(data);
+  for (const [k, v] of entries) {
+    traverse(v, `root.${k}`, 0, k);
+  }
+
+  return result;
+}
+
+function JsonTreeViewComponent({ data }: Props) {
+  // Initially expand root level
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    const entries = Array.isArray(data) ? data.map((v, i) => [String(i), v] as const) : Object.entries(data);
+    for (const [k] of entries) {
+      initial.add(`root.${k}`);
+    }
+    return initial;
+  });
+
+  const flatNodes = useMemo(() => flattenTree(data, expandedIds), [data, expandedIds]);
+
+  const toggleExpand = useCallback((id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: flatNodes.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 24, // 24px height per row
+    overscan: 10,
+  });
 
   return (
-    <div className={depth > 0 ? "ml-4 border-border border-l pl-2" : ""}>
-      {entries.map(([key, value]) => (
-        <JsonNode key={key} nodeKey={key} value={value} depth={depth} />
-      ))}
+    <div
+      ref={parentRef}
+      className="max-h-96 overflow-auto"
+      style={{
+        contain: "strict",
+      }}
+    >
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          width: "100%",
+          position: "relative",
+        }}
+      >
+        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+          const node = flatNodes[virtualRow.index];
+          return (
+            <div
+              key={node.id}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+                paddingLeft: `${node.depth * 16}px`,
+              }}
+              className="flex items-center"
+            >
+              <RenderNode node={node} isExpanded={expandedIds.has(node.id)} onToggle={() => toggleExpand(node.id)} />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function JsonNode({
-  nodeKey,
-  value,
-  depth,
-}: {
-  readonly nodeKey: string;
-  readonly value: unknown;
-  readonly depth: number;
-}) {
-  const [open, setOpen] = useState(depth < 2);
-  const isObject = typeof value === "object" && value !== null;
-
+const RenderNode = memo(({ node, isExpanded, onToggle }: { node: FlatNode; isExpanded: boolean; onToggle: () => void }) => {
   const handleCopy = useCallback(() => {
     void navigator.clipboard.writeText(
-      typeof value === "string" ? value : JSON.stringify(value, null, 2)
+      typeof node.value === "string" ? node.value : JSON.stringify(node.value, null, 2)
     );
-  }, [value]);
+  }, [node.value]);
 
-  if (isObject) {
-    const count = Array.isArray(value) ? value.length : Object.keys(value as object).length;
-    const label = Array.isArray(value) ? `[${count}]` : `{${count}}`;
+  if (node.isExpandable) {
+    const label = node.isArray ? `[${node.count}]` : `{${node.count}}`;
     return (
-      <div className="group/node">
+      <div className="group/node flex w-full items-center">
         <button
           type="button"
-          onClick={() => setOpen(!open)}
+          onClick={onToggle}
           className="flex items-center gap-1 rounded py-0.5 font-mono text-[12px] hover:bg-accent"
         >
-          {open ? (
-            <ChevronDown size={12} className="text-foreground-muted" />
+          {isExpanded ? (
+            <ChevronDown size={12} className="text-foreground-muted shrink-0" />
           ) : (
-            <ChevronRight size={12} className="text-foreground-muted" />
+            <ChevronRight size={12} className="text-foreground-muted shrink-0" />
           )}
-          <span className="text-foreground-secondary">{nodeKey}</span>
+          <span className="text-foreground-secondary">{node.nodeKey}</span>
           <span className="text-foreground-muted">{label}</span>
         </button>
-        {open ? (
-          <JsonTreeViewComponent
-            data={value as Record<string, unknown> | unknown[]}
-            depth={depth + 1}
-          />
-        ) : null}
       </div>
     );
   }
 
   return (
-    <div className="group/leaf flex items-center gap-1 py-0.5 pl-4 font-mono text-[12px]">
-      <span className="text-foreground-secondary">{nodeKey}:</span>
-      <span className={valueClassName(value)}>{formatValue(value)}</span>
+    <div className="group/leaf flex w-full items-center gap-1 py-0.5 pl-[20px] font-mono text-[12px]">
+      <span className="text-foreground-secondary">{node.nodeKey}:</span>
+      <span className={valueClassName(node.value)}>{formatValue(node.value)}</span>
       <button
         type="button"
         onClick={handleCopy}
@@ -81,10 +181,10 @@ function JsonNode({
       </button>
     </div>
   );
-}
+});
 
 function valueClassName(value: unknown): string {
-  if (typeof value === "string") return "text-success";
+  if (typeof value === "string") return "text-success truncate max-w-[500px]";
   if (typeof value === "number") return "text-chart-1";
   if (typeof value === "boolean") return "text-warning";
   if (value === null) return "text-foreground-muted italic";

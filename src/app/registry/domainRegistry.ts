@@ -1,6 +1,7 @@
 import { dashboardsConfig } from "@/features/dashboards";
 import { infrastructureConfig } from "@/features/infrastructure";
 import { ingestionConfig } from "@/features/ingestion";
+import { llmConfig } from "@/features/llm";
 import { logsConfig } from "@/features/log";
 import { metricsConfig } from "@/features/metrics";
 import { monitorsConfig } from "@/features/monitors";
@@ -55,6 +56,7 @@ export const domainRegistry: readonly DomainConfig[] = [
   metricsConfig,
   logsConfig,
   tracesConfig,
+  llmConfig,
   infrastructureConfig,
   ingestionConfig,
   monitorsConfig,

@@ -124,7 +124,10 @@ export function DatabaseQueriesTab({ system }: { system: string }) {
             onClick: () =>
               navigate(
                 dynamicNavigateOptions(
-                  ROUTES.saturationDatabaseQuery.replace("$queryId", queryFingerprintId(row))
+                  ROUTES.saturationDatabaseQuery.replace(
+                    "$queryId",
+                    row.query_hash || queryFingerprintId(row)
+                  )
                 )
               ),
             style: { cursor: "pointer" },

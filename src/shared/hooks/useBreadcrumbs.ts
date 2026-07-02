@@ -51,6 +51,15 @@ const BREADCRUMB_RULES: BreadcrumbRule[] = [
   },
   {
     match: (pathname, segments) =>
+      pathname.startsWith("/saturation/database/query/") && segments.length === 4,
+    build: (segments, navLookup) => [
+      { label: navLookup.get(ROUTES.saturation) ?? "Saturation", path: ROUTES.saturation },
+      { label: "Database", path: ROUTES.saturationDatabase },
+      { label: `Query #${segments[3].slice(0, 6)}` },
+    ],
+  },
+  {
+    match: (pathname, segments) =>
       pathname.startsWith("/saturation/datastores/") && segments.length === 3,
     build: (segments, navLookup) => [
       { label: navLookup.get(ROUTES.saturation) ?? "Saturation", path: ROUTES.saturation },

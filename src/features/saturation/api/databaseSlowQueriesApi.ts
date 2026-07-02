@@ -8,6 +8,8 @@ const nullableNumber = z.coerce.number().nullable();
 
 const slowQueryPatternSchema = z
   .object({
+    // Backend fingerprint; defaults to "" when the server is older.
+    query_hash: stringValue,
     query_text: stringValue,
     collection_name: stringValue,
     p50_ms: nullableNumber,
