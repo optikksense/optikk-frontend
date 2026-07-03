@@ -2,14 +2,14 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 import { cn } from "@/lib/utils";
 
-export interface TabItem {
+interface TabItem {
   key: string;
   label: string;
   icon?: React.ReactNode;
   children?: React.ReactNode;
 }
 
-export interface TabsProps {
+interface TabsProps {
   activeKey: string;
   onChange: (key: string) => void;
   className?: string;

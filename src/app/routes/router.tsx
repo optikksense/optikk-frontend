@@ -59,6 +59,7 @@ const DashboardDetailPage = lazy(
   () => import("@/features/dashboards/pages/DashboardDetailPage/DashboardDetailPage")
 );
 const WelcomePage = lazy(() => import("@/features/onboarding/pages/WelcomePage/WelcomePage"));
+const DeviceApprovePage = lazy(() => import("@/features/deviceAuth/pages/DeviceApprovePage"));
 
 export const rootRoute = createRootRoute({ component: AppContent });
 
@@ -92,6 +93,24 @@ const welcomeRoute = createRoute({
     <FeatureErrorBoundary featureName="route:welcome">
       <Suspense fallback={<Loading fullscreen />}>
         <WelcomePage />
+      </Suspense>
+    </FeatureErrorBoundary>
+  ),
+});
+
+// CLI device-login approval. Authed and full-screen, like the welcome wizard.
+const deviceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: ROUTES.device.replace(/^\//, ""),
+  beforeLoad: async ({ location }) => {
+    if (!(await session.ensureSession())) {
+      throw redirect({ to: ROUTES.login, search: { redirect: location.href }, replace: true });
+    }
+  },
+  component: () => (
+    <FeatureErrorBoundary featureName="route:device">
+      <Suspense fallback={<Loading fullscreen />}>
+        <DeviceApprovePage />
       </Suspense>
     </FeatureErrorBoundary>
   ),
@@ -166,7 +185,6 @@ const dashboardDetailRoute = createProtected(ROUTES.dashboardDetail, DashboardDe
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
 const logsTransactionsRedirect = createProtected("/logs/transactions", () => null, ROUTES.logs);
 
-
 const { marketingTree, productRedirectRoute, loginRoute, signupRoute } = buildMarketingRoutes(
   () => rootRoute
 );
@@ -177,6 +195,7 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   signupRoute,
   welcomeRoute,
+  deviceRoute,
   mainLayoutRoute.addChildren([
     ...protectedExplorerRoutes,
     overviewRoute,

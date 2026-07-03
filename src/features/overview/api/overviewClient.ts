@@ -3,12 +3,9 @@ import { API_CONFIG } from "@config/apiConfig";
 import type { RequestTime } from "@shared/api/service-types";
 import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
-export const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export function rangeParams(
-  startTime: RequestTime,
-  endTime: RequestTime
-): Record<string, RequestTime> {
+function rangeParams(startTime: RequestTime, endTime: RequestTime): Record<string, RequestTime> {
   return { startTime, endTime };
 }
 

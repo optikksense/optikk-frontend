@@ -9,8 +9,6 @@ const Drawer = ({
   <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />
 );
 Drawer.displayName = "Drawer";
-
-const DrawerTrigger = DrawerPrimitive.Trigger;
 const DrawerPortal = DrawerPrimitive.Portal;
 const DrawerClose = DrawerPrimitive.Close;
 
@@ -69,15 +67,4 @@ const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 );
 DrawerFooter.displayName = "DrawerFooter";
 
-export {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerPortal,
-  DrawerTitle,
-  DrawerTrigger,
-};
+export { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle };

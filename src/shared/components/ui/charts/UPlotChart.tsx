@@ -8,9 +8,7 @@ import { useTheme } from "@store/appStore";
 
 import { type ChartMarker, buildMarkerDrawHook } from "./chartMarkers";
 
-export type { ChartMarker } from "./chartMarkers";
-
-export interface UPlotChartProps {
+interface UPlotChartProps {
   options: Omit<uPlot.Options, "width" | "height">;
   data: uPlot.AlignedData;
   height?: number;

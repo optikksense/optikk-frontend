@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export interface PaginationProps {
+interface PaginationProps {
   page: number;
   pageSize: number;
   total: number;

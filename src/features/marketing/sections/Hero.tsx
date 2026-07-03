@@ -5,8 +5,6 @@ import type { MouseEvent, ReactNode } from "react";
 import { useRef } from "react";
 
 import { dynamicTo } from "@/shared/utils/navigation";
-
-import { GradientText } from "../motion/GradientText";
 import { Reveal } from "../motion/Reveal";
 
 interface HeroCta {
@@ -143,8 +141,4 @@ export function Hero({
       </div>
     </section>
   );
-}
-
-export function HeroGradientTitle({ children }: { readonly children: ReactNode }) {
-  return <GradientText>{children}</GradientText>;
 }

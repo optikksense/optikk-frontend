@@ -2,15 +2,8 @@ import { z } from "zod";
 
 import type { RequestTime } from "@/shared/api/service-types";
 
-import {
-  groupPartitionsSchema,
-  topicThroughputSchema,
-} from "./kafkaExplorerSchemas";
-import type {
-  GroupPartitionsRow,
-  KafkaSummary,
-  TopicThroughputRow,
-} from "./kafkaExplorerSchemas";
+import { groupPartitionsSchema, topicThroughputSchema } from "./kafkaExplorerSchemas";
+import type { GroupPartitionsRow, KafkaSummary, TopicThroughputRow } from "./kafkaExplorerSchemas";
 import { getSaturation, rangeParams } from "./saturationClient";
 
 function topicParams(topic: string, startTime: RequestTime, endTime: RequestTime) {

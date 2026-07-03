@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export interface DrawerTab {
+interface DrawerTab {
   readonly id: string;
   readonly label: string;
   readonly badge?: number | null;

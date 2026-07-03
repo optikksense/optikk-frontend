@@ -30,24 +30,6 @@ export const TIME_RANGES: import("@/types").RelativeTimeRange[] = [
   { kind: "relative", label: "Last 7 days", preset: "7d", minutes: 10080 },
   { kind: "relative", label: "Last 30 days", preset: "30d", minutes: 43200 },
 ];
-
-export const STATUS_COLORS = {
-  OK: "#73C991",
-  ERROR: "#F04438",
-  WARNING: "#F7B63A",
-  INFO: "#67B7C9",
-  UNKNOWN: "#6B7280",
-};
-
-export const LOG_LEVELS = {
-  TRACE: { label: "Trace", color: "#6B7280" },
-  DEBUG: { label: "Debug", color: "#67B7C9" },
-  INFO: { label: "Info", color: "#73C991" },
-  WARN: { label: "Warn", color: "#F7B63A" },
-  ERROR: { label: "Error", color: "#F04438" },
-  FATAL: { label: "Fatal", color: "#991B1B" },
-};
-
 export const CHART_COLORS = [
   "#5ea9ff",
   "#f38b6b",

@@ -26,8 +26,10 @@ function flattenTree(
     const isObject = typeof obj === "object" && obj !== null;
     if (isObject) {
       const isArray = Array.isArray(obj);
-      const entries = isArray ? (obj as unknown[]).map((v, i) => [String(i), v] as const) : Object.entries(obj as object);
-      
+      const entries = isArray
+        ? (obj as unknown[]).map((v, i) => [String(i), v] as const)
+        : Object.entries(obj as object);
+
       result.push({
         id: currentPath,
         nodeKey: key,
@@ -57,7 +59,9 @@ function flattenTree(
   }
 
   // Start traversing from root items
-  const entries = Array.isArray(data) ? data.map((v, i) => [String(i), v] as const) : Object.entries(data);
+  const entries = Array.isArray(data)
+    ? data.map((v, i) => [String(i), v] as const)
+    : Object.entries(data);
   for (const [k, v] of entries) {
     traverse(v, `root.${k}`, 0, k);
   }
@@ -69,7 +73,9 @@ function JsonTreeViewComponent({ data }: Props) {
   // Initially expand root level
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
     const initial = new Set<string>();
-    const entries = Array.isArray(data) ? data.map((v, i) => [String(i), v] as const) : Object.entries(data);
+    const entries = Array.isArray(data)
+      ? data.map((v, i) => [String(i), v] as const)
+      : Object.entries(data);
     for (const [k] of entries) {
       initial.add(`root.${k}`);
     }
@@ -130,7 +136,11 @@ function JsonTreeViewComponent({ data }: Props) {
               }}
               className="flex items-center"
             >
-              <RenderNode node={node} isExpanded={expandedIds.has(node.id)} onToggle={() => toggleExpand(node.id)} />
+              <RenderNode
+                node={node}
+                isExpanded={expandedIds.has(node.id)}
+                onToggle={() => toggleExpand(node.id)}
+              />
             </div>
           );
         })}
@@ -139,49 +149,55 @@ function JsonTreeViewComponent({ data }: Props) {
   );
 }
 
-const RenderNode = memo(({ node, isExpanded, onToggle }: { node: FlatNode; isExpanded: boolean; onToggle: () => void }) => {
-  const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText(
-      typeof node.value === "string" ? node.value : JSON.stringify(node.value, null, 2)
-    );
-  }, [node.value]);
+const RenderNode = memo(
+  ({
+    node,
+    isExpanded,
+    onToggle,
+  }: { node: FlatNode; isExpanded: boolean; onToggle: () => void }) => {
+    const handleCopy = useCallback(() => {
+      void navigator.clipboard.writeText(
+        typeof node.value === "string" ? node.value : JSON.stringify(node.value, null, 2)
+      );
+    }, [node.value]);
 
-  if (node.isExpandable) {
-    const label = node.isArray ? `[${node.count}]` : `{${node.count}}`;
+    if (node.isExpandable) {
+      const label = node.isArray ? `[${node.count}]` : `{${node.count}}`;
+      return (
+        <div className="group/node flex w-full items-center">
+          <button
+            type="button"
+            onClick={onToggle}
+            className="flex items-center gap-1 rounded py-0.5 font-mono text-[12px] hover:bg-accent"
+          >
+            {isExpanded ? (
+              <ChevronDown size={12} className="shrink-0 text-foreground-muted" />
+            ) : (
+              <ChevronRight size={12} className="shrink-0 text-foreground-muted" />
+            )}
+            <span className="text-foreground-secondary">{node.nodeKey}</span>
+            <span className="text-foreground-muted">{label}</span>
+          </button>
+        </div>
+      );
+    }
+
     return (
-      <div className="group/node flex w-full items-center">
+      <div className="group/leaf flex w-full items-center gap-1 py-0.5 pl-[20px] font-mono text-[12px]">
+        <span className="text-foreground-secondary">{node.nodeKey}:</span>
+        <span className={valueClassName(node.value)}>{formatValue(node.value)}</span>
         <button
           type="button"
-          onClick={onToggle}
-          className="flex items-center gap-1 rounded py-0.5 font-mono text-[12px] hover:bg-accent"
+          onClick={handleCopy}
+          className="ml-1 opacity-0 transition-opacity group-hover/leaf:opacity-100"
+          title="Copy value"
         >
-          {isExpanded ? (
-            <ChevronDown size={12} className="text-foreground-muted shrink-0" />
-          ) : (
-            <ChevronRight size={12} className="text-foreground-muted shrink-0" />
-          )}
-          <span className="text-foreground-secondary">{node.nodeKey}</span>
-          <span className="text-foreground-muted">{label}</span>
+          <Copy size={10} className="text-foreground-muted" />
         </button>
       </div>
     );
   }
-
-  return (
-    <div className="group/leaf flex w-full items-center gap-1 py-0.5 pl-[20px] font-mono text-[12px]">
-      <span className="text-foreground-secondary">{node.nodeKey}:</span>
-      <span className={valueClassName(node.value)}>{formatValue(node.value)}</span>
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="ml-1 opacity-0 transition-opacity group-hover/leaf:opacity-100"
-        title="Copy value"
-      >
-        <Copy size={10} className="text-foreground-muted" />
-      </button>
-    </div>
-  );
-});
+);
 
 function valueClassName(value: unknown): string {
   if (typeof value === "string") return "text-success truncate max-w-[500px]";

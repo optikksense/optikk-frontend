@@ -20,7 +20,7 @@ function isEndpointListType(value: string): value is EndpointListType {
   return value === "requests" || value === "errorRate" || value === "latency" || value === "count";
 }
 
-export function buildEndpointKey(row: DashboardRecord) {
+function buildEndpointKey(row: DashboardRecord) {
   const method = strValue(row, ["http_method", "httpMethod"]).toUpperCase();
   const op = strValue(
     row,

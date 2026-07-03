@@ -1,4 +1,3 @@
-export * from "./api";
 export * from "./common";
 export * from "./dashboardConfig";
 
@@ -20,10 +19,6 @@ export type TimeRange = RelativeTimeRange | AbsoluteTimeRange;
 
 export function isRelativeRange(r: TimeRange): r is RelativeTimeRange {
   return r.kind === "relative";
-}
-
-export function isAbsoluteRange(r: TimeRange): r is AbsoluteTimeRange {
-  return r.kind === "absolute";
 }
 
 export function resolveTimeRangeBounds(r: TimeRange): { startTime: number; endTime: number } {

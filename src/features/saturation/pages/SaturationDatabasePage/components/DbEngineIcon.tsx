@@ -10,7 +10,7 @@ export function DbEngineIcon({ system, size = 30 }: DbEngineIconProps) {
   const color = engineColor(system);
   return (
     <div
-      className="grid shrink-0 place-items-center rounded-md font-mono font-bold"
+      className="grid shrink-0 place-items-center rounded-md font-bold font-mono"
       style={{
         width: size,
         height: size,

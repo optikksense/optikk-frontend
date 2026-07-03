@@ -17,7 +17,7 @@ import type { ExplorerFilter } from "@/features/explorer/types/filters";
 
 // ---------- public types ----------
 
-export interface LogsFiltersBody {
+interface LogsFiltersBody {
   startTime: number;
   endTime: number;
   limit?: number;
@@ -45,7 +45,7 @@ export interface LogsFiltersBody {
   }>;
 }
 
-export interface TranslationWarning {
+interface TranslationWarning {
   readonly code: "unsupported_op" | "unknown_field" | "duplicate_single_value";
   readonly field: string;
   readonly message: string;

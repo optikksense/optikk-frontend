@@ -1,10 +1,3 @@
-export type {
-  TraceSummary,
-  TracesQueryRequest,
-  TracesFacetBucket,
-  TracesQueryResponse,
-} from "./trace";
-
 export type { TraceRecord } from "@shared/api/schemas/tracesSchemas";
 
 export interface SpanEvent {

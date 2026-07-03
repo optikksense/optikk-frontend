@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const traceRecordSchema = z
+const traceRecordSchema = z
   .object({
     span_id: z.string(),
     trace_id: z.string(),
@@ -41,26 +41,6 @@ export const spanRecordSchema = z
     attributes: z.string().default(""),
   })
   .strict();
-
-export const tracesSummarySchema = z
-  .object({
-    total_traces: z.number().default(0),
-    error_traces: z.number().default(0),
-    avg_duration: z.number().default(0),
-    p50_duration: z.number().default(0),
-    p95_duration: z.number().default(0),
-    p99_duration: z.number().default(0),
-  })
-  .strict()
-  .default({
-    total_traces: 0,
-    error_traces: 0,
-    avg_duration: 0,
-    p50_duration: 0,
-    p95_duration: 0,
-    p99_duration: 0,
-  });
-
 export const traceLogSchema = z
   .object({
     id: z.string().default(""),
@@ -86,7 +66,7 @@ export const traceLogSchema = z
   })
   .strict();
 
-export const traceLogsResponseSchema = z
+const traceLogsResponseSchema = z
   .object({
     logs: z.array(traceLogSchema).default([]),
     is_speculative: z.boolean().default(false),
@@ -125,7 +105,7 @@ export const errorPathSpanSchema = z
   })
   .strict();
 
-export const spanLinkSchema = z
+const spanLinkSchema = z
   .object({
     trace_id: z.string(),
     span_id: z.string(),
@@ -176,7 +156,7 @@ export type ErrorPathSpanRecord = z.infer<typeof errorPathSpanSchema>;
 export type SpanAttributesRecord = z.infer<typeof spanAttributesSchema>;
 export type RelatedTraceRecord = z.infer<typeof relatedTraceSchema>;
 
-export const traceErrorSpanSchema = z
+const traceErrorSpanSchema = z
   .object({
     span_id: z.string(),
     service_name: z.string(),

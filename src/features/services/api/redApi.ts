@@ -2,7 +2,7 @@ import api from "@/shared/api/api/client";
 import type { RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
 import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
-import { buildREDFilters, type REDFiltersParams } from "./buildREDFilters";
+import { type REDFiltersParams, buildREDFilters } from "./buildREDFilters";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -15,7 +15,7 @@ async function getJson<T>(path: string, params: REDFiltersParams): Promise<T> {
 
 // ─── Topology (unchanged) ────────────────────────────────────────────
 
-export interface ServiceNode {
+interface ServiceNode {
   readonly name: string;
   readonly request_count: number;
   readonly error_count: number;
@@ -26,7 +26,7 @@ export interface ServiceNode {
   readonly health: string;
 }
 
-export interface ServiceEdge {
+interface ServiceEdge {
   readonly source: string;
   readonly target: string;
   readonly call_count: number;
@@ -85,10 +85,10 @@ export async function getRedSummaryWithComparison(
   services?: string | readonly string[]
 ): Promise<RedSummaryWithComparison> {
   const params = buildREDFilters(s, e, services);
-  const overview = await api.get<{ totals: Omit<ServiceCatalogRedSummary, "services">; services: RedServiceRow[] }>(
-    `${V1}/spans/red/fleet-overview`,
-    { params }
-  );
+  const overview = await api.get<{
+    totals: Omit<ServiceCatalogRedSummary, "services">;
+    services: RedServiceRow[];
+  }>(`${V1}/spans/red/fleet-overview`, { params });
   return { data: { ...overview.totals, services: overview.services } };
 }
 
@@ -161,7 +161,7 @@ export interface TopDBQuery {
   readonly p99_ms: number;
 }
 
-export interface PageInfo {
+interface PageInfo {
   readonly hasMore: boolean;
   readonly nextCursor?: string;
   readonly limit: number;

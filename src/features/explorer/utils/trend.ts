@@ -1,5 +1,4 @@
 import type { TrendBucket } from "../components/trend/TrendHistogramStrip";
-import type { TrendLegendItem } from "../components/trend/TrendLegend";
 import type { ExplorerTrendBucket } from "../types/queries";
 
 /**
@@ -21,17 +20,6 @@ export function toTrendBuckets(
     },
   }));
 }
-
-export const LOG_TREND_SERIES: readonly TrendLegendItem[] = [
-  { key: "total", label: "Total", color: "#8e96a9" },
-  { key: "warnings", label: "Warnings", color: "#f2cc0c" },
-  { key: "errors", label: "Errors", color: "#f2495c" },
-];
-
-export const TRACE_TREND_SERIES: readonly TrendLegendItem[] = [
-  { key: "total", label: "Total", color: "#4e9fdd" },
-  { key: "errors", label: "Errors", color: "#e8494d" },
-];
 
 function parseMs(s: string): number | null {
   let iso = s.includes("T") ? s : s.replace(" ", "T");

@@ -32,7 +32,7 @@ function fnv1aHue(s: string): number {
   return (h >>> 0) % 360;
 }
 
-export function serviceHue(name: string | null | undefined): number {
+function serviceHue(name: string | null | undefined): number {
   if (!name) return 270;
   const curated = CURATED[name];
   if (curated != null) return curated;

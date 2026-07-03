@@ -103,7 +103,7 @@ function getFallbackMetadata(serviceName: string) {
   return { tier, team, lang, instances };
 }
 
-export function buildCatalogRow(
+function buildCatalogRow(
   row: RedServiceRow,
   windowSec: number,
   spark: Map<string, number[]>,

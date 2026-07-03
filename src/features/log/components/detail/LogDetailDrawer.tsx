@@ -1,4 +1,4 @@
-import { ExternalLink, GitFork, ScrollText, Waypoints } from "lucide-react";
+import { ExternalLink, GitFork, Waypoints } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 

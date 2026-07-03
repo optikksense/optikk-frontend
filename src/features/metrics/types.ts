@@ -1,8 +1,8 @@
-export type DomainRecord = Record<string, unknown>;
+type DomainRecord = Record<string, unknown>;
 
 // Metrics Explorer Types
 
-export type MetricType = "gauge" | "counter" | "histogram" | "summary";
+type MetricType = "gauge" | "counter" | "histogram" | "summary";
 
 export interface MetricNameEntry {
   readonly name: string;

@@ -6,7 +6,7 @@ import type { ExplorerFilter, ExplorerMode } from "../types/filters";
 import { decodeFilters, encodeFilters, parseMode } from "../utils/urlState";
 
 /** URL-synced snapshot shared by all explorers (both logs + traces). */
-export interface ExplorerStateSnapshot {
+interface ExplorerStateSnapshot {
   readonly filters: readonly ExplorerFilter[];
   readonly mode: ExplorerMode;
   readonly cursor: string | null;

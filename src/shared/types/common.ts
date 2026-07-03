@@ -1,4 +1,1 @@
-/**
- *
- */
-export type EntityId = string | number;
+export {};

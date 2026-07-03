@@ -44,7 +44,7 @@ export interface SimpleTableColumn<RowType extends TableRowData = TableRowData> 
   onFilter?: (value: unknown, record: RowType) => boolean;
 }
 
-export interface SimpleTablePagination {
+interface SimpleTablePagination {
   pageSize?: number;
   current?: number;
   total?: number;

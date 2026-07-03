@@ -9,7 +9,7 @@ import type { Team, User } from "@/types";
  */
 
 /** "unknown" = cold boot, recovery not attempted yet. */
-export type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
+type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
 
 interface AuthState {
   readonly status: AuthStatus;

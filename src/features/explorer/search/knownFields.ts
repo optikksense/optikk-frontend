@@ -1,6 +1,6 @@
 import type { ExplorerFilterOp, ExplorerScope } from "../types/filters";
 
-export type FieldType = "string" | "number" | "bool";
+type FieldType = "string" | "number" | "bool";
 
 export type FieldCategory = "Common" | "Identifiers" | "Resource" | "Attributes";
 
@@ -156,7 +156,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
   },
 ];
 
-export const LOG_KNOWN_FIELDS: readonly KnownField[] = [
+const LOG_KNOWN_FIELDS: readonly KnownField[] = [
   {
     key: "service_name",
     label: "Service",
@@ -249,7 +249,7 @@ export const LOG_KNOWN_FIELDS: readonly KnownField[] = [
   },
 ];
 
-export const AI_KNOWN_FIELDS: readonly KnownField[] = [
+const AI_KNOWN_FIELDS: readonly KnownField[] = [
   {
     key: "provider",
     label: "Provider",
@@ -418,7 +418,7 @@ export interface QuickTemplate {
   readonly description: string;
 }
 
-export const QUICK_TEMPLATES_LOGS: readonly QuickTemplate[] = [
+const QUICK_TEMPLATES_LOGS: readonly QuickTemplate[] = [
   { label: "Errors only", query: "severity_text:ERROR", description: "ERROR-level logs" },
   {
     label: "Errors and fatals",
@@ -430,14 +430,14 @@ export const QUICK_TEMPLATES_LOGS: readonly QuickTemplate[] = [
   { label: "Body contains", query: '"timeout"', description: "Free-text body search" },
 ];
 
-export const QUICK_TEMPLATES_TRACES: readonly QuickTemplate[] = [
+const QUICK_TEMPLATES_TRACES: readonly QuickTemplate[] = [
   { label: "Errors only", query: "has_error:true", description: "Spans with recorded errors" },
   { label: "Slow requests", query: "duration_ms:>=500", description: "Spans ≥ 500ms" },
   { label: "5xx responses", query: "http_status:>=500", description: "Server-error responses" },
   { label: "By service", query: "service:", description: "Filter by service — type a name" },
 ];
 
-export const QUICK_TEMPLATES_AI: readonly QuickTemplate[] = [
+const QUICK_TEMPLATES_AI: readonly QuickTemplate[] = [
   { label: "Chat models", query: "spanType:CHAT_MODEL", description: "LLM chat/completion calls" },
   { label: "Tools", query: "spanType:TOOL", description: "Agent tool executions" },
   { label: "Retrieval", query: "spanType:RETRIEVER", description: "RAG retrieval spans" },

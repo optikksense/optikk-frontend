@@ -5,8 +5,6 @@ import type { ReactNode } from "react";
 
 import QueryLifecycleBridge from "./QueryLifecycleBridge";
 
-export { queryClient };
-
 interface AppQueryClientProviderProps {
   readonly children: ReactNode;
 }

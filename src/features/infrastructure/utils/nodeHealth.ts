@@ -7,14 +7,3 @@ export type NodeHealthTier = "healthy" | "degraded" | "unhealthy";
 export function tierForNode(node: InfrastructureNode): NodeHealthTier {
   return classifyHealth(node.error_rate, INFRA_HEALTH_THRESHOLDS);
 }
-
-export function groupLabelForNode(
-  node: InfrastructureNode,
-  mode: "health" | "host_prefix"
-): string {
-  if (mode === "health") return tierForNode(node);
-  const host = node.host || "unknown";
-  const dot = host.indexOf(".");
-  const prefix = dot > 0 ? host.slice(0, dot) : host.slice(0, 8) || "other";
-  return prefix;
-}

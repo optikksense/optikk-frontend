@@ -26,7 +26,6 @@ export async function getFleetRedMetrics(
   return { ...overview.totals, services: overview.services };
 }
 
-
 export function getPerformanceSeries(
   startTime: RequestTime,
   endTime: RequestTime

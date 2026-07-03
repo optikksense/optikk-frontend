@@ -1,5 +1,3 @@
-export const INFRA_DOMAIN_KEY = "infrastructure" as const;
-
 export const INFRA_TAB = {
   hosts: "hosts",
   containers: "containers",

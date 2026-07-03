@@ -205,14 +205,7 @@ export const useAppStore = create<AppState>()(
 // Reduces coupling so store internals can change without updating every consumer.
 export const useTimeRange = () => useAppStore((s) => s.timeRange);
 export const useTeamId = () => useAppStore((s) => s.selectedTeamId);
-export const useTeamIds = () => useAppStore((s) => s.selectedTeamIds);
 export const useRefreshKey = () => useAppStore((s) => s.refreshKey);
 export const useSidebarCollapsed = () => useAppStore((s) => s.sidebarCollapsed);
 export const useTheme = () => useAppStore((s) => s.theme);
 export const useTimezone = () => useAppStore((s) => s.timezone);
-export const useComparisonMode = () => useAppStore((s) => s.comparisonMode);
-export const useAutoRefreshInterval = () => useAppStore((s) => s.autoRefreshInterval);
-export const useNotificationsEnabled = () => useAppStore((s) => s.notificationsEnabled);
-export const useViewPreferences = () => useAppStore((s) => s.viewPreferences);
-export const useRecentPages = () => useAppStore((s) => s.recentPages);
-export const useRecentTimeRanges = () => useAppStore((s) => s.recentTimeRanges);

@@ -11,7 +11,7 @@ import type { LlmApp } from "../../../api/llmApi";
 import { useLlmApps, useLlmTimeseries } from "../../../hooks/useLlmQueries";
 import { alignSeries } from "../../../utils/alignSeries";
 import { formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
-import { OperationChip, VendorChip } from "./LlmChips";
+import { VendorChip } from "./LlmChips";
 
 function ChartCard({
   title,

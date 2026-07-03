@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export interface SkeletonProps {
+interface SkeletonProps {
   active?: boolean;
   count?: number;
   paragraph?: { rows: number };

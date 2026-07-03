@@ -8,14 +8,14 @@ import { EmptyState } from "@shared/components/ui/feedback";
 
 type TableRow = object;
 
-export interface DataTableData<RowType extends TableRow = TableRow> {
+interface DataTableData<RowType extends TableRow = TableRow> {
   columns: SimpleTableColumn<RowType>[];
   rows: RowType[];
   loading?: boolean;
   rowKey?: SimpleTableProps<RowType>["rowKey"];
 }
 
-export interface DataTablePagination {
+interface DataTablePagination {
   page?: number;
   pageSize?: number;
   total?: number;
@@ -23,7 +23,7 @@ export interface DataTablePagination {
   showPagination?: boolean;
 }
 
-export interface DataTableConfig<RowType extends TableRow = TableRow> {
+interface DataTableConfig<RowType extends TableRow = TableRow> {
   emptyText?: string;
   scroll?: { x?: number; y?: number };
   onRow?: SimpleTableProps<RowType>["onRow"];

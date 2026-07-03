@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 import { cn } from "@/lib/utils";
 
-export interface PageTabItem {
+interface PageTabItem {
   readonly key: string;
   readonly label: string;
   readonly to?: string;

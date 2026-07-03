@@ -1,6 +1,6 @@
 import type { DashboardRecord, DashboardRuntimeValue } from "@/types/dashboardConfig";
 
-export function isDashboardRecord(value: unknown): value is DashboardRecord {
+function isDashboardRecord(value: unknown): value is DashboardRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 

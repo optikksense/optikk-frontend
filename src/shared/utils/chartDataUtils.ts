@@ -1,14 +1,3 @@
-/**
- * Shared chart data utilities extracted from time-series chart components.
- * Used to normalize API response data for chart rendering.
- */
-
-/** Normalize a timestamp to "YYYY-MM-DD HH:mm" for reliable cross-source matching. */
-export function tsKey(ts: string | number | null | undefined): string {
-  if (!ts) return "";
-  return String(ts).replace("T", " ").replace("Z", "").substring(0, 16);
-}
-
 export function tsMs(ts: string | number | null | undefined): number {
   if (!ts) return Number.NaN;
   const raw = String(ts).trim();

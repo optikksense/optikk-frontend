@@ -4,12 +4,12 @@ import type { ExplorerFilter, ExplorerMode } from "../types/filters";
  * Base64-encodes a JSON-serializable value for URL transport.
  * Uses URL-safe encoding so query strings survive copy/paste.
  */
-export function encodeBase64(value: unknown): string {
+function encodeBase64(value: unknown): string {
   const raw = JSON.stringify(value ?? []);
   return encodeURIComponent(btoa(unescape(encodeURIComponent(raw))));
 }
 
-export function decodeBase64<T>(raw: string | null | undefined, fallback: T): T {
+function decodeBase64<T>(raw: string | null | undefined, fallback: T): T {
   if (!raw) return fallback;
   try {
     const decoded = decodeURIComponent(raw);

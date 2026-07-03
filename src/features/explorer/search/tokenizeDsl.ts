@@ -1,4 +1,4 @@
-export type TokenKind = "bare" | "quoted" | "kv" | "whitespace";
+type TokenKind = "bare" | "quoted" | "kv" | "whitespace";
 
 export interface Token {
   readonly kind: TokenKind;

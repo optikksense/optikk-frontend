@@ -2,7 +2,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { cn } from "@/lib/utils";
 
-export interface TooltipProps {
+interface TooltipProps {
   content: React.ReactNode | string;
   placement?: "top" | "bottom" | "left" | "right";
   children: React.ReactElement;

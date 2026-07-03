@@ -42,7 +42,7 @@ export function isApiEnvelope(value: unknown): value is ApiEnvelope {
   return typeof record.success === "boolean" && "data" in record;
 }
 
-export function buildPayloadPreview(value: unknown): string {
+function buildPayloadPreview(value: unknown): string {
   if (typeof value === "string") {
     return value.slice(0, 240);
   }
@@ -97,7 +97,7 @@ export function normalizeApiPayload(value: unknown): unknown {
   return current;
 }
 
-export function unwrapApiPayload(value: unknown): unknown {
+function unwrapApiPayload(value: unknown): unknown {
   let current = normalizeApiPayload(value);
 
   for (let attempt = 0; attempt < 5; attempt += 1) {

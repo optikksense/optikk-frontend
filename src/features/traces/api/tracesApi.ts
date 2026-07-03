@@ -34,9 +34,9 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 // Traces Query & Explorer Schemas & Helpers
 // ==========================================
 
-export const warningSchema = z.object({ code: z.string(), message: z.string() }).strict();
+const warningSchema = z.object({ code: z.string(), message: z.string() }).strict();
 
-export function normalizeWarnings(
+function normalizeWarnings(
   raw: readonly (string | z.infer<typeof warningSchema>)[] | undefined
 ): TracesQueryResponse["warnings"] {
   if (!raw?.length) return undefined;
@@ -307,10 +307,7 @@ const traceSpansEnvelopeSchema = z
   })
   .strict();
 
-async function getTraceSpans(
-  _teamId: number | null,
-  traceId: string
-): Promise<SpanRecord[]> {
+async function getTraceSpans(_teamId: number | null, traceId: string): Promise<SpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans`);
   if (Array.isArray(data)) {
     return validateResponse(spanListSchema, data);
@@ -334,10 +331,7 @@ async function getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
   return validateResponse(z.array(errorPathSpanSchema), data);
 }
 
-async function getSpanAttributes(
-  traceId: string,
-  spanId: string
-): Promise<SpanAttributesRecord> {
+async function getSpanAttributes(traceId: string, spanId: string): Promise<SpanAttributesRecord> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`);
   return validateResponse(spanAttributesSchema, data);
 }
@@ -365,7 +359,7 @@ async function getServiceMap(traceId: string): Promise<ServiceTopologyResponse> 
   return topologyResponseSchema.parse(data ?? { nodes: [], edges: [] });
 }
 
-export interface ServiceLatencyBaseline {
+interface ServiceLatencyBaseline {
   readonly p95: number;
   readonly p99: number;
 }

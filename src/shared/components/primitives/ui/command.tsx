@@ -85,20 +85,6 @@ function CommandGroup({
   );
 }
 
-function CommandSeparator({
-  className,
-  ref,
-  ...props
-}: React.ComponentPropsWithRef<typeof CommandPrimitive.Separator>) {
-  return (
-    <CommandPrimitive.Separator
-      ref={ref}
-      className={cn("-mx-1 h-px bg-border", className)}
-      {...props}
-    />
-  );
-}
-
 function CommandItem({
   className,
   ref,
@@ -116,19 +102,4 @@ function CommandItem({
   );
 }
 
-function CommandShortcut({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span className={cn("ml-auto text-xs tracking-widest opacity-50", className)} {...props} />
-  );
-}
-
-export {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-};
+export { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList };

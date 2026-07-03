@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type ScreenshotName =
+type ScreenshotName =
   | "overview"
   | "database"
   | "kafka"

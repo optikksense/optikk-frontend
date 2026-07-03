@@ -13,9 +13,3 @@ export function getHealthColor(status: string): string {
   };
   return colors[status] ?? colors.unknown;
 }
-
-export function getErrorRateColor(rate: number): string {
-  if (rate > 5) return APP_COLORS.hex_f04438;
-  if (rate > 1) return APP_COLORS.hex_f79009;
-  return APP_COLORS.hex_73c991;
-}

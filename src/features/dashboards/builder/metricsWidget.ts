@@ -60,7 +60,7 @@ const SIZE_TO_SPAN: Record<WidgetSize, { readonly w: number; readonly h: number 
   full: { w: 12, h: 5 },
 };
 
-export function vizToPanelType(viz: WidgetVizType): DashboardPanelType {
+function vizToPanelType(viz: WidgetVizType): DashboardPanelType {
   return VIZ_TO_PANEL[viz];
 }
 
@@ -72,12 +72,12 @@ export function panelTypeToViz(panelType: DashboardPanelType): WidgetVizType {
   return match ?? "timeseries";
 }
 
-export function sizeToSpan(size: WidgetSize): { readonly w: number; readonly h: number } {
+function sizeToSpan(size: WidgetSize): { readonly w: number; readonly h: number } {
   return SIZE_TO_SPAN[size];
 }
 
 /** Resolves a saved layout's column span back to the nearest size preset. */
-export function spanToSize(layout: DashboardLayout): WidgetSize {
+function spanToSize(layout: DashboardLayout): WidgetSize {
   const match = (Object.keys(SIZE_TO_SPAN) as WidgetSize[]).find(
     (size) => SIZE_TO_SPAN[size].w === layout.w
   );

@@ -7,7 +7,7 @@ import { formatDuration, formatNumber, formatTimestamp } from "@shared/utils/for
 import type { LlmTrace } from "../../../api/llmApi";
 import { useLlmTraceDetail, useLlmTraces } from "../../../hooks/useLlmQueries";
 import { formatCost } from "../../../utils/llmFormat";
-import { OperationChip, StatusBadge, VendorChip } from "./LlmChips";
+import { StatusBadge, VendorChip } from "./LlmChips";
 import TraceInspector from "./TraceInspector";
 
 type TraceFilter = "all" | "errors" | "slow";

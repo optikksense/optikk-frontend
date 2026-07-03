@@ -1,4 +1,4 @@
-import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
+import { SERVICE_HEALTH_THRESHOLDS } from "@shared/constants/healthThresholds";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Database } from "lucide-react";
 

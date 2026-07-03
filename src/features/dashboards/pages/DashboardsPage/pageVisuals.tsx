@@ -20,8 +20,6 @@ const ICONS: Record<string, LucideIcon> = {
   globe: Globe,
 };
 
-export const PAGE_ICON_CHOICES = Object.keys(ICONS);
-
 export function pageIcon(name: string): LucideIcon {
   return ICONS[name] ?? LayoutGrid;
 }

@@ -1,19 +1,5 @@
 import { z } from "zod";
-
-export const traceSpanSchema = z
-  .object({
-    traceId: z.string(),
-    spanId: z.string(),
-    parentSpanId: z.string().optional(),
-    name: z.string(),
-    serviceName: z.string(),
-    timestamp: z.number(),
-    duration: z.number(),
-    status: z.string(),
-  })
-  .strict();
-
-export const traceRecordSchema = z
+const traceRecordSchema = z
   .object({
     span_id: z.string(),
     trace_id: z.string(),
@@ -35,7 +21,7 @@ export const traceRecordSchema = z
 
 export type TraceRecord = z.infer<typeof traceRecordSchema>;
 
-export const traceSummarySchema = z
+const traceSummarySchema = z
   .object({
     total_traces: z.number().default(0),
     error_traces: z.number().default(0),
@@ -46,7 +32,7 @@ export const traceSummarySchema = z
   })
   .strict();
 
-export const tracesResponseSchema = z
+const tracesResponseSchema = z
   .object({
     traces: z.array(traceRecordSchema),
     has_more: z.boolean().optional(),

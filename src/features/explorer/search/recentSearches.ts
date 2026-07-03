@@ -44,10 +44,3 @@ export function pushRecent(scope: ExplorerScope, q: string): void {
     // Quota exceeded or storage disabled — silent no-op.
   }
 }
-
-export function clearRecent(scope: ExplorerScope): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.removeItem(key(scope));
-  } catch {}
-}

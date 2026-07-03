@@ -6,7 +6,7 @@ import type { FleetPod } from "../types";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export type HostStatus = "healthy" | "warn" | "error";
+type HostStatus = "healthy" | "warn" | "error";
 
 // Host is the unified row from GET /infrastructure/hosts. The saturation fields
 // are always present; the RED traffic fields are populated only when the request

@@ -21,7 +21,7 @@ export const groupPartitionsSchema = z
   })
   .strict();
 
-export const kafkaSummarySchema = z
+const kafkaSummarySchema = z
   .object({
     topic_count: integerValue,
     group_count: integerValue,

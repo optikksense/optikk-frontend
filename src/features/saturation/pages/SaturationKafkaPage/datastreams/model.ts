@@ -33,7 +33,7 @@ export function fmtPct(fraction: number): string {
   return `${(fraction * 100).toFixed(fraction >= 0.1 ? 0 : 1)}%`;
 }
 
-export interface ServiceConsume {
+interface ServiceConsume {
   topic: string;
   group: string;
   rate: number;

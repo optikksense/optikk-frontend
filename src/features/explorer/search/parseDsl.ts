@@ -3,7 +3,7 @@ import type { ExplorerFilter, ExplorerFilterOp } from "../types/filters";
 import { type KnownField, TRACE_KNOWN_FIELDS, findKnownField } from "./knownFields";
 import { type Token, tokenizeDsl } from "./tokenizeDsl";
 
-export interface ParseError {
+interface ParseError {
   readonly offset: number;
   readonly length: number;
   readonly message: string;

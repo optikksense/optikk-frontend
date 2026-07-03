@@ -2,7 +2,7 @@ import { Check, Copy, Search, X } from "lucide-react";
 import { type ReactNode, useState } from "react";
 
 /** [key, value, optionalValueColorToken] */
-export type DrawerAttrRow = readonly [string, string, string?];
+type DrawerAttrRow = readonly [string, string, string?];
 
 export interface DrawerAttrGroup {
   readonly label: string;

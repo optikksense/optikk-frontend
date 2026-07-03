@@ -3,13 +3,13 @@ import type { LatencyHeatmapDataPoint } from "@shared/components/ui/charts/speci
 import type { MetricQueryResult } from "../types";
 
 /** A latency band: hosts whose value falls in [min, max) land in this band. */
-export interface LatencyBand {
+interface LatencyBand {
   readonly label: string;
   readonly min: number;
   readonly max: number;
 }
 
-export const FLEET_LATENCY_BANDS: readonly LatencyBand[] = [
+const FLEET_LATENCY_BANDS: readonly LatencyBand[] = [
   { label: "≤ 50ms", min: 0, max: 50 },
   { label: "50–100", min: 50, max: 100 },
   { label: "100–150", min: 100, max: 150 },

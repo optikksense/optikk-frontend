@@ -8,11 +8,11 @@ export type MonitorType = "metric" | "apm" | "log";
 export type MonitorPriority = "P1" | "P2" | "P3" | "P4";
 export type MonitorStatus = "alert" | "warn" | "ok" | "no_data";
 
-export interface ScopeTag {
+interface ScopeTag {
   readonly key: string;
   readonly value: string;
 }
-export interface MonitorScope {
+interface MonitorScope {
   readonly tags?: ScopeTag[];
 }
 
@@ -32,7 +32,7 @@ export interface LogQueryShape {
   readonly group_by?: string;
   readonly window_sec: number;
 }
-export interface MonitorQuery {
+interface MonitorQuery {
   readonly metric?: MetricQueryShape;
   readonly apm?: APMQueryShape;
   readonly log?: LogQueryShape;
@@ -48,7 +48,7 @@ export interface MonitorConditions {
   readonly min_sample?: number;
 }
 
-export interface MonitorNotifyTargets {
+interface MonitorNotifyTargets {
   readonly channel_ids: number[];
 }
 
@@ -101,7 +101,7 @@ export interface MonitorEvent {
   readonly ended_at?: string;
 }
 
-export interface SeriesPoint {
+interface SeriesPoint {
   readonly bucket_ms: number;
   readonly value: number;
 }
@@ -113,7 +113,7 @@ export interface MonitorSeriesResponse {
   readonly recovery_threshold?: number;
 }
 
-export interface StatusBand {
+interface StatusBand {
   readonly status: MonitorStatus;
   readonly started_at: string;
   readonly ended_at: string;
@@ -180,10 +180,6 @@ export async function ackMonitor(id: number): Promise<void> {
 
 export async function muteMonitor(id: number, durationSec: number): Promise<void> {
   await api.post<unknown>(`${V1}/monitors/${id}/mute`, { duration_sec: durationSec });
-}
-
-export async function unmuteMonitor(id: number): Promise<void> {
-  await api.post<unknown>(`${V1}/monitors/${id}/unmute`, {});
 }
 
 export async function testMonitor(id: number): Promise<{

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { ROUTES } from "@/shared/constants/routes";
 import { dynamicTo } from "@shared/utils/navigation";
 
-export type SaturationHubTab = "overview" | "kafka" | "database";
+type SaturationHubTab = "overview" | "kafka" | "database";
 
 interface SaturationSubnavProps {
   readonly active: SaturationHubTab;

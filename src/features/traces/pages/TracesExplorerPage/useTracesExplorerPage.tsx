@@ -144,8 +144,6 @@ export function useTracesExplorerPage() {
   };
 }
 
-export type UseTracesExplorerPageReturn = ReturnType<typeof useTracesExplorerPage>;
-
 function facetsToGroups(
   facets: Readonly<Record<string, readonly TracesFacetBucket[]>> | undefined
 ): FacetGroupModel[] {

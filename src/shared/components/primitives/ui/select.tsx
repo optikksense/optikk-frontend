@@ -4,12 +4,12 @@ import React from "react";
 
 import { cn } from "@/lib/utils";
 
-export interface SelectOption {
+interface SelectOption {
   label: string;
   value: any;
 }
 
-export interface SelectProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+interface SelectProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
   value?: any;
   onChange?: (value: any) => void;
   options: SelectOption[];

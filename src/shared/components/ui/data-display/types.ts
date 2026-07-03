@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 export type BoardFilterValue = string | number | boolean;
 
 export interface BoardFilter {

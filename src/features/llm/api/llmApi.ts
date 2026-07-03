@@ -5,7 +5,7 @@ import { z } from "zod";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export const llmAppSchema = z.object({
+const llmAppSchema = z.object({
   service: z.string(),
   vendor: z.string(),
   primaryModel: z.string(),
@@ -47,7 +47,7 @@ const costResponseSchema = z.object({
   rows: z.array(costRowSchema).nullish(),
 });
 
-export const llmTraceSchema = z.object({
+const llmTraceSchema = z.object({
   traceId: z.string(),
   startMs: z.number(),
   durationMs: z.number(),
@@ -78,7 +78,7 @@ export type LlmTracesResponse = {
   pageInfo: z.infer<typeof pageInfoSchema>;
 };
 
-export const llmSpanSchema = z.object({
+const llmSpanSchema = z.object({
   spanId: z.string(),
   parentSpanId: z.string(),
   name: z.string(),
@@ -93,8 +93,6 @@ export const llmSpanSchema = z.object({
   outputTokens: z.number(),
   cost: z.number(),
 });
-export type LlmSpan = z.infer<typeof llmSpanSchema>;
-
 const traceDetailSchema = z.object({
   traceId: z.string(),
   service: z.string(),

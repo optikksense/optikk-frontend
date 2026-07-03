@@ -24,12 +24,12 @@ const SEV_LVL_CLASS: Record<SeveritySlug, string> = {
   fatal: "text-[var(--fatal-c)] bg-[oklch(0.66_0.22_330/0.12)]",
 };
 
-export const LEVEL_BADGE_BASE =
+const LEVEL_BADGE_BASE =
   "inline-flex h-[19px] items-center gap-[5px] rounded-[4px] border border-current px-[7px] text-[10.5px] font-medium tracking-[0.02em] [font-family:'Geist_Mono',monospace]";
 
-export const LEVEL_DOT = "h-[5px] w-[5px] rounded-full bg-current";
+const LEVEL_DOT = "h-[5px] w-[5px] rounded-full bg-current";
 
-export function levelBadgeClasses(slug: SeveritySlug): string {
+function levelBadgeClasses(slug: SeveritySlug): string {
   return cn(LEVEL_BADGE_BASE, SEV_LVL_CLASS[slug]);
 }
 

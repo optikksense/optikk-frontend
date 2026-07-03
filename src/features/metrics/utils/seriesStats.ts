@@ -38,7 +38,7 @@ function nonNull(values: ReadonlyArray<number | null>): number[] {
   return out;
 }
 
-export function percentile(values: ReadonlyArray<number | null>, p: number): number {
+function percentile(values: ReadonlyArray<number | null>, p: number): number {
   const clean = nonNull(values).sort((a, b) => a - b);
   if (clean.length === 0) return 0;
   if (clean.length === 1) return clean[0];

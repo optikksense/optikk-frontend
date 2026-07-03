@@ -13,7 +13,7 @@ const producerNodeSchema = z
   })
   .strict();
 
-export const topicNodeSchema = z
+const topicNodeSchema = z
   .object({
     topic: stringValue,
     rate_per_sec: numericValue,

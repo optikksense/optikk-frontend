@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export interface CardProps extends React.ComponentPropsWithRef<"div"> {
+interface CardProps extends React.ComponentPropsWithRef<"div"> {
   elevation?: 0 | 1 | 2 | 3;
   padding?: "xs" | "sm" | "md" | "lg" | "xl";
 }
@@ -37,30 +37,4 @@ function Card({ elevation = 1, padding = "md", className, children, ref, ...prop
   );
 }
 
-function CardHeader({ className, ref, ...props }: React.ComponentPropsWithRef<"div">) {
-  return <div ref={ref} className={cn("flex flex-col space-y-1.5 p-0", className)} {...props} />;
-}
-
-function CardTitle({ className, ref, ...props }: React.ComponentPropsWithRef<"h3">) {
-  return (
-    <h3
-      ref={ref}
-      className={cn("font-semibold text-[15px] leading-snug tracking-[0.01em]", className)}
-      {...props}
-    />
-  );
-}
-
-function CardDescription({ className, ref, ...props }: React.ComponentPropsWithRef<"p">) {
-  return <p ref={ref} className={cn("text-[12px] text-muted-foreground", className)} {...props} />;
-}
-
-function CardContent({ className, ref, ...props }: React.ComponentPropsWithRef<"div">) {
-  return <div ref={ref} className={cn("p-0", className)} {...props} />;
-}
-
-function CardFooter({ className, ref, ...props }: React.ComponentPropsWithRef<"div">) {
-  return <div ref={ref} className={cn("flex items-center p-0", className)} {...props} />;
-}
-
-export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };
+export { Card, type CardProps };

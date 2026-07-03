@@ -1,4 +1,4 @@
-import { createContext, use, useEffect, useMemo } from "react";
+import { createContext, use, useMemo } from "react";
 
 import type { ComponentType, PropsWithChildren } from "react";
 
@@ -34,13 +34,11 @@ export interface DashboardPanelRendererProps {
 }
 
 export type SpecializedDashboardRenderer = ComponentType<DashboardPanelRendererProps>;
-export type BaseChartDashboardRenderer = ComponentType<BaseChartComponentProps>;
+type BaseChartDashboardRenderer = ComponentType<BaseChartComponentProps>;
 
-export type DashboardPanelRendererKind = "base-chart" | "specialized" | "self-contained";
+type DashboardPanelRendererKind = "base-chart" | "specialized" | "self-contained";
 
 type DashboardRendererComponent = SpecializedDashboardRenderer | BaseChartDashboardRenderer;
-
-import { useTimeRange } from "@/app/store/appStore";
 import type { TimeRange } from "@/types";
 
 export interface DashboardPanelRegistration {
@@ -104,34 +102,4 @@ export function useDashboardPanelRegistration(
     return null;
   }
   return registry.get(panelType) ?? null;
-}
-
-export function useDashboardPanelLifecycle(
-  registration: DashboardPanelRegistration | null,
-  data?: unknown
-) {
-  const timeRange = useTimeRange();
-
-  useEffect(() => {
-    if (registration?.onMount) {
-      registration.onMount();
-    }
-    return () => {
-      if (registration?.onUnmount) {
-        registration.onUnmount();
-      }
-    };
-  }, [registration]);
-
-  useEffect(() => {
-    if (registration?.onGlobalTimeChange) {
-      registration.onGlobalTimeChange(timeRange);
-    }
-  }, [registration, timeRange]);
-
-  useEffect(() => {
-    if (registration?.onDataUpdate && data !== undefined) {
-      registration.onDataUpdate(data);
-    }
-  }, [registration, data]);
 }

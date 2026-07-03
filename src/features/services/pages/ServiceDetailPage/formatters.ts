@@ -22,22 +22,6 @@ export function fmtPct(value: number | null | undefined, digits = 2): string {
   return `${(value * 100).toFixed(digits)}%`;
 }
 
-export interface Delta {
-  readonly label: string;
-  readonly direction: "up" | "down" | "flat";
-}
-
-export function fmtDelta(now?: number, prev?: number): Delta | null {
-  if (now == null || prev == null || prev === 0) return null;
-  const ratio = (now - prev) / prev;
-  const v = ratio * 100;
-  if (Math.abs(v) < 0.5) return { label: "0%", direction: "flat" };
-  return {
-    label: `${v > 0 ? "+" : ""}${v.toFixed(0)}%`,
-    direction: v > 0 ? "up" : "down",
-  };
-}
-
 export function ratioFromCounts(numerator: number, denominator: number): number {
   if (!denominator) return 0;
   return numerator / denominator;

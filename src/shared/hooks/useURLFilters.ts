@@ -10,9 +10,9 @@ export interface StructuredFilter {
   readonly value: string;
 }
 
-export type URLFilterType = "string" | "string[]" | "number" | "boolean";
+type URLFilterType = "string" | "string[]" | "number" | "boolean";
 
-export type URLFilterValue = string | string[] | number | boolean;
+type URLFilterValue = string | string[] | number | boolean;
 
 type URLFilterValues = Record<string, URLFilterValue>;
 
@@ -20,7 +20,7 @@ type URLFilterSetter = (next: URLFilterValue | ((prev: URLFilterValue) => URLFil
 
 type URLFilterSetters = Record<string, URLFilterSetter>;
 
-export interface URLFilterParam {
+interface URLFilterParam {
   readonly key: string;
   readonly type: URLFilterType;
   readonly defaultValue?: URLFilterValue;
@@ -94,7 +94,7 @@ export function encodeStructuredFiltersParam(filters: StructuredFilter[]): strin
     .join(";");
 }
 
-export function decodeStructuredFiltersParam(raw: string | null): StructuredFilter[] {
+function decodeStructuredFiltersParam(raw: string | null): StructuredFilter[] {
   if (!raw) {
     return [];
   }

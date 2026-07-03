@@ -7,10 +7,4 @@
  *   POST /api/v1/logs/trend    → getLogsTrend        (logsAnalyticsApi.ts)
  *   POST /api/v1/logs/facets   → getLogsFacets       (logsAnalyticsApi.ts)
  */
-export { queryLogs } from "./logsQueryApi";
 export { getLogById } from "./logByIdApi";
-export {
-  getLogsTrend,
-  getLogsFacets,
-} from "./logsAnalyticsApi";
-export type { LogRecord } from "../types/log";

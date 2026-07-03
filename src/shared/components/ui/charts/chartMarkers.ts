@@ -2,7 +2,7 @@ import type uPlot from "uplot";
 
 import { resolveThemeColor } from "@shared/utils/chartTheme";
 
-export type ChartMarkerKind = "deployment" | "incident" | "annotation";
+type ChartMarkerKind = "deployment" | "incident" | "annotation";
 
 export interface ChartMarker {
   /** Unix-seconds. Match uPlot's x-scale unit. */

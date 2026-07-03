@@ -115,7 +115,7 @@ export function buildTracesFilters(
         break;
       case "duration_ms": {
         const ms = Number(value);
-        if (!isNaN(ms)) {
+        if (!Number.isNaN(ms)) {
           const ns = ms * 1_000_000;
           if (op === "gte" || op === "gt" || op === "eq") {
             body.minDurationNs = ns;

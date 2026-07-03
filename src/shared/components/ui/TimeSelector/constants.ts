@@ -1,22 +1,6 @@
 import type { RelativeTimeRange } from "@/types";
 
-export const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-export const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-
-export interface RangeGroupItem extends RelativeTimeRange {}
+interface RangeGroupItem extends RelativeTimeRange {}
 
 export interface RangeGroup {
   title: string;
@@ -68,7 +52,7 @@ export const DISPLAY_MAP: Record<string, string> = {
   "90d": "Last 90 days",
 };
 
-export const COMPARISON_OPTIONS = [
+const COMPARISON_OPTIONS = [
   { value: "off" as const, label: "Off" },
   { value: "previous_period" as const, label: "Previous period" },
   { value: "previous_day" as const, label: "Previous day" },

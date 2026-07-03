@@ -100,24 +100,6 @@ export function uLine(
   };
 }
 
-export function uComparisonLine(label: string, color: string): uPlot.Series {
-  return {
-    label,
-    stroke: resolveThemeColor(color, "#ffffff"),
-    width: 1.5,
-    dash: [4, 4],
-    points: { show: false },
-  };
-}
-
-export function ddCrosshair(): Pick<uPlot.Cursor, "points" | "x" | "y"> {
-  return {
-    points: { show: false },
-    x: true,
-    y: false,
-  };
-}
-
 export function uBars(label: string, color: string): uPlot.Series {
   const resolvedColor = resolveThemeColor(color, "#ffffff");
   return {

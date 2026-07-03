@@ -10,7 +10,7 @@ import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
 const PAGES = API_CONFIG.ENDPOINTS.DASHBOARDS.PAGES;
 
-export interface DashboardPageOwner {
+interface DashboardPageOwner {
   readonly name: string;
   readonly initials: string;
 }
@@ -124,12 +124,6 @@ export async function updateDashboardPage(
 
 export async function deleteDashboardPage(id: number): Promise<void> {
   await api.delete<unknown>(`${PAGES}/${id}`);
-}
-
-export async function listWidgets(pageId: number): Promise<Dashboard[]> {
-  const raw = await api.get<unknown>(`${PAGES}/${pageId}/dashboards`);
-  const items = unwrapEnvelope<{ items: Dashboard[] }>(raw).items;
-  return (items || []).map(normalizeWidget);
 }
 
 export async function createWidget(

@@ -5,7 +5,7 @@ import type { RequestTime } from "@/shared/api/service-types";
 import { validateResponse } from "@/shared/api/utils/validate";
 import { API_CONFIG } from "@config/apiConfig";
 
-export const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
+const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export const numericValue = z.coerce.number().default(0);
 export const integerValue = z.coerce.number().int().default(0);

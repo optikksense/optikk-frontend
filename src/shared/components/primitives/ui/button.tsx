@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export interface ButtonProps extends React.ComponentPropsWithRef<"button"> {
+interface ButtonProps extends React.ComponentPropsWithRef<"button"> {
   variant?: "primary" | "secondary" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   icon?: React.ReactNode;

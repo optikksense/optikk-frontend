@@ -18,8 +18,3 @@ export function tryParseJson(text: string): Record<string, unknown> | unknown[] 
   }
   return null;
 }
-
-export function looksLikeJson(text: string): boolean {
-  const t = text.trimStart();
-  return (t.startsWith("{") && t.includes(":")) || (t.startsWith("[") && t.includes(","));
-}

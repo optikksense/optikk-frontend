@@ -1,9 +1,7 @@
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { ChevronRight } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 
-export interface DropdownMenuProps {
+interface DropdownMenuProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   trigger: React.ReactNode;
@@ -32,10 +30,6 @@ function DropdownMenu({ open, onOpenChange, trigger, children, className }: Drop
   );
 }
 
-function DropdownMenuContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("space-y-1", className)} {...props} />;
-}
-
 function DropdownMenuItem({
   className,
   inset,
@@ -55,61 +49,4 @@ function DropdownMenuItem({
   );
 }
 
-function DropdownMenuLabel({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("px-2 py-1.5 font-medium text-xs", className)} {...props} />;
-}
-
-function DropdownMenuSeparator({
-  className,
-  ref,
-  ...props
-}: React.ComponentPropsWithRef<typeof DropdownMenuPrimitive.Separator>) {
-  return (
-    <DropdownMenuPrimitive.Separator
-      ref={ref}
-      className={cn("my-1 h-px bg-border", className)}
-      {...props}
-    />
-  );
-}
-
-function DropdownMenuShortcut({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span className={cn("ml-auto text-xs tracking-widest opacity-60", className)} {...props} />
-  );
-}
-
-function DropdownMenuSubTrigger({
-  className,
-  children,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      type="button"
-      className={cn(
-        "flex w-full items-center rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent",
-        className
-      )}
-      {...props}
-    >
-      {children}
-      <ChevronRight size={14} className="ml-auto" />
-    </button>
-  );
-}
-
-const DropdownMenuTrigger = ({ children }: React.PropsWithChildren<Record<string, never>>) => (
-  <>{children}</>
-);
-
-export {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-};
+export { DropdownMenu, DropdownMenuItem };

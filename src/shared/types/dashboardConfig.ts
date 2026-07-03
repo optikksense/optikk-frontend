@@ -5,8 +5,8 @@ import type {
   TimeStep,
 } from "@/features/metrics/types";
 
-export type DashboardScalarValue = string | number | boolean | null;
-export type DashboardQueryParamValue =
+type DashboardScalarValue = string | number | boolean | null;
+type DashboardQueryParamValue =
   | DashboardScalarValue
   | readonly string[]
   | readonly number[]
@@ -19,15 +19,10 @@ export type DashboardRuntimeValue =
 export interface DashboardRecord {
   readonly [key: string]: DashboardRuntimeValue;
 }
-export type DashboardDataSourceValue = DashboardRuntimeValue | undefined;
+type DashboardDataSourceValue = DashboardRuntimeValue | undefined;
 export type DashboardDataSources = Record<string, DashboardDataSourceValue>;
 export type DashboardExtraContext = Record<string, DashboardRuntimeValue>;
-/** Canonical schema for newly authored pages; API may still return v1 until migrated. */
-export const DASHBOARD_SCHEMA_VERSION = 2 as const;
-export type DashboardSchemaVersion = 1 | 2;
-
-export type DashboardRenderMode = "dashboard" | "explorer";
-export type DashboardColumnAlign = "left" | "center" | "right";
+type DashboardColumnAlign = "left" | "center" | "right";
 export type DashboardDrawerEntity =
   | "databaseSystem"
   | "deployment"
@@ -37,7 +32,7 @@ export type DashboardDrawerEntity =
   | "node"
   | "redisInstance"
   | "service";
-export const DASHBOARD_PANEL_TYPES = [
+const DASHBOARD_PANEL_TYPES = [
   "bar",
   "db-systems-overview",
   "error-rate",
@@ -64,7 +59,7 @@ export const DASHBOARD_PANEL_TYPES = [
   "metrics-table",
 ] as const;
 export type DashboardPanelType = (typeof DASHBOARD_PANEL_TYPES)[number];
-export const DASHBOARD_LAYOUT_VARIANTS = [
+const DASHBOARD_LAYOUT_VARIANTS = [
   "kpi",
   "summary",
   "standard-chart",
@@ -79,17 +74,6 @@ export const DASHBOARD_LAYOUT_VARIANTS = [
   "wide-compact",
 ] as const;
 export type DashboardLayoutVariant = (typeof DASHBOARD_LAYOUT_VARIANTS)[number];
-export const DASHBOARD_SECTION_TEMPLATES = [
-  "kpi-band",
-  "summary-plus-health",
-  "two-up",
-  "three-up",
-  "stacked",
-  "hero-plus-table",
-  "chart-grid-plus-details",
-  "table-stack",
-] as const;
-export type DashboardSectionTemplate = (typeof DASHBOARD_SECTION_TEMPLATES)[number];
 
 export interface DashboardLayout {
   x: number;
@@ -101,7 +85,7 @@ export interface DashboardLayout {
 }
 
 /** Curated-endpoint widget query: points at an allowlisted GET endpoint. */
-export interface DashboardEndpointQuerySpec {
+interface DashboardEndpointQuerySpec {
   method: string;
   endpoint: string;
   params?: Record<string, DashboardQueryParamValue>;
@@ -125,21 +109,13 @@ export function isMetricsQuerySpec(
   return query != null && "kind" in query && query.kind === "metrics";
 }
 
-export interface DashboardSectionSpec {
-  id: string;
-  title: string;
-  order: number;
-  collapsible: boolean;
-  sectionTemplate: DashboardSectionTemplate;
-}
-
-export interface DashboardStatSummaryField {
+interface DashboardStatSummaryField {
   label: string;
   field?: string;
   keys?: string[];
 }
 
-export interface DashboardTableColumn {
+interface DashboardTableColumn {
   key: string;
   label: string;
   formatter?: string;
@@ -153,7 +129,7 @@ export interface DashboardDrawerAction {
   titleField?: string;
 }
 
-export interface BasePanelSpec {
+interface BasePanelSpec {
   readonly id: string;
   readonly panelType: DashboardPanelType;
   readonly layoutVariant: DashboardLayoutVariant;
@@ -169,7 +145,7 @@ export interface BasePanelSpec {
   readonly dataKey?: string;
 }
 
-export interface ChartPanelSpecKeys {
+interface ChartPanelSpecKeys {
   readonly xKey?: string;
   readonly yKey?: string;
   readonly yPrefix?: string;
@@ -182,12 +158,12 @@ export interface ChartPanelSpecKeys {
   readonly smooth?: boolean;
 }
 
-export interface TablePanelSpecKeys {
+interface TablePanelSpecKeys {
   readonly columns?: DashboardTableColumn[];
   readonly drawerAction?: DashboardDrawerAction;
 }
 
-export interface StatPanelSpecKeys {
+interface StatPanelSpecKeys {
   readonly valueField?: string;
   readonly valueKey?: string;
   readonly valueKeys?: string[];
@@ -196,7 +172,7 @@ export interface StatPanelSpecKeys {
   readonly summaryFields?: DashboardStatSummaryField[];
 }
 
-export interface ListPanelSpecKeys {
+interface ListPanelSpecKeys {
   readonly listSortField?: string;
   readonly listType?: string;
   readonly listTitle?: string;
@@ -214,17 +190,3 @@ export interface DashboardPanelSpec
     TablePanelSpecKeys,
     StatPanelSpecKeys,
     ListPanelSpecKeys {}
-
-export interface DataSourceSpec {
-  id: string;
-  endpoint: string;
-  params?: Record<string, string | number>;
-}
-
-export interface StatCardSpec {
-  title: string;
-  dataSource: string;
-  valueField: string;
-  formatter?: "ms" | "bytes" | "percent1" | "number";
-  icon?: string;
-}

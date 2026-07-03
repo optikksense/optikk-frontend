@@ -2,7 +2,7 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@/lib/utils";
 
-export interface PopoverProps {
+interface PopoverProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   trigger: React.ReactNode;
@@ -31,13 +31,4 @@ function Popover({ open, onOpenChange, trigger, children, className }: PopoverPr
   );
 }
 
-const PopoverTrigger = ({ children }: React.PropsWithChildren<Record<string, never>>) => (
-  <>{children}</>
-);
-
-const PopoverContent = ({
-  children,
-  className,
-}: React.PropsWithChildren<{ className?: string }>) => <div className={className}>{children}</div>;
-
-export { Popover, PopoverContent, PopoverTrigger };
+export { Popover };

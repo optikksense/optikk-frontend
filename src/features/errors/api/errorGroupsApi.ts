@@ -47,7 +47,7 @@ export interface ErrorLatestOccurrence {
   readonly host: string;
 }
 
-export interface ErrorFacet {
+interface ErrorFacet {
   readonly name: string;
   readonly count: number;
   readonly pct: number;

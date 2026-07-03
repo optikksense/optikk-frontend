@@ -4,7 +4,7 @@ import { TrendIndicator } from "@shared/components/ui";
 import React from "react";
 import SparklineChart from "../charts/micro/SparklineChart";
 
-export interface StatCardMetric {
+interface StatCardMetric {
   title: React.ReactNode;
   value: string | number;
   formatter?: (val: string | number) => string | number;
@@ -12,12 +12,12 @@ export interface StatCardMetric {
   description?: string;
 }
 
-export interface StatCardTrend {
+interface StatCardTrend {
   value?: number | null;
   inverted?: boolean;
 }
 
-export interface StatCardVisuals {
+interface StatCardVisuals {
   icon?: React.ReactNode;
   iconColor?: string;
   sparklineData?: number[];
@@ -25,7 +25,7 @@ export interface StatCardVisuals {
   loading?: boolean;
 }
 
-export interface StatCardProps {
+interface StatCardProps {
   metric: StatCardMetric;
   trend?: StatCardTrend;
   visuals?: StatCardVisuals;

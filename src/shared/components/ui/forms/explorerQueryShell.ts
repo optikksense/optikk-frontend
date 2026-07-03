@@ -22,12 +22,6 @@ export const EXPLORER_QUERY_DROPDOWN_CLASSNAME = cn(
   "border border-[var(--glass-border)] bg-surface-overlay",
   "shadow-[var(--shadow-lg)] backdrop-blur-xl"
 );
-
-export const EXPLORER_QUERY_POPOVER_CLASSNAME = cn(
-  "z-[320] overflow-hidden rounded-[14px] border border-[var(--glass-border)]",
-  "bg-surface-overlay shadow-[var(--shadow-lg)] backdrop-blur-xl"
-);
-
 export const EXPLORER_QUERY_HINTS_CLASSNAME = cn(
   "absolute top-[calc(100%+8px)] right-0 z-[340] min-w-[240px] animate-oqb-fade-in",
   "flex flex-col gap-[7px] rounded-[14px] border border-[var(--glass-border)]",

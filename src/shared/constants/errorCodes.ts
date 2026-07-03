@@ -22,7 +22,6 @@ export const NETWORK_ERROR = "NETWORK_ERROR" as const;
 const REQUEST_CANCELLED = "REQUEST_CANCELLED" as const;
 export const UNKNOWN_ERROR = "UNKNOWN_ERROR" as const;
 
-
 export type ErrorCode =
   | typeof BAD_REQUEST
   | typeof VALIDATION_ERROR

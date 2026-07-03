@@ -16,7 +16,7 @@ export interface ObservabilityChartSeries {
   showInTooltip?: boolean;
 }
 
-export interface ObservabilityChartProps {
+interface ObservabilityChartProps {
   timestamps: number[];
   series: ObservabilityChartSeries[];
   type?: "line" | "area" | "bar";

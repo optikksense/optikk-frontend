@@ -26,7 +26,7 @@ export interface LogRecord {
   readonly resource?: Readonly<Record<string, unknown>>;
 }
 
-export type LogCursor = string;
+type LogCursor = string;
 
 export interface LogsQueryResponse {
   readonly results: readonly LogRecord[];

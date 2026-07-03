@@ -14,19 +14,6 @@ function TableBody({ className, ref, ...props }: React.ComponentPropsWithRef<"tb
   return <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />;
 }
 
-function TableFooter({ className, ref, ...props }: React.ComponentPropsWithRef<"tfoot">) {
-  return (
-    <tfoot
-      ref={ref}
-      className={cn(
-        "border-border border-t bg-[var(--color-primary-subtle-05)] font-medium [&>tr]:last:border-b-0",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
 function TableRow({ className, ref, ...props }: React.ComponentPropsWithRef<"tr">) {
   return (
     <tr
@@ -63,14 +50,4 @@ function TableCell({ className, ref, ...props }: React.ComponentPropsWithRef<"td
   );
 }
 
-function TableCaption({ className, ref, ...props }: React.ComponentPropsWithRef<"caption">) {
-  return (
-    <caption
-      ref={ref}
-      className={cn("mt-3 text-[12px] text-muted-foreground", className)}
-      {...props}
-    />
-  );
-}
-
-export { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow };
+export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow };

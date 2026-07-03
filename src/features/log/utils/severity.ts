@@ -6,7 +6,7 @@
  * ordered so callers can iterate legends deterministically.
  */
 
-export type SeverityBucket = 0 | 1 | 2 | 3 | 4 | 5;
+type SeverityBucket = 0 | 1 | 2 | 3 | 4 | 5;
 
 export type SeveritySlug = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
 
@@ -35,25 +35,6 @@ export function severityStyle(bucket: number | undefined | null): SeverityStyle 
   return STYLES[clamped];
 }
 
-export function severityLabel(bucket: number | undefined | null): string {
-  return severityStyle(bucket).label;
-}
-
 export function severityColor(bucket: number | undefined | null): string {
   return severityStyle(bucket).color;
-}
-
-export function severitySlug(bucket: number | undefined | null): SeveritySlug {
-  return severityStyle(bucket).slug;
-}
-
-export function severityFromText(text: string | undefined | null): SeverityBucket {
-  const upper = (text ?? "").toUpperCase();
-  if (upper.startsWith("FATAL")) return 5;
-  if (upper.startsWith("ERROR") || upper === "ERR") return 4;
-  if (upper.startsWith("WARN")) return 3;
-  if (upper.startsWith("INFO")) return 2;
-  if (upper.startsWith("DEBUG")) return 1;
-  if (upper.startsWith("TRACE")) return 0;
-  return 2;
 }

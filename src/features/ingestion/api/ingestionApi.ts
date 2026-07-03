@@ -4,14 +4,14 @@ import { API_CONFIG } from "@config/apiConfig";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export interface SignalTotals {
+interface SignalTotals {
   readonly logs: number;
   readonly spans: number;
   readonly metricDatapoints: number;
   readonly records: number;
 }
 
-export interface TypeShare {
+interface TypeShare {
   readonly type: string;
   readonly label: string;
   readonly records: number;

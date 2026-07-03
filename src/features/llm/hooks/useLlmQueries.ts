@@ -16,7 +16,7 @@ import {
 } from "../api/llmApi";
 
 // Shared page context: selected team + resolved time window + refresh tick.
-export function useLlmRange() {
+function useLlmRange() {
   const timeRange = useTimeRange();
   const teamId = useTeamId();
   const refreshKey = useRefreshKey();

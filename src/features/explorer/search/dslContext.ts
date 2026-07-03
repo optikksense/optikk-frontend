@@ -1,6 +1,6 @@
 import { type KnownField, TRACE_KNOWN_FIELDS, findKnownField } from "./knownFields";
 
-export type DslCompletionKind = "field" | "value" | "attribute" | "operator" | "empty";
+type DslCompletionKind = "field" | "value" | "attribute" | "operator" | "empty";
 
 export interface DslCompletionContext {
   readonly kind: DslCompletionKind;

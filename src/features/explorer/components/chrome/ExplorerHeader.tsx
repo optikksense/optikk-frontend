@@ -7,7 +7,7 @@ import { ExplorerSearchBarDsl } from "./ExplorerSearchBarDsl";
 import { ExplorerTimePicker } from "./ExplorerTimePicker";
 import type { SuggestionOption } from "./QuerySuggestions";
 
-export type SearchBarVariant = "classic" | "dsl";
+type SearchBarVariant = "classic" | "dsl";
 
 interface Props {
   readonly filters: readonly ExplorerFilter[];

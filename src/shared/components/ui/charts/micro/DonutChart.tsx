@@ -1,7 +1,7 @@
 import { Tooltip } from "@/components/ui";
 import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
 
-export interface DonutChartSegment {
+interface DonutChartSegment {
   readonly color: string;
   readonly label: string;
   readonly value: number;

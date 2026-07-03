@@ -1,14 +1,10 @@
-import { createContext, use, useEffect } from "react";
+import { createContext, useEffect } from "react";
 
 import { useAppStore } from "@store/appStore";
 
 type Density = "comfortable" | "compact";
 
 const DensityContext = createContext<Density>("comfortable");
-
-function useDensity() {
-  return use(DensityContext);
-}
 
 interface DensityProviderProps {
   children: React.ReactNode;
@@ -31,4 +27,4 @@ function DensityProvider({ children }: DensityProviderProps) {
   return <DensityContext.Provider value={density}>{children}</DensityContext.Provider>;
 }
 
-export { DensityProvider, useDensity };
+export { DensityProvider };
