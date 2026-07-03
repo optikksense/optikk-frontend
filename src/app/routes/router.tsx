@@ -58,6 +58,7 @@ const DashboardsPage = lazy(
 const DashboardDetailPage = lazy(
   () => import("@/features/dashboards/pages/DashboardDetailPage/DashboardDetailPage")
 );
+const WelcomePage = lazy(() => import("@/features/onboarding/pages/WelcomePage/WelcomePage"));
 
 export const rootRoute = createRootRoute({ component: AppContent });
 
@@ -76,6 +77,24 @@ const mainLayoutRoute = createRoute({
     }
   },
   component: MainLayout,
+});
+
+// Post-signup wizard. Authed like the app, but full-screen (no MainLayout shell).
+const welcomeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: ROUTES.welcome.replace(/^\//, ""),
+  beforeLoad: async ({ location }) => {
+    if (!(await session.ensureSession())) {
+      throw redirect({ to: ROUTES.login, search: { redirect: location.href }, replace: true });
+    }
+  },
+  component: () => (
+    <FeatureErrorBoundary featureName="route:welcome">
+      <Suspense fallback={<Loading fullscreen />}>
+        <WelcomePage />
+      </Suspense>
+    </FeatureErrorBoundary>
+  ),
 });
 
 function toNestedRoutePath(path: string): string {
@@ -147,28 +166,17 @@ const dashboardDetailRoute = createProtected(ROUTES.dashboardDetail, DashboardDe
 const logsPatternsRedirect = createProtected("/logs/patterns", () => null, ROUTES.logs);
 const logsTransactionsRedirect = createProtected("/logs/transactions", () => null, ROUTES.logs);
 
-const layoutFallback = createRoute({
-  getParentRoute: () => mainLayoutRoute,
-  path: "$",
-  loader: () => {
-    throw redirect({ to: ROUTES.overview, replace: true });
-  },
-});
 
-const globalFallback = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "$",
-  loader: () => {
-    throw redirect({ to: ROUTES.home, replace: true });
-  },
-});
-
-const { marketingTree, productRedirectRoute, loginRoute } = buildMarketingRoutes(() => rootRoute);
+const { marketingTree, productRedirectRoute, loginRoute, signupRoute } = buildMarketingRoutes(
+  () => rootRoute
+);
 
 const routeTree = rootRoute.addChildren([
   marketingTree,
   productRedirectRoute,
   loginRoute,
+  signupRoute,
+  welcomeRoute,
   mainLayoutRoute.addChildren([
     ...protectedExplorerRoutes,
     overviewRoute,
@@ -195,9 +203,7 @@ const routeTree = rootRoute.addChildren([
     logsPatternsRedirect,
     logsTransactionsRedirect,
     ...buildLegacyRedirects(mainLayoutRoute),
-    layoutFallback,
   ]),
-  globalFallback,
 ]);
 
 export const router = createRouter({ routeTree });

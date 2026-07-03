@@ -87,6 +87,13 @@ function unwrapSession(responseBody: unknown): SessionPayload {
   return payload.data;
 }
 
+export interface SignupParams {
+  readonly email: string;
+  readonly password: string;
+  readonly name: string;
+  readonly orgName: string;
+}
+
 export const authApi = {
   async login(email: string, password: string): Promise<SessionPayload> {
     try {
@@ -95,6 +102,23 @@ export const authApi = {
     } catch (error: unknown) {
       if (error instanceof AuthApiError) throw error;
       throw toAuthApiError(error, "Login failed");
+    }
+  },
+
+  // Signup returns the same session envelope as login (plus an api_key we drop
+  // here — the wizard reads it from /onboarding/status) and sets the refresh cookie.
+  async signup(params: SignupParams): Promise<SessionPayload> {
+    try {
+      const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
+        email: params.email,
+        password: params.password,
+        name: params.name,
+        org_name: params.orgName,
+      });
+      return unwrapSession(response.data);
+    } catch (error: unknown) {
+      if (error instanceof AuthApiError) throw error;
+      throw toAuthApiError(error, "Sign up failed");
     }
   },
 

@@ -10,8 +10,12 @@ export const DEV_BACKEND_URL = `http://${DEV_BACKEND_HOST}:${DEV_BACKEND_PORT}`;
 export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: "/v1/auth/login",
+    SIGNUP: "/v1/auth/signup",
     REFRESH: "/v1/auth/refresh",
     LOGOUT: "/v1/auth/logout",
+  },
+  ONBOARDING: {
+    STATUS: "/v1/onboarding/status",
   },
   TEAMS: {
     LIST: "/v1/teams",

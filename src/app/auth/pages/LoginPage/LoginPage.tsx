@@ -26,10 +26,10 @@ function TopBar() {
     <div className="flex items-center justify-end gap-2.5 text-[12.5px] text-foreground-muted">
       <span>New to Optikk?</span>
       <Link
-        to={ROUTES.selfHost}
+        to={ROUTES.signup}
         className="font-semibold text-[var(--login-link)] no-underline hover:underline"
       >
-        Self-host now →
+        Create account →
       </Link>
     </div>
   );

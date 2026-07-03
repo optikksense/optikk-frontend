@@ -9,6 +9,7 @@ import { ROUTES } from "@/shared/constants/routes";
 import type { rootRoute } from "./router";
 
 const LoginPage = lazy(() => import("@/app/auth"));
+const SignupPage = lazy(() => import("@/app/auth/pages/SignupPage"));
 const MarketingLayout = lazy(() => import("@/features/marketing/MarketingLayout"));
 
 const HomePageLazy = lazy(() => import("@/features/marketing/pages/HomePage/HomePage"));
@@ -97,6 +98,15 @@ export function buildMarketingRoutes(parent: () => typeof rootRoute) {
       component: () => (
         <Suspense fallback={<Loading fullscreen />}>
           <LoginPage />
+        </Suspense>
+      ),
+    }),
+    signupRoute: createRoute({
+      getParentRoute: parent,
+      path: ROUTES.signup.replace(/^\//, ""),
+      component: () => (
+        <Suspense fallback={<Loading fullscreen />}>
+          <SignupPage />
         </Suspense>
       ),
     }),

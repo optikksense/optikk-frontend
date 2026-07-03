@@ -5,7 +5,7 @@ import { queryClient } from "@shared/api/queryClient";
 import { useAppStore } from "@store/appStore";
 import { useAuthStore } from "@store/authStore";
 
-import { type SessionPayload, authApi } from "./authApi";
+import { type SessionPayload, type SignupParams, authApi } from "./authApi";
 
 /**
  * Single owner of the session lifecycle. The access token lives only in
@@ -61,6 +61,10 @@ export const session = {
 
   async login(email: string, password: string): Promise<void> {
     beginSession(await authApi.login(email, password));
+  },
+
+  async signup(params: SignupParams): Promise<void> {
+    beginSession(await authApi.signup(params));
   },
 
   async logout(): Promise<void> {
