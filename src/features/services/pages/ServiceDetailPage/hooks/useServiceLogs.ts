@@ -5,7 +5,7 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 export function useServiceLogs(serviceName: string, limit = 25, cursor?: string) {
   return useTimeRangeQuery<LogsQueryResponse>(
     "service-detail.logs",
-    (_team, start, end) =>
+    (_tenant, start, end) =>
       queryLogs({
         startTime: Number(start),
         endTime: Number(end),

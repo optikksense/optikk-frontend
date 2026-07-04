@@ -7,6 +7,7 @@ import type {
 } from "@/types/dashboardConfig";
 import { API_CONFIG } from "@config/apiConfig";
 import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
+import { z } from "zod";
 
 const PAGES = API_CONFIG.ENDPOINTS.DASHBOARDS.PAGES;
 
@@ -78,12 +79,17 @@ export interface CreateWidgetPayload {
   position?: number;
 }
 
+const legacySpecSchema = z.object({ type: z.string() }).passthrough();
+
 function normalizeWidget(widget: Dashboard): Dashboard {
+  const parsed = legacySpecSchema.safeParse(widget.spec);
+  const legacyType = parsed.success ? parsed.data.type : undefined;
+
   return {
     ...widget,
     spec: {
       ...widget.spec,
-      panelType: widget.spec.panelType || (widget.spec as any).type || widget.panel_type,
+      panelType: widget.spec.panelType || legacyType || widget.panel_type,
       layoutVariant: widget.spec.layoutVariant || widget.layout_variant,
       layout: widget.spec.layout || widget.layout,
       title: widget.spec.title || widget.title,

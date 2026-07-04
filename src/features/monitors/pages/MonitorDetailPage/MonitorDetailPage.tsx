@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import { ackMonitor, muteMonitor } from "../../api/monitorsApi";
 import {
@@ -60,7 +59,7 @@ export default function MonitorDetailPage() {
 
   const handleEdit = useCallback(() => {
     if (id === undefined) return;
-    navigate(dynamicNavigateOptions(`/monitors/${id}/edit`));
+    navigate({ to: `/monitors/${id}/edit` as string & {} });
   }, [id, navigate]);
 
   const handleDelete = useCallback(async () => {

@@ -13,7 +13,7 @@ import { computeTraceTimeBounds } from "../utils";
 export function useTraceDetailState() {
   const { traceId } = useParams({ strict: false });
   const traceIdParam = traceId ?? "";
-  const selectedTeamId = useAppStore((state) => state.selectedTeamId);
+  const selectedTenantId = useAppStore((state) => state.selectedTenantId);
 
   const rawActiveTab = useTracesStore((s) => s.visualizationTab);
   // Coerce any stale persisted tab (e.g. the removed "flamegraph") to a valid one.
@@ -26,7 +26,7 @@ export function useTraceDetailState() {
       : "timeline";
   const setActiveTab = useTracesStore((s) => s.setVisualizationTab);
 
-  const data = useTraceDetailData(selectedTeamId, traceIdParam);
+  const data = useTraceDetailData(selectedTenantId, traceIdParam);
 
   const resolvedTraceId = useMemo(
     () => (data.spans.length > 0 ? data.spans[0].trace_id || traceIdParam : traceIdParam),

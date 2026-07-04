@@ -1,6 +1,7 @@
 import type { RequestTime } from "@shared/api/service-types";
 
 import { getJson } from "./overviewClient";
+import type { RedServiceRow } from "@/features/services/api/redApi";
 
 export interface FleetRedMetrics {
   service_count?: number;
@@ -11,14 +12,14 @@ export interface FleetRedMetrics {
   avg_p50_ms?: number;
   avg_p95_ms?: number;
   avg_p99_ms?: number;
-  services?: any[];
+  services?: RedServiceRow[];
 }
 
 export async function getFleetRedMetrics(
   startTime: RequestTime,
   endTime: RequestTime
 ): Promise<FleetRedMetrics> {
-  const overview = await getJson<{ totals: FleetRedMetrics; services: unknown[] }>(
+  const overview = await getJson<{ totals: FleetRedMetrics; services: RedServiceRow[] }>(
     "/spans/red/fleet-overview",
     startTime,
     endTime

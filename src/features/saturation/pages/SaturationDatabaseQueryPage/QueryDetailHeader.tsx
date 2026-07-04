@@ -15,9 +15,7 @@ const P99_HIGH_MS = 1000;
 function Breadcrumb() {
   return (
     <div className="mb-3 flex items-center gap-1.5 text-[12px] text-foreground-muted">
-      <Link to={ROUTES.saturation} className="hover:text-foreground">
-        Saturation
-      </Link>
+      <span className="text-foreground">Saturation</span>
       <span aria-hidden="true">/</span>
       <Link to={ROUTES.saturationDatabase} className="hover:text-foreground">
         Database

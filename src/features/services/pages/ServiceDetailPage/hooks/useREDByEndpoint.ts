@@ -57,7 +57,7 @@ export function pivotByRoute(
 export function useREDByEndpoint(serviceName: string) {
   return useTimeRangeQuery<EndpointRatePoint[]>(
     "service-detail.red-by-endpoint",
-    (_team, start, end) => getREDByEndpoint(start, end, serviceName),
+    (_tenant, start, end) => getREDByEndpoint(start, end, serviceName),
     { extraKeys: [serviceName], enabled: Boolean(serviceName) }
   );
 }

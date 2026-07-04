@@ -1,12 +1,12 @@
 import type { RequestTime } from "@/shared/api/service-types";
 
-export interface REDFiltersParams {
+export type REDFiltersParams = {
   readonly startTime: RequestTime;
   readonly endTime: RequestTime;
   readonly services?: readonly string[];
   readonly serviceName?: string;
   readonly [key: string]: RequestTime | string | readonly string[] | number | boolean | undefined;
-}
+};
 
 /**
  * Builds standard query parameters for RED endpoints, mirroring the traces
@@ -19,21 +19,27 @@ export function buildREDFilters(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[],
-  extra?: Record<string, unknown>
+  extra?: Partial<REDFiltersParams>
 ): REDFiltersParams {
-  const p: Record<string, any> = { startTime: s, endTime: e, ...extra };
+  const p: {
+    startTime: RequestTime;
+    endTime: RequestTime;
+    services?: readonly string[];
+    serviceName?: string;
+    [key: string]: any;
+  } = { ...extra, startTime: s, endTime: e };
 
   if (services) {
-    if (Array.isArray(services)) {
+    if (typeof services === "string") {
+      p.serviceName = services;
+    } else {
       if (services.length === 1) {
         p.serviceName = services[0];
       } else if (services.length > 1) {
         p.services = services;
       }
-    } else {
-      p.serviceName = services;
     }
   }
 
-  return p as REDFiltersParams;
+  return p;
 }

@@ -33,6 +33,7 @@ interface ObservabilityChartProps {
   legend?: boolean;
   className?: string;
   plugins?: uPlot.Plugin[];
+  onTimeBrush?: (startMs: number, endMs: number) => void;
 }
 
 function ObservabilityChart({
@@ -51,6 +52,7 @@ function ObservabilityChart({
   legend = false,
   className,
   plugins,
+  onTimeBrush,
 }: ObservabilityChartProps) {
   const alignedData = useMemo<uPlot.AlignedData>(
     () => [timestamps, ...series.map((item) => item.values)] as uPlot.AlignedData,
@@ -145,6 +147,7 @@ function ObservabilityChart({
         height={height}
         fillHeight={fillHeight}
         tooltipContent={tooltipContent}
+        onTimeBrush={onTimeBrush}
       />
     </div>
   );

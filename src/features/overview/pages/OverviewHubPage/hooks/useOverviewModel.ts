@@ -57,7 +57,7 @@ function toCell(row: ServiceMetricPoint): ServiceHealthCell {
 export function useOverviewSummaryQuery() {
   return useTimeRangeQuery(
     "overview-summary",
-    (_team, start, end) => overviewHubApi.getFleetRedMetrics(start, end),
+    (_tenant, start, end) => overviewHubApi.getFleetRedMetrics(start, end),
     { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
 }
@@ -65,7 +65,7 @@ export function useOverviewSummaryQuery() {
 export function useOverviewPerformanceQuery(enabled: boolean) {
   return useTimeRangeQuery(
     "overview-performance",
-    async (_team, start, end) => {
+    async (_tenant, start, end) => {
       const pr = await overviewHubApi.getPerformanceSeries(start, end);
       return { pr };
     },
@@ -76,7 +76,7 @@ export function useOverviewPerformanceQuery(enabled: boolean) {
 export function useTopErrorsQuery(enabled: boolean): UseQueryResult<ErrorHotspotRow[]> {
   return useTimeRangeQuery<ErrorHotspotRow[]>(
     "overview-top-errors",
-    async (_team, start, end) => {
+    async (_tenant, start, end) => {
       const rows = await overviewHubApi.getErrorHotspot(start, end);
       return rows.map((raw) => {
         const r = raw as Record<string, unknown>;

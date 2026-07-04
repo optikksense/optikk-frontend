@@ -9,7 +9,7 @@ import {
 import type { TimeRange } from "@/types";
 import { resolveTimeRangeBounds } from "@/types";
 
-import { useTimeRange as useAppStoreTimeRange, useRefreshKey, useTeamId } from "@store/appStore";
+import { useTimeRange as useAppStoreTimeRange, useRefreshKey, useTenantId } from "@store/appStore";
 import { useInvalidateQueriesOnAppRefresh } from "./useInvalidateQueriesOnAppRefresh";
 
 type QueryTime = string | number;
@@ -20,7 +20,7 @@ interface TimeRangeBounds {
 }
 
 type TimeRangeQueryFunction<TData> = (
-  teamId: number | null,
+  tenantId: number | null,
   startTime: QueryTime,
   endTime: QueryTime
 ) => Promise<TData>;
@@ -48,20 +48,20 @@ export function useTimeRangeQuery<TData = unknown>(
   queryFn: TimeRangeQueryFunction<TData>,
   options: TimeRangeQueryOptions<TData> = {}
 ): UseQueryResult<TData, Error> {
-  const selectedTeamId = useTeamId();
+  const selectedTenantId = useTenantId();
   const timeRange = useAppStoreTimeRange();
   const refreshKey = useRefreshKey();
   const { extraKeys = [], enabled, ...queryOptions } = options;
 
-  useInvalidateQueriesOnAppRefresh(refreshKey, "component-query", selectedTeamId);
+  useInvalidateQueriesOnAppRefresh(refreshKey, "component-query", selectedTenantId);
 
   return useQuery<TData, Error>({
-    queryKey: ["component-query", selectedTeamId, key, rangeKey(timeRange), ...extraKeys],
+    queryKey: ["component-query", selectedTenantId, key, rangeKey(timeRange), ...extraKeys],
     queryFn: async (): Promise<TData> => {
       const { startTime, endTime } = getBounds(timeRange);
-      return queryFn(selectedTeamId, startTime, endTime);
+      return queryFn(selectedTenantId, startTime, endTime);
     },
-    enabled: Boolean(selectedTeamId) && enabled !== false,
+    enabled: Boolean(selectedTenantId) && enabled !== false,
     staleTime: 30_000,
     placeholderData: keepPreviousData,
     ...queryOptions,
@@ -69,17 +69,17 @@ export function useTimeRangeQuery<TData = unknown>(
 }
 
 export function useTimeRange(): {
-  selectedTeamId: number | null;
+  selectedTenantId: number | null;
   timeRange: TimeRange;
   refreshKey: number;
   getTimeRange: () => TimeRangeBounds;
 } {
-  const selectedTeamId = useTeamId();
+  const selectedTenantId = useTenantId();
   const timeRange = useAppStoreTimeRange();
   const refreshKey = useRefreshKey();
 
   return {
-    selectedTeamId,
+    selectedTenantId,
     timeRange,
     refreshKey,
     getTimeRange: (): TimeRangeBounds => getBounds(timeRange),

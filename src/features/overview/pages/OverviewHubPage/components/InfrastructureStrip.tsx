@@ -41,7 +41,7 @@ export default function InfrastructureStrip() {
         </span>
         <button
           type="button"
-          onClick={() => navigate({ to: ROUTES.saturation })}
+          onClick={() => navigate({ to: ROUTES.saturationDatabase })}
           className="text-[11px] text-primary hover:underline"
         >
           Saturation hub →

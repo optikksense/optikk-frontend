@@ -34,7 +34,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     fetcher: query,
   });
 
-  const { startTime, endTime, teamId, refreshKey } = explorerQuery;
+  const { startTime, endTime, tenantId, refreshKey } = explorerQuery;
 
   const needsFacets = include.includes("facets");
   const facetsQuery = useStandardQuery({
@@ -42,7 +42,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
       "traces",
       "explorer",
       "facets",
-      teamId ?? "none",
+      tenantId ?? "none",
       refreshKey,
       startTime,
       endTime,
@@ -58,7 +58,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
       "traces",
       "explorer",
       "trend",
-      teamId ?? "none",
+      tenantId ?? "none",
       refreshKey,
       startTime,
       endTime,

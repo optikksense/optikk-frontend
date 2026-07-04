@@ -2,7 +2,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { dynamicTo } from "@shared/utils/navigation";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -44,26 +43,26 @@ export default function HostsTab() {
 
   const query = useTimeRangeQuery<readonly InfrastructureNode[]>(
     "infrastructure.hosts.list",
-    (_team, s, e) => getNodes(s, e)
+    (_tenant, s, e) => getNodes(s, e)
   );
 
   const summaryQ = useTimeRangeQuery<InfrastructureNodeSummary>(
     "infrastructure.nodes-summary",
-    (_team, s, e) => getNodesSummary(s, e)
+    (_tenant, s, e) => getNodesSummary(s, e)
   );
 
   const avgCpuQ = useTimeRangeQuery<MetricValue>(
     "infrastructure.kpi.cpu-avg",
-    async (teamId, start, end) => {
-      if (!teamId) return { value: 0 };
+    async (tenantId, start, end) => {
+      if (!tenantId) return { value: 0 };
       return infraGet<MetricValue>("/v1/infrastructure/cpu/avg", Number(start), Number(end));
     }
   );
 
   const avgMemQ = useTimeRangeQuery<MetricValue>(
     "infrastructure.kpi.memory-avg",
-    async (teamId, start, end) => {
-      if (!teamId) return { value: 0 };
+    async (tenantId, start, end) => {
+      if (!tenantId) return { value: 0 };
       return infraGet<MetricValue>("/v1/infrastructure/memory/avg", Number(start), Number(end));
     }
   );
@@ -125,7 +124,7 @@ export default function HostsTab() {
   }, [nodes, q]);
 
   const onOpenNode = (host: string) => {
-    navigate({ to: dynamicTo(ROUTES.hostDetail.replace("$host", encodeURIComponent(host))) });
+    navigate({ to: (ROUTES.hostDetail.replace("$host", encodeURIComponent(host as string & {}))) });
   };
 
   const hostsCount = nodes.length;

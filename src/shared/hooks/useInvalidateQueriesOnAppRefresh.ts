@@ -2,14 +2,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
 /**
- * When `refreshKey` bumps (manual/auto refresh), invalidates queries under `[scope, teamId]`
+ * When `refreshKey` bumps (manual/auto refresh), invalidates queries under `[scope, tenantId]`
  * so they refetch without putting `refreshKey` in each query key — avoids a new cache entry
  * and loading flash on every interval.
  */
 export function useInvalidateQueriesOnAppRefresh(
   refreshKey: number,
   scope: "component-query" | "datasource",
-  selectedTeamId: number | null
+  selectedTenantId: number | null
 ): void {
   const queryClient = useQueryClient();
   const prevRefreshKey = useRef<number | null>(null);
@@ -23,9 +23,9 @@ export function useInvalidateQueriesOnAppRefresh(
       return;
     }
     prevRefreshKey.current = refreshKey;
-    if (!selectedTeamId) return;
+    if (!selectedTenantId) return;
     void queryClient.invalidateQueries({
-      queryKey: [scope, selectedTeamId],
+      queryKey: [scope, selectedTenantId],
     });
-  }, [refreshKey, queryClient, scope, selectedTeamId]);
+  }, [refreshKey, queryClient, scope, selectedTenantId]);
 }

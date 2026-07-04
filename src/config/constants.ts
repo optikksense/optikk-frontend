@@ -45,8 +45,8 @@ export const CHART_COLORS = [
 
 export const STORAGE_KEYS = {
   APP_STATE: "optikk_app_state",
-  TEAM_ID: "optikk_team_id",
-  TEAM_IDS: "optikk_team_ids",
+  TENANT_ID: "optikk_tenant_id",
+  TENANT_IDS: "optikk_tenant_ids",
   TIME_RANGE: "optikk_time_range",
   SIDEBAR_COLLAPSED: "optikk_sidebar_collapsed",
   AUTO_REFRESH: "optikk_auto_refresh",

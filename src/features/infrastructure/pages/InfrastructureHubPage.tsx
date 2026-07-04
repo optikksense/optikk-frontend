@@ -26,7 +26,7 @@ function parseTab(raw: string | null): InfraTabId {
 function useNodesSummary() {
   return useTimeRangeQuery<InfrastructureNodeSummary>(
     "infrastructure.nodes-summary",
-    (_team, s, e) => getNodesSummary(s, e)
+    (_tenant, s, e) => getNodesSummary(s, e)
   );
 }
 

@@ -74,7 +74,7 @@ export default function PrivacyPolicyPage() {
       <p>
         Depending on your location, you may have rights under GDPR, CCPA, or other local regulations
         regarding your personal data, including the right to access, correct, delete, or limit its
-        processing. Please contact our support team to exercise these rights.
+        processing. Please contact our support tenant to exercise these rights.
       </p>
     </LegalLayout>
   );

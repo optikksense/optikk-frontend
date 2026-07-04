@@ -11,12 +11,6 @@ interface TracesState {
   collapsedSpanIds: ReadonlySet<string>;
   toggleCollapsedSpan: (spanId: string) => void;
   clearCollapsedSpans: () => void;
-
-  waterfallSearch: string;
-  setWaterfallSearch: (s: string) => void;
-
-  waterfallErrorsOnly: boolean;
-  setWaterfallErrorsOnly: (v: boolean) => void;
 }
 
 export const useTracesStore = create<TracesState>()(
@@ -32,10 +26,6 @@ export const useTracesStore = create<TracesState>()(
         set({ collapsedSpanIds: next });
       },
       clearCollapsedSpans: () => set({ collapsedSpanIds: new Set<string>() }),
-      waterfallSearch: "",
-      setWaterfallSearch: (s) => set({ waterfallSearch: s }),
-      waterfallErrorsOnly: false,
-      setWaterfallErrorsOnly: (v) => set({ waterfallErrorsOnly: v }),
     }),
     {
       name: "traces-store",

@@ -18,7 +18,7 @@ function buildDelta(now: TopEndpoint, prev: TopEndpoint | undefined): number | n
 export function useTopEndpoints(serviceName: string, limit = 50, cursor?: string) {
   return useTimeRangeQuery<PaginatedResponse<EndpointWithDelta[]>>(
     "service-detail.top-endpoints",
-    async (_team, start, end): Promise<PaginatedResponse<EndpointWithDelta[]>> => {
+    async (_tenant, start, end): Promise<PaginatedResponse<EndpointWithDelta[]>> => {
       const payload = await getTopEndpoints(
         start,
         end,

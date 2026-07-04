@@ -13,7 +13,7 @@ export function AggregationPicker({ value, onChange }: AggregationPickerProps) {
     <Select
       size="sm"
       value={value}
-      onChange={onChange}
+      onChange={(v) => onChange(v as MetricAggregation)}
       options={AGGREGATION_OPTIONS}
       className="w-[100px] shrink-0"
     />

@@ -6,7 +6,7 @@ import { CodeBlock } from "../../sections/CodeBlock";
 import { Hero } from "../../sections/Hero";
 import { SectionHeader } from "../../sections/SectionHeader";
 import { Split } from "../../sections/Split";
-import { DashboardMock } from "../../visuals/ProductMock";
+import { DashboardMock } from "../../visuals/DashboardMock";;
 import { Screenshot } from "../../visuals/Screenshot";
 
 const ANCHORS = [
@@ -171,7 +171,7 @@ export default function FeaturesPage() {
             lede={
               <span style={{ color: "#c0cee0" }}>
                 The AI SRE reads the same telemetry graph your humans do — logs, traces, metrics,
-                deploys, dependencies — and writes the verdict in the language your team uses in
+                deploys, dependencies — and writes the verdict in the language your tenant uses in
                 Slack.
               </span>
             }

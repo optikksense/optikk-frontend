@@ -8,7 +8,6 @@ import { Tooltip } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { ROUTES } from "@/shared/constants/routes";
-import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
 import { session } from "@shared/api/auth/session";
 
@@ -57,7 +56,7 @@ export default function Sidebar() {
   const handleLogout = async () => {
     await session.logout();
     toast.success("Logged out successfully");
-    navigate(dynamicNavigateOptions(ROUTES.login));
+    navigate({ to: ROUTES.login as string & {} });
   };
 
   const navItemClass = (isActive: boolean, extra?: string) =>
@@ -84,7 +83,7 @@ export default function Sidebar() {
             type="button"
             key={item.path}
             className={navItemClass(isActive)}
-            onClick={() => navigate(dynamicNavigateOptions(item.path))}
+            onClick={() => navigate({ to: item.path as string & {} })}
             aria-current={isActive ? "page" : undefined}
           >
             <span className="inline-flex shrink-0 items-center">{item.iconNode}</span>
@@ -148,7 +147,7 @@ export default function Sidebar() {
                 "border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] text-foreground shadow-[var(--shadow-sm)] hover:border-primary hover:bg-[var(--color-primary-subtle-18)]",
                 sidebarCollapsed && "justify-center px-1.5"
               )}
-              onClick={() => navigate(dynamicNavigateOptions(ROUTES.settings))}
+              onClick={() => navigate({ to: ROUTES.settings as string & {} })}
             >
               <Settings size={14} />
               {!sidebarCollapsed && "Settings"}

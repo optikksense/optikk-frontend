@@ -34,16 +34,15 @@ export function timeRangeDurationMs(r: TimeRange): number {
   return r.minutes * 60_000;
 }
 
-export interface Team {
+export interface Tenant {
   id: number;
   name: string;
-  orgName?: string | null;
 }
 
 export interface User {
   id: string | number;
   email: string;
   name?: string | null;
-  avatarUrl?: string | null;
-  teams?: Team[];
+  
+  tenants?: Tenant[];
 }

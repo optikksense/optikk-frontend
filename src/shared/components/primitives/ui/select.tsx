@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 
 interface SelectOption {
   label: string;
-  value: any;
+  value: string | number;
 }
 
 interface SelectProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
-  value?: any;
-  onChange?: (value: any) => void;
+  value?: string | number | (string | number)[];
+  onChange?: (value: string | number | (string | number)[]) => void;
   options: SelectOption[];
   placeholder?: string;
   size?: "sm" | "md" | "lg";
@@ -140,11 +140,11 @@ function MultiSelect({
     .map((option) => option.label);
   const displayText = selectedLabels.length > 0 ? selectedLabels.join(", ") : placeholder;
 
-  const handleSelect = (optionValue: any): void => {
+  const handleSelect = (optionValue: string | number): void => {
     if (!onChange) return;
-    const current = Array.isArray(value) ? value : [];
+    const current = Array.isArray(value) ? value : ([] as (string | number)[]);
     const next = current.includes(optionValue)
-      ? current.filter((entry: any) => entry !== optionValue)
+      ? current.filter((entry: string | number) => entry !== optionValue)
       : [...current, optionValue];
     onChange(next);
   };

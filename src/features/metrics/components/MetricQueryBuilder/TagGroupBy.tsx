@@ -87,7 +87,7 @@ export function TagGroupBy({ metricName, groupBy, onChange }: TagGroupByProps) {
               placeholder="Tag key"
               options={availableOptions}
               value={selectedKey}
-              onChange={setSelectedKey}
+              onChange={(v) => setSelectedKey(v as string)}
             />
             <button
               type="button"

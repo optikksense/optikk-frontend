@@ -21,7 +21,7 @@ export interface CatalogRow {
   readonly version: string;
   readonly environment: string;
   readonly tier: string;
-  readonly team: string;
+  readonly tenant: string;
   readonly lang: string;
   readonly instances: number;
 }
@@ -73,18 +73,18 @@ export interface BuildCatalogInputs {
 
 const SERVICE_METADATA_MAP: Record<
   string,
-  { tier: string; team: string; lang: string; instances: number }
+  { tier: string; tenant: string; lang: string; instances: number }
 > = {
-  "payment-svc": { tier: "Tier 0", team: "payments", lang: "Node", instances: 12 },
-  "checkout-bff": { tier: "Tier 0", team: "payments", lang: "Go", instances: 8 },
-  cart: { tier: "Tier 1", team: "shopping", lang: "Java", instances: 6 },
-  search: { tier: "Tier 0", team: "discovery", lang: "Go", instances: 10 },
-  "user-profile": { tier: "Tier 1", team: "identity", lang: "Ruby", instances: 4 },
-  notifications: { tier: "Tier 2", team: "messaging", lang: "Node", instances: 3 },
-  "shipping-rates": { tier: "Tier 1", team: "logistics", lang: "Java", instances: 4 },
-  inventory: { tier: "Tier 0", team: "shopping", lang: "Java", instances: 6 },
-  "tax-calc": { tier: "Tier 1", team: "payments", lang: "Python", instances: 3 },
-  "fraud-detect": { tier: "Tier 0", team: "trust", lang: "Python", instances: 5 },
+  "payment-svc": { tier: "Tier 0", tenant: "payments", lang: "Node", instances: 12 },
+  "checkout-bff": { tier: "Tier 0", tenant: "payments", lang: "Go", instances: 8 },
+  cart: { tier: "Tier 1", tenant: "shopping", lang: "Java", instances: 6 },
+  search: { tier: "Tier 0", tenant: "discovery", lang: "Go", instances: 10 },
+  "user-profile": { tier: "Tier 1", tenant: "identity", lang: "Ruby", instances: 4 },
+  notifications: { tier: "Tier 2", tenant: "messaging", lang: "Node", instances: 3 },
+  "shipping-rates": { tier: "Tier 1", tenant: "logistics", lang: "Java", instances: 4 },
+  inventory: { tier: "Tier 0", tenant: "shopping", lang: "Java", instances: 6 },
+  "tax-calc": { tier: "Tier 1", tenant: "payments", lang: "Python", instances: 3 },
+  "fraud-detect": { tier: "Tier 0", tenant: "trust", lang: "Python", instances: 5 },
 };
 
 function getFallbackMetadata(serviceName: string) {
@@ -94,13 +94,13 @@ function getFallbackMetadata(serviceName: string) {
   }
   const uHash = Math.abs(hash);
   const tiers = ["Tier 0", "Tier 1", "Tier 2"];
-  const teams = ["platform", "infra", "core", "frontend", "billing"];
+  const tenants = ["platform", "infra", "core", "frontend", "billing"];
   const langs = ["Go", "Java", "Node", "Python", "Rust"];
   const tier = tiers[uHash % tiers.length];
-  const team = teams[uHash % teams.length];
+  const tenant = tenants[uHash % tenants.length];
   const lang = langs[uHash % langs.length];
   const instances = (uHash % 8) + 2;
-  return { tier, team, lang, instances };
+  return { tier, tenant, lang, instances };
 }
 
 function buildCatalogRow(
@@ -129,7 +129,7 @@ function buildCatalogRow(
     version: "—",
     environment: "—",
     tier: mappedMeta.tier,
-    team: mappedMeta.team,
+    tenant: mappedMeta.tenant,
     lang: mappedMeta.lang,
     instances: mappedMeta.instances,
   };

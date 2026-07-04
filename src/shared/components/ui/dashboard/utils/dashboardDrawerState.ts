@@ -21,7 +21,7 @@ function asStringValue(value: unknown): string | null {
 }
 
 export function buildDashboardDrawerSearch(
-  currentSearch: string,
+  currentSearch: string | Record<string, unknown>,
   action: DashboardDrawerAction | undefined,
   row: Record<string, unknown>
 ): string | null {
@@ -34,7 +34,8 @@ export function buildDashboardDrawerSearch(
     return null;
   }
 
-  const nextSearchParams = new URLSearchParams(currentSearch);
+  const searchInput = typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
+  const nextSearchParams = new URLSearchParams(searchInput);
   nextSearchParams.set(DASHBOARD_DRAWER_PARAMS.entity, action.entity);
   nextSearchParams.set(DASHBOARD_DRAWER_PARAMS.id, drawerId);
 
@@ -57,12 +58,13 @@ export function buildDashboardDrawerSearch(
 }
 
 export function buildLegacyDashboardDrawerSearch(
-  currentSearch: string,
+  currentSearch: string | Record<string, unknown>,
   entity: DashboardDrawerEntity,
   drawerId: string,
   drawerTitle?: string
 ): string {
-  const nextSearchParams = new URLSearchParams(currentSearch);
+  const searchInput = typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
+  const nextSearchParams = new URLSearchParams(searchInput);
   nextSearchParams.set(DASHBOARD_DRAWER_PARAMS.entity, entity);
   nextSearchParams.set(DASHBOARD_DRAWER_PARAMS.id, drawerId);
   if (drawerTitle) {
@@ -73,8 +75,9 @@ export function buildLegacyDashboardDrawerSearch(
   return search ? `?${search}` : "";
 }
 
-export function clearDashboardDrawerSearch(currentSearch: string): string {
-  const nextSearchParams = new URLSearchParams(currentSearch);
+export function clearDashboardDrawerSearch(currentSearch: string | Record<string, unknown>): string {
+  const searchInput = typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
+  const nextSearchParams = new URLSearchParams(searchInput);
   nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.entity);
   nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.id);
   nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.title);

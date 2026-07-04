@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 
+import type { ColumnDef } from "@tanstack/react-table";
 import { Surface } from "@/components/ui";
-import { SimpleTable, type SimpleTableColumn } from "@/components/ui";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { StatCard } from "@shared/components/ui";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
@@ -63,12 +64,11 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
   const tokensAligned = useMemo(() => alignSeries(tokensQ.data ?? []), [tokensQ.data]);
   const latencyAligned = useMemo(() => alignSeries(latencyQ.data ?? []), [latencyQ.data]);
 
-  const columns: SimpleTableColumn<LlmApp>[] = [
+  const columns: ColumnDef<LlmApp>[] = [
     {
-      title: "App",
-      key: "service",
-      dataIndex: "service",
-      render: (_, a) => (
+      header: "App",
+      accessorKey: "service",
+      cell: ({ row: { original: a } }) => (
         <div className="flex items-center gap-2">
           <span
             className="h-2 w-2 shrink-0 rounded-full"
@@ -82,10 +82,9 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
       ),
     },
     {
-      title: "Primary model",
-      key: "model",
-      dataIndex: "primaryModel",
-      render: (_, a) => (
+      header: "Primary model",
+      accessorKey: "primaryModel",
+      cell: ({ row: { original: a } }) => (
         <div className="flex items-center gap-1.5">
           <VendorChip vendor={a.vendor} />
           <span className="font-mono text-foreground-secondary text-xs">{a.primaryModel}</span>
@@ -93,83 +92,78 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
       ),
     },
     {
-      title: "LLM",
-      key: "llm",
-      align: "right",
-      render: (_, a) => <span className="font-mono">{formatNumber(a.llmSpans)}</span>,
-      sorter: (x, y) => x.llmSpans - y.llmSpans,
-      defaultSortOrder: "descend",
+      header: "LLM",
+      accessorKey: "llmSpans",
+      meta: { align: "right" },
+      cell: ({ row: { original: a } }) => <span className="font-mono">{formatNumber(a.llmSpans)}</span>,
     },
     {
-      title: "Tool",
-      key: "tool",
-      align: "right",
-      render: (_, a) => (
+      header: "Tool",
+      accessorKey: "toolSpans",
+      meta: { align: "right" },
+      cell: ({ row: { original: a } }) => (
         <span className="font-mono text-foreground-secondary">
           {a.toolSpans ? formatNumber(a.toolSpans) : "—"}
         </span>
       ),
     },
     {
-      title: "Retr.",
-      key: "retr",
-      align: "right",
-      render: (_, a) => (
+      header: "Retr.",
+      accessorKey: "retrievalSpans",
+      meta: { align: "right" },
+      cell: ({ row: { original: a } }) => (
         <span className="font-mono text-foreground-secondary">
           {a.retrievalSpans ? formatNumber(a.retrievalSpans) : "—"}
         </span>
       ),
     },
     {
-      title: "Emb.",
-      key: "emb",
-      align: "right",
-      render: (_, a) => (
+      header: "Emb.",
+      accessorKey: "embeddingSpans",
+      meta: { align: "right" },
+      cell: ({ row: { original: a } }) => (
         <span className="font-mono text-foreground-secondary">
           {a.embeddingSpans ? formatNumber(a.embeddingSpans) : "—"}
         </span>
       ),
     },
     {
-      title: "p95",
-      key: "p95",
-      align: "right",
-      render: (_, a) => <span className="font-mono">{formatDuration(a.p95Ms)}</span>,
-      sorter: (x, y) => x.p95Ms - y.p95Ms,
+      header: "p95",
+      accessorKey: "p95Ms",
+      meta: { align: "right" },
+      cell: ({ row: { original: a } }) => <span className="font-mono">{formatDuration(a.p95Ms)}</span>,
     },
     {
-      title: "Err",
-      key: "err",
-      align: "right",
-      render: (_, a) => (
+      header: "Err",
+      accessorKey: "errorRate",
+      meta: { align: "right" },
+      cell: ({ row: { original: a } }) => (
         <span className="font-mono" style={{ color: a.errorRate > 1 ? "var(--err)" : undefined }}>
           {a.errorRate.toFixed(2)}%
         </span>
       ),
-      sorter: (x, y) => x.errorRate - y.errorRate,
     },
     {
-      title: "Tokens",
-      key: "tokens",
-      align: "right",
-      render: (_, a) => (
+      header: "Tokens",
+      accessorKey: "tokens",
+      meta: { align: "right" },
+      cell: ({ row: { original: a } }) => (
         <span className="font-mono text-foreground-secondary">
           {formatNumber(a.inputTokens)} / {formatNumber(a.outputTokens)}
         </span>
       ),
     },
     {
-      title: "Cost",
-      key: "cost",
-      align: "right",
-      render: (_, a) => <span className="font-mono font-semibold">{formatCost(a.cost)}</span>,
-      sorter: (x, y) => x.cost - y.cost,
+      header: "Cost",
+      accessorKey: "cost",
+      meta: { align: "right" },
+      cell: ({ row: { original: a } }) => <span className="font-mono font-semibold">{formatCost(a.cost)}</span>,
     },
     {
-      title: "Trend",
-      key: "trend",
-      width: 90,
-      render: (_, a) =>
+      header: "Trend",
+      accessorKey: "trend",
+      size: 90,
+      cell: ({ row: { original: a } }) =>
         a.trend && a.trend.length > 1 ? (
           <SparklineChart data={a.trend} color="var(--chart-1)" width={80} height={22} />
         ) : (
@@ -245,13 +239,16 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
             {apps.length} apps · services emitting gen_ai spans · click for traces
           </div>
         </div>
-        <SimpleTable<LlmApp>
-          columns={columns}
-          dataSource={apps}
-          rowKey="service"
-          size="small"
-          pagination={false}
-          onRow={(a) => ({ onClick: () => onOpenTrace(a.service), style: { cursor: "pointer" } })}
+        <DataTable
+          data={{
+            columns,
+            rows: apps,
+            loading: appsQ.isPending,
+          }}
+          pagination={{ showPagination: false }}
+          config={{
+            onRow: (a) => ({ onClick: () => onOpenTrace(a.service), style: { cursor: "pointer" } })
+          }}
         />
       </Surface>
     </div>

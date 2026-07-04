@@ -1,7 +1,7 @@
 import { StatCard } from "@shared/components/ui";
 
 interface StatCardsGridProps {
-  stats?: any[];
+  stats?: (React.ComponentProps<typeof StatCard> & { colProps?: unknown })[];
   style?: React.CSSProperties;
   className?: string;
   defaultColProps?: Record<string, unknown>;

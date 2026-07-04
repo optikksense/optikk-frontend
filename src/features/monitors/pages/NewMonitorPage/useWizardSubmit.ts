@@ -1,7 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import { type CreateMonitorPayload, createMonitor, testMonitor } from "../../api/monitorsApi";
 import { useUpdateMonitor } from "../../hooks/useMonitorMutations";
@@ -36,10 +35,10 @@ export function useWizardSubmit(editId: number | undefined) {
     try {
       if (editId !== undefined) {
         const updated = await updateMutation.mutateAsync(draft);
-        navigate(dynamicNavigateOptions(`/monitors/${updated.id}`));
+        navigate({ to: `/monitors/${updated.id}` as string & {} });
       } else {
         const created = await createMonitor(draft);
-        navigate(dynamicNavigateOptions(`/monitors/${created.id}`));
+        navigate({ to: `/monitors/${created.id}` as string & {} });
       }
     } catch (err) {
       setError(errorMessage(err, "Failed to save monitor"));

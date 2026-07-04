@@ -6,17 +6,16 @@ import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
 import { ChevronDown, ChevronLeft, ChevronRight, Moon, RefreshCw, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { settingsService } from "@shared/api/settingsService";
 
 import { useAppStore, useTheme } from "@store/appStore";
-import { useAuthTeam } from "@store/authStore";
+import { useAuthTenant } from "@store/authStore";
 
 import { AUTO_REFRESH_INTERVALS } from "@config/constants";
 
 import { cn } from "@/lib/utils";
 
 export default function Header() {
-  const team = useAuthTeam();
+  const tenant = useAuthTenant();
   const triggerRefresh = useAppStore((s) => s.triggerRefresh);
   const autoRefreshInterval = useAppStore((s) => s.autoRefreshInterval);
   const setAutoRefreshInterval = useAppStore((s) => s.setAutoRefreshInterval);
@@ -41,7 +40,6 @@ export default function Header() {
   const toggleTheme = useCallback(() => {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
-    void settingsService.updatePreferences({ theme: next }).catch(() => {});
   }, [theme, setTheme]);
 
   const shiftTimeRange = useCallback(
@@ -128,13 +126,13 @@ export default function Header() {
       </div>
 
       <div className="ml-auto flex min-w-0 shrink items-center gap-2.5">
-        {team && (
+        {tenant && (
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="whitespace-nowrap text-[11px] text-foreground-muted uppercase tracking-wide max-[1240px]:hidden">
               Workspace
             </span>
             <span className="truncate whitespace-nowrap font-medium text-[12px] text-foreground-secondary">
-              {team.orgName ? `${team.orgName} / ${team.name}` : team.name}
+              {tenant.name}
             </span>
           </div>
         )}

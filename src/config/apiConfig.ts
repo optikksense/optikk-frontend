@@ -15,20 +15,13 @@ const API_ENDPOINTS = {
     LOGOUT: "/v1/auth/logout",
     DEVICE_APPROVE: "/v1/auth/device/approve",
   },
-  ONBOARDING: {
-    STATUS: "/v1/onboarding/status",
-  },
-  TEAMS: {
-    LIST: "/v1/teams",
-    SWITCH: "/v1/teams/switch",
+  TENANTS: {
+    LIST: "/v1/tenants",
+    SWITCH: "/v1/tenants/switch",
   },
   V1_BASE: "/v1",
   DASHBOARDS: {
     PAGES: "/v1/dashboard-pages",
-  },
-  SETTINGS: {
-    PROFILE: "/v1/settings/profile",
-    PREFERENCES: "/v1/settings/preferences",
   },
 } as const;
 

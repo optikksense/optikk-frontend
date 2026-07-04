@@ -4,7 +4,6 @@ import { ArrowRight } from "lucide-react";
 import type { MouseEvent, ReactNode } from "react";
 import { useRef } from "react";
 
-import { dynamicTo } from "@/shared/utils/navigation";
 import { Reveal } from "../motion/Reveal";
 
 interface HeroCta {
@@ -45,7 +44,7 @@ function HeroLink({ cta }: { readonly cta: HeroCta }) {
     );
   }
   return (
-    <Link to={dynamicTo(cta.path)} className={className}>
+    <Link to={(cta.path as string & {})} className={className}>
       {cta.label}
       <ArrowRight size={16} />
     </Link>

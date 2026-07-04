@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Grid3x3 } from "lucide-react";
 
-import { dynamicTo } from "@shared/utils/navigation";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -30,7 +29,7 @@ function MetaLink({ label, to, value }: { label: string; to: string; value: stri
   return (
     <span className="inline-flex items-baseline gap-1 whitespace-nowrap">
       <span>{label}</span>
-      <Link to={dynamicTo(to)} className="font-medium font-mono text-primary hover:underline">
+      <Link to={(to as string & {})} className="font-medium font-mono text-primary hover:underline">
         {value}
       </Link>
     </span>

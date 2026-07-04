@@ -3,7 +3,6 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { dynamicTo } from "@shared/utils/navigation";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -40,7 +39,7 @@ export default function ContainersTab() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
 
-  const query = useTimeRangeQuery<FleetPod[]>("infrastructure.containers.list", (_team, s, e) =>
+  const query = useTimeRangeQuery<FleetPod[]>("infrastructure.containers.list", (_tenant, s, e) =>
     getFleetPods(s, e)
   );
 
@@ -94,12 +93,12 @@ export default function ContainersTab() {
   }, [processedPods]);
 
   const onOpenHost = (host: string) => {
-    navigate({ to: dynamicTo(ROUTES.hostDetail.replace("$host", encodeURIComponent(host))) });
+    navigate({ to: (ROUTES.hostDetail.replace("$host", encodeURIComponent(host as string & {}))) });
   };
 
   const onOpenContainer = (container: string) => {
     navigate({
-      to: dynamicTo(ROUTES.containerDetail.replace("$container", encodeURIComponent(container))),
+      to: (ROUTES.containerDetail.replace("$container", encodeURIComponent(container as string & {}))),
     });
   };
 

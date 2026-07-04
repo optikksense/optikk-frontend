@@ -33,7 +33,7 @@ export function useTraceOperationBaseline(
 ) {
   return useTimeRangeQuery<OperationBaseline>(
     "trace-detail.operation-baseline",
-    (_team, start, end) => fetchOperationBaseline(start, end, service ?? "", operation ?? ""),
+    (_tenant, start, end) => fetchOperationBaseline(start, end, service ?? "", operation ?? ""),
     { extraKeys: [service ?? "", operation ?? ""], enabled: Boolean(service && operation) }
   );
 }

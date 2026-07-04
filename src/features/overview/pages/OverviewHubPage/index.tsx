@@ -15,6 +15,7 @@ import {
   useServiceHealthCells,
   useTopErrorsQuery,
 } from "./hooks/useOverviewModel";
+import type { ServiceMetricPoint } from "@/features/metrics/types";
 
 function DegradedBadge({ count }: { readonly count: number }) {
   if (count <= 0) return null;
@@ -37,7 +38,7 @@ export default function OverviewHubPage() {
   const summaryLoading = summaryQ.isPending && !summaryQ.data;
 
   const performance = usePerformanceSeries(performanceQ.data?.pr);
-  const healthCells = useServiceHealthCells(summary?.services);
+  const healthCells = useServiceHealthCells(summary?.services as unknown as ServiceMetricPoint[]);
   const topErrors = useRankedErrorRows(errorsQ.data);
 
   const serviceCount = summary?.service_count ?? healthCells.length;

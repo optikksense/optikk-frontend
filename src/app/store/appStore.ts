@@ -16,8 +16,8 @@ import {
 
 interface AppState extends PersistedAppState {
   readonly refreshKey: number;
-  readonly setSelectedTeamId: (teamId: number | null) => void;
-  readonly setSelectedTeamIds: (teamIds: number[]) => void;
+  readonly setSelectedTenantId: (tenantId: number | null) => void;
+  readonly setSelectedTenantIds: (tenantIds: number[]) => void;
   readonly setTimeRange: (range: TimeRange) => void;
   readonly setCustomTimeRange: (startMs: number, endMs: number, label?: string) => void;
   readonly toggleSidebar: () => void;
@@ -43,18 +43,18 @@ export const useAppStore = create<AppState>()(
       ...defaultPersistedState,
       refreshKey: 0,
 
-      setSelectedTeamId: (teamId: number | null): void => {
+      setSelectedTenantId: (tenantId: number | null): void => {
         set({
-          selectedTeamId: teamId,
-          selectedTeamIds: teamId != null ? [teamId] : [],
+          selectedTenantId: tenantId,
+          selectedTenantIds: tenantId != null ? [tenantId] : [],
         });
       },
 
-      setSelectedTeamIds: (teamIds: number[]): void => {
-        const primary = teamIds[0] ?? null;
+      setSelectedTenantIds: (tenantIds: number[]): void => {
+        const primary = tenantIds[0] ?? null;
         set({
-          selectedTeamIds: teamIds,
-          selectedTeamId: primary,
+          selectedTenantIds: tenantIds,
+          selectedTenantId: primary,
         });
       },
 
@@ -159,8 +159,8 @@ export const useAppStore = create<AppState>()(
       name: STORAGE_KEYS.APP_STATE,
       storage: createJSONStorage(() => localStorage),
       partialize: (state): PersistedAppState => ({
-        selectedTeamId: state.selectedTeamId,
-        selectedTeamIds: state.selectedTeamIds,
+        selectedTenantId: state.selectedTenantId,
+        selectedTenantIds: state.selectedTenantIds,
         timeRange: state.timeRange,
         sidebarCollapsed: state.sidebarCollapsed,
         autoRefreshInterval: state.autoRefreshInterval,
@@ -178,18 +178,18 @@ export const useAppStore = create<AppState>()(
           return current;
         }
 
-        const selectedTeamIds = snapshot.selectedTeamIds ?? current.selectedTeamIds;
-        let selectedTeamId = snapshot.selectedTeamId ?? current.selectedTeamId;
-        if (selectedTeamId == null && selectedTeamIds.length > 0) {
-          selectedTeamId = selectedTeamIds[0] ?? null;
+        const selectedTenantIds = snapshot.selectedTenantIds ?? current.selectedTenantIds;
+        let selectedTenantId = snapshot.selectedTenantId ?? current.selectedTenantId;
+        if (selectedTenantId == null && selectedTenantIds.length > 0) {
+          selectedTenantId = selectedTenantIds[0] ?? null;
         }
 
         return {
           ...current,
           ...snapshot,
           timeRange: migrateTimeRange(snapshot.timeRange),
-          selectedTeamIds,
-          selectedTeamId,
+          selectedTenantIds,
+          selectedTenantId,
           viewPreferences: snapshot.viewPreferences ?? current.viewPreferences,
           recentPages: snapshot.recentPages ?? current.recentPages,
           recentTimeRanges: snapshot.recentTimeRanges ?? current.recentTimeRanges,
@@ -204,7 +204,7 @@ export const useAppStore = create<AppState>()(
 // Computed selectors — use these instead of accessing store shape directly.
 // Reduces coupling so store internals can change without updating every consumer.
 export const useTimeRange = () => useAppStore((s) => s.timeRange);
-export const useTeamId = () => useAppStore((s) => s.selectedTeamId);
+export const useTenantId = () => useAppStore((s) => s.selectedTenantId);
 export const useRefreshKey = () => useAppStore((s) => s.refreshKey);
 export const useSidebarCollapsed = () => useAppStore((s) => s.sidebarCollapsed);
 export const useTheme = () => useAppStore((s) => s.theme);

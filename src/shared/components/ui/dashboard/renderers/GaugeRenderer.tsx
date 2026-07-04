@@ -39,9 +39,9 @@ export function GaugeRenderer({
             alignContent: "start",
           }}
         >
-          {rows.map((row: any, i: number) => {
+          {rows.map((row: Record<string, unknown>, i: number) => {
             const val = Number(row[valueKey] ?? 0);
-            const label = row[groupKey] || `Item ${i + 1}`;
+            const label = String(row[groupKey] || `Item ${i + 1}`);
             return (
               <div
                 key={label}

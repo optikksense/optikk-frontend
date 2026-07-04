@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 
-import { dynamicTo } from "@/shared/utils/navigation";
 
 import { Stagger, StaggerItem } from "../motion/Stagger";
 
@@ -43,7 +42,7 @@ function FeatureLink({ link }: { readonly link: FeatureItem["link"] }) {
     );
   }
   return (
-    <Link className="m-bento-link" to={dynamicTo(link.path)}>
+    <Link className="m-bento-link" to={(link.path as string & {})}>
       {link.label} <ArrowRight size={14} />
     </Link>
   );

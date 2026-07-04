@@ -1,20 +1,4 @@
-import {
-  Activity,
-  Bot,
-  GitBranch,
-  Github,
-  Layers,
-  LineChart,
-  Network,
-  ScrollText,
-  Shield,
-  Star,
-  Workflow,
-} from "lucide-react";
-
-import { OSS, formatStars } from "../../constants";
-import { useGitHubStars } from "../../hooks/useGitHubStars";
-
+import { Activity, GitBranch, LineChart, ScrollText } from "lucide-react";
 import { GradientText } from "../../motion/GradientText";
 import { CTA } from "../../sections/CTA";
 import { ComparisonTable } from "../../sections/ComparisonTable";
@@ -24,97 +8,13 @@ import { LogoStrip } from "../../sections/LogoStrip";
 import { MetricsStrip } from "../../sections/MetricsStrip";
 import { SectionHeader } from "../../sections/SectionHeader";
 import { Split } from "../../sections/Split";
-import { DashboardMock, ProductMock } from "../../visuals/ProductMock";
+import { ProductMock } from "../../visuals/ProductMock";
+import { DashboardMock } from "../../visuals/DashboardMock";
 import { Screenshot } from "../../visuals/Screenshot";
-
-const STACK_LOGOS = [
-  { name: "OpenTelemetry" },
-  { name: "Kafka" },
-  { name: "ClickHouse" },
-  { name: "MySQL" },
-  { name: "Redis" },
-  { name: "Kubernetes" },
-  { name: "Prometheus" },
-  { name: "AWS" },
-  { name: "GCP" },
-  { name: "Azure" },
-];
-
-const PILLARS = [
-  {
-    icon: Workflow,
-    title: "Unified storage, three signals",
-    body: "Logs, metrics, and traces all land in the same high-performance columnar database. One query language, one cache, one place to look.",
-    link: { label: "See architecture", path: "/architecture" },
-    variant: "wide" as const,
-  },
-  {
-    icon: Bot,
-    title: "AI SRE on call",
-    body: "Ask what changed, which deploy broke prod, where the latency leaked. Answers grounded in your telemetry graph.",
-    link: { label: "Meet the AI SRE", path: "/features#ai-sre" },
-    variant: "ink" as const,
-  },
-  {
-    icon: Network,
-    title: "Context Graph",
-    body: "Services, deploys, hosts, pods, queries, and users are first-class entities — not strings to grep.",
-    link: { label: "How it works", path: "/architecture" },
-  },
-  {
-    icon: Layers,
-    title: "OpenTelemetry-native",
-    body: "Point your OTLP collector at us. Keep the schema you already have, drop the agent fleet you don't want.",
-    link: { label: "OTel quickstart", path: "/opentelemetry" },
-  },
-  {
-    icon: Shield,
-    title: "Flexible Deployments",
-    body: "Run in your private cloud, VPC, or fully air-gapped. Select the blast radius you can defend, with complete code parity.",
-    link: { label: "Deployment options", path: "/self-host" },
-    variant: "grad" as const,
-  },
-  {
-    icon: Github,
-    title: "Open source at the core",
-    body: "Engine, scheduler, and frontend dashboard are Apache 2.0. Self-host the whole stack from public repos with a single helm command.",
-    link: { label: "View on GitHub", path: OSS.org },
-  },
-];
-
-const COMPARE_ROWS = [
-  {
-    label: "Open source (Apache 2.0)",
-    cells: [false, true, "partial", "partial"] as const,
-  },
-  {
-    label: "Built on off-the-shelf primitives",
-    cells: [false, true, "partial", "partial"] as const,
-  },
-  {
-    label: "OTLP-native ingest",
-    cells: [true, true, "partial", true] as const,
-  },
-  {
-    label: "Logs · metrics · traces unified",
-    cells: [true, true, true, true] as const,
-  },
-  {
-    label: "AI investigations grounded in graph",
-    cells: [false, true, false, "partial"] as const,
-  },
-  {
-    label: "Self-host (full feature parity)",
-    cells: [false, true, false, "partial"] as const,
-  },
-  {
-    label: "Free tag cardinality",
-    cells: [false, true, "partial", "partial"] as const,
-  },
-];
+import { OpenSourceSection } from "../../sections/OpenSourceSection";
+import { STACK_LOGOS, PILLARS, COMPARE_ROWS } from "./HomePageData";
 
 export default function HomePage() {
-  const { stars, totalStars } = useGitHubStars();
   return (
     <>
       <Hero
@@ -139,7 +39,7 @@ export default function HomePage() {
       />
 
       <LogoStrip
-        label="Built on / integrates with the stack your platform team already runs"
+        label="Built on / integrates with the stack your platform tenant already runs"
         items={STACK_LOGOS}
       />
 
@@ -274,146 +174,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="m-section m-section--ink" id="open-source">
-        <div className="m-container">
-          <SectionHeader
-            eyebrow="Open source"
-            title={
-              <span style={{ color: "#fff" }}>
-                Apache 2.0, <GradientText>top to bottom.</GradientText>
-              </span>
-            }
-            lede={
-              <span style={{ color: "#c0cee0" }}>
-                The engine, the OTel collector build, the language SDKs, and the Helm chart all live
-                on GitHub. Self-host runs the same binaries Cloud does — no proprietary fork, no
-                closed core.
-              </span>
-            }
-          />
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: 18,
-              marginTop: 36,
-            }}
-          >
-            <a
-              className="is-ink m-bento-card"
-              href={OSS.frontend}
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: "none" }}
-            >
-              <span className="m-bento-icon">
-                <Github size={20} />
-              </span>
-              <h3 className="m-h4">optikk-frontend</h3>
-              <p className="m-body-sm">
-                Frontend UI dashboard of Observability. Built with React 19, Vite, and TypeScript.
-              </p>
-              <div className="m-bento-link">
-                <Star size={13} strokeWidth={2.4} /> {formatStars(stars["optikk-frontend"] || 0)} ·
-                Apache 2.0
-              </div>
-            </a>
-            <a
-              className="is-ink m-bento-card"
-              href={OSS.backend}
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: "none" }}
-            >
-              <span className="m-bento-icon">
-                <Github size={20} />
-              </span>
-              <h3 className="m-h4">optikk-backend</h3>
-              <p className="m-body-sm">
-                Go core backend engine. Handles high-throughput ingestion, storage, and AI-assisted
-                query resolution.
-              </p>
-              <div className="m-bento-link">
-                <Star size={13} strokeWidth={2.4} /> {formatStars(stars["optikk-backend"] || 0)} ·
-                Apache 2.0
-              </div>
-            </a>
-            <a
-              className="is-ink m-bento-card"
-              href={OSS.scheduler}
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: "none" }}
-            >
-              <span className="m-bento-icon">
-                <Github size={20} />
-              </span>
-              <h3 className="m-h4">scheduler</h3>
-              <p className="m-body-sm">
-                Distributed Go scheduling engine for alerting pipelines and tasks orchestration.
-              </p>
-              <div className="m-bento-link">
-                <Star size={13} strokeWidth={2.4} /> {formatStars(stars.scheduler || 0)} · Apache
-                2.0
-              </div>
-            </a>
-            <a
-              className="is-ink m-bento-card"
-              href={OSS.otelDemo}
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: "none" }}
-            >
-              <span className="m-bento-icon">
-                <Github size={20} />
-              </span>
-              <h3 className="m-h4">opentelemetry-demo</h3>
-              <p className="m-body-sm">
-                Astronomy Shop microservices demonstration instrumented with OpenTelemetry.
-              </p>
-              <div className="m-bento-link">
-                <Star size={13} strokeWidth={2.4} /> {formatStars(stars["opentelemetry-demo"] || 0)}{" "}
-                · Apache 2.0
-              </div>
-            </a>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 12,
-              marginTop: 28,
-              justifyContent: "center",
-            }}
-          >
-            <a
-              className="m-btn m-btn-primary"
-              href={OSS.frontend}
-              target="_blank"
-              rel="noreferrer"
-              style={{ background: "#fff", color: "var(--m-ink)", borderColor: "#fff" }}
-            >
-              <Star size={16} strokeWidth={2.4} />
-              Star on GitHub · {formatStars(totalStars)}
-            </a>
-            <a
-              className="m-btn m-btn-secondary"
-              href={OSS.org}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                background: "transparent",
-                color: "#fff",
-                borderColor: "rgba(255,255,255,0.3)",
-              }}
-            >
-              All repos
-            </a>
-          </div>
-        </div>
-      </section>
+      <OpenSourceSection />
 
       <section className="m-section">
         <div className="m-container">
@@ -438,7 +199,7 @@ export default function HomePage() {
       <section className="m-section m-section--warm">
         <div className="m-container">
           <SectionHeader
-            eyebrow="What teams build with Optikk"
+            eyebrow="What tenants build with Optikk"
             title={
               <>
                 From hobby project to <GradientText>10 million spans / second.</GradientText>
@@ -481,7 +242,7 @@ export default function HomePage() {
             <span style={{ color: "#fdba74" }}>Never re-do observability again.</span>
           </>
         }
-        subtitle="Optikk is fully open source under the Apache 2.0 license. Bring your OTel collector. Bring your team. Ship faster on Monday."
+        subtitle="Optikk is fully open source under the Apache 2.0 license. Bring your OTel collector. Bring your tenant. Ship faster on Monday."
         primary={{ label: "Self-host now", path: "/self-host" }}
         secondary={{ label: "Read the docs", path: "/opentelemetry", variant: "secondary" }}
       />

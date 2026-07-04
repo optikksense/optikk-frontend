@@ -2,7 +2,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { memo } from "react";
 
-import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 import type { Monitor } from "../../api/monitorsApi";
 import MonitorStatusBadge from "../../components/MonitorStatusBadge";
 import PriorityChip from "../../components/PriorityChip";
@@ -56,7 +55,7 @@ function MonitorsTable({ monitors }: Props) {
           {monitors.map((m) => (
             <tr
               key={m.id}
-              onClick={() => navigate(dynamicNavigateOptions(`/monitors/${m.id}`))}
+              onClick={() => navigate({ to: `/monitors/${m.id}` as string & {} })}
               className="cursor-pointer border-border border-b last:border-0 hover:bg-secondary"
             >
               <td className="py-2 pl-4">

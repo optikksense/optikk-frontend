@@ -1,14 +1,13 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
-import type { SimpleTableColumn } from "@shared/components/primitives/ui/simple-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { ROUTES } from "@/shared/constants/routes";
-import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
 import { DbEngineIcon } from "../components/DbEngineIcon";
 import { StatusPill } from "../components/StatusPill";
@@ -23,13 +22,13 @@ function p95Class(ms: number): string {
   return "text-foreground";
 }
 
-function buildColumns(sparklines: Map<string, number[]>): SimpleTableColumn<DatastoreSystemRow>[] {
+function buildColumns(sparklines: Map<string, number[]>): ColumnDef<DatastoreSystemRow>[] {
   return [
     {
-      title: "Instance",
-      key: "system",
-      width: 260,
-      render: (_v, row) => (
+      header: "Instance",
+      accessorKey: "system",
+      size: 260,
+      cell: ({ row: { original: row } }) => (
         <div className="flex items-center gap-2.5">
           <DbEngineIcon system={row.system} />
           <div className="min-w-0">
@@ -44,30 +43,29 @@ function buildColumns(sparklines: Map<string, number[]>): SimpleTableColumn<Data
       ),
     },
     {
-      title: "Region",
-      key: "server_hint",
-      width: 150,
-      render: (_v, row) => (
+      header: "Region",
+      accessorKey: "server_hint",
+      size: 150,
+      cell: ({ row: { original: row } }) => (
         <span className="font-mono text-[12px] text-foreground-secondary">
           {row.server_hint || "—"}
         </span>
       ),
     },
     {
-      title: "Queries",
-      key: "query_count",
-      width: 100,
-      align: "right",
-      sorter: (a, b) => a.query_count - b.query_count,
-      render: (_v, row) => (
+      header: "Queries",
+      accessorKey: "query_count",
+      size: 100,
+      meta: { align: "right" },
+      cell: ({ row: { original: row } }) => (
         <span className="font-mono font-semibold text-foreground">{fmtNum(row.query_count)}</span>
       ),
     },
     {
-      title: "Trend",
-      key: "trend",
-      width: 110,
-      render: (_v, row) => {
+      header: "Trend",
+      accessorKey: "trend",
+      size: 110,
+      cell: ({ row: { original: row } }) => {
         const series = sparklines.get(row.system) ?? [];
         const status = instanceStatus(row);
         const color =
@@ -80,45 +78,41 @@ function buildColumns(sparklines: Map<string, number[]>): SimpleTableColumn<Data
       },
     },
     {
-      title: "Avg",
-      key: "avg_latency_ms",
-      width: 84,
-      align: "right",
-      sorter: (a, b) => a.avg_latency_ms - b.avg_latency_ms,
-      render: (_v, row) => <span className="font-mono">{fmtMs(row.avg_latency_ms)}</span>,
+      header: "Avg",
+      accessorKey: "avg_latency_ms",
+      size: 84,
+      meta: { align: "right" },
+      cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.avg_latency_ms)}</span>,
     },
     {
-      title: "p95",
-      key: "p95_latency_ms",
-      width: 84,
-      align: "right",
-      sorter: (a, b) => a.p95_latency_ms - b.p95_latency_ms,
-      defaultSortOrder: "descend",
-      render: (_v, row) => (
+      header: "p95",
+      accessorKey: "p95_latency_ms",
+      size: 84,
+      meta: { align: "right" },
+      cell: ({ row: { original: row } }) => (
         <span className={`font-mono ${p95Class(row.p95_latency_ms)}`}>
           {fmtMs(row.p95_latency_ms)}
         </span>
       ),
     },
     {
-      title: "Connections",
-      key: "active_connections",
-      width: 110,
-      align: "right",
-      sorter: (a, b) => a.active_connections - b.active_connections,
-      render: (_v, row) => <span className="font-mono">{fmtNum(row.active_connections)}</span>,
+      header: "Connections",
+      accessorKey: "active_connections",
+      size: 110,
+      meta: { align: "right" },
+      cell: ({ row: { original: row } }) => <span className="font-mono">{fmtNum(row.active_connections)}</span>,
     },
     {
-      title: "Status",
-      key: "status",
-      width: 120,
-      render: (_v, row) => <StatusPill status={instanceStatus(row)} />,
+      header: "Status",
+      accessorKey: "status",
+      size: 120,
+      cell: ({ row: { original: row } }) => <StatusPill status={instanceStatus(row)} />,
     },
     {
-      title: "",
-      key: "chevron",
-      width: 34,
-      render: () => <ChevronRight size={14} className="text-foreground-muted" />,
+      header: "",
+      id: "chevron",
+      size: 34,
+      cell: () => <ChevronRight size={14} className="text-foreground-muted" />,
     },
   ];
 }
@@ -133,18 +127,19 @@ export function DatabaseInstancesTable({ rows, loading, sparklines }: DatabaseIn
   const navigate = useNavigate();
   const columns = buildColumns(sparklines);
   return (
-    <DataTable<DatastoreSystemRow>
-      data={{ columns, rows, loading, rowKey: "system" }}
+    <DataTable
+      data={{ columns, rows, loading }}
       pagination={{ showPagination: false }}
       config={{
         emptyText: "No datastore instances match the current filters.",
         onRow: (row) => ({
           onClick: () =>
-            navigate(
-              dynamicNavigateOptions(
-                ROUTES.saturationDatabaseDetail.replace("$system", encodeURIComponent(row.system))
-              )
-            ),
+            navigate({
+              to: ROUTES.saturationDatabaseDetail.replace(
+                "$system",
+                encodeURIComponent(row.system)
+              ) as never,
+            }),
           style: { cursor: "pointer" },
         }),
       }}

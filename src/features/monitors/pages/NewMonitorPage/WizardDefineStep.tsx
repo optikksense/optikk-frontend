@@ -57,7 +57,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
                 .filter(Boolean),
             }))
           }
-          placeholder="team:payments, tier:0"
+          placeholder="tenant:payments, tier:0"
           className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
       </FieldRow>

@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import type { SimpleTableColumn } from "@shared/components/primitives/ui/simple-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
@@ -10,7 +10,6 @@ import { queryFingerprintId } from "@/features/saturation/utils/queryFingerprint
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
 import { ROUTES } from "@/shared/constants/routes";
-import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
 import { StatusDot } from "../components/StatusDot";
 import { useDatabaseSystemQueries } from "../hooks/useDatabaseSystemQueries";
@@ -24,12 +23,12 @@ function p99Status(p99: number) {
   return "ok" as const;
 }
 
-const COLUMNS: SimpleTableColumn<SlowQueryPatternRow>[] = [
+const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
   {
-    title: "Query",
-    key: "query_text",
-    width: 460,
-    render: (_v, row) => (
+    header: "Query",
+    accessorKey: "query_text",
+    size: 460,
+    cell: ({ row: { original: row } }) => (
       <div className="flex min-w-0 items-center gap-2">
         <StatusDot status={p99Status(row.p99_ms ?? 0)} />
         <span className="block truncate font-mono text-[11.5px] text-foreground">
@@ -39,47 +38,42 @@ const COLUMNS: SimpleTableColumn<SlowQueryPatternRow>[] = [
     ),
   },
   {
-    title: "Calls",
-    key: "call_count",
-    width: 90,
-    align: "right",
-    sorter: (a, b) => a.call_count - b.call_count,
-    render: (_v, row) => <span className="font-mono">{fmtNum(row.call_count)}</span>,
+    header: "Calls",
+    accessorKey: "call_count",
+    size: 90,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtNum(row.call_count)}</span>,
   },
   {
-    title: "p50",
-    key: "p50_ms",
-    width: 84,
-    align: "right",
-    sorter: (a, b) => (a.p50_ms ?? 0) - (b.p50_ms ?? 0),
-    render: (_v, row) => <span className="font-mono">{fmtMs(row.p50_ms)}</span>,
+    header: "p50",
+    accessorKey: "p50_ms",
+    size: 84,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.p50_ms)}</span>,
   },
   {
-    title: "p99",
-    key: "p99_ms",
-    width: 84,
-    align: "right",
-    sorter: (a, b) => (a.p99_ms ?? 0) - (b.p99_ms ?? 0),
-    defaultSortOrder: "descend",
-    render: (_v, row) => <span className="font-mono">{fmtMs(row.p99_ms)}</span>,
+    header: "p99",
+    accessorKey: "p99_ms",
+    size: 84,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.p99_ms)}</span>,
   },
   {
-    title: "Total time",
-    key: "total",
-    width: 104,
-    align: "right",
-    sorter: (a, b) => a.call_count * (a.p95_ms ?? 0) - b.call_count * (b.p95_ms ?? 0),
-    render: (_v, row) => (
+    header: "Total time",
+    accessorKey: "total",
+    size: 104,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
       <span className="font-mono font-semibold text-foreground">
         {fmtMs(row.call_count * (row.p95_ms ?? 0))}
       </span>
     ),
   },
   {
-    title: "",
-    key: "chevron",
-    width: 34,
-    render: () => <ChevronRight size={14} className="text-foreground-muted" />,
+    header: "",
+    id: "chevron",
+    size: 34,
+    cell: () => <ChevronRight size={14} className="text-foreground-muted" />,
   },
 ];
 
@@ -110,26 +104,23 @@ export function DatabaseQueriesTab({ system }: { system: string }) {
         />
       }
     >
-      <DataTable<SlowQueryPatternRow>
+      <DataTable
         data={{
           columns: COLUMNS,
           rows: filtered,
           loading: isPending,
-          rowKey: (r, i) => `${queryFingerprintId(r)}::${i}`,
         }}
         pagination={{ pageSize: 10 }}
         config={{
           emptyText: "No queries recorded for this instance in the current window.",
           onRow: (row) => ({
             onClick: () =>
-              navigate(
-                dynamicNavigateOptions(
-                  ROUTES.saturationDatabaseQuery.replace(
-                    "$queryId",
-                    row.query_hash || queryFingerprintId(row)
-                  )
-                )
-              ),
+              navigate({
+                to: ROUTES.saturationDatabaseQuery.replace(
+                  "$queryId",
+                  row.query_hash || queryFingerprintId(row)
+                ) as never,
+              }),
             style: { cursor: "pointer" },
           }),
         }}

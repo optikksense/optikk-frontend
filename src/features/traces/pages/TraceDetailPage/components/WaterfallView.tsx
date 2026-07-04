@@ -2,7 +2,6 @@ import { memo } from "react";
 
 import type { TraceRecord } from "@shared/entities/trace/model";
 
-import { useTracesStore } from "../../../store/tracesStore";
 import type { SpanEvent } from "../../../types";
 
 import { WaterfallTrace } from "./WaterfallTrace";
@@ -16,8 +15,11 @@ interface Props {
   readonly spanEvents?: readonly SpanEvent[];
 }
 
+import { Route } from "@/routes/_app/traces/$traceId";
+
 function WaterfallViewComponent(props: Props) {
-  const search = useTracesStore((s) => s.waterfallSearch);
+  const searchParams = Route.useSearch();
+  const search = searchParams.q ?? "";
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-auto">

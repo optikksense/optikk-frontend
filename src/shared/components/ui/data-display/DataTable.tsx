@@ -1,19 +1,18 @@
-import { UI_CONFIG } from "@config/constants";
-import { SimpleTable } from "@shared/components/primitives/ui/simple-table";
-import type {
-  SimpleTableColumn,
-  SimpleTableProps,
-} from "@shared/components/primitives/ui/simple-table";
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { EmptyState } from "@shared/components/ui/feedback";
-
-type TableRow = object;
-
-interface DataTableData<RowType extends TableRow = TableRow> {
-  columns: SimpleTableColumn<RowType>[];
-  rows: RowType[];
-  loading?: boolean;
-  rowKey?: SimpleTableProps<RowType>["rowKey"];
-}
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@shared/components/primitives/ui/table";
 
 interface DataTablePagination {
   page?: number;
@@ -23,41 +22,37 @@ interface DataTablePagination {
   showPagination?: boolean;
 }
 
-interface DataTableConfig<RowType extends TableRow = TableRow> {
+interface DataTableConfig<TData> {
   emptyText?: string;
   scroll?: { x?: number; y?: number };
-  onRow?: SimpleTableProps<RowType>["onRow"];
+  onRow?: (record: TData, index?: number) => React.HTMLAttributes<HTMLTableRowElement>;
 }
 
-export interface DataTableProps<RowType extends TableRow = TableRow> {
-  data: DataTableData<RowType>;
+export interface DataTableProps<TData, TValue> {
+  data: {
+    columns: ColumnDef<TData, TValue>[];
+    rows: TData[];
+    loading?: boolean;
+  };
   pagination?: DataTablePagination;
-  config?: DataTableConfig<RowType>;
+  config?: DataTableConfig<TData>;
 }
 
 /**
- * Shared table wrapper with consistent pagination and empty states.
+ * Standard shadcn/ui DataTable wrapper.
  */
-export default function DataTable<RowType extends TableRow = TableRow>({
+export default function DataTable<TData, TValue>({
   data,
-  pagination = {},
   config = {},
-}: DataTableProps<RowType>): JSX.Element {
-  const { columns, rows, loading = false, rowKey } = data;
-  const { page, pageSize, total, onPageChange, showPagination = true } = pagination;
-  const { emptyText = "No data found", scroll, onRow } = config;
+}: DataTableProps<TData, TValue>): JSX.Element {
+  const { columns, rows, loading = false } = data;
+  const { emptyText = "No data found", onRow } = config;
 
-  const paginationConfig =
-    showPagination && onPageChange
-      ? {
-          current: page,
-          pageSize: pageSize || UI_CONFIG.DEFAULT_PAGE_SIZE,
-          total: total || 0,
-          onChange: (newPage: number, newPageSize: number) => onPageChange(newPage, newPageSize),
-        }
-      : showPagination
-        ? { pageSize: UI_CONFIG.DEFAULT_PAGE_SIZE }
-        : false;
+  const table = useReactTable({
+    data: rows,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   if (loading) {
     return (
@@ -72,14 +67,54 @@ export default function DataTable<RowType extends TableRow = TableRow>({
   }
 
   return (
-    <SimpleTable
-      columns={columns}
-      dataSource={rows}
-      rowKey={rowKey}
-      pagination={paginationConfig || false}
-      scroll={scroll}
-      onRow={onRow}
-      size="small"
-    />
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                const align = (header.column.columnDef.meta as any)?.align || "left";
+                const width = header.column.columnDef.size !== 150 ? header.column.columnDef.size : undefined;
+                return (
+                  <TableHead 
+                    key={header.id} 
+                    style={{ width, textAlign: align }}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row, index) => {
+            const rowProps = onRow ? onRow(row.original, index) : {};
+            return (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                {...rowProps}
+              >
+                {row.getVisibleCells().map((cell) => {
+                  const align = (cell.column.columnDef.meta as any)?.align || "left";
+                  return (
+                    <TableCell key={cell.id} style={{ textAlign: align }}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+      {/* Pagination implementation placeholder if needed in the future */}
+    </div>
   );
 }

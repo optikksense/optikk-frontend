@@ -22,7 +22,7 @@ interface DatabaseQueryDetail {
 export function useDatabaseQueryDetail(queryId: string): DatabaseQueryDetail {
   const { data, isPending } = useTimeRangeQuery<SlowQueryPatternRow[]>(
     "saturation-db.query-detail",
-    (_team, s, e) => getSlowQueryPatterns(s, e, undefined, DETAIL_LIMIT),
+    (_tenant, s, e) => getSlowQueryPatterns(s, e, undefined, DETAIL_LIMIT),
     { extraKeys: [DETAIL_LIMIT] }
   );
   const row = useMemo(

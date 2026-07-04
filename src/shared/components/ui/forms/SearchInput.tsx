@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
-import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { Button, Input, SearchField } from "react-aria-components";
 
 import { cn } from "@/lib/utils";
 
@@ -19,48 +19,31 @@ export default function SearchInput({
   style,
   className,
 }: SearchInputProps): JSX.Element {
-  const [value, setValue] = useState("");
-
   const debouncedSearch = useDebouncedCallback((newValue: string) => {
     onSearch?.(newValue);
   }, debounceMs);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    debouncedSearch(newValue);
-  };
-
-  const handleClear = () => {
-    setValue("");
-    debouncedSearch.cancel();
-    onSearch?.("");
-  };
-
   return (
-    <div className={cn("relative inline-flex items-center", className)} style={style}>
+    <SearchField
+      className={cn("relative inline-flex items-center group", className)}
+      style={style}
+      onChange={debouncedSearch}
+      onClear={() => onSearch?.("")}
+      aria-label="Search"
+    >
       <Search
         size={16}
-        className="pointer-events-none absolute left-2 text-[var(--text-secondary,#999)]"
+        className="pointer-events-none absolute left-2 text-[var(--text-secondary,#999)] z-10"
       />
-      <input
-        type="text"
-        value={value}
-        onChange={handleChange}
+      <Input
         placeholder={placeholder}
-        className="h-8 w-full rounded-md border border-[var(--border-color,#d9d9d9)] pl-[30px] text-sm"
-        style={{ paddingRight: value ? 28 : 8 }}
+        className="h-8 w-full rounded-md border border-[var(--border-color,#d9d9d9)] pl-[30px] pr-[28px] text-sm outline-none focus-visible:ring-1 focus-visible:ring-primary"
       />
-      {value && (
-        <button
-          type="button"
-          onClick={handleClear}
-          aria-label="Clear"
-          className="absolute right-1.5 cursor-pointer border-none bg-transparent text-[var(--text-secondary,#999)] text-sm"
-        >
-          &times;
-        </button>
-      )}
-    </div>
+      <Button
+        className="absolute right-1.5 cursor-pointer rounded-sm border-none bg-transparent p-0.5 text-[var(--text-secondary,#999)] text-sm opacity-0 group-data-[empty=false]:opacity-100 hover:text-foreground outline-none focus-visible:ring-1 focus-visible:ring-primary"
+      >
+        &times;
+      </Button>
+    </SearchField>
   );
 }

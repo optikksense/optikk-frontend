@@ -11,25 +11,25 @@ interface QueryLifecycleBridgeProps {
 }
 
 export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeProps): JSX.Element {
-  const selectedTeamId = useAppStore((state) => state.selectedTeamId);
-  const selectedTeamIds = useAppStore((state) => state.selectedTeamIds);
+  const selectedTenantId = useAppStore((state) => state.selectedTenantId);
+  const selectedTenantIds = useAppStore((state) => state.selectedTenantIds);
 
-  const teamScopeKey = useMemo(
-    () => JSON.stringify({ selectedTeamId, selectedTeamIds }),
-    [selectedTeamId, selectedTeamIds]
+  const tenantScopeKey = useMemo(
+    () => JSON.stringify({ selectedTenantId, selectedTenantIds }),
+    [selectedTenantId, selectedTenantIds]
   );
 
-  const isFirstTeamScope = useRef(true);
+  const isFirstTenantScope = useRef(true);
 
   useEffect(() => {
-    if (isFirstTeamScope.current) {
-      isFirstTeamScope.current = false;
+    if (isFirstTenantScope.current) {
+      isFirstTenantScope.current = false;
       return;
     }
 
     void queryClient.invalidateQueries({ queryKey: ["component-query"] });
     void queryClient.invalidateQueries({ queryKey: ["datasource"] });
-  }, [teamScopeKey]);
+  }, [tenantScopeKey]);
 
   return <>{children}</>;
 }

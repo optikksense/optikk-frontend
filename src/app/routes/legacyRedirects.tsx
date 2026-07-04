@@ -3,14 +3,13 @@ import type { RootRoute } from "@tanstack/react-router";
 
 import { ROUTES } from "@/shared/constants/routes";
 import type { DashboardDrawerEntity } from "@/shared/types/dashboardConfig";
-import { dynamicTo } from "@/shared/utils/navigation";
 
 import LegacyDashboardDetailRedirect from "./LegacyDashboardDetailRedirect";
 
 // Legacy per-datastore / per-redis detail URLs now forward to the Database hub
 // (the standalone detail pages were removed in the saturation simplification).
 function LegacySaturationDatabaseRedirect() {
-  return <Navigate to={dynamicTo(ROUTES.saturationDatabase)} replace />;
+  return <Navigate to={(ROUTES.saturationDatabase as string & {})} replace />;
 }
 
 function toNestedRoutePath(path: string): string {

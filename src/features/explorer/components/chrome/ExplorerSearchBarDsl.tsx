@@ -1,4 +1,5 @@
-import { type KeyboardEvent, forwardRef, memo, useCallback, useEffect, useState } from "react";
+import { type KeyboardEvent, forwardRef, memo, useCallback, useEffect, useRef, useState } from "react";
+import { Group, Input, Popover, SearchField } from "react-aria-components";
 
 import { useDslSearchBar } from "../../hooks/useDslSearchBar";
 import { formatDsl } from "../../search/formatDsl";
@@ -75,26 +76,40 @@ interface LayoutProps {
 
 function DslBarLayout(p: LayoutProps) {
   const { state: s } = p;
+  const triggerRef = useRef<HTMLDivElement>(null);
   return (
-    <div className="relative">
-      <input
-        ref={p.inputRef}
-        type="text"
-        value={s.input}
-        placeholder={p.placeholder ?? 'service:foo -env:prod @http.status_code:>=500 "timeout"'}
-        onChange={(e) => {
-          s.onChange(e.target.value, e.target.selectionStart ?? e.target.value.length);
-          p.setShowPopover(true);
-        }}
-        onSelect={(e) => s.setCaret((e.target as HTMLInputElement).selectionStart ?? 0)}
-        onFocus={() => p.setShowPopover(true)}
-        onBlur={() => setTimeout(() => p.setShowPopover(false), 150)}
-        onKeyDown={p.onKeyDown}
-        className={inputClass(s.parsed.errors.length > 0)}
-        spellCheck={false}
-        autoComplete="off"
-      />
-      {p.showPopover ? (
+    <SearchField
+      value={s.input}
+      onChange={() => {
+        // SearchField onChange doesn't provide caret pos, so we rely on Input onChange
+      }}
+      aria-label="Search query"
+      className="relative w-full"
+    >
+      <Group ref={triggerRef} className={inputClass(s.parsed.errors.length > 0)}>
+        <Input
+          ref={p.inputRef}
+          placeholder={p.placeholder ?? 'service:foo -env:prod @http.status_code:>=500 "timeout"'}
+          onChange={(e) => {
+            s.onChange(e.target.value, e.target.selectionStart ?? e.target.value.length);
+            p.setShowPopover(true);
+          }}
+          onSelect={(e) => s.setCaret((e.target as HTMLInputElement).selectionStart ?? 0)}
+          onFocus={() => p.setShowPopover(true)}
+          onKeyDown={p.onKeyDown}
+          className="w-full bg-transparent outline-none"
+          spellCheck={false}
+          autoComplete="off"
+        />
+      </Group>
+      <Popover
+        triggerRef={triggerRef}
+        isOpen={p.showPopover}
+        onOpenChange={p.setShowPopover}
+        isNonModal
+        placement="bottom start"
+        className="w-[var(--trigger-width)]"
+      >
         <QuerySuggestions
           options={s.suggestions}
           activeIndex={s.activeIdx}
@@ -104,17 +119,17 @@ function DslBarLayout(p: LayoutProps) {
           title={popoverTitle(s.context)}
           highlight={s.context.tokenPrefix}
         />
-      ) : null}
+      </Popover>
       {s.parsed.errors.length > 0 ? (
         <div className="mt-1 text-[10px] text-error">{s.parsed.errors[0].message}</div>
       ) : null}
-    </div>
+    </SearchField>
   );
 }
 
 function inputClass(hasError: boolean): string {
   const base =
-    "w-full rounded border px-2 py-1 font-mono text-[13px] outline-none focus:border-[var(--accent)]";
+    "flex w-full items-center rounded border px-2 py-1 font-mono text-[13px] outline-none focus-within:border-[var(--accent)]";
   return hasError ? `${base} border-error bg-background` : `${base} border-border bg-background`;
 }
 

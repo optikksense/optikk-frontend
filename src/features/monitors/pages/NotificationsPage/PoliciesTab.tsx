@@ -100,7 +100,7 @@ export default function PoliciesTab() {
           <input
             value={form.matchDsl}
             onChange={(e) => setForm((f) => ({ ...f, matchDsl: e.target.value }))}
-            placeholder="Match DSL (e.g. priority:P1 AND team:payments)"
+            placeholder="Match DSL (e.g. priority:P1 AND tenant:payments)"
             className="rounded border border-border bg-card px-2 py-1.5 font-mono text-xs"
           />
           <textarea

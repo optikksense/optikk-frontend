@@ -18,7 +18,7 @@ function buildDelta(now: TopDBQuery, prev: TopDBQuery | undefined): number | nul
 export function useTopDBQueries(serviceName: string, limit = 50, cursor?: string) {
   return useTimeRangeQuery<PaginatedResponse<DBQueryWithDelta[]>>(
     "service-detail.top-db-queries",
-    async (_team, start, end): Promise<PaginatedResponse<DBQueryWithDelta[]>> => {
+    async (_tenant, start, end): Promise<PaginatedResponse<DBQueryWithDelta[]>> => {
       const payload = await getTopDBQueries(
         start,
         end,

@@ -11,8 +11,8 @@ interface RecentPage {
 }
 
 export interface PersistedAppState {
-  readonly selectedTeamId: number | null;
-  readonly selectedTeamIds: number[];
+  readonly selectedTenantId: number | null;
+  readonly selectedTenantIds: number[];
   readonly timeRange: TimeRange;
   readonly sidebarCollapsed: boolean;
   readonly autoRefreshInterval: number;
@@ -106,8 +106,8 @@ export function pushRecentRange(existing: TimeRange[], newRange: TimeRange): Tim
   return [newRange, ...filtered].slice(0, MAX_RECENT_RANGES);
 }
 
-function readLegacyTeamIDs(): number[] {
-  const raw = readStorage(STORAGE_KEYS.TEAM_IDS);
+function readLegacyTenantIDs(): number[] {
+  const raw = readStorage(STORAGE_KEYS.TENANT_IDS);
   if (!raw) {
     return [];
   }
@@ -115,21 +115,21 @@ function readLegacyTeamIDs(): number[] {
   return raw
     .split(",")
     .map(Number)
-    .filter((teamId) => Number.isFinite(teamId) && teamId > 0);
+    .filter((tenantId) => Number.isFinite(tenantId) && tenantId > 0);
 }
 
 export function loadLegacyAppState(): PersistedAppState {
-  const selectedTeamIdRaw = readStorage(STORAGE_KEYS.TEAM_ID);
-  const selectedTeamId =
-    selectedTeamIdRaw && Number.isFinite(Number(selectedTeamIdRaw))
-      ? Number(selectedTeamIdRaw)
+  const selectedTenantIdRaw = readStorage(STORAGE_KEYS.TENANT_ID);
+  const selectedTenantId =
+    selectedTenantIdRaw && Number.isFinite(Number(selectedTenantIdRaw))
+      ? Number(selectedTenantIdRaw)
       : null;
-  const selectedTeamIds = readLegacyTeamIDs();
+  const selectedTenantIds = readLegacyTenantIDs();
 
   return {
-    selectedTeamId,
-    selectedTeamIds:
-      selectedTeamIds.length > 0 ? selectedTeamIds : selectedTeamId != null ? [selectedTeamId] : [],
+    selectedTenantId,
+    selectedTenantIds:
+      selectedTenantIds.length > 0 ? selectedTenantIds : selectedTenantId != null ? [selectedTenantId] : [],
     timeRange: migrateTimeRange(readStorage(STORAGE_KEYS.TIME_RANGE)),
     sidebarCollapsed: readStorage(STORAGE_KEYS.SIDEBAR_COLLAPSED) === "true",
     autoRefreshInterval: Number(readStorage(STORAGE_KEYS.AUTO_REFRESH) ?? "10000") || 10_000,

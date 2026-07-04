@@ -1,7 +1,8 @@
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { PageShell } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
@@ -20,58 +21,56 @@ function fmtMs(v: number): string {
   return `${Math.round(v)}ms`;
 }
 
-const SERVICE_COLUMNS: SimpleTableColumn<InfrastructureNodeService>[] = [
-  { title: "Service", key: "service_name", width: 220 },
+const SERVICE_COLUMNS: ColumnDef<InfrastructureNodeService>[] = [
+  { header: "Service", accessorKey: "service_name", size: 220 },
   {
-    title: "Requests",
-    key: "request_count",
-    align: "right",
-    width: 120,
-    render: (_v, row) => formatNumber(row.request_count),
-    sorter: (a, b) => a.request_count - b.request_count,
-    defaultSortOrder: "descend",
+    header: "Requests",
+    accessorKey: "request_count",
+    meta: { align: "right" },
+    size: 120,
+    cell: ({ row: { original: row } }) => formatNumber(row.request_count),
   },
   {
-    title: "Errors",
-    key: "error_count",
-    align: "right",
-    width: 100,
-    render: (_v, row) => formatNumber(row.error_count),
+    header: "Errors",
+    accessorKey: "error_count",
+    meta: { align: "right" },
+    size: 100,
+    cell: ({ row: { original: row } }) => formatNumber(row.error_count),
   },
   {
-    title: "Error %",
-    key: "error_rate",
-    align: "right",
-    width: 100,
-    render: (_v, row) => `${(row.error_rate * 100).toFixed(2)}%`,
+    header: "Error %",
+    accessorKey: "error_rate",
+    meta: { align: "right" },
+    size: 100,
+    cell: ({ row: { original: row } }) => `${(row.error_rate * 100).toFixed(2)}%`,
   },
   {
-    title: "Avg latency",
-    key: "avg_latency_ms",
-    align: "right",
-    width: 130,
-    render: (_v, row) => fmtMs(row.avg_latency_ms),
+    header: "Avg latency",
+    accessorKey: "avg_latency_ms",
+    meta: { align: "right" },
+    size: 130,
+    cell: ({ row: { original: row } }) => fmtMs(row.avg_latency_ms),
   },
   {
-    title: "p95",
-    key: "p95_latency_ms",
-    align: "right",
-    width: 110,
-    render: (_v, row) => fmtMs(row.p95_latency_ms),
+    header: "p95",
+    accessorKey: "p95_latency_ms",
+    meta: { align: "right" },
+    size: 110,
+    cell: ({ row: { original: row } }) => fmtMs(row.p95_latency_ms),
   },
   {
-    title: "Pods",
-    key: "pod_count",
-    align: "right",
-    width: 80,
-    render: (_v, row) => formatNumber(row.pod_count),
+    header: "Pods",
+    accessorKey: "pod_count",
+    meta: { align: "right" },
+    size: 80,
+    cell: ({ row: { original: row } }) => formatNumber(row.pod_count),
   },
 ];
 
 function useHostNode(host: string): InfrastructureNode | null {
   const nodesQ = useTimeRangeQuery<readonly InfrastructureNode[]>(
     "host-detail.nodes-list",
-    (_team, s, e) => getNodes(s, e)
+    (_tenant, s, e) => getNodes(s, e)
   );
   return useMemo(
     () => nodesQ.data?.find((node) => node.host === host) ?? null,
@@ -105,10 +104,11 @@ export default function HostDetailPage(): JSX.Element {
       <HostDetailSystemMetrics host={host} />
       <section className="rounded-md border border-border bg-card p-4">
         <div className="mb-3 font-semibold text-[13px] text-foreground">Services on this host</div>
-        <SimpleTable
-          columns={SERVICE_COLUMNS}
-          dataSource={services}
-          rowKey={(r) => r.service_name}
+        <DataTable
+          data={{
+            columns: SERVICE_COLUMNS,
+            rows: services,
+          }}
           pagination={{ pageSize: 25 }}
         />
       </section>

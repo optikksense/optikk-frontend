@@ -41,7 +41,7 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
   // Latest occurrence of the top error group (to get its real stacktrace)
   const detailQ = useTimeRangeQuery(
     "service-detail.error-group-top-latest",
-    (_team, start, end) => getErrorGroupLatestOccurrence(topGroupId, start, end),
+    (_tenant, start, end) => getErrorGroupLatestOccurrence(topGroupId, start, end),
     { extraKeys: [topGroupId], enabled: Boolean(topGroupId) }
   );
 

@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import { memo } from "react";
+import { Input, SearchField } from "react-aria-components";
 
 interface Props {
   readonly value: string;
@@ -12,16 +13,18 @@ interface Props {
  */
 function FacetSearchBoxComponent({ value, onChange, placeholder = "Filter values" }: Props) {
   return (
-    <div className="flex items-center gap-1.5 rounded border border-border bg-muted px-2 py-1">
+    <SearchField 
+      className="flex items-center gap-1.5 rounded border border-border bg-muted px-2 py-1"
+      value={value}
+      onChange={onChange}
+      aria-label={placeholder}
+    >
       <Search size={12} className="shrink-0 text-foreground-muted" />
-      <input
-        type="text"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
+      <Input
         placeholder={placeholder}
         className="min-w-0 flex-1 bg-transparent text-[12px] text-foreground outline-none placeholder:text-foreground-muted"
       />
-    </div>
+    </SearchField>
   );
 }
 

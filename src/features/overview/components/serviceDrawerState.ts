@@ -15,7 +15,7 @@ export interface ServiceDrawerSeedData {
 }
 
 export function buildServiceDrawerSearch(
-  currentSearch: string,
+  currentSearch: string | Record<string, unknown>,
   service: string | ServiceDrawerSeedData
 ): string {
   const serviceName = typeof service === "string" ? service : service.name;
@@ -70,10 +70,11 @@ function clearServiceDrawerParams(searchParams: URLSearchParams): void {
 }
 
 export function buildServiceTracesSearch(
-  currentSearch: string,
+  currentSearch: string | Record<string, unknown>,
   serviceName: string
 ): Record<string, string | string[]> {
-  const next = new URLSearchParams(currentSearch);
+  const searchInput = typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
+  const next = new URLSearchParams(searchInput);
   clearServiceDrawerParams(next);
   next.delete("view");
   next.delete("topologyFocus");
@@ -84,10 +85,11 @@ export function buildServiceTracesSearch(
 }
 
 export function buildServiceLogsSearch(
-  currentSearch: string,
+  currentSearch: string | Record<string, unknown>,
   serviceName: string
 ): Record<string, string | string[]> {
-  const next = new URLSearchParams(currentSearch);
+  const searchInput = typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
+  const next = new URLSearchParams(searchInput);
   clearServiceDrawerParams(next);
   next.delete("view");
   next.delete("topologyFocus");

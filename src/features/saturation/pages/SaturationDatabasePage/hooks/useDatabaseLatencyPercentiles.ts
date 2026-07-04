@@ -64,7 +64,7 @@ export function useDatabaseLatencyPercentiles(system?: string) {
   const filters = system ? { db_system: system } : undefined;
   const query = useTimeRangeQuery<LatencySeriesPoint[]>(
     "saturation-db.latency-percentiles",
-    (_team, s, e) => getLatencyBySystem(s, e, filters),
+    (_tenant, s, e) => getLatencyBySystem(s, e, filters),
     { extraKeys: [system ?? "all"] }
   );
   const series = useMemo(() => buildSeries(query.data ?? []), [query.data]);

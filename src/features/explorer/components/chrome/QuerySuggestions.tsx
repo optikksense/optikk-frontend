@@ -64,7 +64,7 @@ const BADGE_TONE: Record<TypeBadge, string> = {
 function QuerySuggestionsComponent(p: Props) {
   if (!p.loading && p.options.length === 0) return null;
   return (
-    <div className="absolute z-30 mt-1 flex w-[480px] max-w-[calc(100vw-32px)] flex-col rounded-md border border-border bg-background shadow-2xl">
+    <div className="flex w-[480px] max-w-[calc(100vw-32px)] flex-col rounded-md border border-border bg-background shadow-2xl">
       {p.title ? (
         <div className="border-border border-b px-3 py-1.5 font-semibold text-[10px] text-foreground-muted uppercase tracking-wider">
           {p.title}

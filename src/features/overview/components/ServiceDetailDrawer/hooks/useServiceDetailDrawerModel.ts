@@ -2,7 +2,6 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { dynamicNavigateOptions, dynamicTo } from "@/shared/utils/navigation";
 
 import { buildServiceLogsSearch, buildServiceTracesSearch } from "../../serviceDrawerState";
 import type { ServiceSummarySnapshot } from "../types";
@@ -110,20 +109,22 @@ export function useServiceDetailDrawerModel(
   );
 
   const openTraces = useCallback((): void => {
-    navigate(
-      dynamicNavigateOptions(ROUTES.traces, buildServiceTracesSearch(location.search, serviceName))
-    );
+    navigate({
+      to: ROUTES.traces as never,
+      search: buildServiceTracesSearch(location.search, serviceName) as any,
+    });
   }, [location.search, navigate, serviceName]);
 
   const openLogs = useCallback((): void => {
-    navigate(
-      dynamicNavigateOptions(ROUTES.logs, buildServiceLogsSearch(location.search, serviceName))
-    );
+    navigate({
+      to: ROUTES.logs as never,
+      search: buildServiceLogsSearch(location.search, serviceName) as any,
+    });
   }, [location.search, navigate, serviceName]);
 
   const openFullView = useCallback((): void => {
     const path = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(serviceName));
-    navigate({ to: dynamicTo(path) });
+    navigate({ to: (path as string & {}) });
   }, [navigate, serviceName]);
 
   const serviceLabel = title?.trim() || serviceName;

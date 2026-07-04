@@ -43,10 +43,12 @@ function normalizeWarnings(
   return raw.map((item) => (typeof item === "string" ? { code: "query", message: item } : item));
 }
 
+const pageInfoSchema = z.object({ nextCursor: z.string().optional() }).passthrough();
+
 function extractNextCursor(pageInfo: unknown): string | undefined {
-  if (pageInfo && typeof pageInfo === "object" && "nextCursor" in pageInfo) {
-    const c = (pageInfo as { nextCursor?: string }).nextCursor;
-    return c && c !== "" ? c : undefined;
+  const parsed = pageInfoSchema.safeParse(pageInfo);
+  if (parsed.success && parsed.data.nextCursor && parsed.data.nextCursor !== "") {
+    return parsed.data.nextCursor;
   }
   return undefined;
 }
@@ -79,7 +81,7 @@ function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSum
   const durationNs = Math.round(row.duration_ms * 1_000_000);
   return {
     trace_id: row.trace_id,
-    team_id: 0,
+    tenant_id: 0,
     start_ms: row.start_ms,
     end_ms: row.end_ms,
     duration_ns: durationNs,
@@ -283,37 +285,22 @@ export async function getSuggestions(req: SuggestRequest): Promise<SuggestionIte
 
 const spanListSchema = z.array(spanRecordSchema);
 
-const traceSpanListItemSchema = z
-  .object({
-    span_id: z.string(),
-    parent_span_id: z.string().optional(),
-    trace_id: z.string(),
-    service_name: z.string(),
-    operation_name: z.string(),
-    kind: z.string().optional().default(""),
-    status_code: z.string().optional().default(""),
-    has_error: z.boolean().optional().default(false),
-    duration_ms: z.coerce.number(),
-    start_ns: z.coerce.number(),
-  })
-  .strict();
-
 const traceSpansEnvelopeSchema = z
   .object({
     spans: z
-      .array(traceSpanListItemSchema)
+      .array(spanRecordSchema)
       .nullish()
       .transform((v) => v ?? []),
   })
   .strict();
 
-async function getTraceSpans(_teamId: number | null, traceId: string): Promise<SpanRecord[]> {
+async function getTraceSpans(_tenantId: number | null, traceId: string): Promise<SpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans`);
   if (Array.isArray(data)) {
     return validateResponse(spanListSchema, data);
   }
   const { spans } = validateResponse(traceSpansEnvelopeSchema, data);
-  return spans as unknown as SpanRecord[];
+  return spans;
 }
 
 async function getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {

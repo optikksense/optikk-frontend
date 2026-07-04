@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 
-import { SimpleTable, type SimpleTableColumn, Surface } from "@/components/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Surface } from "@/components/ui";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { StatCard } from "@shared/components/ui";
 import { formatDuration, formatNumber, formatTimestamp } from "@shared/utils/formatters";
 
@@ -56,25 +58,25 @@ export default function TracesTab({
     [traces]
   );
 
-  const columns: SimpleTableColumn<LlmTrace>[] = [
+  const columns: ColumnDef<LlmTrace>[] = [
     {
-      title: "Time",
-      key: "time",
-      render: (_, t) => (
+      header: "Time",
+      accessorKey: "time",
+      cell: ({ row: { original: t } }) => (
         <span className="font-mono text-foreground-muted text-xs">
           {formatTimestamp(t.startMs)}
         </span>
       ),
     },
     {
-      title: "ML app",
-      key: "service",
-      render: (_, t) => <span className="font-medium font-mono text-foreground">{t.service}</span>,
+      header: "ML app",
+      accessorKey: "service",
+      cell: ({ row: { original: t } }) => <span className="font-medium font-mono text-foreground">{t.service}</span>,
     },
     {
-      title: "Model",
-      key: "model",
-      render: (_, t) => (
+      header: "Model",
+      accessorKey: "model",
+      cell: ({ row: { original: t } }) => (
         <div className="flex items-center gap-1.5">
           <VendorChip vendor={t.vendor} />
           <span className="font-mono text-foreground-secondary text-xs">{t.model || "—"}</span>
@@ -82,36 +84,36 @@ export default function TracesTab({
       ),
     },
     {
-      title: "Tokens (in / out)",
-      key: "tokens",
-      align: "right",
-      render: (_, t) => (
+      header: "Tokens (in / out)",
+      accessorKey: "tokens",
+      meta: { align: "right" },
+      cell: ({ row: { original: t } }) => (
         <span className="font-mono text-foreground-secondary">
           {formatNumber(t.inputTokens)} / {formatNumber(t.outputTokens)}
         </span>
       ),
     },
     {
-      title: "Latency",
-      key: "latency",
-      align: "right",
-      render: (_, t) => <span className="font-mono">{formatDuration(t.durationMs)}</span>,
+      header: "Latency",
+      accessorKey: "latency",
+      meta: { align: "right" },
+      cell: ({ row: { original: t } }) => <span className="font-mono">{formatDuration(t.durationMs)}</span>,
     },
     {
-      title: "Cost",
-      key: "cost",
-      align: "right",
-      render: (_, t) => <span className="font-mono">{formatCost(t.cost)}</span>,
+      header: "Cost",
+      accessorKey: "cost",
+      meta: { align: "right" },
+      cell: ({ row: { original: t } }) => <span className="font-mono">{formatCost(t.cost)}</span>,
     },
     {
-      title: "Status",
-      key: "status",
-      render: (_, t) => <StatusBadge hasError={t.hasError} />,
+      header: "Status",
+      accessorKey: "status",
+      cell: ({ row: { original: t } }) => <StatusBadge hasError={t.hasError} />,
     },
     {
-      title: "Operation",
-      key: "operation",
-      render: (_, t) => (
+      header: "Operation",
+      accessorKey: "operation",
+      cell: ({ row: { original: t } }) => (
         <span className="font-mono text-foreground-muted text-xs">{t.operation}</span>
       ),
     },
@@ -184,16 +186,19 @@ export default function TracesTab({
             ))}
           </div>
         </div>
-        <SimpleTable<LlmTrace>
-          columns={columns}
-          dataSource={traces}
-          rowKey="traceId"
-          size="small"
-          pagination={false}
-          onRow={(t) => ({
-            onClick: () => setSelectedTraceId(t.traceId),
-            style: { cursor: "pointer" },
-          })}
+        <DataTable
+          data={{
+            columns,
+            rows: traces,
+            loading: tracesQ.isPending,
+          }}
+          pagination={{ showPagination: false }}
+          config={{
+            onRow: (t) => ({
+              onClick: () => setSelectedTraceId(t.traceId),
+              style: { cursor: "pointer" },
+            })
+          }}
         />
         <div className="mt-3 flex items-center justify-between">
           <button

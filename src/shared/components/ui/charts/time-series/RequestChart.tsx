@@ -35,7 +35,7 @@ interface RequestChartProps {
   legend?: boolean;
 }
 
-function formatAxisValue(value: any) {
+function formatAxisValue(value: number | string) {
   const n = Number(value) || 0;
   const abs = Math.abs(n);
   if (abs >= 1000000) return `${(n / 1000000).toFixed(1)}M`;

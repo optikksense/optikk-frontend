@@ -5,6 +5,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 
 import { DensityProvider } from "@/components/ui/providers/DensityProvider";
 import ShortcutHelpOverlay from "@shared/components/ui/overlay/ShortcutHelpOverlay";
+import CommandPalette from "@shared/components/ui/overlay/CommandPalette/CommandPalette";
 import { useKeyboardShortcuts } from "@shared/hooks/useKeyboardShortcuts";
 
 import { cn } from "@/lib/utils";
@@ -84,6 +85,7 @@ export default function MainLayout() {
           onClose={() => setShortcutHelpOpen(false)}
           shortcuts={shortcuts}
         />
+        <CommandPalette />
       </div>
     </DensityProvider>
   );

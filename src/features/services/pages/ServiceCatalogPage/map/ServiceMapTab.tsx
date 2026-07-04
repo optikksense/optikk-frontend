@@ -10,7 +10,6 @@ import {
   topologyNodeTypes,
 } from "@shared/components/ui/charts/ServiceTopologyGraph";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -40,7 +39,7 @@ export function ServiceMapTab() {
 
   const query = useTimeRangeQuery<ServiceTopologyResponse>(
     "service-hub.map-topology",
-    (_team, startTime, endTime) => getServiceTopology({ startTime, endTime })
+    (_tenant, startTime, endTime) => getServiceTopology({ startTime, endTime })
   );
   const data = query.data ?? EMPTY;
 
@@ -53,7 +52,7 @@ export function ServiceMapTab() {
   const openService = useCallback(
     (name: string): void => {
       const detail = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(name));
-      navigate(dynamicNavigateOptions(detail));
+      navigate({ to: detail as string & {} });
     },
     [navigate]
   );

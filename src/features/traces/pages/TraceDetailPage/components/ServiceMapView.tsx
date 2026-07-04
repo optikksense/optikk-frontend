@@ -8,7 +8,6 @@ import {
   topologyEdgeTypes,
   topologyNodeTypes,
 } from "@shared/components/ui/charts/ServiceTopologyGraph";
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -26,7 +25,7 @@ export function ServiceMapView({ map }: Props) {
   const openService = useCallback(
     (name: string): void => {
       const detail = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(name));
-      navigate(dynamicNavigateOptions(detail));
+      navigate({ to: detail as string & {} });
     },
     [navigate]
   );

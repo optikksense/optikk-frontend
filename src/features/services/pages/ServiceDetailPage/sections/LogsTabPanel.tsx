@@ -21,7 +21,7 @@ export function LogsTabPanel({ serviceName }: { serviceName: string }) {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const handleRowClick = (row: any) => {
+  const handleRowClick = (row: { id: string }) => {
     setSelectedId((prev) => (prev === row.id ? null : row.id));
   };
 

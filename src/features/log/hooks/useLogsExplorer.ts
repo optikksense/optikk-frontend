@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import { useExplorerState } from "@/features/explorer/hooks/useExplorerState";
 import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
-import { useRefreshKey, useTeamId, useTimeRange } from "@app/store/appStore";
+import { useRefreshKey, useTenantId, useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import {
@@ -44,7 +44,7 @@ interface UseLogsExplorerArgs {
  */
 export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const explorerState = useExplorerState();
-  const teamId = useTeamId();
+  const tenantId = useTenantId();
   const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
 
@@ -60,13 +60,13 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
 
   const listBaseKey = useMemo(
-    () => ["logs", teamId ?? "none", timeRangeKey, filtersJson] as const,
-    [teamId, timeRangeKey, filtersJson]
+    () => ["logs", tenantId ?? "none", timeRangeKey, filtersJson] as const,
+    [tenantId, timeRangeKey, filtersJson]
   );
 
   const analyticsBaseKey = useMemo(
-    () => ["logs-analytics", teamId ?? "none", refreshKey, timeRangeKey, filtersJson] as const,
-    [teamId, refreshKey, timeRangeKey, filtersJson]
+    () => ["logs-analytics", tenantId ?? "none", refreshKey, timeRangeKey, filtersJson] as const,
+    [tenantId, refreshKey, timeRangeKey, filtersJson]
   );
 
   const prevListBaseKeyRef = useRef(listBaseKey);

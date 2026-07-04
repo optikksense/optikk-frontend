@@ -3,7 +3,6 @@ import { useMemo } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { dynamicTo } from "@shared/utils/navigation";
 
 import { getFleetPods } from "../../api/hostsApi";
 import InfraPodsTable, { getPodDetails } from "../../components/InfraPodsTable";
@@ -15,7 +14,7 @@ interface HostDetailContainersProps {
 
 export function HostDetailContainers({ host }: HostDetailContainersProps) {
   const navigate = useNavigate();
-  const podsQ = useTimeRangeQuery<FleetPod[]>("host-detail.fleet-pods", (_team, s, e) =>
+  const podsQ = useTimeRangeQuery<FleetPod[]>("host-detail.fleet-pods", (_tenant, s, e) =>
     getFleetPods(s, e)
   );
   const pods = useMemo(
@@ -34,12 +33,12 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
   }, [pods]);
 
   const onOpenHost = (h: string) => {
-    navigate({ to: dynamicTo(ROUTES.hostDetail.replace("$host", encodeURIComponent(h))) });
+    navigate({ to: (ROUTES.hostDetail.replace("$host", encodeURIComponent(h as string & {}))) });
   };
 
   const onOpenContainer = (container: string) => {
     navigate({
-      to: dynamicTo(ROUTES.containerDetail.replace("$container", encodeURIComponent(container))),
+      to: (ROUTES.containerDetail.replace("$container", encodeURIComponent(container as string & {}))),
     });
   };
 

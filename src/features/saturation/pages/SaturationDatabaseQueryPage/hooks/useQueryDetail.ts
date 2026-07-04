@@ -18,7 +18,7 @@ export function isBackendQueryHash(queryId: string): boolean {
 export function useQueryDetailSummary(hash: string, enabled: boolean) {
   return useTimeRangeQuery<QueryDetailSummary | null>(
     "saturation-db.query-summary",
-    (_team, s, e) => getQueryDetailSummary(hash, s, e),
+    (_tenant, s, e) => getQueryDetailSummary(hash, s, e),
     { extraKeys: [hash], enabled }
   );
 }
@@ -26,7 +26,7 @@ export function useQueryDetailSummary(hash: string, enabled: boolean) {
 export function useQueryDetailTimeseries(hash: string, enabled: boolean) {
   return useTimeRangeQuery<QueryTimeseriesPoint[]>(
     "saturation-db.query-timeseries",
-    (_team, s, e) => getQueryDetailTimeseries(hash, s, e),
+    (_tenant, s, e) => getQueryDetailTimeseries(hash, s, e),
     { extraKeys: [hash], enabled }
   );
 }
@@ -34,7 +34,7 @@ export function useQueryDetailTimeseries(hash: string, enabled: boolean) {
 export function useQueryDetailExecutions(hash: string, enabled: boolean) {
   return useTimeRangeQuery<QueryExecutionRow[]>(
     "saturation-db.query-executions",
-    (_team, s, e) => getQueryDetailExecutions(hash, s, e),
+    (_tenant, s, e) => getQueryDetailExecutions(hash, s, e),
     { extraKeys: [hash], enabled }
   );
 }

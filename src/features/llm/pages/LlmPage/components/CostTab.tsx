@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 
-import { SimpleTable, type SimpleTableColumn, Surface } from "@/components/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Surface } from "@/components/ui";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { StatCard } from "@shared/components/ui";
 import { formatNumber } from "@shared/utils/formatters";
 
@@ -30,11 +32,11 @@ export default function CostTab() {
   const totalSpans = useMemo(() => rows.reduce((acc, r) => acc + r.llmSpans, 0), [rows]);
   const vendorTotal = useMemo(() => vendors.reduce((acc, v) => acc + v.cost, 0), [vendors]);
 
-  const columns: SimpleTableColumn<LlmCostRow>[] = [
+  const columns: ColumnDef<LlmCostRow>[] = [
     {
-      title: GROUPS.find((g) => g.key === groupBy)?.label.replace("By ", "") ?? "Key",
-      key: "key",
-      render: (_, r) => (
+      header: GROUPS.find((g) => g.key === groupBy)?.label.replace("By ", "") ?? "Key",
+      accessorKey: "key",
+      cell: ({ row: { original: r } }) => (
         <div className="flex items-center gap-2">
           <span
             className="h-2 w-2 shrink-0 rounded-full"
@@ -45,55 +47,53 @@ export default function CostTab() {
       ),
     },
     {
-      title: "Vendor",
-      key: "vendor",
-      render: (_, r) => <VendorChip vendor={r.vendor ?? ""} />,
+      header: "Vendor",
+      accessorKey: "vendor",
+      cell: ({ row: { original: r } }) => <VendorChip vendor={r.vendor ?? ""} />,
     },
     {
-      title: "LLM spans",
-      key: "spans",
-      align: "right",
-      render: (_, r) => <span className="font-mono">{formatNumber(r.llmSpans)}</span>,
+      header: "LLM spans",
+      accessorKey: "spans",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => <span className="font-mono">{formatNumber(r.llmSpans)}</span>,
     },
     {
-      title: "Tokens in",
-      key: "tokin",
-      align: "right",
-      render: (_, r) => (
+      header: "Tokens in",
+      accessorKey: "tokin",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => (
         <span className="font-mono text-foreground-secondary">{formatNumber(r.inputTokens)}</span>
       ),
     },
     {
-      title: "Tokens out",
-      key: "tokout",
-      align: "right",
-      render: (_, r) => (
+      header: "Tokens out",
+      accessorKey: "tokout",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => (
         <span className="font-mono text-foreground-secondary">{formatNumber(r.outputTokens)}</span>
       ),
     },
     {
-      title: "$/1k spans",
-      key: "per1k",
-      align: "right",
-      render: (_, r) => (
+      header: "$/1k spans",
+      accessorKey: "per1k",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => (
         <span className="font-mono text-foreground-secondary">
           {r.llmSpans > 0 ? formatCost((r.cost / r.llmSpans) * 1000) : "—"}
         </span>
       ),
     },
     {
-      title: "Cost",
-      key: "cost",
-      align: "right",
-      render: (_, r) => <span className="font-mono font-semibold">{formatCost(r.cost)}</span>,
-      sorter: (a, b) => a.cost - b.cost,
-      defaultSortOrder: "descend",
+      header: "Cost",
+      accessorKey: "cost",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => <span className="font-mono font-semibold">{formatCost(r.cost)}</span>,
     },
     {
-      title: "Share",
-      key: "share",
-      width: 140,
-      render: (_, r) => {
+      header: "Share",
+      accessorKey: "share",
+      size: 140,
+      cell: ({ row: { original: r } }) => {
         const pct = total > 0 ? (r.cost / total) * 100 : 0;
         return (
           <div className="flex items-center gap-2">
@@ -164,12 +164,14 @@ export default function CostTab() {
               ))}
             </div>
           </div>
-          <SimpleTable<LlmCostRow>
-            columns={columns}
-            dataSource={rows}
-            rowKey="key"
-            size="small"
-            pagination={false}
+          <DataTable
+            data={{
+              columns,
+              rows,
+              loading: breakdownQ.isPending,
+            }}
+            pagination={{ pageSize: 25 }}
+            config={{ emptyText: "No cost data available in this time range." }}
           />
         </Surface>
 

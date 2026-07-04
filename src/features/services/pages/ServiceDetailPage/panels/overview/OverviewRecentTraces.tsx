@@ -103,7 +103,7 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
               <button
                 key={opt.id}
                 type="button"
-                onClick={() => setFilter(opt.id as any)}
+                onClick={() => setFilter(opt.id as "all" | "errors" | "p95" | "p99")}
                 className={`rounded px-2.5 py-1 font-semibold text-[11px] capitalize ${
                   filter === opt.id
                     ? "bg-card text-foreground shadow-sm"

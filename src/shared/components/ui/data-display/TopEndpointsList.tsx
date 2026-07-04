@@ -9,7 +9,7 @@ import { APP_COLORS } from "@config/colorLiterals";
 
 export type TopEndpointsListType = "requests" | "errorRate" | "latency" | "count";
 
-interface TopEndpointListItem {
+export interface TopEndpointListItem {
   key?: string;
   endpoint?: string;
   service?: string;
@@ -28,7 +28,7 @@ interface TopEndpointsListProps {
   type?: TopEndpointsListType;
   drawerAction?: DashboardDrawerAction;
   currentPathname?: string;
-  currentSearch?: string;
+  currentSearch?: string | Record<string, unknown>;
   maxVisibleRows?: number;
 }
 

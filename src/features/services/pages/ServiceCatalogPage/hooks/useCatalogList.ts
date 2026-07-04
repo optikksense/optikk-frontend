@@ -22,13 +22,13 @@ export interface UseCatalogListResult {
 }
 
 function useRedSummary() {
-  return useTimeRangeQuery<RedSummaryWithComparison>("service-hub.red-summary-cmp", (_team, s, e) =>
+  return useTimeRangeQuery<RedSummaryWithComparison>("service-hub.red-summary-cmp", (_tenant, s, e) =>
     getRedSummaryWithComparison(s, e)
   );
 }
 
 function useRateSeries() {
-  return useTimeRangeQuery<RequestRatePoint[]>("service-hub.request-rate", (_team, s, e) =>
+  return useTimeRangeQuery<RequestRatePoint[]>("service-hub.request-rate", (_tenant, s, e) =>
     getRequestRateSeries(s, e)
   );
 }

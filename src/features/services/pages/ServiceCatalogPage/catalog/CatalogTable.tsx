@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 
-import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 import { ServiceAvatar } from "../../../components/ServiceAvatar";
@@ -34,80 +35,58 @@ function sparkTone(status: CatalogRow["status"]): "info" | "warn" | "err" {
   return status === "error" ? "err" : status === "warn" ? "warn" : "info";
 }
 
-const COLUMNS: SimpleTableColumn<CatalogRow>[] = [
+const COLUMNS: ColumnDef<CatalogRow>[] = [
   {
-    title: "Service",
-    key: "serviceName",
-    width: 300,
-    headerClassName:
-      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
-    cellClassName: "py-[12px] px-3",
-    render: (_v, row) => <NameCell row={row} />,
+    header: "Service",
+    accessorKey: "serviceName",
+    size: 300,
+    cell: ({ row: { original: row } }) => <NameCell row={row} />,
   },
   {
-    title: "RPS",
-    key: "rps",
-    width: 110,
-    align: "right",
-    headerClassName:
-      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
-    cellClassName: "py-[12px] px-3",
-    sorter: (a, b) => a.rps - b.rps,
-    defaultSortOrder: "descend",
-    render: (_v, row) => (
+    header: "RPS",
+    accessorKey: "rps",
+    size: 110,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
       <span className="font-semibold text-[12.5px] text-foreground tabular-nums">
         {fmtNum(row.rps)}
       </span>
     ),
   },
   {
-    title: "Error",
-    key: "errorRate",
-    width: 90,
-    align: "right",
-    headerClassName:
-      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
-    cellClassName: "py-[12px] px-3",
-    sorter: (a, b) => a.errorRate - b.errorRate,
-    render: (_v, row) => (
+    header: "Error",
+    accessorKey: "errorRate",
+    size: 90,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
       <span className="tabular-nums">
         <ErrorCell rate={row.errorRate} />
       </span>
     ),
   },
   {
-    title: "P99",
-    key: "p99Ms",
-    width: 100,
-    align: "right",
-    headerClassName:
-      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
-    cellClassName: "py-[12px] px-3",
-    sorter: (a, b) => a.p99Ms - b.p99Ms,
-    render: (_v, row) => (
+    header: "P99",
+    accessorKey: "p99Ms",
+    size: 100,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
       <span className="font-mono text-[12px] tabular-nums">{fmtMs(row.p99Ms)}</span>
     ),
   },
   {
-    title: "Last 1 hour",
-    key: "sparkline",
-    width: 140,
-    headerClassName:
-      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
-    cellClassName: "py-[12px] px-3",
-    render: (_v, row) => (
+    header: "Last 1 hour",
+    accessorKey: "sparkline",
+    size: 140,
+    cell: ({ row: { original: row } }) => (
       <SparklineCell values={row.sparkline} tone={sparkTone(row.status)} width={120} />
     ),
   },
   {
-    title: "",
-    key: "chevron",
-    width: 40,
-    align: "right",
-    headerClassName:
-      "text-[10px] font-semibold uppercase tracking-[0.06em] text-foreground-muted pb-2.5",
-    cellClassName: "py-[12px] px-3",
-    render: () => <ChevronRight size={14} className="text-foreground-muted" />,
+    header: "",
+    id: "chevron",
+    size: 40,
+    meta: { align: "right" },
+    cell: () => <ChevronRight size={14} className="text-foreground-muted" />,
   },
 ];
 
@@ -118,16 +97,18 @@ interface CatalogTableProps {
 
 export function CatalogTable({ rows, onRowClick }: CatalogTableProps) {
   return (
-    <SimpleTable
-      columns={COLUMNS}
-      dataSource={rows}
-      rowKey={(r) => r.serviceName}
+    <DataTable
+      data={{
+        columns: COLUMNS,
+        rows,
+      }}
       pagination={{ pageSize: 50 }}
-      className="[&_table]:rounded-none [&_table]:bg-transparent [&_tr:hover_td]:bg-[var(--bg-row-hover)] [&_tr:last-child]:border-0 [&_tr:nth-child(even)]:bg-transparent [&_tr]:border-[var(--line-2)] [&_tr]:border-b [&_tr]:bg-transparent"
-      onRow={(record) => ({
-        onClick: () => onRowClick(record.serviceName),
-        style: { cursor: "pointer" },
-      })}
+      config={{
+        onRow: (record) => ({
+          onClick: () => onRowClick(record.serviceName),
+          style: { cursor: "pointer" },
+        }),
+      }}
     />
   );
 }

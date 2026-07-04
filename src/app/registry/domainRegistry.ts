@@ -45,7 +45,7 @@ export interface DomainConfig {
   readonly label: string;
   readonly permissions: readonly string[];
   readonly navigation: readonly DomainNavigationItem[];
-  readonly routes: readonly DomainRouteConfig[];
+  readonly routes?: readonly DomainRouteConfig[];
   readonly dashboardPages?: readonly DashboardPageAdapterConfig[];
   readonly dashboardPanels?: readonly DashboardPanelRegistration[];
 }
@@ -75,16 +75,7 @@ export function getDomainNavigationItems(): readonly DomainNavigationItem[] {
   return domainRegistry.flatMap((domain) => domain.navigation);
 }
 
-export function getExplorerRoutes(): readonly RegisteredDomainRoute[] {
-  return domainRegistry.flatMap((domain) =>
-    domain.routes.map((route) => ({
-      ...route,
-      domainKey: domain.key,
-      label: domain.label,
-      permissions: domain.permissions,
-    }))
-  );
-}
+
 
 export function getDashboardPanelRegistrations(): readonly DashboardPanelRegistration[] {
   return domainRegistry.flatMap((domain) => domain.dashboardPanels ?? []);

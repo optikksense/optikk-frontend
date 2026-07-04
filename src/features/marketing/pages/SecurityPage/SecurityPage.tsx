@@ -35,7 +35,7 @@ export default function SecurityPage() {
           on all subscription plans without custom enterprise premiums.
         </li>
         <li>
-          <strong>Role-Based Access Control (RBAC):</strong> Define precise team permissions,
+          <strong>Role-Based Access Control (RBAC):</strong> Define precise tenant permissions,
           restricting access to sensitive telemetry scopes, dashboards, alert settings, or billing
           options.
         </li>

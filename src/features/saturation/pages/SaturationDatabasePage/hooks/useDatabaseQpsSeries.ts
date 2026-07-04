@@ -25,7 +25,7 @@ export function useDatabaseQpsSeries(system?: string) {
   const filters = system ? { db_system: system } : undefined;
   const query = useTimeRangeQuery<OpsSeriesPoint[]>(
     "saturation-db.qps",
-    (_team, s, e) => getOpsBySystem(s, e, filters),
+    (_tenant, s, e) => getOpsBySystem(s, e, filters),
     { extraKeys: [system ?? "all"] }
   );
   const series = useMemo(() => sumByTimestamp(query.data ?? []), [query.data]);

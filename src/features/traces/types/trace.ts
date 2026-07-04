@@ -13,7 +13,7 @@ import type {
 
 export interface TraceSummary {
   readonly trace_id: string;
-  readonly team_id: number;
+  readonly tenant_id: number;
   readonly start_ms: number;
   readonly end_ms: number;
   readonly duration_ns: number;

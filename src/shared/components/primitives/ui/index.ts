@@ -12,10 +12,7 @@ export {
 export { IconButton } from "./icon-button";
 export { Popover } from "./popover";
 export { Select } from "./select";
-export {
-  SimpleTable,
-  type SimpleTableColumn,
-} from "./simple-table";
+
 export { Skeleton } from "./skeleton";
 export { Switch } from "./switch";
 export {

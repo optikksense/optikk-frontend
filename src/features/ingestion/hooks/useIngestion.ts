@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { useTeamId } from "@store/appStore";
+import { useTenantId } from "@store/appStore";
 
 import {
   getIngestionServices,
@@ -18,34 +18,34 @@ function monthToDateRange(): { startTime: number; endTime: number; monthKey: str
 }
 
 export function useIngestionSummary() {
-  const teamId = useTeamId();
+  const tenantId = useTenantId();
   const { startTime, endTime, monthKey } = monthToDateRange();
   return useQuery({
-    queryKey: ["ingestion.summary", teamId, monthKey],
+    queryKey: ["ingestion.summary", tenantId, monthKey],
     queryFn: () => getIngestionSummary(startTime, endTime),
-    enabled: Boolean(teamId),
+    enabled: Boolean(tenantId),
     staleTime: 60_000,
   });
 }
 
 export function useIngestionTimeseries(groupBy: "type" | "service") {
-  const teamId = useTeamId();
+  const tenantId = useTenantId();
   const { startTime, endTime, monthKey } = monthToDateRange();
   return useQuery({
-    queryKey: ["ingestion.timeseries", teamId, monthKey, groupBy],
+    queryKey: ["ingestion.timeseries", tenantId, monthKey, groupBy],
     queryFn: () => getIngestionTimeseries(startTime, endTime, groupBy),
-    enabled: Boolean(teamId),
+    enabled: Boolean(tenantId),
     staleTime: 60_000,
   });
 }
 
 export function useIngestionServices() {
-  const teamId = useTeamId();
+  const tenantId = useTenantId();
   const { startTime, endTime, monthKey } = monthToDateRange();
   return useQuery({
-    queryKey: ["ingestion.services", teamId, monthKey],
+    queryKey: ["ingestion.services", tenantId, monthKey],
     queryFn: () => getIngestionServices(startTime, endTime),
-    enabled: Boolean(teamId),
+    enabled: Boolean(tenantId),
     staleTime: 60_000,
   });
 }

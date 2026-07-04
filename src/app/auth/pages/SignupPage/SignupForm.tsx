@@ -45,7 +45,7 @@ export function SignupForm() {
     }
 
     toast.success("Account created!");
-    navigate({ to: ROUTES.welcome });
+    navigate({ to: ROUTES.overview });
   };
 
   return (

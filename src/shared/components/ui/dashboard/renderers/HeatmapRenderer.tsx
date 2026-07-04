@@ -19,7 +19,7 @@ export function HeatmapRenderer({
   const valueKey = chartConfig.valueKey || "error_rate";
 
   const xValues = useMemo(
-    () => Array.from(new Set(rows.map((r: any) => String(r[xKey] ?? "")))).slice(0, 20),
+    () => Array.from(new Set(rows.map((r: Record<string, unknown>) => String(r[xKey] ?? "")))).slice(0, 20),
     [rows, xKey]
   );
 
@@ -65,7 +65,7 @@ export function HeatmapRenderer({
 
   const { yValues, lookup, maxVal, yOverflow } = useMemo(() => {
     const Y_CAP = 50;
-    const allYVals = Array.from(new Set(rows.map((r: any) => String(r[yKey] ?? ""))));
+    const allYVals = Array.from(new Set(rows.map((r: Record<string, unknown>) => String(r[yKey] ?? ""))));
     const yVals = allYVals.slice(0, Y_CAP);
     const yVisible = new Set(yVals);
     const lkp: Record<string, Record<string, number>> = {};

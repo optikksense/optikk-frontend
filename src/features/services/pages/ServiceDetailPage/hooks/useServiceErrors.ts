@@ -6,7 +6,7 @@ import type { PaginatedResponse } from "@/features/services/api/redApi";
 export function useServiceErrors(serviceName: string, limit = 25, cursor?: string) {
   return useTimeRangeQuery<PaginatedResponse<ErrorGroup[]>>(
     "service-detail.error-groups",
-    (_team, start, end) => listErrorGroups(start, end, { serviceName, limit, cursor }),
+    (_tenant, start, end) => listErrorGroups(start, end, { serviceName, limit, cursor }),
     { extraKeys: [serviceName, limit, cursor], enabled: Boolean(serviceName) }
   );
 }

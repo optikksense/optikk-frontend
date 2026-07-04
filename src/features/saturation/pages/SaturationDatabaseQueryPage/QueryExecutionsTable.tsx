@@ -1,38 +1,36 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
-import type { SimpleTableColumn } from "@shared/components/primitives/ui/simple-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 
 import type { QueryExecutionRow } from "@/features/saturation/api/databaseQueryDetailApi";
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
 import { ROUTES } from "@/shared/constants/routes";
-import { dynamicNavigateOptions } from "@/shared/utils/navigation";
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleTimeString();
 }
 
-const COLUMNS: SimpleTableColumn<QueryExecutionRow>[] = [
+const COLUMNS: ColumnDef<QueryExecutionRow>[] = [
   {
-    title: "Time",
-    key: "timestamp",
-    width: 110,
-    render: (_v, row) => (
+    header: "Time",
+    accessorKey: "timestamp",
+    size: 110,
+    cell: ({ row: { original: row } }) => (
       <span className="font-mono text-[11.5px] text-foreground-secondary">
         {fmtTime(row.timestamp)}
       </span>
     ),
   },
   {
-    title: "Duration",
-    key: "duration_ms",
-    width: 90,
-    align: "right",
-    sorter: (a, b) => a.duration_ms - b.duration_ms,
-    render: (_v, row) => (
+    header: "Duration",
+    accessorKey: "duration_ms",
+    size: 90,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
       <span
         className={`font-mono font-semibold ${row.is_error ? "text-error" : "text-foreground"}`}
       >
@@ -41,33 +39,33 @@ const COLUMNS: SimpleTableColumn<QueryExecutionRow>[] = [
     ),
   },
   {
-    title: "Rows",
-    key: "rows",
-    width: 70,
-    align: "right",
-    render: (_v, row) => (
+    header: "Rows",
+    accessorKey: "rows",
+    size: 70,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
       <span className="font-mono">{row.rows == null ? "—" : fmtNum(row.rows)}</span>
     ),
   },
   {
-    title: "Service",
-    key: "service",
-    width: 160,
-    render: (_v, row) => <span className="font-mono text-[11.5px]">{row.service || "—"}</span>,
+    header: "Service",
+    accessorKey: "service",
+    size: 160,
+    cell: ({ row: { original: row } }) => <span className="font-mono text-[11.5px]">{row.service || "—"}</span>,
   },
   {
-    title: "Host",
-    key: "host",
-    width: 160,
-    render: (_v, row) => (
+    header: "Host",
+    accessorKey: "host",
+    size: 160,
+    cell: ({ row: { original: row } }) => (
       <span className="font-mono text-[11.5px] text-foreground-secondary">{row.host || "—"}</span>
     ),
   },
   {
-    title: "",
-    key: "chevron",
-    width: 34,
-    render: () => <ChevronRight size={14} className="text-foreground-muted" />,
+    header: "",
+    id: "chevron",
+    size: 34,
+    cell: () => <ChevronRight size={14} className="text-foreground-muted" />,
   },
 ];
 
@@ -82,21 +80,20 @@ export function QueryExecutionsTable({
   const navigate = useNavigate();
   return (
     <PanelCard title="Recent executions" subtitle="latest spans for this query" padded={false}>
-      <DataTable<QueryExecutionRow>
+      <DataTable
         data={{
           columns: COLUMNS,
           rows,
           loading,
-          rowKey: (r) => `${r.trace_id}::${r.span_id}`,
         }}
         pagination={{ pageSize: 10 }}
         config={{
           emptyText: "No executions recorded in the current window.",
           onRow: (row) => ({
             onClick: () =>
-              navigate(
-                dynamicNavigateOptions(ROUTES.traceDetail.replace("$traceId", row.trace_id))
-              ),
+              navigate({
+                to: ROUTES.traceDetail.replace("$traceId", row.trace_id) as never,
+              }),
             style: { cursor: "pointer" },
           }),
         }}

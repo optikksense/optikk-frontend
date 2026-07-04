@@ -41,7 +41,15 @@ export const calculateTraceStats = (spans: TraceRecord[]): TraceStats => {
   return stats;
 };
 
-export function normalizeSpan(span: any): TraceRecord {
+export function normalizeSpan(
+  span: Partial<TraceRecord> & {
+    start_ns?: number;
+    kind?: string;
+    has_error?: boolean;
+    status_code?: string;
+    [key: string]: unknown;
+  }
+): TraceRecord {
   const durationMs = Number(span.duration_ms ?? 0);
   const startNsRaw = span.start_ns;
   const startNs = typeof startNsRaw === "number" && Number.isFinite(startNsRaw) ? startNsRaw : null;
@@ -65,31 +73,31 @@ export function normalizeSpan(span: any): TraceRecord {
 
   return {
     ...span,
-    span_id: span.span_id,
-    trace_id: span.trace_id,
+    span_id: span.span_id as string,
+    trace_id: span.trace_id as string,
     service_name: span.service_name ?? "",
     operation_name: span.operation_name ?? "",
-    parent_span_id: span.parent_span_id,
-    span_kind,
+    parent_span_id: span.parent_span_id as string | undefined,
+    span_kind: span_kind as string,
     duration_ms: durationMs,
     start_time,
     end_time,
-    status: statusFromWire || "OK",
-    status_message: span.status_message,
-    http_method: span.http_method,
-    http_url: span.http_url,
-    http_status_code: span.http_status_code,
+    status: (statusFromWire || "OK") as string,
+    status_message: span.status_message as string | undefined,
+    http_method: span.http_method as string | undefined,
+    http_url: span.http_url as string | undefined,
+    http_status_code: span.http_status_code as number | undefined,
   };
 }
 
-export function normalizeTraceLog(log: any): any {
+export function normalizeTraceLog<T extends Record<string, unknown>>(log: T) {
   return {
     ...log,
     timestamp: log.timestamp,
     service_name: log.service_name,
     trace_id: log.trace_id,
     span_id: log.span_id,
-    level: log.level || log.severity_text || "INFO",
-    message: log.message || log.body || "",
+    level: (log.level as string | undefined) || (log.severity_text as string | undefined) || "INFO",
+    message: (log.message as string | undefined) || (log.body as string | undefined) || "",
   };
 }

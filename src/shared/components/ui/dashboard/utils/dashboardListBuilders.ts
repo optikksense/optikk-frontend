@@ -73,7 +73,7 @@ export function buildQueueEndpoints(
   scope: string
 ) {
   if (!Array.isArray(topQueues)) return [];
-  const queueSeriesKey = (queue: any) =>
+  const queueSeriesKey = (queue: DashboardRecord) =>
     `${strValue(queue, ["queue_name", "queueName"], "unknown")}::${strValue(queue, ["service_name", "serviceName"], "unknown")}`;
   return [...topQueues]
     .sort((a, b) => Number(b[sortField] || 0) - Number(a[sortField] || 0))
@@ -85,7 +85,7 @@ export function buildQueueEndpoints(
     }));
 }
 
-export function buildEndpointList(endpointMetrics: any[], listType: string) {
+export function buildEndpointList(endpointMetrics: DashboardRecord[], listType: string) {
   if (!Array.isArray(endpointMetrics) || endpointMetrics.length === 0) return [];
 
   const mapped = endpointMetrics.map((endpoint) => {
@@ -126,7 +126,7 @@ export function buildEndpointList(endpointMetrics: any[], listType: string) {
   return mapped.sort((a, b) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);
 }
 
-export function buildServiceListFromMetrics(serviceMetrics: any[], listType: string) {
+export function buildServiceListFromMetrics(serviceMetrics: DashboardRecord[], listType: string) {
   if (!Array.isArray(serviceMetrics) || serviceMetrics.length === 0) return [];
 
   const mapped = serviceMetrics
@@ -149,19 +149,19 @@ export function buildServiceListFromMetrics(serviceMetrics: any[], listType: str
         latency: avgLatency,
       };
     })
-    .filter(Boolean);
+    .filter((s): s is NonNullable<typeof s> => s !== null);
 
   if (listType === "errorRate") {
     return mapped
-      .filter((service: any) => service.errorRate > 0)
-      .sort((a: any, b: any) => b.errorRate - a.errorRate)
+      .filter((service) => service.errorRate > 0)
+      .sort((a, b) => b.errorRate - a.errorRate)
       .slice(0, 10);
   }
   if (listType === "latency") {
-    return mapped.sort((a: any, b: any) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);
+    return mapped.sort((a, b) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);
   }
   return mapped
-    .sort((a: any, b: any) => (b.request_count || 0) - (a.request_count || 0))
+    .sort((a, b) => (b.request_count || 0) - (a.request_count || 0))
     .slice(0, 10);
 }
 

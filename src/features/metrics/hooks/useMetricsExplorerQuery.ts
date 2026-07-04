@@ -1,6 +1,6 @@
 import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
 import { useStandardQuery } from "@/shared/hooks/useStandardQuery";
-import { useRefreshKey, useTeamId, useTimeRange } from "@store/appStore";
+import { useRefreshKey, useTenantId, useTimeRange } from "@store/appStore";
 import { buildExplorerQueryRequest, metricsExplorerApi } from "../api/metricsExplorerApi";
 import type { MetricQueryDefinition, MetricSpaceAggregation, TimeStep } from "../types";
 
@@ -9,7 +9,7 @@ export function useMetricsExplorerQuery(
   step: TimeStep,
   spaceAgg: MetricSpaceAggregation
 ) {
-  const selectedTeamId = useTeamId();
+  const selectedTenantId = useTenantId();
   const timeRange = useTimeRange();
   const refreshKey = useRefreshKey();
   const { startTime, endTime } = resolveTimeBounds(timeRange);
@@ -21,7 +21,7 @@ export function useMetricsExplorerQuery(
     queryKey: [
       "metrics",
       "explorer",
-      selectedTeamId,
+      selectedTenantId,
       queriesHash,
       startTime,
       endTime,
@@ -33,7 +33,7 @@ export function useMetricsExplorerQuery(
       metricsExplorerApi.query(
         buildExplorerQueryRequest(queries, startTime, endTime, step, spaceAgg)
       ),
-    enabled: Boolean(selectedTeamId) && activeQueries.length > 0,
+    enabled: Boolean(selectedTenantId) && activeQueries.length > 0,
     retry: false,
   });
 }

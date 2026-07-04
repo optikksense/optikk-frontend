@@ -1,5 +1,6 @@
 import { Search, X } from "lucide-react";
 import { forwardRef, useCallback, useState } from "react";
+import { Group, Input, SearchField } from "react-aria-components";
 
 import type { ExplorerFilter } from "../../types/filters";
 
@@ -51,29 +52,33 @@ export const ExplorerSearchBar = forwardRef<HTMLInputElement, Props>(function Ex
     [filters, onChangeFilters]
   );
   return (
-    <div className="flex min-h-10 flex-wrap items-center gap-2 rounded-md border border-border bg-muted px-2 py-1">
+    <SearchField 
+      value={text}
+      onChange={setText}
+      onSubmit={(val) => {
+        if (val.trim().length > 0) {
+          onSubmitFreeText(val.trim());
+          setText("");
+        }
+      }}
+      aria-label={placeholder}
+      className="flex min-h-10 flex-wrap items-center gap-2 rounded-md border border-border bg-muted px-2 py-1"
+    >
       <Search size={14} className="shrink-0 text-foreground-muted" />
-      {filters.map((filter, index) => (
-        <FilterChip
-          key={`${filter.field}:${filter.op}:${filter.value}:${index}`}
-          filter={filter}
-          onRemove={() => removeAt(index)}
+      <Group className="flex flex-1 flex-wrap items-center gap-2 min-w-0">
+        {filters.map((filter, index) => (
+          <FilterChip
+            key={`${filter.field}:${filter.op}:${filter.value}:${index}`}
+            filter={filter}
+            onRemove={() => removeAt(index)}
+          />
+        ))}
+        <Input
+          ref={ref}
+          placeholder={placeholder}
+          className="min-w-[120px] flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-foreground-muted"
         />
-      ))}
-      <input
-        ref={ref}
-        type="text"
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && text.trim().length > 0) {
-            onSubmitFreeText(text.trim());
-            setText("");
-          }
-        }}
-        placeholder={placeholder}
-        className="min-w-[120px] flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-foreground-muted"
-      />
-    </div>
+      </Group>
+    </SearchField>
   );
 });

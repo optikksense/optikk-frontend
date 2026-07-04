@@ -41,7 +41,7 @@
         "noImplicitAnyLet": "off",
         "noRedeclare": "off",
         "noArrayIndexKey": "off",
-        "noExplicitAny": "off"
+        "noExplicitAny": "error"
       },
       "a11y": {
         "noLabelWithoutControl": "off",

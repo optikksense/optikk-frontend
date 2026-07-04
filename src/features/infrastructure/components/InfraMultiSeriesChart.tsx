@@ -61,8 +61,8 @@ export default memo(function InfraMultiSeriesChart({
   const extraParamsKey = JSON.stringify(extraParams ?? {});
   const q = useTimeRangeQuery<ChartRow[]>(
     `${queryKey}|${extraParamsKey}`,
-    async (teamId, start, end) => {
-      if (!teamId) return [];
+    async (tenantId, start, end) => {
+      if (!tenantId) return [];
       const data = await infraGet<ChartRow[]>(endpoint, Number(start), Number(end), extraParams);
       return Array.isArray(data) ? data : [];
     }

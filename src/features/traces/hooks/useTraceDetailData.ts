@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { tracesService } from "../api/tracesApi";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
-export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: string) {
+export function useTraceDetailData(selectedTenantId: number | null, traceIdParam: string) {
   const [searchParams] = useSearchParams();
   const [selectedSpanId, setSelectedSpanId] = useState<string | null>(
     () => searchParams.get("span") || null
@@ -24,9 +24,9 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     isError: spansIsError,
     error: spansError,
   } = useStandardQuery({
-    queryKey: ["trace-spans", selectedTeamId, traceIdParam],
-    queryFn: () => tracesService.getTraceSpans(selectedTeamId, traceIdParam),
-    enabled: !!selectedTeamId && !!traceIdParam,
+    queryKey: ["trace-spans", selectedTenantId, traceIdParam],
+    queryFn: () => tracesService.getTraceSpans(selectedTenantId, traceIdParam),
+    enabled: !!selectedTenantId && !!traceIdParam,
   });
 
   const spans = useMemo(
@@ -40,9 +40,9 @@ export function useTraceDetailData(selectedTeamId: number | null, traceIdParam: 
     isError: logsIsError,
     error: logsError,
   } = useStandardQuery({
-    queryKey: ["trace-logs", selectedTeamId, traceIdParam],
+    queryKey: ["trace-logs", selectedTenantId, traceIdParam],
     queryFn: () => getTraceLogs(traceIdParam),
-    enabled: !!selectedTeamId && !!traceIdParam,
+    enabled: !!selectedTenantId && !!traceIdParam,
   });
 
   const traceLogs = useMemo(() => (logsData?.logs ?? []).map(normalizeTraceLog), [logsData]);

@@ -36,19 +36,19 @@ function firstError(...errors: Array<Error | null>): Error | null {
 export function useSaturationOverviewModel(): SaturationOverviewModel {
   const datastoreSummary = useTimeRangeQuery<DatastoreSummary>(
     "saturation-overview-datastores-summary",
-    (teamId, s, e) => saturationApi.getDatastoreSummary(teamId, s, e)
+    (tenantId, s, e) => saturationApi.getDatastoreSummary(tenantId, s, e)
   );
   const datastoreSystems = useTimeRangeQuery<DatastoreSystemRow[]>(
     "saturation-overview-datastores-systems",
-    (teamId, s, e) => saturationApi.getDatastoreSystems(teamId, s, e)
+    (tenantId, s, e) => saturationApi.getDatastoreSystems(tenantId, s, e)
   );
   const kafkaSummary = useTimeRangeQuery<KafkaSummary>(
     "saturation-overview-kafka-summary",
-    (teamId, s, e) => saturationApi.getKafkaSummary(teamId, s, e)
+    (tenantId, s, e) => saturationApi.getKafkaSummary(tenantId, s, e)
   );
   const hostSaturation = useTimeRangeQuery<HostSaturationRow[]>(
     "saturation-overview-hosts",
-    (teamId, s, e) => saturationApi.getHostSaturation(teamId, s, e)
+    (tenantId, s, e) => saturationApi.getHostSaturation(tenantId, s, e)
   );
 
   const systems = datastoreSystems.data ?? [];

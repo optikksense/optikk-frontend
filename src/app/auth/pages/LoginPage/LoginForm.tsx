@@ -6,7 +6,6 @@ import { z } from "zod";
 
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@shared/constants/routes";
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 
 import { session } from "@shared/api/auth/session";
 
@@ -50,7 +49,7 @@ export function LoginForm() {
     toast.success("Login successful!");
     // Only honor internal paths so a crafted ?redirect= can't leave the app.
     const target = redirect?.startsWith("/") ? redirect : ROUTES.overview;
-    navigate(dynamicNavigateOptions(target));
+    navigate({ to: target as string & {} });
   };
 
   return (

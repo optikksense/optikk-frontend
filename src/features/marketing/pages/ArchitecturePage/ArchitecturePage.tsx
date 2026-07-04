@@ -59,7 +59,7 @@ const LAYERS = [
     name: "API + apps",
     label: "Layer 08",
     icon: Server,
-    body: "GraphQL + REST + WebSocket. Web UI, terminal client, IDE plugins, Slack/Teams bots — all on the same API.",
+    body: "GraphQL + REST + WebSocket. Web UI, terminal client, IDE plugins, Slack/Tenants bots — all on the same API.",
   },
 ];
 
@@ -277,7 +277,7 @@ PUBLISH livetail:tenant:acme:logs:service=checkout,level=ERROR {
             eyebrow="In product"
             title={
               <>
-                Operate the stack <GradientText>through the same UI your team uses.</GradientText>
+                Operate the stack <GradientText>through the same UI your tenant uses.</GradientText>
               </>
             }
             lede="Every layer of the architecture shows up as a first-class view. No grafana sprawl, no separate Kafka UI to bookmark."

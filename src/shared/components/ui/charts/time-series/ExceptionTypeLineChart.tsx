@@ -10,9 +10,14 @@ export default memo(function ExceptionTypeLineChart({
   selectedEndpoints = [],
   height = 280,
   fillHeight = false,
-}: any) {
+}: {
+  serviceTimeseriesMap?: Record<string, Record<string, unknown>[]>;
+  selectedEndpoints?: string[];
+  height?: number;
+  fillHeight?: boolean;
+}) {
   const { timestamps, chartData } = useMemo(() => {
-    const groupMap = serviceTimeseriesMap as Record<string, any[]>;
+    const groupMap = serviceTimeseriesMap;
     const groups = Object.keys(groupMap);
 
     if (groups.length === 0) {
@@ -24,12 +29,12 @@ export default memo(function ExceptionTypeLineChart({
 
     const firstGroupRows = groupMap[activeGroups[0]] ?? [];
     const activeTimestamps = firstGroupRows
-      .map((row) => tsMs(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "") / 1000)
+      .map((row: Record<string, unknown>) => tsMs(String(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "")) / 1000)
       .filter((t) => !Number.isNaN(t));
 
     const seriesList = activeGroups.map((exceptionType, idx) => {
       const rows = groupMap[exceptionType] || [];
-      const values = rows.map((row) => Number(row.count ?? row.value ?? 0));
+      const values = rows.map((row: Record<string, unknown>) => Number(row.count ?? row.value ?? 0));
 
       return {
         label: exceptionType,

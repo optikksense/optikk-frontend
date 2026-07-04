@@ -1,5 +1,4 @@
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
-import { dynamicNavigateOptions } from "@shared/utils/navigation";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 
@@ -85,8 +84,8 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
         initialData={drawer.data}
         onClose={() =>
           navigate({
-            ...dynamicNavigateOptions(
-              location.pathname + clearDashboardDrawerSearch(location.search)
+            to: 
+              location.pathname + clearDashboardDrawerSearch(location.search as string & {}
             ),
             replace: true,
           })
@@ -100,8 +99,8 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
       open
       onClose={() =>
         navigate({
-          ...dynamicNavigateOptions(
-            location.pathname + clearDashboardDrawerSearch(location.search)
+          to: 
+            location.pathname + clearDashboardDrawerSearch(location.search as string & {}
           ),
           replace: true,
         })

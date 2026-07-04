@@ -9,7 +9,7 @@ import { APP_COLORS } from "@config/colorLiterals";
 
 export type QueueMetricsListType = "depth" | "consumerLag" | "productionRate" | "consumptionRate";
 
-interface QueueMetricsItem {
+export interface QueueMetricsItem {
   key?: string;
   queue_name?: string;
   service_name?: string;
@@ -28,7 +28,7 @@ interface QueueMetricsListProps {
   type?: QueueMetricsListType;
   drawerAction?: DashboardDrawerAction;
   currentPathname?: string;
-  currentSearch?: string;
+  currentSearch?: string | Record<string, unknown>;
   maxVisibleRows?: number;
 }
 

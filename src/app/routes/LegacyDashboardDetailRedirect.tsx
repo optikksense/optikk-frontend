@@ -21,7 +21,13 @@ export default function LegacyDashboardDetailRedirect({
   const params = useParams({ strict: false });
 
   const rawValue = params[paramKey] ?? "";
-  const nextSearchParams = new URLSearchParams(location.search);
+  
+  const searchObj: Record<string, string> = {};
+  for (const [k, v] of Object.entries(location.search)) {
+    if (v != null) searchObj[k] = String(v);
+  }
+  const nextSearchParams = new URLSearchParams(searchObj);
+  
   if (tab) {
     nextSearchParams.set("tab", tab);
   }

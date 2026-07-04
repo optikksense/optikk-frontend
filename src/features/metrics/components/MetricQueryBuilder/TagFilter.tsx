@@ -116,7 +116,7 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
               options={tagKeyOptions}
               value={selectedKey}
               onChange={(v) => {
-                setSelectedKey(v);
+                setSelectedKey(v as string);
                 setSelectedValue("");
               }}
             />
@@ -132,7 +132,7 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
               placeholder="Value"
               options={tagValueOptions}
               value={selectedValue}
-              onChange={setSelectedValue}
+              onChange={(v) => setSelectedValue(v as string)}
             />
             <button
               type="button"

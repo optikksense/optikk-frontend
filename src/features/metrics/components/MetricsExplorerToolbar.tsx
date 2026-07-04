@@ -73,7 +73,7 @@ export function MetricsExplorerToolbar({
           <Select
             size="sm"
             value={step}
-            onChange={onStepChange}
+            onChange={(v) => onStepChange(v as TimeStep)}
             options={TIME_STEP_OPTIONS}
             className="w-[80px]"
           />
@@ -88,7 +88,7 @@ export function MetricsExplorerToolbar({
           <Select
             size="sm"
             value={spaceAgg}
-            onChange={onSpaceAggChange}
+            onChange={(v) => onSpaceAggChange(v as MetricSpaceAggregation)}
             options={SPACE_AGGREGATION_OPTIONS}
             className="w-[90px]"
           />

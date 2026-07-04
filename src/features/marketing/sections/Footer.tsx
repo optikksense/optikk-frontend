@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { Github, Linkedin } from "lucide-react";
 
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
-import { dynamicTo } from "@/shared/utils/navigation";
 
 import { OSS } from "../constants";
 
@@ -57,7 +56,7 @@ function FooterLink({ label, path }: { readonly label: string; readonly path: st
       </a>
     );
   }
-  return <Link to={dynamicTo(path)}>{label}</Link>;
+  return <Link to={(path as string & {})}>{label}</Link>;
 }
 
 export function Footer() {
@@ -65,7 +64,7 @@ export function Footer() {
     <footer className="m-footer">
       <div className="m-container m-footer-grid">
         <div className="m-footer-brand">
-          <Link to={dynamicTo("/")} className="m-brand" aria-label="Optikk home">
+          <Link to={("/" as string & {})} className="m-brand" aria-label="Optikk home">
             <OptikkLogo size={28} />
             <span>Optikk</span>
           </Link>

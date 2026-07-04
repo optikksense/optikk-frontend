@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Check, Database, Layers, ServerCog, ShieldCheck, Terminal } from "lucide-react";
 
-import { dynamicTo } from "@/shared/utils/navigation";
 
 import { OSS } from "../../constants";
 import { GradientText } from "../../motion/GradientText";
@@ -152,7 +151,7 @@ export default function SelfHostPage() {
                   </a>
                 ) : (
                   <Link
-                    to={dynamicTo(mode.cta.path)}
+                    to={(mode.cta.path as string & {})}
                     className={`m-btn ${mode.featured ? "m-btn-primary" : "m-btn-secondary"}`}
                   >
                     {mode.cta.label}

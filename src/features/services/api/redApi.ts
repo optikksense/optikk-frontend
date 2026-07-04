@@ -3,6 +3,8 @@ import type { RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
 import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 import { type REDFiltersParams, buildREDFilters } from "./buildREDFilters";
+import { validateResponse } from "@shared/api/utils/validate";
+import { z } from "zod";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -201,7 +203,40 @@ export function getLatencyPercentilesTimeseries(
   return getJson("/spans/red/latency-percentiles-timeseries", buildREDFilters(s, e, services));
 }
 
-export function getTopEndpoints(
+const topEndpointSchema = z.object({
+  operation_name: z.string(),
+  service_name: z.string(),
+  span_kind: z.string(),
+  http_route: z.string(),
+  rps: z.coerce.number(),
+  error_rate: z.coerce.number(),
+  error_count: z.coerce.number(),
+  total_count: z.coerce.number(),
+  p50_ms: z.coerce.number(),
+  p95_ms: z.coerce.number(),
+  p99_ms: z.coerce.number(),
+});
+
+const topEndpointsResponseSchema = z.object({
+  data: z.object({
+    results: z.array(topEndpointSchema),
+    pageInfo: z.object({
+      hasMore: z.boolean(),
+      nextCursor: z.string().optional(),
+      limit: z.coerce.number(),
+    })
+  }),
+  comparison: z.object({
+    results: z.array(topEndpointSchema),
+    pageInfo: z.object({
+      hasMore: z.boolean(),
+      nextCursor: z.string().optional(),
+      limit: z.coerce.number(),
+    })
+  }).optional()
+});
+
+export async function getTopEndpoints(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[],
@@ -211,14 +246,45 @@ export function getTopEndpoints(
 ): Promise<ComparisonPayload<PaginatedResponse<TopEndpoint[]>>> {
   const params = buildREDFilters(s, e, services, { limit, cursor });
   if (compareTo) {
-    (params as any).compareTo = compareTo;
+    Object.assign(params, { compareTo });
   }
-  return api
-    .get<unknown>(`${V1}/spans/red/top-endpoints`, { params })
-    .then((raw) => raw as ComparisonPayload<PaginatedResponse<TopEndpoint[]>>);
+  const raw = await api.get<unknown>(`${V1}/spans/red/top-endpoints`, { params });
+  return validateResponse(topEndpointsResponseSchema, raw);
 }
 
-export function getTopDBQueries(
+const topDBQuerySchema = z.object({
+  operation_name: z.string(),
+  service_name: z.string(),
+  db_system: z.string(),
+  rps: z.coerce.number(),
+  error_rate: z.coerce.number(),
+  error_count: z.coerce.number(),
+  total_count: z.coerce.number(),
+  p50_ms: z.coerce.number(),
+  p95_ms: z.coerce.number(),
+  p99_ms: z.coerce.number(),
+});
+
+const topDBQueriesResponseSchema = z.object({
+  data: z.object({
+    results: z.array(topDBQuerySchema),
+    pageInfo: z.object({
+      hasMore: z.boolean(),
+      nextCursor: z.string().optional(),
+      limit: z.coerce.number(),
+    })
+  }),
+  comparison: z.object({
+    results: z.array(topDBQuerySchema),
+    pageInfo: z.object({
+      hasMore: z.boolean(),
+      nextCursor: z.string().optional(),
+      limit: z.coerce.number(),
+    })
+  }).optional()
+});
+
+export async function getTopDBQueries(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[],
@@ -228,11 +294,10 @@ export function getTopDBQueries(
 ): Promise<ComparisonPayload<PaginatedResponse<TopDBQuery[]>>> {
   const params = buildREDFilters(s, e, services, { limit, cursor });
   if (compareTo) {
-    (params as any).compareTo = compareTo;
+    Object.assign(params, { compareTo });
   }
-  return api
-    .get<unknown>(`${V1}/spans/red/top-db-queries`, { params })
-    .then((raw) => raw as ComparisonPayload<PaginatedResponse<TopDBQuery[]>>);
+  const raw = await api.get<unknown>(`${V1}/spans/red/top-db-queries`, { params });
+  return validateResponse(topDBQueriesResponseSchema, raw);
 }
 
 // ─── Service Detail (consolidated from serviceDetailApi.ts) ───────────
@@ -256,16 +321,34 @@ export interface SaturationTimeSeriesPoint {
   readonly value: number;
 }
 
-export function getServiceSummary(
+const serviceSummarySchema = z.object({
+  service_name: z.string(),
+  request_count: z.coerce.number(),
+  error_count: z.coerce.number(),
+  rps: z.coerce.number(),
+  error_rate: z.coerce.number(),
+  p50_ms: z.coerce.number(),
+  p95_ms: z.coerce.number(),
+  p99_ms: z.coerce.number(),
+  cpu_utilization: z.coerce.number(),
+  memory_utilization: z.coerce.number(),
+  disk_utilization: z.coerce.number(),
+});
+
+const serviceSummaryComparisonSchema = z.object({
+  data: serviceSummarySchema,
+  comparison: serviceSummarySchema.optional()
+});
+
+export async function getServiceSummary(
   s: RequestTime,
   e: RequestTime,
   services: string | readonly string[],
   compareTo?: "previous_period"
 ): Promise<ComparisonPayload<ServiceSummaryResponse>> {
   const params = buildREDFilters(s, e, services, { compareTo });
-  return api
-    .get<unknown>(`${V1}/spans/red/summary`, { params })
-    .then((raw) => raw as ComparisonPayload<ServiceSummaryResponse>);
+  const raw = await api.get<unknown>(`${V1}/spans/red/summary`, { params });
+  return validateResponse(serviceSummaryComparisonSchema, raw);
 }
 
 export function getServiceSaturationTimeseries(

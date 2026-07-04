@@ -23,6 +23,13 @@ interface ServiceMapEdge {
   delay: string;
 }
 
+interface ServiceMapListItem {
+  name: string;
+  callCount: number;
+  errorRate: number;
+  status: "ok" | "warn" | "err";
+}
+
 export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
   const navigate = useNavigate();
   const [selectedFocus, setSelectedFocus] = useState(serviceName);
@@ -53,8 +60,8 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
 
     const computedNodes: ServiceMapNode[] = [];
     const computedEdges: ServiceMapEdge[] = [];
-    const upList: any[] = [];
-    const downList: any[] = [];
+    const upList: ServiceMapListItem[] = [];
+    const downList: ServiceMapListItem[] = [];
 
     const centerNodeStatus = focusNode ? mapStatus(focusNode.error_rate) : "ok";
     computedNodes.push({
@@ -398,7 +405,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
             )}
 
             {}
-            {upstreamList.map((d: any) => (
+            {upstreamList.map((d: ServiceMapListItem) => (
               <div
                 key={d.name}
                 onClick={() => setSelectedFocus(d.name)}
@@ -435,7 +442,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
             ))}
 
             {}
-            {downstreamList.map((d: any) => (
+            {downstreamList.map((d: ServiceMapListItem) => (
               <div
                 key={d.name}
                 onClick={() => setSelectedFocus(d.name)}

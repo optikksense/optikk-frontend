@@ -7,17 +7,13 @@ import { resolveApiBaseURL } from "../api/baseUrl";
 
 /**
  * Pure HTTP layer for the auth endpoints. Uses a bare axios instance (not
- * the shared client) so these requests never enter the Bearer/team-header
+ * the shared client) so these requests never enter the Bearer/tenant-header
  * interceptors and a 401 here can never trigger a recursive refresh.
  */
 
-const teamSchema = z.object({
+const tenantSchema = z.object({
   id: z.number(),
   name: z.string().min(1),
-
-  slug: z.string().nullish(),
-  color: z.string().nullish(),
-  orgName: z.string().nullish(),
   role: z.string().nullish(),
 });
 
@@ -25,12 +21,11 @@ const userSchema = z.object({
   id: z.union([z.string(), z.number()]),
   email: z.string().email(),
   name: z.string().nullish(),
-  avatarUrl: z.string().nullish(),
 });
 
 const sessionPayloadSchema = z.object({
   user: userSchema,
-  team: teamSchema,
+  tenant: tenantSchema,
   accessToken: z.string().min(1),
 });
 
@@ -105,15 +100,14 @@ export const authApi = {
     }
   },
 
-  // Signup returns the same session envelope as login (plus an api_key we drop
-  // here — the wizard reads it from /onboarding/status) and sets the refresh cookie.
+  // Signup returns the same session envelope as login and sets the refresh cookie.
   async signup(params: SignupParams): Promise<SessionPayload> {
     try {
       const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
         email: params.email,
         password: params.password,
         name: params.name,
-        org_name: params.orgName,
+        tenant_name: params.orgName,
       });
       return unwrapSession(response.data);
     } catch (error: unknown) {

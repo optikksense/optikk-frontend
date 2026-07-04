@@ -15,10 +15,8 @@ import type {
   DashboardExtraContext,
   DashboardPanelSpec,
 } from "@/types/dashboardConfig";
-import QueueMetricsList from "@shared/components/ui/data-display/QueueMetricsList";
-import type { QueueMetricsListType } from "@shared/components/ui/data-display/QueueMetricsList";
-import TopEndpointsList from "@shared/components/ui/data-display/TopEndpointsList";
-import type { TopEndpointsListType } from "@shared/components/ui/data-display/TopEndpointsList";
+import TopEndpointsList, { type TopEndpointListItem, type TopEndpointsListType } from "@shared/components/ui/data-display/TopEndpointsList";
+import QueueMetricsList, { type QueueMetricsItem, type QueueMetricsListType } from "@shared/components/ui/data-display/QueueMetricsList";
 
 import { cn } from "@/lib/utils";
 import DashboardCardErrorBoundary from "./DashboardCardErrorBoundary";
@@ -187,7 +185,7 @@ function ConfigurableChartCardContent({
               <TopEndpointsList
                 title={String(defaultListTitleForChart(chartConfig))}
                 type={endpointListType}
-                endpoints={endpoints}
+                endpoints={endpoints as TopEndpointListItem[]}
                 selectedEndpoints={selectedEndpoints}
                 onToggle={toggleEndpoint}
                 drawerAction={chartConfig.drawerAction}
@@ -199,7 +197,7 @@ function ConfigurableChartCardContent({
               <QueueMetricsList
                 type={asQueueMetricsListType(chartConfig.listType)}
                 title={String(chartConfig.listTitle || chartConfig.listType || "")}
-                queues={endpoints}
+                queues={endpoints as QueueMetricsItem[]}
                 selectedQueues={selectedEndpoints}
                 onToggle={toggleEndpoint}
                 drawerAction={chartConfig.drawerAction}

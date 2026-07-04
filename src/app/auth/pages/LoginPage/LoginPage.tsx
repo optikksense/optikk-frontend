@@ -14,6 +14,7 @@ export function LoginPage() {
         <div className="mx-auto w-full max-w-[380px] self-center py-7">
           <Heading />
           <LoginForm />
+          <SignupCta />
         </div>
         <Footer />
       </main>
@@ -35,6 +36,25 @@ function TopBar() {
   );
 }
 
+function SignupCta() {
+  return (
+    <div className="mt-5">
+      <div className="flex items-center gap-3 text-[11.5px] text-foreground-muted">
+        <span className="h-px flex-1 bg-border" />
+        <span>New to Optikk?</span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+      <Link
+        to={ROUTES.signup}
+        data-testid="login-create-account"
+        className="mt-4 flex h-[42px] w-full items-center justify-center rounded-md border border-border bg-card font-semibold text-[13.5px] text-foreground no-underline transition-colors duration-150 hover:border-foreground-muted hover:bg-surface-inset"
+      >
+        Create an account
+      </Link>
+    </div>
+  );
+}
+
 function Heading() {
   return (
     <header>
@@ -42,7 +62,7 @@ function Heading() {
         Sign in to Optikk
       </h2>
       <p className="m-0 mb-[22px] text-[13.5px] text-foreground-muted">
-        Welcome back. Pick up where your team left off.
+        Welcome back. Pick up where your tenant left off.
       </p>
     </header>
   );

@@ -4,7 +4,6 @@ import { Github, Menu, Star, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
-import { dynamicTo } from "@/shared/utils/navigation";
 
 import { OSS, formatStars } from "../constants";
 import { useGitHubStars } from "../hooks/useGitHubStars";
@@ -34,7 +33,7 @@ function NavItem({ label, path }: { readonly label: string; readonly path: strin
   }
 
   return (
-    <Link className={className} to={dynamicTo(path)}>
+    <Link className={className} to={(path as string & {})}>
       {label}
     </Link>
   );
@@ -69,7 +68,7 @@ export function Nav() {
   return (
     <header className={`m-nav${scrolled ? " is-scrolled" : ""}`}>
       <div className="m-container m-nav-inner">
-        <Link to={dynamicTo("/")} className="m-brand" aria-label="Optikk home">
+        <Link to={("/" as string & {})} className="m-brand" aria-label="Optikk home">
           <OptikkLogo size={26} />
           <span className="m-brand-word">Optikk</span>
         </Link>
@@ -94,10 +93,10 @@ export function Nav() {
             <Star size={12} strokeWidth={2.4} />
             <span>{formatStars(totalStars)}</span>
           </a>
-          <Link to={dynamicTo("/login")} className="m-btn m-btn-ghost m-btn-sm">
+          <Link to={("/login" as string & {})} className="m-btn m-btn-ghost m-btn-sm">
             Sign in
           </Link>
-          <Link to={dynamicTo("/self-host")} className="m-btn m-btn-primary m-btn-sm">
+          <Link to={("/self-host" as string & {})} className="m-btn m-btn-primary m-btn-sm">
             Self-host
           </Link>
           <button
@@ -126,7 +125,7 @@ export function Nav() {
                   {link.label}
                 </a>
               ) : (
-                <Link key={link.path} to={dynamicTo(link.path)}>
+                <Link key={link.path} to={(link.path as string & {})}>
                   {link.label}
                 </Link>
               )

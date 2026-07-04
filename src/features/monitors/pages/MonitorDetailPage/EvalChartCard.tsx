@@ -1,46 +1,65 @@
 import { memo, useMemo } from "react";
-
+import type uPlot from "uplot";
 import type { MonitorSeriesResponse } from "../../api/monitorsApi";
+import ObservabilityChart, { type ObservabilityChartSeries } from "@shared/components/ui/charts/ObservabilityChart";
 
 interface Props {
   readonly data: MonitorSeriesResponse | undefined;
   readonly loading: boolean;
 }
 
-const HEIGHT = 180;
-const PADDING = 8;
+function thresholdLinesPlugin(warn?: number, alert?: number): uPlot.Plugin {
+  return {
+    hooks: {
+      draw: (u) => {
+        const { ctx } = u;
+        const xMin = u.bbox.left;
+        const xMax = xMin + u.bbox.width;
 
-interface Point {
-  readonly x: number;
-  readonly y: number;
-}
+        const drawLine = (val: number, color: string) => {
+          const y = u.valToPos(val, "y", true);
+          // Don't draw if outside the plot area
+          if (y < u.bbox.top || y > u.bbox.top + u.bbox.height) return;
+          
+          ctx.save();
+          ctx.beginPath();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);
+          ctx.moveTo(xMin, y);
+          ctx.lineTo(xMax, y);
+          ctx.stroke();
+          ctx.restore();
+        };
 
-function buildPath(points: readonly Point[]): string {
-  if (points.length === 0) return "";
-  return points
-    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(2)},${p.y.toFixed(2)}`)
-    .join(" ");
+        if (warn !== undefined) drawLine(warn, "#f59e0b");
+        if (alert !== undefined) drawLine(alert, "#ef4444");
+      },
+    },
+  };
 }
 
 function EvalChartCard({ data, loading }: Props) {
-  const chart = useMemo(() => {
-    if (!data || data.points.length === 0) return null;
-    const values = data.points.map((p) => p.value);
-    const min = Math.min(0, ...values);
-    let max = Math.max(...values);
-    if (data.alert_threshold !== undefined) max = Math.max(max, data.alert_threshold * 1.2);
-    if (max === min) max = min + 1;
-    const yScale = (v: number) =>
-      HEIGHT - PADDING - ((v - min) / (max - min)) * (HEIGHT - PADDING * 2);
-    const xScale = (i: number) =>
-      data.points.length === 1 ? 0 : (i / (data.points.length - 1)) * 100;
-    const pts: Point[] = data.points.map((p, i) => ({ x: xScale(i), y: yScale(p.value) }));
-    return {
-      path: buildPath(pts),
-      area: `${buildPath(pts)} L100,${HEIGHT} L0,${HEIGHT} Z`,
-      yAlert: data.alert_threshold !== undefined ? yScale(data.alert_threshold) : undefined,
-      yWarn: data.warn_threshold !== undefined ? yScale(data.warn_threshold) : undefined,
-    };
+  const timestamps = useMemo(() => {
+    if (!data?.points) return [];
+    return data.points.map((p) => Math.floor(p.bucket_ms / 1000));
+  }, [data]);
+
+  const series = useMemo<ObservabilityChartSeries[]>(() => {
+    if (!data?.points) return [];
+    return [
+      {
+        label: "Value",
+        values: data.points.map((p) => p.value),
+        color: "#ef4444",
+        fill: true,
+      }
+    ];
+  }, [data]);
+
+  const plugins = useMemo(() => {
+    if (!data) return [];
+    return [thresholdLinesPlugin(data.warn_threshold, data.alert_threshold)];
   }, [data]);
 
   return (
@@ -63,48 +82,25 @@ function EvalChartCard({ data, loading }: Props) {
           </div>
         )}
       </div>
+      
       <div className="mt-3 h-[180px] w-full">
         {loading && !data ? (
           <div className="flex h-full items-center justify-center text-foreground-muted text-xs">
             Loading…
           </div>
-        ) : !chart ? (
+        ) : !data || data.points.length === 0 ? (
           <div className="flex h-full items-center justify-center text-foreground-muted text-xs">
             No data yet for this monitor.
           </div>
         ) : (
-          <svg
-            viewBox={`0 0 100 ${HEIGHT}`}
-            preserveAspectRatio="none"
-            className="h-full w-full"
-            role="img"
-            aria-label="Monitor evaluation chart"
-          >
-            <path d={chart.area} fill="rgba(239,68,68,0.12)" stroke="none" />
-            <path d={chart.path} fill="none" stroke="#ef4444" strokeWidth={0.6} />
-            {chart.yWarn !== undefined && (
-              <line
-                x1="0"
-                y1={chart.yWarn}
-                x2="100"
-                y2={chart.yWarn}
-                stroke="#f59e0b"
-                strokeWidth={0.4}
-                strokeDasharray="1.5,1.5"
-              />
-            )}
-            {chart.yAlert !== undefined && (
-              <line
-                x1="0"
-                y1={chart.yAlert}
-                x2="100"
-                y2={chart.yAlert}
-                stroke="#ef4444"
-                strokeWidth={0.4}
-                strokeDasharray="1.5,1.5"
-              />
-            )}
-          </svg>
+          <ObservabilityChart
+            type="area"
+            timestamps={timestamps}
+            series={series}
+            plugins={plugins}
+            height={180}
+            fillHeight
+          />
         )}
       </div>
     </div>

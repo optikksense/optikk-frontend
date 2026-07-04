@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 
-import { SimpleTable, type SimpleTableColumn } from "@shared/components/primitives/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatNumber, formatRelativeTime } from "@shared/utils/formatters";
 
 import type { ErrorGroup } from "../../api/errorGroupsApi";
@@ -13,11 +14,11 @@ function isFreshlySeen(iso: string): boolean {
   return Date.now() - t < 60_000;
 }
 
-const columns: SimpleTableColumn<ErrorGroup>[] = [
+const columns: ColumnDef<ErrorGroup>[] = [
   {
-    title: "Issue",
-    key: "operation_name",
-    render: (_v, row) => (
+    header: "Issue",
+    accessorKey: "operation_name",
+    cell: ({ row: { original: row } }) => (
       <div className="flex min-w-0 items-start gap-2.5">
         <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-error" />
         <div className="min-w-0">
@@ -35,42 +36,42 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     ),
   },
   {
-    title: "HTTP",
-    key: "http_status_code",
-    width: 80,
-    align: "right",
-    render: (_v, row) => (
+    header: "HTTP",
+    accessorKey: "http_status_code",
+    size: 80,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
       <span className="font-mono text-[12.5px] text-foreground-secondary">
         {row.http_status_code || "—"}
       </span>
     ),
   },
   {
-    title: "Errors",
-    key: "error_count",
-    width: 100,
-    align: "right",
-    render: (_v, row) => (
+    header: "Errors",
+    accessorKey: "error_count",
+    size: 100,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
       <span className="font-mono font-semibold text-[13px] text-foreground tabular-nums">
         {formatNumber(row.error_count)}
       </span>
     ),
   },
   {
-    title: "First seen",
-    key: "first_occurrence",
-    width: 110,
-    render: (_v, row) => (
+    header: "First seen",
+    accessorKey: "first_occurrence",
+    size: 110,
+    cell: ({ row: { original: row } }) => (
       <span className="font-mono text-[12.5px] text-foreground-muted">
         {row.first_occurrence ? formatRelativeTime(row.first_occurrence) : "—"}
       </span>
     ),
   },
   {
-    title: "Last seen",
-    key: "last_occurrence",
-    width: 100,
-    render: (_v, row) => (
+    header: "Last seen",
+    accessorKey: "last_occurrence",
+    size: 100,
+    cell: ({ row: { original: row } }) => (
       <span
         className={`font-mono text-[12.5px] ${
           isFreshlySeen(row.last_occurrence) ? "text-error" : "text-foreground-secondary"
@@ -81,11 +82,11 @@ const columns: SimpleTableColumn<ErrorGroup>[] = [
     ),
   },
   {
-    title: "",
-    key: "chevron",
-    width: 36,
-    align: "right",
-    render: () => <ChevronRight size={14} className="text-foreground-muted" />,
+    header: "",
+    id: "chevron",
+    size: 36,
+    meta: { align: "right" },
+    cell: () => <ChevronRight size={14} className="text-foreground-muted" />,
   },
 ];
 
@@ -96,14 +97,17 @@ interface IssuesTableProps {
 
 export function IssuesTable({ rows, onOpen }: IssuesTableProps): JSX.Element {
   return (
-    <SimpleTable
-      columns={columns}
-      dataSource={rows}
-      rowKey={(r) => r.group_id}
-      onRow={(record) => ({
-        onClick: () => onOpen(record.group_id),
-        style: { cursor: "pointer" },
-      })}
+    <DataTable
+      data={{
+        columns,
+        rows,
+      }}
+      config={{
+        onRow: (record) => ({
+          onClick: () => onOpen(record.group_id),
+          style: { cursor: "pointer" },
+        }),
+      }}
     />
   );
 }

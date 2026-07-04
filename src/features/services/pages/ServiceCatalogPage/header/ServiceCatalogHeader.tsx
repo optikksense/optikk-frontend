@@ -1,7 +1,7 @@
 import { RefreshCw, Server } from "lucide-react";
 
 import { useAppStore } from "@store/appStore";
-import { useAuthTeam } from "@store/authStore";
+import { useAuthTenant } from "@store/authStore";
 
 import { fmtNum } from "../../ServiceDetailPage/formatters";
 import type { CatalogAggregate } from "../hooks/useCatalogAggregate";
@@ -47,7 +47,7 @@ function buildSubtitle(
 }
 
 export function ServiceCatalogHeader({ aggregate, environment }: ServiceCatalogHeaderProps) {
-  const org = useAuthTeam()?.orgName ?? null;
+  const org = useAuthTenant()?.name ?? null;
   return (
     <header className="flex items-start justify-between gap-3">
       <div className="flex items-start gap-3">

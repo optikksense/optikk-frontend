@@ -12,7 +12,7 @@ import { ContainerDetailKpiCards } from "./ContainerDetailKpiCards";
 import { ContainerDetailSystemMetrics } from "./ContainerDetailSystemMetrics";
 
 function useContainerPod(podName: string): FleetPod | null {
-  const podsQ = useTimeRangeQuery<FleetPod[]>("container-detail.pods-list", (_team, s, e) =>
+  const podsQ = useTimeRangeQuery<FleetPod[]>("container-detail.pods-list", (_tenant, s, e) =>
     getFleetPods(s, e)
   );
   return useMemo(

@@ -8,7 +8,7 @@ import { type TopologyResponse, getTopology } from "@/features/services/api/redA
 export function useServiceTopology(serviceName: string) {
   return useTimeRangeQuery<TopologyResponse>(
     "service-detail.topology",
-    (_team, start, end) => getTopology(start, end, serviceName),
+    (_tenant, start, end) => getTopology(start, end, serviceName),
     { enabled: Boolean(serviceName), extraKeys: [serviceName] }
   );
 }

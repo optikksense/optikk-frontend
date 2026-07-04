@@ -3,9 +3,9 @@ import { useCallback } from "react";
 
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { buildLogsHubHref, traceIdEqualsFilter } from "@shared/observability/deepLinks";
+import { Route } from "@/routes/_app/traces/$traceId";
 
 import type { useTraceDetailData } from "../../../hooks/useTraceDetailData";
-import { useTracesStore } from "../../../store/tracesStore";
 
 type State = {
   resolvedTraceId: string;
@@ -14,15 +14,6 @@ type State = {
   selectedSpanId: string | null;
 };
 
-/** Writes `?span=<id>` to the URL so deep-links round-trip. */
-function writeSpanQueryParam(spanId: string | null) {
-  if (typeof window === "undefined") return;
-  const url = new URL(window.location.href);
-  if (spanId) url.searchParams.set("span", spanId);
-  else url.searchParams.delete("span");
-  window.history.replaceState(window.history.state, "", url.toString());
-}
-
 export function useTraceDetailActions({
   resolvedTraceId,
   traceTimeBounds,
@@ -30,25 +21,25 @@ export function useTraceDetailActions({
   selectedSpanId,
 }: State) {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const { getTimeRange } = useTimeRange();
-  const setWaterfallSearch = useTracesStore((s) => s.setWaterfallSearch);
-  const waterfallSearch = useTracesStore((s) => s.waterfallSearch);
+  
+  const waterfallSearch = search.q ?? "";
 
   const handleSpanClick = useCallback(
     (span: { span_id?: string }) => {
       const id = span.span_id ?? null;
-
       const next = id && id === selectedSpanId ? null : id;
       setSelectedSpanId(next);
-      writeSpanQueryParam(next);
+      navigate({ search: ((prev: any) => ({ ...prev, span: next || undefined })) as any, replace: true });
     },
-    [setSelectedSpanId, selectedSpanId]
+    [setSelectedSpanId, selectedSpanId, navigate]
   );
 
   const closeSpan = useCallback(() => {
     setSelectedSpanId(null);
-    writeSpanQueryParam(null);
-  }, [setSelectedSpanId]);
+    navigate({ search: ((prev: any) => ({ ...prev, span: undefined })) as any, replace: true });
+  }, [setSelectedSpanId, navigate]);
 
   const openInLogs = useCallback(() => {
     const { startTime, endTime } = getTimeRange();
@@ -69,15 +60,17 @@ export function useTraceDetailActions({
     (key: string, value: string) => {
       const token = `${key}:${value}`;
       const current = waterfallSearch.trim();
-      if (current.length === 0) {
-        setWaterfallSearch(token);
-        return;
+      let nextSearch = token;
+      
+      if (current.length > 0) {
+        const tokens = current.split(/\s+/);
+        if (tokens.includes(token)) return;
+        nextSearch = `${current} ${token}`;
       }
-      const tokens = current.split(/\s+/);
-      if (tokens.includes(token)) return;
-      setWaterfallSearch(`${current} ${token}`);
+      
+      navigate({ search: ((prev: any) => ({ ...prev, q: nextSearch })) as any, replace: true });
     },
-    [setWaterfallSearch, waterfallSearch]
+    [waterfallSearch, navigate]
   );
 
   return { handleSpanClick, closeSpan, openInLogs, goBack, addFilter };

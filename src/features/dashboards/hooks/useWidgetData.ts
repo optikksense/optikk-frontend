@@ -37,15 +37,15 @@ function rangeKey(timeRange: ReturnType<typeof useTimeRange>["timeRange"]): stri
  */
 export function useWidgetData(spec: DashboardPanelSpec): WidgetDataResult {
   const { ref, inView } = useInView<HTMLDivElement>({ rootMargin: "100px", once: true });
-  const { selectedTeamId, timeRange, getTimeRange } = useTimeRange();
+  const { selectedTenantId, timeRange, getTimeRange } = useTimeRange();
 
   const endpointQuery = isMetricsQuerySpec(spec.query) ? undefined : spec.query;
   const endpoint = endpointQuery?.endpoint;
   const params = endpointQuery?.params;
-  const enabled = Boolean(inView && endpoint && selectedTeamId);
+  const enabled = Boolean(inView && endpoint && selectedTenantId);
 
   const query = useQuery({
-    queryKey: ["dashboard-widget", selectedTeamId, endpoint, params, rangeKey(timeRange)],
+    queryKey: ["dashboard-widget", selectedTenantId, endpoint, params, rangeKey(timeRange)],
     queryFn: async () => {
       const { startTime, endTime } = getTimeRange();
       const raw = await api.get<unknown>(`${V1}${endpoint}`, {

@@ -4,7 +4,7 @@ import { getDatastoreSummary } from "@/features/saturation/api/datastoresExplore
 import type { DatastoreSummary } from "@/features/saturation/api/datastoresExplorerSchemas";
 
 export function useDatabaseSummary() {
-  return useTimeRangeQuery<DatastoreSummary>("saturation-db.summary", (_team, s, e) =>
+  return useTimeRangeQuery<DatastoreSummary>("saturation-db.summary", (_tenant, s, e) =>
     getDatastoreSummary(s, e)
   );
 }

@@ -47,8 +47,8 @@ function usePodSeries(
 ) {
   return useTimeRangeQuery<ChartRow[]>(
     `container-detail.${metricKey}.${pod}`,
-    async (team, s, e) => {
-      if (!team || !host || !pod || !serviceName) return [];
+    async (tenant, s, e) => {
+      if (!tenant || !host || !pod || !serviceName) return [];
       const data = await infraGet<ChartRow[]>(endpoint, Number(s), Number(e), {
         host,
         pod,

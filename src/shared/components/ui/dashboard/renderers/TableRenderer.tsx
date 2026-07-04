@@ -1,5 +1,6 @@
-import { SimpleTable } from "@shared/components/primitives/ui/simple-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { useMemo } from "react";
 
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
@@ -41,14 +42,13 @@ export function TableRenderer({
               .trim(),
           }));
 
-    const baseColumns = resolvedColumns.map((column) => ({
-      title: column.label,
-      dataIndex: column.key,
-      key: column.key,
-      width: column.width,
-      align: column.align,
-      ellipsis: true,
-      render: (val: any) => {
+    const baseColumns: ColumnDef<Record<string, unknown>>[] = resolvedColumns.map((column) => ({
+      header: column.label,
+      accessorKey: column.key,
+      size: column.width,
+      meta: { align: column.align },
+      cell: ({ getValue }) => {
+        const val = getValue();
         if (val == null || val === "") return "—";
         if (column.key === "sample_trace_id" || column.key === "trace_id") {
           return (
@@ -56,7 +56,7 @@ export function TableRenderer({
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                navigate({ to: `/traces/${val}` });
+                navigate({ to: `/traces/${String(val)}` });
               }}
               className="group flex cursor-pointer items-center gap-1 text-primary hover:underline"
             >
@@ -68,12 +68,12 @@ export function TableRenderer({
         if (column.formatter) {
           switch (column.formatter) {
             case "ms":
-              return formatDuration(val);
+              return formatDuration(val as number);
             case "number":
-              return formatNumber(val);
+              return formatNumber(val as number);
             case "percent":
             case "percent2":
-              return formatPercentage(val);
+              return formatPercentage(val as number);
           }
         }
 
@@ -88,11 +88,11 @@ export function TableRenderer({
     return [
       ...baseColumns,
       {
-        title: "Details",
-        key: "__details",
-        align: "right" as const,
-        render: (_val: unknown, row: Record<string, unknown>) => {
-          const search = buildDashboardDrawerSearch(location.search, chartConfig.drawerAction, row);
+        header: "Details",
+        id: "__details",
+        meta: { align: "right" },
+        cell: ({ row }) => {
+          const search = buildDashboardDrawerSearch(location.search, chartConfig.drawerAction, row.original);
           return search ? <Link to={location.pathname + search}>View</Link> : "—";
         },
       },
@@ -103,11 +103,11 @@ export function TableRenderer({
   }
   return (
     <div className="h-full min-h-0 overflow-auto">
-      <SimpleTable
-        dataSource={rows.map((r: any, i: number) => ({ ...r, _rowKey: r.id ?? r.key ?? i }))}
-        columns={columns}
-        rowKey="_rowKey"
-        size="middle"
+      <DataTable
+        data={{
+          rows: rows.map((r: Record<string, unknown>, i: number) => ({ ...r, _rowKey: r.id ?? r.key ?? i })),
+          columns,
+        }}
       />
     </div>
   );
