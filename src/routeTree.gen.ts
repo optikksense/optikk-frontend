@@ -28,12 +28,13 @@ import { Route as AppOverviewRouteImport } from './routes/_app/overview'
 import { Route as AppMetricsRouteImport } from './routes/_app/metrics'
 import { Route as AppLlmRouteImport } from './routes/_app/llm'
 import { Route as AppIngestionRouteImport } from './routes/_app/ingestion'
-import { Route as AppInfrastructureRouteImport } from './routes/_app/infrastructure'
 import { Route as AppDeviceRouteImport } from './routes/_app/device'
 import { Route as AppTracesIndexRouteImport } from './routes/_app/traces/index'
 import { Route as AppServicesIndexRouteImport } from './routes/_app/services/index'
+import { Route as AppSaturationIndexRouteImport } from './routes/_app/saturation/index'
 import { Route as AppMonitorsIndexRouteImport } from './routes/_app/monitors/index'
 import { Route as AppLogsIndexRouteImport } from './routes/_app/logs/index'
+import { Route as AppInfrastructureIndexRouteImport } from './routes/_app/infrastructure/index'
 import { Route as AppErrorsIndexRouteImport } from './routes/_app/errors/index'
 import { Route as AppDashboardsIndexRouteImport } from './routes/_app/dashboards/index'
 import { Route as AppTracesTraceIdRouteImport } from './routes/_app/traces/$traceId'
@@ -148,11 +149,6 @@ const AppIngestionRoute = AppIngestionRouteImport.update({
   path: '/ingestion',
   getParentRoute: () => AppRoute,
 } as any)
-const AppInfrastructureRoute = AppInfrastructureRouteImport.update({
-  id: '/infrastructure',
-  path: '/infrastructure',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppDeviceRoute = AppDeviceRouteImport.update({
   id: '/device',
   path: '/device',
@@ -168,6 +164,11 @@ const AppServicesIndexRoute = AppServicesIndexRouteImport.update({
   path: '/services/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSaturationIndexRoute = AppSaturationIndexRouteImport.update({
+  id: '/saturation/',
+  path: '/saturation/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMonitorsIndexRoute = AppMonitorsIndexRouteImport.update({
   id: '/monitors/',
   path: '/monitors/',
@@ -176,6 +177,11 @@ const AppMonitorsIndexRoute = AppMonitorsIndexRouteImport.update({
 const AppLogsIndexRoute = AppLogsIndexRouteImport.update({
   id: '/logs/',
   path: '/logs/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInfrastructureIndexRoute = AppInfrastructureIndexRouteImport.update({
+  id: '/infrastructure/',
+  path: '/infrastructure/',
   getParentRoute: () => AppRoute,
 } as any)
 const AppErrorsIndexRoute = AppErrorsIndexRouteImport.update({
@@ -263,15 +269,15 @@ const AppMonitorsMonitorIdEditRoute =
   } as any)
 const AppInfrastructureHostsHostRoute =
   AppInfrastructureHostsHostRouteImport.update({
-    id: '/hosts/$host',
-    path: '/hosts/$host',
-    getParentRoute: () => AppInfrastructureRoute,
+    id: '/infrastructure/hosts/$host',
+    path: '/infrastructure/hosts/$host',
+    getParentRoute: () => AppRoute,
   } as any)
 const AppInfrastructureContainersContainerRoute =
   AppInfrastructureContainersContainerRouteImport.update({
-    id: '/containers/$container',
-    path: '/containers/$container',
-    getParentRoute: () => AppInfrastructureRoute,
+    id: '/infrastructure/containers/$container',
+    path: '/infrastructure/containers/$container',
+    getParentRoute: () => AppRoute,
   } as any)
 const AppSaturationDatabaseQueryQueryIdRoute =
   AppSaturationDatabaseQueryQueryIdRouteImport.update({
@@ -292,7 +298,6 @@ export interface FileRoutesByFullPath {
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
   '/device': typeof AppDeviceRoute
-  '/infrastructure': typeof AppInfrastructureRouteWithChildren
   '/ingestion': typeof AppIngestionRoute
   '/llm': typeof AppLlmRoute
   '/metrics': typeof AppMetricsRoute
@@ -320,8 +325,10 @@ export interface FileRoutesByFullPath {
   '/traces/$traceId': typeof AppTracesTraceIdRoute
   '/dashboards/': typeof AppDashboardsIndexRoute
   '/errors/': typeof AppErrorsIndexRoute
+  '/infrastructure/': typeof AppInfrastructureIndexRoute
   '/logs/': typeof AppLogsIndexRoute
   '/monitors/': typeof AppMonitorsIndexRoute
+  '/saturation/': typeof AppSaturationIndexRoute
   '/services/': typeof AppServicesIndexRoute
   '/traces/': typeof AppTracesIndexRoute
   '/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerRoute
@@ -337,7 +344,6 @@ export interface FileRoutesByTo {
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
   '/device': typeof AppDeviceRoute
-  '/infrastructure': typeof AppInfrastructureRouteWithChildren
   '/ingestion': typeof AppIngestionRoute
   '/llm': typeof AppLlmRoute
   '/metrics': typeof AppMetricsRoute
@@ -365,8 +371,10 @@ export interface FileRoutesByTo {
   '/traces/$traceId': typeof AppTracesTraceIdRoute
   '/dashboards': typeof AppDashboardsIndexRoute
   '/errors': typeof AppErrorsIndexRoute
+  '/infrastructure': typeof AppInfrastructureIndexRoute
   '/logs': typeof AppLogsIndexRoute
   '/monitors': typeof AppMonitorsIndexRoute
+  '/saturation': typeof AppSaturationIndexRoute
   '/services': typeof AppServicesIndexRoute
   '/traces': typeof AppTracesIndexRoute
   '/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerRoute
@@ -384,7 +392,6 @@ export interface FileRoutesById {
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
   '/_app/device': typeof AppDeviceRoute
-  '/_app/infrastructure': typeof AppInfrastructureRouteWithChildren
   '/_app/ingestion': typeof AppIngestionRoute
   '/_app/llm': typeof AppLlmRoute
   '/_app/metrics': typeof AppMetricsRoute
@@ -413,8 +420,10 @@ export interface FileRoutesById {
   '/_app/traces/$traceId': typeof AppTracesTraceIdRoute
   '/_app/dashboards/': typeof AppDashboardsIndexRoute
   '/_app/errors/': typeof AppErrorsIndexRoute
+  '/_app/infrastructure/': typeof AppInfrastructureIndexRoute
   '/_app/logs/': typeof AppLogsIndexRoute
   '/_app/monitors/': typeof AppMonitorsIndexRoute
+  '/_app/saturation/': typeof AppSaturationIndexRoute
   '/_app/services/': typeof AppServicesIndexRoute
   '/_app/traces/': typeof AppTracesIndexRoute
   '/_app/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerRoute
@@ -432,7 +441,6 @@ export interface FileRouteTypes {
     | '/product'
     | '/signup'
     | '/device'
-    | '/infrastructure'
     | '/ingestion'
     | '/llm'
     | '/metrics'
@@ -460,8 +468,10 @@ export interface FileRouteTypes {
     | '/traces/$traceId'
     | '/dashboards/'
     | '/errors/'
+    | '/infrastructure/'
     | '/logs/'
     | '/monitors/'
+    | '/saturation/'
     | '/services/'
     | '/traces/'
     | '/infrastructure/containers/$container'
@@ -477,7 +487,6 @@ export interface FileRouteTypes {
     | '/product'
     | '/signup'
     | '/device'
-    | '/infrastructure'
     | '/ingestion'
     | '/llm'
     | '/metrics'
@@ -505,8 +514,10 @@ export interface FileRouteTypes {
     | '/traces/$traceId'
     | '/dashboards'
     | '/errors'
+    | '/infrastructure'
     | '/logs'
     | '/monitors'
+    | '/saturation'
     | '/services'
     | '/traces'
     | '/infrastructure/containers/$container'
@@ -523,7 +534,6 @@ export interface FileRouteTypes {
     | '/product'
     | '/signup'
     | '/_app/device'
-    | '/_app/infrastructure'
     | '/_app/ingestion'
     | '/_app/llm'
     | '/_app/metrics'
@@ -552,8 +562,10 @@ export interface FileRouteTypes {
     | '/_app/traces/$traceId'
     | '/_app/dashboards/'
     | '/_app/errors/'
+    | '/_app/infrastructure/'
     | '/_app/logs/'
     | '/_app/monitors/'
+    | '/_app/saturation/'
     | '/_app/services/'
     | '/_app/traces/'
     | '/_app/infrastructure/containers/$container'
@@ -707,13 +719,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIngestionRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/infrastructure': {
-      id: '/_app/infrastructure'
-      path: '/infrastructure'
-      fullPath: '/infrastructure'
-      preLoaderRoute: typeof AppInfrastructureRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/device': {
       id: '/_app/device'
       path: '/device'
@@ -735,6 +740,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppServicesIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/saturation/': {
+      id: '/_app/saturation/'
+      path: '/saturation'
+      fullPath: '/saturation/'
+      preLoaderRoute: typeof AppSaturationIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/monitors/': {
       id: '/_app/monitors/'
       path: '/monitors'
@@ -747,6 +759,13 @@ declare module '@tanstack/react-router' {
       path: '/logs'
       fullPath: '/logs/'
       preLoaderRoute: typeof AppLogsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/infrastructure/': {
+      id: '/_app/infrastructure/'
+      path: '/infrastructure'
+      fullPath: '/infrastructure/'
+      preLoaderRoute: typeof AppInfrastructureIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/errors/': {
@@ -863,17 +882,17 @@ declare module '@tanstack/react-router' {
     }
     '/_app/infrastructure/hosts/$host': {
       id: '/_app/infrastructure/hosts/$host'
-      path: '/hosts/$host'
+      path: '/infrastructure/hosts/$host'
       fullPath: '/infrastructure/hosts/$host'
       preLoaderRoute: typeof AppInfrastructureHostsHostRouteImport
-      parentRoute: typeof AppInfrastructureRoute
+      parentRoute: typeof AppRoute
     }
     '/_app/infrastructure/containers/$container': {
       id: '/_app/infrastructure/containers/$container'
-      path: '/containers/$container'
+      path: '/infrastructure/containers/$container'
       fullPath: '/infrastructure/containers/$container'
       preLoaderRoute: typeof AppInfrastructureContainersContainerRouteImport
-      parentRoute: typeof AppInfrastructureRoute
+      parentRoute: typeof AppRoute
     }
     '/_app/saturation/database/query/$queryId': {
       id: '/_app/saturation/database/query/$queryId'
@@ -892,20 +911,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AppInfrastructureRouteChildren {
-  AppInfrastructureContainersContainerRoute: typeof AppInfrastructureContainersContainerRoute
-  AppInfrastructureHostsHostRoute: typeof AppInfrastructureHostsHostRoute
-}
-
-const AppInfrastructureRouteChildren: AppInfrastructureRouteChildren = {
-  AppInfrastructureContainersContainerRoute:
-    AppInfrastructureContainersContainerRoute,
-  AppInfrastructureHostsHostRoute: AppInfrastructureHostsHostRoute,
-}
-
-const AppInfrastructureRouteWithChildren =
-  AppInfrastructureRoute._addFileChildren(AppInfrastructureRouteChildren)
-
 interface AppMonitorsMonitorIdRouteChildren {
   AppMonitorsMonitorIdEditRoute: typeof AppMonitorsMonitorIdEditRoute
 }
@@ -919,7 +924,6 @@ const AppMonitorsMonitorIdRouteWithChildren =
 
 interface AppRouteChildren {
   AppDeviceRoute: typeof AppDeviceRoute
-  AppInfrastructureRoute: typeof AppInfrastructureRouteWithChildren
   AppIngestionRoute: typeof AppIngestionRoute
   AppLlmRoute: typeof AppLlmRoute
   AppMetricsRoute: typeof AppMetricsRoute
@@ -939,10 +943,14 @@ interface AppRouteChildren {
   AppTracesTraceIdRoute: typeof AppTracesTraceIdRoute
   AppDashboardsIndexRoute: typeof AppDashboardsIndexRoute
   AppErrorsIndexRoute: typeof AppErrorsIndexRoute
+  AppInfrastructureIndexRoute: typeof AppInfrastructureIndexRoute
   AppLogsIndexRoute: typeof AppLogsIndexRoute
   AppMonitorsIndexRoute: typeof AppMonitorsIndexRoute
+  AppSaturationIndexRoute: typeof AppSaturationIndexRoute
   AppServicesIndexRoute: typeof AppServicesIndexRoute
   AppTracesIndexRoute: typeof AppTracesIndexRoute
+  AppInfrastructureContainersContainerRoute: typeof AppInfrastructureContainersContainerRoute
+  AppInfrastructureHostsHostRoute: typeof AppInfrastructureHostsHostRoute
   AppSaturationDatabaseIndexRoute: typeof AppSaturationDatabaseIndexRoute
   AppSaturationDatabaseInstanceSystemRoute: typeof AppSaturationDatabaseInstanceSystemRoute
   AppSaturationDatabaseQueryQueryIdRoute: typeof AppSaturationDatabaseQueryQueryIdRoute
@@ -950,7 +958,6 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppDeviceRoute: AppDeviceRoute,
-  AppInfrastructureRoute: AppInfrastructureRouteWithChildren,
   AppIngestionRoute: AppIngestionRoute,
   AppLlmRoute: AppLlmRoute,
   AppMetricsRoute: AppMetricsRoute,
@@ -970,10 +977,15 @@ const AppRouteChildren: AppRouteChildren = {
   AppTracesTraceIdRoute: AppTracesTraceIdRoute,
   AppDashboardsIndexRoute: AppDashboardsIndexRoute,
   AppErrorsIndexRoute: AppErrorsIndexRoute,
+  AppInfrastructureIndexRoute: AppInfrastructureIndexRoute,
   AppLogsIndexRoute: AppLogsIndexRoute,
   AppMonitorsIndexRoute: AppMonitorsIndexRoute,
+  AppSaturationIndexRoute: AppSaturationIndexRoute,
   AppServicesIndexRoute: AppServicesIndexRoute,
   AppTracesIndexRoute: AppTracesIndexRoute,
+  AppInfrastructureContainersContainerRoute:
+    AppInfrastructureContainersContainerRoute,
+  AppInfrastructureHostsHostRoute: AppInfrastructureHostsHostRoute,
   AppSaturationDatabaseIndexRoute: AppSaturationDatabaseIndexRoute,
   AppSaturationDatabaseInstanceSystemRoute:
     AppSaturationDatabaseInstanceSystemRoute,

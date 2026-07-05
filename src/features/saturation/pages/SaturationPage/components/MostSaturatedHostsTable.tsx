@@ -1,5 +1,8 @@
 import { memo } from "react";
 
+import { useNavigate } from "@tanstack/react-router";
+
+import { ROUTES } from "@/shared/constants/routes";
 import type { HostSaturationRow } from "../../../api/saturationApi";
 import type { Tone } from "../view-models/saturationScore";
 import { RankBarRow } from "./RankBarRow";
@@ -21,6 +24,8 @@ function metrics(host: HostSaturationRow): string {
 }
 
 function MostSaturatedHostsTableImpl({ rows }: Props): JSX.Element {
+  const navigate = useNavigate();
+
   return (
     <SaturationCard
       title="Most saturated hosts"
@@ -46,6 +51,7 @@ function MostSaturatedHostsTableImpl({ rows }: Props): JSX.Element {
               bar={row.saturation / 100}
               barLabel={`${Math.round(row.saturation)}%`}
               tone={TONES[row.tone] ?? "ok"}
+              onClick={() => navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(row.host)) as never })}
             />
           ))}
         </tbody>
