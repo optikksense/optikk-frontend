@@ -2,7 +2,7 @@ export const API_PROXY_BASE = "/api";
 const API_TIMEOUT_MS = 30000;
 const API_RETRY_ATTEMPTS = 3;
 
-export const DEV_FRONTEND_PORT = 3000;
+export const DEV_FRONTEND_PORT = 8080;
 const DEV_BACKEND_HOST = "localhost";
 const DEV_BACKEND_PORT = 19090;
 export const DEV_BACKEND_URL = `http://${DEV_BACKEND_HOST}:${DEV_BACKEND_PORT}`;
