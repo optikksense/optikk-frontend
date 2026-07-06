@@ -1,6 +1,6 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import DataTable from "@shared/components/ui/data-display/DataTable";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
@@ -92,7 +92,11 @@ export function TableRenderer({
         id: "__details",
         meta: { align: "right" },
         cell: ({ row }) => {
-          const search = buildDashboardDrawerSearch(location.search, chartConfig.drawerAction, row.original);
+          const search = buildDashboardDrawerSearch(
+            location.search,
+            chartConfig.drawerAction,
+            row.original
+          );
           return search ? <Link to={location.pathname + search}>View</Link> : "—";
         },
       },
@@ -105,7 +109,10 @@ export function TableRenderer({
     <div className="h-full min-h-0 overflow-auto">
       <DataTable
         data={{
-          rows: rows.map((r: Record<string, unknown>, i: number) => ({ ...r, _rowKey: r.id ?? r.key ?? i })),
+          rows: rows.map((r: Record<string, unknown>, i: number) => ({
+            ...r,
+            _rowKey: r.id ?? r.key ?? i,
+          })),
           columns,
         }}
       />

@@ -12,6 +12,7 @@ import {
 } from "@shared/components/ui/overlay/detail-drawer";
 import type { TraceRecord } from "@shared/entities/trace/model";
 import { formatDuration } from "@shared/utils/formatters";
+import { getSeverityTheme } from "@/features/log/utils/logTransformers";
 
 import type { RelatedTrace, SpanAttributes, SpanEvent } from "../../../types";
 import { SpanInfoTab } from "./span-detail/SpanInfoTab";
@@ -50,19 +51,6 @@ interface Props {
 }
 
 type SpanTab = "info" | "json" | "logs";
-
-function logLevel(text: string): "info" | "warn" | "error" {
-  const t = text.toUpperCase();
-  if (t.startsWith("ERROR") || t.startsWith("FATAL") || t === "ERR") return "error";
-  if (t.startsWith("WARN")) return "warn";
-  return "info";
-}
-
-const LEVEL_COLOR = {
-  info: "var(--accent)",
-  warn: "var(--warn)",
-  error: "var(--err)",
-} as const;
 
 function statusColor(httpStatus: number | undefined): string | undefined {
   if (httpStatus == null) return undefined;
@@ -266,31 +254,31 @@ function SpanDetailDrawerComponent(props: Props) {
             ) : (
               <div className="flex flex-col gap-1.5">
                 {spanLogs.map((l, i) => {
-                  const level = logLevel(l.severity_text);
+                  const { level, color } = getSeverityTheme(l.severity_text);
                   return (
                     <div
                       key={l.id || `${l.timestamp}-${i}`}
-                      className="flex items-start gap-2 rounded-md border border-[var(--line-2)] bg-[var(--bg-card)] p-[8px_9px]"
+                      className="group flex flex-col gap-1.5 rounded-md border border-transparent p-2 transition-colors hover:border-border hover:bg-surface-inset"
                     >
-                      <span
-                        className="mt-0.5 h-3.5 w-0.5 shrink-0 rounded-full"
-                        style={{ background: LEVEL_COLOR[level] }}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full"
+                          style={{ background: color }}
+                        />
+                        <span className="font-mono text-[11px] text-foreground-muted">
+                          {String(l.timestamp)}
+                        </span>
+                        {l.severity_text && (
                           <span
-                            className="font-mono font-semibold text-[11px] uppercase"
-                            style={{ color: LEVEL_COLOR[level] }}
+                            className="rounded px-1.5 py-0.5 font-semibold text-[10px] uppercase tracking-wider"
+                            style={{ color, background: `${color}15` }}
                           >
                             {level}
                           </span>
-                          <span className="font-mono text-[11px] text-[var(--fg-3)]">
-                            {String(l.timestamp)}
-                          </span>
-                        </div>
-                        <div className="font-mono text-[12.5px] text-[var(--fg-0)] leading-[1.4]">
-                          {l.body || "—"}
-                        </div>
+                        )}
+                      </div>
+                      <div className="font-mono text-[12.5px] text-[var(--fg-0)] leading-[1.4]">
+                        {l.body || "—"}
                       </div>
                     </div>
                   );

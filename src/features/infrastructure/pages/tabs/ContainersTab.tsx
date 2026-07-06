@@ -93,12 +93,15 @@ export default function ContainersTab() {
   }, [processedPods]);
 
   const onOpenHost = (host: string) => {
-    navigate({ to: (ROUTES.hostDetail.replace("$host", encodeURIComponent(host as string & {}))) });
+    navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(host as string & {})) });
   };
 
   const onOpenContainer = (container: string) => {
     navigate({
-      to: (ROUTES.containerDetail.replace("$container", encodeURIComponent(container as string & {}))),
+      to: ROUTES.containerDetail.replace(
+        "$container",
+        encodeURIComponent(container as string & {})
+      ),
     });
   };
 

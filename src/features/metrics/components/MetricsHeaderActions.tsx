@@ -1,6 +1,6 @@
 import { Bell, Download, ExternalLink, Plus } from "lucide-react";
 import { useCallback } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import { Button } from "@shared/components/primitives/ui/button";
 

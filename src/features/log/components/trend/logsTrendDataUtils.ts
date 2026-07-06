@@ -1,6 +1,6 @@
 import type { LogsTrendBucket } from "../../api/logsAnalyticsApi";
 
-export interface ChartBucket {
+interface ChartBucket {
   readonly ts: number;
   readonly debug: number;
   readonly info: number;
@@ -33,7 +33,9 @@ export function prepareLogsTrendData(trend: readonly LogsTrendBucket[] | undefin
  * Draws highest series (err) in the back, then warn, info, and debug in front.
  * Returns [timestamps, err_cumulative, warn_cumulative, info_cumulative, debug_cumulative]
  */
-export function buildCumulativeSeries(buckets: ChartBucket[]): [number[], number[], number[], number[], number[]] {
+export function buildCumulativeSeries(
+  buckets: ChartBucket[]
+): [number[], number[], number[], number[], number[]] {
   const timestamps: number[] = [];
   const errSeries: number[] = [];
   const warnSeries: number[] = [];

@@ -1,7 +1,7 @@
 import { ChevronRight } from "lucide-react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@shared/components/ui/data-display/DataTable";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 import { ServiceAvatar } from "../../../components/ServiceAvatar";

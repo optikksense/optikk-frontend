@@ -252,6 +252,6 @@ function handleAttribute(key: string, op: string, value: string, ctx: DispatchCt
 
 function appendArr(body: LogsFiltersBody, key: keyof LogsFiltersBody, value: string): void {
   const val = body[key];
-  const current = Array.isArray(val) && val.every(v => typeof v === "string") ? val : [];
+  const current = Array.isArray(val) && val.every((v) => typeof v === "string") ? val : [];
   Object.assign(body, { [key]: [...current, value] });
 }

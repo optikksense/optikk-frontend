@@ -31,9 +31,7 @@ export default function SettingsPage() {
         activeKey={activeSettingsTab}
         onChange={setActiveSettingsTab}
         className="mt-1"
-        items={[
-          { key: "tenant", label: "Tenant", icon: <Users size={14} /> },
-        ]}
+        items={[{ key: "tenant", label: "Tenant", icon: <Users size={14} /> }]}
       />
 
       {activeSettingsTab === "tenant" && (

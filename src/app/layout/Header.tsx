@@ -6,7 +6,6 @@ import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
 import { ChevronDown, ChevronLeft, ChevronRight, Moon, RefreshCw, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-
 import { useAppStore, useTheme } from "@store/appStore";
 import { useAuthTenant } from "@store/authStore";
 

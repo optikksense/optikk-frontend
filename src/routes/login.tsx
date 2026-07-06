@@ -6,8 +6,5 @@ const LoginPage = lazy(() => import("@/app/auth"));
 
 export const Route = createFileRoute("/login")({
   validateSearch: z.object({ redirect: z.string().optional() }),
-  component: () => (
-      <LoginPage />
-
-  ),
+  component: () => <LoginPage />,
 });

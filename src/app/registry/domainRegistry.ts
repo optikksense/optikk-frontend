@@ -65,17 +65,9 @@ const domainRegistry: readonly DomainConfig[] = [
   settingsConfig,
 ] as const;
 
-export interface RegisteredDomainRoute extends DomainRouteConfig {
-  readonly domainKey: string;
-  readonly label: string;
-  readonly permissions: readonly string[];
-}
-
 export function getDomainNavigationItems(): readonly DomainNavigationItem[] {
   return domainRegistry.flatMap((domain) => domain.navigation);
 }
-
-
 
 export function getDashboardPanelRegistrations(): readonly DashboardPanelRegistration[] {
   return domainRegistry.flatMap((domain) => domain.dashboardPanels ?? []);

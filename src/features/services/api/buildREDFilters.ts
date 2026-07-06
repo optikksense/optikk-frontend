@@ -26,7 +26,7 @@ export function buildREDFilters(
     endTime: RequestTime;
     services?: readonly string[];
     serviceName?: string;
-    [key: string]: any;
+    [key: string]: RequestTime | string | readonly string[] | number | boolean | undefined;
   } = { ...extra, startTime: s, endTime: e };
 
   if (services) {

@@ -111,20 +111,20 @@ export function useServiceDetailDrawerModel(
   const openTraces = useCallback((): void => {
     navigate({
       to: ROUTES.traces as never,
-      search: buildServiceTracesSearch(location.search, serviceName) as any,
+      search: buildServiceTracesSearch(location.search, serviceName) as never,
     });
   }, [location.search, navigate, serviceName]);
 
   const openLogs = useCallback((): void => {
     navigate({
       to: ROUTES.logs as never,
-      search: buildServiceLogsSearch(location.search, serviceName) as any,
+      search: buildServiceLogsSearch(location.search, serviceName) as never,
     });
   }, [location.search, navigate, serviceName]);
 
   const openFullView = useCallback((): void => {
     const path = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(serviceName));
-    navigate({ to: (path as string & {}) });
+    navigate({ to: path as string & {} });
   }, [navigate, serviceName]);
 
   const serviceLabel = title?.trim() || serviceName;

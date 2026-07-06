@@ -9,6 +9,10 @@ const CHART_THEME_FALLBACKS = {
   borderLight: "rgba(255,255,255,0.08)",
   colorPrimary: "#2563eb",
   colorInfo: "#38bdf8",
+  ok: "#34d399",
+  warn: "#facc15",
+  err: "#f87171",
+  brand: "#818cf8",
 } as const;
 
 const CHART_PALETTE_TOKENS = [
@@ -68,4 +72,8 @@ export const CHART_THEME_DEFAULTS = {
   borderLight: () => resolveThemeColor("--border-light", CHART_THEME_FALLBACKS.borderLight),
   colorPrimary: () => resolveThemeColor("--color-primary", CHART_THEME_FALLBACKS.colorPrimary),
   colorInfo: () => resolveThemeColor("--color-info", CHART_THEME_FALLBACKS.colorInfo),
+  ok: () => resolveThemeColor("--ok", CHART_THEME_FALLBACKS.ok),
+  warn: () => resolveThemeColor("--warn", CHART_THEME_FALLBACKS.warn),
+  err: () => resolveThemeColor("--err", CHART_THEME_FALLBACKS.err),
+  brand: () => resolveThemeColor("--brand", CHART_THEME_FALLBACKS.brand),
 } as const;

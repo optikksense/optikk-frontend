@@ -1,11 +1,11 @@
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import type { ColumnDef } from "@tanstack/react-table";
-import DataTable from "@shared/components/ui/data-display/DataTable";
 import { PageShell } from "@shared/components/ui";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import { getNodeServices, getNodes } from "../../api/hostsApi";
 import type { InfrastructureNode, InfrastructureNodeService } from "../../api/hostsApi";

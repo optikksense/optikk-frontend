@@ -51,7 +51,11 @@ function MostSaturatedHostsTableImpl({ rows }: Props): JSX.Element {
               bar={row.saturation / 100}
               barLabel={`${Math.round(row.saturation)}%`}
               tone={TONES[row.tone] ?? "ok"}
-              onClick={() => navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(row.host)) as never })}
+              onClick={() =>
+                navigate({
+                  to: ROUTES.hostDetail.replace("$host", encodeURIComponent(row.host)) as never,
+                })
+              }
             />
           ))}
         </tbody>

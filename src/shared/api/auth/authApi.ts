@@ -15,6 +15,8 @@ const tenantSchema = z.object({
   id: z.number(),
   name: z.string().min(1),
   role: z.string().nullish(),
+  accountStatus: z.string().nullish(),
+  trialEndsAt: z.string().nullish(),
 });
 
 const userSchema = z.object({
@@ -36,7 +38,7 @@ const envelopeSchema = z.object({
   data: z.unknown(),
 });
 
-export class AuthApiError extends Error {
+class AuthApiError extends Error {
   readonly status: number | null;
 
   constructor(message: string, status: number | null) {
@@ -89,6 +91,21 @@ export interface SignupParams {
   readonly orgName: string;
 }
 
+interface SignupResult {
+  readonly session: SessionPayload;
+  readonly apiKey: string;
+}
+
+// Signup's envelope carries the tenant's api_key alongside the session.
+const signupKeySchema = z.object({ api_key: z.string().min(1) });
+
+function extractApiKey(responseBody: unknown): string {
+  const envelope = envelopeSchema.safeParse(responseBody);
+  const candidate = envelope.success ? envelope.data.data : responseBody;
+  const parsed = signupKeySchema.safeParse(candidate);
+  return parsed.success ? parsed.data.api_key : "";
+}
+
 export const authApi = {
   async login(email: string, password: string): Promise<SessionPayload> {
     try {
@@ -100,8 +117,9 @@ export const authApi = {
     }
   },
 
-  // Signup returns the same session envelope as login and sets the refresh cookie.
-  async signup(params: SignupParams): Promise<SessionPayload> {
+  // Signup returns the same session envelope as login (plus the api_key) and
+  // sets the refresh cookie.
+  async signup(params: SignupParams): Promise<SignupResult> {
     try {
       const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
         email: params.email,
@@ -109,7 +127,7 @@ export const authApi = {
         name: params.name,
         tenant_name: params.orgName,
       });
-      return unwrapSession(response.data);
+      return { session: unwrapSession(response.data), apiKey: extractApiKey(response.data) };
     } catch (error: unknown) {
       if (error instanceof AuthApiError) throw error;
       throw toAuthApiError(error, "Sign up failed");

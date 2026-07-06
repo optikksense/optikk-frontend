@@ -1,6 +1,6 @@
 import { ExternalLink, GitFork, Waypoints } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
 import {
@@ -19,6 +19,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { getLogById } from "../../api/logsExplorerApi";
 import { getTraceLogs } from "../../api/traceLogsApi";
 import type { LogRecord } from "../../types/log";
+import { buildAttrGroups } from "../../utils/logTransformers";
 import { serviceSwatchColor } from "../../utils/serviceHue";
 import { severityStyle } from "../../utils/severity";
 import { getSpanId, getTraceId } from "../../utils/traceCorrelation";
@@ -43,63 +44,7 @@ function formatTime(iso: string): string {
   }
 }
 
-function buildAttrGroups(log: LogRecord, sevLabel: string, sevColor: string): DrawerAttrGroup[] {
-  const traceId = getTraceId(log);
-  const spanId = getSpanId(log);
-
-  const source: DrawerAttrGroup = {
-    label: "Source",
-    rows: [
-      ["service.name", log.service_name, "var(--accent-2)"],
-      ...(log.environment ? ([["env", log.environment]] as const) : []),
-      ...(log.scope_name ? ([["scope.name", log.scope_name]] as const) : []),
-      ...(log.scope_version ? ([["scope.version", log.scope_version]] as const) : []),
-    ],
-  };
-
-  const severity: DrawerAttrGroup = {
-    label: "Severity",
-    rows: [
-      ["severity_text", log.severity_text ?? sevLabel, sevColor],
-      ["severity_bucket", String(log.severity_bucket)],
-    ],
-  };
-
-  const infra: DrawerAttrGroup = {
-    label: "Infrastructure",
-    rows: [
-      ...(log.host ? ([["host", log.host]] as const) : []),
-      ...(log.pod ? ([["pod", log.pod]] as const) : []),
-      ...(log.container ? ([["container", log.container]] as const) : []),
-    ],
-  };
-
-  const trace: DrawerAttrGroup = {
-    label: "Trace",
-    rows: traceId
-      ? [
-          ["trace.id", traceId, "var(--accent-2)"],
-          ...(spanId ? ([["span.id", spanId]] as const) : []),
-        ]
-      : [["has_trace", "false", "var(--fg-3)"]],
-  };
-
-  const dynamic: [string, string][] = [
-    ...Object.entries(log.attributes_string ?? {}),
-    ...Object.entries(log.attributes_number ?? {}).map(
-      ([k, v]) => [k, String(v)] as [string, string]
-    ),
-    ...Object.entries(log.attributes_bool ?? {}).map(
-      ([k, v]) => [k, v ? "true" : "false"] as [string, string]
-    ),
-  ].sort(([a], [b]) => a.localeCompare(b));
-
-  const attributes: DrawerAttrGroup = { label: "Attributes", rows: dynamic };
-
-  return [source, severity, infra, trace, attributes].filter((g) => g.rows.length > 0);
-}
-
-function LogDetailDrawerComponent({ logId, open, onClose, onPrev, onNext }: Props) {
+function LogDetailDrawerInner({ logId, open, onClose, onPrev, onNext }: Props) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<LogTab>("event");
   useEffect(() => {
@@ -352,6 +297,17 @@ function LogDetailDrawerComponent({ logId, open, onClose, onPrev, onNext }: Prop
       </div>
     </DrawerShell>
   );
+}
+
+function LogDetailDrawerComponent(props: Props) {
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    if (props.open) setHasMounted(true);
+  }, [props.open]);
+
+  if (!hasMounted) return null;
+
+  return <LogDetailDrawerInner {...props} />;
 }
 
 export const LogDetailDrawer = memo(LogDetailDrawerComponent);

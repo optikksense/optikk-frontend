@@ -5,7 +5,7 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { getLatencyBySystem } from "@/features/saturation/api/databaseLatencyApi";
 import type { LatencySeriesPoint } from "@/features/saturation/api/databaseSeriesSchemas";
 
-export interface LatencyPercentileSeries {
+interface LatencyPercentileSeries {
   readonly timestamps: number[];
   readonly p50Ms: number[];
   readonly p95Ms: number[];

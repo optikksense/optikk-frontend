@@ -2,8 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@shared/components/ui/data-display/DataTable";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
 import { queryFingerprintId } from "@/features/saturation/utils/queryFingerprintId";
@@ -42,7 +42,9 @@ const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
     accessorKey: "call_count",
     size: 90,
     meta: { align: "right" },
-    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtNum(row.call_count)}</span>,
+    cell: ({ row: { original: row } }) => (
+      <span className="font-mono">{fmtNum(row.call_count)}</span>
+    ),
   },
   {
     header: "p50",

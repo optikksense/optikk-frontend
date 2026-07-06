@@ -1,7 +1,6 @@
 // Theme-color guardrail: components must use semantic utilities or
 // [var(--token)] in className — no Tailwind named colors, raw hex, or rgb().
 // Raw colors are only allowed in inline style={{}} and .css files.
-// Marketing keeps its own scoped theme and is excluded.
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 
@@ -13,8 +12,7 @@ const RAW_RGB = /\[rgba?\(/;
 const files = execSync('git ls-files "src/**/*.tsx" "src/**/*.ts"', { encoding: "utf8" })
   .split("\n")
   .filter(Boolean)
-  .filter((f) => existsSync(f))
-  .filter((f) => !f.startsWith("src/features/marketing/"));
+  .filter((f) => existsSync(f));
 
 let failed = false;
 for (const file of files) {

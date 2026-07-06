@@ -7,6 +7,9 @@ interface ImportMetaEnv {
   readonly VITE_OTEL_SERVICE_NAME?: string;
 
   readonly VITE_OTEL_TRACES_SAMPLE_RATIO?: string;
+
+  /** Customer-facing OTLP ingest endpoint shown on the Welcome page. */
+  readonly VITE_OTLP_ENDPOINT?: string;
 }
 
 interface ImportMeta {

@@ -73,7 +73,8 @@ export function buildServiceTracesSearch(
   currentSearch: string | Record<string, unknown>,
   serviceName: string
 ): Record<string, string | string[]> {
-  const searchInput = typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
+  const searchInput =
+    typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
   const next = new URLSearchParams(searchInput);
   clearServiceDrawerParams(next);
   next.delete("view");
@@ -88,7 +89,8 @@ export function buildServiceLogsSearch(
   currentSearch: string | Record<string, unknown>,
   serviceName: string
 ): Record<string, string | string[]> {
-  const searchInput = typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
+  const searchInput =
+    typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
   const next = new URLSearchParams(searchInput);
   clearServiceDrawerParams(next);
   next.delete("view");

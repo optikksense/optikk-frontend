@@ -4,6 +4,6 @@ export * from "./feedback";
 export * from "./cards";
 export * from "./overlay";
 export * from "./TimeSelector";
-export * from "./data-display";
+
 export * from "./forms";
 export * from "./layout";

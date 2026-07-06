@@ -5,7 +5,7 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import type { OpsSeriesPoint } from "@/features/saturation/api/databaseSeriesSchemas";
 import { getOpsBySystem } from "@/features/saturation/api/databaseVolumeApi";
 
-export interface QpsSeries {
+interface QpsSeries {
   readonly timestamps: number[];
   readonly opsPerSec: number[];
 }

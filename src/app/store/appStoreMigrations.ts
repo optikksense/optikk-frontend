@@ -129,7 +129,11 @@ export function loadLegacyAppState(): PersistedAppState {
   return {
     selectedTenantId,
     selectedTenantIds:
-      selectedTenantIds.length > 0 ? selectedTenantIds : selectedTenantId != null ? [selectedTenantId] : [],
+      selectedTenantIds.length > 0
+        ? selectedTenantIds
+        : selectedTenantId != null
+          ? [selectedTenantId]
+          : [],
     timeRange: migrateTimeRange(readStorage(STORAGE_KEYS.TIME_RANGE)),
     sidebarCollapsed: readStorage(STORAGE_KEYS.SIDEBAR_COLLAPSED) === "true",
     autoRefreshInterval: Number(readStorage(STORAGE_KEYS.AUTO_REFRESH) ?? "10000") || 10_000,

@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import { Surface } from "@/components/ui";
-import DataTable from "@shared/components/ui/data-display/DataTable";
 import { StatCard } from "@shared/components/ui";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatDuration, formatNumber, formatTimestamp } from "@shared/utils/formatters";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import type { LlmTrace } from "../../../api/llmApi";
 import { useLlmTraceDetail, useLlmTraces } from "../../../hooks/useLlmQueries";
@@ -71,7 +71,9 @@ export default function TracesTab({
     {
       header: "ML app",
       accessorKey: "service",
-      cell: ({ row: { original: t } }) => <span className="font-medium font-mono text-foreground">{t.service}</span>,
+      cell: ({ row: { original: t } }) => (
+        <span className="font-medium font-mono text-foreground">{t.service}</span>
+      ),
     },
     {
       header: "Model",
@@ -97,7 +99,9 @@ export default function TracesTab({
       header: "Latency",
       accessorKey: "latency",
       meta: { align: "right" },
-      cell: ({ row: { original: t } }) => <span className="font-mono">{formatDuration(t.durationMs)}</span>,
+      cell: ({ row: { original: t } }) => (
+        <span className="font-mono">{formatDuration(t.durationMs)}</span>
+      ),
     },
     {
       header: "Cost",
@@ -197,7 +201,7 @@ export default function TracesTab({
             onRow: (t) => ({
               onClick: () => setSelectedTraceId(t.traceId),
               style: { cursor: "pointer" },
-            })
+            }),
           }}
         />
         <div className="mt-3 flex items-center justify-between">

@@ -13,7 +13,8 @@
       "dist/**/*",
       "node_modules/**/*",
       "public/**/*",
-      "*.log"
+      "*.log",
+      "routeTree.gen.ts"
     ]
   },
   "formatter": {

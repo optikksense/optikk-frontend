@@ -1,7 +1,9 @@
+import ObservabilityChart, {
+  type ObservabilityChartSeries,
+} from "@shared/components/ui/charts/ObservabilityChart";
 import { memo, useMemo } from "react";
 import type uPlot from "uplot";
 import type { MonitorSeriesResponse } from "../../api/monitorsApi";
-import ObservabilityChart, { type ObservabilityChartSeries } from "@shared/components/ui/charts/ObservabilityChart";
 
 interface Props {
   readonly data: MonitorSeriesResponse | undefined;
@@ -20,7 +22,7 @@ function thresholdLinesPlugin(warn?: number, alert?: number): uPlot.Plugin {
           const y = u.valToPos(val, "y", true);
           // Don't draw if outside the plot area
           if (y < u.bbox.top || y > u.bbox.top + u.bbox.height) return;
-          
+
           ctx.save();
           ctx.beginPath();
           ctx.strokeStyle = color;
@@ -53,7 +55,7 @@ function EvalChartCard({ data, loading }: Props) {
         values: data.points.map((p) => p.value),
         color: "#ef4444",
         fill: true,
-      }
+      },
     ];
   }, [data]);
 
@@ -82,7 +84,7 @@ function EvalChartCard({ data, loading }: Props) {
           </div>
         )}
       </div>
-      
+
       <div className="mt-3 h-[180px] w-full">
         {loading && !data ? (
           <div className="flex h-full items-center justify-center text-foreground-muted text-xs">

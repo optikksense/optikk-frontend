@@ -1,7 +1,7 @@
 import { IconButton, Skeleton, Surface } from "@/components/ui";
 import { Copy, Key, Users } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import type { SettingsTenantViewModel } from "../../types";
 

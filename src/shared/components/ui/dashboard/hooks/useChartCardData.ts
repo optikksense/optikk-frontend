@@ -93,7 +93,7 @@ export interface ChartCardData {
   hasNoData: boolean;
   timeseriesData: DashboardRecord[];
   serviceTimeseriesMap: Record<string, DashboardRecord[]>;
-  endpoints: any[];
+  endpoints: unknown[];
   chartProps: BaseChartComponentProps;
 }
 

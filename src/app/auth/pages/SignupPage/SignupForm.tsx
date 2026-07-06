@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Building2, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { cn } from "@/lib/utils";
@@ -45,7 +45,7 @@ export function SignupForm() {
     }
 
     toast.success("Account created!");
-    navigate({ to: ROUTES.overview });
+    navigate({ to: ROUTES.welcome });
   };
 
   return (
@@ -222,13 +222,13 @@ function LegalLine() {
   return (
     <p className="mx-auto mt-[22px] max-w-[320px] text-center text-[11px] text-foreground-muted leading-[1.5]">
       By creating an account you agree to Optikk&apos;s{" "}
-      <Link to={ROUTES.terms} className="text-foreground-secondary underline">
+      <a href={ROUTES.terms} className="text-foreground-secondary underline">
         Terms of Service
-      </Link>{" "}
+      </a>{" "}
       and{" "}
-      <Link to={ROUTES.privacy} className="text-foreground-secondary underline">
+      <a href={ROUTES.privacy} className="text-foreground-secondary underline">
         Privacy Policy
-      </Link>
+      </a>
       .
     </p>
   );

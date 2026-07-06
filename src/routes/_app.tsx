@@ -1,7 +1,7 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { session } from "@shared/api/auth/session";
-import { ROUTES } from "@/shared/constants/routes";
 import MainLayout from "@/app/layout/MainLayout";
+import { ROUTES } from "@/shared/constants/routes";
+import { session } from "@shared/api/auth/session";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ location }) => {

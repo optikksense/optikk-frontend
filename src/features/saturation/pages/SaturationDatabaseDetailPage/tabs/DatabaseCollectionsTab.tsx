@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@shared/components/ui/data-display/DataTable";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
@@ -26,7 +26,9 @@ const COLUMNS: ColumnDef<CollectionRow>[] = [
     accessorKey: "queryCount",
     size: 96,
     meta: { align: "right" },
-    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtNum(row.queryCount)}</span>,
+    cell: ({ row: { original: row } }) => (
+      <span className="font-mono">{fmtNum(row.queryCount)}</span>
+    ),
   },
   {
     header: "Calls",

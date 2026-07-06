@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTopDBQueries } from "../../hooks/useTopDBQueries";
 import { type TopOpRow, TopOpsTable } from "./TopOpsTable";
 
@@ -13,14 +13,13 @@ export function OverviewDbQueries({ serviceName }: { serviceName: string }) {
   const hasMore = queriesQ.data?.pageInfo?.hasMore ?? false;
   const nextCursor = queriesQ.data?.pageInfo?.nextCursor;
 
-  useEffect(() => {
-    if (nextCursor) {
-      setCursors((prev) => ({ ...prev, [page]: nextCursor }));
-    }
-  }, [nextCursor, page]);
-
   const handleNext = () => {
-    if (hasMore) setPage((p) => p + 1);
+    if (hasMore) {
+      if (nextCursor) {
+        setCursors((prev) => ({ ...prev, [page]: nextCursor }));
+      }
+      setPage((p) => p + 1);
+    }
   };
   const handlePrev = () => {
     if (page > 0) setPage((p) => p - 1);

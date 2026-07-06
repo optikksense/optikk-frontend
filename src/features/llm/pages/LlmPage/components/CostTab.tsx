@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import { Surface } from "@/components/ui";
-import DataTable from "@shared/components/ui/data-display/DataTable";
 import { StatCard } from "@shared/components/ui";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatNumber } from "@shared/utils/formatters";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import type { LlmCostGroupBy, LlmCostRow } from "../../../api/llmApi";
 import { useLlmCostBreakdown } from "../../../hooks/useLlmQueries";
@@ -55,7 +55,9 @@ export default function CostTab() {
       header: "LLM spans",
       accessorKey: "spans",
       meta: { align: "right" },
-      cell: ({ row: { original: r } }) => <span className="font-mono">{formatNumber(r.llmSpans)}</span>,
+      cell: ({ row: { original: r } }) => (
+        <span className="font-mono">{formatNumber(r.llmSpans)}</span>
+      ),
     },
     {
       header: "Tokens in",
@@ -87,7 +89,9 @@ export default function CostTab() {
       header: "Cost",
       accessorKey: "cost",
       meta: { align: "right" },
-      cell: ({ row: { original: r } }) => <span className="font-mono font-semibold">{formatCost(r.cost)}</span>,
+      cell: ({ row: { original: r } }) => (
+        <span className="font-mono font-semibold">{formatCost(r.cost)}</span>
+      ),
     },
     {
       header: "Share",

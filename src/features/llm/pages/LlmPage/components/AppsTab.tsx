@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import { Surface } from "@/components/ui";
-import DataTable from "@shared/components/ui/data-display/DataTable";
 import { StatCard } from "@shared/components/ui";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import type { LlmApp } from "../../../api/llmApi";
 import { useLlmApps, useLlmTimeseries } from "../../../hooks/useLlmQueries";
@@ -95,7 +95,9 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
       header: "LLM",
       accessorKey: "llmSpans",
       meta: { align: "right" },
-      cell: ({ row: { original: a } }) => <span className="font-mono">{formatNumber(a.llmSpans)}</span>,
+      cell: ({ row: { original: a } }) => (
+        <span className="font-mono">{formatNumber(a.llmSpans)}</span>
+      ),
     },
     {
       header: "Tool",
@@ -131,7 +133,9 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
       header: "p95",
       accessorKey: "p95Ms",
       meta: { align: "right" },
-      cell: ({ row: { original: a } }) => <span className="font-mono">{formatDuration(a.p95Ms)}</span>,
+      cell: ({ row: { original: a } }) => (
+        <span className="font-mono">{formatDuration(a.p95Ms)}</span>
+      ),
     },
     {
       header: "Err",
@@ -157,7 +161,9 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
       header: "Cost",
       accessorKey: "cost",
       meta: { align: "right" },
-      cell: ({ row: { original: a } }) => <span className="font-mono font-semibold">{formatCost(a.cost)}</span>,
+      cell: ({ row: { original: a } }) => (
+        <span className="font-mono font-semibold">{formatCost(a.cost)}</span>
+      ),
     },
     {
       header: "Trend",
@@ -247,7 +253,7 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
           }}
           pagination={{ showPagination: false }}
           config={{
-            onRow: (a) => ({ onClick: () => onOpenTrace(a.service), style: { cursor: "pointer" } })
+            onRow: (a) => ({ onClick: () => onOpenTrace(a.service), style: { cursor: "pointer" } }),
           }}
         />
       </Surface>

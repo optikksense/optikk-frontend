@@ -1,7 +1,7 @@
-import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { cn } from "@/lib/utils";
@@ -190,12 +190,12 @@ function RequestAccessLine() {
   return (
     <p className="mt-4 text-center text-[12.5px] text-foreground-muted">
       Want to deploy your own instance?{" "}
-      <Link
-        to={ROUTES.selfHost}
+      <a
+        href={ROUTES.selfHost}
         className="font-semibold text-[var(--login-link)] no-underline hover:underline"
       >
         Self-host now
-      </Link>
+      </a>
     </p>
   );
 }
@@ -204,13 +204,13 @@ function LegalLine() {
   return (
     <p className="mx-auto mt-[22px] max-w-[320px] text-center text-[11px] text-foreground-muted leading-[1.5]">
       By signing in you agree to Optikk&apos;s{" "}
-      <Link to={ROUTES.terms} className="text-foreground-secondary underline">
+      <a href={ROUTES.terms} className="text-foreground-secondary underline">
         Terms of Service
-      </Link>{" "}
+      </a>{" "}
       and{" "}
-      <Link to={ROUTES.privacy} className="text-foreground-secondary underline">
+      <a href={ROUTES.privacy} className="text-foreground-secondary underline">
         Privacy Policy
-      </Link>
+      </a>
       .
     </p>
   );

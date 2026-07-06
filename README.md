@@ -1,6 +1,6 @@
 # Optikk Frontend
 
-Optikk Frontend is the React/Vite application for the Optikk product UI. It contains the authenticated observability app, the marketing site, frontend-owned hub pages, shared dashboard/rendering infrastructure, and browser telemetry wiring.
+Optikk Frontend is the React/Vite application for the Optikk product UI. It contains the authenticated observability app, frontend-owned hub pages, shared dashboard/rendering infrastructure, and browser telemetry wiring.
 
 ## Current stack
 
@@ -17,10 +17,7 @@ See [package.json](package.json) for the current scripts and dependency versions
 
 ## App shape
 
-The application has two broad surfaces:
-
-- marketing routes rendered under a dedicated marketing layout
-- authenticated product routes rendered inside the main app shell
+The application renders authenticated product routes inside the main app shell.
 
 ### Key app entrypoints
 
@@ -35,7 +32,7 @@ The application has two broad surfaces:
 ```text
 optikk-frontend/
 ├── src/app/           # Bootstrap, routing, providers, shell
-├── src/features/      # Product and marketing features
+├── src/features/      # Product features
 ├── src/shared/        # Shared api, ui, hooks, entities, telemetry, utils
 └── src/config/        # App config constants
 ```
@@ -49,7 +46,6 @@ Current feature directories under `src/features`:
 - `traces`
 - `infrastructure`
 - `settings`
-- `marketing`
 - `explorer` (shared explorer infrastructure)
 
 ## Product routing
@@ -61,7 +57,6 @@ The route table in [src/app/routes/router.tsx](src/app/routes/router.tsx) shows 
 - `/service`: service hub
 - `/service/:serviceName`: service detail page
 - explorer-style routes contributed by the domain registry for metrics, logs, traces, saturation, and settings
-- marketing pages under their own layout
 
 The frontend now owns much more of the page composition than earlier versions of the project. Backend APIs provide data; page structure and interaction logic largely live here.
 

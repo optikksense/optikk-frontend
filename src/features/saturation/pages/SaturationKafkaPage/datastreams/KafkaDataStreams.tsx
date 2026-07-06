@@ -1,15 +1,16 @@
-import { ChevronRight, Server } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import type { KafkaTopology, TopicNode } from "@/features/saturation/api/kafkaTopologySchemas";
-import { SAT_TABLE_CLASS } from "@/features/saturation/pages/SaturationPage/components/tableClasses";
 
 import { useKafkaTopology } from "../hooks/useKafkaTopology";
 import { KafkaGroupDrawer } from "./KafkaGroupDrawer";
+import { KafkaPathwaysTable } from "./KafkaPathwaysTable";
+import { KafkaServicesTable } from "./KafkaServicesTable";
 import { type GroupSelection, KafkaTopicDrawer } from "./KafkaTopicDrawer";
+import { KafkaTopicsTable } from "./KafkaTopicsTable";
 import { KafkaTopology as TopologyMap } from "./KafkaTopology";
 import { ServiceMultiSelect } from "./ServiceMultiSelect";
-import { LEVEL_LABEL, type Level, deriveServices, fmtPct, fmtRate, levelFromError } from "./model";
+import { type Level, deriveServices, fmtPct, fmtRate, levelFromError } from "./model";
 
 const LV_COLOR: Record<Level, string> = { ok: "var(--ok)", warn: "var(--warn)", err: "var(--err)" };
 
@@ -27,7 +28,6 @@ export function KafkaDataStreams() {
   const [openTopic, setOpenTopic] = useState<TopicNode | null>(null);
   const [openGroup, setOpenGroup] = useState<GroupSelection | null>(null);
 
-  // Default selection = first client, applied once data arrives.
   const effectiveSel = selected.length > 0 ? selected : services[0] ? [services[0].id] : [];
   const selSet = new Set(effectiveSel);
 
@@ -53,9 +53,9 @@ export function KafkaDataStreams() {
       topo.pathways
         .filter((p) => selSet.has(p.producer) || selSet.has(p.consumer))
         .sort(
-          (a, b) => b.error_rate - a.error_rate || b.consume_rate_per_sec - a.consume_rate_per_sec
+          (a, b) => b.error_rate - a.error_rate || b.consume_rate_per_sec - a.consume_rate_per_sec,
         ),
-    [topo, effectiveSel.join(",")]
+    [topo, effectiveSel.join(",")],
   );
 
   const scopeTopicNodes = topo.topics.filter((t) => scopeTopics.has(t.topic));
@@ -66,6 +66,13 @@ export function KafkaDataStreams() {
   };
   const scopeLabel = effectiveSel.length === 1 ? effectiveSel[0] : `${effectiveSel.length} clients`;
 
+  const TABS: { id: TabId; label: string; badge?: number }[] = [
+    { id: "topology", label: "Topology" },
+    { id: "services", label: "Services", badge: services.length },
+    { id: "topics", label: "Topics", badge: topo.topics.length },
+    { id: "consumers", label: "Consumer groups", badge: topo.pathways.length },
+  ];
+
   if (isLoading)
     return <div className="p-6 text-[13px] text-[var(--fg-3)]">Loading data streams…</div>;
   if (services.length === 0)
@@ -75,13 +82,6 @@ export function KafkaDataStreams() {
         populate the topology.
       </div>
     );
-
-  const TABS: { id: TabId; label: string; badge?: number }[] = [
-    { id: "topology", label: "Topology" },
-    { id: "services", label: "Services", badge: services.length },
-    { id: "topics", label: "Topics", badge: topo.topics.length },
-    { id: "consumers", label: "Consumer groups", badge: topo.pathways.length },
-  ];
 
   return (
     <div className="flex flex-col gap-4">
@@ -146,64 +146,14 @@ export function KafkaDataStreams() {
                 {pathways.length} pathways · sorted by error rate
               </span>
             </div>
-            <table className={SAT_TABLE_CLASS}>
-              <thead>
-                <tr>
-                  <th>Producer</th>
-                  <th>Topic</th>
-                  <th>Consumer group</th>
-                  <th className="num">Msg/s</th>
-                  <th className="num">Err</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {pathways.map((r, i) => {
-                  const lv = levelFromError(r.error_rate);
-                  return (
-                    <tr
-                      key={i}
-                      className={lv === "err" ? "is-err" : lv === "warn" ? "is-warn" : undefined}
-                      onClick={() =>
-                        setOpenGroup({
-                          group: r.group,
-                          consumer: r.consumer,
-                          topic: r.topic,
-                          level: lv,
-                        })
-                      }
-                    >
-                      <td className="strong">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            focusSvc(r.producer);
-                          }}
-                        >
-                          {r.producer}
-                        </button>
-                      </td>
-                      <td>{r.topic}</td>
-                      <td>
-                        <span
-                          className="mr-1.5 inline-block h-[7px] w-[7px] rounded-full align-middle"
-                          style={{ background: LV_COLOR[lv] }}
-                        />
-                        {r.group} <span className="text-[var(--fg-3)]">· {r.consumer}</span>
-                      </td>
-                      <td className="num">{fmtRate(r.consume_rate_per_sec)}</td>
-                      <td className="num" style={{ color: LV_COLOR[lv] }}>
-                        {fmtPct(r.error_rate)}
-                      </td>
-                      <td>
-                        <ChevronRight size={14} className="text-[var(--fg-3)]" />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <KafkaPathwaysTable
+              pathways={pathways}
+              variant="topology"
+              onRowClick={(r) => {
+                const lv = levelFromError(r.error_rate);
+                setOpenGroup({ group: r.group, consumer: r.consumer, topic: r.topic, level: lv });
+              }}
+            />
           </div>
         </>
       )}
@@ -213,57 +163,13 @@ export function KafkaDataStreams() {
           <div className="mb-2 font-semibold text-[14px] text-[var(--fg-0)]">
             Clients · producing &amp; consuming
           </div>
-          <table className={SAT_TABLE_CLASS}>
-            <thead>
-              <tr>
-                <th>Service</th>
-                <th>Role</th>
-                <th>Produces to</th>
-                <th>Consumes from</th>
-                <th className="num">Throughput</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {services
-                .slice()
-                .sort((a, b) => b.rate - a.rate)
-                .map((s) => {
-                  const role =
-                    s.produces.length && s.consumes.length
-                      ? "producer + consumer"
-                      : s.produces.length
-                        ? "producer"
-                        : "consumer";
-                  return (
-                    <tr
-                      key={s.id}
-                      onClick={() => {
-                        focusSvc(s.id);
-                        setTab("topology");
-                      }}
-                    >
-                      <td className="strong">
-                        <span className="mr-2 inline-flex h-[18px] w-[18px] items-center justify-center rounded-[5px] bg-[var(--brand-tint)] align-middle text-[var(--brand)]">
-                          <Server size={11} />
-                        </span>
-                        {s.id}
-                      </td>
-                      <td className="dim">{role}</td>
-                      <td className="dim">{s.produces.map((p) => p.topic).join(", ") || "—"}</td>
-                      <td className="dim">{s.consumes.map((c) => c.topic).join(", ") || "—"}</td>
-                      <td className="num">{fmtRate(s.rate)}/s</td>
-                      <td>
-                        <span className={`badge ${s.status}`}>
-                          <span className="b-dot" />
-                          {LEVEL_LABEL[s.status]}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
+          <KafkaServicesTable
+            services={services}
+            onServiceClick={(id) => {
+              focusSvc(id);
+              setTab("topology");
+            }}
+          />
         </div>
       )}
 
@@ -272,32 +178,7 @@ export function KafkaDataStreams() {
           <div className="mb-2 font-semibold text-[14px] text-[var(--fg-0)]">
             Topics · {scopeLabel}
           </div>
-          <table className={SAT_TABLE_CLASS}>
-            <thead>
-              <tr>
-                <th>Topic</th>
-                <th className="num">Producers</th>
-                <th className="num">Groups</th>
-                <th className="num">Msg/s</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {topo.topics
-                .filter((t) => scopeTopics.has(t.topic))
-                .map((t) => (
-                  <tr key={t.topic} onClick={() => setOpenTopic(t)}>
-                    <td className="strong">{t.topic}</td>
-                    <td className="num">{t.producer_count}</td>
-                    <td className="num">{t.consumer_group_count}</td>
-                    <td className="num">{fmtRate(t.rate_per_sec)}</td>
-                    <td>
-                      <ChevronRight size={14} className="text-[var(--fg-3)]" />
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+          <KafkaTopicsTable topics={scopeTopicNodes} onTopicClick={setOpenTopic} />
         </div>
       )}
 
@@ -306,54 +187,14 @@ export function KafkaDataStreams() {
           <div className="mb-2 font-semibold text-[14px] text-[var(--fg-0)]">
             Consumer groups · {scopeLabel}
           </div>
-          <table className={SAT_TABLE_CLASS}>
-            <thead>
-              <tr>
-                <th>Consumer group</th>
-                <th>Service</th>
-                <th>Reads topic</th>
-                <th className="num">Msg/s</th>
-                <th className="num">Err</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {pathways.map((r, i) => {
-                const lv = levelFromError(r.error_rate);
-                return (
-                  <tr
-                    key={i}
-                    className={lv === "err" ? "is-err" : lv === "warn" ? "is-warn" : undefined}
-                    onClick={() =>
-                      setOpenGroup({
-                        group: r.group,
-                        consumer: r.consumer,
-                        topic: r.topic,
-                        level: lv,
-                      })
-                    }
-                  >
-                    <td className="strong">
-                      <span
-                        className="mr-1.5 inline-block h-[7px] w-[7px] rounded-full align-middle"
-                        style={{ background: LV_COLOR[lv] }}
-                      />
-                      {r.group}
-                    </td>
-                    <td className="dim">{r.consumer}</td>
-                    <td className="dim">{r.topic}</td>
-                    <td className="num">{fmtRate(r.consume_rate_per_sec)}</td>
-                    <td className="num" style={{ color: LV_COLOR[lv] }}>
-                      {fmtPct(r.error_rate)}
-                    </td>
-                    <td>
-                      <ChevronRight size={14} className="text-[var(--fg-3)]" />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <KafkaPathwaysTable
+            pathways={pathways}
+            variant="consumers"
+            onRowClick={(r) => {
+              const lv = levelFromError(r.error_rate);
+              setOpenGroup({ group: r.group, consumer: r.consumer, topic: r.topic, level: lv });
+            }}
+          />
         </div>
       )}
 

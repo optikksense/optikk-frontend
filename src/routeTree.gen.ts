@@ -9,20 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProductRouteImport } from './routes/product'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as MarketingRouteImport } from './routes/_marketing'
 import { Route as AppRouteImport } from './routes/_app'
-import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
-import { Route as MarketingTermsRouteImport } from './routes/_marketing/terms'
-import { Route as MarketingSelfHostRouteImport } from './routes/_marketing/self-host'
-import { Route as MarketingSecurityRouteImport } from './routes/_marketing/security'
-import { Route as MarketingPrivacyRouteImport } from './routes/_marketing/privacy'
-import { Route as MarketingPricingRouteImport } from './routes/_marketing/pricing'
-import { Route as MarketingOpentelemetryRouteImport } from './routes/_marketing/opentelemetry'
-import { Route as MarketingFeaturesRouteImport } from './routes/_marketing/features'
-import { Route as MarketingArchitectureRouteImport } from './routes/_marketing/architecture'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppOverviewRouteImport } from './routes/_app/overview'
 import { Route as AppMetricsRouteImport } from './routes/_app/metrics'
@@ -56,6 +48,11 @@ import { Route as AppInfrastructureContainersContainerRouteImport } from './rout
 import { Route as AppSaturationDatabaseQueryQueryIdRouteImport } from './routes/_app/saturation/database/query/$queryId'
 import { Route as AppSaturationDatabaseInstanceSystemRouteImport } from './routes/_app/saturation/database/instance/$system'
 
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -71,58 +68,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MarketingRoute = MarketingRouteImport.update({
-  id: '/_marketing',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MarketingIndexRoute = MarketingIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingTermsRoute = MarketingTermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingSelfHostRoute = MarketingSelfHostRouteImport.update({
-  id: '/self-host',
-  path: '/self-host',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingSecurityRoute = MarketingSecurityRouteImport.update({
-  id: '/security',
-  path: '/security',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingPrivacyRoute = MarketingPrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingPricingRoute = MarketingPricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingOpentelemetryRoute = MarketingOpentelemetryRouteImport.update({
-  id: '/opentelemetry',
-  path: '/opentelemetry',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingFeaturesRoute = MarketingFeaturesRouteImport.update({
-  id: '/features',
-  path: '/features',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingArchitectureRoute = MarketingArchitectureRouteImport.update({
-  id: '/architecture',
-  path: '/architecture',
-  getParentRoute: () => MarketingRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
@@ -293,24 +246,17 @@ const AppSaturationDatabaseInstanceSystemRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof MarketingIndexRoute
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
+  '/welcome': typeof WelcomeRoute
   '/device': typeof AppDeviceRoute
   '/ingestion': typeof AppIngestionRoute
   '/llm': typeof AppLlmRoute
   '/metrics': typeof AppMetricsRoute
   '/overview': typeof AppOverviewRoute
   '/settings': typeof AppSettingsRoute
-  '/architecture': typeof MarketingArchitectureRoute
-  '/features': typeof MarketingFeaturesRoute
-  '/opentelemetry': typeof MarketingOpentelemetryRoute
-  '/pricing': typeof MarketingPricingRoute
-  '/privacy': typeof MarketingPrivacyRoute
-  '/security': typeof MarketingSecurityRoute
-  '/self-host': typeof MarketingSelfHostRoute
-  '/terms': typeof MarketingTermsRoute
   '/alerts/new': typeof AppAlertsNewRoute
   '/dashboards/$pageId': typeof AppDashboardsPageIdRoute
   '/errors/$groupId': typeof AppErrorsGroupIdRoute
@@ -339,24 +285,17 @@ export interface FileRoutesByFullPath {
   '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof MarketingIndexRoute
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
+  '/welcome': typeof WelcomeRoute
   '/device': typeof AppDeviceRoute
   '/ingestion': typeof AppIngestionRoute
   '/llm': typeof AppLlmRoute
   '/metrics': typeof AppMetricsRoute
   '/overview': typeof AppOverviewRoute
   '/settings': typeof AppSettingsRoute
-  '/architecture': typeof MarketingArchitectureRoute
-  '/features': typeof MarketingFeaturesRoute
-  '/opentelemetry': typeof MarketingOpentelemetryRoute
-  '/pricing': typeof MarketingPricingRoute
-  '/privacy': typeof MarketingPrivacyRoute
-  '/security': typeof MarketingSecurityRoute
-  '/self-host': typeof MarketingSelfHostRoute
-  '/terms': typeof MarketingTermsRoute
   '/alerts/new': typeof AppAlertsNewRoute
   '/dashboards/$pageId': typeof AppDashboardsPageIdRoute
   '/errors/$groupId': typeof AppErrorsGroupIdRoute
@@ -386,26 +325,18 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
-  '/_marketing': typeof MarketingRouteWithChildren
   '/login': typeof LoginRoute
   '/product': typeof ProductRoute
   '/signup': typeof SignupRoute
+  '/welcome': typeof WelcomeRoute
   '/_app/device': typeof AppDeviceRoute
   '/_app/ingestion': typeof AppIngestionRoute
   '/_app/llm': typeof AppLlmRoute
   '/_app/metrics': typeof AppMetricsRoute
   '/_app/overview': typeof AppOverviewRoute
   '/_app/settings': typeof AppSettingsRoute
-  '/_marketing/architecture': typeof MarketingArchitectureRoute
-  '/_marketing/features': typeof MarketingFeaturesRoute
-  '/_marketing/opentelemetry': typeof MarketingOpentelemetryRoute
-  '/_marketing/pricing': typeof MarketingPricingRoute
-  '/_marketing/privacy': typeof MarketingPrivacyRoute
-  '/_marketing/security': typeof MarketingSecurityRoute
-  '/_marketing/self-host': typeof MarketingSelfHostRoute
-  '/_marketing/terms': typeof MarketingTermsRoute
-  '/_marketing/': typeof MarketingIndexRoute
   '/_app/alerts/new': typeof AppAlertsNewRoute
   '/_app/dashboards/$pageId': typeof AppDashboardsPageIdRoute
   '/_app/errors/$groupId': typeof AppErrorsGroupIdRoute
@@ -440,20 +371,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/product'
     | '/signup'
+    | '/welcome'
     | '/device'
     | '/ingestion'
     | '/llm'
     | '/metrics'
     | '/overview'
     | '/settings'
-    | '/architecture'
-    | '/features'
-    | '/opentelemetry'
-    | '/pricing'
-    | '/privacy'
-    | '/security'
-    | '/self-host'
-    | '/terms'
     | '/alerts/new'
     | '/dashboards/$pageId'
     | '/errors/$groupId'
@@ -486,20 +410,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/product'
     | '/signup'
+    | '/welcome'
     | '/device'
     | '/ingestion'
     | '/llm'
     | '/metrics'
     | '/overview'
     | '/settings'
-    | '/architecture'
-    | '/features'
-    | '/opentelemetry'
-    | '/pricing'
-    | '/privacy'
-    | '/security'
-    | '/self-host'
-    | '/terms'
     | '/alerts/new'
     | '/dashboards/$pageId'
     | '/errors/$groupId'
@@ -528,26 +445,18 @@ export interface FileRouteTypes {
     | '/saturation/database/query/$queryId'
   id:
     | '__root__'
+    | '/'
     | '/_app'
-    | '/_marketing'
     | '/login'
     | '/product'
     | '/signup'
+    | '/welcome'
     | '/_app/device'
     | '/_app/ingestion'
     | '/_app/llm'
     | '/_app/metrics'
     | '/_app/overview'
     | '/_app/settings'
-    | '/_marketing/architecture'
-    | '/_marketing/features'
-    | '/_marketing/opentelemetry'
-    | '/_marketing/pricing'
-    | '/_marketing/privacy'
-    | '/_marketing/security'
-    | '/_marketing/self-host'
-    | '/_marketing/terms'
-    | '/_marketing/'
     | '/_app/alerts/new'
     | '/_app/dashboards/$pageId'
     | '/_app/errors/$groupId'
@@ -577,15 +486,23 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  MarketingRoute: typeof MarketingRouteWithChildren
   LoginRoute: typeof LoginRoute
   ProductRoute: typeof ProductRoute
   SignupRoute: typeof SignupRoute
+  WelcomeRoute: typeof WelcomeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -607,13 +524,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_marketing': {
-      id: '/_marketing'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof MarketingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_app': {
       id: '/_app'
       path: ''
@@ -621,68 +531,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_marketing/': {
-      id: '/_marketing/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof MarketingIndexRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/terms': {
-      id: '/_marketing/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof MarketingTermsRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/self-host': {
-      id: '/_marketing/self-host'
-      path: '/self-host'
-      fullPath: '/self-host'
-      preLoaderRoute: typeof MarketingSelfHostRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/security': {
-      id: '/_marketing/security'
-      path: '/security'
-      fullPath: '/security'
-      preLoaderRoute: typeof MarketingSecurityRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/privacy': {
-      id: '/_marketing/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof MarketingPrivacyRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/pricing': {
-      id: '/_marketing/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof MarketingPricingRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/opentelemetry': {
-      id: '/_marketing/opentelemetry'
-      path: '/opentelemetry'
-      fullPath: '/opentelemetry'
-      preLoaderRoute: typeof MarketingOpentelemetryRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/features': {
-      id: '/_marketing/features'
-      path: '/features'
-      fullPath: '/features'
-      preLoaderRoute: typeof MarketingFeaturesRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/architecture': {
-      id: '/_marketing/architecture'
-      path: '/architecture'
-      fullPath: '/architecture'
-      preLoaderRoute: typeof MarketingArchitectureRouteImport
-      parentRoute: typeof MarketingRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/settings': {
       id: '/_app/settings'
@@ -995,40 +849,13 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
-interface MarketingRouteChildren {
-  MarketingArchitectureRoute: typeof MarketingArchitectureRoute
-  MarketingFeaturesRoute: typeof MarketingFeaturesRoute
-  MarketingOpentelemetryRoute: typeof MarketingOpentelemetryRoute
-  MarketingPricingRoute: typeof MarketingPricingRoute
-  MarketingPrivacyRoute: typeof MarketingPrivacyRoute
-  MarketingSecurityRoute: typeof MarketingSecurityRoute
-  MarketingSelfHostRoute: typeof MarketingSelfHostRoute
-  MarketingTermsRoute: typeof MarketingTermsRoute
-  MarketingIndexRoute: typeof MarketingIndexRoute
-}
-
-const MarketingRouteChildren: MarketingRouteChildren = {
-  MarketingArchitectureRoute: MarketingArchitectureRoute,
-  MarketingFeaturesRoute: MarketingFeaturesRoute,
-  MarketingOpentelemetryRoute: MarketingOpentelemetryRoute,
-  MarketingPricingRoute: MarketingPricingRoute,
-  MarketingPrivacyRoute: MarketingPrivacyRoute,
-  MarketingSecurityRoute: MarketingSecurityRoute,
-  MarketingSelfHostRoute: MarketingSelfHostRoute,
-  MarketingTermsRoute: MarketingTermsRoute,
-  MarketingIndexRoute: MarketingIndexRoute,
-}
-
-const MarketingRouteWithChildren = MarketingRoute._addFileChildren(
-  MarketingRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  MarketingRoute: MarketingRouteWithChildren,
   LoginRoute: LoginRoute,
   ProductRoute: ProductRoute,
   SignupRoute: SignupRoute,
+  WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

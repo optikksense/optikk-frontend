@@ -20,7 +20,7 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 ### 1. Theme Color Contract (Datadog-aligned, light-first)
 - CSS variables defined in [src/config/themeColors.css](src/config/themeColors.css) map to [tailwind.config.ts](tailwind.config.ts).
 - Default theme is **light** (applied via `:root`). Overridden by `[data-theme="dark"]`.
-- **Rule**: NEVER use raw hex/rgb/rgba or Tailwind named colors (e.g., `text-red-500`) in `className` within `src/` (except in marketing). Use semantic utilities (e.g., `text-error`, `bg-surface`) or `var(--token)`. Checked via `yarn check:colors`.
+- **Rule**: NEVER use raw hex/rgb/rgba or Tailwind named colors (e.g., `text-red-500`) in `className` within `src/`. Use semantic utilities (e.g., `text-error`, `bg-surface`) or `var(--token)`. Checked via `yarn check:colors`.
 - Global font-family variables `--font` (Inter) and `--font-mono` (JetBrains Mono) are declared in [src/index.css](src/index.css).
 
 ### 2. Formatting Guidelines
@@ -59,7 +59,6 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 | **Services** | `services/` | `/services`, `/service-map`, `/deployments`, `/services/$serviceName` | Service catalog lists, map, deployments, and detail. Service details render golden signals KPIs (compares current vs historical), version traffic area charts, and deploy impact tables. Entry: [pages/ServiceCatalogPage/ServiceCatalogPage.tsx](src/features/services/pages/ServiceCatalogPage/ServiceCatalogPage.tsx). |
 | **Monitors** | `monitors/` | `/monitors`, `/monitors/new`, `/monitors/$monitorId`, `/monitors/$monitorId/edit`, `/monitors/notifications` | Alerting system UI. Supports metric, APM, and log monitor types. 5-step monitor builder wizard. Detail page features hand-rolled SVG eval chart. Outbound integration supports Slack webhooks. Entry: [pages/MonitorsPage/MonitorsPage.tsx](src/features/monitors/pages/MonitorsPage/MonitorsPage.tsx). |
 | **Settings** | `settings/` | `/settings` | Profiles, team members management, and user preference controls. |
-| **Marketing** | `marketing/` | `/`, `/features`, `/pricing`, `/opentelemetry`, `/self-host`, `/architecture`, `/privacy`, `/terms`, `/security` | Public-facing site marketing pages. STAR count fetched via GitHub API wrapper. |
 | **Explorer** | `explorer/` | — | Shared explorer utilities, DSL input parser (`ExplorerSearchBarDsl`), facets, visualizations, and trend chart primitives used by logs/traces/metrics. |
 
 ---

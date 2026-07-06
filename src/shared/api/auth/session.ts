@@ -5,6 +5,7 @@ import { queryClient } from "@shared/api/queryClient";
 import { useAppStore } from "@store/appStore";
 import { useAuthStore } from "@store/authStore";
 
+import { stashSignupApiKey } from "./apiKeyHandoff";
 import { type SessionPayload, type SignupParams, authApi } from "./authApi";
 
 /**
@@ -21,8 +22,8 @@ let refreshInflight: Promise<string | null> | null = null;
 localStorage.removeItem("optikk_auth_state");
 
 function toTenant(payload: SessionPayload): Tenant {
-  const { id, name } = payload.tenant;
-  return { id, name };
+  const { id, name, accountStatus, trialEndsAt } = payload.tenant;
+  return { id, name, accountStatus: accountStatus ?? undefined, trialEndsAt };
 }
 
 function toUser(payload: SessionPayload): User {
@@ -64,7 +65,9 @@ export const session = {
   },
 
   async signup(params: SignupParams): Promise<void> {
-    beginSession(await authApi.signup(params));
+    const { session: payload, apiKey } = await authApi.signup(params);
+    beginSession(payload);
+    stashSignupApiKey(apiKey);
   },
 
   async logout(): Promise<void> {

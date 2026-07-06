@@ -4,12 +4,14 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { DensityProvider } from "@/components/ui/providers/DensityProvider";
-import ShortcutHelpOverlay from "@shared/components/ui/overlay/ShortcutHelpOverlay";
 import CommandPalette from "@shared/components/ui/overlay/CommandPalette/CommandPalette";
+import ShortcutHelpOverlay from "@shared/components/ui/overlay/ShortcutHelpOverlay";
 import { useKeyboardShortcuts } from "@shared/hooks/useKeyboardShortcuts";
 
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@store/appStore";
+
+import { TrialBanner } from "@/features/onboarding/TrialBanner";
 
 import Header from "./Header";
 import Sidebar from "./Sidebar";
@@ -67,6 +69,7 @@ export default function MainLayout() {
           )}
         >
           <Header />
+          <TrialBanner />
           <main
             className={cn(
               "p-4 max-md:p-3",

@@ -1,9 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
 import DataTable from "@shared/components/ui/data-display/DataTable";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
@@ -82,7 +82,9 @@ function buildColumns(sparklines: Map<string, number[]>): ColumnDef<DatastoreSys
       accessorKey: "avg_latency_ms",
       size: 84,
       meta: { align: "right" },
-      cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.avg_latency_ms)}</span>,
+      cell: ({ row: { original: row } }) => (
+        <span className="font-mono">{fmtMs(row.avg_latency_ms)}</span>
+      ),
     },
     {
       header: "p95",
@@ -100,7 +102,9 @@ function buildColumns(sparklines: Map<string, number[]>): ColumnDef<DatastoreSys
       accessorKey: "active_connections",
       size: 110,
       meta: { align: "right" },
-      cell: ({ row: { original: row } }) => <span className="font-mono">{fmtNum(row.active_connections)}</span>,
+      cell: ({ row: { original: row } }) => (
+        <span className="font-mono">{fmtNum(row.active_connections)}</span>
+      ),
     },
     {
       header: "Status",

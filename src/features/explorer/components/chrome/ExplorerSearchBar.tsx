@@ -52,7 +52,7 @@ export const ExplorerSearchBar = forwardRef<HTMLInputElement, Props>(function Ex
     [filters, onChangeFilters]
   );
   return (
-    <SearchField 
+    <SearchField
       value={text}
       onChange={setText}
       onSubmit={(val) => {
@@ -65,7 +65,7 @@ export const ExplorerSearchBar = forwardRef<HTMLInputElement, Props>(function Ex
       className="flex min-h-10 flex-wrap items-center gap-2 rounded-md border border-border bg-muted px-2 py-1"
     >
       <Search size={14} className="shrink-0 text-foreground-muted" />
-      <Group className="flex flex-1 flex-wrap items-center gap-2 min-w-0">
+      <Group className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
         {filters.map((filter, index) => (
           <FilterChip
             key={`${filter.field}:${filter.op}:${filter.value}:${index}`}

@@ -29,12 +29,17 @@ export default memo(function ExceptionTypeLineChart({
 
     const firstGroupRows = groupMap[activeGroups[0]] ?? [];
     const activeTimestamps = firstGroupRows
-      .map((row: Record<string, unknown>) => tsMs(String(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "")) / 1000)
+      .map(
+        (row: Record<string, unknown>) =>
+          tsMs(String(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "")) / 1000
+      )
       .filter((t) => !Number.isNaN(t));
 
     const seriesList = activeGroups.map((exceptionType, idx) => {
       const rows = groupMap[exceptionType] || [];
-      const values = rows.map((row: Record<string, unknown>) => Number(row.count ?? row.value ?? 0));
+      const values = rows.map((row: Record<string, unknown>) =>
+        Number(row.count ?? row.value ?? 0)
+      );
 
       return {
         label: exceptionType,

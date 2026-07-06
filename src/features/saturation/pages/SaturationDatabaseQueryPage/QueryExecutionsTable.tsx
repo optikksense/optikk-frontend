@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@shared/components/ui/data-display/DataTable";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import type { QueryExecutionRow } from "@/features/saturation/api/databaseQueryDetailApi";
 import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
@@ -51,7 +51,9 @@ const COLUMNS: ColumnDef<QueryExecutionRow>[] = [
     header: "Service",
     accessorKey: "service",
     size: 160,
-    cell: ({ row: { original: row } }) => <span className="font-mono text-[11.5px]">{row.service || "—"}</span>,
+    cell: ({ row: { original: row } }) => (
+      <span className="font-mono text-[11.5px]">{row.service || "—"}</span>
+    ),
   },
   {
     header: "Host",

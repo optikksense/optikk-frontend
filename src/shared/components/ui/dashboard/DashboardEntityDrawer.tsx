@@ -84,9 +84,7 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
         initialData={drawer.data}
         onClose={() =>
           navigate({
-            to: 
-              location.pathname + clearDashboardDrawerSearch(location.search as string & {}
-            ),
+            to: location.pathname + clearDashboardDrawerSearch(location.search as string & {}),
             replace: true,
           })
         }
@@ -99,9 +97,7 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
       open
       onClose={() =>
         navigate({
-          to: 
-            location.pathname + clearDashboardDrawerSearch(location.search as string & {}
-          ),
+          to: location.pathname + clearDashboardDrawerSearch(location.search as string & {}),
           replace: true,
         })
       }

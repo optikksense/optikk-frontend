@@ -1,7 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-
 import { type CreateMonitorPayload, createMonitor, testMonitor } from "../../api/monitorsApi";
 import { useUpdateMonitor } from "../../hooks/useMonitorMutations";
 

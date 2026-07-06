@@ -2,9 +2,9 @@ import api from "@/shared/api/api/client";
 import type { RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
 import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
-import { type REDFiltersParams, buildREDFilters } from "./buildREDFilters";
 import { validateResponse } from "@shared/api/utils/validate";
 import { z } from "zod";
+import { type REDFiltersParams, buildREDFilters } from "./buildREDFilters";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -224,16 +224,18 @@ const topEndpointsResponseSchema = z.object({
       hasMore: z.boolean(),
       nextCursor: z.string().optional(),
       limit: z.coerce.number(),
-    })
+    }),
   }),
-  comparison: z.object({
-    results: z.array(topEndpointSchema),
-    pageInfo: z.object({
-      hasMore: z.boolean(),
-      nextCursor: z.string().optional(),
-      limit: z.coerce.number(),
+  comparison: z
+    .object({
+      results: z.array(topEndpointSchema),
+      pageInfo: z.object({
+        hasMore: z.boolean(),
+        nextCursor: z.string().optional(),
+        limit: z.coerce.number(),
+      }),
     })
-  }).optional()
+    .optional(),
 });
 
 export async function getTopEndpoints(
@@ -272,16 +274,18 @@ const topDBQueriesResponseSchema = z.object({
       hasMore: z.boolean(),
       nextCursor: z.string().optional(),
       limit: z.coerce.number(),
-    })
+    }),
   }),
-  comparison: z.object({
-    results: z.array(topDBQuerySchema),
-    pageInfo: z.object({
-      hasMore: z.boolean(),
-      nextCursor: z.string().optional(),
-      limit: z.coerce.number(),
+  comparison: z
+    .object({
+      results: z.array(topDBQuerySchema),
+      pageInfo: z.object({
+        hasMore: z.boolean(),
+        nextCursor: z.string().optional(),
+        limit: z.coerce.number(),
+      }),
     })
-  }).optional()
+    .optional(),
 });
 
 export async function getTopDBQueries(
@@ -337,7 +341,7 @@ const serviceSummarySchema = z.object({
 
 const serviceSummaryComparisonSchema = z.object({
   data: serviceSummarySchema,
-  comparison: serviceSummarySchema.optional()
+  comparison: serviceSummarySchema.optional(),
 });
 
 export async function getServiceSummary(

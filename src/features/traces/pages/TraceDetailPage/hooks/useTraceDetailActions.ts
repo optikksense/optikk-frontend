@@ -1,9 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 
+import { Route } from "@/routes/_app/traces/$traceId";
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { buildLogsHubHref, traceIdEqualsFilter } from "@shared/observability/deepLinks";
-import { Route } from "@/routes/_app/traces/$traceId";
 
 import type { useTraceDetailData } from "../../../hooks/useTraceDetailData";
 
@@ -23,7 +23,7 @@ export function useTraceDetailActions({
   const navigate = useNavigate();
   const search = Route.useSearch();
   const { getTimeRange } = useTimeRange();
-  
+
   const waterfallSearch = search.q ?? "";
 
   const handleSpanClick = useCallback(
@@ -31,14 +31,23 @@ export function useTraceDetailActions({
       const id = span.span_id ?? null;
       const next = id && id === selectedSpanId ? null : id;
       setSelectedSpanId(next);
-      navigate({ search: ((prev: any) => ({ ...prev, span: next || undefined })) as any, replace: true });
+      navigate({
+        search: ((prev: Record<string, unknown>) => ({
+          ...prev,
+          span: next || undefined,
+        })) as never,
+        replace: true,
+      });
     },
     [setSelectedSpanId, selectedSpanId, navigate]
   );
 
   const closeSpan = useCallback(() => {
     setSelectedSpanId(null);
-    navigate({ search: ((prev: any) => ({ ...prev, span: undefined })) as any, replace: true });
+    navigate({
+      search: ((prev: Record<string, unknown>) => ({ ...prev, span: undefined })) as never,
+      replace: true,
+    });
   }, [setSelectedSpanId, navigate]);
 
   const openInLogs = useCallback(() => {
@@ -61,14 +70,17 @@ export function useTraceDetailActions({
       const token = `${key}:${value}`;
       const current = waterfallSearch.trim();
       let nextSearch = token;
-      
+
       if (current.length > 0) {
         const tokens = current.split(/\s+/);
         if (tokens.includes(token)) return;
         nextSearch = `${current} ${token}`;
       }
-      
-      navigate({ search: ((prev: any) => ({ ...prev, q: nextSearch })) as any, replace: true });
+
+      navigate({
+        search: ((prev: Record<string, unknown>) => ({ ...prev, q: nextSearch })) as never,
+        replace: true,
+      });
     },
     [waterfallSearch, navigate]
   );

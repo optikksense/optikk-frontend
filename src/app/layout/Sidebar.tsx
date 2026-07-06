@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { ChevronsLeft, ChevronsRight, LogOut, Settings } from "lucide-react";
 import { useMemo } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
 import { Tooltip } from "@/components/ui";

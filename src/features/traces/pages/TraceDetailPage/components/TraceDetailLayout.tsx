@@ -4,7 +4,7 @@ import type { TraceErrorGroup, TraceLog } from "@shared/api/schemas/tracesSchema
 import type { ServiceTopologyResponse } from "@shared/components/ui/charts/ServiceTopologyGraph";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
-import { type VisualizationTab } from "../../../store/tracesStore";
+import type { VisualizationTab } from "../../../store/tracesStore";
 import type { RelatedTrace, SpanAttributes, SpanEvent } from "../../../types";
 
 import { SpanDetailDrawer } from "./SpanDetailDrawer";
@@ -49,8 +49,8 @@ export interface TraceDetailLayoutProps {
   readonly onOpenSpanInLogs: () => void;
 }
 
-import { useNavigate } from "@tanstack/react-router";
 import { Route } from "@/routes/_app/traces/$traceId";
+import { useNavigate } from "@tanstack/react-router";
 
 function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
   const drawerOpen = !!props.selectedSpanId && !!props.selectedSpan;
@@ -59,7 +59,10 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
 
   const search = searchParams.q ?? "";
   const setSearch = (s: string) => {
-    navigate({ search: ((prev: any) => ({ ...prev, q: s || undefined })) as any, replace: true });
+    navigate({
+      search: ((prev: Record<string, unknown>) => ({ ...prev, q: s || undefined })) as never,
+      replace: true,
+    });
   };
 
   return (

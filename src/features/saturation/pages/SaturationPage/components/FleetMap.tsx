@@ -1,5 +1,5 @@
-import { memo, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { memo, useMemo, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/shared/constants/routes";
@@ -50,11 +50,13 @@ function Hex({ host, fill }: { host: HostSaturationRow; fill: FillBy }) {
     <div
       title={`${host.host} · ${Math.round(value)}%`}
       className={cn(
-        "flex h-14 w-[50px] flex-col items-center justify-center font-bold text-[12px] text-white cursor-pointer hover:opacity-90",
+        "flex h-14 w-[50px] cursor-pointer flex-col items-center justify-center font-bold text-[12px] text-white hover:opacity-90",
         fillToneClass(value)
       )}
       style={{ clipPath: HEX_CLIP }}
-      onClick={() => navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(host.host)) as never })}
+      onClick={() =>
+        navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(host.host)) as never })
+      }
     >
       {Math.round(value)}
       <span className="mt-px font-semibold text-[10px] opacity-90">{shortLabel(host.host)}</span>

@@ -3,21 +3,6 @@
  * Centralized configuration for the entire React application
  */
 
-export const UI_CONFIG = {
-  THEME: {
-    PRIMARY_COLOR: "#8B7FFF",
-    SUCCESS_COLOR: "#73C991",
-    WARNING_COLOR: "#F7B63A",
-    ERROR_COLOR: "#F04438",
-    INFO_COLOR: "#67B7C9",
-  },
-  SIDEBAR_WIDTH: 220,
-  SIDEBAR_COLLAPSED_WIDTH: 56,
-  HEADER_HEIGHT: 56,
-  PAGE_SIZES: [10, 20, 50, 100],
-  DEFAULT_PAGE_SIZE: 20,
-};
-
 export const TIME_RANGES: import("@/types").RelativeTimeRange[] = [
   { kind: "relative", label: "Last 5 minutes", preset: "5m", minutes: 5 },
   { kind: "relative", label: "Last 15 minutes", preset: "15m", minutes: 15 },

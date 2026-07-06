@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
-import { useDebouncedCallback } from "use-debounce";
 import { Button, Input, SearchField } from "react-aria-components";
+import { useDebouncedCallback } from "use-debounce";
 
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ export default function SearchInput({
 
   return (
     <SearchField
-      className={cn("relative inline-flex items-center group", className)}
+      className={cn("group relative inline-flex items-center", className)}
       style={style}
       onChange={debouncedSearch}
       onClear={() => onSearch?.("")}
@@ -33,15 +33,13 @@ export default function SearchInput({
     >
       <Search
         size={16}
-        className="pointer-events-none absolute left-2 text-[var(--text-secondary,#999)] z-10"
+        className="pointer-events-none absolute left-2 z-10 text-[var(--text-secondary,#999)]"
       />
       <Input
         placeholder={placeholder}
-        className="h-8 w-full rounded-md border border-[var(--border-color,#d9d9d9)] pl-[30px] pr-[28px] text-sm outline-none focus-visible:ring-1 focus-visible:ring-primary"
+        className="h-8 w-full rounded-md border border-[var(--border-color,#d9d9d9)] pr-[28px] pl-[30px] text-sm outline-none focus-visible:ring-1 focus-visible:ring-primary"
       />
-      <Button
-        className="absolute right-1.5 cursor-pointer rounded-sm border-none bg-transparent p-0.5 text-[var(--text-secondary,#999)] text-sm opacity-0 group-data-[empty=false]:opacity-100 hover:text-foreground outline-none focus-visible:ring-1 focus-visible:ring-primary"
-      >
+      <Button className="absolute right-1.5 cursor-pointer rounded-sm border-none bg-transparent p-0.5 text-[var(--text-secondary,#999)] text-sm opacity-0 outline-none hover:text-foreground focus-visible:ring-1 focus-visible:ring-primary group-data-[empty=false]:opacity-100">
         &times;
       </Button>
     </SearchField>

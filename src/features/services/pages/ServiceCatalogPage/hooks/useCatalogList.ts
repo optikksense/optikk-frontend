@@ -22,8 +22,9 @@ export interface UseCatalogListResult {
 }
 
 function useRedSummary() {
-  return useTimeRangeQuery<RedSummaryWithComparison>("service-hub.red-summary-cmp", (_tenant, s, e) =>
-    getRedSummaryWithComparison(s, e)
+  return useTimeRangeQuery<RedSummaryWithComparison>(
+    "service-hub.red-summary-cmp",
+    (_tenant, s, e) => getRedSummaryWithComparison(s, e)
   );
 }
 

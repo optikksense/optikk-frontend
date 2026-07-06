@@ -39,7 +39,7 @@ export function SaturationSubnav({ active, counts }: SaturationSubnavProps) {
         return (
           <Link
             key={item.id}
-            to={(item.href as string & {})}
+            to={item.href as string & {}}
             className={cn(
               "flex items-center gap-1 border-b-2 px-3 py-2 text-[13px] transition-colors",
               isActive

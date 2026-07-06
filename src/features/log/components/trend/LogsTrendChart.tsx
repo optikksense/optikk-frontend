@@ -1,8 +1,10 @@
+import ObservabilityChart, {
+  type ObservabilityChartSeries,
+} from "@shared/components/ui/charts/ObservabilityChart";
 import { memo, useMemo } from "react";
 import type { LogsTrendBucket } from "../../api/logsAnalyticsApi";
 import { severityColor } from "../../utils/severity";
-import ObservabilityChart, { type ObservabilityChartSeries } from "@shared/components/ui/charts/ObservabilityChart";
-import { prepareLogsTrendData, buildCumulativeSeries } from "./logsTrendDataUtils";
+import { buildCumulativeSeries, prepareLogsTrendData } from "./logsTrendDataUtils";
 
 interface Props {
   readonly trend: readonly LogsTrendBucket[] | undefined;
@@ -23,12 +25,7 @@ function compactY(v: number): string {
   return String(v);
 }
 
-function LogsTrendChartComponent({
-  trend,
-  onTimeRangeChange,
-  minTimeMs,
-  maxTimeMs,
-}: Props) {
+function LogsTrendChartComponent({ trend, onTimeRangeChange, minTimeMs, maxTimeMs }: Props) {
   const chartData = useMemo(() => {
     const buckets = prepareLogsTrendData(trend);
     if (buckets.length === 0) return null;
@@ -38,7 +35,7 @@ function LogsTrendChartComponent({
   const series = useMemo<ObservabilityChartSeries[]>(() => {
     if (!chartData) return [];
     const [, errSeries, warnSeries, infoSeries, debugSeries] = chartData;
-    
+
     // Ordered from largest (drawn first in background) to smallest (drawn last in foreground)
     return [
       { label: "Errors", values: errSeries, color: ERROR_COLOR, fill: true },
@@ -71,7 +68,7 @@ function LogsTrendChartComponent({
           </span>
         </div>
       </div>
-      
+
       <div className="h-[180px] w-full">
         {!chartData ? (
           <div className="flex h-full items-center justify-center text-[var(--fg-3)] text-sm">

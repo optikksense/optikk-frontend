@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import api from "@/shared/api/api/client";
 import { useInView } from "@/shared/hooks/useInView";
@@ -44,7 +44,7 @@ export function useWidgetData(spec: DashboardPanelSpec): WidgetDataResult {
   const params = endpointQuery?.params;
   const enabled = Boolean(inView && endpoint && selectedTenantId);
 
-  const query = useQuery({
+  const query = useStandardQuery({
     queryKey: ["dashboard-widget", selectedTenantId, endpoint, params, rangeKey(timeRange)],
     queryFn: async () => {
       const { startTime, endTime } = getTimeRange();

@@ -124,7 +124,7 @@ export default function HostsTab() {
   }, [nodes, q]);
 
   const onOpenNode = (host: string) => {
-    navigate({ to: (ROUTES.hostDetail.replace("$host", encodeURIComponent(host as string & {}))) });
+    navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(host as string & {})) });
   };
 
   const hostsCount = nodes.length;

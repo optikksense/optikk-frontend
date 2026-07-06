@@ -11,8 +11,3 @@ export interface UserViewPreferences {
 }
 
 export type UserViewPreferenceKey = keyof UserViewPreferences;
-
-export type UserViewPreferenceValue = Exclude<
-  UserViewPreferences[UserViewPreferenceKey],
-  undefined
->;

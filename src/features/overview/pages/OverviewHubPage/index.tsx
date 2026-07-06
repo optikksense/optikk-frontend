@@ -2,6 +2,7 @@ import { PageHeader, PageShell } from "@shared/components/ui";
 import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
 import { useInView } from "@shared/hooks/useInView";
 
+import type { ServiceMetricPoint } from "@/features/metrics/types";
 import InfrastructureStrip from "./components/InfrastructureStrip";
 import OverviewHero from "./components/OverviewHero";
 import ServiceHealthGrid from "./components/ServiceHealthGrid";
@@ -15,7 +16,6 @@ import {
   useServiceHealthCells,
   useTopErrorsQuery,
 } from "./hooks/useOverviewModel";
-import type { ServiceMetricPoint } from "@/features/metrics/types";
 
 function DegradedBadge({ count }: { readonly count: number }) {
   if (count <= 0) return null;

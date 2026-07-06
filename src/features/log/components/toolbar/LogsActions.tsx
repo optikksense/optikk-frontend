@@ -1,6 +1,6 @@
 import { Share2 } from "lucide-react";
 import { memo, useCallback } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 /** Action buttons: Share (copy link). */
 function LogsActionsComponent() {

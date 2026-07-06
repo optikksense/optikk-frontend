@@ -1,11 +1,4 @@
 import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { EmptyState } from "@shared/components/ui/feedback";
-import {
   Table,
   TableBody,
   TableCell,
@@ -13,6 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/components/primitives/ui/table";
+import { EmptyState } from "@shared/components/ui/feedback";
+import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 interface DataTablePagination {
   page?: number;
@@ -73,19 +68,17 @@ export default function DataTable<TData, TValue>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
-                const align = (header.column.columnDef.meta as any)?.align || "left";
-                const width = header.column.columnDef.size !== 150 ? header.column.columnDef.size : undefined;
+                const align = (header.column.columnDef.meta as { align?: string })?.align || "left";
+                const width =
+                  header.column.columnDef.size !== 150 ? header.column.columnDef.size : undefined;
                 return (
-                  <TableHead 
-                    key={header.id} 
-                    style={{ width, textAlign: align }}
+                  <TableHead
+                    key={header.id}
+                    style={{ width, textAlign: align as "left" | "center" | "right" }}
                   >
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 );
               })}
@@ -96,15 +89,14 @@ export default function DataTable<TData, TValue>({
           {table.getRowModel().rows.map((row, index) => {
             const rowProps = onRow ? onRow(row.original, index) : {};
             return (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                {...rowProps}
-              >
+              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} {...rowProps}>
                 {row.getVisibleCells().map((cell) => {
-                  const align = (cell.column.columnDef.meta as any)?.align || "left";
+                  const align = (cell.column.columnDef.meta as { align?: string })?.align || "left";
                   return (
-                    <TableCell key={cell.id} style={{ textAlign: align }}>
+                    <TableCell
+                      key={cell.id}
+                      style={{ textAlign: align as "left" | "center" | "right" }}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   );

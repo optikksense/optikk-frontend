@@ -1,7 +1,7 @@
 import type { RequestTime } from "@shared/api/service-types";
 
-import { getJson } from "./overviewClient";
 import type { RedServiceRow } from "@/features/services/api/redApi";
+import { getJson } from "./overviewClient";
 
 export interface FleetRedMetrics {
   service_count?: number;

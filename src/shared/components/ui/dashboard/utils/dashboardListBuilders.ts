@@ -160,9 +160,7 @@ export function buildServiceListFromMetrics(serviceMetrics: DashboardRecord[], l
   if (listType === "latency") {
     return mapped.sort((a, b) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);
   }
-  return mapped
-    .sort((a, b) => (b.request_count || 0) - (a.request_count || 0))
-    .slice(0, 10);
+  return mapped.sort((a, b) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);
 }
 
 export function defaultListTypeForChart(chartConfig: DashboardPanelSpec): EndpointListType {

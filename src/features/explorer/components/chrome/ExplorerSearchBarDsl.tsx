@@ -1,4 +1,12 @@
-import { type KeyboardEvent, forwardRef, memo, useCallback, useEffect, useRef, useState } from "react";
+import {
+  type KeyboardEvent,
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Group, Input, Popover, SearchField } from "react-aria-components";
 
 import { useDslSearchBar } from "../../hooks/useDslSearchBar";

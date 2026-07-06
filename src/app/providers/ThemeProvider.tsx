@@ -1,9 +1,7 @@
 import { useEffect } from "react";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
 import { useAppStore } from "@store/appStore";
-
-import { APP_COLORS } from "@config/colorLiterals";
 
 import type { ReactNode } from "react";
 
@@ -28,24 +26,13 @@ export default function ThemeProvider({ children }: ThemeProviderProps): JSX.Ele
       {children}
       <Toaster
         position="top-right"
+        richColors
         toastOptions={{
           duration: 4000,
           style: {
             background: "var(--toast-bg)",
             color: "var(--toast-text)",
             border: "1px solid var(--toast-border)",
-          },
-          success: {
-            iconTheme: {
-              primary: APP_COLORS.hex_52876b,
-              secondary: APP_COLORS.hex_fff,
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: APP_COLORS.hex_dc2626,
-              secondary: APP_COLORS.hex_fff,
-            },
           },
         }}
       />

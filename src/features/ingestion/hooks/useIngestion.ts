@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import { useTenantId } from "@store/appStore";
 
@@ -20,7 +20,7 @@ function monthToDateRange(): { startTime: number; endTime: number; monthKey: str
 export function useIngestionSummary() {
   const tenantId = useTenantId();
   const { startTime, endTime, monthKey } = monthToDateRange();
-  return useQuery({
+  return useStandardQuery({
     queryKey: ["ingestion.summary", tenantId, monthKey],
     queryFn: () => getIngestionSummary(startTime, endTime),
     enabled: Boolean(tenantId),
@@ -31,7 +31,7 @@ export function useIngestionSummary() {
 export function useIngestionTimeseries(groupBy: "type" | "service") {
   const tenantId = useTenantId();
   const { startTime, endTime, monthKey } = monthToDateRange();
-  return useQuery({
+  return useStandardQuery({
     queryKey: ["ingestion.timeseries", tenantId, monthKey, groupBy],
     queryFn: () => getIngestionTimeseries(startTime, endTime, groupBy),
     enabled: Boolean(tenantId),
@@ -42,7 +42,7 @@ export function useIngestionTimeseries(groupBy: "type" | "service") {
 export function useIngestionServices() {
   const tenantId = useTenantId();
   const { startTime, endTime, monthKey } = monthToDateRange();
-  return useQuery({
+  return useStandardQuery({
     queryKey: ["ingestion.services", tenantId, monthKey],
     queryFn: () => getIngestionServices(startTime, endTime),
     enabled: Boolean(tenantId),

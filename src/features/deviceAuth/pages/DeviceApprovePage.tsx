@@ -34,7 +34,7 @@ function DeviceApprovePage() {
         </p>
 
         {approved ? (
-          <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-[13.5px]">
+          <div className="rounded-lg border border-success/30 bg-success/10 p-4 text-[13.5px]">
             ✓ Device approved. Return to your terminal — it will finish logging in.
           </div>
         ) : (
@@ -53,7 +53,7 @@ function DeviceApprovePage() {
               className="rounded-md border border-border bg-surface-inset px-3.5 py-2.5 text-center font-mono text-lg tracking-[0.15em] outline-none focus:border-primary"
             />
             {mutation.isError && (
-              <p className="m-0 text-[13px] text-red-500">{mutation.error.message}</p>
+              <p className="m-0 text-[13px] text-error">{mutation.error.message}</p>
             )}
             <button
               type="submit"

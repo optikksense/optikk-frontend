@@ -15,8 +15,14 @@ import type {
   DashboardExtraContext,
   DashboardPanelSpec,
 } from "@/types/dashboardConfig";
-import TopEndpointsList, { type TopEndpointListItem, type TopEndpointsListType } from "@shared/components/ui/data-display/TopEndpointsList";
-import QueueMetricsList, { type QueueMetricsItem, type QueueMetricsListType } from "@shared/components/ui/data-display/QueueMetricsList";
+import QueueMetricsList, {
+  type QueueMetricsItem,
+  type QueueMetricsListType,
+} from "@shared/components/ui/data-display/QueueMetricsList";
+import TopEndpointsList, {
+  type TopEndpointListItem,
+  type TopEndpointsListType,
+} from "@shared/components/ui/data-display/TopEndpointsList";
 
 import { cn } from "@/lib/utils";
 import DashboardCardErrorBoundary from "./DashboardCardErrorBoundary";

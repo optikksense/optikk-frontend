@@ -16,8 +16,7 @@ const ALLOWED_FILES = new Set([
 const files = execSync('git ls-files "src/**/*.ts" "src/**/*.tsx"', { encoding: "utf8" })
   .split("\n")
   .filter(Boolean)
-  .filter((f) => existsSync(f))
-  .filter((f) => !f.startsWith("src/features/marketing/"));
+  .filter((f) => existsSync(f));
 
 let failed = false;
 for (const file of files) {

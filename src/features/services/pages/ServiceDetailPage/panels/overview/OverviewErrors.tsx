@@ -1,5 +1,7 @@
 import { getErrorGroupLatestOccurrence } from "@/features/errors/api/errorGroupsApi";
+import { PaginationFooter } from "@shared/components/table/PaginationFooter";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+import { parseStackFrames } from "@shared/utils/errorParsers";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { fmtNum, relativeTimeFromIso } from "../../formatters";
@@ -17,14 +19,11 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
   const hasMore = errorsQ.data?.pageInfo?.hasMore ?? false;
   const nextCursor = errorsQ.data?.pageInfo?.nextCursor;
 
-  useEffect(() => {
-    if (nextCursor) {
-      setCursors((prev) => ({ ...prev, [page]: nextCursor }));
-    }
-  }, [nextCursor, page]);
-
   const handleNext = () => {
     if (hasMore) {
+      if (nextCursor) {
+        setCursors((prev) => ({ ...prev, [page]: nextCursor }));
+      }
       setPage((p) => p + 1);
     }
   };
@@ -50,34 +49,7 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
   }, [errorsList]);
 
   const stackFrames = useMemo(() => {
-    const stack = detailQ.data?.stacktrace;
-    if (!stack) return [];
-
-    return stack
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .slice(0, 4)
-      .map((line) => {
-        const rubyMatch = line.match(/(.+):(\d+):in `(.+)'/);
-        if (rubyMatch) {
-          return {
-            method: rubyMatch[3] ?? "unknown",
-            file: `${rubyMatch[1]}:${rubyMatch[2]}`,
-          };
-        }
-        const generalMatch = line.match(/at\s+(.+)\s+\((.+):(\d+)\)/);
-        if (generalMatch) {
-          return {
-            method: generalMatch[1] ?? "unknown",
-            file: `${generalMatch[2]}:${generalMatch[3]}`,
-          };
-        }
-        return {
-          method: line,
-          file: "",
-        };
-      });
+    return parseStackFrames(detailQ.data?.stacktrace);
   }, [detailQ.data]);
 
   const handleRowClick = (groupId: string) => {
@@ -168,27 +140,12 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
               </table>
             </div>
 
-            <div className="mt-4 flex items-center justify-between border-border/40 border-t pt-4">
-              <div className="text-[11.5px] text-foreground-muted">Showing page {page + 1}</div>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  disabled={page === 0}
-                  onClick={handlePrev}
-                  className="inline-flex h-[26px] items-center gap-1 rounded-md border border-border bg-card px-3 font-semibold text-[11px] text-foreground-secondary hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-40"
-                >
-                  Previous
-                </button>
-                <button
-                  type="button"
-                  disabled={!hasMore}
-                  onClick={handleNext}
-                  className="inline-flex h-[26px] items-center gap-1 rounded-md border border-border bg-card px-3 font-semibold text-[11px] text-foreground-secondary hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-40"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+            <PaginationFooter
+              page={page}
+              hasMore={hasMore}
+              onPrev={handlePrev}
+              onNext={handleNext}
+            />
           </div>
 
           {/* Stacktrace card */}

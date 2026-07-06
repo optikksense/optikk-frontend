@@ -23,10 +23,10 @@ export function SearchToolbar({ value, onChange, status, onStatusChange }: Searc
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  
+
   return (
     <div className="flex items-center gap-2.5">
-      <SearchField 
+      <SearchField
         className="flex h-8 w-[320px] items-center gap-2 rounded-md border border-border bg-card px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
         value={value}
         onChange={onChange}

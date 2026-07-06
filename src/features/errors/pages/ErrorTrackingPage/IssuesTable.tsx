@@ -1,8 +1,8 @@
 import { ChevronRight } from "lucide-react";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatNumber, formatRelativeTime } from "@shared/utils/formatters";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import type { ErrorGroup } from "../../api/errorGroupsApi";
 

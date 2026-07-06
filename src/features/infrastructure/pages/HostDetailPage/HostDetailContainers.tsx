@@ -33,12 +33,15 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
   }, [pods]);
 
   const onOpenHost = (h: string) => {
-    navigate({ to: (ROUTES.hostDetail.replace("$host", encodeURIComponent(h as string & {}))) });
+    navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(h as string & {})) });
   };
 
   const onOpenContainer = (container: string) => {
     navigate({
-      to: (ROUTES.containerDetail.replace("$container", encodeURIComponent(container as string & {}))),
+      to: ROUTES.containerDetail.replace(
+        "$container",
+        encodeURIComponent(container as string & {})
+      ),
     });
   };
 
