@@ -41,7 +41,7 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -subj "/C=US/ST=State/L=City/O=Organization/OU=IT/CN=localhost"
 
 # Expose non-privileged ports
-EXPOSE 8080 8443
+EXPOSE 3000 3443
 
 # Set default backend URL if not provided
 ENV BACKEND_URL="http://backend:8080"

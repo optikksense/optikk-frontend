@@ -9,6 +9,9 @@ export function resolveOtlpEndpoint(): string {
     return fromEnv.replace(/\/+$/, "");
   }
   const { origin } = window.location;
+  if (origin.includes("app.")) {
+    return origin.replace("app.", "ingest.");
+  }
   if (origin.includes("api.")) {
     return origin.replace("api.", "ingest.");
   }
