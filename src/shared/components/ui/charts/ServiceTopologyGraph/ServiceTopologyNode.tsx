@@ -1,3 +1,4 @@
+import { formatPercentage } from "@shared/utils/formatters";
 import { Handle, type NodeProps, Position } from "@xyflow/react";
 import { formatMs, formatNumber } from "./format";
 
@@ -17,10 +18,6 @@ const healthRingColor: Record<ServiceTopologyNode["health"], string> = {
   unhealthy: "var(--color-error)",
 };
 
-function formatPct(n: number): string {
-  return `${(n * 100).toFixed(n >= 0.1 ? 1 : 2)}%`;
-}
-
 export function ServiceTopologyNode({ data }: NodeProps) {
   const d = data as TopologyNodeData;
   const ringColor = healthRingColor[d.health];
@@ -35,7 +32,8 @@ export function ServiceTopologyNode({ data }: NodeProps) {
       <div className="flex justify-between gap-4">
         <span className="text-foreground-muted">Errors</span>
         <span>
-          {formatNumber(d.error_count)} ({formatPct(d.error_rate)})
+          {formatNumber(d.error_count)} (
+          {formatPercentage(d.error_rate * 100, d.error_rate >= 0.001 ? 1 : 2)})
         </span>
       </div>
       <div className="flex justify-between gap-4">
@@ -89,7 +87,7 @@ export function ServiceTopologyNode({ data }: NodeProps) {
                 color: d.error_rate > 0.05 ? "var(--color-error)" : "var(--text-primary)",
               }}
             >
-              {formatPct(d.error_rate)}
+              {formatPercentage(d.error_rate * 100, d.error_rate >= 0.001 ? 1 : 2)}
             </span>
           </div>
           <div className="flex flex-col">

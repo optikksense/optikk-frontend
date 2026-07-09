@@ -22,8 +22,14 @@ let refreshInflight: Promise<string | null> | null = null;
 localStorage.removeItem("optikk_auth_state");
 
 function toTenant(payload: SessionPayload): Tenant {
-  const { id, name, accountStatus, trialEndsAt } = payload.tenant;
-  return { id, name, accountStatus: accountStatus ?? undefined, trialEndsAt };
+  const { id, name, role, accountStatus, trialEndsAt } = payload.tenant;
+  return {
+    id,
+    name,
+    role: role ?? undefined,
+    accountStatus: accountStatus ?? undefined,
+    trialEndsAt,
+  };
 }
 
 function toUser(payload: SessionPayload): User {

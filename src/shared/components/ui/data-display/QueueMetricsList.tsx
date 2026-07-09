@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 
 import type { DashboardDrawerAction } from "@/types/dashboardConfig";
 import { CHART_COLORS } from "@config/constants";
 import { buildDashboardDrawerSearch } from "@shared/components/ui/dashboard/utils/dashboardDrawerState";
 import { formatNumber } from "@shared/utils/formatters";
 
+import { cn } from "@/lib/utils";
 import { APP_COLORS } from "@config/colorLiterals";
 
 export type QueueMetricsListType = "depth" | "consumerLag" | "productionRate" | "consumptionRate";
@@ -33,24 +35,9 @@ interface QueueMetricsListProps {
 }
 
 interface QueueRowDisplayConfig {
-  selectedBg: string;
-  hoverBg: string;
-  valueColor: string;
+  selectedBgClass: string;
+  valueColorClass: string;
   displayValue: string;
-}
-
-function formatRate(value: number): string {
-  const numericValue = Number(value);
-  if (!Number.isFinite(numericValue)) return "0";
-  if (Math.abs(numericValue) >= 1000) return formatNumber(numericValue);
-  return numericValue.toLocaleString(undefined, { maximumFractionDigits: 2 });
-}
-
-function formatDepth(value: number): string {
-  const numericValue = Number(value);
-  if (!Number.isFinite(numericValue)) return "0";
-  if (Math.abs(numericValue) >= 1000) return formatNumber(numericValue);
-  return numericValue.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 
 function getQueueDisplayConfig(
@@ -60,38 +47,41 @@ function getQueueDisplayConfig(
   if (type === "consumerLag") {
     const lag = queue.max_consumer_lag ?? 0;
     return {
-      selectedBg: "rgba(240, 68, 56, 0.12)",
-      hoverBg: "rgba(255,255,255,0.04)",
-      valueColor: lag > 100 ? "var(--color-error)" : "var(--text-primary)",
+      selectedBgClass: "bg-[#f04438]/12",
+      valueColorClass: lag > 100 ? "text-[var(--color-error)]" : "text-[var(--text-primary)]",
       displayValue: formatNumber(lag),
     };
   }
 
   if (type === "productionRate") {
     return {
-      selectedBg: "rgba(247, 182, 58, 0.12)",
-      hoverBg: "rgba(255,255,255,0.04)",
-      valueColor: "var(--text-primary)",
-      displayValue: `${formatRate(queue.avg_publish_rate ?? 0)}/s`,
+      selectedBgClass: "bg-[#f7b63a]/12",
+      valueColorClass: "text-[var(--text-primary)]",
+      displayValue: `${formatNumber(queue.avg_publish_rate ?? 0)}/s`,
     };
   }
 
   if (type === "consumptionRate") {
     return {
-      selectedBg: "rgba(115, 201, 145, 0.12)",
-      hoverBg: "rgba(255,255,255,0.04)",
-      valueColor: "var(--text-primary)",
-      displayValue: `${formatRate(queue.avg_receive_rate ?? 0)}/s`,
+      selectedBgClass: "bg-[#73c991]/12",
+      valueColorClass: "text-[var(--text-primary)]",
+      displayValue: `${formatNumber(queue.avg_receive_rate ?? 0)}/s`,
     };
   }
 
   return {
-    selectedBg: "rgba(124, 127, 242, 0.12)",
-    hoverBg: "rgba(255,255,255,0.04)",
-    valueColor: "var(--text-primary)",
-    displayValue: formatDepth(queue.avg_queue_depth ?? 0),
+    selectedBgClass: "bg-[#7c7ff2]/12",
+    valueColorClass: "text-[var(--text-primary)]",
+    displayValue: formatNumber(queue.avg_queue_depth ?? 0),
   };
 }
+
+const getVal = (type: QueueMetricsListType, q: QueueMetricsItem) => {
+  if (type === "consumerLag") return q.max_consumer_lag ?? 0;
+  if (type === "productionRate") return q.avg_publish_rate ?? 0;
+  if (type === "consumptionRate") return q.avg_receive_rate ?? 0;
+  return q.avg_queue_depth ?? 0;
+};
 
 /**
  * Renders queue metric rows for queue depth and throughput charts.
@@ -109,39 +99,28 @@ export default function QueueMetricsList({
   currentSearch = "",
   maxVisibleRows,
 }: QueueMetricsListProps): JSX.Element | null {
-  if (queues.length === 0) return null;
   const visibleQueues = maxVisibleRows ? queues.slice(0, maxVisibleRows) : queues;
 
+  const maxValInList = useMemo(() => {
+    return Math.max(...visibleQueues.map((q) => getVal(type, q)), 1);
+  }, [visibleQueues, type]);
+  if (queues.length === 0) return null;
+
   return (
-    <div style={{ marginTop: 0, borderTop: "1px solid var(--border-color)" }}>
+    <div className="mt-0 border-[var(--border-color)] border-t">
       <div
+        className="max-h-[180px] overflow-y-auto"
         style={{
-          maxHeight: "180px",
-          overflowY: "auto",
           scrollbarWidth: "thin",
           scrollbarColor: `var(--border-color, ${APP_COLORS.hex_2d2d2d}) transparent`,
         }}
       >
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            fontSize: "12px",
-            textAlign: "left",
-          }}
-        >
+        <table className="w-full border-collapse text-left text-[12px]">
           <thead>
-            <tr
-              style={{
-                color: "var(--text-secondary)",
-                borderBottom: "1px solid var(--border-color)",
-              }}
-            >
-              <th style={{ padding: "4px 8px", fontWeight: 500 }}>Topic Name</th>
-              <th style={{ padding: "4px 8px", fontWeight: 500, textAlign: "right" }}>{title}</th>
-              {drawerAction ? (
-                <th style={{ padding: "4px 8px", fontWeight: 500, textAlign: "right" }}>Details</th>
-              ) : null}
+            <tr className="border-[var(--border-color)] border-b text-[var(--text-secondary)]">
+              <th className="px-2 py-1 font-medium">Topic Name</th>
+              <th className="px-2 py-1 text-right font-medium">{title}</th>
+              {drawerAction ? <th className="px-2 py-1 text-right font-medium">Details</th> : null}
             </tr>
           </thead>
           <tbody>
@@ -156,19 +135,12 @@ export default function QueueMetricsList({
               );
               const isSelected = selectedQueues.includes(queueKey);
               const isFaded = selectedQueues.length > 0 && !isSelected;
-              const { selectedBg, hoverBg, valueColor, displayValue } = getQueueDisplayConfig(
+              const { selectedBgClass, valueColorClass, displayValue } = getQueueDisplayConfig(
                 type,
                 queue
               );
 
-              const getVal = (q: QueueMetricsItem) => {
-                if (type === "consumerLag") return q.max_consumer_lag ?? 0;
-                if (type === "productionRate") return q.avg_publish_rate ?? 0;
-                if (type === "consumptionRate") return q.avg_receive_rate ?? 0;
-                return q.avg_queue_depth ?? 0;
-              };
-              const maxValInList = Math.max(...visibleQueues.map(getVal), 1);
-              const currentVal = getVal(queue);
+              const currentVal = getVal(type, queue);
               const pct = (currentVal / maxValInList) * 100;
               const barWidth = Math.max(Math.min(pct, 100), 2);
 
@@ -188,92 +160,48 @@ export default function QueueMetricsList({
                     event.stopPropagation();
                     onToggle?.(queueKey);
                   }}
-                  style={{
-                    background: isSelected ? selectedBg : "transparent",
-                    cursor: "pointer",
-                    transition: "background 0.2s",
-                    opacity: isFaded ? 0.4 : 1,
-                  }}
-                  onMouseEnter={(event) => {
-                    if (!isFaded) {
-                      event.currentTarget.style.background = isSelected ? selectedBg : hoverBg;
-                    }
-                  }}
-                  onMouseLeave={(event) => {
-                    event.currentTarget.style.background = isSelected ? selectedBg : "transparent";
-                  }}
+                  className={cn(
+                    "cursor-pointer transition-colors duration-200",
+                    isFaded ? "opacity-40" : "opacity-100",
+                    isSelected ? selectedBgClass : "bg-transparent hover:bg-white/5"
+                  )}
                 >
-                  <td
-                    style={{
-                      padding: "4px 8px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "4px",
-                    }}
-                  >
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                      <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>
+                  <td className="flex flex-col gap-1 px-2 py-1">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-[var(--text-primary)]">
                         {queue.queue_name}
                       </span>
                       {queue.service_name && queue.service_name !== "unknown" && (
-                        <span style={{ color: "var(--text-muted)", fontSize: "11px" }}>
+                        <span className="text-[11px] text-[var(--text-muted)]">
                           {queue.service_name}
                         </span>
                       )}
                     </div>
-                    {}
-                    <div
-                      style={{
-                        width: "100%",
-                        height: "3px",
-                        background: "var(--bg-tertiary)",
-                        borderRadius: "999px",
-                        overflow: "hidden",
-                        marginTop: "2px",
-                      }}
-                    >
+                    <div className="mt-[2px] h-[3px] w-full overflow-hidden rounded-full bg-[var(--bg-tertiary)]">
                       <div
+                        className="h-full rounded-sm"
                         style={{
                           width: `${barWidth}%`,
-                          height: "100%",
                           background: barBg,
-                          borderRadius: "2px",
                         }}
                       />
                     </div>
                   </td>
-                  <td
-                    className="font-mono"
-                    style={{
-                      padding: "4px 8px",
-                      textAlign: "right",
-                      color: valueColor,
-                    }}
-                  >
+                  <td className={cn("px-2 py-1 text-right font-mono", valueColorClass)}>
                     {displayValue}
                   </td>
                   {drawerAction ? (
-                    <td
-                      style={{
-                        padding: "4px 8px",
-                        textAlign: "right",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
+                    <td className="whitespace-nowrap px-2 py-1 text-right">
                       {detailSearch ? (
                         <Link
                           to={currentPathname + detailSearch}
                           onClick={(event) => event.stopPropagation()}
-                          style={{
-                            color: "var(--color-primary)",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                          }}
+                          className="font-medium text-[12px] text-[var(--color-primary)] hover:underline"
                         >
                           View
                         </Link>
                       ) : (
-                        <span style={{ color: "var(--text-muted)", fontSize: "12px" }}>—</span>
+                        <span className="text-[12px] text-[var(--text-muted)]">—</span>
                       )}
                     </td>
                   ) : null}

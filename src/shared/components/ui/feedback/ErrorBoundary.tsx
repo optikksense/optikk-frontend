@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui";
 import { AlertCircle } from "lucide-react";
-import React from "react";
-import { ErrorBoundary as ReactErrorBoundary, type FallbackProps } from "react-error-boundary";
+import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
 
 import type { ErrorBoundaryProps } from "./types";
 
@@ -21,10 +20,7 @@ function FallbackComponent({
 
   return (
     <div className="flex items-center justify-center" style={{ minHeight: 400, padding: 24 }}>
-      <div
-        className="flex-col items-center gap-lg"
-        style={{ textAlign: "center", maxWidth: 420 }}
-      >
+      <div className="flex-col items-center gap-lg" style={{ textAlign: "center", maxWidth: 420 }}>
         <AlertCircle size={48} color="var(--color-error)" />
         <h2 style={{ fontSize: 20, fontWeight: 600, color: "var(--text-primary)", margin: 0 }}>
           Something went wrong
@@ -76,7 +72,7 @@ export default function ErrorBoundary({
         console.error(
           `Error Boundary caught an error${boundaryName ? ` [${boundaryName}]` : ""}:`,
           error,
-          info,
+          info
         );
       }}
     >

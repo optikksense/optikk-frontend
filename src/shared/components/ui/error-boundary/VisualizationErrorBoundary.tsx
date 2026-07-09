@@ -7,7 +7,10 @@ interface Props {
   fallback?: ReactNode;
 }
 
-function Fallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+function Fallback({
+  error,
+  resetErrorBoundary,
+}: { error: unknown; resetErrorBoundary: () => void }) {
   return (
     <div className="flex h-full min-h-[200px] w-full flex-col items-center justify-center rounded-lg border border-border bg-card p-4 text-center">
       <div className="mb-3 rounded-full bg-err/10 p-3 text-err">
@@ -19,7 +22,7 @@ function Fallback({ error, resetErrorBoundary }: { error: Error; resetErrorBound
       </p>
       {import.meta.env.DEV && (
         <pre className="mt-2 max-w-full overflow-auto rounded bg-muted/20 p-2 text-left text-[11px] text-err opacity-80">
-          {error.message}
+          {error instanceof Error ? error.message : String(error)}
         </pre>
       )}
       <button

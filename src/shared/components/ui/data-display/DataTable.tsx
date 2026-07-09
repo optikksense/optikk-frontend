@@ -8,6 +8,8 @@ import {
 } from "@shared/components/primitives/ui/table";
 import { EmptyState } from "@shared/components/ui/feedback";
 import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useRef } from "react";
 
 interface DataTablePagination {
   page?: number;
@@ -19,7 +21,7 @@ interface DataTablePagination {
 
 interface DataTableConfig<TData> {
   emptyText?: string;
-  scroll?: { x?: number; y?: number };
+  scroll?: { x?: number; y?: number | string };
   onRow?: (record: TData, index?: number) => React.HTMLAttributes<HTMLTableRowElement>;
 }
 
@@ -34,7 +36,7 @@ export interface DataTableProps<TData, TValue> {
 }
 
 /**
- * Standard shadcn/ui DataTable wrapper.
+ * Standard shadcn/ui DataTable wrapper with virtualization.
  */
 export default function DataTable<TData, TValue>({
   data,
@@ -49,6 +51,16 @@ export default function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const { rows: tableRows } = table.getRowModel();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useVirtualizer({
+    count: tableRows.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 48,
+    overscan: 10,
+  });
+
   if (loading) {
     return (
       <div className="py-8 text-center" style={{ color: "var(--text-muted)" }}>
@@ -61,10 +73,21 @@ export default function DataTable<TData, TValue>({
     return <EmptyState icon={null} title="No Data" description={emptyText} action={null} />;
   }
 
+  const virtualItems = virtualizer.getVirtualItems();
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualItems.length > 0
+      ? virtualizer.getTotalSize() - (virtualItems[virtualItems.length - 1]?.end || 0)
+      : 0;
+
   return (
-    <div className="rounded-md border">
+    <div
+      ref={scrollRef}
+      className="rounded-md border overflow-y-auto relative"
+      style={{ maxHeight: config.scroll?.y ?? "calc(100vh - 200px)" }}
+    >
       <Table>
-        <TableHeader>
+        <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -75,6 +98,7 @@ export default function DataTable<TData, TValue>({
                   <TableHead
                     key={header.id}
                     style={{ width, textAlign: align as "left" | "center" | "right" }}
+                    className="bg-background"
                   >
                     {header.isPlaceholder
                       ? null
@@ -86,8 +110,14 @@ export default function DataTable<TData, TValue>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows.map((row, index) => {
-            const rowProps = onRow ? onRow(row.original, index) : {};
+          {paddingTop > 0 && (
+            <tr>
+              <td style={{ height: `${paddingTop}px` }} />
+            </tr>
+          )}
+          {virtualItems.map((virtualRow) => {
+            const row = tableRows[virtualRow.index];
+            const rowProps = onRow ? onRow(row.original, virtualRow.index) : {};
             return (
               <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} {...rowProps}>
                 {row.getVisibleCells().map((cell) => {
@@ -104,6 +134,11 @@ export default function DataTable<TData, TValue>({
               </TableRow>
             );
           })}
+          {paddingBottom > 0 && (
+            <tr>
+              <td style={{ height: `${paddingBottom}px` }} />
+            </tr>
+          )}
         </TableBody>
       </Table>
       {/* Pagination implementation placeholder if needed in the future */}

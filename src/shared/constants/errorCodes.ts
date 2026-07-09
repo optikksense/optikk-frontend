@@ -5,7 +5,6 @@ const UNAUTHORIZED = "UNAUTHORIZED" as const;
 const FORBIDDEN = "FORBIDDEN" as const;
 const NOT_FOUND = "NOT_FOUND" as const;
 const CONFLICT = "CONFLICT" as const;
-const RATE_LIMITED = "RATE_LIMITED" as const;
 const PAYLOAD_TOO_LARGE = "PAYLOAD_TOO_LARGE" as const;
 
 const INTERNAL_ERROR = "INTERNAL_ERROR" as const;
@@ -29,7 +28,6 @@ export type ErrorCode =
   | typeof FORBIDDEN
   | typeof NOT_FOUND
   | typeof CONFLICT
-  | typeof RATE_LIMITED
   | typeof PAYLOAD_TOO_LARGE
   | typeof INTERNAL_ERROR
   | typeof QUERY_FAILED
@@ -50,7 +48,6 @@ export const ERROR_CODE_LABELS: Record<ErrorCode, string> = {
   FORBIDDEN: "Access denied",
   NOT_FOUND: "Not found",
   CONFLICT: "Resource conflict",
-  RATE_LIMITED: "Too many requests",
   PAYLOAD_TOO_LARGE: "Payload too large",
   INTERNAL_ERROR: "Server error",
   QUERY_FAILED: "Query failed",

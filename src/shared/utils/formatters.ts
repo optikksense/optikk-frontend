@@ -39,10 +39,47 @@ export function formatDuration(ms: number | string | null | undefined): string {
   return `${(value / ONE_MINUTE_MS).toFixed(2)}m`;
 }
 
-export function formatTimestamp(timestamp: number | string | Date): string {
+export function formatTimestamp(timestamp: number | string | Date, tz = "local"): string {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString();
+
+  const opts: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    fractionalSecondDigits: 3,
+  };
+  if (tz !== "local") opts.timeZone = tz;
+
+  try {
+    return new Intl.DateTimeFormat("sv-SE", opts).format(date);
+  } catch {
+    return date.toLocaleString();
+  }
+}
+
+export function formatTime(timestamp: number | string | Date, tz = "local"): string {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  const opts: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    fractionalSecondDigits: 3,
+  };
+  if (tz !== "local") opts.timeZone = tz;
+
+  try {
+    return new Intl.DateTimeFormat("sv-SE", opts).format(date);
+  } catch {
+    return date.toLocaleTimeString();
+  }
 }
 
 export function formatBytes(bytes: number): string {
@@ -65,9 +102,8 @@ export function normalizePercentage(
   raw = raw === 0 ? 0 : raw;
   if (!Number.isFinite(raw)) return 0;
 
-  const percent = raw >= 0 && raw <= 1 ? raw * 100 : raw;
-  if (!clamp) return percent;
-  return Math.min(Math.max(percent, 0), 100);
+  if (!clamp) return raw;
+  return Math.min(Math.max(raw, 0), 100);
 }
 
 export function formatPercentage(

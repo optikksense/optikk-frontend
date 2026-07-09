@@ -60,14 +60,6 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks(id) {
-            if (id.includes("/src/features/")) {
-              const parts = id.split("/src/features/");
-              if (parts.length > 1) {
-                const featureName = parts[1].split("/")[0];
-                if (featureName) return `feature-${featureName}`;
-              }
-            }
-
             if (
               id.includes("/node_modules/@radix-ui/") ||
               id.includes("/node_modules/cmdk/") ||

@@ -37,6 +37,7 @@ export function timeRangeDurationMs(r: TimeRange): number {
 export interface Tenant {
   id: number;
   name: string;
+  role?: string;
   accountStatus?: string;
   trialEndsAt?: string | null;
 }

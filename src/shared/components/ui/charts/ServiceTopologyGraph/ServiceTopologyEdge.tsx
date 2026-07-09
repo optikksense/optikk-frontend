@@ -1,4 +1,5 @@
-import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getBezierPath } from "@xyflow/react";
+import { formatPercentage } from "@shared/utils/formatters";
+import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getSmoothStepPath } from "@xyflow/react";
 import { formatMs, formatNumber } from "./format";
 
 import { Tooltip } from "@shared/components/primitives/ui";
@@ -13,10 +14,6 @@ export interface TopologyEdgeData {
   source: string;
   target: string;
   maxCallCount: number;
-}
-
-function formatPct(n: number): string {
-  return `${(n * 100).toFixed(n >= 0.1 ? 1 : 2)}%`;
 }
 
 function edgeColor(d: TopologyEdgeData): string {
@@ -36,7 +33,7 @@ export function ServiceTopologyEdge(props: EdgeProps) {
     props;
   const d = (props.data ?? {}) as unknown as TopologyEdgeData;
 
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -61,7 +58,8 @@ export function ServiceTopologyEdge(props: EdgeProps) {
       <div className="flex justify-between gap-4">
         <span className="text-foreground-muted">Errors</span>
         <span>
-          {formatNumber(d.errorCount)} ({formatPct(d.errorRate)})
+          {formatNumber(d.errorCount)} (
+          {formatPercentage(d.errorRate * 100, d.errorRate >= 0.001 ? 1 : 2)})
         </span>
       </div>
       <div className="flex justify-between gap-4">
@@ -97,7 +95,9 @@ export function ServiceTopologyEdge(props: EdgeProps) {
             <div className="rounded-full border border-border bg-card px-2 py-0.5 text-[10px] text-foreground-muted shadow-[var(--shadow-sm)]">
               {formatNumber(d.callCount)}
               {d.errorRate > 0 ? (
-                <span className="ml-1 text-error">{formatPct(d.errorRate)}</span>
+                <span className="ml-1 text-error">
+                  {formatPercentage(d.errorRate * 100, d.errorRate >= 0.001 ? 1 : 2)}
+                </span>
               ) : null}
             </div>
           </Tooltip>
