@@ -3,6 +3,7 @@ import { ArrowRight, ChevronDown, ChevronRight, GitFork } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 
 import { HighlightedText } from "@shared/components/primitives/HighlightedText";
+import { formatTimestamp } from "@shared/utils/formatters";
 
 import { useTimezone } from "@/app/store/appStore";
 import { cn } from "@/lib/utils";
@@ -41,27 +42,6 @@ interface Props {
   readonly onContextMenu?: (row: LogRecord, x: number, y: number) => void;
 }
 
-function formatTs(ts: string, tz: string): string {
-  try {
-    const d = new Date(ts);
-    if (Number.isNaN(d.getTime())) return ts;
-    const opts: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-      fractionalSecondDigits: 3,
-    };
-    if (tz !== "local") opts.timeZone = tz;
-    return new Intl.DateTimeFormat("sv-SE", opts).format(d);
-  } catch {
-    return ts;
-  }
-}
-
 function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }: Props) {
   const navigate = useNavigate();
   const expanded = useLogsExplorerStore((s) => s.expandedRows.has(row.id));
@@ -74,7 +54,11 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
   // on a single row, and surface a visible placeholder for empty bodies so
   // the row keeps a stable visual presence.
   const displayBody = useMemo(() => {
-    const collapsed = (row.body ?? "").replace(/\s*\n\s*/g, " ⏎ ").trim();
+    let rawBody = row.body ?? "";
+    if (rawBody.length > 500) {
+      rawBody = `${rawBody.slice(0, 500)}...`;
+    }
+    const collapsed = rawBody.replace(/\s*\n\s*/g, " ⏎ ").trim();
     return collapsed.length > 0 ? collapsed : "(empty)";
   }, [row.body]);
 
@@ -134,7 +118,7 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
           {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
 
-        <span className="text-[var(--fg-2)]">{formatTs(row.timestamp, tz)}</span>
+        <span className="text-[var(--fg-2)]">{formatTimestamp(row.timestamp, tz)}</span>
 
         <span className="inline-flex items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap text-[var(--fg-1)]">
           <span

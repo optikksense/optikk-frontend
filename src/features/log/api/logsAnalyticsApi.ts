@@ -1,8 +1,11 @@
 import { z } from "zod";
 
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import { API_CONFIG } from "@config/apiConfig";
 import { api } from "@shared/api/api/client";
 import { validateResponse } from "@shared/api/utils/validate";
+
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 import { buildLogsFilters } from "./buildLogsFilters";
 
@@ -107,16 +110,16 @@ function buildBody(args: LogsAnalyticsArgs) {
 }
 
 export async function getLogsSummary(args: LogsAnalyticsArgs): Promise<LogsSummary> {
-  const raw = await api.post<unknown>("/v1/logs/summary", buildBody(args));
+  const raw = await api.post<unknown>(`${V1}/logs/summary`, buildBody(args));
   return validateResponse(summarySchema, raw);
 }
 
 export async function getLogsTrend(args: LogsAnalyticsArgs): Promise<readonly LogsTrendBucket[]> {
-  const raw = await api.post<unknown>("/v1/logs/trend", buildBody(args));
+  const raw = await api.post<unknown>(`${V1}/logs/trend`, buildBody(args));
   return validateResponse(trendSchema, raw);
 }
 
 export async function getLogsFacets(args: LogsAnalyticsArgs): Promise<LogsFacets> {
-  const raw = await api.post<unknown>("/v1/logs/facets", buildBody(args));
+  const raw = await api.post<unknown>(`${V1}/logs/facets`, buildBody(args));
   return validateResponse(facetsSchema, raw);
 }

@@ -1,5 +1,8 @@
+import { API_CONFIG } from "@config/apiConfig";
 import { api } from "@shared/api/api/client";
 import { validateResponse } from "@shared/api/utils/validate";
+
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 import type { LogsGetByIdResponse } from "../types/log";
 import { normalizeLogRecord, rawLogRowSchema } from "./logsQueryApi";
@@ -7,6 +10,6 @@ import { normalizeLogRecord, rawLogRowSchema } from "./logsQueryApi";
 const getByIdSchema = rawLogRowSchema.transform((row) => ({ log: normalizeLogRecord(row) }));
 
 export async function getLogById(id: string): Promise<LogsGetByIdResponse> {
-  const raw = await api.get<unknown>(`/v1/logs/${encodeURIComponent(id)}`);
+  const raw = await api.get<unknown>(`${V1}/logs/${encodeURIComponent(id)}`);
   return validateResponse(getByIdSchema, raw);
 }

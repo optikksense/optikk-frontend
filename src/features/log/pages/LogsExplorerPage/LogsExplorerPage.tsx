@@ -123,7 +123,7 @@ export default function LogsExplorerPage() {
             onClearAll={onClearFilters}
           />
 
-          <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto">
+          <div className="flex min-h-0 min-w-0 flex-col gap-3">
             <LogsSummaryChips summary={summary.data} />
             <LogsTrendChart
               trend={trend.data}
@@ -133,7 +133,7 @@ export default function LogsExplorerPage() {
               maxTimeMs={endTime}
             />
 
-            <div className="flex shrink-0 flex-col overflow-hidden rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
+            <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
               <LogsTableToolbar />
               <LogsTable
                 rows={results}

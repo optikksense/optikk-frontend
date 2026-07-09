@@ -1,8 +1,11 @@
 import { z } from "zod";
 
 import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import { API_CONFIG } from "@config/apiConfig";
 import { api } from "@shared/api/api/client";
 import { validateResponse } from "@shared/api/utils/validate";
+
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 import type { LogRecord, LogsQueryResponse } from "../types/log";
 import { buildLogsFilters } from "./buildLogsFilters";
@@ -139,7 +142,7 @@ export async function queryLogs(args: QueryLogsArgs): Promise<LogsQueryResponse>
     cursor: args.cursor,
     limit: args.limit ?? 100,
   });
-  const raw = await api.post<unknown>("/v1/logs/query", body);
+  const raw = await api.post<unknown>(`${V1}/logs/query`, body);
   const parsed = validateResponse(queryResponseSchema, raw);
   return dedupeRows(enforceIdFilters(parsed, body));
 }
