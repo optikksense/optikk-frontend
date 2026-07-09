@@ -1,11 +1,14 @@
 import { useMemo } from "react";
 
+import { API_CONFIG } from "@config/apiConfig";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { firstValue } from "@shared/utils/chartDataUtils";
 
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 
 import { infraGet } from "../../api/infrastructureApi";
+
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 interface ChartRow {
   readonly [key: string]: unknown;
@@ -97,14 +100,14 @@ export function HostDetailKpiCards({ host }: HostDetailKpiCardsProps) {
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
       <KpiTile
         label="CPU"
-        endpoint="/v1/infrastructure/cpu/by-instance"
+        endpoint={`${V1}/infrastructure/cpu/by-instance`}
         metricKey="cpu"
         host={host}
         tone={cpuTone}
       />
       <KpiTile
         label="Memory"
-        endpoint="/v1/infrastructure/memory/by-instance"
+        endpoint={`${V1}/infrastructure/memory/by-instance`}
         metricKey="memory"
         host={host}
         tone={memoryTone}

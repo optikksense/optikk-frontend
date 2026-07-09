@@ -1,6 +1,9 @@
+import { API_CONFIG } from "@config/apiConfig";
 import { Card } from "@shared/components/primitives/ui";
 
 import InfraMultiSeriesChart from "../../components/InfraMultiSeriesChart";
+
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 interface ContainerDetailSystemMetricsProps {
   readonly container: string;
@@ -26,7 +29,7 @@ export function ContainerDetailSystemMetrics({
         <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`container-cpu-${container}`}
-            endpoint="/v1/infrastructure/cpu/by-instance"
+            endpoint={`${V1}/infrastructure/cpu/by-instance`}
             title="CPU"
             groupByField="pod"
             valueField="value"
@@ -37,7 +40,7 @@ export function ContainerDetailSystemMetrics({
         <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`container-mem-${container}`}
-            endpoint="/v1/infrastructure/memory/by-instance"
+            endpoint={`${V1}/infrastructure/memory/by-instance`}
             title="Memory"
             groupByField="pod"
             valueField="value"
@@ -48,7 +51,7 @@ export function ContainerDetailSystemMetrics({
         <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`container-net-${container}`}
-            endpoint="/v1/infrastructure/network/by-instance"
+            endpoint={`${V1}/infrastructure/network/by-instance`}
             title="Network"
             groupByField="pod"
             valueField="value"
@@ -59,7 +62,7 @@ export function ContainerDetailSystemMetrics({
         <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`container-disk-${container}`}
-            endpoint="/v1/infrastructure/disk/by-instance"
+            endpoint={`${V1}/infrastructure/disk/by-instance`}
             title="Disk"
             groupByField="pod"
             valueField="value"

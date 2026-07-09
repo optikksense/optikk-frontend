@@ -5,7 +5,10 @@ import { firstValue } from "@shared/utils/chartDataUtils";
 
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 
+import { API_CONFIG } from "@config/apiConfig";
 import { infraGet } from "../../api/infrastructureApi";
+
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 interface ChartRow {
   readonly [key: string]: unknown;
@@ -123,7 +126,7 @@ export function ContainerDetailKpiCards({
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
       <KpiTile
         label="CPU"
-        endpoint="/v1/infrastructure/cpu/by-instance"
+        endpoint={`${V1}/infrastructure/cpu/by-instance`}
         metricKey="cpu"
         container={container}
         host={host}
@@ -133,7 +136,7 @@ export function ContainerDetailKpiCards({
       />
       <KpiTile
         label="Memory"
-        endpoint="/v1/infrastructure/memory/by-instance"
+        endpoint={`${V1}/infrastructure/memory/by-instance`}
         metricKey="memory"
         container={container}
         host={host}

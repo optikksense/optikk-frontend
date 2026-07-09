@@ -1,7 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
+import { API_CONFIG } from "@config/apiConfig";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -55,7 +58,7 @@ export default function HostsTab() {
     "infrastructure.kpi.cpu-avg",
     async (tenantId, start, end) => {
       if (!tenantId) return { value: 0 };
-      return infraGet<MetricValue>("/v1/infrastructure/cpu/avg", Number(start), Number(end));
+      return infraGet<MetricValue>(`${V1}/infrastructure/cpu/avg`, Number(start), Number(end));
     }
   );
 
@@ -63,7 +66,7 @@ export default function HostsTab() {
     "infrastructure.kpi.memory-avg",
     async (tenantId, start, end) => {
       if (!tenantId) return { value: 0 };
-      return infraGet<MetricValue>("/v1/infrastructure/memory/avg", Number(start), Number(end));
+      return infraGet<MetricValue>(`${V1}/infrastructure/memory/avg`, Number(start), Number(end));
     }
   );
 

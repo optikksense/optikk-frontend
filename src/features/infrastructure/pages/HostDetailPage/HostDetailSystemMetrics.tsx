@@ -1,6 +1,9 @@
+import { API_CONFIG } from "@config/apiConfig";
 import { Card } from "@shared/components/primitives/ui";
 
 import InfraMultiSeriesChart from "../../components/InfraMultiSeriesChart";
+
+const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 interface HostDetailSystemMetricsProps {
   readonly host: string;
@@ -19,7 +22,7 @@ export function HostDetailSystemMetrics({ host }: HostDetailSystemMetricsProps) 
         <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`host-cpu-${host}`}
-            endpoint="/v1/infrastructure/cpu/by-instance"
+            endpoint={`${V1}/infrastructure/cpu/by-instance`}
             title="CPU"
             groupByField="host"
             valueField="value"
@@ -30,7 +33,7 @@ export function HostDetailSystemMetrics({ host }: HostDetailSystemMetricsProps) 
         <Card padding="md" className="min-h-[280px] border-border">
           <InfraMultiSeriesChart
             queryKey={`host-mem-${host}`}
-            endpoint="/v1/infrastructure/memory/by-instance"
+            endpoint={`${V1}/infrastructure/memory/by-instance`}
             title="Memory"
             groupByField="host"
             valueField="value"

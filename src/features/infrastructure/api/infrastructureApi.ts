@@ -17,5 +17,6 @@ export async function infraGet<T>(
       }
     }
   }
-  return api.get<T>(path, { params });
+  const raw = await api.get<unknown>(path, { params });
+  return raw as T;
 }
