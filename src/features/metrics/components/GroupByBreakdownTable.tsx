@@ -1,5 +1,6 @@
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { Download } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 import {
   Button,
@@ -49,6 +50,21 @@ export function GroupByBreakdownTable({ primaryQuery, result }: GroupByBreakdown
     if (csv) downloadCsv(`${primaryQuery?.metricName || "metrics"}-breakdown.csv`, csv);
   };
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 48,
+    overscan: 5,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualItems.length > 0
+      ? virtualizer.getTotalSize() - (virtualItems[virtualItems.length - 1]?.end || 0)
+      : 0;
+
   return (
     <PageSurface padding="lg" className="overflow-hidden">
       <div className="flex items-start justify-between gap-3 pb-3">
@@ -71,64 +87,79 @@ export function GroupByBreakdownTable({ primaryQuery, result }: GroupByBreakdown
           No grouped series. Add a group-by to the primary query.
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-auto max-h-[600px] relative" ref={scrollRef}>
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
               <TableRow>
                 {tagKeys.map((key) => (
-                  <TableHead key={key}>{key}</TableHead>
+                  <TableHead key={key} className="bg-background">
+                    {key}
+                  </TableHead>
                 ))}
-                <TableHead className="text-right">min</TableHead>
-                <TableHead className="text-right">avg</TableHead>
-                <TableHead className="text-right">p95</TableHead>
-                <TableHead className="text-right">p99</TableHead>
-                <TableHead className="text-right">max</TableHead>
-                <TableHead className="w-[180px]">Last 1h</TableHead>
-                <TableHead className="w-[90px] text-right">Δ</TableHead>
+                <TableHead className="bg-background text-right">min</TableHead>
+                <TableHead className="bg-background text-right">avg</TableHead>
+                <TableHead className="bg-background text-right">p95</TableHead>
+                <TableHead className="bg-background text-right">p99</TableHead>
+                <TableHead className="bg-background text-right">max</TableHead>
+                <TableHead className="w-[180px] bg-background">Last 1h</TableHead>
+                <TableHead className="w-[90px] bg-background text-right">Δ</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.map((row, i) => (
-                <TableRow key={i}>
-                  {tagKeys.map((key) => (
-                    <TableCell key={key} className="font-mono text-[12px] text-foreground">
-                      {row.tags[key] ?? "—"}
+              {paddingTop > 0 && (
+                <tr>
+                  <td style={{ height: `${paddingTop}px` }} />
+                </tr>
+              )}
+              {virtualItems.map((virtualRow) => {
+                const row = rows[virtualRow.index];
+                return (
+                  <TableRow key={virtualRow.index}>
+                    {tagKeys.map((key) => (
+                      <TableCell key={key} className="font-mono text-[12px] text-foreground">
+                        {row.tags[key] ?? "—"}
+                      </TableCell>
+                    ))}
+                    <TableCell className="text-right font-mono">
+                      {formatStatValue(row.stats.min)}
                     </TableCell>
-                  ))}
-                  <TableCell className="text-right font-mono">
-                    {formatStatValue(row.stats.min)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {formatStatValue(row.stats.avg)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono font-semibold text-foreground">
-                    {formatStatValue(row.stats.p95)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {formatStatValue(row.stats.p99)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {formatStatValue(row.stats.max)}
-                  </TableCell>
-                  <TableCell>
-                    <TableSparkline
-                      data={row.spark}
-                      width={170}
-                      height={26}
-                      trend={
-                        row.stats.delta == null || row.stats.delta === 0
-                          ? "flat"
-                          : row.stats.delta > 0
-                            ? "down"
-                            : "up"
-                      }
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DeltaBadge delta={row.stats.delta} />
-                  </TableCell>
-                </TableRow>
-              ))}
+                    <TableCell className="text-right font-mono">
+                      {formatStatValue(row.stats.avg)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-semibold text-foreground">
+                      {formatStatValue(row.stats.p95)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {formatStatValue(row.stats.p99)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {formatStatValue(row.stats.max)}
+                    </TableCell>
+                    <TableCell>
+                      <TableSparkline
+                        data={row.spark}
+                        width={170}
+                        height={26}
+                        trend={
+                          row.stats.delta == null || row.stats.delta === 0
+                            ? "flat"
+                            : row.stats.delta > 0
+                              ? "down"
+                              : "up"
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DeltaBadge delta={row.stats.delta} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {paddingBottom > 0 && (
+                <tr>
+                  <td style={{ height: `${paddingBottom}px` }} />
+                </tr>
+              )}
             </TableBody>
           </Table>
         </div>

@@ -1,12 +1,9 @@
+import { formatNumber } from "@shared/utils/formatters";
+
 /** Compact numeric formatting for KPI / table stat cells. */
 export function formatStatValue(value: number | null): string {
   if (value == null || Number.isNaN(value)) return "—";
-  const abs = Math.abs(value);
-  if (abs >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (abs >= 10_000) return `${(value / 1_000).toFixed(1)}k`;
-  if (abs >= 100) return value.toFixed(0);
-  if (abs >= 1) return value.toFixed(1);
-  return value.toFixed(2);
+  return formatNumber(value);
 }
 
 export function formatDelta(delta: number | null): string {
