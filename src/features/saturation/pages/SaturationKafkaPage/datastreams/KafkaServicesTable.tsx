@@ -36,18 +36,14 @@ const columns: ColumnDef<KafkaService>[] = [
     id: "produces_to",
     header: "Produces to",
     cell: ({ row }) => (
-      <span className="dim">
-        {row.original.produces.map((p) => p.topic).join(", ") || "—"}
-      </span>
+      <span className="dim">{row.original.produces.map((p) => p.topic).join(", ") || "—"}</span>
     ),
   },
   {
     id: "consumes_from",
     header: "Consumes from",
     cell: ({ row }) => (
-      <span className="dim">
-        {row.original.consumes.map((c) => c.topic).join(", ") || "—"}
-      </span>
+      <span className="dim">{row.original.consumes.map((c) => c.topic).join(", ") || "—"}</span>
     ),
   },
   {

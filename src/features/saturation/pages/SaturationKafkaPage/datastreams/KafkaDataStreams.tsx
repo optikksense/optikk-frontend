@@ -53,9 +53,9 @@ export function KafkaDataStreams() {
       topo.pathways
         .filter((p) => selSet.has(p.producer) || selSet.has(p.consumer))
         .sort(
-          (a, b) => b.error_rate - a.error_rate || b.consume_rate_per_sec - a.consume_rate_per_sec,
+          (a, b) => b.error_rate - a.error_rate || b.consume_rate_per_sec - a.consume_rate_per_sec
         ),
-    [topo, effectiveSel.join(",")],
+    [topo, effectiveSel.join(",")]
   );
 
   const scopeTopicNodes = topo.topics.filter((t) => scopeTopics.has(t.topic));

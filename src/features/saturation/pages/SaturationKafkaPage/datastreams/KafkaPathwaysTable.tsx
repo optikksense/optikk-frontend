@@ -1,7 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ChevronRight } from "lucide-react";
 
-import { SAT_TABLE_CLASS } from "@/features/saturation/pages/SaturationPage/components/tableClasses";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 
 import { type Level, fmtPct, fmtRate, levelFromError } from "./model";
@@ -29,9 +28,7 @@ const topologyColumns: ColumnDef<Pathway>[] = [
   {
     accessorKey: "producer",
     header: "Producer",
-    cell: ({ row }) => (
-      <span className="strong font-semibold">{row.original.producer}</span>
-    ),
+    cell: ({ row }) => <span className="strong font-semibold">{row.original.producer}</span>,
   },
   { accessorKey: "topic", header: "Topic" },
   {
@@ -45,8 +42,7 @@ const topologyColumns: ColumnDef<Pathway>[] = [
             className="mr-1.5 inline-block h-[7px] w-[7px] rounded-full align-middle"
             style={{ background: LV_COLOR[lv] }}
           />
-          {row.original.group}{" "}
-          <span className="text-[var(--fg-3)]">· {row.original.consumer}</span>
+          {row.original.group} <span className="text-[var(--fg-3)]">· {row.original.consumer}</span>
         </span>
       );
     },
