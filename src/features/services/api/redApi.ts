@@ -69,7 +69,7 @@ export interface ServiceCatalogRedSummary {
   readonly total_span_count: number;
   readonly total_errors: number;
   readonly total_rps: number;
-  readonly avg_error_pct: number;
+  readonly avg_error_rate: number;
   readonly avg_p50_ms: number;
   readonly avg_p95_ms: number;
   readonly avg_p99_ms: number;
@@ -108,6 +108,16 @@ export async function getRequestRateSeries(
   const params = buildREDFilters(s, e, services);
   const raw = await api.get<unknown>(`${V1}/spans/red/request-rate`, { params });
   return unwrapEnvelope<RequestRatePoint[]>(raw);
+}
+
+export async function getRequestAndErrorRateSeries(
+  s: RequestTime,
+  e: RequestTime,
+  services?: string | readonly string[]
+): Promise<unknown[]> {
+  const params = buildREDFilters(s, e, services);
+  const raw = await api.get<unknown>(`${V1}/spans/red/request-and-error-rate`, { params });
+  return unwrapEnvelope<unknown[]>(raw);
 }
 
 // ─── Shared RED timeseries (fleet-wide or per-service) ───────────────

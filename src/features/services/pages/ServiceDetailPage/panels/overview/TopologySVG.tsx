@@ -1,5 +1,4 @@
 import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
-import type { ReactNode } from "react";
 
 export interface ServiceMapNode {
   name: string;

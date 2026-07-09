@@ -1,7 +1,7 @@
 import { PaginationFooter } from "@shared/components/table/PaginationFooter";
 import { useNavigate } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { relativeTimeFromIso } from "../../formatters";
 import { useRecentTraces } from "../../hooks/useRecentTraces";
 

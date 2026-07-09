@@ -3,7 +3,7 @@ import { PaginationFooter } from "@shared/components/table/PaginationFooter";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { parseStackFrames } from "@shared/utils/errorParsers";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { fmtNum, relativeTimeFromIso } from "../../formatters";
 import { useServiceErrors } from "../../hooks/useServiceErrors";
 
