@@ -13,7 +13,7 @@ interface Props {
 
 export default function OverviewHero({ summary, loading }: Props) {
   const totalReq = num(summary?.total_span_count);
-  const errPct = num(summary?.avg_error_pct);
+  const errRate = num(summary?.avg_error_rate);
   const errCount = num(summary?.total_errors);
 
   return (
@@ -31,7 +31,7 @@ export default function OverviewHero({ summary, loading }: Props) {
       <StatCard
         metric={{
           title: "Error rate",
-          value: loading ? "—" : formatPercentage(errPct),
+          value: loading ? "—" : formatPercentage(errRate * 100),
           description: loading ? undefined : "of total requests",
         }}
         visuals={{

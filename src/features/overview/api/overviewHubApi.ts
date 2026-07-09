@@ -7,13 +7,19 @@
  *   overviewErrorsApi → `/spans/exception-rate-by-type`, `/spans/error-hotspot`
  */
 
+import {
+  getRedSummaryWithComparison,
+  getRequestAndErrorRateSeries,
+} from "../../services/api/redApi";
 import { getErrorHotspot } from "./overviewErrorsApi";
-import { getFleetRedMetrics, getPerformanceSeries } from "./overviewRedApi";
 
-export type { FleetRedMetrics } from "./overviewRedApi";
+export type { ServiceCatalogRedSummary as FleetRedMetrics } from "../../services/api/redApi";
+
+import type { RequestTime } from "@shared/api/service-types";
 
 export const overviewHubApi = {
-  getFleetRedMetrics,
-  getPerformanceSeries,
+  getFleetRedMetrics: (start: RequestTime, end: RequestTime) =>
+    getRedSummaryWithComparison(start, end).then((r) => r.data),
+  getPerformanceSeries: getRequestAndErrorRateSeries,
   getErrorHotspot,
 };
