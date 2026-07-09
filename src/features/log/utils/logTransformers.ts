@@ -75,4 +75,3 @@ export function getSeverityTheme(text?: string | null): { level: SeverityLevel; 
   }
   return { level: "info", color: "var(--accent)" };
 }
-
