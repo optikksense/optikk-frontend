@@ -45,13 +45,13 @@
         "noExplicitAny": "error"
       },
       "a11y": {
-        "noLabelWithoutControl": "off",
-        "useValidAnchor": "off",
-        "useKeyWithClickEvents": "off",
-        "useSemanticElements": "off"
+        "noLabelWithoutControl": "warn",
+        "useValidAnchor": "warn",
+        "useKeyWithClickEvents": "warn",
+        "useSemanticElements": "warn"
       },
       "correctness": {
-        "useExhaustiveDependencies": "off",
+        "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error"
       },
       "nursery": {
