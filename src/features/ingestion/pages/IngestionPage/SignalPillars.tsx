@@ -1,57 +1,67 @@
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
 
 import type { IngestionSummary } from "../../api/ingestionApi";
-import { SIGNAL_COLORS, fmtCount } from "../../utils/format";
+import {
+  type IngestionUnit,
+  SIGNAL_COLORS,
+  fmtBytes,
+  fmtCount,
+  fmtValue,
+} from "../../utils/format";
+import { Bar } from "./Bar";
 
 interface Props {
   readonly summary: IngestionSummary | undefined;
+  readonly unit: IngestionUnit;
 }
 
-function Bar({ pct, color }: { pct: number; color: string }) {
-  return (
-    <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
-      <div
-        className="h-full rounded-full"
-        style={{ width: `${Math.min(100, pct)}%`, background: color }}
-      />
-    </div>
-  );
+function dailyAvg(value: number | undefined, days: number | undefined): number {
+  if (!value || !days) return 0;
+  return value / days;
 }
 
-function dailyAvg(records: number | undefined, days: number | undefined): number {
-  if (!records || !days) return 0;
-  return records / days;
-}
-
-// Per-signal summary cards. Metrics is expressed in active timeseries (its real
-// count) rather than datapoints, matching the mockup's framing.
-export function SignalPillars({ summary }: Props) {
+// Per-signal summary cards. Logs and spans switch with the unit; the metrics
+// card keeps its cost drivers (active timeseries + datapoints), which have no
+// byte denomination — so its units stay labeled rather than blurred.
+export function SignalPillars({ summary, unit }: Props) {
+  const bytes = unit === "bytes";
   const days = summary?.daysElapsed;
   const logs = summary?.byType.find((t) => t.type === "logs");
   const spans = summary?.byType.find((t) => t.type === "spans");
   const metrics = summary?.byType.find((t) => t.type === "metrics");
 
+  const value = (t: typeof logs) => (bytes ? t?.bytes : t?.records);
+  const share = (t: typeof logs) => (bytes ? t?.bytesPct : t?.pct) ?? 0;
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       <PanelCard title="Logs" subtitle="record volume this period">
         <div className="mono mb-3 font-bold text-[20px] text-foreground">
-          {fmtCount(logs?.records)}
+          {fmtValue(unit, value(logs))}
         </div>
-        <Bar pct={logs?.pct ?? 0} color={SIGNAL_COLORS.logs} />
+        <Bar
+          pct={share(logs)}
+          color={SIGNAL_COLORS.logs}
+          label={`Logs ${Math.round(share(logs))}%`}
+        />
         <div className="mt-3 flex justify-between text-[12px] text-foreground-muted">
-          <span>{Math.round(logs?.pct ?? 0)}% of ingest</span>
-          <span className="mono">{fmtCount(dailyAvg(logs?.records, days))} / day</span>
+          <span>{Math.round(share(logs))}% of ingest</span>
+          <span className="mono">{fmtValue(unit, dailyAvg(value(logs), days))} / day</span>
         </div>
       </PanelCard>
 
       <PanelCard title="Spans (APM)" subtitle="span volume this period">
         <div className="mono mb-3 font-bold text-[20px] text-foreground">
-          {fmtCount(spans?.records)}
+          {fmtValue(unit, value(spans))}
         </div>
-        <Bar pct={spans?.pct ?? 0} color={SIGNAL_COLORS.spans} />
+        <Bar
+          pct={share(spans)}
+          color={SIGNAL_COLORS.spans}
+          label={`Spans ${Math.round(share(spans))}%`}
+        />
         <div className="mt-3 flex justify-between text-[12px] text-foreground-muted">
-          <span>{Math.round(spans?.pct ?? 0)}% of ingest</span>
-          <span className="mono">{fmtCount(dailyAvg(spans?.records, days))} / day</span>
+          <span>{Math.round(share(spans))}% of ingest</span>
+          <span className="mono">{fmtValue(unit, dailyAvg(value(spans), days))} / day</span>
         </div>
       </PanelCard>
 
@@ -59,10 +69,16 @@ export function SignalPillars({ summary }: Props) {
         <div className="mono mb-3 font-bold text-[20px] text-foreground">
           {fmtCount(summary?.activeTimeseries)}
         </div>
-        <Bar pct={metrics?.pct ?? 0} color={SIGNAL_COLORS.metrics} />
+        <Bar
+          pct={share(metrics)}
+          color={SIGNAL_COLORS.metrics}
+          label={`Metrics ${Math.round(share(metrics))}%`}
+        />
         <div className="mt-3 flex justify-between text-[12px] text-foreground-muted">
-          <span>{fmtCount(metrics?.records)} datapoints</span>
-          <span className="mono">{Math.round(metrics?.pct ?? 0)}% of ingest</span>
+          <span>
+            {bytes ? fmtBytes(metrics?.bytes) : `${fmtCount(metrics?.records)} datapoints`}
+          </span>
+          <span className="mono">{Math.round(share(metrics))}% of ingest</span>
         </div>
       </PanelCard>
     </div>

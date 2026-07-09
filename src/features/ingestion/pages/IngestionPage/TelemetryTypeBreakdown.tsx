@@ -1,45 +1,44 @@
 import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
 
 import type { IngestionSummary } from "../../api/ingestionApi";
-import { SIGNAL_COLORS, fmtCount } from "../../utils/format";
+import { type IngestionUnit, SIGNAL_COLORS, fmtCount, fmtValue } from "../../utils/format";
+import { Bar } from "./Bar";
 
 interface Props {
   readonly summary: IngestionSummary | undefined;
+  readonly unit: IngestionUnit;
 }
 
-function Bar({ pct, color }: { pct: number; color: string }) {
-  return (
-    <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
-      <div
-        className="h-full rounded-full"
-        style={{ width: `${Math.min(100, pct)}%`, background: color }}
-      />
-    </div>
-  );
-}
-
-// Share of total ingest per telemetry type, with the data-backed metrics
-// cardinality footer replacing the mockup's (unbacked) indexed/retained note.
-export function TelemetryTypeBreakdown({ summary }: Props) {
+// Share of total ingest per telemetry type, denominated in the active unit.
+export function TelemetryTypeBreakdown({ summary, unit }: Props) {
+  const bytes = unit === "bytes";
   return (
     <PanelCard title="By telemetry type" subtitle="share of total ingested this period">
       <div className="flex flex-col gap-4">
-        {(summary?.byType ?? []).map((row) => (
-          <div key={row.type}>
-            <div className="mb-1.5 flex items-center justify-between">
-              <span className="font-medium text-[13px] text-foreground">{row.label}</span>
-              <div className="flex items-center gap-1.5">
-                <span className="mono font-semibold text-[13px] text-foreground">
-                  {fmtCount(row.records)}
-                </span>
-                <span className="mono text-[12px] text-foreground-muted">
-                  {Math.round(row.pct)}%
-                </span>
+        {(summary?.byType ?? []).map((row) => {
+          const value = bytes ? row.bytes : row.records;
+          const share = bytes ? row.bytesPct : row.pct;
+          return (
+            <div key={row.type}>
+              <div className="mb-1.5 flex items-center justify-between">
+                <span className="font-medium text-[13px] text-foreground">{row.label}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="mono font-semibold text-[13px] text-foreground">
+                    {fmtValue(unit, value)}
+                  </span>
+                  <span className="mono text-[12px] text-foreground-muted">
+                    {Math.round(share)}%
+                  </span>
+                </div>
               </div>
+              <Bar
+                pct={share}
+                color={SIGNAL_COLORS[row.type] ?? "var(--color-info,#3b82f6)"}
+                label={`${row.label} ${Math.round(share)}%`}
+              />
             </div>
-            <Bar pct={row.pct} color={SIGNAL_COLORS[row.type] ?? "var(--color-info,#3b82f6)"} />
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="my-4 h-px bg-border" />

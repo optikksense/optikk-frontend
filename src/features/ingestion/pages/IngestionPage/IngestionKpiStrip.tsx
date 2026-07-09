@@ -1,10 +1,11 @@
 import { KpiCard } from "@shared/components/ui/dashboard/KpiCard";
 
 import type { IngestionSummary } from "../../api/ingestionApi";
-import { fmtCount } from "../../utils/format";
+import { type IngestionUnit, fmtValue } from "../../utils/format";
 
 interface Props {
   readonly summary: IngestionSummary | undefined;
+  readonly unit: IngestionUnit;
 }
 
 function pctLabel(value: number | undefined): string {
@@ -20,42 +21,49 @@ function peakDate(date: string | undefined): string {
   }).format(new Date(`${date}T00:00:00Z`));
 }
 
-// Four data-backed tiles mirroring the mockup, denominated in record counts.
-export function IngestionKpiStrip({ summary }: Props) {
-  const projectionWarn = (summary?.projectedPct ?? 0) >= 90;
+// Four data-backed tiles, denominated in the active unit (records or volume).
+export function IngestionKpiStrip({ summary, unit }: Props) {
+  const bytes = unit === "bytes";
+  const total = bytes ? summary?.totals.bytes : summary?.totals.records;
+  const projected = bytes ? summary?.projectedBytes : summary?.projectedRecords;
+  const projectedPct = bytes ? summary?.projectedBytesPct : summary?.projectedPct;
+  const usedPct = bytes ? summary?.commitmentUsedBytesPct : summary?.commitmentUsedPct;
+  const commitment = bytes ? summary?.commitmentBytes : summary?.commitmentRecords;
+  const dailyAvg = bytes ? summary?.dailyAverageBytes : summary?.dailyAverage;
+  const peak = bytes ? summary?.peak.bytes : summary?.peak.records;
+  const secondary = bytes ? "ingested" : "records";
+  const projectionWarn = (projectedPct ?? 0) >= 90;
+  const fmt = (n: number | undefined) => fmtValue(unit, n);
+
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
       <KpiCard
         label="Total ingested · this month"
-        value={fmtCount(summary?.totals.records)}
-        secondary="records"
+        value={fmt(total)}
+        secondary={secondary}
         subtext="logs + spans + metric datapoints"
       />
       <KpiCard
         label="Projected month-end"
-        value={fmtCount(summary?.projectedRecords)}
-        secondary="records"
-        subtext={`${pctLabel(summary?.projectedPct)} of ${fmtCount(summary?.commitmentRecords)} commitment`}
+        value={fmt(projected)}
+        secondary={secondary}
+        subtext={`${pctLabel(projectedPct)} of ${fmt(commitment)} commitment · from last 7d`}
         tone={projectionWarn ? "warn" : "ok"}
       />
       <KpiCard
         label="Used of commitment"
-        value={pctLabel(summary?.commitmentUsedPct)}
+        value={pctLabel(usedPct)}
         subtext={
           summary
-            ? `${fmtCount(summary.totals.records)} / ${fmtCount(summary.commitmentRecords)} · day ${summary.daysElapsed}/${summary.daysInMonth}`
+            ? `${fmt(total)} / ${fmt(commitment)} · day ${summary.daysElapsed}/${summary.daysInMonth}`
             : undefined
         }
       />
       <KpiCard
         label="Daily average"
-        value={fmtCount(summary?.dailyAverage)}
-        secondary="records / day"
-        subtext={
-          summary
-            ? `peak ${fmtCount(summary.peak.records)} · ${peakDate(summary.peak.date)}`
-            : undefined
-        }
+        value={fmt(dailyAvg)}
+        secondary={bytes ? "ingested / day" : "records / day"}
+        subtext={summary ? `peak ${fmt(peak)} · ${peakDate(summary.peak.date)}` : undefined}
       />
     </div>
   );

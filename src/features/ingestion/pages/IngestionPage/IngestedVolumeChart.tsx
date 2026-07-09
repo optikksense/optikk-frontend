@@ -8,7 +8,7 @@ import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/Pa
 
 import type { TimeseriesSeries } from "../../api/ingestionApi";
 import { useIngestionTimeseries } from "../../hooks/useIngestion";
-import { SERVICE_PALETTE, SIGNAL_COLORS, fmtCount } from "../../utils/format";
+import { type IngestionUnit, SERVICE_PALETTE, SIGNAL_COLORS, fmtValue } from "../../utils/format";
 
 type GroupBy = "type" | "service";
 
@@ -20,15 +20,23 @@ function colorFor(series: TimeseriesSeries, index: number): string {
   return SIGNAL_COLORS[series.id] ?? SERVICE_PALETTE[index % SERVICE_PALETTE.length];
 }
 
+function bandValues(s: TimeseriesSeries, unit: IngestionUnit): readonly number[] {
+  return unit === "bytes" ? s.byteData : s.data;
+}
+
 // Cumulatively stack the bands and draw largest first so smaller bands paint on
 // top — uplot has no native stacking, so this fakes it with layered area fills.
-function stackSeries(series: readonly TimeseriesSeries[]): ObservabilityChartSeries[] {
-  const length = series[0]?.data.length ?? 0;
+function stackSeries(
+  series: readonly TimeseriesSeries[],
+  unit: IngestionUnit
+): ObservabilityChartSeries[] {
+  const length = bandValues(series[0] ?? ({ data: [], byteData: [] } as never), unit).length;
   const cumulative: number[][] = [];
   series.forEach((s, idx) => {
+    const vals = bandValues(s, unit);
     cumulative[idx] = Array.from(
       { length },
-      (_v, i) => (s.data[i] ?? 0) + (idx > 0 ? cumulative[idx - 1][i] : 0)
+      (_v, i) => (vals[i] ?? 0) + (idx > 0 ? cumulative[idx - 1][i] : 0)
     );
   });
   return series
@@ -46,12 +54,12 @@ const TOGGLE: { id: GroupBy; label: string }[] = [
   { id: "service", label: "By service" },
 ];
 
-export function IngestedVolumeChart() {
+export function IngestedVolumeChart({ unit }: { unit: IngestionUnit }) {
   const [groupBy, setGroupBy] = useState<GroupBy>("type");
   const { data, isPending, isError } = useIngestionTimeseries(groupBy);
 
   const timestamps = useMemo(() => (data?.dates ?? []).map(dateToSeconds), [data?.dates]);
-  const series = useMemo(() => stackSeries(data?.series ?? []), [data?.series]);
+  const series = useMemo(() => stackSeries(data?.series ?? [], unit), [data?.series, unit]);
 
   const toggle = (
     <div className="inline-flex gap-0.5 rounded-md bg-secondary p-0.5">
@@ -75,7 +83,7 @@ export function IngestedVolumeChart() {
   return (
     <PanelCard
       title="Ingested volume"
-      subtitle="records per day · stacked · current month to date"
+      subtitle={`${unit === "bytes" ? "bytes" : "records"} per day · stacked · current month to date`}
       action={toggle}
     >
       {isError ? (
@@ -93,7 +101,7 @@ export function IngestedVolumeChart() {
             series={series}
             type="area"
             height={320}
-            yFormatter={fmtCount}
+            yFormatter={(n) => fmtValue(unit, n)}
             xFormatter={(s) =>
               new Intl.DateTimeFormat(undefined, {
                 month: "short",

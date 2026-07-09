@@ -9,6 +9,10 @@ interface SignalTotals {
   readonly spans: number;
   readonly metricDatapoints: number;
   readonly records: number;
+  readonly logsBytes: number;
+  readonly spansBytes: number;
+  readonly metricBytes: number;
+  readonly bytes: number;
 }
 
 interface TypeShare {
@@ -16,6 +20,8 @@ interface TypeShare {
   readonly label: string;
   readonly records: number;
   readonly pct: number;
+  readonly bytes: number;
+  readonly bytesPct: number;
 }
 
 export interface IngestionSummary {
@@ -23,14 +29,20 @@ export interface IngestionSummary {
   readonly activeTimeseries: number;
   readonly topCardinalityMetric: { readonly name: string; readonly timeseries: number };
   readonly dailyAverage: number;
-  readonly peak: { readonly date: string; readonly records: number };
+  readonly dailyAverageBytes: number;
+  readonly peak: { readonly date: string; readonly records: number; readonly bytes: number };
   readonly daysElapsed: number;
   readonly daysInMonth: number;
   readonly projectedRecords: number;
+  readonly projectedBytes: number;
   readonly commitmentRecords: number;
+  readonly commitmentBytes: number;
   readonly commitmentUsedPct: number;
+  readonly commitmentUsedBytesPct: number;
   readonly projectedPct: number;
+  readonly projectedBytesPct: number;
   readonly onPace: boolean;
+  readonly onPaceBytes: boolean;
   readonly byType: readonly TypeShare[];
 }
 
@@ -38,6 +50,7 @@ export interface TimeseriesSeries {
   readonly id: string;
   readonly label: string;
   readonly data: readonly number[];
+  readonly byteData: readonly number[];
 }
 
 export interface IngestionTimeseries {
@@ -53,15 +66,19 @@ export interface IngestionServiceRow {
   readonly spans: number;
   readonly timeseries: number;
   readonly total: number;
+  readonly bytes: number;
   readonly pct: number;
+  readonly bytesPct: number;
   readonly deltaPct: number;
   readonly spark: readonly number[];
+  readonly byteSpark: readonly number[];
 }
 
 export interface IngestionServices {
   readonly services: readonly IngestionServiceRow[];
   readonly totalServices: number;
   readonly topSharePct: number;
+  readonly topShareBytesPct: number;
 }
 
 function range(s: RequestTime, e: RequestTime) {

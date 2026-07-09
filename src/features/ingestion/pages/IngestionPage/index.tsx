@@ -1,6 +1,8 @@
 import { DatabaseZap } from "lucide-react";
+import { useState } from "react";
 
 import { useIngestionServices, useIngestionSummary } from "../../hooks/useIngestion";
+import type { IngestionUnit } from "../../utils/format";
 import { IngestedVolumeChart } from "./IngestedVolumeChart";
 import { IngestionKpiStrip } from "./IngestionKpiStrip";
 import { SignalPillars } from "./SignalPillars";
@@ -19,10 +21,43 @@ function PaceBadge({ onPace, pct }: { onPace: boolean; pct: number }) {
   );
 }
 
+const UNITS: { id: IngestionUnit; label: string }[] = [
+  { id: "records", label: "Records" },
+  { id: "bytes", label: "Volume" },
+];
+
+function UnitToggle({
+  unit,
+  onChange,
+}: { unit: IngestionUnit; onChange: (u: IngestionUnit) => void }) {
+  return (
+    <div className="inline-flex gap-0.5 rounded-md bg-secondary p-0.5">
+      {UNITS.map((opt) => (
+        <button
+          key={opt.id}
+          type="button"
+          onClick={() => onChange(opt.id)}
+          className={`rounded px-2.5 py-1 font-semibold text-[12px] transition-colors ${
+            unit === opt.id
+              ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
+              : "text-foreground-muted hover:text-foreground"
+          }`}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function IngestionPage(): JSX.Element {
+  const [unit, setUnit] = useState<IngestionUnit>("records");
   const summaryQ = useIngestionSummary();
   const servicesQ = useIngestionServices();
   const summary = summaryQ.data;
+
+  const onPace = unit === "bytes" ? summary?.onPaceBytes : summary?.onPace;
+  const pacePct = unit === "bytes" ? summary?.projectedBytesPct : summary?.projectedPct;
 
   return (
     <div className="flex min-w-0 flex-col gap-5 px-1 pt-1 pb-7">
@@ -33,12 +68,12 @@ export default function IngestionPage(): JSX.Element {
         <div className="min-w-0">
           <h1 className="font-bold text-[22px] text-foreground tracking-tight">Data Ingestion</h1>
           <p className="text-[13px] text-foreground-muted">
-            Usage across logs, spans and custom metrics · current billing month · measured in record
-            counts
+            Usage across logs, spans and custom metrics · current billing month
           </p>
         </div>
         <div className="flex-1" />
-        {summary && <PaceBadge onPace={summary.onPace} pct={summary.projectedPct} />}
+        <UnitToggle unit={unit} onChange={setUnit} />
+        {summary && <PaceBadge onPace={Boolean(onPace)} pct={pacePct ?? 0} />}
       </header>
 
       {summaryQ.isError ? (
@@ -50,16 +85,16 @@ export default function IngestionPage(): JSX.Element {
         </div>
       ) : null}
 
-      <IngestionKpiStrip summary={summary} />
+      <IngestionKpiStrip summary={summary} unit={unit} />
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.1fr_1fr]">
-        <IngestedVolumeChart />
-        <TelemetryTypeBreakdown summary={summary} />
+        <IngestedVolumeChart unit={unit} />
+        <TelemetryTypeBreakdown summary={summary} unit={unit} />
       </div>
 
-      <SignalPillars summary={summary} />
+      <SignalPillars summary={summary} unit={unit} />
 
-      <TopServicesTable data={servicesQ.data} isPending={servicesQ.isPending} />
+      <TopServicesTable data={servicesQ.data} isPending={servicesQ.isPending} unit={unit} />
     </div>
   );
 }
