@@ -1,7 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy } from "react";
-
-const TraceDetailPage = lazy(() => import("@/features/traces/pages/TraceDetailPage"));
 
 type TraceDetailSearch = {
   q?: string;
@@ -17,5 +14,4 @@ export const Route = createFileRoute("/_app/traces/$traceId")({
       span: typeof search.span === "string" ? search.span : undefined,
     };
   },
-  component: () => <TraceDetailPage />,
 });

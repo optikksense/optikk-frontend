@@ -1,0 +1,7 @@
+import { createLazyFileRoute } from "@tanstack/react-router";
+
+import SaturationKafkaPage from "@/features/saturation/pages/SaturationKafkaPage/SaturationKafkaPage";
+
+export const Route = createLazyFileRoute("/_app/saturation/kafka")({
+  component: () => <SaturationKafkaPage />,
+});
