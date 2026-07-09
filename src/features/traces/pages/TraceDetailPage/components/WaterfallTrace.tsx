@@ -60,7 +60,7 @@ function WaterfallTraceComponent({
 
   const { flat, traceStartMs, traceEndMs } = useMemo(
     () => buildFlatTree(spans, collapsed),
-    [spans, collapsed],
+    [spans, collapsed]
   );
   const totalMs = Math.max(0, traceEndMs - traceStartMs);
 
@@ -91,7 +91,7 @@ function WaterfallTraceComponent({
         <div
           className={cn(
             lblBase,
-            "!text-[10.5px] h-[34px] text-foreground-caption uppercase tracking-[0.06em]",
+            "!text-[10.5px] h-[34px] text-foreground-caption uppercase tracking-[0.06em]"
           )}
         >
           Service · Operation
@@ -105,7 +105,7 @@ function WaterfallTraceComponent({
                   className={cn(
                     "-translate-x-1/2 absolute bottom-[5px] whitespace-nowrap bg-background px-[3px] font-mono text-[10px] text-foreground-caption [font-variant-numeric:tabular-nums]",
                     pct < 4 && "!left-0 !translate-x-0",
-                    pct > 96 && "!-translate-x-full",
+                    pct > 96 && "!-translate-x-full"
                   )}
                 >
                   {formatDuration(t)}
@@ -117,10 +117,7 @@ function WaterfallTraceComponent({
       </div>
 
       <div ref={scrollContainerRef} className="min-h-0 flex-1 overflow-auto">
-        <div
-          className="relative w-full"
-          style={{ height: `${virtualizer.getTotalSize()}px` }}
-        >
+        <div className="relative w-full" style={{ height: `${virtualizer.getTotalSize()}px` }}>
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const row = flat[virtualRow.index];
             return (

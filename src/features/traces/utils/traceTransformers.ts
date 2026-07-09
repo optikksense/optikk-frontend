@@ -1,5 +1,4 @@
 import type { TraceRecord } from "@shared/entities/trace/model";
-import type { SpanEvent } from "../types";
 
 export type EventLevel = "info" | "warn" | "error";
 export interface BarEvent {

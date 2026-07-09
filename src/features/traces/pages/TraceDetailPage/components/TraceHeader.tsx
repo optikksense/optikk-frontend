@@ -3,6 +3,7 @@ import { memo, useCallback, useState } from "react";
 
 import { useTimezone } from "@/app/store/appStore";
 import { cn } from "@/lib/utils";
+import { formatTimestamp } from "@shared/utils/formatters";
 
 interface Stats {
   readonly totalSpans: number;
@@ -37,24 +38,6 @@ const badge =
 const tidMonoSmall = "text-foreground-secondary font-mono text-[11.5px] break-all";
 const tidLabel = "text-foreground-caption";
 const tidMute = "text-foreground-muted font-mono text-[11.5px]";
-
-function formatStartTime(ms: number, tz: string): string {
-  try {
-    const opts: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    };
-    if (tz !== "local") opts.timeZone = tz;
-    return new Intl.DateTimeFormat("sv-SE", opts).format(new Date(ms));
-  } catch {
-    return new Date(ms).toISOString().replace("T", " ").slice(0, 19);
-  }
-}
 
 function httpBadgeColor(status: number | undefined): string {
   if (status == null) return "";
@@ -150,7 +133,7 @@ function TraceHeaderComponent({
             <>
               <span className="text-foreground-caption opacity-40">·</span>
               <span className={tidLabel}>started</span>
-              <code className={tidMute}>{formatStartTime(startMs, tz)}</code>
+              <code className={tidMute}>{formatTimestamp(startMs, tz)}</code>
             </>
           )}
         </div>

@@ -41,8 +41,11 @@ export default function TracesExplorerPage() {
         />
 
         {}
-        <div className="overflow-y-auto bg-background" style={{ padding: "18px 22px" }}>
-          <div className="flex flex-row items-center" style={{ gap: 10, marginBottom: 16 }}>
+        <div className="flex flex-col min-h-0 bg-background" style={{ padding: "18px 22px" }}>
+          <div
+            className="flex flex-row items-center"
+            style={{ gap: 10, marginBottom: 16, flexShrink: 0 }}
+          >
             <StatPill label="Total" value={formatNumber(p.summary?.total ?? 0)} />
             <StatPill
               label="Errors"
@@ -52,17 +55,21 @@ export default function TracesExplorerPage() {
           </div>
 
           {p.trendBuckets.length > 0 ? (
-            <TrendStrip buckets={p.trendBuckets} startTime={p.startTime} endTime={p.endTime} />
+            <div style={{ flexShrink: 0 }}>
+              <TrendStrip buckets={p.trendBuckets} startTime={p.startTime} endTime={p.endTime} />
+            </div>
           ) : null}
 
-          <TracesTable
-            traces={p.sortedTraces}
-            onRowClick={(t) => p.onOpenTrace(t.trace_id)}
-            onNextPage={p.onNextPage}
-            onPrevPage={p.onPrevPage}
-            hasNextPage={p.hasNextPage}
-            hasPrevPage={p.hasPrevPage}
-          />
+          <div className="flex flex-1 min-h-0 flex-col mt-4">
+            <TracesTable
+              traces={p.sortedTraces}
+              onRowClick={(t) => p.onOpenTrace(t.trace_id)}
+              onNextPage={p.onNextPage}
+              onPrevPage={p.onPrevPage}
+              hasNextPage={p.hasNextPage}
+              hasPrevPage={p.hasPrevPage}
+            />
+          </div>
         </div>
       </div>
     </div>

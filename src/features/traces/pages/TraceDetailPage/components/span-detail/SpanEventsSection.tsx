@@ -2,6 +2,7 @@ import { memo, useMemo } from "react";
 
 import { useTimezone } from "@/app/store/appStore";
 import { cn } from "@/lib/utils";
+import { formatTime } from "@shared/utils/formatters";
 
 import type { SpanEvent } from "../../../../types";
 
@@ -20,24 +21,6 @@ function safeParseAttrs(s: string): readonly [string, string][] {
     /* fall through */
   }
   return [];
-}
-
-function formatTs(ts: string, tz: string): string {
-  try {
-    const d = new Date(ts);
-    if (Number.isNaN(d.getTime())) return ts;
-    const opts: Intl.DateTimeFormatOptions = {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-      fractionalSecondDigits: 3,
-    };
-    if (tz !== "local") opts.timeZone = tz;
-    return new Intl.DateTimeFormat("sv-SE", opts).format(d);
-  } catch {
-    return ts;
-  }
 }
 
 function levelOf(eventName: string): "info" | "warn" | "error" {
@@ -59,7 +42,12 @@ function SpanEventsSectionComponent({ events, selectedSpanId }: Props) {
     () =>
       [...events]
         .filter((e) => e.spanId === selectedSpanId)
-        .sort((a, b) => a.timestamp.localeCompare(b.timestamp)),
+        .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+        .map((e) => ({
+          ...e,
+          level: levelOf(e.eventName),
+          parsedAttrs: safeParseAttrs(e.attributes),
+        })),
     [events, selectedSpanId]
   );
 
@@ -68,8 +56,6 @@ function SpanEventsSectionComponent({ events, selectedSpanId }: Props) {
   return (
     <div className="flex flex-col">
       {sorted.map((event, i) => {
-        const level = levelOf(event.eventName);
-        const attrs = safeParseAttrs(event.attributes);
         const isLast = i === sorted.length - 1;
         return (
           <div
@@ -79,7 +65,7 @@ function SpanEventsSectionComponent({ events, selectedSpanId }: Props) {
             <div className="relative">
               <div
                 className="absolute top-1 left-1 h-2.5 w-2.5 rounded-full"
-                style={{ background: LEVEL_DOT[level] }}
+                style={{ background: LEVEL_DOT[event.level] }}
               />
               {!isLast && (
                 <div className="-bottom-2.5 absolute top-4 left-2 w-0.5 bg-[var(--line)]" />
@@ -89,18 +75,18 @@ function SpanEventsSectionComponent({ events, selectedSpanId }: Props) {
               <div className="flex flex-wrap items-baseline gap-2">
                 <span
                   className="rounded-[3px] px-1.5 py-px font-mono text-[10px] uppercase tracking-[0.04em]"
-                  style={{ color: LEVEL_DOT[level], background: "var(--bg-inset)" }}
+                  style={{ color: LEVEL_DOT[event.level], background: "var(--bg-inset)" }}
                 >
-                  {level}
+                  {event.level}
                 </span>
                 <span className="font-mono text-[11px] text-[var(--fg-3)]">
-                  {formatTs(event.timestamp, tz)}
+                  {formatTime(event.timestamp, tz)}
                 </span>
                 <span className="text-[var(--fg-0)]">{event.eventName}</span>
               </div>
-              {attrs.length > 0 && (
+              {event.parsedAttrs.length > 0 && (
                 <div className="mt-1 flex flex-wrap gap-1">
-                  {attrs.map(([k, v]) => (
+                  {event.parsedAttrs.map(([k, v]) => (
                     <span
                       key={k}
                       className={cn(

@@ -1,6 +1,7 @@
 import type { FacetGroupModel } from "@/features/explorer/components/facets/FacetGroup";
 import { formatNumber } from "@shared/utils/formatters";
 import { ExternalLink, Search } from "lucide-react";
+import { useState } from "react";
 import { getServiceColor } from "../../../utils/serviceColor";
 
 interface Props {
@@ -24,6 +25,8 @@ function dotColor(field: string, value: string): string | null {
 }
 
 export function TracesFacetRail({ groups, onInclude, onClearAll, activeFilterCount }: Props) {
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
   return (
     <div
       className="overflow-y-auto border-border border-r bg-background"
@@ -65,48 +68,69 @@ export function TracesFacetRail({ groups, onInclude, onClearAll, activeFilterCou
         />
       </div>
 
-      {groups.map((g) => (
-        <div key={g.field} style={{ marginBottom: 24 }}>
-          <div
-            className="font-semibold text-[11px] text-foreground-muted uppercase tracking-[0.06em]"
-            style={{ marginBottom: 10 }}
-          >
-            {g.label}
-          </div>
-          {g.buckets.slice(0, 8).map((b) => {
-            const dot = dotColor(g.field, b.value);
-            return (
-              <div
-                key={b.value}
-                onClick={() => onInclude(g.field, b.value)}
-                className="flex cursor-pointer flex-row items-center justify-between rounded-md hover:bg-card-hover"
-                style={{ padding: "5px 6px" }}
-              >
-                <div className="flex flex-row items-center" style={{ gap: 8, minWidth: 0 }}>
-                  {dot ? (
+      {groups.map((g) => {
+        const isExpanded = expandedGroups[g.field];
+        const visibleBuckets = isExpanded ? g.buckets : g.buckets.slice(0, 8);
+        const hasMore = g.buckets.length > 8;
+
+        return (
+          <div key={g.field} style={{ marginBottom: 24 }}>
+            <div
+              className="font-semibold text-[11px] text-foreground-muted uppercase tracking-[0.06em]"
+              style={{ marginBottom: 10 }}
+            >
+              {g.label}
+            </div>
+            {visibleBuckets.map((b) => {
+              const dot = dotColor(g.field, b.value);
+              return (
+                <div
+                  key={b.value}
+                  onClick={() => onInclude(g.field, b.value)}
+                  className="flex cursor-pointer flex-row items-center justify-between rounded-md hover:bg-card-hover"
+                  style={{ padding: "5px 6px" }}
+                >
+                  <div className="flex flex-row items-center" style={{ gap: 8, minWidth: 0 }}>
+                    {dot ? (
+                      <span
+                        className="shrink-0"
+                        style={{ width: 8, height: 8, borderRadius: "50%", background: dot }}
+                      />
+                    ) : null}
                     <span
-                      className="shrink-0"
-                      style={{ width: 8, height: 8, borderRadius: "50%", background: dot }}
-                    />
-                  ) : null}
-                  <span
-                    className={
-                      dot
-                        ? "truncate text-[13.5px] text-foreground-secondary"
-                        : "truncate font-mono text-[13px] text-foreground-secondary"
-                    }
-                  >
-                    {b.value || "(empty)"}
+                      className={
+                        dot
+                          ? "truncate text-[13.5px] text-foreground-secondary"
+                          : "truncate font-mono text-[13px] text-foreground-secondary"
+                      }
+                    >
+                      {b.value || "(empty)"}
+                    </span>
+                  </div>
+                  <span className="ml-2 font-mono text-[12px] text-foreground-muted">
+                    {formatNumber(b.count)}
                   </span>
                 </div>
-                <span className="ml-2 font-mono text-[12px] text-foreground-muted">
-                  {formatNumber(b.count)}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      ))}
+              );
+            })}
+            {hasMore && (
+              <button
+                type="button"
+                onClick={() =>
+                  setExpandedGroups((prev) => ({
+                    ...prev,
+                    [g.field]: !prev[g.field],
+                  }))
+                }
+                className="mt-1 text-[11px] font-medium text-brand hover:underline"
+                style={{ padding: "2px 6px" }}
+              >
+                {isExpanded ? "Show Less" : "Show More"}
+              </button>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
