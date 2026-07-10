@@ -41,8 +41,13 @@ export function WelcomePage() {
             label="API key"
             value={apiKey}
             icon={<KeyRound size={14} strokeWidth={2} />}
-            fallback="Available in Settings → Team"
+            fallback="Regenerate in Settings → Tenant (keys are not recoverable)"
           />
+          {apiKey && (
+            <p className="m-0 mb-3 text-[11.5px] text-foreground-muted">
+              Store this key now — it cannot be shown again. If lost, regenerate it in Settings.
+            </p>
+          )}
 
           <SnippetTabs
             tabs={snippets.map((s) => ({ id: s.id, label: s.label }))}

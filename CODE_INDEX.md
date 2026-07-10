@@ -68,7 +68,7 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 
 | Area | Path | Key Files & Purpose |
 | :--- | :--- | :--- |
-| **API** | `api/` | JWT token management, standard refresh interceptors, and typed Axios client wrappers. |
+| **API** | `api/` | JWT token management, standard refresh interceptors, typed Axios client wrappers, and cross-feature API types (`service-types.ts`: `RequestTime`, `PageInfo`, `PaginatedResponse`). |
 | **Components** | `components/` | Reusable UI primitives (`primitives/`), table wrappers (`table/`), custom chart modules (`ui/charts/` including `uPlot` setups, micro charts, and uplot helpers), and dashboard layouts. |
 | **Entities** | `entities/` | System-wide TS declarations for metrics, logs, traces, users, and deployments. |
 | **Hooks** | `hooks/` | Standard React hooks: `useStandardQuery` for TanStack query defaults, `useVisibilityInterval` for tab-hidden updates, and `useSocketStream` for WebSockets. |

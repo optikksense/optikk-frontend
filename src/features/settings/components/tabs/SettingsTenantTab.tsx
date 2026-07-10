@@ -1,26 +1,22 @@
 import { IconButton, Skeleton, Surface } from "@/components/ui";
-import { Copy, Key, Users } from "lucide-react";
+import { Copy, Key, RefreshCw, TriangleAlert, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { rotateApiKey } from "../../api/tenantApi";
 import type { SettingsTenantViewModel } from "../../types";
 
 interface SettingsTenantTabProps {
   readonly profileLoading: boolean;
   readonly tenants: SettingsTenantViewModel[];
-}
-
-function maskApiKey(key: string): string {
-  if (key.length <= 8) return "••••••••";
-  return `••••••••••••${key.slice(-4)}`;
+  readonly isAdmin: boolean;
 }
 
 export default function SettingsTenantTab({
   profileLoading,
   tenants,
+  isAdmin,
 }: SettingsTenantTabProps): JSX.Element {
-  const [revealedKeys, setRevealedKeys] = useState<Set<number>>(new Set());
-
   if (profileLoading) {
     return (
       <div className="p-xl">
@@ -28,29 +24,6 @@ export default function SettingsTenantTab({
       </div>
     );
   }
-
-  const toggleReveal = (index: number) => {
-    setRevealedKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) {
-        next.delete(index);
-      } else {
-        next.add(index);
-      }
-      return next;
-    });
-  };
-
-  const copyKey = (key: string) => {
-    void navigator.clipboard
-      .writeText(key)
-      .then(() => {
-        toast.success("API key copied", { duration: 2000 });
-      })
-      .catch(() => {
-        toast.error("Unable to copy API key");
-      });
-  };
 
   return (
     <Surface elevation={1} padding="lg" className="settings-card">
@@ -67,33 +40,6 @@ export default function SettingsTenantTab({
             <span className="font-semibold text-md">{tenant.name}</span>
             <span className="text-muted text-xs uppercase tracking-wide">{tenant.role}</span>
           </div>
-          {tenant.apiKey && (
-            <div className="flex items-center gap-xs">
-              <Key size={13} className="text-muted" />
-              <code className="font-mono text-secondary text-xs" style={{ wordBreak: "break-all" }}>
-                {revealedKeys.has(index) ? tenant.apiKey : maskApiKey(tenant.apiKey)}
-              </code>
-              <button
-                type="button"
-                className="text-muted text-xs"
-                onClick={() => toggleReveal(index)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-              >
-                {revealedKeys.has(index) ? "Hide" : "Reveal"}
-              </button>
-              <IconButton
-                icon={<Copy size={12} />}
-                size="sm"
-                label="Copy API key"
-                onClick={() => copyKey(tenant.apiKey!)}
-              />
-            </div>
-          )}
         </div>
       ))}
 
@@ -102,6 +48,87 @@ export default function SettingsTenantTab({
           You are not a member of any tenants yet.
         </p>
       )}
+
+      <ApiKeySection isAdmin={isAdmin} />
     </Surface>
+  );
+}
+
+/**
+ * API keys are stored hashed server-side, so a key is visible exactly once:
+ * in the response that minted it. This section is the only place a key can
+ * be regenerated; there is no way to re-display an existing key.
+ */
+function ApiKeySection({ isAdmin }: { readonly isAdmin: boolean }): JSX.Element {
+  const [newKey, setNewKey] = useState<string | null>(null);
+  const [rotating, setRotating] = useState(false);
+
+  const regenerate = async () => {
+    setRotating(true);
+    try {
+      const resp = await rotateApiKey();
+      setNewKey(resp.api_key);
+      toast.success("New API key generated", { duration: 2000 });
+    } catch {
+      toast.error("Unable to regenerate API key");
+    } finally {
+      setRotating(false);
+    }
+  };
+
+  const copyKey = (key: string) => {
+    void navigator.clipboard
+      .writeText(key)
+      .then(() => toast.success("API key copied", { duration: 2000 }))
+      .catch(() => toast.error("Unable to copy API key"));
+  };
+
+  return (
+    <div className="pt-md">
+      <div className="mb-xs flex items-center gap-xs">
+        <Key size={14} className="text-muted" />
+        <span className="font-semibold text-md">Ingest API key</span>
+      </div>
+      <p className="m-0 mb-sm text-muted text-xs">
+        Keys are stored hashed and are <strong>not recoverable if lost</strong>. A key is shown only
+        once, when it is generated — if you lose it, regenerate a new one (the old key stops working
+        within a few minutes).
+      </p>
+
+      {isAdmin ? (
+        <button
+          type="button"
+          className="flex items-center gap-xs text-xs"
+          onClick={() => void regenerate()}
+          disabled={rotating}
+          style={{ cursor: rotating ? "wait" : "pointer" }}
+        >
+          <RefreshCw size={12} />
+          {rotating ? "Generating…" : "Regenerate API key"}
+        </button>
+      ) : (
+        <p className="m-0 text-muted text-xs">Ask a tenant admin to regenerate the key.</p>
+      )}
+
+      {newKey && (
+        <div className="mt-sm rounded border p-sm">
+          <div className="mb-xs flex items-center gap-xs text-xs">
+            <TriangleAlert size={13} />
+            <strong>Store this key now — it cannot be shown again.</strong>
+          </div>
+          <div className="flex items-center gap-xs">
+            <code className="font-mono text-secondary text-xs" style={{ wordBreak: "break-all" }}>
+              {newKey}
+            </code>
+            <IconButton
+              icon={<Copy size={12} />}
+              size="sm"
+              label="Copy API key"
+              onClick={() => copyKey(newKey)}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

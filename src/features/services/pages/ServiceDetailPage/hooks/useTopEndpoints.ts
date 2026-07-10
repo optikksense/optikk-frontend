@@ -1,10 +1,7 @@
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import {
-  type PaginatedResponse,
-  type TopEndpoint,
-  getTopEndpoints,
-} from "@/features/services/api/redApi";
+import { type TopEndpoint, getTopEndpoints } from "@/features/services/api/redApi";
+import type { PaginatedResponse } from "@/shared/api/service-types";
 
 export interface EndpointWithDelta extends TopEndpoint {
   readonly p99_delta_pct: number | null;

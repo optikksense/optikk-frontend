@@ -99,5 +99,5 @@ yarn ci
 
 ## Related docs
 
-- Codebase map: [CODEBASE_INDEX.md](CODEBASE_INDEX.md)
-- Backend sibling repo: [../optikk-backend/README.md](../optikk-backend/README.md)
+- Codebase map: [CODE_INDEX.md](CODE_INDEX.md)
+- Backend sibling repos: [../query/README.md](../query/README.md), [../ingest/README.md](../ingest/README.md)

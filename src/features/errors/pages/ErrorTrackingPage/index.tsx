@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import type { PaginatedResponse } from "@/features/services/api/redApi";
+import type { PaginatedResponse } from "@/shared/api/service-types";
 
 import {
   type ErrorGroup,

@@ -54,5 +54,12 @@ RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
     echo 'exec nginx -g "daemon off;"' >> /docker-entrypoint.sh && \
     chmod +x /docker-entrypoint.sh
 
+# Change ownership of nginx directories to the non-root nginx user
+RUN mkdir -p /var/cache/nginx /var/run && \
+    chown -R nginx:nginx /var/cache/nginx /var/run /etc/nginx /usr/share/nginx/html /docker-entrypoint.sh && \
+    chmod -R 775 /etc/nginx/conf.d /etc/nginx/ssl
+
+USER nginx
+
 # Use the startup script as entrypoint
 CMD ["/docker-entrypoint.sh"]

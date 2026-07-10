@@ -1,5 +1,5 @@
 import api from "@/shared/api/api/client";
-import type { RequestTime } from "@/shared/api/service-types";
+import type { PaginatedResponse, RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
 import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 import { validateResponse } from "@shared/api/utils/validate";
@@ -171,17 +171,6 @@ export interface TopDBQuery {
   readonly p50_ms: number;
   readonly p95_ms: number;
   readonly p99_ms: number;
-}
-
-interface PageInfo {
-  readonly hasMore: boolean;
-  readonly nextCursor?: string;
-  readonly limit: number;
-}
-
-export interface PaginatedResponse<T> {
-  readonly results: T;
-  readonly pageInfo: PageInfo;
 }
 
 export interface ComparisonPayload<T> {

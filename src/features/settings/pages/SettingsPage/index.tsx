@@ -22,7 +22,7 @@ export default function SettingsPage() {
   );
 
   const isAdmin = tenant?.role === "admin";
-  const tenants = tenant ? [{ name: tenant.name, apiKey: null, role: tenant.role ?? null }] : [];
+  const tenants = tenant ? [{ name: tenant.name, role: tenant.role ?? null }] : [];
 
   const tabItems = [
     { key: "tenant", label: "Tenant", icon: <Users size={14} /> },
@@ -38,7 +38,9 @@ export default function SettingsPage() {
 
       <Tabs activeKey={active} onChange={setActiveSettingsTab} className="mt-1" items={tabItems} />
 
-      {active === "tenant" && <SettingsTenantTab profileLoading={false} tenants={tenants} />}
+      {active === "tenant" && (
+        <SettingsTenantTab profileLoading={false} tenants={tenants} isAdmin={isAdmin} />
+      )}
       {active === "members" && isAdmin && <SettingsMembersTab />}
     </PageShell>
   );
