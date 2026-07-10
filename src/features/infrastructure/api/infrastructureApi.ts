@@ -1,4 +1,4 @@
-import { api } from "@shared/api/api/client";
+import { api } from "@shared/api/http/client";
 
 export async function infraGet<T>(
   path: string,

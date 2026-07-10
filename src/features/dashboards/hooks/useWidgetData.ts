@@ -1,6 +1,6 @@
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
-import api from "@/shared/api/api/client";
+import api from "@/shared/api/http/client";
 import { useInView } from "@/shared/hooks/useInView";
 import { useTimeRange } from "@/shared/hooks/useTimeRangeQuery";
 import {

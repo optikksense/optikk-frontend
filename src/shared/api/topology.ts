@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { API_V1_BASE } from "@config/apiConfig";
-import api from "@shared/api/api";
+import api from "@shared/api/http/client";
 
 const numeric = z.coerce.number().default(0);
 const str = z.string().default("");

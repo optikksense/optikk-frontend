@@ -1,4 +1,4 @@
-import api from "@/shared/api/api/client";
+import api from "@/shared/api/http/client";
 import type { RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
 

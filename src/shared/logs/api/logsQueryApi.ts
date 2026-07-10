@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { API_CONFIG } from "@config/apiConfig";
-import { api } from "@shared/api/api/client";
+import { api } from "@shared/api/http/client";
 import { validateResponse } from "@shared/api/utils/validate";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 

@@ -1,4 +1,4 @@
-import { api } from "@shared/api/api/client";
+import { api } from "@shared/api/http/client";
 import { buildREDFilters } from "@shared/api/red/buildREDFilters";
 import type { RequestTime } from "@shared/api/service-types";
 

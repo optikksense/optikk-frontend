@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import api from "@/shared/api/api/client";
+import api from "@/shared/api/http/client";
 import type { RequestTime } from "@/shared/api/service-types";
 import { validateResponse } from "@/shared/api/utils/validate";
 import { API_CONFIG } from "@config/apiConfig";

@@ -1,4 +1,4 @@
-import { logsPaletteActions } from "@/features/log/palette";
+import { logsPaletteActions } from "@/features/logs/palette";
 import { metricsPaletteActions } from "@/features/metrics/palette";
 import { tracePaletteActions } from "@/features/traces/palette";
 import { navigationPaletteActions } from "./navigationPalette";

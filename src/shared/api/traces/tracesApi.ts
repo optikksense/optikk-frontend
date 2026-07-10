@@ -1,5 +1,5 @@
 import { API_CONFIG } from "@config/apiConfig";
-import api from "@shared/api/api/client";
+import api from "@shared/api/http/client";
 import { validateResponse } from "@shared/api/utils/validate";
 import { z } from "zod";
 import { buildTracesFilters } from "./buildTracesFilters";

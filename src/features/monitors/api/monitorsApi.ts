@@ -1,4 +1,4 @@
-import api from "@/shared/api/api/client";
+import api from "@/shared/api/http/client";
 import { API_CONFIG } from "@config/apiConfig";
 import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 

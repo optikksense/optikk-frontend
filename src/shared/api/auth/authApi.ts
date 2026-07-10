@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { API_CONFIG } from "@config/apiConfig";
 
-import { resolveApiBaseURL } from "../api/baseUrl";
+import { resolveApiBaseURL } from "../http/baseUrl";
 
 /**
  * Pure HTTP layer for the auth endpoints. Uses a bare axios instance (not
