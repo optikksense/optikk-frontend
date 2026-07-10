@@ -6,6 +6,19 @@ export interface CustomTimeRangeBounds {
   readonly endMs: number;
 }
 
+export interface ResolvedTimeBounds {
+  readonly startTime: number;
+  readonly endTime: number;
+}
+
+/**
+ * Resolves the app store time range (relative or absolute) into millisecond
+ * start/end bounds used by API payloads.
+ */
+export function resolveTimeBounds(timeRange: TimeRange): ResolvedTimeBounds {
+  return resolveTimeRangeBounds(timeRange);
+}
+
 export function shiftTimeRange(
   timeRange: TimeRange,
   direction: "backward" | "forward"

@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
 import { API_CONFIG } from "@config/apiConfig";
 import { api } from "@shared/api/api/client";
 import { validateResponse } from "@shared/api/utils/validate";
+import type { ExplorerFilter } from "@shared/search/types/filters";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 

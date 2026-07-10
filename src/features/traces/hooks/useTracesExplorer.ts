@@ -1,9 +1,9 @@
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useMemo } from "react";
 
-import { useExplorerQuery } from "@/features/explorer/hooks/useExplorerQuery";
-import { useExplorerState } from "@/features/explorer/hooks/useExplorerState";
-import type { ExplorerIncludeFlag } from "@/features/explorer/types";
+import { useExplorerQuery } from "@shared/search/hooks/useExplorerQuery";
+import { useExplorerState } from "@shared/search/hooks/useExplorerState";
+import type { ExplorerIncludeFlag } from "@shared/search/types";
 
 import { query, queryFacets, queryTrend } from "../api/tracesApi";
 import type { TracesQueryResponse } from "../types/trace";

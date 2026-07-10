@@ -3,16 +3,16 @@ import { Copy, ExternalLink } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
-import type { SummaryKPI } from "@/features/explorer/components/chrome/SummaryStrip";
-import type { FacetGroupModel } from "@/features/explorer/components/facets/FacetGroup";
-import type { ContextMenuEntry } from "@/features/explorer/components/list/RowContextMenu";
+import type { SummaryKPI } from "@shared/search/components/chrome/SummaryStrip";
+import type { FacetGroupModel } from "@shared/search/components/facets/FacetGroup";
+import type { ContextMenuEntry } from "@shared/search/components/list/RowContextMenu";
 import {
   copyToClipboard,
   pushIncludeExcludeFilter,
-} from "@/features/explorer/components/list/rowContextMenuHelpers";
-import { useExplorerKeyboard } from "@/features/explorer/hooks/useExplorerKeyboard";
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
-import { toTrendBuckets } from "@/features/explorer/utils/trend";
+} from "@shared/search/components/list/rowContextMenuHelpers";
+import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
+import type { ExplorerFilter } from "@shared/search/types/filters";
+import { toTrendBuckets } from "@shared/search/utils/trend";
 import { formatNumber } from "@shared/utils/formatters";
 
 import { resolveTimeRangeBounds } from "@/types";

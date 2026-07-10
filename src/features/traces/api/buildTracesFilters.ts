@@ -1,4 +1,4 @@
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import type { ExplorerFilter } from "@shared/search/types/filters";
 
 export interface TracesFiltersBody {
   startTime: number;

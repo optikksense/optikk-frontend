@@ -1,4 +1,4 @@
-import type { FacetGroupModel } from "@/features/explorer/components/facets/FacetGroup";
+import type { FacetGroupModel } from "@shared/search/components/facets/FacetGroup";
 import { formatNumber } from "@shared/utils/formatters";
 import { ExternalLink, Search } from "lucide-react";
 import { useState } from "react";

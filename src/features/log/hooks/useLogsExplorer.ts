@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
-import { useExplorerState } from "@/features/explorer/hooks/useExplorerState";
-import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
 import { useRefreshKey, useTenantId, useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { useExplorerState } from "@shared/search/hooks/useExplorerState";
+import { resolveTimeBounds } from "@shared/utils/timeBounds";
 
 import {
   type LogsAnalyticsArgs,

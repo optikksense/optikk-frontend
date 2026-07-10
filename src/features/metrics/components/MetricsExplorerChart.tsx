@@ -6,7 +6,7 @@ import { Button } from "@shared/components/primitives/ui/button";
 import { PageSurface } from "@shared/components/ui";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
-import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
+import { resolveTimeBounds } from "@shared/utils/timeBounds";
 import { useTimeRange } from "@store/appStore";
 
 import { useMetricsStore } from "../store/metricsStore";

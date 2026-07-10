@@ -1,10 +1,7 @@
 import { useCallback, useMemo } from "react";
 
-import {
-  deserializeStateSnapshot,
-  serializeStateSnapshot,
-} from "@/features/explorer/utils/urlState";
 import { type URLFilterConfig, useURLFilters } from "@/shared/hooks/useURLFilters";
+import { deserializeStateSnapshot, serializeStateSnapshot } from "@shared/search/utils/urlState";
 import { QUERY_LABELS, createDefaultQuery } from "../constants";
 import type {
   ChartType,

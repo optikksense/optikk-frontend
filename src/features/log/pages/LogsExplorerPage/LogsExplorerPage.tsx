@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
-import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import type { SuggestionOption } from "@shared/search/components/chrome/QuerySuggestions";
+import type { ExplorerFilter } from "@shared/search/types/filters";
 
 import { resolveTimeRangeBounds } from "@/types";
 

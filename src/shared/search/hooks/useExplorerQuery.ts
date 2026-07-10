@@ -2,9 +2,9 @@ import { useRefreshKey, useTenantId, useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useMemo } from "react";
 
+import { resolveTimeBounds } from "@shared/utils/timeBounds";
 import type { ExplorerFilter } from "../types/filters";
 import type { ExplorerIncludeFlag, ExplorerQueryRequest } from "../types/queries";
-import { resolveTimeBounds } from "../utils/timeRange";
 
 interface UseExplorerQueryArgs<TResponse> {
   readonly scope: "logs" | "traces";

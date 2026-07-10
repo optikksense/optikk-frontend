@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { useDebounce } from "use-debounce";
 
-import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
 import { useTimeRange } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { resolveTimeBounds } from "@shared/utils/timeBounds";
 
-import { type SuggestionItem, getSuggestions } from "@/features/traces/api/tracesApi";
+import { type SuggestionItem, getSuggestions } from "@shared/api/suggestions";
 
 interface Args {
   readonly field: string | null;

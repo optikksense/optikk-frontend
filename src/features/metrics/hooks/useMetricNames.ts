@@ -1,5 +1,5 @@
-import { resolveTimeBounds } from "@/features/explorer/utils/timeRange";
 import { useStandardQuery } from "@/shared/hooks/useStandardQuery";
+import { resolveTimeBounds } from "@shared/utils/timeBounds";
 import { useRefreshKey, useTenantId, useTimeRange } from "@store/appStore";
 import { metricsExplorerApi } from "../api/metricsExplorerApi";
 

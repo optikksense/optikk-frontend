@@ -1,4 +1,4 @@
-import type { TrendBucket } from "@/features/explorer/components/trend/TrendHistogramStrip";
+import type { TrendBucket } from "@shared/search/components/trend/TrendHistogramStrip";
 import { formatNumber, formatTimestamp } from "@shared/utils/formatters";
 import { useState } from "react";
 

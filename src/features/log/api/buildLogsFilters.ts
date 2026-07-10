@@ -1,4 +1,4 @@
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import type { ExplorerFilter } from "@shared/search/types/filters";
 
 /**
  * Single source of truth for translating `ExplorerFilter[]` (FE chip model)

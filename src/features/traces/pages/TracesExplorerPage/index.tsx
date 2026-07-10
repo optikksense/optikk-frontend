@@ -1,5 +1,5 @@
-import { ExplorerHeader } from "@/features/explorer/components/chrome/ExplorerHeader";
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
+import type { ExplorerFilter } from "@shared/search/types/filters";
 import { formatNumber } from "@shared/utils/formatters";
 
 import { TracesFacetRail } from "./components/TracesFacetRail";

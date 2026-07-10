@@ -1,9 +1,9 @@
 import { type ReactNode, forwardRef, memo } from "react";
 
-import { DslSearchBarWithChips } from "@/features/explorer/components/chrome/DslSearchBarWithChips";
-import type { SuggestionOption } from "@/features/explorer/components/chrome/QuerySuggestions";
+import { DslSearchBarWithChips } from "@shared/search/components/chrome/DslSearchBarWithChips";
+import type { SuggestionOption } from "@shared/search/components/chrome/QuerySuggestions";
 
-import type { ExplorerFilter } from "@/features/explorer/types/filters";
+import type { ExplorerFilter } from "@shared/search/types/filters";
 
 interface Props {
   readonly filters: readonly ExplorerFilter[];

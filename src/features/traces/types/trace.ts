@@ -9,7 +9,7 @@ import type {
   ExplorerQueryWarnings,
   ExplorerSummary,
   ExplorerTrendBucket,
-} from "@/features/explorer/types";
+} from "@shared/search/types";
 
 export interface TraceSummary {
   readonly trace_id: string;
