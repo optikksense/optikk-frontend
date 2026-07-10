@@ -7,9 +7,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
 import { queryFingerprintId } from "@/features/saturation/utils/queryFingerprintId";
-import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
-import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
 import { ROUTES } from "@/shared/constants/routes";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
 
 import { StatusDot } from "../components/StatusDot";
 import { useDatabaseSystemQueries } from "../hooks/useDatabaseSystemQueries";

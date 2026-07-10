@@ -3,8 +3,8 @@ import { useMemo } from "react";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import type { QueryTimeseriesPoint } from "@/features/saturation/api/databaseQueryDetailApi";
-import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
-import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
 
 interface ChartSeries {
   readonly timestamps: number[];

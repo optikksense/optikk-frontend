@@ -5,9 +5,9 @@ import { ROUTES } from "@/shared/constants/routes";
 
 import type { ErrorGroup } from "@/features/errors/api/errorGroupsApi";
 
-import { fmtNum, relativeTimeFromIso } from "../formatters";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtNum, relativeTimeFromIso } from "@shared/utils/metricFormatters";
 import { useServiceErrors } from "../hooks/useServiceErrors";
-import { PanelCard } from "./PanelCard";
 
 function ErrorRow({ row }: { row: ErrorGroup }) {
   const detail = ROUTES.errorGroupDetail.replace("$groupId", encodeURIComponent(row.group_id));

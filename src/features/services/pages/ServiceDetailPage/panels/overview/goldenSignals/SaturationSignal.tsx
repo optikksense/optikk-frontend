@@ -5,8 +5,8 @@ import ObservabilityChart, {
 } from "@shared/components/ui/charts/ObservabilityChart";
 import { tsMs } from "@shared/utils/chartDataUtils";
 
+import { PanelCard } from "@shared/components/ui/PanelCard";
 import { useServiceSaturation } from "../../../hooks/useServiceSaturation";
-import { PanelCard } from "../../PanelCard";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 // Backend already returns `value` as a percentage (e.g. 18.5 → 18.5%).

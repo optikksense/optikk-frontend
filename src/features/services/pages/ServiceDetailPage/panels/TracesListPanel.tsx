@@ -3,9 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { ROUTES } from "@/shared/constants/routes";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
-import { fmtMs, relativeTimeFromIso } from "../formatters";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtMs, relativeTimeFromIso } from "@shared/utils/metricFormatters";
 import { useRecentTraces } from "../hooks/useRecentTraces";
-import { PanelCard } from "./PanelCard";
 
 const STATUS_DOT: Record<string, string> = {
   OK: "bg-[var(--color-success,#10b981)]",

@@ -1,6 +1,6 @@
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
-import { fmtMs } from "@/features/services/pages/ServiceDetailPage/formatters";
-import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtMs } from "@shared/utils/metricFormatters";
 
 interface Bar {
   readonly label: string;

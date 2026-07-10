@@ -3,7 +3,7 @@ import { RefreshCw, Server } from "lucide-react";
 import { useAppStore } from "@store/appStore";
 import { useAuthTenant } from "@store/authStore";
 
-import { fmtNum } from "../../ServiceDetailPage/formatters";
+import { fmtNum } from "@shared/utils/metricFormatters";
 import type { CatalogAggregate } from "../hooks/useCatalogAggregate";
 
 interface ServiceCatalogHeaderProps {

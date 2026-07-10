@@ -1,8 +1,8 @@
 import { PaginationFooter } from "@shared/components/table/PaginationFooter";
+import { relativeTimeFromIso } from "@shared/utils/metricFormatters";
 import { useNavigate } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
 import { useMemo, useState } from "react";
-import { relativeTimeFromIso } from "../../formatters";
 import { useRecentTraces } from "../../hooks/useRecentTraces";
 
 const FILTER_OPTIONS = [

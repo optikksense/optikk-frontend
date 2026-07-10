@@ -1,5 +1,5 @@
 import { ENDPOINT_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
-import { fmtNum } from "../../formatters";
+import { fmtNum } from "@shared/utils/metricFormatters";
 
 export interface TopOpRow {
   readonly key: string;

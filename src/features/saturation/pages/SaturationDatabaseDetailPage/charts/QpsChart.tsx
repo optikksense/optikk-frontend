@@ -1,8 +1,8 @@
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import { useDatabaseQpsSeries } from "@/features/saturation/pages/SaturationDatabasePage/hooks/useDatabaseQpsSeries";
-import { fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
-import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtNum } from "@shared/utils/metricFormatters";
 
 export function QpsChart({ system }: { system?: string }) {
   const { series } = useDatabaseQpsSeries(system);

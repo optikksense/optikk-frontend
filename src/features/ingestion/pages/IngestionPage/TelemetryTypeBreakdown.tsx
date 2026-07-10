@@ -1,4 +1,4 @@
-import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
+import { PanelCard } from "@shared/components/ui/PanelCard";
 
 import type { IngestionSummary } from "../../api/ingestionApi";
 import { type IngestionUnit, SIGNAL_COLORS, fmtCount, fmtValue } from "../../utils/format";

@@ -4,7 +4,7 @@ import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
 
-import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
+import { PanelCard } from "@shared/components/ui/PanelCard";
 
 import type { TimeseriesSeries } from "../../api/ingestionApi";
 import { useIngestionTimeseries } from "../../hooks/useIngestion";

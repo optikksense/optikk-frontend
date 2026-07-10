@@ -5,9 +5,9 @@ import DataTable from "@shared/components/ui/data-display/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { QueryExecutionRow } from "@/features/saturation/api/databaseQueryDetailApi";
-import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
-import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
 import { ROUTES } from "@/shared/constants/routes";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);

@@ -1,7 +1,7 @@
 import { KpiCard, type KpiTone } from "@shared/components/ui/dashboard/KpiCard";
 
 import type { DatastoreSummary } from "@/features/saturation/api/datastoresExplorerSchemas";
-import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
+import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
 
 import { useDatabaseLatencyPercentiles } from "../hooks/useDatabaseLatencyPercentiles";
 import { useDatabaseQpsSeries } from "../hooks/useDatabaseQpsSeries";

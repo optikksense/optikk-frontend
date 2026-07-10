@@ -6,7 +6,7 @@ import { KpiCard } from "@shared/components/ui/dashboard/KpiCard";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { SaturationSubnav } from "@/features/saturation/components/SaturationSubnav";
-import { fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
+import { fmtNum } from "@shared/utils/metricFormatters";
 
 import { instanceStatus } from "./databaseInstanceModel";
 import { useDatabaseSummary } from "./hooks/useDatabaseSummary";

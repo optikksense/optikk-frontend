@@ -4,7 +4,7 @@ import { Pill } from "@shared/components/primitives/ui/pill";
 import { useAppStore } from "@store/appStore";
 
 import type { KafkaSummary } from "@/features/saturation/api/kafkaExplorerSchemas";
-import { fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
+import { fmtNum } from "@shared/utils/metricFormatters";
 
 interface KafkaPageHeaderProps {
   readonly summary: KafkaSummary | undefined;

@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
-import { fmtMs, fmtPct } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { ROUTES } from "@/shared/constants/routes";
+import { fmtMs, fmtPct } from "@shared/utils/metricFormatters";
 
 import { DbEngineIcon } from "@/features/saturation/pages/SaturationDatabasePage/components/DbEngineIcon";
 import { StatusPill } from "@/features/saturation/pages/SaturationDatabasePage/components/StatusPill";

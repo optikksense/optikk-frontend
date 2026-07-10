@@ -2,9 +2,9 @@ import { useMemo } from "react";
 
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
-import { fmtNum } from "../../../formatters";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtNum } from "@shared/utils/metricFormatters";
 import { pivotByRoute, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
-import { PanelCard } from "../../PanelCard";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 export function RequestRateSignal({ serviceName }: { serviceName: string }) {

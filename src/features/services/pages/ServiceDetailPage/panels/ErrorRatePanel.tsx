@@ -8,9 +8,9 @@ import { tsMs } from "@shared/utils/chartDataUtils";
 
 import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
 
-import { fmtPct } from "../formatters";
+import { PanelCard } from "@shared/components/ui/PanelCard";
+import { fmtPct } from "@shared/utils/metricFormatters";
 import { useErrorRateSeries } from "../hooks/useErrorRateSeries";
-import { PanelCard } from "./PanelCard";
 
 interface ChartData {
   timestamps: number[];

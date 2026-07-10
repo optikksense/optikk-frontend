@@ -2,9 +2,9 @@ import { getErrorGroupLatestOccurrence } from "@/features/errors/api/errorGroups
 import { PaginationFooter } from "@shared/components/table/PaginationFooter";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { parseStackFrames } from "@shared/utils/errorParsers";
+import { fmtNum, relativeTimeFromIso } from "@shared/utils/metricFormatters";
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { fmtNum, relativeTimeFromIso } from "../../formatters";
 import { useServiceErrors } from "../../hooks/useServiceErrors";
 
 export function OverviewErrors({ serviceName }: { serviceName: string }) {

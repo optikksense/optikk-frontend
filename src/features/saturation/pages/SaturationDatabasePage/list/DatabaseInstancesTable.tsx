@@ -6,8 +6,8 @@ import DataTable from "@shared/components/ui/data-display/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
-import { fmtMs, fmtNum } from "@/features/services/pages/ServiceDetailPage/formatters";
 import { ROUTES } from "@/shared/constants/routes";
+import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
 
 import { DbEngineIcon } from "../components/DbEngineIcon";
 import { StatusPill } from "../components/StatusPill";

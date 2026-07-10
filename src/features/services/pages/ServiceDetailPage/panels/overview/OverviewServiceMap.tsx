@@ -1,8 +1,8 @@
 import { VisualizationErrorBoundary } from "@shared/components/ui/error-boundary/VisualizationErrorBoundary";
 import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
+import { fmtNum } from "@shared/utils/metricFormatters";
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { fmtNum } from "../../formatters";
 import { useServiceTopology } from "../../hooks/useServiceTopology";
 import { type ServiceMapEdge, type ServiceMapNode, TopologySVG } from "./TopologySVG";
 

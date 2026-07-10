@@ -4,8 +4,8 @@ import DataTable from "@shared/components/ui/data-display/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
+import { fmtMs, fmtNum, fmtPct } from "@shared/utils/metricFormatters";
 import { ServiceAvatar } from "../../../components/ServiceAvatar";
-import { fmtMs, fmtNum, fmtPct } from "../../ServiceDetailPage/formatters";
 import { StatusDot } from "./StatusDot";
 import type { CatalogRow } from "./buildCatalogRows";
 

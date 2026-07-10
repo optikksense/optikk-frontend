@@ -1,6 +1,6 @@
 import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
 
-import { PanelCard } from "@/features/services/pages/ServiceDetailPage/panels/PanelCard";
+import { PanelCard } from "@shared/components/ui/PanelCard";
 
 import type { IngestionServiceRow, IngestionServices } from "../../api/ingestionApi";
 import {
