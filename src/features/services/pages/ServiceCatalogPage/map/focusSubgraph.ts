@@ -1,4 +1,4 @@
-import type { ServiceTopologyResponse } from "@shared/components/ui/charts/ServiceTopologyGraph";
+import type { ServiceTopologyResponse } from "@shared/api/topology";
 
 function buildAdjacency(edges: ServiceTopologyResponse["edges"]): Map<string, Set<string>> {
   const adjacency = new Map<string, Set<string>>();

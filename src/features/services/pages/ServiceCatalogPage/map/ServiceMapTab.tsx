@@ -1,11 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 
+import { type ServiceTopologyResponse, getServiceTopology } from "@shared/api/topology";
 import {
   ServiceTopologyGraph,
-  type ServiceTopologyResponse,
   buildTopologyGraph,
-  getServiceTopology,
   topologyEdgeTypes,
   topologyNodeTypes,
 } from "@shared/components/ui/charts/ServiceTopologyGraph";

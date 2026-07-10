@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { ServiceTopologyResponse } from "@shared/components/ui/charts/ServiceTopologyGraph";
+import type { ServiceTopologyResponse } from "@shared/api/topology";
 import { useImmutableQuery } from "@shared/hooks/useImmutableQuery";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 

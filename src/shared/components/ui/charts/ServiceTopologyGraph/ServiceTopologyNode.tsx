@@ -4,7 +4,7 @@ import { formatMs, formatNumber } from "./format";
 
 import { Tooltip } from "@shared/components/primitives/ui";
 
-import type { ServiceTopologyNode } from "./api";
+import type { ServiceTopologyNode } from "@shared/api/topology";
 import { NODE_HEIGHT, NODE_WIDTH } from "./layout";
 
 export type TopologyNodeData = ServiceTopologyNode & {

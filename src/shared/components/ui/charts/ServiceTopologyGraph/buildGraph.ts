@@ -1,8 +1,8 @@
 import type { Edge, Node } from "@xyflow/react";
 
+import type { ServiceTopologyResponse } from "@shared/api/topology";
 import { ServiceTopologyEdge, type TopologyEdgeData } from "./ServiceTopologyEdge";
 import { ServiceTopologyNode, type TopologyNodeData } from "./ServiceTopologyNode";
-import type { ServiceTopologyResponse } from "./api";
 import { layoutTopology } from "./layout";
 
 export const topologyNodeTypes = { service: ServiceTopologyNode } as const;

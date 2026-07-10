@@ -5,7 +5,7 @@ import {
   getStatusTimeseries,
   getTopEndpoints,
 } from "@/features/services/api/redApi";
-import { getServiceTopology } from "@shared/components/ui/charts/ServiceTopologyGraph";
+import { getServiceTopology } from "@shared/api/topology";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 /**

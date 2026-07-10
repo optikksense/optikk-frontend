@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 import type { TraceErrorGroup, TraceLog } from "@shared/api/schemas/tracesSchemas";
-import type { ServiceTopologyResponse } from "@shared/components/ui/charts/ServiceTopologyGraph";
+import type { ServiceTopologyResponse } from "@shared/api/topology";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
 import type { VisualizationTab } from "../../../store/tracesStore";

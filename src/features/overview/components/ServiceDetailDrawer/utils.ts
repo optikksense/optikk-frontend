@@ -3,7 +3,7 @@ import type {
   LatencyPercentilesPoint,
   StatusTimeseriesPoint,
 } from "@/features/services/api/redApi";
-import type { ServiceTopologyEdge } from "@shared/components/ui/charts/ServiceTopologyGraph";
+import type { ServiceTopologyEdge } from "@shared/api/topology";
 import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 
 import type { DependencyRow, EndpointRow, ServiceSummarySnapshot } from "./types";

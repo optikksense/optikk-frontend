@@ -22,10 +22,7 @@ import type {
   SpanRecord,
   TraceErrorGroup,
 } from "@shared/api/schemas/tracesSchemas";
-import {
-  type ServiceTopologyResponse,
-  topologyResponseSchema,
-} from "@shared/components/ui/charts/ServiceTopologyGraph";
+import { type ServiceTopologyResponse, topologyResponseSchema } from "@shared/api/topology";
 import type { TraceSummary, TracesQueryRequest, TracesQueryResponse } from "../types/trace";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
