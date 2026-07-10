@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { ServiceCatalogRedSummary } from "@/features/services/api/redApi";
+import type { ServiceCatalogRedSummary } from "@shared/api/red/redApi";
 
 import type { CatalogRow } from "../catalog/buildCatalogRows";
 

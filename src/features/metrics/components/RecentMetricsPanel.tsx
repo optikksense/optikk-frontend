@@ -5,9 +5,9 @@ import { PageSurface } from "@shared/components/ui";
 import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
 import { getChartColor } from "@shared/utils/charting";
 
-import { useMetricNames } from "../hooks/useMetricNames";
+import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";
+import type { MetricNameEntry, MetricQueryResult } from "@shared/metrics/types";
 import { useMetricsStore } from "../store/metricsStore";
-import type { MetricNameEntry, MetricQueryResult } from "../types";
 
 interface RecentMetricsPanelProps {
   /** Metric name currently driving the primary query, if any. */

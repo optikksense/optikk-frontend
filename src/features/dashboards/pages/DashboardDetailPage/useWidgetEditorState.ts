@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 
-import { QUERY_LABELS, createDefaultQuery } from "@/features/metrics/constants";
+import { QUERY_LABELS, createDefaultQuery } from "@shared/metrics/constants";
 import type {
   MetricAggregation,
   MetricQueryDefinition,
   MetricSpaceAggregation,
   MetricTagFilter,
   TimeStep,
-} from "@/features/metrics/types";
+} from "@shared/metrics/types";
 
 import {
   type WidgetDisplayOptions,

@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Check, X } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { MetricQueryBuilder } from "@/features/metrics/components/MetricQueryBuilder/MetricQueryBuilder";
+import { MetricQueryBuilder } from "@shared/metrics/components/MetricQueryBuilder/MetricQueryBuilder";
 
 import type { Dashboard } from "../../api/dashboardsApi";
 import { editorStateToPayload, specToEditorState } from "../../builder/metricsWidget";

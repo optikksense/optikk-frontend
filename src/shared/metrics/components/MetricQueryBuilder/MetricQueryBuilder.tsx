@@ -2,13 +2,13 @@ import { Calculator, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui";
 
-import { MAX_QUERIES } from "../../constants";
+import { MAX_QUERIES } from "@shared/metrics/constants";
 import type {
   FormulaDefinition,
   MetricAggregation,
   MetricQueryDefinition,
   MetricTagFilter,
-} from "../../types";
+} from "@shared/metrics/types";
 import { FormulaRow } from "./FormulaRow";
 import { MetricQueryRow } from "./MetricQueryRow";
 

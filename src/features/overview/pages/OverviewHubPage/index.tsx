@@ -2,7 +2,7 @@ import { PageHeader, PageShell } from "@shared/components/ui";
 import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
 import { useInView } from "@shared/hooks/useInView";
 
-import type { ServiceMetricPoint } from "@/features/metrics/types";
+import type { ServiceMetricPoint } from "@shared/metrics/types";
 import InfrastructureStrip from "./components/InfrastructureStrip";
 import OverviewHero from "./components/OverviewHero";
 import ServiceHealthGrid from "./components/ServiceHealthGrid";

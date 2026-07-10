@@ -4,8 +4,8 @@ import { useCallback, useDeferredValue, useMemo, useRef, useState } from "react"
 import { Popover } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-import { useMetricNames } from "../../hooks/useMetricNames";
-import type { MetricNameEntry } from "../../types";
+import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";
+import type { MetricNameEntry } from "@shared/metrics/types";
 
 interface MetricSelectorProps {
   readonly value: string;

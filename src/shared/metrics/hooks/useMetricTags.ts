@@ -1,7 +1,7 @@
 import { useStandardQuery } from "@/shared/hooks/useStandardQuery";
+import { metricsExplorerApi } from "@shared/metrics/api/metricsExplorerApi";
 import { resolveTimeBounds } from "@shared/utils/timeBounds";
 import { useRefreshKey, useTenantId, useTimeRange } from "@store/appStore";
-import { metricsExplorerApi } from "../api/metricsExplorerApi";
 
 export function useMetricTags(metricName: string) {
   const selectedTenantId = useTenantId();

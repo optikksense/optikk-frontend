@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import type { ServiceMetricPoint } from "@/features/metrics/types";
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
+import type { ServiceMetricPoint } from "@shared/metrics/types";
 
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import type { UseQueryResult } from "@tanstack/react-query";

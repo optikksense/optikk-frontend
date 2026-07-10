@@ -1,6 +1,6 @@
-import type { ServiceMetricPoint } from "@/features/metrics/types";
 import type { RequestTime } from "@/shared/api/service-types";
 import { getServiceTopology } from "@shared/api/topology";
+import type { ServiceMetricPoint } from "@shared/metrics/types";
 
 /**
  * Replaces the old `metricsOverviewApi` (which called phantom `/overview/*`

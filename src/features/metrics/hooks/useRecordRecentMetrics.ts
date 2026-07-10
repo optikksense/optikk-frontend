@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
+import type { MetricQueryDefinition } from "@shared/metrics/types";
 import { useMetricsStore } from "../store/metricsStore";
-import type { MetricQueryDefinition } from "../types";
 
 /**
  * Records the metric names of active queries into the recent-metrics list

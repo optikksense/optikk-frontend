@@ -1,6 +1,6 @@
 import { api } from "@shared/api/api/client";
+import { buildREDFilters } from "@shared/api/red/buildREDFilters";
 import type { RequestTime } from "@shared/api/service-types";
-import { buildREDFilters } from "../../services/api/buildREDFilters";
 
 import { API_CONFIG } from "@config/apiConfig";
 

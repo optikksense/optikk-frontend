@@ -1,13 +1,13 @@
 import type { ObservabilityChartSeries } from "@shared/components/ui/charts/ObservabilityChart";
 
-import { getChartColor } from "@shared/utils/charting";
-import { QUERY_LABEL_COLORS } from "../constants";
+import { QUERY_LABEL_COLORS } from "@shared/metrics/constants";
 import type {
   ChartType,
   FormulaDefinition,
   MetricExplorerResults,
   MetricQueryDefinition,
-} from "../types";
+} from "@shared/metrics/types";
+import { getChartColor } from "@shared/utils/charting";
 import { evaluateFormula } from "./formulaEvaluator";
 
 const FORMULA_COLOR = "#f59e0b";

@@ -1,12 +1,12 @@
-import { getServiceMetrics } from "@/features/overview/api/serviceMetricsApi";
+import { getServiceErrorRate } from "@shared/api/errors";
 import {
   getLatencyPercentilesTimeseries,
   getStatusTimeseries,
   getTopEndpoints,
-} from "@/features/services/api/redApi";
-import { getServiceErrorRate } from "@shared/api/errors";
+} from "@shared/api/red/redApi";
 import { getServiceTopology } from "@shared/api/topology";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+import { getServiceMetrics } from "../serviceMetricsApi";
 
 /**
  * Fans the six panel queries that drive the Service Detail drawer. Split

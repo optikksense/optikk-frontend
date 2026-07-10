@@ -9,15 +9,15 @@ import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart"
 import { resolveTimeBounds } from "@shared/utils/timeBounds";
 import { useTimeRange } from "@store/appStore";
 
-import { useMetricsStore } from "../store/metricsStore";
 import type {
   ChartType,
   FormulaDefinition,
   MetricExplorerResults,
   MetricQueryDefinition,
   MetricYAxisScale,
-} from "../types";
-import { buildSeries, toRenderType } from "../utils/chartSeries";
+} from "@shared/metrics/types";
+import { buildSeries, toRenderType } from "@shared/metrics/utils/chartSeries";
+import { useMetricsStore } from "../store/metricsStore";
 
 const MAX_RENDERED_SERIES = 100;
 

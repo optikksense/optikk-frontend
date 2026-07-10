@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 
+import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
 import type {
   MetricExplorerResults,
   MetricQueryDefinition,
   MetricSpaceAggregation,
-} from "../types";
-import { formatStatValue } from "../utils/formatStat";
-import { computeQuerySummary } from "../utils/seriesStats";
-import { DeltaBadge } from "./DeltaBadge";
+} from "@shared/metrics/types";
+import { formatStatValue } from "@shared/metrics/utils/formatStat";
+import { computeQuerySummary } from "@shared/metrics/utils/seriesStats";
 
 interface MetricsKpiStripProps {
   readonly primaryQuery: MetricQueryDefinition | undefined;

@@ -1,5 +1,5 @@
-import type { MetricQueryResult } from "../types";
-import { computeSeriesStats } from "./seriesStats";
+import type { MetricQueryResult } from "@shared/metrics/types";
+import { computeSeriesStats } from "@shared/metrics/utils/seriesStats";
 
 /** Tag keys present across a query's series, in stable first-seen order. */
 export function collectTagKeys(result: MetricQueryResult | undefined): string[] {

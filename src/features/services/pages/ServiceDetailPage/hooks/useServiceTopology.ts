@@ -1,6 +1,6 @@
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { type TopologyResponse, getTopology } from "@/features/services/api/redApi";
+import { type TopologyResponse, getTopology } from "@shared/api/red/redApi";
 
 // Fetches the runtime topology scoped to a focus service. The server owns all
 // neighborhood pruning (1-hop upstream + downstream) — the focus name is sent

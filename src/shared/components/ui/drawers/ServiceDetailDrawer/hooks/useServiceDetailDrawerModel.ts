@@ -3,7 +3,10 @@ import { useCallback, useMemo } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import { buildServiceLogsSearch, buildServiceTracesSearch } from "../../serviceDrawerState";
+import {
+  buildServiceLogsSearch,
+  buildServiceTracesSearch,
+} from "@shared/components/ui/drawers/serviceDrawerState";
 import type { ServiceSummarySnapshot } from "../types";
 import {
   buildDependencyRows,

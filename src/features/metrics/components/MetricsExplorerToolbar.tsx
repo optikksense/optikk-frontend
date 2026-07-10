@@ -1,10 +1,22 @@
 import { Select } from "@/components/ui";
 import { Switch } from "@shared/components/primitives/ui/switch";
 
-import { CHART_TYPE_OPTIONS, SPACE_AGGREGATION_OPTIONS, TIME_STEP_OPTIONS } from "../constants";
+import {
+  MetricSegmentedControl,
+  type SegmentOption,
+} from "@shared/metrics/components/MetricSegmentedControl";
+import {
+  CHART_TYPE_OPTIONS,
+  SPACE_AGGREGATION_OPTIONS,
+  TIME_STEP_OPTIONS,
+} from "@shared/metrics/constants";
+import type {
+  ChartType,
+  MetricSpaceAggregation,
+  MetricYAxisScale,
+  TimeStep,
+} from "@shared/metrics/types";
 import { useMetricsStore } from "../store/metricsStore";
-import type { ChartType, MetricSpaceAggregation, MetricYAxisScale, TimeStep } from "../types";
-import { MetricSegmentedControl, type SegmentOption } from "./MetricSegmentedControl";
 
 interface MetricsExplorerToolbarProps {
   readonly chartType: ChartType;

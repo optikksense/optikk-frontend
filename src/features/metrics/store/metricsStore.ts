@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { MetricYAxisScale } from "../types";
+import type { MetricYAxisScale } from "@shared/metrics/types";
 
 const MAX_RECENT_METRICS = 12;
 

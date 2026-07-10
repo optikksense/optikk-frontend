@@ -2,8 +2,12 @@ import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-import { QUERY_LABEL_COLORS } from "../../constants";
-import type { MetricAggregation, MetricQueryDefinition, MetricTagFilter } from "../../types";
+import { QUERY_LABEL_COLORS } from "@shared/metrics/constants";
+import type {
+  MetricAggregation,
+  MetricQueryDefinition,
+  MetricTagFilter,
+} from "@shared/metrics/types";
 import { AggregationPicker } from "./AggregationPicker";
 import { MetricSelector } from "./MetricSelector";
 import { TagFilter } from "./TagFilter";

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 
-import ServiceDetailDrawer from "@/features/overview/components/ServiceDetailDrawer";
+import ServiceDetailDrawer from "@shared/components/ui/drawers/ServiceDetailDrawer";
 
 import { CatalogTable } from "../catalog/CatalogTable";
 import { SearchToolbar } from "../catalog/SearchToolbar";

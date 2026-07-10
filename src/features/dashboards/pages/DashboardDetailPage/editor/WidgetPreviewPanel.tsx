@@ -1,7 +1,7 @@
-import { MetricSegmentedControl } from "@/features/metrics/components/MetricSegmentedControl";
-import { TIME_STEP_OPTIONS } from "@/features/metrics/constants";
-import { useMetricsExplorerQuery } from "@/features/metrics/hooks/useMetricsExplorerQuery";
-import type { TimeStep } from "@/features/metrics/types";
+import { MetricSegmentedControl } from "@shared/metrics/components/MetricSegmentedControl";
+import { TIME_STEP_OPTIONS } from "@shared/metrics/constants";
+import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplorerQuery";
+import type { TimeStep } from "@shared/metrics/types";
 
 import type { WidgetEditorState } from "../../../builder/metricsWidget";
 import { WidgetVizRenderer } from "../../../components/WidgetVizRenderer";

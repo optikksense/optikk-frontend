@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Popover, Select } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-import { useMetricTags } from "../../hooks/useMetricTags";
+import { useMetricTags } from "@shared/metrics/hooks/useMetricTags";
 
 interface TagGroupByProps {
   readonly metricName: string;

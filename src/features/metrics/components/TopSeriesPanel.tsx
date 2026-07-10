@@ -2,11 +2,14 @@ import { useMemo, useState } from "react";
 
 import { PageSurface } from "@shared/components/ui";
 
-import type { MetricQueryResult, TopSeriesGroupBy } from "../types";
-import { formatStatValue } from "../utils/formatStat";
+import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
+import {
+  MetricSegmentedControl,
+  type SegmentOption,
+} from "@shared/metrics/components/MetricSegmentedControl";
+import type { MetricQueryResult, TopSeriesGroupBy } from "@shared/metrics/types";
+import { formatStatValue } from "@shared/metrics/utils/formatStat";
 import { buildTopSeriesRows } from "../utils/topSeries";
-import { DeltaBadge } from "./DeltaBadge";
-import { MetricSegmentedControl, type SegmentOption } from "./MetricSegmentedControl";
 
 interface TopSeriesPanelProps {
   readonly result: MetricQueryResult | undefined;

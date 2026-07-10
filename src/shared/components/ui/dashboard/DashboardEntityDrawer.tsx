@@ -2,7 +2,7 @@ import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearc
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import ServiceDetailDrawer from "@/features/overview/components/ServiceDetailDrawer";
+import ServiceDetailDrawer from "@shared/components/ui/drawers/ServiceDetailDrawer";
 import { DetailDrawer } from "@shared/components/ui/layout";
 
 import { clearDashboardDrawerSearch, readDashboardDrawerState } from "./utils/dashboardDrawerState";

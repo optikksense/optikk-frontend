@@ -1,8 +1,15 @@
 import { useStandardQuery } from "@/shared/hooks/useStandardQuery";
+import {
+  buildExplorerQueryRequest,
+  metricsExplorerApi,
+} from "@shared/metrics/api/metricsExplorerApi";
+import type {
+  MetricQueryDefinition,
+  MetricSpaceAggregation,
+  TimeStep,
+} from "@shared/metrics/types";
 import { resolveTimeBounds } from "@shared/utils/timeBounds";
 import { useRefreshKey, useTenantId, useTimeRange } from "@store/appStore";
-import { buildExplorerQueryRequest, metricsExplorerApi } from "../api/metricsExplorerApi";
-import type { MetricQueryDefinition, MetricSpaceAggregation, TimeStep } from "../types";
 
 export function useMetricsExplorerQuery(
   queries: MetricQueryDefinition[],

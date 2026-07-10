@@ -1,4 +1,4 @@
-import { MetricSegmentedControl } from "@/features/metrics/components/MetricSegmentedControl";
+import { MetricSegmentedControl } from "@shared/metrics/components/MetricSegmentedControl";
 
 import type { WidgetDisplayOptions, WidgetSize } from "../../../builder/metricsWidget";
 

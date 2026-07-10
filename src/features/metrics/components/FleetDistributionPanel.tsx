@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { PageSurface } from "@shared/components/ui";
 
-import type { MetricQueryResult } from "../types";
+import type { MetricQueryResult } from "@shared/metrics/types";
 import { buildFleetDistribution } from "../utils/fleetDistribution";
 
 interface FleetDistributionPanelProps {

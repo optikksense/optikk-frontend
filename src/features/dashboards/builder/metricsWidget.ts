@@ -1,10 +1,3 @@
-import { QUERY_LABELS, createDefaultQuery } from "@/features/metrics/constants";
-import type {
-  FormulaDefinition,
-  MetricQueryDefinition,
-  MetricSpaceAggregation,
-  TimeStep,
-} from "@/features/metrics/types";
 import {
   type DashboardLayout,
   type DashboardLayoutVariant,
@@ -13,6 +6,13 @@ import {
   type DashboardPanelType,
   isMetricsQuerySpec,
 } from "@/types/dashboardConfig";
+import { QUERY_LABELS, createDefaultQuery } from "@shared/metrics/constants";
+import type {
+  FormulaDefinition,
+  MetricQueryDefinition,
+  MetricSpaceAggregation,
+  TimeStep,
+} from "@shared/metrics/types";
 
 import type { CreateWidgetPayload } from "../api/dashboardsApi";
 

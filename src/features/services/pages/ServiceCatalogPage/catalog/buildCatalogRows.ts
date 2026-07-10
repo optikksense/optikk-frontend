@@ -2,7 +2,7 @@ import type {
   RedServiceRow,
   RequestRatePoint,
   ServiceCatalogRedSummary,
-} from "@/features/services/api/redApi";
+} from "@shared/api/red/redApi";
 
 export type CatalogStatus = "healthy" | "warn" | "error" | "unknown";
 

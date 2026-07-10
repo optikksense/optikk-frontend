@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 import { Button } from "@shared/components/primitives/ui/button";
 
-import type { MetricQueryDefinition, MetricQueryResult } from "../types";
+import type { MetricQueryDefinition, MetricQueryResult } from "@shared/metrics/types";
 import { buildBreakdownCsv, downloadCsv } from "../utils/breakdownCsv";
 
 interface MetricsHeaderActionsProps {

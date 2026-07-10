@@ -4,7 +4,7 @@ import type {
   MetricQueryDefinition,
   MetricSpaceAggregation,
   TimeStep,
-} from "../types";
+} from "@shared/metrics/types";
 export const QUERY_LABELS = ["a", "b", "c", "d", "e", "f"] as const;
 
 export const QUERY_LABEL_COLORS: Record<string, string> = {

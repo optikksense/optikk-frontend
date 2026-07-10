@@ -14,11 +14,11 @@ import {
 } from "@shared/components/primitives/ui";
 import { PageSurface } from "@shared/components/ui";
 
-import type { MetricQueryDefinition, MetricQueryResult } from "../types";
+import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
+import type { MetricQueryDefinition, MetricQueryResult } from "@shared/metrics/types";
+import { formatStatValue } from "@shared/metrics/utils/formatStat";
+import { computeSeriesStats } from "@shared/metrics/utils/seriesStats";
 import { buildBreakdownCsv, collectTagKeys, downloadCsv } from "../utils/breakdownCsv";
-import { formatStatValue } from "../utils/formatStat";
-import { computeSeriesStats } from "../utils/seriesStats";
-import { DeltaBadge } from "./DeltaBadge";
 
 interface GroupByBreakdownTableProps {
   readonly primaryQuery: MetricQueryDefinition | undefined;

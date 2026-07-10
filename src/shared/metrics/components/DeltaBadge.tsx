@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-import { deltaDirection, formatDelta } from "../utils/formatStat";
+import { deltaDirection, formatDelta } from "@shared/metrics/utils/formatStat";
 
 interface DeltaBadgeProps {
   readonly delta: number | null;

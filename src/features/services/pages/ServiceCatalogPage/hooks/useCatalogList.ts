@@ -8,7 +8,7 @@ import {
   type ServiceCatalogRedSummary,
   getRedSummaryWithComparison,
   getRequestRateSeries,
-} from "@/features/services/api/redApi";
+} from "@shared/api/red/redApi";
 
 import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 

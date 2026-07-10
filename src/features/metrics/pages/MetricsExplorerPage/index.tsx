@@ -3,20 +3,20 @@ import { useMemo } from "react";
 
 import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
 
+import { MetricQueryBuilder } from "@shared/metrics/components/MetricQueryBuilder/MetricQueryBuilder";
+import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";
+import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplorerQuery";
+import type { MetricExplorerResults } from "@shared/metrics/types";
 import { FleetDistributionPanel } from "../../components/FleetDistributionPanel";
 import { GroupByBreakdownTable } from "../../components/GroupByBreakdownTable";
-import { MetricQueryBuilder } from "../../components/MetricQueryBuilder/MetricQueryBuilder";
 import { MetricsExplorerChart } from "../../components/MetricsExplorerChart";
 import { MetricsExplorerToolbar } from "../../components/MetricsExplorerToolbar";
 import { MetricsHeaderActions } from "../../components/MetricsHeaderActions";
 import { MetricsKpiStrip } from "../../components/MetricsKpiStrip";
 import { RecentMetricsPanel } from "../../components/RecentMetricsPanel";
 import { TopSeriesPanel } from "../../components/TopSeriesPanel";
-import { useMetricNames } from "../../hooks/useMetricNames";
 import { useMetricsExplorer } from "../../hooks/useMetricsExplorer";
-import { useMetricsExplorerQuery } from "../../hooks/useMetricsExplorerQuery";
 import { useRecordRecentMetrics } from "../../hooks/useRecordRecentMetrics";
-import type { MetricExplorerResults } from "../../types";
 
 export default function MetricsExplorerPage() {
   const {

@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 
 import { Surface } from "@/components/ui";
-import { buildServiceDrawerSearch } from "@/features/overview/components/serviceDrawerState";
+import { buildServiceDrawerSearch } from "@shared/components/ui/drawers/serviceDrawerState";
 import { formatNumber } from "@shared/utils/formatters";
 
 import type { ServiceHealthCell, ServiceHealthStatus } from "../hooks/useOverviewModel";

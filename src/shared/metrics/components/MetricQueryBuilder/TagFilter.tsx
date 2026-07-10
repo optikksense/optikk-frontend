@@ -4,8 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 import { Popover, Select } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-import { useMetricTags } from "../../hooks/useMetricTags";
-import type { MetricFilterOperator, MetricTagFilter } from "../../types";
+import { useMetricTags } from "@shared/metrics/hooks/useMetricTags";
+import type { MetricFilterOperator, MetricTagFilter } from "@shared/metrics/types";
 
 interface TagFilterProps {
   readonly metricName: string;

@@ -3,7 +3,7 @@ import type {
   MetricQueryDefinition,
   MetricSpaceAggregation,
   TimeStep,
-} from "@/features/metrics/types";
+} from "@shared/metrics/types";
 
 type DashboardScalarValue = string | number | boolean | null;
 type DashboardQueryParamValue =

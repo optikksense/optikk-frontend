@@ -1,7 +1,7 @@
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { type TopDBQuery, getTopDBQueries } from "@/features/services/api/redApi";
 import type { PaginatedResponse } from "@/shared/api/service-types";
+import { type TopDBQuery, getTopDBQueries } from "@shared/api/red/redApi";
 
 export interface DBQueryWithDelta extends TopDBQuery {
   readonly p99_delta_pct: number | null;

@@ -10,17 +10,17 @@ const ServiceHealthGridRenderer = lazy(() =>
   }))
 );
 const LatencyHistogramRenderer = lazy(() =>
-  import("@/features/metrics/dashboard/renderers/LatencyHistogramRenderer").then((module) => ({
+  import("./dashboard/renderers/LatencyHistogramRenderer").then((module) => ({
     default: module.LatencyHistogramRenderer,
   }))
 );
 const LatencyHeatmapRenderer = lazy(() =>
-  import("@/features/metrics/dashboard/renderers/LatencyHeatmapRenderer").then((module) => ({
+  import("./dashboard/renderers/LatencyHeatmapRenderer").then((module) => ({
     default: module.LatencyHeatmapRenderer,
   }))
 );
 const DbSystemsRenderer = lazy(() =>
-  import("@/features/metrics/dashboard/renderers/DbSystemsRenderer").then((module) => ({
+  import("./dashboard/renderers/DbSystemsRenderer").then((module) => ({
     default: module.DbSystemsRenderer,
   }))
 );

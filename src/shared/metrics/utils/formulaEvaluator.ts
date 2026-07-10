@@ -1,4 +1,4 @@
-import type { MetricExplorerResults } from "../types";
+import type { MetricExplorerResults } from "@shared/metrics/types";
 
 type Token =
   | { type: "number"; value: number }

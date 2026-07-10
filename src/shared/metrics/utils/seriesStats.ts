@@ -1,4 +1,8 @@
-import type { MetricQueryResult, MetricSeriesData, MetricSpaceAggregation } from "../types";
+import type {
+  MetricQueryResult,
+  MetricSeriesData,
+  MetricSpaceAggregation,
+} from "@shared/metrics/types";
 
 /** Per-series summary statistics computed over a single series' value array. */
 export interface SeriesStats {

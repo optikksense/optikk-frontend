@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from "react";
 
 import { type URLFilterConfig, useURLFilters } from "@/shared/hooks/useURLFilters";
-import { deserializeStateSnapshot, serializeStateSnapshot } from "@shared/search/utils/urlState";
-import { QUERY_LABELS, createDefaultQuery } from "../constants";
+import { QUERY_LABELS, createDefaultQuery } from "@shared/metrics/constants";
 import type {
   ChartType,
   FormulaDefinition,
@@ -11,7 +10,8 @@ import type {
   MetricSpaceAggregation,
   MetricTagFilter,
   TimeStep,
-} from "../types";
+} from "@shared/metrics/types";
+import { deserializeStateSnapshot, serializeStateSnapshot } from "@shared/search/utils/urlState";
 
 const URL_CONFIG: URLFilterConfig = {
   params: [

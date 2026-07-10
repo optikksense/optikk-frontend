@@ -7,13 +7,10 @@
  *   overviewErrorsApi → `/spans/exception-rate-by-type`, `/spans/error-hotspot`
  */
 
-import {
-  getRedSummaryWithComparison,
-  getRequestAndErrorRateSeries,
-} from "../../services/api/redApi";
+import { getRedSummaryWithComparison, getRequestAndErrorRateSeries } from "@shared/api/red/redApi";
 import { getErrorHotspot } from "./overviewErrorsApi";
 
-export type { ServiceCatalogRedSummary as FleetRedMetrics } from "../../services/api/redApi";
+export type { ServiceCatalogRedSummary as FleetRedMetrics } from "@shared/api/red/redApi";
 
 import type { RequestTime } from "@shared/api/service-types";
 
