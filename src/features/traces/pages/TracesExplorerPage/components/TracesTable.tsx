@@ -1,8 +1,8 @@
+import type { TraceSummary } from "@shared/api/traces/types";
 import { formatTimestamp } from "@shared/utils/formatters";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChevronRight } from "lucide-react";
 import { memo, useRef } from "react";
-import type { TraceSummary } from "../../../types/trace";
 import { getServiceColor } from "../../../utils/serviceColor";
 
 interface Props {

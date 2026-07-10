@@ -4,7 +4,7 @@ import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatNumber, formatRelativeTime } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import type { ErrorGroup } from "../../api/errorGroupsApi";
+import type { ErrorGroup } from "@shared/api/errors";
 
 /** Recent (seconds-ago) last-seen values render in the error color to signal "still firing". */
 function isFreshlySeen(iso: string): boolean {

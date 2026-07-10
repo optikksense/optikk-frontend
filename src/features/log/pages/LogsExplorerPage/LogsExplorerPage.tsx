@@ -6,18 +6,18 @@ import type { ExplorerFilter } from "@shared/search/types/filters";
 
 import { resolveTimeRangeBounds } from "@/types";
 
-import type { LogsFacets } from "../../api/logsAnalyticsApi";
+import type { LogsFacets } from "@shared/logs/api/logsAnalyticsApi";
+import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
+import type { LogRecord } from "@shared/logs/types/log";
+import { SEVERITY_STYLES } from "@shared/logs/utils/severity";
 import { useLogsExplorer } from "../../hooks/useLogsExplorer";
-import { useLogsExplorerStore } from "../../store/logsExplorerStore";
-import type { LogRecord } from "../../types/log";
-import { SEVERITY_STYLES } from "../../utils/severity";
 
-import { LogDetailDrawer } from "../../components/detail/LogDetailDrawer";
+import { LogDetailDrawer } from "@shared/logs/components/detail/LogDetailDrawer";
 import { LogsFacetPanel } from "../../components/facets/LogsFacetPanel";
 
-import { LogsTable } from "../../components/table/LogsTable";
-import { LogsTableFooter } from "../../components/table/LogsTableFooter";
-import { LogsTableToolbar } from "../../components/table/LogsTableToolbar";
+import { LogsTable } from "@shared/logs/components/table/LogsTable";
+import { LogsTableFooter } from "@shared/logs/components/table/LogsTableFooter";
+import { LogsTableToolbar } from "@shared/logs/components/table/LogsTableToolbar";
 import { LogsActions } from "../../components/toolbar/LogsActions";
 import { LogsToolbar } from "../../components/toolbar/LogsToolbar";
 import { LogsSummaryChips } from "../../components/trend/LogsSummaryChips";

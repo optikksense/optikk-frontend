@@ -1,6 +1,6 @@
 import { PageSurface } from "@shared/components/ui";
 
-import type { ErrorLatestOccurrence } from "../../api/errorGroupsApi";
+import type { ErrorLatestOccurrence } from "@shared/api/errors";
 
 interface Props {
   readonly occurrence: ErrorLatestOccurrence | null | undefined;

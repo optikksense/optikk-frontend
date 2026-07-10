@@ -13,10 +13,10 @@ import {
   getLogsFacets,
   getLogsSummary,
   getLogsTrend,
-} from "../api/logsAnalyticsApi";
-import { queryLogs } from "../api/logsQueryApi";
-import { useLogsExplorerStore } from "../store/logsExplorerStore";
-import type { LogRecord } from "../types/log";
+} from "@shared/logs/api/logsAnalyticsApi";
+import { queryLogs } from "@shared/logs/api/logsQueryApi";
+import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
+import type { LogRecord } from "@shared/logs/types/log";
 
 const DEFAULT_PAGE_SIZE = 100;
 

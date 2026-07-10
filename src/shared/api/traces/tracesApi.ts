@@ -4,6 +4,7 @@ import { validateResponse } from "@shared/api/utils/validate";
 import { z } from "zod";
 import { buildTracesFilters } from "./buildTracesFilters";
 
+import { type ServiceTopologyResponse, topologyResponseSchema } from "@shared/api/topology";
 import {
   criticalPathSpanSchema,
   errorPathSpanSchema,
@@ -12,7 +13,7 @@ import {
   spanEventSchema,
   spanRecordSchema,
   traceErrorGroupSchema,
-} from "@shared/api/schemas/tracesSchemas";
+} from "@shared/api/traces/schemas";
 import type {
   CriticalPathSpanRecord,
   ErrorPathSpanRecord,
@@ -21,9 +22,8 @@ import type {
   SpanEventRecord,
   SpanRecord,
   TraceErrorGroup,
-} from "@shared/api/schemas/tracesSchemas";
-import { type ServiceTopologyResponse, topologyResponseSchema } from "@shared/api/topology";
-import type { TraceSummary, TracesQueryRequest, TracesQueryResponse } from "../types/trace";
+} from "@shared/api/traces/schemas";
+import type { TraceSummary, TracesQueryRequest, TracesQueryResponse } from "./types";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 

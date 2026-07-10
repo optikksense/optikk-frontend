@@ -2,7 +2,7 @@ import { Tag } from "lucide-react";
 
 import { PageSurface } from "@shared/components/ui";
 
-import type { ErrorFacetGroup } from "../../api/errorGroupsApi";
+import type { ErrorFacetGroup } from "@shared/api/errors";
 
 interface Props {
   readonly groups: ErrorFacetGroup[];

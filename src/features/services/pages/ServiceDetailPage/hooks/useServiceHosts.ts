@@ -1,6 +1,6 @@
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { type Host, getHosts } from "@/features/infrastructure/api/hostsApi";
+import { type Host, getHosts } from "@shared/api/hosts";
 
 export function useServiceHosts(serviceName: string) {
   return useTimeRangeQuery<Host[]>(

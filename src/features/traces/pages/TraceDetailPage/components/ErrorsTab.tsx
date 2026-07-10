@@ -3,7 +3,7 @@ import { memo, useMemo } from "react";
 
 import { formatDuration } from "@shared/utils/formatters";
 
-import type { TraceErrorGroup } from "@shared/api/schemas/tracesSchemas";
+import type { TraceErrorGroup } from "@shared/api/traces/schemas";
 import type { TraceRecord } from "@shared/entities/trace/model";
 
 import { TraceErrorSummary } from "./TraceErrorSummary";

@@ -2,8 +2,8 @@ import { memo } from "react";
 
 import { formatNumber } from "@shared/utils/formatters";
 
-import type { LogsSummary } from "../../api/logsAnalyticsApi";
-import { severityColor } from "../../utils/severity";
+import type { LogsSummary } from "@shared/logs/api/logsAnalyticsApi";
+import { severityColor } from "@shared/logs/utils/severity";
 
 interface Props {
   readonly summary: LogsSummary | undefined;

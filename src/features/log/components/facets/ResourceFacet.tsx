@@ -1,7 +1,7 @@
 import { Minus, Plus } from "lucide-react";
 import { memo, useState } from "react";
 
-import type { LogsFacetValue } from "../../api/logsAnalyticsApi";
+import type { LogsFacetValue } from "@shared/logs/api/logsAnalyticsApi";
 
 interface Props {
   readonly field: string;

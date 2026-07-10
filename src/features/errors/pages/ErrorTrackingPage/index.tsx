@@ -12,7 +12,7 @@ import {
   type ErrorTimeSeriesPoint,
   getErrorVolume,
   listErrorGroups,
-} from "../../api/errorGroupsApi";
+} from "@shared/api/errors";
 import { ErrorsKpiStrip, type ErrorsKpis } from "./ErrorsKpiStrip";
 import { IssuesTable } from "./IssuesTable";
 import { type ServiceFacet, ServiceFacetRail } from "./ServiceFacetRail";

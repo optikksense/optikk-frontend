@@ -6,7 +6,7 @@ import ObservabilityChart, {
 } from "@shared/components/ui/charts/ObservabilityChart";
 import { tsMs } from "@shared/utils/chartDataUtils";
 
-import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
+import type { ErrorTimeSeriesPoint } from "@shared/api/errors";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { fmtPct } from "@shared/utils/metricFormatters";

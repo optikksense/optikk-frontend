@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react";
 
 import { PageSurface, Skeleton } from "@shared/components/ui";
 
-import type { ErrorGroupTrace } from "../../api/errorGroupsApi";
+import type { ErrorGroupTrace } from "@shared/api/errors";
 
 interface Props {
   readonly traces: readonly ErrorGroupTrace[];

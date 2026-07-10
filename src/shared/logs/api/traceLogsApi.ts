@@ -1,7 +1,7 @@
 import { API_CONFIG } from "@config/apiConfig";
 import api from "@shared/api/api/client";
-import { traceLogSchema } from "@shared/api/schemas/tracesSchemas";
-import type { TraceLogsResponse } from "@shared/api/schemas/tracesSchemas";
+import { traceLogSchema } from "@shared/api/traces/schemas";
+import type { TraceLogsResponse } from "@shared/api/traces/schemas";
 import { validateResponse } from "@shared/api/utils/validate";
 import { z } from "zod";
 

@@ -5,8 +5,8 @@ import { useExplorerQuery } from "@shared/search/hooks/useExplorerQuery";
 import { useExplorerState } from "@shared/search/hooks/useExplorerState";
 import type { ExplorerIncludeFlag } from "@shared/search/types";
 
-import { query, queryFacets, queryTrend } from "../api/tracesApi";
-import type { TracesQueryResponse } from "../types/trace";
+import { query, queryFacets, queryTrend } from "@shared/api/traces/tracesApi";
+import type { TracesQueryResponse } from "@shared/api/traces/types";
 
 interface UseTracesExplorerArgs {
   readonly include?: readonly ExplorerIncludeFlag[];

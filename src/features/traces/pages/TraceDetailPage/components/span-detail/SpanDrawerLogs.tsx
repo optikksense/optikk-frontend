@@ -1,6 +1,6 @@
-import { getSeverityTheme } from "@/features/log/utils/logTransformers";
-import type { TraceLog } from "@shared/api/schemas/tracesSchemas";
+import type { TraceLog } from "@shared/api/traces/schemas";
 import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { getSeverityTheme } from "@shared/logs/utils/logTransformers";
 
 interface SpanDrawerLogsProps {
   spanLogs: readonly TraceLog[];

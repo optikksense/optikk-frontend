@@ -3,8 +3,8 @@ import { memo, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import type { LogsFacets } from "../../api/logsAnalyticsApi";
-import { useLogsExplorerStore } from "../../store/logsExplorerStore";
+import type { LogsFacets } from "@shared/logs/api/logsAnalyticsApi";
+import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
 import { ResourceFacet } from "./ResourceFacet";
 import { SeverityFacet } from "./SeverityFacet";
 

@@ -1,4 +1,4 @@
-export type { TraceRecord } from "@shared/api/schemas/tracesSchemas";
+export type { TraceRecord } from "@shared/api/traces/schemas";
 
 export interface SpanEvent {
   readonly spanId: string;

@@ -6,29 +6,6 @@ import type { FleetPod } from "../types";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-type HostStatus = "healthy" | "warn" | "error";
-
-// Host is the unified row from GET /infrastructure/hosts. The saturation fields
-// are always present; the RED traffic fields are populated only when the request
-// is scoped to a service.
-export interface Host {
-  readonly host: string;
-  readonly subsystem: string;
-  readonly cpu: number;
-  readonly mem: number;
-  readonly disk: number;
-  readonly saturation: number;
-  readonly tone: string;
-  readonly zone?: string;
-  readonly rps?: number;
-  readonly error_rate?: number;
-  readonly p99_ms?: number;
-  readonly status?: HostStatus;
-  readonly last_seen?: string;
-  readonly request_count?: number;
-  readonly error_count?: number;
-}
-
 export interface InfrastructureNode {
   readonly host: string;
   readonly pod_count: number;
@@ -61,12 +38,6 @@ export interface InfrastructureNodeSummary {
 
 function range(s: RequestTime, e: RequestTime) {
   return { startTime: s, endTime: e };
-}
-
-export function getHosts(s: RequestTime, e: RequestTime, serviceName?: string): Promise<Host[]> {
-  return api.get<Host[]>(`${V1}/infrastructure/hosts`, {
-    params: serviceName ? { ...range(s, e), service: serviceName } : range(s, e),
-  });
 }
 
 export function getNodes(s: RequestTime, e: RequestTime): Promise<InfrastructureNode[]> {

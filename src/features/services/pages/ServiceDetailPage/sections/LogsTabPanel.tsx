@@ -1,5 +1,5 @@
-import { LogDetailDrawer } from "@/features/log/components/detail/LogDetailDrawer";
-import { LogsTable } from "@/features/log/components/table/LogsTable";
+import { LogDetailDrawer } from "@shared/logs/components/detail/LogDetailDrawer";
+import { LogsTable } from "@shared/logs/components/table/LogsTable";
 import { useEffect, useState } from "react";
 import { useServiceLogs } from "../hooks/useServiceLogs";
 

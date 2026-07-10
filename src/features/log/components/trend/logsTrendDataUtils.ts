@@ -1,4 +1,4 @@
-import type { LogsTrendBucket } from "../../api/logsAnalyticsApi";
+import type { LogsTrendBucket } from "@shared/logs/api/logsAnalyticsApi";
 
 interface ChartBucket {
   readonly ts: number;

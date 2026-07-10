@@ -1,6 +1,6 @@
-import { queryLogs } from "@/features/log/api/logsQueryApi";
-import type { LogsQueryResponse } from "@/features/log/types/log";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+import { queryLogs } from "@shared/logs/api/logsQueryApi";
+import type { LogsQueryResponse } from "@shared/logs/types/log";
 
 export function useServiceLogs(serviceName: string, limit = 25, cursor?: string) {
   return useTimeRangeQuery<LogsQueryResponse>(

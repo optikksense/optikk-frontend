@@ -1,9 +1,6 @@
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import {
-  type ErrorTimeSeriesPoint,
-  getServiceErrorRate,
-} from "@/features/errors/api/errorGroupsApi";
+import { type ErrorTimeSeriesPoint, getServiceErrorRate } from "@shared/api/errors";
 
 export function useErrorRateSeries(serviceName: string) {
   return useTimeRangeQuery<ErrorTimeSeriesPoint[]>(

@@ -1,4 +1,4 @@
-import { getErrorGroupLatestOccurrence } from "@/features/errors/api/errorGroupsApi";
+import { getErrorGroupLatestOccurrence } from "@shared/api/errors";
 import { PaginationFooter } from "@shared/components/table/PaginationFooter";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { parseStackFrames } from "@shared/utils/errorParsers";

@@ -1,8 +1,8 @@
-import type { ErrorTimeSeriesPoint } from "@/features/errors/api/errorGroupsApi";
 import type {
   LatencyPercentilesPoint,
   StatusTimeseriesPoint,
 } from "@/features/services/api/redApi";
+import type { ErrorTimeSeriesPoint } from "@shared/api/errors";
 import type { ServiceTopologyEdge } from "@shared/api/topology";
 import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 

@@ -1,9 +1,9 @@
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
+import type { LogsTrendBucket } from "@shared/logs/api/logsAnalyticsApi";
+import { severityColor } from "@shared/logs/utils/severity";
 import { memo, useMemo } from "react";
-import type { LogsTrendBucket } from "../../api/logsAnalyticsApi";
-import { severityColor } from "../../utils/severity";
 import { buildCumulativeSeries, prepareLogsTrendData } from "./logsTrendDataUtils";
 
 interface Props {

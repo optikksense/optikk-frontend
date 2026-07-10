@@ -4,7 +4,7 @@ import type { ServiceTopologyResponse } from "@shared/api/topology";
 import { useImmutableQuery } from "@shared/hooks/useImmutableQuery";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
-import { tracesService } from "../api/tracesApi";
+import { tracesService } from "@shared/api/traces/tracesApi";
 
 // Pad the (often sub-minute) trace window out to whole minutes so the RED
 // 1-minute rollup returns the bucket(s) covering the trace.

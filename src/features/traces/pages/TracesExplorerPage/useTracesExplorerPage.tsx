@@ -17,8 +17,8 @@ import { formatNumber } from "@shared/utils/formatters";
 
 import { resolveTimeRangeBounds } from "@/types";
 
+import type { TraceSummary, TracesFacetBucket } from "@shared/api/traces/types";
 import { useTracesExplorer } from "../../hooks/useTracesExplorer";
-import type { TraceSummary, TracesFacetBucket } from "../../types/trace";
 import { sortTraces } from "../../utils/sortTraces";
 
 /**

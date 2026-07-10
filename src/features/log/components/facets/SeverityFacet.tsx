@@ -2,8 +2,8 @@ import { memo } from "react";
 
 import { cn } from "@/lib/utils";
 
-import type { SeveritySlug } from "../../utils/severity";
-import { SEVERITY_STYLES } from "../../utils/severity";
+import type { SeveritySlug } from "@shared/logs/utils/severity";
+import { SEVERITY_STYLES } from "@shared/logs/utils/severity";
 
 interface Props {
   readonly labels: readonly string[];

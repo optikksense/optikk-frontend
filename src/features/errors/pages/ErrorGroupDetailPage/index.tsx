@@ -13,7 +13,7 @@ import {
   getErrorGroupLatestOccurrence,
   getErrorGroupTimeseries,
   getErrorGroupTraces,
-} from "../../api/errorGroupsApi";
+} from "@shared/api/errors";
 
 import { RequestContextCard } from "./RequestContextCard";
 import { TracesPanel } from "./TracesPanel";

@@ -1,7 +1,7 @@
 import { ScrollText } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
 
-import type { TraceLog } from "@shared/api/schemas/tracesSchemas";
+import type { TraceLog } from "@shared/api/traces/schemas";
 import { DrawerJson, DrawerShell, DrawerTabs } from "@shared/components/ui/overlay/detail-drawer";
 import type { TraceRecord } from "@shared/entities/trace/model";
 

@@ -8,7 +8,7 @@
  */
 import type { RequestTime } from "@/shared/api/service-types";
 
-import { getHosts } from "@/features/infrastructure/api/hostsApi";
+import { getHosts } from "@shared/api/hosts";
 
 import { getDatastoreSummary, getDatastoreSystems } from "./datastoresExplorerApi";
 import { getKafkaSummary } from "./kafkaExplorerApi";
@@ -17,7 +17,7 @@ export type {
   DatastoreSummary,
   DatastoreSystemRow,
 } from "./datastoresExplorerSchemas";
-export type { Host as HostSaturationRow } from "@/features/infrastructure/api/hostsApi";
+export type { Host as HostSaturationRow } from "@shared/api/hosts";
 export type { KafkaSummary } from "./kafkaExplorerSchemas";
 
 type R = RequestTime;

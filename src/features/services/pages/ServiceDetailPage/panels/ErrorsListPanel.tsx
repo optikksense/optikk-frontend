@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import type { ErrorGroup } from "@/features/errors/api/errorGroupsApi";
+import type { ErrorGroup } from "@shared/api/errors";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { fmtNum, relativeTimeFromIso } from "@shared/utils/metricFormatters";
