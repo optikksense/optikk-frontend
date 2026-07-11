@@ -34,22 +34,17 @@ export function TrendStrip({ buckets, startTime, endTime }: Props) {
   const widthPct = Math.max((bucketMs / durationMs) * 100, 0.5);
 
   return (
-    <div
-      className="bg-card"
-      style={{ border: "1px solid var(--line)", borderRadius: 8, padding: 18, marginBottom: 16 }}
-    >
-      <div className="flex flex-row items-center justify-between" style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--fg-0)" }}>
-          Trace Volume Over Time
-        </div>
-        <div className="flex flex-row items-center" style={{ gap: 16 }}>
+    <div className="bg-card border border-border rounded-lg p-[18px] mb-4">
+      <div className="flex flex-row items-center justify-between mb-4">
+        <div className="text-[14.5px] font-bold text-foreground">Trace Volume Over Time</div>
+        <div className="flex flex-row items-center gap-4">
           {SEGMENTS.map((s) => (
             <LegendDot key={s.key} color={s.color} label={s.label} />
           ))}
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "34px 1fr", gap: 8 }}>
+      <div className="grid grid-cols-[34px_1fr] gap-2">
         <div
           className="font-mono text-foreground-muted"
           style={{
@@ -218,9 +213,9 @@ function Tooltip({
 
 function LegendDot({ color, label }: { color: string; label: string }) {
   return (
-    <div className="flex flex-row items-center" style={{ gap: 6 }}>
-      <span style={{ width: 8, height: 8, borderRadius: "50%", background: color }} />
-      <span style={{ fontSize: 12.5, color: "var(--fg-1)" }}>{label}</span>
+    <div className="flex flex-row items-center gap-1.5">
+      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+      <span className="text-[12.5px] text-foreground-secondary">{label}</span>
     </div>
   );
 }

@@ -114,10 +114,11 @@ export function KafkaGroupDrawer({ group, topo, open, onClose, onOpenTopic }: Pr
             >
               <div className="flex flex-col gap-2">
                 {subscribed.map((s, i) => (
-                  <div
+                  <button
+                    type="button"
                     key={i}
                     onClick={() => openTopic(s.topic)}
-                    className="cursor-pointer rounded-lg border bg-[var(--bg-inset)] px-3 py-2.5"
+                    className="block w-full cursor-pointer rounded-lg border bg-[var(--bg-inset)] px-3 py-2.5 text-left"
                     style={{
                       borderColor:
                         levelFromError(s.error) === "err"
@@ -149,7 +150,7 @@ export function KafkaGroupDrawer({ group, topo, open, onClose, onOpenTopic }: Pr
                         · {fmtRate(s.rate)}/s
                       </span>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </DrawerSection>
@@ -182,10 +183,11 @@ export function KafkaGroupDrawer({ group, topo, open, onClose, onOpenTopic }: Pr
           >
             <div className="flex flex-col gap-2">
               {subscribed.map((s, i) => (
-                <div
+                <button
+                  type="button"
                   key={i}
                   onClick={() => openTopic(s.topic)}
-                  className="grid cursor-pointer grid-cols-[1fr_auto] items-center gap-2.5 rounded-lg border border-[var(--line-2)] bg-[var(--bg-inset)] px-3 py-2.5"
+                  className="block grid w-full cursor-pointer grid-cols-[1fr_auto] items-center gap-2.5 rounded-lg border border-[var(--line-2)] bg-[var(--bg-inset)] px-3 py-2.5 text-left"
                 >
                   <div className="min-w-0">
                     <div className="truncate font-mono text-[13px] text-[var(--fg-0)]">
@@ -206,7 +208,7 @@ export function KafkaGroupDrawer({ group, topo, open, onClose, onOpenTopic }: Pr
                       {LEVEL_LABEL[levelFromError(s.error)]}
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </DrawerSection>

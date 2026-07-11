@@ -29,7 +29,6 @@ export function KafkaDataStreams() {
   const [openGroup, setOpenGroup] = useState<GroupSelection | null>(null);
 
   const effectiveSel = selected.length > 0 ? selected : services[0] ? [services[0].id] : [];
-  const selSet = new Set(effectiveSel);
 
   const toggleSvc = (id: string) =>
     setSelected((prev) => {
@@ -41,21 +40,22 @@ export function KafkaDataStreams() {
 
   const scopeTopics = useMemo(() => {
     const s = new Set<string>();
+    const selSet = new Set(effectiveSel);
     for (const e of topo.edges) {
       if (e.kind === "produce" && selSet.has(e.source)) s.add(e.target);
       if (e.kind === "consume" && selSet.has(e.target)) s.add(e.source);
     }
     return s;
-  }, [topo, effectiveSel.join(",")]);
+  }, [topo, effectiveSel]);
 
   const pathways = useMemo(
     () =>
       topo.pathways
-        .filter((p) => selSet.has(p.producer) || selSet.has(p.consumer))
+        .filter((p) => effectiveSel.includes(p.producer) || effectiveSel.includes(p.consumer))
         .sort(
           (a, b) => b.error_rate - a.error_rate || b.consume_rate_per_sec - a.consume_rate_per_sec
         ),
-    [topo, effectiveSel.join(",")]
+    [topo, effectiveSel]
   );
 
   const scopeTopicNodes = topo.topics.filter((t) => scopeTopics.has(t.topic));

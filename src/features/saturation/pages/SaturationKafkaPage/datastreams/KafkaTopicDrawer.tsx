@@ -45,14 +45,15 @@ function SvcChip({
   level?: Level;
   onClick?: () => void;
 }) {
+  const Component = onClick ? "button" : "div";
   return (
-    <div
+    <Component
+      type={onClick ? "button" : undefined}
       onClick={onClick}
-      className="flex items-center justify-between rounded-lg border bg-[var(--bg-inset)] px-3 py-2.5"
+      className={`flex items-center justify-between rounded-lg border bg-[var(--bg-inset)] px-3 py-2.5 ${onClick ? "block w-full cursor-pointer text-left" : ""}`}
       style={{
         borderColor:
           level === "err" ? "color-mix(in oklab, var(--err) 25%, transparent)" : "var(--line-2)",
-        cursor: onClick ? "pointer" : "default",
       }}
     >
       <div className="flex min-w-0 items-center gap-2.5">
@@ -80,7 +81,7 @@ function SvcChip({
           <div className="font-mono text-[11px] text-[var(--fg-3)]">err</div>
         </div>
       )}
-    </div>
+    </Component>
   );
 }
 

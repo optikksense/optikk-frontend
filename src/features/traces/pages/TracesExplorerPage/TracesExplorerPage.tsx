@@ -17,7 +17,7 @@ export default function TracesExplorerPage() {
 
   return (
     <div className="flex h-full flex-col bg-background">
-      <div style={{ backgroundColor: "#fcfaf7" }}>
+      <div className="bg-surface-muted">
         <ExplorerHeader
           ref={p.searchInputRef}
           variant="dsl"
@@ -28,10 +28,7 @@ export default function TracesExplorerPage() {
         />
       </div>
 
-      <div
-        className="min-h-0 flex-1 overflow-hidden"
-        style={{ display: "grid", gridTemplateColumns: "236px 1fr" }}
-      >
+      <div className="min-h-0 flex-1 overflow-hidden grid grid-cols-[236px_1fr]">
         {}
         <TracesFacetRail
           groups={p.facetGroups}
@@ -41,11 +38,8 @@ export default function TracesExplorerPage() {
         />
 
         {}
-        <div className="flex flex-col min-h-0 bg-background" style={{ padding: "18px 22px" }}>
-          <div
-            className="flex flex-row items-center"
-            style={{ gap: 10, marginBottom: 16, flexShrink: 0 }}
-          >
+        <div className="flex flex-col min-h-0 bg-background p-4 md:p-[18px_22px]">
+          <div className="flex flex-row items-center gap-2.5 mb-4 shrink-0">
             <StatPill label="Total" value={formatNumber(p.summary?.total ?? 0)} />
             <StatPill
               label="Errors"
@@ -55,7 +49,7 @@ export default function TracesExplorerPage() {
           </div>
 
           {p.trendBuckets.length > 0 ? (
-            <div style={{ flexShrink: 0 }}>
+            <div className="shrink-0">
               <TrendStrip buckets={p.trendBuckets} startTime={p.startTime} endTime={p.endTime} />
             </div>
           ) : null}
@@ -78,30 +72,12 @@ export default function TracesExplorerPage() {
 
 function StatPill({ label, value, dot }: { label: string; value: string; dot?: string }) {
   return (
-    <div
-      className="flex flex-row items-center"
-      style={{
-        gap: 8,
-        height: 32,
-        padding: "0 14px",
-        borderRadius: 999,
-        border: "1px solid var(--line)",
-        background: "var(--bg-card)",
-      }}
-    >
-      {dot ? <span style={{ width: 8, height: 8, borderRadius: "50%", background: dot }} /> : null}
-      <span
-        style={{
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-          color: "var(--fg-3)",
-        }}
-      >
+    <div className="flex flex-row items-center gap-2 h-8 px-[14px] rounded-full border border-border bg-card">
+      {dot ? <span style={{ backgroundColor: dot }} className="w-2 h-2 rounded-full" /> : null}
+      <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-foreground-muted">
         {label}
       </span>
-      <span style={{ fontSize: 15, fontWeight: 700, color: "var(--fg-0)" }}>{value}</span>
+      <span className="text-[15px] font-bold text-foreground">{value}</span>
     </div>
   );
 }

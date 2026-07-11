@@ -87,7 +87,7 @@ export function GroupByBreakdownTable({ primaryQuery, result }: GroupByBreakdown
           No grouped series. Add a group-by to the primary query.
         </div>
       ) : (
-        <div className="overflow-auto max-h-[600px] relative" ref={scrollRef}>
+        <div className="relative max-h-[600px] overflow-auto" ref={scrollRef}>
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
               <TableRow>

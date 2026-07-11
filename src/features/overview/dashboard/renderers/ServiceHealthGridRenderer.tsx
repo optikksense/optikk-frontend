@@ -50,8 +50,9 @@ export function ServiceHealthGridRenderer({
         >
           {serviceHealth.map((service) => (
             <div key={service.name}>
-              <div
-                className="hover:-translate-y-px cursor-pointer rounded-lg border border-border bg-muted p-3 text-center transition-all duration-200 hover:border-primary"
+              <button
+                type="button"
+                className="hover:-translate-y-px cursor-pointer rounded-lg border border-border bg-muted p-3 text-center transition-all duration-200 hover:border-primary block w-full"
                 onClick={() =>
                   navigate({
                     to:
@@ -83,7 +84,7 @@ export function ServiceHealthGridRenderer({
                 >
                   {Math.max(0, Number(service.errorRate)).toFixed(2)}% err
                 </div>
-              </div>
+              </button>
             </div>
           ))}
         </div>

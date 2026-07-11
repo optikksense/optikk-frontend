@@ -57,7 +57,7 @@ function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputEle
         props.disableBareFreeTextFallback
       );
     },
-    [showPopover, s, props.onApply, activeOpt]
+    [showPopover, s, props.onApply, activeOpt, props.disableBareFreeTextFallback]
   );
   return (
     <DslBarLayout

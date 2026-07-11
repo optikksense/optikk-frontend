@@ -39,7 +39,12 @@ export function ServiceMultiSelect({ options, selected, onToggle }: Props) {
       </button>
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <button
+            type="button"
+            aria-label="Close"
+            className="fixed inset-0 z-40 block w-full cursor-default"
+            onClick={() => setOpen(false)}
+          />
           <div className="absolute top-[38px] left-0 z-41 max-h-[360px] w-[288px] overflow-y-auto rounded-[10px] border border-[var(--line)] bg-[var(--bg-card)] p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.16)]">
             <div className="px-2.5 pt-1.5 pb-1 font-semibold text-[10px] text-[var(--fg-3)] uppercase tracking-[0.06em]">
               Select clients · {selected.length} active
@@ -47,10 +52,11 @@ export function ServiceMultiSelect({ options, selected, onToggle }: Props) {
             {sorted.map((s) => {
               const on = selected.includes(s.id);
               return (
-                <div
+                <button
+                  type="button"
                   key={s.id}
                   onClick={() => onToggle(s.id)}
-                  className="flex cursor-pointer items-center gap-2.5 rounded-[7px] px-2.5 py-2"
+                  className="flex w-full cursor-pointer items-center gap-2.5 rounded-[7px] px-2.5 py-2 text-left"
                   style={{ background: on ? "var(--brand-tint)" : "transparent" }}
                 >
                   <span
@@ -75,7 +81,7 @@ export function ServiceMultiSelect({ options, selected, onToggle }: Props) {
                   >
                     {s.id}
                   </span>
-                </div>
+                </button>
               );
             })}
           </div>

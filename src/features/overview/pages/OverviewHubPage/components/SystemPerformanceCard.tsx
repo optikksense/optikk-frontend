@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 
-import { useTheme } from "@app/store/appStore";
 import { Surface } from "@shared/components/primitives/ui";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
-import { tsMs } from "@shared/utils/chartDataUtils";
 import { resolveThemeColor } from "@shared/utils/chartTheme";
 
 import type { PerformanceSeries } from "../hooks/useOverviewModel";
+import { usePerformanceChartData } from "../hooks/usePerformanceChartData";
+import { type HoverState, SystemPerformanceTooltip } from "./SystemPerformanceTooltip";
 
 const CHART_HEIGHT = 200;
 
@@ -26,57 +26,23 @@ function formatAxisValue(value: number | null | undefined): string {
 }
 
 export default function SystemPerformanceCard({ series, loading }: Props) {
-  const theme = useTheme();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<uPlot | null>(null);
 
-  const [hoverState, setHoverState] = useState<{
-    left: number;
-    top: number;
-    title?: string;
-    rows: Array<{ label: string; value: string; color?: string }>;
-  } | null>(null);
+  const [hoverState, setHoverState] = useState<HoverState | null>(null);
 
   const showEmpty = !loading && !series.hasRequests && !series.hasErrors;
 
   // Resolve dynamic colors based on theme
-  const requestColor = useMemo(
-    () => resolveThemeColor("var(--literal-hex-3b82f6)", "#3b82f6"),
-    [theme]
-  );
-  const errorColor = useMemo(() => resolveThemeColor("var(--err)", "#ef4444"), [theme]);
+  const requestColor = useMemo(() => resolveThemeColor("var(--literal-hex-3b82f6)", "#3b82f6"), []);
+  const errorColor = useMemo(() => resolveThemeColor("var(--err)", "#ef4444"), []);
 
-  const { timestamps, reqValues, errValues } = useMemo(() => {
-    const reqByTs = new Map<number, number>();
-    const errByTs = new Map<number, number>();
-
-    for (const row of series.requestRows) {
-      const t = Math.floor(tsMs(row.timestamp as string) / 1000);
-      if (!Number.isFinite(t)) continue;
-      reqByTs.set(t, (reqByTs.get(t) ?? 0) + Number(row.request_count ?? row.value ?? 0));
-    }
-    for (const row of series.errorRows) {
-      const t = Math.floor(tsMs(row.timestamp as string) / 1000);
-      if (!Number.isFinite(t)) continue;
-      errByTs.set(t, (errByTs.get(t) ?? 0) + Number(row.error_count ?? 0));
-    }
-
-    const allTs = [...new Set([...reqByTs.keys(), ...errByTs.keys()])].sort((a, b) => a - b);
-
-    return {
-      timestamps: allTs,
-      reqValues: allTs.map((t) => reqByTs.get(t) ?? 0),
-      errValues: allTs.map((t) => errByTs.get(t) ?? 0),
-    };
-  }, [series.requestRows, series.errorRows]);
-
-  const alignedData = useMemo<uPlot.AlignedData>(
-    () => [timestamps, reqValues, errValues],
-    [timestamps, reqValues, errValues]
-  );
+  const alignedData = usePerformanceChartData(series);
 
   const currentData = useRef<uPlot.AlignedData>(alignedData);
-  currentData.current = alignedData;
+  useLayoutEffect(() => {
+    currentData.current = alignedData;
+  }, [alignedData]);
 
   useEffect(() => {
     const el = chartContainerRef.current;
@@ -261,7 +227,7 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
       chart.destroy();
       chartRef.current = null;
     };
-  }, [showEmpty, theme, requestColor, errorColor]);
+  }, [showEmpty, requestColor, errorColor]);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -297,35 +263,7 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
         </div>
       ) : (
         <div ref={chartContainerRef} className="relative w-full" style={{ height: CHART_HEIGHT }}>
-          {hoverState ? (
-            <div
-              className="pointer-events-none absolute z-20 min-w-[220px] rounded-[var(--card-radius)] border border-border bg-surface-overlay px-3 py-2 shadow-[var(--shadow-md)] backdrop-blur-[10px]"
-              style={{ left: hoverState.left, top: hoverState.top }}
-            >
-              {hoverState.title ? (
-                <div className="mb-2 font-semibold text-[11px] text-foreground-secondary">
-                  {hoverState.title}
-                </div>
-              ) : null}
-              <div className="flex flex-col gap-1.5">
-                {hoverState.rows.map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex items-center justify-between gap-3 text-[11px]"
-                  >
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span
-                        className="h-2 w-2 shrink-0 rounded-full"
-                        style={{ backgroundColor: row.color ?? "var(--text-muted)" }}
-                      />
-                      <span className="truncate text-foreground-secondary">{row.label}</span>
-                    </div>
-                    <span className="shrink-0 font-mono text-foreground">{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
+          {hoverState ? <SystemPerformanceTooltip hoverState={hoverState} /> : null}
         </div>
       )}
     </Surface>
