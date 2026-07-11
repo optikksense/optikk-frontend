@@ -36,7 +36,7 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 
 ### 4. Import Aliases (exactly four)
 - `@/*` → `src/*`, `@app/*` → `src/app/*`, `@shared/*` → `src/shared/*`, `@config/*` → `src/config/*`.
-- Declared in three places that MUST stay in sync: [tsconfig.json](tsconfig.json), [vite.config.ts](vite.config.ts), and [scripts/check-boundaries.mjs](scripts/check-boundaries.mjs). Do not add new aliases.
+- **Source of truth**: the `paths` block in [tsconfig.json](tsconfig.json). [scripts/check-boundaries.mjs](scripts/check-boundaries.mjs) reads it directly (cannot drift). [vite.config.ts](vite.config.ts) mirrors it by hand — the only place to keep in sync. Do not add new aliases.
 
 ### 5. API & Routing Rules
 - **GET APIs**: Must use `get*` prefix (e.g., `getREDSummary`). `fetch*` is reserved for the browser Fetch API.

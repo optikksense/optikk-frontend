@@ -7,13 +7,21 @@ import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-// Mirrors tsconfig.json "paths" (keep in sync). Order matters: longest first.
-const ALIASES = [
-  ["@app/", "src/app/"],
-  ["@shared/", "src/shared/"],
-  ["@config/", "src/config/"],
-  ["@/", "src/"],
-];
+// Import aliases are the single source of truth in tsconfig.json "paths".
+// Read them here (no JSONC — tsconfig is plain JSON) so the two files can
+// never drift. Longest prefix first so "@app/" wins over "@/".
+function loadAliases() {
+  const tsconfig = JSON.parse(readFileSync("tsconfig.json", "utf8"));
+  const paths = tsconfig.compilerOptions?.paths ?? {};
+  return Object.entries(paths)
+    .map(([alias, [target]]) => [
+      alias.replace(/\*$/, ""),
+      target.replace(/^\.\//, "").replace(/\*$/, ""),
+    ])
+    .sort((a, b) => b[0].length - a[0].length);
+}
+
+const ALIASES = loadAliases();
 
 const IMPORT_RE = /(?:from|import)\s*\(?\s*["']([^"']+)["']/g;
 
