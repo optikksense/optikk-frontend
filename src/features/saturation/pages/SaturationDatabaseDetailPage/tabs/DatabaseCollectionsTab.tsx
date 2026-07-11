@@ -6,7 +6,12 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
 
-import { StatusPill } from "@/features/saturation/pages/SaturationDatabasePage/components/StatusPill";
+import { StatusPill } from "@shared/components/ui/data-display/status/StatusPill";
+
+import {
+  INSTANCE_HEALTH,
+  STATUS_LABEL,
+} from "@/features/saturation/pages/SaturationDatabasePage/databaseInstanceModel";
 import { type CollectionRow, aggregateCollections } from "../collectionsModel";
 import { useDatabaseSystemQueries } from "../hooks/useDatabaseSystemQueries";
 
@@ -57,7 +62,9 @@ const COLUMNS: ColumnDef<CollectionRow>[] = [
     header: "Status",
     accessorKey: "status",
     size: 110,
-    cell: ({ row: { original: row } }) => <StatusPill status={row.status} />,
+    cell: ({ row: { original: row } }) => (
+      <StatusPill status={INSTANCE_HEALTH[row.status]} label={STATUS_LABEL[row.status]} />
+    ),
   },
 ];
 

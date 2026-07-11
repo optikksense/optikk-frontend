@@ -1,4 +1,5 @@
 import { APP_COLORS } from "@config/colorLiterals";
+import type { HealthStatus } from "@shared/components/ui/data-display/status/healthStatus";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 
@@ -15,6 +16,13 @@ export const STATUS_LABEL: Record<InstanceStatus, string> = {
   ok: "healthy",
   warn: "degraded",
   err: "critical",
+};
+
+// Translate the local vocabulary to the shared health-indicator vocabulary.
+export const INSTANCE_HEALTH: Record<InstanceStatus, HealthStatus> = {
+  ok: "healthy",
+  warn: "warn",
+  err: "error",
 };
 
 const ENGINE_COLOR: Record<string, string> = {

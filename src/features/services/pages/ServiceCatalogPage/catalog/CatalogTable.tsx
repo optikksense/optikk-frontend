@@ -4,9 +4,9 @@ import DataTable from "@shared/components/ui/data-display/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
+import { StatusDot } from "@shared/components/ui/data-display/status/StatusDot";
 import { fmtMs, fmtNum, fmtPct } from "@shared/utils/metricFormatters";
 import { ServiceAvatar } from "../../../components/ServiceAvatar";
-import { StatusDot } from "./StatusDot";
 import type { CatalogRow } from "./buildCatalogRows";
 
 function ErrorCell({ rate }: { rate: number }) {
@@ -17,7 +17,7 @@ function ErrorCell({ rate }: { rate: number }) {
 function NameCell({ row }: { row: CatalogRow }) {
   return (
     <div className="flex min-w-0 items-center gap-2.5">
-      <StatusDot status={row.status} />
+      <StatusDot status={row.status} ring className="h-2 w-2" />
       <ServiceAvatar serviceName={row.serviceName} size={26} />
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate font-semibold text-[12.5px] text-foreground">

@@ -9,9 +9,15 @@ import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExp
 import { ROUTES } from "@/shared/constants/routes";
 import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
 
+import { StatusPill } from "@shared/components/ui/data-display/status/StatusPill";
+
 import { DbEngineIcon } from "../components/DbEngineIcon";
-import { StatusPill } from "../components/StatusPill";
-import { engineColor, instanceStatus } from "../databaseInstanceModel";
+import {
+  INSTANCE_HEALTH,
+  STATUS_LABEL,
+  engineColor,
+  instanceStatus,
+} from "../databaseInstanceModel";
 
 const P95_WARN_MS = 1000;
 const P95_CRIT_MS = 2000;
@@ -110,7 +116,10 @@ function buildColumns(sparklines: Map<string, number[]>): ColumnDef<DatastoreSys
       header: "Status",
       accessorKey: "status",
       size: 120,
-      cell: ({ row: { original: row } }) => <StatusPill status={instanceStatus(row)} />,
+      cell: ({ row: { original: row } }) => {
+        const s = instanceStatus(row);
+        return <StatusPill status={INSTANCE_HEALTH[s]} label={STATUS_LABEL[s]} />;
+      },
     },
     {
       header: "",

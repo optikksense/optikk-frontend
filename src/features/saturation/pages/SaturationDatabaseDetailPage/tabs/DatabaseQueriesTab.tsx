@@ -11,7 +11,9 @@ import { ROUTES } from "@/shared/constants/routes";
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
 
-import { StatusDot } from "../components/StatusDot";
+import { StatusDot } from "@shared/components/ui/data-display/status/StatusDot";
+
+import { INSTANCE_HEALTH } from "@/features/saturation/pages/SaturationDatabasePage/databaseInstanceModel";
 import { useDatabaseSystemQueries } from "../hooks/useDatabaseSystemQueries";
 
 const P99_WARN_MS = 1000;
@@ -30,7 +32,7 @@ const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
     size: 460,
     cell: ({ row: { original: row } }) => (
       <div className="flex min-w-0 items-center gap-2">
-        <StatusDot status={p99Status(row.p99_ms ?? 0)} />
+        <StatusDot status={INSTANCE_HEALTH[p99Status(row.p99_ms ?? 0)]} />
         <span className="block truncate font-mono text-[11.5px] text-foreground">
           {row.query_text || "—"}
         </span>

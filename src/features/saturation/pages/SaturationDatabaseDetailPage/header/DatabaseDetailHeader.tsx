@@ -5,9 +5,14 @@ import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExp
 import { ROUTES } from "@/shared/constants/routes";
 import { fmtMs, fmtPct } from "@shared/utils/metricFormatters";
 
+import { StatusPill } from "@shared/components/ui/data-display/status/StatusPill";
+
 import { DbEngineIcon } from "@/features/saturation/pages/SaturationDatabasePage/components/DbEngineIcon";
-import { StatusPill } from "@/features/saturation/pages/SaturationDatabasePage/components/StatusPill";
-import { instanceStatus } from "@/features/saturation/pages/SaturationDatabasePage/databaseInstanceModel";
+import {
+  INSTANCE_HEALTH,
+  STATUS_LABEL,
+  instanceStatus,
+} from "@/features/saturation/pages/SaturationDatabasePage/databaseInstanceModel";
 
 // Short, data-derived reason for a non-healthy badge (no backend issue string).
 function statusDetail(row: DatastoreSystemRow): string | null {
@@ -35,7 +40,7 @@ export function DatabaseDetailHeader({ row }: { row: DatastoreSystemRow }) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="font-mono font-semibold text-[20px] text-foreground">{row.system}</h1>
-            <StatusPill status={status} label={detail ?? undefined} />
+            <StatusPill status={INSTANCE_HEALTH[status]} label={detail ?? STATUS_LABEL[status]} />
           </div>
           <div className="text-[12px] text-foreground-muted">
             {row.category} · {row.server_hint || "unknown region"}

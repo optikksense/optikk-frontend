@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 
+import { StatusPill } from "@shared/components/ui/data-display/status/StatusPill";
+
 import { ServiceAvatar } from "@/features/services/components/ServiceAvatar";
 import { ROUTES } from "@/shared/constants/routes";
 
 import type { HeroData } from "../hooks/useServiceHeroData";
 import { HeroMetaRow } from "./HeroMetaRow";
-import { StatusPill } from "./StatusPill";
 
 interface ServiceHeroHeaderProps {
   readonly serviceName: string;
@@ -36,7 +37,7 @@ export function ServiceHeroHeader({ serviceName, hero, instanceCount }: ServiceH
             <h1 className="truncate font-semibold text-[24px] text-foreground leading-tight">
               {serviceName}
             </h1>
-            <StatusPill status={hero.status} />
+            <StatusPill status={hero.status} className="uppercase tracking-wide" />
           </div>
           <HeroMetaRow instanceCount={instanceCount} />
         </div>
