@@ -2,7 +2,7 @@ import { memo } from "react";
 
 import type { ServiceTopologyResponse } from "@shared/api/topology";
 import type { TraceErrorGroup } from "@shared/api/traces/schemas";
-import type { TraceRecord } from "@shared/entities/trace/model";
+import type { TraceRecord } from "@shared/api/traces/schemas";
 
 import type { VisualizationTab } from "../../../store/tracesStore";
 import type { SpanEvent } from "../../../types";

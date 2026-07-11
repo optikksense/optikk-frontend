@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { forwardRef, memo } from "react";
 
-import { findKnownField, knownFieldsForScope } from "../../search/knownFields";
+import { findKnownField, knownFieldsForScope } from "../../dsl/knownFields";
 import type { ExplorerFilter, ExplorerFilterOp, ExplorerScope } from "../../types/filters";
 import { ExplorerSearchBarDsl } from "./ExplorerSearchBarDsl";
 import type { SuggestionOption } from "./QuerySuggestions";

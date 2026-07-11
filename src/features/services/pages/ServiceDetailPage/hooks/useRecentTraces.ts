@@ -1,8 +1,8 @@
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
+import type { TraceRecord, TracesResponse } from "@shared/api/traces/schemas";
 import { query } from "@shared/api/traces/tracesApi";
 import type { TraceSummary } from "@shared/api/traces/types";
-import type { TraceRecord, TracesResponse } from "@shared/entities/trace/model";
 
 function toTraceRecord(summary: TraceSummary): TraceRecord {
   return {

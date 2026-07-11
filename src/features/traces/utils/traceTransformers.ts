@@ -1,4 +1,4 @@
-import type { TraceRecord } from "@shared/entities/trace/model";
+import type { TraceRecord } from "@shared/api/traces/schemas";
 
 export type EventLevel = "info" | "warn" | "error";
 export interface BarEvent {

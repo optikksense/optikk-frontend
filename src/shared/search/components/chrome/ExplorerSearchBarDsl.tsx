@@ -9,8 +9,8 @@ import {
 } from "react";
 import { Group, Input, Popover, SearchField } from "react-aria-components";
 
+import { formatDsl } from "../../dsl/formatDsl";
 import { useDslSearchBar } from "../../hooks/useDslSearchBar";
-import { formatDsl } from "../../search/formatDsl";
 import type { ExplorerFilter, ExplorerScope } from "../../types/filters";
 import { QuerySuggestions, type SuggestionOption } from "./QuerySuggestions";
 

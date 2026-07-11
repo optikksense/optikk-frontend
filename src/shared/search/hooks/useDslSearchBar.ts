@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import type { SuggestionOption } from "../components/chrome/QuerySuggestions";
-import { dslContextAtCaret, matchingFields } from "../search/dslContext";
+import { dslContextAtCaret, matchingFields } from "../dsl/dslContext";
 import {
   CATEGORY_ORDER,
   type KnownField,
@@ -10,9 +10,9 @@ import {
   SUGGESTABLE_SCALAR_FIELDS,
   knownFieldsForScope,
   quickTemplatesForScope,
-} from "../search/knownFields";
-import { parseDsl } from "../search/parseDsl";
-import { getRecent, pushRecent } from "../search/recentSearches";
+} from "../dsl/knownFields";
+import { parseDsl } from "../dsl/parseDsl";
+import { getRecent, pushRecent } from "../dsl/recentSearches";
 import type { ExplorerScope } from "../types/filters";
 import { useQuerySuggestions } from "./useQuerySuggestions";
 

@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import type { TraceRecord } from "@shared/entities/trace/model";
+import type { TraceRecord } from "@shared/api/traces/schemas";
 
 import type { SpanEvent } from "../../../types";
 

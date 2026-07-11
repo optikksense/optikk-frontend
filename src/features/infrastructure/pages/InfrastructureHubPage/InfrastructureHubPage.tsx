@@ -4,9 +4,9 @@ import { PageShell } from "@shared/components/ui";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { getNodesSummary } from "../api/hostsApi";
-import { INFRA_TAB, type InfraTabId, URL_TAB } from "../constants";
-import type { InfrastructureNodeSummary } from "../types";
+import { getNodesSummary } from "../../api/hostsApi";
+import { INFRA_TAB, type InfraTabId, URL_TAB } from "../../constants";
+import type { InfrastructureNodeSummary } from "../../types";
 import { InfrastructureHubHeader } from "./InfrastructureHubHeader";
 
 const HostsTab = lazy(() => import("./tabs/HostsTab"));

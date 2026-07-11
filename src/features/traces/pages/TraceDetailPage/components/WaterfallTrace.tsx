@@ -1,4 +1,4 @@
-import type { TraceRecord } from "@shared/entities/trace/model";
+import type { TraceRecord } from "@shared/api/traces/schemas";
 import { cn } from "@shared/lib/utils";
 import { formatDuration } from "@shared/utils/formatters";
 import { useVirtualizer } from "@tanstack/react-virtual";

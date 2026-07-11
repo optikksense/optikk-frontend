@@ -8,12 +8,12 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import { getNodes, getNodesSummary } from "../../api/hostsApi";
-import { infraGet } from "../../api/infrastructureApi";
-import { InfraHostsFilterBar } from "../../components/InfraHostsFilterBar";
-import { InfraHostsTable } from "../../components/InfraHostsTable";
-import { InfraTopConsumersSidebar } from "../../components/InfraTopConsumersSidebar";
-import type { InfrastructureNode, InfrastructureNodeSummary, MetricValue } from "../../types";
+import { getNodes, getNodesSummary } from "../../../api/hostsApi";
+import { infraGet } from "../../../api/infrastructureApi";
+import { InfraHostsFilterBar } from "../../../components/InfraHostsFilterBar";
+import { InfraHostsTable } from "../../../components/InfraHostsTable";
+import { InfraTopConsumersSidebar } from "../../../components/InfraTopConsumersSidebar";
+import type { InfrastructureNode, InfrastructureNodeSummary, MetricValue } from "../../../types";
 
 function KpiCard({
   label,

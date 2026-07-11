@@ -3,7 +3,7 @@ import { memo, useMemo } from "react";
 
 import { cn } from "@shared/lib/utils";
 
-import type { TraceRecord } from "@shared/entities/trace/model";
+import type { TraceRecord } from "@shared/api/traces/schemas";
 
 interface Props {
   readonly spans: readonly TraceRecord[];

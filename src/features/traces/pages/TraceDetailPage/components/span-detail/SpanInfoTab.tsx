@@ -1,9 +1,9 @@
 import { AlertCircle, ChevronRight } from "lucide-react";
 import { memo, useMemo } from "react";
 
+import type { TraceRecord } from "@shared/api/traces/schemas";
 import { Skeleton } from "@shared/components/primitives/ui";
 import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
-import type { TraceRecord } from "@shared/entities/trace/model";
 import { formatDuration } from "@shared/utils/formatters";
 
 import type { RelatedTrace, SpanAttributes, SpanEvent, SpanLink } from "../../../../types";

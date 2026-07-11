@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { ROUTES } from "@/shared/constants/routes";
-import type { TraceRecord } from "@shared/entities/trace/model";
+import type { TraceRecord } from "@shared/api/traces/schemas";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { fmtMs, relativeTimeFromIso } from "@shared/utils/metricFormatters";

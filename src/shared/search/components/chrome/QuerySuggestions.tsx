@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Fragment, memo } from "react";
 
-import type { SuggestionIcon, TypeBadge } from "../../search/knownFields";
+import type { SuggestionIcon, TypeBadge } from "../../dsl/knownFields";
 
 export interface SuggestionOption {
   readonly value: string;

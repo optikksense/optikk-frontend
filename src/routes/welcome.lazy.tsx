@@ -1,4 +1,4 @@
-import WelcomePage from "@/app/auth/pages/WelcomePage";
+import WelcomePage from "@/features/onboarding/pages/WelcomePage";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/welcome")({

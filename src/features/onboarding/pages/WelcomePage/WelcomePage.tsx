@@ -9,7 +9,7 @@ import { takeSignupApiKey } from "@shared/api/auth/apiKeyHandoff";
 
 import { resolveOtlpEndpoint } from "@/features/onboarding/otlpEndpoint";
 
-import { LoginBrandPanel } from "../LoginPage/LoginBrandPanel";
+import { LoginBrandPanel } from "@/app/auth/pages/LoginPage/LoginBrandPanel";
 import { buildSnippets } from "./snippets";
 
 export function WelcomePage() {

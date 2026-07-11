@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 
-import { approveDevice } from "../api/deviceAuthApi";
+import { approveDevice } from "../../api/deviceAuthApi";
 
 // Reads an optional ?user_code= to prefill the code shown by the CLI.
 function initialCode(): string {

@@ -44,6 +44,15 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 - **Router Casts**: Use `dynamicNavigateOptions` and `dynamicTo` from [src/shared/utils/navigation.ts](src/shared/utils/navigation.ts) instead of raw `as any` casts.
 - **JWT Authorization**: Access tokens reside in memory ([src/app/auth/tokenStore.ts](src/app/auth/tokenStore.ts)). Attached as `Authorization: Bearer` by `authInterceptor.ts`. Single-flight token refresh runs on 401 using httpOnly cookies.
 
+### 6. Page Entry Convention (one shape)
+- Every page lives in its own folder: `features/<x>/pages/<Name>Page/<Name>Page.tsx` holds the component (`export default`), and a one-line `index.tsx` re-exports it: `export { default } from "./<Name>Page";`.
+- Import pages by directory (`@/features/<x>/pages/<Name>Page`), never the inner file. Flat `pages/<Name>.tsx` files and bare `pages/<Name>/index.tsx` components are not allowed.
+
+### 7. How to Add a Page (three steps)
+1. **Route**: add a file under [src/routes/](src/routes/) (`_app/` for authenticated app pages) that imports the page and sets it as the route `component`. The route tree regenerates automatically ([src/routeTree.gen.ts](src/routeTree.gen.ts)).
+2. **Page**: create `features/<x>/pages/<Name>Page/<Name>Page.tsx` + the one-line `index.tsx` re-export (see §6).
+3. **Nav**: add a `DomainNavigationItem` to `features/<x>/index.ts` so it appears in the sidebar. That is the registry's only role — it does not wire routes.
+
 ---
 
 ## Features & Routes Map
@@ -57,12 +66,12 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 | **Metrics** | `metrics/` | `/metrics` | Metric query builder supporting line, area, bar, stack, heatmap, and top-list. Offers delta indicators, spatial/temporal stats, and CSV export. Entry: [pages/MetricsExplorerPage/index.tsx](src/features/metrics/pages/MetricsExplorerPage/index.tsx). |
 | **Logs** | `logs/` | `/logs` | Log explorer featuring severity-stacked trend chart (`/logs/trend`), summary statistics, query DSL parser, JSON trees in expanded rows, and detail drawer. Server-side cursor pagination (no infinite scroll). Entry: [pages/LogsExplorerPage/index.tsx](src/features/logs/pages/LogsExplorerPage/index.tsx). Data layer + table/detail viewer live in `@shared/logs` (store: `logsExplorerStore.ts`). |
 | **Traces** | `traces/` | `/traces`, `/traces/$traceId`, `/traces/compare` | Trace list with facet rails + volume trend charts. Detail page displays KPIs, service chips, and tabbed panels (Waterfall, Service Map, Errors, JSON) with span drawer. Entry: [pages/TracesExplorerPage/index.tsx](src/features/traces/pages/TracesExplorerPage/index.tsx). Store: `tracesStore.ts`. |
-| **Infrastructure** | `infrastructure/` | `/infrastructure`, `/infrastructure/hosts/$host`, `/infrastructure/containers/$container` | Infrastructure hub with hosts list, pods, network, and host-map tabs. Detail pages show metrics, container specs, and deep links to logs. Entry: [pages/InfrastructureHubPage.tsx](src/features/infrastructure/pages/InfrastructureHubPage.tsx). |
+| **Infrastructure** | `infrastructure/` | `/infrastructure`, `/infrastructure/hosts/$host`, `/infrastructure/containers/$container` | Infrastructure hub with hosts list, pods, network, and host-map tabs. Detail pages show metrics, container specs, and deep links to logs. Entry: [pages/InfrastructureHubPage/InfrastructureHubPage.tsx](src/features/infrastructure/pages/InfrastructureHubPage/InfrastructureHubPage.tsx). |
 | **Errors** | `errors/` | `/errors`, `/errors/$groupId` | Error tracker listing issues by occurrence counts and affected services. Details include stack frames panel, context, and occurrences timeline. Entry: [pages/ErrorTrackingPage/index.tsx](src/features/errors/pages/ErrorTrackingPage/index.tsx). |
 | **Services** | `services/` | `/services`, `/service-map`, `/deployments`, `/services/$serviceName` | Service catalog lists, map, deployments, and detail. Service details render golden signals KPIs (compares current vs historical), version traffic area charts, and deploy impact tables. Entry: [pages/ServiceCatalogPage/ServiceCatalogPage.tsx](src/features/services/pages/ServiceCatalogPage/ServiceCatalogPage.tsx). |
 | **Monitors** | `monitors/` | `/monitors`, `/monitors/new`, `/monitors/$monitorId`, `/monitors/$monitorId/edit`, `/monitors/notifications` | Alerting system UI. Supports metric, APM, and log monitor types. 5-step monitor builder wizard. Detail page features hand-rolled SVG eval chart. Outbound integration supports Slack webhooks. Entry: [pages/MonitorsPage/MonitorsPage.tsx](src/features/monitors/pages/MonitorsPage/MonitorsPage.tsx). |
 | **Settings** | `settings/` | `/settings` | Tenant info (API key reveal) + admin-only **Members** tab: list/invite users and promote/demote admin↔member (`components/tabs/SettingsMembersTab`, `api/membersApi`, `hooks/useMembers`). The Members tab renders only when `authStore.tenant.role === "admin"`; the server enforces tenant scoping and a last-admin guard. |
-| **Onboarding** | `onboarding/` | `/welcome` | Post-signup page (in `app/auth/pages/WelcomePage`) showing the tenant API key + OTLP endpoint + collector-config snippet tabs. Feature folder holds `TrialBanner` (days-left banner in `MainLayout`), `otlpEndpoint.ts`, and the transient signup-key handoff (`shared/api/auth/apiKeyHandoff.ts`). |
+| **Onboarding** | `onboarding/` | `/welcome` | Post-signup page ([pages/WelcomePage/WelcomePage.tsx](src/features/onboarding/pages/WelcomePage/WelcomePage.tsx)) showing the tenant API key + OTLP endpoint + collector-config snippet tabs. Feature folder holds `TrialBanner` (days-left banner in `MainLayout`), `otlpEndpoint.ts`, and the transient signup-key handoff (`shared/api/auth/apiKeyHandoff.ts`). |
 
 ---
 
@@ -75,7 +84,6 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 | **Logs kit** | `logs/` | Log data layer + viewer used by the logs feature, services, and traces: `api/` (query/trend/facets/byId/traceLogs), `types/`, `utils/` (severity, transformers, trace correlation), `store/logsExplorerStore.ts`, and `components/table` + `components/detail`. |
 | **Metrics kit** | `metrics/` | Metric query kit used by the metrics feature, dashboards, and overview: `types.ts`, `constants/`, `api/metricsExplorerApi.ts`, hooks (`useMetricsExplorerQuery`, `useMetricNames`, `useMetricTags`), utils (`chartSeries`, `formatStat`, `seriesStats`, `formulaEvaluator`), and components (`MetricQueryBuilder`, `DeltaBadge`, `MetricSegmentedControl`). |
 | **Components** | `components/` | Reusable UI primitives (`primitives/`), table wrappers (`table/`), custom chart modules (`ui/charts/` including `uPlot` setups, micro charts, and uplot helpers), dashboard layouts, `ui/PanelCard.tsx`, and domain drawers (`ui/drawers/ServiceDetailDrawer`). |
-| **Entities** | `entities/` | System-wide TS declarations (currently only `trace/`). |
 | **Hooks** | `hooks/` | Standard React hooks: `useStandardQuery` for TanStack query defaults, `useVisibilityInterval` for tab-hidden updates, and `useSocketStream` for WebSockets. |
 | **Constants** | `constants/` | Global routes mapping ([src/shared/constants/routes.ts](src/shared/constants/routes.ts)) and health alert thresholds. |
 | **Utils** | `utils/` | Shared helper scripts: `formatters.ts` (number/duration formatters), `metricFormatters.ts` (`fmtNum`/`fmtMs`/`fmtPct` display helpers), `timeBounds.ts` (resolve/shift/zoom time ranges), and `navigation.ts` (TanStack casts). |

@@ -1,7 +1,7 @@
 import { Copy, Download } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 
-import type { TraceRecord } from "@shared/entities/trace/model";
+import type { TraceRecord } from "@shared/api/traces/schemas";
 
 interface Props {
   readonly traceId: string;

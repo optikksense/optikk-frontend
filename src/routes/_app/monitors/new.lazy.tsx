@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import NewMonitorPage from "@/features/monitors/pages/NewMonitorPage/NewMonitorPage";
+import NewMonitorPage from "@/features/monitors/pages/NewMonitorPage";
 
 export const Route = createLazyFileRoute("/_app/monitors/new")({
   component: () => <NewMonitorPage />,

@@ -177,3 +177,26 @@ export const traceErrorGroupSchema = z
   .strict();
 
 export type TraceErrorGroup = z.infer<typeof traceErrorGroupSchema>;
+
+const traceSummarySchema = z
+  .object({
+    total_traces: z.number().default(0),
+    error_traces: z.number().default(0),
+    avg_duration: z.number().default(0),
+    p50_duration: z.number().default(0),
+    p95_duration: z.number().default(0),
+    p99_duration: z.number().default(0),
+  })
+  .strict();
+
+const tracesResponseSchema = z
+  .object({
+    traces: z.array(traceRecordSchema),
+    has_more: z.boolean().optional(),
+    next_cursor: z.string().optional(),
+    limit: z.number().optional(),
+    summary: traceSummarySchema.optional(),
+  })
+  .strict();
+
+export type TracesResponse = z.infer<typeof tracesResponseSchema>;
