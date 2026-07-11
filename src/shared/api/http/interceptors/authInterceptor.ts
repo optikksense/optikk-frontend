@@ -1,6 +1,6 @@
 import { session } from "@shared/api/auth/session";
 
-import { useAppStore } from "@store/appStore";
+import { useAppStore } from "@app/store/appStore";
 
 import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 

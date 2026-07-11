@@ -1,6 +1,6 @@
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
-import { useTenantId } from "@store/appStore";
+import { useTenantId } from "@app/store/appStore";
 
 import {
   getIngestionServices,

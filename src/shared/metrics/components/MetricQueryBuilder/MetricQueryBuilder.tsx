@@ -1,6 +1,6 @@
 import { Calculator, Plus } from "lucide-react";
 
-import { Button } from "@/components/ui";
+import { Button } from "@shared/components/primitives/ui";
 
 import { MAX_QUERIES } from "@shared/metrics/constants";
 import type {

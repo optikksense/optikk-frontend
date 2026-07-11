@@ -1,6 +1,6 @@
 import React, { type ReactNode } from "react";
 
-import { Surface } from "@/components/ui";
+import { Surface } from "@shared/components/primitives/ui";
 import ChartErrorOverlay from "@shared/components/ui/feedback/ChartErrorOverlay";
 import { UNKNOWN_ERROR } from "@shared/constants/errorCodes";
 

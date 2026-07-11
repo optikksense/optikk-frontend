@@ -1,4 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import {
   type CreateMemberPayload,
@@ -13,7 +15,7 @@ import {
 const MEMBERS_KEY = ["settings", "members"] as const;
 
 export function useMembers() {
-  return useQuery<Member[], Error>({
+  return useStandardQuery<Member[]>({
     queryKey: MEMBERS_KEY,
     queryFn: listMembers,
   });

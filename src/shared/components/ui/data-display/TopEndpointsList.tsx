@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 
-import type { DashboardDrawerAction } from "@/types/dashboardConfig";
 import { CHART_COLORS } from "@config/constants";
 import { buildDashboardDrawerSearch } from "@shared/components/ui/dashboard/utils/dashboardDrawerState";
+import type { DashboardDrawerAction } from "@shared/types/dashboardConfig";
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
 import { APP_COLORS } from "@config/colorLiterals";

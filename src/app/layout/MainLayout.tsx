@@ -3,13 +3,13 @@ import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { DensityProvider } from "@/components/ui/providers/DensityProvider";
+import { DensityProvider } from "@shared/components/primitives/ui/providers/DensityProvider";
 import CommandPalette from "@shared/components/ui/overlay/CommandPalette/CommandPalette";
 import ShortcutHelpOverlay from "@shared/components/ui/overlay/ShortcutHelpOverlay";
 import { useKeyboardShortcuts } from "@shared/hooks/useKeyboardShortcuts";
 
-import { cn } from "@/lib/utils";
-import { useAppStore } from "@store/appStore";
+import { useAppStore } from "@app/store/appStore";
+import { cn } from "@shared/lib/utils";
 
 import { TrialBanner } from "@/features/onboarding/TrialBanner";
 

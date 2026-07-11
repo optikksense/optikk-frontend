@@ -1,11 +1,3 @@
-import {
-  type DashboardLayout,
-  type DashboardLayoutVariant,
-  type DashboardMetricsQuerySpec,
-  type DashboardPanelSpec,
-  type DashboardPanelType,
-  isMetricsQuerySpec,
-} from "@/types/dashboardConfig";
 import { QUERY_LABELS, createDefaultQuery } from "@shared/metrics/constants";
 import type {
   FormulaDefinition,
@@ -13,6 +5,14 @@ import type {
   MetricSpaceAggregation,
   TimeStep,
 } from "@shared/metrics/types";
+import {
+  type DashboardLayout,
+  type DashboardLayoutVariant,
+  type DashboardMetricsQuerySpec,
+  type DashboardPanelSpec,
+  type DashboardPanelType,
+  isMetricsQuerySpec,
+} from "@shared/types/dashboardConfig";
 
 import type { CreateWidgetPayload } from "../api/dashboardsApi";
 

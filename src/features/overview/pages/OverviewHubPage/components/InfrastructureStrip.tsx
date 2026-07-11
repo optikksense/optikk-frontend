@@ -2,8 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Database, Layers3 } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { Surface } from "@/components/ui";
 import { ROUTES } from "@/shared/constants/routes";
+import { Surface } from "@shared/components/primitives/ui";
 
 interface InfraTile {
   readonly key: string;

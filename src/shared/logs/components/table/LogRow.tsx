@@ -6,7 +6,7 @@ import { HighlightedText } from "@shared/components/primitives/HighlightedText";
 import { formatTimestamp } from "@shared/utils/formatters";
 
 import { useTimezone } from "@/app/store/appStore";
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import { useLogsExplorerStore } from "../../store/logsExplorerStore";
 import type { LogRecord } from "../../types/log";

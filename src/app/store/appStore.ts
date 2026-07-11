@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import type { AbsoluteTimeRange, RelativeTimeRange, TimeRange } from "@/types";
+import type { AbsoluteTimeRange, RelativeTimeRange, TimeRange } from "@shared/types";
 
 import { STORAGE_KEYS } from "@config/constants";
 import type { ComparisonMode } from "@shared/components/ui/TimeSelector/constants";

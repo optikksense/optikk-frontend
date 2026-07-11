@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 interface CardProps extends React.ComponentPropsWithRef<"div"> {
   elevation?: 0 | 1 | 2 | 3;

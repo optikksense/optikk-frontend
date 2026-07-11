@@ -1,4 +1,4 @@
-import { IconButton, Skeleton, Surface } from "@/components/ui";
+import { IconButton, Skeleton, Surface } from "@shared/components/primitives/ui";
 import { Copy, Key, RefreshCw, TriangleAlert, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

@@ -4,14 +4,14 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 
 import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
-import { Tooltip } from "@/components/ui";
-import { cn } from "@/lib/utils";
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { ROUTES } from "@/shared/constants/routes";
+import { Tooltip } from "@shared/components/primitives/ui";
+import { cn } from "@shared/lib/utils";
 
 import { session } from "@shared/api/auth/session";
 
-import { useAppStore, useSidebarCollapsed } from "@store/appStore";
+import { useAppStore, useSidebarCollapsed } from "@app/store/appStore";
 
 export default function Sidebar() {
   const navigate = useNavigate();

@@ -2,8 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { ROUTES } from "@/shared/constants/routes";
+import { Drawer, DrawerContent } from "@shared/components/primitives/ui/drawer";
 
 import { useCreateDashboardPage } from "../../hooks/useDashboardMutations";
 

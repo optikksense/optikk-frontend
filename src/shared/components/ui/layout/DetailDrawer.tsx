@@ -1,4 +1,4 @@
-import { DrawerClose, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { DrawerClose, DrawerHeader, DrawerTitle } from "@shared/components/primitives/ui/drawer";
 import type { ReactNode } from "react";
 import { SidePanel } from "./SidePanel";
 

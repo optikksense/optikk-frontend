@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
-import { Skeleton, Surface } from "@/components/ui";
 import { ROUTES } from "@/shared/constants/routes";
+import { Skeleton, Surface } from "@shared/components/primitives/ui";
 import { formatNumber } from "@shared/utils/formatters";
 
 import type { ErrorHotspotRow } from "../hooks/useOverviewModel";

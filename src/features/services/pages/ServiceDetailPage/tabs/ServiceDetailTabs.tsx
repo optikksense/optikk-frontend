@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import { SERVICE_TAB_IDS, type ServiceTabId } from "./useActiveServiceTab";
 

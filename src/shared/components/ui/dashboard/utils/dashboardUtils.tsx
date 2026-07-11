@@ -38,7 +38,7 @@ import {
   Zap,
 } from "lucide-react";
 
-import type { DashboardPanelSpec } from "@/types/dashboardConfig";
+import type { DashboardPanelSpec } from "@shared/types/dashboardConfig";
 
 const ICONS: Record<string, LucideIcon> = {
   Activity,

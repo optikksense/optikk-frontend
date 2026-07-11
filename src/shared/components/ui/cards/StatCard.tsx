@@ -1,5 +1,5 @@
-import { Skeleton, Surface } from "@/components/ui";
 import { APP_COLORS } from "@config/colorLiterals";
+import { Skeleton, Surface } from "@shared/components/primitives/ui";
 import { TrendIndicator } from "@shared/components/ui";
 import React from "react";
 import SparklineChart from "../charts/micro/SparklineChart";

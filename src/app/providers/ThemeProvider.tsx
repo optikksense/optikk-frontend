@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Toaster } from "sonner";
 
-import { useAppStore } from "@store/appStore";
+import { useAppStore } from "@app/store/appStore";
 
 import type { ReactNode } from "react";
 

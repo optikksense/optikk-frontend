@@ -1,6 +1,6 @@
 import { Keyboard } from "lucide-react";
 
-import { Modal } from "@/components/ui";
+import { Modal } from "@shared/components/primitives/ui";
 
 import type { KeyboardShortcut } from "@shared/hooks/useKeyboardShortcuts";
 

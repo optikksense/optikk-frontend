@@ -2,7 +2,7 @@ import { ArrowLeft, Check, Copy, ExternalLink, MoreHorizontal } from "lucide-rea
 import { memo, useCallback, useState } from "react";
 
 import { useTimezone } from "@/app/store/appStore";
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 import { formatTimestamp } from "@shared/utils/formatters";
 
 interface Stats {

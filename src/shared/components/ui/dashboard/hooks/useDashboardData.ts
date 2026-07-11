@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { DashboardDataSources, DashboardPanelSpec } from "@/types/dashboardConfig";
+import type { DashboardDataSources, DashboardPanelSpec } from "@shared/types/dashboardConfig";
 
 import { resolveDataSourceId } from "../utils/dashboardUtils";
 import { asDashboardRecordArray, getDashboardRecordArrayField } from "../utils/runtimeValue";

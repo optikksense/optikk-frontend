@@ -1,7 +1,7 @@
 import { Maximize2, Search, X } from "lucide-react";
 import { memo, useState } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import type { LogsFacets } from "@shared/logs/api/logsAnalyticsApi";
 import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";

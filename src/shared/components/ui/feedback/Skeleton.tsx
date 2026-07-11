@@ -1,4 +1,4 @@
-import { Skeleton as DSSkeleton } from "@/components/ui";
+import { Skeleton as DSSkeleton } from "@shared/components/primitives/ui";
 
 import type { FeedbackSkeletonProps } from "./types";
 

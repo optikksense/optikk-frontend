@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { Surface } from "@/components/ui";
+import { Surface } from "@shared/components/primitives/ui";
 import { StatCard } from "@shared/components/ui";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";

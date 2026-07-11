@@ -9,7 +9,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@shared/components/primitives/ui/command";
 
 import type { PaletteAction, PaletteActionContext } from "./types";
 

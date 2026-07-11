@@ -6,10 +6,14 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 
-import type { TimeRange } from "@/types";
-import { resolveTimeRangeBounds } from "@/types";
+import type { TimeRange } from "@shared/types";
+import { resolveTimeRangeBounds } from "@shared/types";
 
-import { useTimeRange as useAppStoreTimeRange, useRefreshKey, useTenantId } from "@store/appStore";
+import {
+  useTimeRange as useAppStoreTimeRange,
+  useRefreshKey,
+  useTenantId,
+} from "@app/store/appStore";
 import { useInvalidateQueriesOnAppRefresh } from "./useInvalidateQueriesOnAppRefresh";
 
 type QueryTime = string | number;

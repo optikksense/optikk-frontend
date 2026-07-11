@@ -1,17 +1,17 @@
-import { IconButton, Tooltip } from "@/components/ui";
-import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@/types";
+import { IconButton, Tooltip } from "@shared/components/primitives/ui";
 import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
 import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
 import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
+import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@shared/types";
 import { ChevronDown, ChevronLeft, ChevronRight, Moon, RefreshCw, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useAppStore, useTheme } from "@store/appStore";
-import { useAuthTenant } from "@store/authStore";
+import { useAppStore, useTheme } from "@app/store/appStore";
+import { useAuthTenant } from "@app/store/authStore";
 
 import { AUTO_REFRESH_INTERVALS } from "@config/constants";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 export default function Header() {
   const tenant = useAuthTenant();

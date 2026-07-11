@@ -9,16 +9,9 @@ import path from "node:path";
 
 // Mirrors tsconfig.json "paths" (keep in sync). Order matters: longest first.
 const ALIASES = [
-  ["@/components/ui/", "src/shared/components/primitives/ui/"],
-  ["@/components/", "src/shared/components/primitives/"],
-  ["@/types/", "src/shared/types/"],
-  ["@/types", "src/shared/types/index.ts"],
-  ["@/lib/", "src/shared/lib/"],
   ["@app/", "src/app/"],
-  ["@entities/", "src/shared/entities/"],
   ["@shared/", "src/shared/"],
   ["@config/", "src/config/"],
-  ["@store/", "src/app/store/"],
   ["@/", "src/"],
 ];
 

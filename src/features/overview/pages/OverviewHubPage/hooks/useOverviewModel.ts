@@ -7,7 +7,7 @@ import type { ServiceMetricPoint } from "@shared/metrics/types";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import type { UseQueryResult } from "@tanstack/react-query";
 
-import type { DashboardRecord } from "@/types/dashboardConfig";
+import type { DashboardRecord } from "@shared/types/dashboardConfig";
 
 import { mapRedErrorPctRows, mapRedRequestRateRows, num } from "./mappers";
 

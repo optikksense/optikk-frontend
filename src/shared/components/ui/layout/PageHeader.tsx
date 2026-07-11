@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
 import { Breadcrumbs } from "@shared/components/primitives/ui/breadcrumb";
 import { useBreadcrumbs } from "@shared/hooks/useBreadcrumbs";
+import { cn } from "@shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import React from "react";
 

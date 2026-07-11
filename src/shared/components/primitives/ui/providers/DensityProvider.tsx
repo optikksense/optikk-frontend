@@ -1,6 +1,6 @@
 import { createContext, useEffect } from "react";
 
-import { useAppStore } from "@store/appStore";
+import { useAppStore } from "@app/store/appStore";
 
 type Density = "comfortable" | "compact";
 

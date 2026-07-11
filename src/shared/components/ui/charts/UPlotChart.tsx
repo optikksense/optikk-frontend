@@ -3,8 +3,8 @@ import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 import "./uplot.css";
 
-import { cn } from "@/lib/utils";
-import { useTheme } from "@store/appStore";
+import { useTheme } from "@app/store/appStore";
+import { cn } from "@shared/lib/utils";
 
 import { type ChartMarker, buildMarkerDrawHook } from "./chartMarkers";
 

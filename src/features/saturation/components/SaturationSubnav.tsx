@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
-import { cn } from "@/lib/utils";
 import { ROUTES } from "@/shared/constants/routes";
+import { cn } from "@shared/lib/utils";
 
 type SaturationHubTab = "overview" | "kafka" | "database";
 

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import { deltaDirection, formatDelta } from "@shared/metrics/utils/formatStat";
 

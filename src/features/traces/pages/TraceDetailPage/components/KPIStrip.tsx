@@ -1,6 +1,6 @@
 import { memo, useMemo } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 import { formatDuration } from "@shared/utils/formatters";
 
 import type { TraceRecord } from "@shared/entities/trace/model";

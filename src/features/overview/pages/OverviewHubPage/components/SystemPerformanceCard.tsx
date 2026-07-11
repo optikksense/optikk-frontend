@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 
-import { Surface } from "@/components/ui";
+import { useTheme } from "@app/store/appStore";
+import { Surface } from "@shared/components/primitives/ui";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { tsMs } from "@shared/utils/chartDataUtils";
 import { resolveThemeColor } from "@shared/utils/chartTheme";
-import { useTheme } from "@store/appStore";
 
 import type { PerformanceSeries } from "../hooks/useOverviewModel";
 

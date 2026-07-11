@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui";
+import { Button } from "@shared/components/primitives/ui";
 import { AlertCircle } from "lucide-react";
 import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
 

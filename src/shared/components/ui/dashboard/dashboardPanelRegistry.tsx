@@ -8,7 +8,7 @@ import type {
   DashboardPanelSpec,
   DashboardPanelType,
   DashboardRecord,
-} from "@/types/dashboardConfig";
+} from "@shared/types/dashboardConfig";
 
 export interface BaseChartComponentProps {
   data?: DashboardRecord[];
@@ -39,7 +39,7 @@ type BaseChartDashboardRenderer = ComponentType<BaseChartComponentProps>;
 type DashboardPanelRendererKind = "base-chart" | "specialized" | "self-contained";
 
 type DashboardRendererComponent = SpecializedDashboardRenderer | BaseChartDashboardRenderer;
-import type { TimeRange } from "@/types";
+import type { TimeRange } from "@shared/types";
 
 export interface DashboardPanelRegistration {
   readonly panelType: DashboardPanelType;

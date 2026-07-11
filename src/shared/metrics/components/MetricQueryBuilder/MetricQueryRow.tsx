@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import { QUERY_LABEL_COLORS } from "@shared/metrics/constants";
 import type {

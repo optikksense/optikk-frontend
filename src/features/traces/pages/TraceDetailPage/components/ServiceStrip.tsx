@@ -1,7 +1,7 @@
 import { AlertCircle } from "lucide-react";
 import { memo, useMemo } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import type { TraceRecord } from "@shared/entities/trace/model";
 

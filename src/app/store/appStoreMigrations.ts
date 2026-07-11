@@ -1,4 +1,4 @@
-import type { RelativeTimeRange, TimeRange } from "@/types";
+import type { RelativeTimeRange, TimeRange } from "@shared/types";
 
 import { STORAGE_KEYS, TIME_RANGES } from "@config/constants";
 import type { ComparisonMode } from "@shared/components/ui/TimeSelector/constants";

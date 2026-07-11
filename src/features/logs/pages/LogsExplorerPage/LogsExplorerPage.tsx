@@ -4,7 +4,7 @@ import { useAppStore, useTimeRange } from "@/app/store/appStore";
 import type { SuggestionOption } from "@shared/search/components/chrome/QuerySuggestions";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 
-import { resolveTimeRangeBounds } from "@/types";
+import { resolveTimeRangeBounds } from "@shared/types";
 
 import type { LogsFacets } from "@shared/logs/api/logsAnalyticsApi";
 import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";

@@ -1,10 +1,17 @@
-import { Button, IconButton, Modal, Select, Skeleton, Surface } from "@/components/ui";
+import {
+  Button,
+  IconButton,
+  Modal,
+  Select,
+  Skeleton,
+  Surface,
+} from "@shared/components/primitives/ui";
 import { Trash2, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useAuthStore } from "@app/store/authStore";
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
-import { useAuthStore } from "@store/authStore";
 
 import type { MemberRole } from "../../api/membersApi";
 import { useMemberMutations, useMembers } from "../../hooks/useMembers";

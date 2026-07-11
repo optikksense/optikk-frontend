@@ -17,21 +17,9 @@ export default defineConfig(({ mode }) => {
     plugins: [TanStackRouterVite(), react()],
     resolve: {
       alias: [
-        {
-          find: "@/components/ui",
-          replacement: path.resolve(__dirname, "./src/shared/components/primitives/ui"),
-        },
-        {
-          find: "@/components",
-          replacement: path.resolve(__dirname, "./src/shared/components/primitives"),
-        },
-        { find: "@/lib", replacement: path.resolve(__dirname, "./src/shared/lib") },
-        { find: "@/types", replacement: path.resolve(__dirname, "./src/shared/types") },
         { find: "@app", replacement: path.resolve(__dirname, "./src/app") },
-        { find: "@entities", replacement: path.resolve(__dirname, "./src/shared/entities") },
         { find: "@shared", replacement: path.resolve(__dirname, "./src/shared") },
         { find: "@config", replacement: path.resolve(__dirname, "./src/config") },
-        { find: "@store", replacement: path.resolve(__dirname, "./src/app/store") },
         { find: "@", replacement: path.resolve(__dirname, "./src") },
       ],
     },

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import { useRefreshKey, useTenantId, useTimeRange } from "@/app/store/appStore";
-import { resolveTimeRangeBounds } from "@/types";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { resolveTimeRangeBounds } from "@shared/types";
 
 import {
   type LlmCostGroupBy,

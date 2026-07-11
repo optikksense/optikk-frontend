@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 import { formatDuration } from "@shared/utils/formatters";
 import { AlertCircle, ChevronDown, RotateCw } from "lucide-react";
 import type { BarEvent, FlatSpan } from "../../../utils/traceTransformers";

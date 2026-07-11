@@ -1,4 +1,4 @@
-import type { DashboardRecord } from "@/types/dashboardConfig";
+import type { DashboardRecord } from "@shared/types/dashboardConfig";
 
 export function num(v: unknown, fallback = 0): number {
   const n = Number(v);

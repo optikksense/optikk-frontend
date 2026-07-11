@@ -1,5 +1,5 @@
-import { Card, type CardProps } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { Card, type CardProps } from "@shared/components/primitives/ui";
+import { cn } from "@shared/lib/utils";
 
 interface PageShellProps extends React.HTMLAttributes<HTMLDivElement> {}
 

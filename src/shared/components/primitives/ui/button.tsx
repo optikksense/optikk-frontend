@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 interface ButtonProps extends React.ComponentPropsWithRef<"button"> {
   variant?: "primary" | "secondary" | "ghost" | "danger";

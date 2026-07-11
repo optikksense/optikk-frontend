@@ -7,11 +7,10 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 ## Core Stack & Key Files
 - **Stack**: React 19, TypeScript, Vite 8, TanStack Router, TanStack Query, Zustand, Tailwind, Biome
 - **Bootstrap**: [src/main.tsx](src/main.tsx)
-- **Root App**: [src/app/App.tsx](src/app/App.tsx)
-- **Router Setup**: [src/app/routes/router.tsx](src/app/routes/router.tsx)
-- **Domain Registry**: [src/app/registry/domainRegistry.ts](src/app/registry/domainRegistry.ts)
+- **Root App**: [src/app/App.tsx](src/app/App.tsx) (creates the router from the generated route tree)
+- **Routing**: file-based TanStack Router routes in [src/routes/](src/routes/) (generated [src/routeTree.gen.ts](src/routeTree.gen.ts))
+- **Domain Registry**: [src/app/registry/domainRegistry.ts](src/app/registry/domainRegistry.ts) — feeds sidebar navigation and dashboard panel registration only; it does NOT wire routes
 - **Build/Proxy Settings**: [vite.config.ts](vite.config.ts)
-- **Firebase Config**: [firebase.json](firebase.json)
 
 ---
 
@@ -35,7 +34,11 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
   - **Explorer queries**: include `refreshKey` in `queryKey`.
 - **Query Loading**: Checked via `isPending && data === undefined`. Always set `placeholderData: keepPreviousData`.
 
-### 4. API & Routing Rules
+### 4. Import Aliases (exactly four)
+- `@/*` → `src/*`, `@app/*` → `src/app/*`, `@shared/*` → `src/shared/*`, `@config/*` → `src/config/*`.
+- Declared in three places that MUST stay in sync: [tsconfig.json](tsconfig.json), [vite.config.ts](vite.config.ts), and [scripts/check-boundaries.mjs](scripts/check-boundaries.mjs). Do not add new aliases.
+
+### 5. API & Routing Rules
 - **GET APIs**: Must use `get*` prefix (e.g., `getREDSummary`). `fetch*` is reserved for the browser Fetch API.
 - **No Cross-Feature Imports**: Move shared code to `@shared/`. Enforced by `yarn check:boundaries` ([scripts/check-boundaries.mjs](scripts/check-boundaries.mjs)): features may import only `@shared` and themselves; `@shared` must never import features.
 - **Router Casts**: Use `dynamicNavigateOptions` and `dynamicTo` from [src/shared/utils/navigation.ts](src/shared/utils/navigation.ts) instead of raw `as any` casts.
@@ -72,7 +75,7 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 | **Logs kit** | `logs/` | Log data layer + viewer used by the logs feature, services, and traces: `api/` (query/trend/facets/byId/traceLogs), `types/`, `utils/` (severity, transformers, trace correlation), `store/logsExplorerStore.ts`, and `components/table` + `components/detail`. |
 | **Metrics kit** | `metrics/` | Metric query kit used by the metrics feature, dashboards, and overview: `types.ts`, `constants/`, `api/metricsExplorerApi.ts`, hooks (`useMetricsExplorerQuery`, `useMetricNames`, `useMetricTags`), utils (`chartSeries`, `formatStat`, `seriesStats`, `formulaEvaluator`), and components (`MetricQueryBuilder`, `DeltaBadge`, `MetricSegmentedControl`). |
 | **Components** | `components/` | Reusable UI primitives (`primitives/`), table wrappers (`table/`), custom chart modules (`ui/charts/` including `uPlot` setups, micro charts, and uplot helpers), dashboard layouts, `ui/PanelCard.tsx`, and domain drawers (`ui/drawers/ServiceDetailDrawer`). |
-| **Entities** | `entities/` | System-wide TS declarations for metrics, logs, traces, users, and deployments. |
+| **Entities** | `entities/` | System-wide TS declarations (currently only `trace/`). |
 | **Hooks** | `hooks/` | Standard React hooks: `useStandardQuery` for TanStack query defaults, `useVisibilityInterval` for tab-hidden updates, and `useSocketStream` for WebSockets. |
 | **Constants** | `constants/` | Global routes mapping ([src/shared/constants/routes.ts](src/shared/constants/routes.ts)) and health alert thresholds. |
 | **Utils** | `utils/` | Shared helper scripts: `formatters.ts` (number/duration formatters), `metricFormatters.ts` (`fmtNum`/`fmtMs`/`fmtPct` display helpers), `timeBounds.ts` (resolve/shift/zoom time ranges), and `navigation.ts` (TanStack casts). |

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 
 import { queryClient } from "@shared/api/queryClient";
 
-import { useAppStore } from "@store/appStore";
+import { useAppStore } from "@app/store/appStore";
 
 import type { ReactNode } from "react";
 

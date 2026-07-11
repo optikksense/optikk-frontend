@@ -27,16 +27,9 @@
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
-      "@/lib/*": ["./src/shared/lib/*"],
-      "@/types": ["./src/shared/types/index.ts"],
-      "@/types/*": ["./src/shared/types/*"],
       "@app/*": ["./src/app/*"],
-      "@entities/*": ["./src/shared/entities/*"],
       "@shared/*": ["./src/shared/*"],
-      "@config/*": ["./src/config/*"],
-      "@store/*": ["./src/app/store/*"],
-      "@/components/*": ["./src/shared/components/primitives/*"],
-      "@/components/ui/*": ["./src/shared/components/primitives/ui/*"]
+      "@config/*": ["./src/config/*"]
     }
   },
   "include": ["src"],

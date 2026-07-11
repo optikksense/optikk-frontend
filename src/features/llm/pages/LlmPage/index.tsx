@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { PageTabs } from "@/components/ui";
+import { PageTabs } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell } from "@shared/components/ui";
 
 import AppsTab from "./components/AppsTab";

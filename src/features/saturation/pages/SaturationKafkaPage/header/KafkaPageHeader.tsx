@@ -1,7 +1,7 @@
 import { RefreshCw, Waves } from "lucide-react";
 
+import { useAppStore } from "@app/store/appStore";
 import { Pill } from "@shared/components/primitives/ui/pill";
-import { useAppStore } from "@store/appStore";
 
 import type { KafkaSummary } from "@/features/saturation/api/kafkaExplorerSchemas";
 import { fmtNum } from "@shared/utils/metricFormatters";

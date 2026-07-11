@@ -1,4 +1,4 @@
-import type { RelativeTimeRange } from "@/types";
+import type { RelativeTimeRange } from "@shared/types";
 
 interface RangeGroupItem extends RelativeTimeRange {}
 

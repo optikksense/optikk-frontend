@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { Tenant, User } from "@/types";
+import type { Tenant, User } from "@shared/types";
 
 /**
  * Auth state only. Session lifecycle (login/logout/refresh) is owned by

@@ -1,7 +1,7 @@
 import { Calculator, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import { QUERY_LABELS } from "@shared/metrics/constants";
 

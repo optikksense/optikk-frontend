@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { Surface } from "@/components/ui";
+import { Surface } from "@shared/components/primitives/ui";
 import { StatCard } from "@shared/components/ui";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatNumber } from "@shared/utils/formatters";

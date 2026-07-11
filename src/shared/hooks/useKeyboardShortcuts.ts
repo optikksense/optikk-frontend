@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 
+import { useAppStore } from "@app/store/appStore";
 import { shiftTimeRange, zoomTimeRange } from "@shared/utils/timeBounds";
-import { useAppStore } from "@store/appStore";
 
 export interface KeyboardShortcut {
   id: string;

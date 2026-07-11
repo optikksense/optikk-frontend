@@ -1,10 +1,10 @@
 import { Pencil, Trash2 } from "lucide-react";
 
-import { Surface } from "@/components/ui";
-import { isMetricsQuerySpec } from "@/types/dashboardConfig";
-import type { DashboardPanelSpec } from "@/types/dashboardConfig";
+import { Surface } from "@shared/components/primitives/ui";
 import { ConfigurableChartCard } from "@shared/components/ui/dashboard";
 import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplorerQuery";
+import { isMetricsQuerySpec } from "@shared/types/dashboardConfig";
+import type { DashboardPanelSpec } from "@shared/types/dashboardConfig";
 
 import type { Dashboard } from "../../api/dashboardsApi";
 import { panelTypeToViz } from "../../builder/metricsWidget";

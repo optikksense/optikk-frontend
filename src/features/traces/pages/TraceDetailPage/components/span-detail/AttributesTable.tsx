@@ -1,7 +1,7 @@
 import { Check, Copy, Search } from "lucide-react";
 import { Fragment, memo, useCallback, useMemo, useState } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 interface Props {
   readonly spanAttributes: Record<string, string>;

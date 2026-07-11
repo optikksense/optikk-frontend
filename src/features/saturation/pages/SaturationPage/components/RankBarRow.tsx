@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import type { Tone } from "../view-models/saturationScore";
 

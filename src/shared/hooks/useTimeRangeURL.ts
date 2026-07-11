@@ -1,11 +1,11 @@
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useEffect, useRef } from "react";
 
-import type { RelativeTimeRange, TimeRange } from "@/types";
+import type { RelativeTimeRange, TimeRange } from "@shared/types";
 
 import { TIME_RANGES } from "@config/constants";
 
-import { useAppStore, useTimeRange } from "@store/appStore";
+import { useAppStore, useTimeRange } from "@app/store/appStore";
 
 const PARAM_FROM = "from";
 const PARAM_TO = "to";

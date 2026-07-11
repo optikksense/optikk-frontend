@@ -2,9 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { MoreHorizontal, Plus, Star, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { cn } from "@/lib/utils";
 import { ROUTES } from "@/shared/constants/routes";
 import { DropdownMenu, DropdownMenuItem, Modal } from "@shared/components/primitives/ui";
+import { cn } from "@shared/lib/utils";
 
 import type { DashboardPage } from "../../api/dashboardsApi";
 import { useDeleteDashboardPage } from "../../hooks/useDashboardMutations";

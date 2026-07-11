@@ -3,7 +3,7 @@ import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { useAuthUser } from "@store/authStore";
+import { useAuthUser } from "@app/store/authStore";
 
 import type { DashboardPage } from "../../api/dashboardsApi";
 import { useDashboardPagesList } from "../../hooks/useDashboardPages";

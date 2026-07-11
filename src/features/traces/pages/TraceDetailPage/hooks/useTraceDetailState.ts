@@ -1,7 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import { useAppStore } from "@store/appStore";
+import { useAppStore } from "@app/store/appStore";
 
 import { useTraceDetailData } from "../../../hooks/useTraceDetailData";
 import { useTraceDetailEnhanced } from "../../../hooks/useTraceDetailEnhanced";

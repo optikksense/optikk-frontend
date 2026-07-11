@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 
-import { useAuthTenant } from "@store/authStore";
+import { useAuthTenant } from "@app/store/authStore";
 
 // Shows remaining trial days for tenants still in 'trialing'. Dismissible for
 // the current session; reappears on reload until the tenant converts.

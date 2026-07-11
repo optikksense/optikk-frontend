@@ -1,12 +1,12 @@
 import api from "@/shared/api/http/client";
+import { API_CONFIG } from "@config/apiConfig";
+import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 import type {
   DashboardLayout,
   DashboardLayoutVariant,
   DashboardPanelSpec,
   DashboardPanelType,
-} from "@/types/dashboardConfig";
-import { API_CONFIG } from "@config/apiConfig";
-import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
+} from "@shared/types/dashboardConfig";
 import { z } from "zod";
 
 const PAGES = API_CONFIG.ENDPOINTS.DASHBOARDS.PAGES;

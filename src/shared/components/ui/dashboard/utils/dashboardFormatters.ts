@@ -3,7 +3,7 @@ import type {
   DashboardPanelSpec,
   DashboardPanelType,
   DashboardRecord,
-} from "@/types/dashboardConfig";
+} from "@shared/types/dashboardConfig";
 
 import { formatBytes, formatDuration, formatNumber } from "@shared/utils/formatters";
 import {

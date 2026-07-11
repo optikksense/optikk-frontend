@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 import type uPlot from "uplot";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import UPlotChart from "./UPlotChart";
 import { defaultAxes, uBars, uLine } from "./uplotHelpers";

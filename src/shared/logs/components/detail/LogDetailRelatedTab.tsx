@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
 import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { cn } from "@shared/lib/utils";
 import { formatRelativeTime } from "@shared/utils/formatters";
 import { memo } from "react";
 import { toast } from "sonner";

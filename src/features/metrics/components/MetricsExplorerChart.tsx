@@ -1,13 +1,13 @@
 import { AlertCircle, BarChart3, RefreshCw } from "lucide-react";
 import { useMemo } from "react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@shared/components/primitives/ui/button";
 import { PageSurface } from "@shared/components/ui";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
+import { cn } from "@shared/lib/utils";
 
+import { useTimeRange } from "@app/store/appStore";
 import { resolveTimeBounds } from "@shared/utils/timeBounds";
-import { useTimeRange } from "@store/appStore";
 
 import type {
   ChartType,

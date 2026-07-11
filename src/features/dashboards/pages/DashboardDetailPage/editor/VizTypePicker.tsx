@@ -1,6 +1,6 @@
 import { BarChart3, Hash, LineChart, type LucideIcon, Table2 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import type { WidgetVizType } from "../../../builder/metricsWidget";
 

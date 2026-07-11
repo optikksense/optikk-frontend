@@ -1,4 +1,4 @@
-import { Surface, Tooltip } from "@/components/ui";
+import { Surface, Tooltip } from "@shared/components/primitives/ui";
 import { Info } from "lucide-react";
 
 import type { ComponentType, ReactNode } from "react";
@@ -10,11 +10,6 @@ import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverla
 import { useLocation } from "@tanstack/react-router";
 import { memo, useMemo, useState } from "react";
 
-import type {
-  DashboardDataSources,
-  DashboardExtraContext,
-  DashboardPanelSpec,
-} from "@/types/dashboardConfig";
 import QueueMetricsList, {
   type QueueMetricsItem,
   type QueueMetricsListType,
@@ -23,8 +18,13 @@ import TopEndpointsList, {
   type TopEndpointListItem,
   type TopEndpointsListType,
 } from "@shared/components/ui/data-display/TopEndpointsList";
+import type {
+  DashboardDataSources,
+  DashboardExtraContext,
+  DashboardPanelSpec,
+} from "@shared/types/dashboardConfig";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 import DashboardCardErrorBoundary from "./DashboardCardErrorBoundary";
 import {
   type BaseChartComponentProps,

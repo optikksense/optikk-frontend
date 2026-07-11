@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 
 import { useTimezone } from "@/app/store/appStore";
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 import { formatTime } from "@shared/utils/formatters";
 
 import type { SpanEvent } from "../../../../types";

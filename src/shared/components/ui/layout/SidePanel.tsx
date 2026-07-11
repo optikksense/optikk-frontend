@@ -1,5 +1,5 @@
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
-import { cn } from "@/lib/utils";
+import { Drawer, DrawerContent } from "@shared/components/primitives/ui/drawer";
+import { cn } from "@shared/lib/utils";
 import type React from "react";
 import { memo, useCallback, useEffect, useRef } from "react";
 

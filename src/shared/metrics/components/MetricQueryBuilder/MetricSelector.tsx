@@ -1,8 +1,8 @@
 import { ChevronDown, Search } from "lucide-react";
 import { useCallback, useDeferredValue, useMemo, useRef, useState } from "react";
 
-import { Popover } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { Popover } from "@shared/components/primitives/ui";
+import { cn } from "@shared/lib/utils";
 
 import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";
 import type { MetricNameEntry } from "@shared/metrics/types";

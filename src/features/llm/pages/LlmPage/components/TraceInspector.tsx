@@ -1,4 +1,4 @@
-import { Skeleton, Surface } from "@/components/ui";
+import { Skeleton, Surface } from "@shared/components/primitives/ui";
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
 import type { LlmTraceDetail } from "../../../api/llmApi";

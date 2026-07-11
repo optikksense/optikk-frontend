@@ -1,4 +1,4 @@
-import type { DashboardDrawerAction, DashboardDrawerEntity } from "@/types/dashboardConfig";
+import type { DashboardDrawerAction, DashboardDrawerEntity } from "@shared/types/dashboardConfig";
 
 export const DASHBOARD_DRAWER_PARAMS = {
   entity: "drawerEntity",

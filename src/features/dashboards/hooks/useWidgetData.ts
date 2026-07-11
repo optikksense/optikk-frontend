@@ -3,14 +3,14 @@ import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import api from "@/shared/api/http/client";
 import { useInView } from "@/shared/hooks/useInView";
 import { useTimeRange } from "@/shared/hooks/useTimeRangeQuery";
+import { API_CONFIG } from "@config/apiConfig";
+import { type ApiErrorShape, toApiErrorShape } from "@shared/api/utils/errorNormalization";
+import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 import {
   type DashboardDataSources,
   type DashboardPanelSpec,
   isMetricsQuerySpec,
-} from "@/types/dashboardConfig";
-import { API_CONFIG } from "@config/apiConfig";
-import { type ApiErrorShape, toApiErrorShape } from "@shared/api/utils/errorNormalization";
-import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
+} from "@shared/types/dashboardConfig";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 const STALE_MS = 30_000;

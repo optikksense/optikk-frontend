@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import { useAuthStatus } from "@store/authStore";
+import { useAuthStatus } from "@app/store/authStore";
 
 /**
  * Sends the user to /login when an active session ends unexpectedly (failed

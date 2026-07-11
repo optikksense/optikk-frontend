@@ -1,7 +1,7 @@
 import { Activity, AlertCircle, Braces, Network, Search } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 import type { VisualizationTab } from "../../../store/tracesStore";
 

@@ -2,7 +2,7 @@ import { Activity, Columns2, RefreshCw, Server, Settings, Sun } from "lucide-rea
 import { createElement } from "react";
 
 import type { PaletteAction } from "@/app/layout/CommandPalette/types";
-import { useAppStore } from "@store/appStore";
+import { useAppStore } from "@app/store/appStore";
 
 export const navigationPaletteActions: PaletteAction[] = [
   {

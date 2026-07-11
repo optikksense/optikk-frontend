@@ -1,6 +1,6 @@
 import * as SwitchPrimitive from "@radix-ui/react-switch";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 interface SwitchProps
   extends Omit<React.ComponentPropsWithRef<"button">, "type" | "size" | "onChange"> {

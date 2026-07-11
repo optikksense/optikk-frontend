@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 import { subMonths } from "date-fns";
 import { ArrowRight, ChevronDown, Clock } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { TimeRange } from "@/types";
+import type { TimeRange } from "@shared/types";
 
 import { useAppStore, useTimeRange } from "@app/store/appStore";
 

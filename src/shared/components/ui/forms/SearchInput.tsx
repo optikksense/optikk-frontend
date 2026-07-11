@@ -2,7 +2,7 @@ import { Search } from "lucide-react";
 import { Button, Input, SearchField } from "react-aria-components";
 import { useDebouncedCallback } from "use-debounce";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 interface SearchInputProps {
   placeholder?: string;

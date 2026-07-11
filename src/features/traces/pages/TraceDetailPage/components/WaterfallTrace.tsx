@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import type { TraceRecord } from "@shared/entities/trace/model";
+import { cn } from "@shared/lib/utils";
 import { formatDuration } from "@shared/utils/formatters";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { memo, useCallback, useMemo, useRef, useState } from "react";

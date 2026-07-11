@@ -1,6 +1,6 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 interface PopoverProps {
   open: boolean;

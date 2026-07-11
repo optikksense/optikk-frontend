@@ -15,7 +15,7 @@ import type { ExplorerFilter } from "@shared/search/types/filters";
 import { toTrendBuckets } from "@shared/search/utils/trend";
 import { formatNumber } from "@shared/utils/formatters";
 
-import { resolveTimeRangeBounds } from "@/types";
+import { resolveTimeRangeBounds } from "@shared/types";
 
 import type { TraceSummary, TracesFacetBucket } from "@shared/api/traces/types";
 import { useTracesExplorer } from "../../hooks/useTracesExplorer";

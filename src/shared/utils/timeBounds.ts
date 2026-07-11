@@ -1,5 +1,5 @@
-import { resolveTimeRangeBounds, timeRangeDurationMs } from "@/types";
-import type { TimeRange } from "@/types";
+import { resolveTimeRangeBounds, timeRangeDurationMs } from "@shared/types";
+import type { TimeRange } from "@shared/types";
 
 export interface CustomTimeRangeBounds {
   readonly startMs: number;

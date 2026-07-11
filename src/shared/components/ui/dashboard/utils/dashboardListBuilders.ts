@@ -1,4 +1,4 @@
-import type { DashboardPanelSpec, DashboardRecord } from "@/types/dashboardConfig";
+import type { DashboardPanelSpec, DashboardRecord } from "@shared/types/dashboardConfig";
 
 import { numValue, resolveComponentKey, strValue } from "./dashboardFormatters";
 

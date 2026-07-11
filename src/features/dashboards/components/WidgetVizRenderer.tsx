@@ -1,6 +1,7 @@
 import { AlertCircle, BarChart3 } from "lucide-react";
 import { useMemo } from "react";
 
+import { useTimeRange } from "@app/store/appStore";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
 import type {
@@ -14,7 +15,6 @@ import { buildSeries } from "@shared/metrics/utils/chartSeries";
 import { formatStatValue } from "@shared/metrics/utils/formatStat";
 import { computeQuerySummary, computeSeriesStats } from "@shared/metrics/utils/seriesStats";
 import { resolveTimeBounds } from "@shared/utils/timeBounds";
-import { useTimeRange } from "@store/appStore";
 
 import type { WidgetDisplayOptions, WidgetVizType } from "../builder/metricsWidget";
 

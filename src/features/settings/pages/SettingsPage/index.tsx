@@ -1,4 +1,4 @@
-import { Tabs } from "@/components/ui";
+import { Tabs } from "@shared/components/primitives/ui";
 import { Settings, Users, UsersRound } from "lucide-react";
 import { useState } from "react";
 
@@ -6,7 +6,7 @@ import { PageHeader, PageShell } from "@shared/components/ui";
 
 import { SettingsMembersTab, SettingsTenantTab } from "../../components/tabs";
 
-import { useAuthStore } from "@store/authStore";
+import { useAuthStore } from "@app/store/authStore";
 import { useShallow } from "zustand/react/shallow";
 
 /**

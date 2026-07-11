@@ -1,7 +1,7 @@
 import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 function Command({
   className,

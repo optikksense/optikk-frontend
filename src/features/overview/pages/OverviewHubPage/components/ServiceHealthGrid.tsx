@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 
-import { Surface } from "@/components/ui";
+import { Surface } from "@shared/components/primitives/ui";
 import { buildServiceDrawerSearch } from "@shared/components/ui/drawers/serviceDrawerState";
 import { formatNumber } from "@shared/utils/formatters";
 

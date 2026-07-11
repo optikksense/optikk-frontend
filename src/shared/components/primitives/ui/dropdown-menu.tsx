@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { cn } from "@shared/lib/utils";
 
 interface DropdownMenuProps {
   open: boolean;

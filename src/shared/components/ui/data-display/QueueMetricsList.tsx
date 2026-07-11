@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import type { DashboardDrawerAction } from "@/types/dashboardConfig";
 import { CHART_COLORS } from "@config/constants";
 import { buildDashboardDrawerSearch } from "@shared/components/ui/dashboard/utils/dashboardDrawerState";
+import type { DashboardDrawerAction } from "@shared/types/dashboardConfig";
 import { formatNumber } from "@shared/utils/formatters";
 
-import { cn } from "@/lib/utils";
 import { APP_COLORS } from "@config/colorLiterals";
+import { cn } from "@shared/lib/utils";
 
 export type QueueMetricsListType = "depth" | "consumerLag" | "productionRate" | "consumptionRate";
 

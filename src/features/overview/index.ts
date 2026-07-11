@@ -28,7 +28,6 @@ const DbSystemsRenderer = lazy(() =>
 export const overviewConfig: DomainConfig = {
   key: "overview",
   label: "Overview",
-  permissions: ["overview:read"],
   navigation: [
     {
       path: ROUTES.overview,
@@ -43,8 +42,6 @@ export const overviewConfig: DomainConfig = {
       group: "observe",
     },
   ],
-  routes: [],
-  dashboardPages: [],
   dashboardPanels: [
     { panelType: "service-health-grid", kind: "specialized", component: ServiceHealthGridRenderer },
     { panelType: "latency-histogram", kind: "specialized", component: LatencyHistogramRenderer },

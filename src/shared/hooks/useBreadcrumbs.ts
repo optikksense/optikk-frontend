@@ -3,7 +3,7 @@ import { useLocation } from "@tanstack/react-router";
 import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
 
-import type { BreadcrumbItem } from "@/components/ui/breadcrumb";
+import type { BreadcrumbItem } from "@shared/components/primitives/ui/breadcrumb";
 
 function formatSegmentLabel(segment: string): string {
   return segment.replace(/[-_]+/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());

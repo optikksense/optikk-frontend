@@ -8,7 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@shared/lib/utils";
 
 const SOURCES: ReadonlyArray<{
   readonly label: string;

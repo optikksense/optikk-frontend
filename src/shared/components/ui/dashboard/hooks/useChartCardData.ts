@@ -5,7 +5,7 @@ import type {
   DashboardPanelSpec,
   DashboardPanelType,
   DashboardRecord,
-} from "@/types/dashboardConfig";
+} from "@shared/types/dashboardConfig";
 
 import type { BaseChartComponentProps } from "../dashboardPanelRegistry";
 import {

@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { memo, useMemo, useState } from "react";
 
-import { cn } from "@/lib/utils";
 import { ROUTES } from "@/shared/constants/routes";
+import { cn } from "@shared/lib/utils";
 
 import type { HostSaturationRow } from "../../../api/saturationApi";
 import { SaturationCard } from "./SaturationCard";
