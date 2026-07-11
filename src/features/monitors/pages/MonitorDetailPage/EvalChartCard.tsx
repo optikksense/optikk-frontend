@@ -1,44 +1,13 @@
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
+import type { ThresholdLine } from "@shared/components/ui/charts/uplotHelpers";
 import { memo, useMemo } from "react";
-import type uPlot from "uplot";
 import type { MonitorSeriesResponse } from "../../api/monitorsApi";
 
 interface Props {
   readonly data: MonitorSeriesResponse | undefined;
   readonly loading: boolean;
-}
-
-function thresholdLinesPlugin(warn?: number, alert?: number): uPlot.Plugin {
-  return {
-    hooks: {
-      draw: (u) => {
-        const { ctx } = u;
-        const xMin = u.bbox.left;
-        const xMax = xMin + u.bbox.width;
-
-        const drawLine = (val: number, color: string) => {
-          const y = u.valToPos(val, "y", true);
-          // Don't draw if outside the plot area
-          if (y < u.bbox.top || y > u.bbox.top + u.bbox.height) return;
-
-          ctx.save();
-          ctx.beginPath();
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 1;
-          ctx.setLineDash([4, 4]);
-          ctx.moveTo(xMin, y);
-          ctx.lineTo(xMax, y);
-          ctx.stroke();
-          ctx.restore();
-        };
-
-        if (warn !== undefined) drawLine(warn, "#f59e0b");
-        if (alert !== undefined) drawLine(alert, "#ef4444");
-      },
-    },
-  };
 }
 
 function EvalChartCard({ data, loading }: Props) {
@@ -53,15 +22,20 @@ function EvalChartCard({ data, loading }: Props) {
       {
         label: "Value",
         values: data.points.map((p) => p.value),
-        color: "#ef4444",
+        color: "var(--color-error)",
         fill: true,
       },
     ];
   }, [data]);
 
-  const plugins = useMemo(() => {
+  const thresholds = useMemo<ThresholdLine[]>(() => {
     if (!data) return [];
-    return [thresholdLinesPlugin(data.warn_threshold, data.alert_threshold)];
+    const lines: ThresholdLine[] = [];
+    if (data.warn_threshold !== undefined)
+      lines.push({ value: data.warn_threshold, color: "var(--color-warning)" });
+    if (data.alert_threshold !== undefined)
+      lines.push({ value: data.alert_threshold, color: "var(--color-error)" });
+    return lines;
   }, [data]);
 
   return (
@@ -99,7 +73,7 @@ function EvalChartCard({ data, loading }: Props) {
             type="area"
             timestamps={timestamps}
             series={series}
-            plugins={plugins}
+            thresholds={thresholds}
             height={180}
             fillHeight
           />

@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import type uPlot from "uplot";
 
 import ObservabilityChart, {
   type ObservabilityChartSeries,
@@ -34,7 +33,7 @@ function buildSeries(rows: ErrorTimeSeriesPoint[] | undefined): ChartData {
   };
 }
 
-function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[] }) {
+function ChartBody({ data }: { data: ChartData }) {
   if (data.timestamps.length === 0) {
     return (
       <div className="grid h-[180px] place-items-center text-[12px] text-foreground-muted">
@@ -49,7 +48,6 @@ function ChartBody({ data, plugins }: { data: ChartData; plugins: uPlot.Plugin[]
       series={data.series}
       height={200}
       yFormatter={(v) => fmtPct(v, v < 0.01 ? 2 : 1)}
-      plugins={plugins}
     />
   );
 }
@@ -78,7 +76,7 @@ export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
   }, [query.data]);
   return (
     <PanelCard title="Error rate" subtitle="last 60m" action={<CurrentRate value={current} />}>
-      <ChartBody data={data} plugins={[]} />
+      <ChartBody data={data} />
     </PanelCard>
   );
 }

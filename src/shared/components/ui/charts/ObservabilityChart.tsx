@@ -4,7 +4,13 @@ import type uPlot from "uplot";
 import { cn } from "@shared/lib/utils";
 
 import UPlotChart from "./UPlotChart";
-import { defaultAxes, uBars, uLine } from "./uplotHelpers";
+import {
+  type ThresholdLine,
+  defaultAxes,
+  thresholdLinesPlugin,
+  uBars,
+  uLine,
+} from "./uplotHelpers";
 
 export interface ObservabilityChartSeries {
   label: string;
@@ -33,6 +39,8 @@ interface ObservabilityChartProps {
   legend?: boolean;
   className?: string;
   plugins?: uPlot.Plugin[];
+  /** Horizontal reference lines (e.g. monitor warn/alert thresholds). */
+  thresholds?: ThresholdLine[];
   onTimeBrush?: (startMs: number, endMs: number) => void;
 }
 
@@ -52,8 +60,14 @@ function ObservabilityChart({
   legend = false,
   className,
   plugins,
+  thresholds,
   onTimeBrush,
 }: ObservabilityChartProps) {
+  const allPlugins = useMemo<uPlot.Plugin[]>(() => {
+    const list = plugins ? [...plugins] : [];
+    if (thresholds && thresholds.length > 0) list.push(thresholdLinesPlugin(thresholds));
+    return list;
+  }, [plugins, thresholds]);
   const alignedData = useMemo<uPlot.AlignedData>(
     () => [timestamps, ...series.map((item) => item.values)] as uPlot.AlignedData,
     [timestamps, series]
@@ -94,9 +108,9 @@ function ObservabilityChart({
           });
         }),
       ],
-      ...(plugins && plugins.length > 0 ? { plugins } : {}),
+      ...(allPlugins.length > 0 ? { plugins: allPlugins } : {}),
     };
-  }, [legend, series, yAxisSize, yFormatter, xMin, xMax, yMin, yMax, type, plugins]);
+  }, [legend, series, yAxisSize, yFormatter, xMin, xMax, yMin, yMax, type, allPlugins]);
 
   const tooltipContent = useMemo(() => {
     const defaultXFormatter = (timestampSeconds: number) =>

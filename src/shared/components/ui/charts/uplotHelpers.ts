@@ -110,3 +110,41 @@ export function uBars(label: string, color: string): uPlot.Series {
     paths: uPlot.paths.bars?.({ size: [0.6], radius: 2 }),
   };
 }
+
+export interface ThresholdLine {
+  value: number;
+  /** Theme token (e.g. "var(--color-warning)") or literal color. */
+  color: string;
+  dash?: number[];
+}
+
+/** Draws horizontal reference lines (warn/alert thresholds) across the plot. */
+export function thresholdLinesPlugin(thresholds: ThresholdLine[]): uPlot.Plugin {
+  const lines = thresholds.map((t) => ({
+    value: t.value,
+    color: resolveThemeColor(t.color, "#ffffff"),
+    dash: t.dash ?? [4, 4],
+  }));
+  return {
+    hooks: {
+      draw: (u) => {
+        const { ctx } = u;
+        const xMin = u.bbox.left;
+        const xMax = xMin + u.bbox.width;
+        for (const line of lines) {
+          const y = u.valToPos(line.value, "y", true);
+          if (y < u.bbox.top || y > u.bbox.top + u.bbox.height) continue;
+          ctx.save();
+          ctx.beginPath();
+          ctx.strokeStyle = line.color;
+          ctx.lineWidth = 1;
+          ctx.setLineDash(line.dash);
+          ctx.moveTo(xMin, y);
+          ctx.lineTo(xMax, y);
+          ctx.stroke();
+          ctx.restore();
+        }
+      },
+    },
+  };
+}

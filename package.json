@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "ci": "yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn build",
+    "ci": "yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn check:charts && yarn build",
     "preview": "vite preview",
     "check:boundaries": "node scripts/check-boundaries.mjs",
+    "check:charts": "node scripts/check-charts.mjs",
     "check:colors": "node scripts/check-theme-colors.mjs",
     "check:dupes": "node scripts/check-duplication.mjs",
     "lint": "biome check .",

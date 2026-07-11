@@ -44,13 +44,17 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 - **Router Casts**: Use `dynamicNavigateOptions` and `dynamicTo` from [src/shared/utils/navigation.ts](src/shared/utils/navigation.ts) instead of raw `as any` casts.
 - **JWT Authorization**: Access tokens reside in memory ([src/app/auth/tokenStore.ts](src/app/auth/tokenStore.ts)). Attached as `Authorization: Bearer` by `authInterceptor.ts`. Single-flight token refresh runs on 401 using httpOnly cookies.
 
-### 6. Page Entry Convention (one shape)
+### 6. Chart Layering
+- Features render through the shared wrappers `ObservabilityChart` (declarative line/area/bar, tooltips, `thresholds`/`plugins` props) or `UPlotChart`. Direct `uplot` imports live only under [src/shared/components/ui/charts/](src/shared/components/ui/charts/).
+- Enforced by `yarn check:charts` ([scripts/check-charts.mjs](scripts/check-charts.mjs)). One ratcheted exception remains (`SystemPerformanceCard` — imperative live-updating combined-area chart); new direct-uPlot imports in features fail.
+
+### 7. Page Entry Convention (one shape)
 - Every page lives in its own folder: `features/<x>/pages/<Name>Page/<Name>Page.tsx` holds the component (`export default`), and a one-line `index.tsx` re-exports it: `export { default } from "./<Name>Page";`.
 - Import pages by directory (`@/features/<x>/pages/<Name>Page`), never the inner file. Flat `pages/<Name>.tsx` files and bare `pages/<Name>/index.tsx` components are not allowed.
 
-### 7. How to Add a Page (three steps)
+### 8. How to Add a Page (three steps)
 1. **Route**: add a file under [src/routes/](src/routes/) (`_app/` for authenticated app pages) that imports the page and sets it as the route `component`. The route tree regenerates automatically ([src/routeTree.gen.ts](src/routeTree.gen.ts)).
-2. **Page**: create `features/<x>/pages/<Name>Page/<Name>Page.tsx` + the one-line `index.tsx` re-export (see §6).
+2. **Page**: create `features/<x>/pages/<Name>Page/<Name>Page.tsx` + the one-line `index.tsx` re-export (see §7).
 3. **Nav**: add a `DomainNavigationItem` to `features/<x>/index.ts` so it appears in the sidebar. That is the registry's only role — it does not wire routes.
 
 ---
@@ -102,4 +106,5 @@ These commands check code quality, formatting, and theme safety:
 - `yarn check:colors`: Verify that no raw color codes or Tailwind named color classes are used in CSS/TSX files.
 - `yarn check:dupes`: Ensure that display formatters are only declared in their sanctioned shared file.
 - `yarn check:boundaries`: Enforce import boundaries (no cross-feature imports; no shared→feature imports). New violations fail; the allowlist in `scripts/boundaries-allowlist.json` is empty and must stay that way.
-- `yarn ci`: Runs full suite validation (`yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn build`).
+- `yarn check:charts`: Enforce chart layering (features must not import `uplot` directly; use `ObservabilityChart`/`UPlotChart`). One ratcheted exception; new violations fail.
+- `yarn ci`: Runs full suite validation (`yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn check:charts && yarn build`).
