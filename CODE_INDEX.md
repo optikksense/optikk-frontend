@@ -37,7 +37,7 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 
 ### 4. API & Routing Rules
 - **GET APIs**: Must use `get*` prefix (e.g., `getREDSummary`). `fetch*` is reserved for the browser Fetch API.
-- **No Cross-Feature Imports**: Move shared code to `@shared/`.
+- **No Cross-Feature Imports**: Move shared code to `@shared/`. Enforced by `yarn check:boundaries` ([scripts/check-boundaries.mjs](scripts/check-boundaries.mjs)): features may import only `@shared` and themselves; `@shared` must never import features.
 - **Router Casts**: Use `dynamicNavigateOptions` and `dynamicTo` from [src/shared/utils/navigation.ts](src/shared/utils/navigation.ts) instead of raw `as any` casts.
 - **JWT Authorization**: Access tokens reside in memory ([src/app/auth/tokenStore.ts](src/app/auth/tokenStore.ts)). Attached as `Authorization: Bearer` by `authInterceptor.ts`. Single-flight token refresh runs on 401 using httpOnly cookies.
 
@@ -52,7 +52,7 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 | **Overview** | `overview/` | `/overview` | Datadog-style landing page. Renders Golden Signals KPIs (Requests, Error rate, Latency p99), `SystemPerformanceCard` (combined uPlot area chart), `ServiceHealthGrid` (status tiles), and Top Errors. Entry: [pages/OverviewHubPage/index.tsx](src/features/overview/pages/OverviewHubPage/index.tsx). API: `overviewHubApi.ts`. |
 | **Saturation** | `saturation/` | `/saturation`, `/saturation/kafka`, `/saturation/database`, `/saturation/database/query/$queryId` | Single-scroll status pages (no tabs). Renders subsystem health, `FleetMap` hex grids, and `MostSaturatedHostsTable` (reads `/saturation/hosts`). Database query detail page identifies slow queries via fingerprinted query text. Entry: [pages/SaturationPage/index.tsx](src/features/saturation/pages/SaturationPage/index.tsx). |
 | **Metrics** | `metrics/` | `/metrics` | Metric query builder supporting line, area, bar, stack, heatmap, and top-list. Offers delta indicators, spatial/temporal stats, and CSV export. Entry: [pages/MetricsExplorerPage/index.tsx](src/features/metrics/pages/MetricsExplorerPage/index.tsx). |
-| **Logs** | `log/` | `/logs` | Log explorer featuring severity-stacked trend chart (`/logs/trend`), summary statistics, query DSL parser, JSON trees in expanded rows, and detail drawer. Server-side cursor pagination (no infinite scroll). Entry: [pages/LogsExplorerPage/index.tsx](src/features/log/pages/LogsExplorerPage/index.tsx). Store: `logsExplorerStore.ts`. |
+| **Logs** | `logs/` | `/logs` | Log explorer featuring severity-stacked trend chart (`/logs/trend`), summary statistics, query DSL parser, JSON trees in expanded rows, and detail drawer. Server-side cursor pagination (no infinite scroll). Entry: [pages/LogsExplorerPage/index.tsx](src/features/logs/pages/LogsExplorerPage/index.tsx). Data layer + table/detail viewer live in `@shared/logs` (store: `logsExplorerStore.ts`). |
 | **Traces** | `traces/` | `/traces`, `/traces/$traceId`, `/traces/compare` | Trace list with facet rails + volume trend charts. Detail page displays KPIs, service chips, and tabbed panels (Waterfall, Service Map, Errors, JSON) with span drawer. Entry: [pages/TracesExplorerPage/index.tsx](src/features/traces/pages/TracesExplorerPage/index.tsx). Store: `tracesStore.ts`. |
 | **Infrastructure** | `infrastructure/` | `/infrastructure`, `/infrastructure/hosts/$host`, `/infrastructure/containers/$container` | Infrastructure hub with hosts list, pods, network, and host-map tabs. Detail pages show metrics, container specs, and deep links to logs. Entry: [pages/InfrastructureHubPage.tsx](src/features/infrastructure/pages/InfrastructureHubPage.tsx). |
 | **Errors** | `errors/` | `/errors`, `/errors/$groupId` | Error tracker listing issues by occurrence counts and affected services. Details include stack frames panel, context, and occurrences timeline. Entry: [pages/ErrorTrackingPage/index.tsx](src/features/errors/pages/ErrorTrackingPage/index.tsx). |
@@ -60,7 +60,6 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 | **Monitors** | `monitors/` | `/monitors`, `/monitors/new`, `/monitors/$monitorId`, `/monitors/$monitorId/edit`, `/monitors/notifications` | Alerting system UI. Supports metric, APM, and log monitor types. 5-step monitor builder wizard. Detail page features hand-rolled SVG eval chart. Outbound integration supports Slack webhooks. Entry: [pages/MonitorsPage/MonitorsPage.tsx](src/features/monitors/pages/MonitorsPage/MonitorsPage.tsx). |
 | **Settings** | `settings/` | `/settings` | Tenant info (API key reveal) + admin-only **Members** tab: list/invite users and promote/demote admin↔member (`components/tabs/SettingsMembersTab`, `api/membersApi`, `hooks/useMembers`). The Members tab renders only when `authStore.tenant.role === "admin"`; the server enforces tenant scoping and a last-admin guard. |
 | **Onboarding** | `onboarding/` | `/welcome` | Post-signup page (in `app/auth/pages/WelcomePage`) showing the tenant API key + OTLP endpoint + collector-config snippet tabs. Feature folder holds `TrialBanner` (days-left banner in `MainLayout`), `otlpEndpoint.ts`, and the transient signup-key handoff (`shared/api/auth/apiKeyHandoff.ts`). |
-| **Explorer** | `explorer/` | — | Shared explorer utilities, DSL input parser (`ExplorerSearchBarDsl`), facets, visualizations, and trend chart primitives used by logs/traces/metrics. |
 
 ---
 
@@ -68,12 +67,15 @@ Orientation for [optikk-frontend](.). This index is aligned to the current repo 
 
 | Area | Path | Key Files & Purpose |
 | :--- | :--- | :--- |
-| **API** | `api/` | JWT token management, standard refresh interceptors, typed Axios client wrappers, and cross-feature API types (`service-types.ts`: `RequestTime`, `PageInfo`, `PaginatedResponse`). |
-| **Components** | `components/` | Reusable UI primitives (`primitives/`), table wrappers (`table/`), custom chart modules (`ui/charts/` including `uPlot` setups, micro charts, and uplot helpers), and dashboard layouts. |
+| **API** | `api/` | HTTP transport in `http/` (Axios client, auth/error interceptors, baseUrl), JWT token management, and domain API modules consumed across features: `topology.ts`, `errors.ts`, `hosts.ts`, `suggestions.ts`, `red/` (redApi + buildREDFilters), `traces/` (tracesApi, buildTracesFilters, types, zod schemas), plus cross-feature types (`service-types.ts`: `RequestTime`, `PageInfo`, `PaginatedResponse`). |
+| **Search** | `search/` | Explorer kit used by traces/logs/metrics/dashboards: filter/query types, DSL parser + search bar (`ExplorerSearchBarDsl`, `DslSearchBarWithChips`), suggestions, facets, explorer state/query/keyboard hooks, and trend primitives. |
+| **Logs kit** | `logs/` | Log data layer + viewer used by the logs feature, services, and traces: `api/` (query/trend/facets/byId/traceLogs), `types/`, `utils/` (severity, transformers, trace correlation), `store/logsExplorerStore.ts`, and `components/table` + `components/detail`. |
+| **Metrics kit** | `metrics/` | Metric query kit used by the metrics feature, dashboards, and overview: `types.ts`, `constants/`, `api/metricsExplorerApi.ts`, hooks (`useMetricsExplorerQuery`, `useMetricNames`, `useMetricTags`), utils (`chartSeries`, `formatStat`, `seriesStats`, `formulaEvaluator`), and components (`MetricQueryBuilder`, `DeltaBadge`, `MetricSegmentedControl`). |
+| **Components** | `components/` | Reusable UI primitives (`primitives/`), table wrappers (`table/`), custom chart modules (`ui/charts/` including `uPlot` setups, micro charts, and uplot helpers), dashboard layouts, `ui/PanelCard.tsx`, and domain drawers (`ui/drawers/ServiceDetailDrawer`). |
 | **Entities** | `entities/` | System-wide TS declarations for metrics, logs, traces, users, and deployments. |
 | **Hooks** | `hooks/` | Standard React hooks: `useStandardQuery` for TanStack query defaults, `useVisibilityInterval` for tab-hidden updates, and `useSocketStream` for WebSockets. |
 | **Constants** | `constants/` | Global routes mapping ([src/shared/constants/routes.ts](src/shared/constants/routes.ts)) and health alert thresholds. |
-| **Utils** | `utils/` | Shared helper scripts: `formatters.ts` (number/duration formatters), `navigation.ts` (TanStack casts), and time range helpers. |
+| **Utils** | `utils/` | Shared helper scripts: `formatters.ts` (number/duration formatters), `metricFormatters.ts` (`fmtNum`/`fmtMs`/`fmtPct` display helpers), `timeBounds.ts` (resolve/shift/zoom time ranges), and `navigation.ts` (TanStack casts). |
 
 ---
 
@@ -88,4 +90,5 @@ These commands check code quality, formatting, and theme safety:
 - `yarn lint:fix` / `yarn format`: Automatically format and correct lints.
 - `yarn check:colors`: Verify that no raw color codes or Tailwind named color classes are used in CSS/TSX files.
 - `yarn check:dupes`: Ensure that display formatters are only declared in their sanctioned shared file.
-- `yarn ci`: Runs full suite validation (`yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn build`).
+- `yarn check:boundaries`: Enforce import boundaries (no cross-feature imports; no shared→feature imports). New violations fail; the allowlist in `scripts/boundaries-allowlist.json` is empty and must stay that way.
+- `yarn ci`: Runs full suite validation (`yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn build`).
