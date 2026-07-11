@@ -1,11 +1,28 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 import { ROUTES } from "@shared/constants/routes";
 
+import { session } from "@shared/api/auth/session";
 import { LoginBrandPanel } from "./LoginBrandPanel";
 import { LoginForm } from "./LoginForm";
 
 export function LoginPage() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get("token");
+    if (!token) return;
+    void session
+      .verifyEmail(token)
+      .then(() => {
+        toast.success("Email verified. Your API key is ready.");
+        navigate({ to: ROUTES.welcome });
+      })
+      .catch((error: unknown) =>
+        toast.error(error instanceof Error ? error.message : "Email verification failed")
+      );
+  }, [navigate]);
   return (
     <div className="grid min-h-screen grid-cols-1 bg-surface-canvas text-foreground lg:grid-cols-[1.05fr_1fr]">
       <LoginBrandPanel />

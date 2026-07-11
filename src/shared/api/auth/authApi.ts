@@ -89,9 +89,10 @@ export interface SignupParams {
   readonly password: string;
   readonly name: string;
   readonly orgName: string;
+  readonly turnstileToken: string;
 }
 
-interface SignupResult {
+interface VerifyResult {
   readonly session: SessionPayload;
   readonly apiKey: string;
 }
@@ -117,20 +118,27 @@ export const authApi = {
     }
   },
 
-  // Signup returns the same session envelope as login (plus the api_key) and
-  // sets the refresh cookie.
-  async signup(params: SignupParams): Promise<SignupResult> {
+  async signup(params: SignupParams): Promise<void> {
     try {
-      const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
+      await http.post(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
         email: params.email,
         password: params.password,
         name: params.name,
         tenant_name: params.orgName,
+        turnstile_token: params.turnstileToken,
       });
-      return { session: unwrapSession(response.data), apiKey: extractApiKey(response.data) };
     } catch (error: unknown) {
       if (error instanceof AuthApiError) throw error;
       throw toAuthApiError(error, "Sign up failed");
+    }
+  },
+
+  async verifyEmail(token: string): Promise<VerifyResult> {
+    try {
+      const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.VERIFY_EMAIL, { token });
+      return { session: unwrapSession(response.data), apiKey: extractApiKey(response.data) };
+    } catch (error: unknown) {
+      throw toAuthApiError(error, "Email verification failed");
     }
   },
 

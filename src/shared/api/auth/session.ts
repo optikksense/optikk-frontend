@@ -1,9 +1,9 @@
-import type { Tenant, User } from "@/types";
+import type { Tenant, User } from "@shared/types";
 
 import { queryClient } from "@shared/api/queryClient";
 
-import { useAppStore } from "@store/appStore";
-import { useAuthStore } from "@store/authStore";
+import { useAppStore } from "@app/store/appStore";
+import { useAuthStore } from "@app/store/authStore";
 
 import { stashSignupApiKey } from "./apiKeyHandoff";
 import { type SessionPayload, type SignupParams, authApi } from "./authApi";
@@ -71,7 +71,11 @@ export const session = {
   },
 
   async signup(params: SignupParams): Promise<void> {
-    const { session: payload, apiKey } = await authApi.signup(params);
+    await authApi.signup(params);
+  },
+
+  async verifyEmail(token: string): Promise<void> {
+    const { session: payload, apiKey } = await authApi.verifyEmail(token);
     beginSession(payload);
     stashSignupApiKey(apiKey);
   },

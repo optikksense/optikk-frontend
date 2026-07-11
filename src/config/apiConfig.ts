@@ -11,6 +11,7 @@ const API_ENDPOINTS = {
   AUTH: {
     LOGIN: "/v1/auth/login",
     SIGNUP: "/v1/auth/signup",
+    VERIFY_EMAIL: "/v1/auth/verify-email",
     REFRESH: "/v1/auth/refresh",
     LOGOUT: "/v1/auth/logout",
     DEVICE_APPROVE: "/v1/auth/device/approve",
