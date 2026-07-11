@@ -10,30 +10,8 @@ import { getFleetPods } from "../../../api/hostsApi";
 import InfraPodsTable from "../../../components/InfraPodsTable";
 import { getPodDetails } from "../../../components/InfraPodsTable";
 import type { FleetPod } from "../../../types";
-function KpiCard({
-  label,
-  value,
-  subtext,
-  color,
-}: {
-  label: string;
-  value: string;
-  subtext: string;
-  color?: string;
-}) {
-  return (
-    <div className="rounded-md border border-border bg-card p-3.5 shadow-sm">
-      <div className="text-[12.5px] text-foreground-muted leading-none">{label}</div>
-      <div
-        className="mt-1 font-bold text-[22px] leading-tight"
-        style={{ color: color || "var(--fg-0)" }}
-      >
-        {value}
-      </div>
-      <div className="mt-1 text-[11.5px] text-foreground-muted">{subtext}</div>
-    </div>
-  );
-}
+import { ContainersKpiGrid } from "./ContainersKpiGrid";
+import { TopContainersList } from "./TopContainersList";
 
 export default function ContainersTab() {
   const navigate = useNavigate();
@@ -105,53 +83,9 @@ export default function ContainersTab() {
     });
   };
 
-  const STATUS_COLOR = {
-    running: "var(--ok)",
-    pending: "var(--warn)",
-    terminating: "var(--fg-mute)",
-    crashloop: "var(--err)",
-    oomkilled: "var(--err)",
-  };
-
   return (
     <div className="flex flex-col gap-4">
-      {}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <KpiCard
-          label="Running"
-          value={String(kpiStats.running)}
-          subtext={`of ${processedPods.length}`}
-        />
-        <KpiCard
-          label="Pending"
-          value={String(kpiStats.pending)}
-          subtext="scheduling"
-          color="var(--warn-fg)"
-        />
-        <KpiCard
-          label="CrashLoop / OOM"
-          value={String(kpiStats.crashLoop)}
-          subtext="needs attention"
-          color="var(--err)"
-        />
-        <KpiCard
-          label="Restarts (1h)"
-          value={String(kpiStats.restarts)}
-          subtext="across cluster"
-          color="var(--warn-fg)"
-        />
-        <KpiCard
-          label="CPU used"
-          value={processedPods.length > 0 ? "62%" : "0%"}
-          subtext="of 88 cores"
-        />
-        <KpiCard
-          label="Mem used"
-          value={processedPods.length > 0 ? "54%" : "0%"}
-          subtext="of 176 GB"
-        />
-      </div>
-
+      <ContainersKpiGrid kpiStats={kpiStats} totalPods={processedPods.length} />
       {}
       <div className="rounded-md border border-border bg-card p-3.5 shadow-sm">
         <div className="flex w-[320px] items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 focus-within:border-primary">
@@ -182,83 +116,19 @@ export default function ContainersTab() {
 
       {}
       <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {}
-        <div className="rounded-md border border-border bg-card p-4">
-          <div className="font-bold text-[13px] text-foreground leading-tight">
-            Top CPU containers
-          </div>
-          <div className="mt-0.5 text-[11.5px] text-foreground-muted">last 1 hour</div>
-          <div className="mt-3 flex flex-col gap-1.5">
-            {topCpuContainers.map((c) => (
-              <button
-                key={c.pod_name}
-                type="button"
-                onClick={() => onOpenContainer(c.pod_name)}
-                className="flex items-center justify-between rounded-md p-1.5 text-left transition-colors hover:bg-muted"
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <span
-                    style={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: "50%",
-                      background: STATUS_COLOR[c.status],
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span className="truncate font-medium font-mono text-[12.5px] text-foreground">
-                    {c.pod_name}
-                  </span>
-                </div>
-                <span
-                  className="font-mono font-semibold text-[12.5px]"
-                  style={{ color: c.cpu >= 90 ? "var(--err)" : "var(--warn-fg)" }}
-                >
-                  {c.cpu}%
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <TopContainersList
+          title="Top CPU containers"
+          metricType="cpu"
+          containers={topCpuContainers}
+          onOpenContainer={onOpenContainer}
+        />
 
-        {}
-        <div className="rounded-md border border-border bg-card p-4">
-          <div className="font-bold text-[13px] text-foreground leading-tight">
-            Top memory containers
-          </div>
-          <div className="mt-0.5 text-[11.5px] text-foreground-muted">last 1 hour</div>
-          <div className="mt-3 flex flex-col gap-1.5">
-            {topMemContainers.map((c) => (
-              <button
-                key={c.pod_name}
-                type="button"
-                onClick={() => onOpenContainer(c.pod_name)}
-                className="flex items-center justify-between rounded-md p-1.5 text-left transition-colors hover:bg-muted"
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <span
-                    style={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: "50%",
-                      background: STATUS_COLOR[c.status],
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span className="truncate font-medium font-mono text-[12.5px] text-foreground">
-                    {c.pod_name}
-                  </span>
-                </div>
-                <span
-                  className="font-mono font-semibold text-[12.5px]"
-                  style={{ color: c.mem >= 90 ? "var(--err)" : "var(--warn-fg)" }}
-                >
-                  {c.mem}%
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <TopContainersList
+          title="Top memory containers"
+          metricType="mem"
+          containers={topMemContainers}
+          onOpenContainer={onOpenContainer}
+        />
       </div>
     </div>
   );
