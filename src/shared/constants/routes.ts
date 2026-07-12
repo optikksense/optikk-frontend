@@ -36,6 +36,8 @@ export const ROUTES = {
 
   ingestion: "/ingestion",
 
+  cloud: "/cloud",
+
   monitors: "/monitors",
   monitorsNew: "/monitors/new",
   monitorDetail: "/monitors/$monitorId",

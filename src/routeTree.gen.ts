@@ -29,6 +29,7 @@ const AppOverviewLazyRouteImport = createFileRoute('/_app/overview')()
 const AppMetricsLazyRouteImport = createFileRoute('/_app/metrics')()
 const AppLlmLazyRouteImport = createFileRoute('/_app/llm')()
 const AppDeviceLazyRouteImport = createFileRoute('/_app/device')()
+const AppCloudLazyRouteImport = createFileRoute('/_app/cloud')()
 const AppTracesIndexLazyRouteImport = createFileRoute('/_app/traces/')()
 const AppServicesIndexLazyRouteImport = createFileRoute('/_app/services/')()
 const AppSaturationIndexLazyRouteImport = createFileRoute('/_app/saturation/')()
@@ -131,6 +132,11 @@ const AppDeviceLazyRoute = AppDeviceLazyRouteImport.update({
   path: '/device',
   getParentRoute: () => AppRoute,
 } as any).lazy(() => import('./routes/_app/device.lazy').then((d) => d.Route))
+const AppCloudLazyRoute = AppCloudLazyRouteImport.update({
+  id: '/cloud',
+  path: '/cloud',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() => import('./routes/_app/cloud.lazy').then((d) => d.Route))
 const AppIngestionRoute = AppIngestionRouteImport.update({
   id: '/ingestion',
   path: '/ingestion',
@@ -336,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/welcome': typeof WelcomeRoute
   '/ingestion': typeof AppIngestionRoute
+  '/cloud': typeof AppCloudLazyRoute
   '/device': typeof AppDeviceLazyRoute
   '/llm': typeof AppLlmLazyRoute
   '/metrics': typeof AppMetricsLazyRoute
@@ -375,6 +382,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/welcome': typeof WelcomeRoute
   '/ingestion': typeof AppIngestionRoute
+  '/cloud': typeof AppCloudLazyRoute
   '/device': typeof AppDeviceLazyRoute
   '/llm': typeof AppLlmLazyRoute
   '/metrics': typeof AppMetricsLazyRoute
@@ -416,6 +424,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/welcome': typeof WelcomeRoute
   '/_app/ingestion': typeof AppIngestionRoute
+  '/_app/cloud': typeof AppCloudLazyRoute
   '/_app/device': typeof AppDeviceLazyRoute
   '/_app/llm': typeof AppLlmLazyRoute
   '/_app/metrics': typeof AppMetricsLazyRoute
@@ -457,6 +466,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/welcome'
     | '/ingestion'
+    | '/cloud'
     | '/device'
     | '/llm'
     | '/metrics'
@@ -496,6 +506,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/welcome'
     | '/ingestion'
+    | '/cloud'
     | '/device'
     | '/llm'
     | '/metrics'
@@ -536,6 +547,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/welcome'
     | '/_app/ingestion'
+    | '/_app/cloud'
     | '/_app/device'
     | '/_app/llm'
     | '/_app/metrics'
@@ -655,6 +667,13 @@ declare module '@tanstack/react-router' {
       path: '/device'
       fullPath: '/device'
       preLoaderRoute: typeof AppDeviceLazyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cloud': {
+      id: '/_app/cloud'
+      path: '/cloud'
+      fullPath: '/cloud'
+      preLoaderRoute: typeof AppCloudLazyRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/ingestion': {
@@ -865,6 +884,7 @@ const AppMonitorsMonitorIdLazyRouteWithChildren =
 
 interface AppRouteChildren {
   AppIngestionRoute: typeof AppIngestionRoute
+  AppCloudLazyRoute: typeof AppCloudLazyRoute
   AppDeviceLazyRoute: typeof AppDeviceLazyRoute
   AppLlmLazyRoute: typeof AppLlmLazyRoute
   AppMetricsLazyRoute: typeof AppMetricsLazyRoute
@@ -899,6 +919,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppIngestionRoute: AppIngestionRoute,
+  AppCloudLazyRoute: AppCloudLazyRoute,
   AppDeviceLazyRoute: AppDeviceLazyRoute,
   AppLlmLazyRoute: AppLlmLazyRoute,
   AppMetricsLazyRoute: AppMetricsLazyRoute,

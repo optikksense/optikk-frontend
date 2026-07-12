@@ -89,7 +89,6 @@ export interface SignupParams {
   readonly password: string;
   readonly name: string;
   readonly orgName: string;
-  readonly turnstileToken: string;
 }
 
 interface VerifyResult {
@@ -125,7 +124,6 @@ export const authApi = {
         password: params.password,
         name: params.name,
         tenant_name: params.orgName,
-        turnstile_token: params.turnstileToken,
       });
     } catch (error: unknown) {
       if (error instanceof AuthApiError) throw error;

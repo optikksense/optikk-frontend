@@ -8,7 +8,6 @@ import { ROUTES } from "@shared/constants/routes";
 import { cn } from "@shared/lib/utils";
 
 import { session } from "@shared/api/auth/session";
-import { Turnstile } from "./Turnstile";
 
 import type { ReactNode } from "react";
 
@@ -27,7 +26,6 @@ export function SignupForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState("");
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -39,8 +37,7 @@ export function SignupForm() {
 
     setIsSubmitting(true);
     try {
-      if (!turnstileToken) throw new Error("Complete bot verification first");
-      await session.signup({ ...parsed.data, turnstileToken });
+      await session.signup(parsed.data);
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Sign up failed");
       setIsSubmitting(false);
@@ -99,7 +96,6 @@ export function SignupForm() {
         endSlot={<ShowHideToggle show={showPassword} onToggle={setShowPassword} />}
       />
       <SubmitButton loading={isSubmitting} />
-      <Turnstile onToken={setTurnstileToken} />
       <SignInLine />
       <LegalLine />
     </form>
