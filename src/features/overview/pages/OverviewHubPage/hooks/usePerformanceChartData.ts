@@ -1,9 +1,10 @@
 import { tsMs } from "@shared/utils/chartDataUtils";
 import { useMemo } from "react";
-import type uPlot from "uplot";
 import type { PerformanceSeries } from "./useOverviewModel";
 
-export function usePerformanceChartData(series: PerformanceSeries): uPlot.AlignedData {
+export function usePerformanceChartData(
+  series: PerformanceSeries
+): [number[], ...(number | null | undefined)[][]] {
   const { timestamps, reqValues, errValues } = useMemo(() => {
     const reqByTs = new Map<number, number>();
     const errByTs = new Map<number, number>();
@@ -28,7 +29,7 @@ export function usePerformanceChartData(series: PerformanceSeries): uPlot.Aligne
     };
   }, [series.requestRows, series.errorRows]);
 
-  return useMemo<uPlot.AlignedData>(
+  return useMemo<[number[], ...(number | null | undefined)[][]]>(
     () => [timestamps, reqValues, errValues],
     [timestamps, reqValues, errValues]
   );
