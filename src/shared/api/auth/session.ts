@@ -70,8 +70,13 @@ export const session = {
     beginSession(await authApi.login(email, password));
   },
 
-  async signup(params: SignupParams): Promise<void> {
-    await authApi.signup(params);
+  async signup(params: SignupParams): Promise<"verificationRequired" | "signedIn"> {
+    const result = await authApi.signup(params);
+    if (result.kind === "signedIn") {
+      beginSession(result.session);
+      stashSignupApiKey(result.apiKey);
+    }
+    return result.kind;
   },
 
   async verifyEmail(token: string): Promise<void> {

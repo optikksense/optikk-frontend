@@ -96,6 +96,10 @@ interface VerifyResult {
   readonly apiKey: string;
 }
 
+type SignupResult =
+  | { readonly kind: "verificationRequired" }
+  | { readonly kind: "signedIn"; readonly session: SessionPayload; readonly apiKey: string };
+
 // Signup's envelope carries the tenant's api_key alongside the session.
 const signupKeySchema = z.object({ api_key: z.string().min(1) });
 
@@ -117,14 +121,23 @@ export const authApi = {
     }
   },
 
-  async signup(params: SignupParams): Promise<void> {
+  async signup(params: SignupParams): Promise<SignupResult> {
     try {
-      await http.post(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
+      const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
         email: params.email,
         password: params.password,
         name: params.name,
         tenant_name: params.orgName,
       });
+      const apiKey = extractApiKey(response.data);
+      if (apiKey === "") {
+        return { kind: "verificationRequired" };
+      }
+      return {
+        kind: "signedIn",
+        session: unwrapSession(response.data),
+        apiKey,
+      };
     } catch (error: unknown) {
       if (error instanceof AuthApiError) throw error;
       throw toAuthApiError(error, "Sign up failed");

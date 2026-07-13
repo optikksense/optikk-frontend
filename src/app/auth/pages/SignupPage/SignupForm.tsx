@@ -36,14 +36,20 @@ export function SignupForm() {
     }
 
     setIsSubmitting(true);
+    let result: "verificationRequired" | "signedIn";
     try {
-      await session.signup(parsed.data);
+      result = await session.signup(parsed.data);
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Sign up failed");
       setIsSubmitting(false);
       return;
     }
 
+    if (result === "signedIn") {
+      toast.success("Account created.");
+      navigate({ to: ROUTES.welcome });
+      return;
+    }
     toast.success("Check your email to verify your account.");
     navigate({ to: ROUTES.login });
   };
