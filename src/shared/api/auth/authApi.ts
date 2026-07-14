@@ -168,4 +168,31 @@ export const authApi = {
       headers: accessToken != null ? { Authorization: `Bearer ${accessToken}` } : undefined,
     });
   },
+
+  async forgotPassword(email: string): Promise<void> {
+    try {
+      await http.post(API_CONFIG.ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+    } catch (error: unknown) {
+      if (error instanceof AuthApiError) throw error;
+      throw toAuthApiError(error, "Failed to request password reset");
+    }
+  },
+
+  async resetPassword(token: string, password: string): Promise<void> {
+    try {
+      await http.post(API_CONFIG.ENDPOINTS.AUTH.RESET_PASSWORD, { token, password });
+    } catch (error: unknown) {
+      if (error instanceof AuthApiError) throw error;
+      throw toAuthApiError(error, "Failed to reset password");
+    }
+  },
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    try {
+      await http.post(API_CONFIG.ENDPOINTS.AUTH.CHANGE_PASSWORD, { currentPassword, newPassword });
+    } catch (error: unknown) {
+      if (error instanceof AuthApiError) throw error;
+      throw toAuthApiError(error, "Failed to change password");
+    }
+  },
 };

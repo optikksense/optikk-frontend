@@ -52,8 +52,8 @@ export default function SettingsMembersTab(): JSX.Element {
   };
 
   const submitInvite = () => {
-    if (!form.email || !form.name || !form.password) {
-      toast.error("Email, name and password are required");
+    if (!form.email || !form.name) {
+      toast.error("Email and name are required");
       return;
     }
     create.mutate(form, {
@@ -143,12 +143,15 @@ export default function SettingsMembersTab(): JSX.Element {
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <input
-            className="w-full rounded border px-sm py-xs"
-            placeholder="Temporary password"
+            className="w-full rounded border px-sm py-xs text-sm"
+            placeholder="Optional temporary password"
             type="password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
+          <p className="text-xs text-muted mt-[-4px]">
+            Leave blank to email the user an invite link to set their own password.
+          </p>
           <Select
             value={form.role}
             options={ROLE_OPTIONS}

@@ -92,6 +92,18 @@ export const session = {
     endSession();
   },
 
+  async forgotPassword(email: string): Promise<void> {
+    await authApi.forgotPassword(email);
+  },
+
+  async resetPassword(token: string, password: string): Promise<void> {
+    await authApi.resetPassword(token, password);
+  },
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    await authApi.changePassword(currentPassword, newPassword);
+  },
+
   refreshAccessToken(): Promise<string | null> {
     if (useAuthStore.getState().status === "unauthenticated") {
       return Promise.resolve(null);

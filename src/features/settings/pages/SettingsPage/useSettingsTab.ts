@@ -2,11 +2,11 @@ import { useCallback } from "react";
 
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 
-export const SETTINGS_TABS = ["tenant", "members", "ingestion"] as const;
+export const SETTINGS_TABS = ["profile", "tenant", "members", "ingestion"] as const;
 
 export type SettingsTab = (typeof SETTINGS_TABS)[number];
 
-const DEFAULT_TAB: SettingsTab = "tenant";
+const DEFAULT_TAB: SettingsTab = "profile";
 
 function normalize(value: string | null | undefined): SettingsTab {
   if (!value) return DEFAULT_TAB;

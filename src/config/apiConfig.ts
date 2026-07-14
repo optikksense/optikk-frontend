@@ -15,6 +15,9 @@ const API_ENDPOINTS = {
     REFRESH: "/v1/auth/refresh",
     LOGOUT: "/v1/auth/logout",
     DEVICE_APPROVE: "/v1/auth/device/approve",
+    FORGOT_PASSWORD: "/v1/auth/forgot-password",
+    RESET_PASSWORD: "/v1/auth/reset-password",
+    CHANGE_PASSWORD: "/v1/auth/change-password",
   },
   TENANTS: {
     LIST: "/v1/tenants",

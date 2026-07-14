@@ -18,7 +18,7 @@ export interface Member {
 export interface CreateMemberPayload {
   email: string;
   name: string;
-  password: string;
+  password?: string;
   role: MemberRole;
 }
 

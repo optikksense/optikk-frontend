@@ -1,36 +1,35 @@
-import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { ArrowRight, Lock, Mail } from "lucide-react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { ArrowRight, Lock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { ROUTES } from "@shared/constants/routes";
 import { cn } from "@shared/lib/utils";
-
 import { session } from "@shared/api/auth/session";
-
-import { useAppStore } from "@app/store/appStore";
 
 import type { ReactNode } from "react";
 
-const loginSchema = z.object({
-  email: z.string().trim().min(1, "Please enter your email").email("Please enter a valid email"),
-  password: z.string().min(1, "Please enter your password"),
+const resetPasswordSchema = z.object({
+  password: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
-export function LoginForm() {
+export function ResetPasswordForm() {
   const navigate = useNavigate();
-  const { redirect } = useSearch({ strict: false }) as { redirect?: string };
-  const setTimeRange = useAppStore((s) => s.setTimeRange);
+  const { token } = useSearch({ strict: false }) as { token?: string };
 
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    const parsed = loginSchema.safeParse({ email, password });
+    if (!token) {
+      toast.error("Reset token is missing from the URL.");
+      return;
+    }
+
+    const parsed = resetPasswordSchema.safeParse({ password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Check your details");
       return;
@@ -38,65 +37,38 @@ export function LoginForm() {
 
     setIsSubmitting(true);
     try {
-      await session.login(parsed.data.email, parsed.data.password);
+      await session.resetPassword(token, parsed.data.password);
+      toast.success("Password reset successfully. You can now sign in.");
+      navigate({ to: ROUTES.login });
     } catch (error: unknown) {
-      toast.error(error instanceof Error ? error.message : "Login failed");
+      toast.error(error instanceof Error ? error.message : "Failed to reset password");
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    setTimeRange({ kind: "relative", preset: "30m", label: "Last 30 minutes", minutes: 30 });
-    toast.success("Login successful!");
-    // Only honor internal paths so a crafted ?redirect= can't leave the app.
-    const target = redirect?.startsWith("/") ? redirect : ROUTES.overview;
-    navigate({ to: target as string & {} });
   };
 
   return (
     <form onSubmit={handleSubmit} autoComplete="off">
       <Field
-        id="email"
-        label="Work email"
-        type="email"
-        value={email}
-        onChange={setEmail}
-        placeholder="you@company.com"
-        icon={<Mail size={15} strokeWidth={2} />}
-        required
-        autoComplete="email"
-      />
-      <Field
         id="password"
-        label={
-          <div className="flex items-center justify-between w-full">
-            <span>Password</span>
-            <Link
-              to="/forgot-password"
-              className="font-normal normal-case tracking-normal text-[var(--login-link)] no-underline hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-        }
+        label="New password"
         type={showPassword ? "text" : "password"}
         value={password}
         onChange={setPassword}
         placeholder="••••••••••••"
         icon={<Lock size={15} strokeWidth={2} />}
         required
-        autoComplete="current-password"
+        autoComplete="new-password"
         endSlot={<ShowHideToggle show={showPassword} onToggle={setShowPassword} />}
       />
       <SubmitButton loading={isSubmitting} />
-      <RequestAccessLine />
-      <LegalLine />
     </form>
   );
 }
 
 interface FieldProps {
   readonly id: string;
-  readonly label: ReactNode;
+  readonly label: string;
   readonly type: string;
   readonly value: string;
   readonly onChange: (value: string) => void;
@@ -131,7 +103,7 @@ function Field({
     <div className="mb-3 grid gap-1.5">
       <label
         htmlFor={id}
-        className="flex items-center font-semibold text-[11.5px] text-foreground-secondary uppercase tracking-[0.04em]"
+        className="font-semibold text-[11.5px] text-foreground-secondary uppercase tracking-[0.04em]"
       >
         {label}
       </label>
@@ -141,7 +113,7 @@ function Field({
         </span>
         <input
           id={id}
-          data-testid={`login-${id}`}
+          data-testid={`reset-${id}`}
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -179,7 +151,7 @@ function ShowHideToggle({
 function SubmitButton({ loading }: { readonly loading: boolean }) {
   return (
     <button
-      data-testid="login-submit"
+      data-testid="reset-submit"
       type="submit"
       disabled={loading}
       className="mt-2 flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-primary bg-primary font-[inherit] font-semibold text-[var(--login-submit-fg)] text-sm transition-[background-color,border-color,transform] duration-150 hover:border-[var(--login-link)] hover:bg-[var(--login-link)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
@@ -188,40 +160,10 @@ function SubmitButton({ loading }: { readonly loading: boolean }) {
         <span className="h-[16px] w-[16px] animate-[spin_0.6s_linear_infinite] rounded-full border-2 border-transparent border-t-current" />
       ) : (
         <>
-          Sign in
+          Set password
           <ArrowRight size={14} strokeWidth={2.2} />
         </>
       )}
     </button>
-  );
-}
-
-function RequestAccessLine() {
-  return (
-    <p className="mt-4 text-center text-[12.5px] text-foreground-muted">
-      Want to deploy your own instance?{" "}
-      <a
-        href={ROUTES.selfHost}
-        className="font-semibold text-[var(--login-link)] no-underline hover:underline"
-      >
-        Self-host now
-      </a>
-    </p>
-  );
-}
-
-function LegalLine() {
-  return (
-    <p className="mx-auto mt-[22px] max-w-[320px] text-center text-[11px] text-foreground-muted leading-[1.5]">
-      By signing in you agree to Optikk&apos;s{" "}
-      <a href={ROUTES.terms} className="text-foreground-secondary underline">
-        Terms of Service
-      </a>{" "}
-      and{" "}
-      <a href={ROUTES.privacy} className="text-foreground-secondary underline">
-        Privacy Policy
-      </a>
-      .
-    </p>
   );
 }
