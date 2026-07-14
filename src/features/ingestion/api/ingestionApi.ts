@@ -81,6 +81,24 @@ export interface IngestionServices {
   readonly topShareBytesPct: number;
 }
 
+export interface CostLine {
+  readonly category: string;
+  readonly unit: string;
+  readonly quantity: number;
+  readonly rate: number;
+  readonly cost: number;
+  readonly projectedCost: number;
+}
+
+export interface IngestionCost {
+  readonly currency: string;
+  readonly lines: readonly CostLine[];
+  readonly currentCost: number;
+  readonly projectedMonthlyCost: number;
+  readonly daysElapsed: number;
+  readonly daysInMonth: number;
+}
+
 function range(s: RequestTime, e: RequestTime) {
   return { startTime: s, endTime: e };
 }
@@ -101,4 +119,8 @@ export function getIngestionTimeseries(
 
 export function getIngestionServices(s: RequestTime, e: RequestTime): Promise<IngestionServices> {
   return api.get<IngestionServices>(`${V1}/ingestion/services`, { params: range(s, e) });
+}
+
+export function getIngestionCost(s: RequestTime, e: RequestTime): Promise<IngestionCost> {
+  return api.get<IngestionCost>(`${V1}/ingestion/cost`, { params: range(s, e) });
 }

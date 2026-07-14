@@ -1,8 +1,13 @@
 import { DatabaseZap } from "lucide-react";
 import { useState } from "react";
 
-import { useIngestionServices, useIngestionSummary } from "../../hooks/useIngestion";
+import {
+  useIngestionCost,
+  useIngestionServices,
+  useIngestionSummary,
+} from "../../hooks/useIngestion";
 import type { IngestionUnit } from "../../utils/format";
+import { CostBreakdown } from "./CostBreakdown";
 import { IngestedVolumeChart } from "./IngestedVolumeChart";
 import { IngestionKpiStrip } from "./IngestionKpiStrip";
 import { SignalPillars } from "./SignalPillars";
@@ -54,6 +59,7 @@ export default function IngestionPage(): JSX.Element {
   const [unit, setUnit] = useState<IngestionUnit>("records");
   const summaryQ = useIngestionSummary();
   const servicesQ = useIngestionServices();
+  const costQ = useIngestionCost();
   const summary = summaryQ.data;
 
   const onPace = unit === "bytes" ? summary?.onPaceBytes : summary?.onPace;
@@ -90,6 +96,10 @@ export default function IngestionPage(): JSX.Element {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.1fr_1fr]">
         <IngestedVolumeChart unit={unit} />
         <TelemetryTypeBreakdown summary={summary} unit={unit} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.1fr_1fr]">
+        <CostBreakdown cost={costQ.data} />
       </div>
 
       <SignalPillars summary={summary} unit={unit} />

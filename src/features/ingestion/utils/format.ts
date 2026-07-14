@@ -29,6 +29,16 @@ export function fmtValue(unit: IngestionUnit, n: number | null | undefined): str
   return unit === "bytes" ? fmtBytes(n) : fmtCount(n);
 }
 
+// Format a monetary amount in the given ISO currency (e.g. "USD" -> "$12.34").
+export function fmtMoney(currency: string, n: number | null | undefined): string {
+  if (n == null || !Number.isFinite(n)) return "—";
+  try {
+    return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(n);
+  } catch {
+    return `${n.toFixed(2)} ${currency}`;
+  }
+}
+
 // Per-signal colors, reused by the chart, breakdown bars and pillar cards.
 export const SIGNAL_COLORS: Record<string, string> = {
   logs: "var(--color-info,#3b82f6)",

@@ -3,6 +3,7 @@ import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useTenantId } from "@app/store/appStore";
 
 import {
+  getIngestionCost,
   getIngestionServices,
   getIngestionSummary,
   getIngestionTimeseries,
@@ -34,6 +35,17 @@ export function useIngestionTimeseries(groupBy: "type" | "service") {
   return useStandardQuery({
     queryKey: ["ingestion.timeseries", tenantId, monthKey, groupBy],
     queryFn: () => getIngestionTimeseries(startTime, endTime, groupBy),
+    enabled: Boolean(tenantId),
+    staleTime: 60_000,
+  });
+}
+
+export function useIngestionCost() {
+  const tenantId = useTenantId();
+  const { startTime, endTime, monthKey } = monthToDateRange();
+  return useStandardQuery({
+    queryKey: ["ingestion.cost", tenantId, monthKey],
+    queryFn: () => getIngestionCost(startTime, endTime),
     enabled: Boolean(tenantId),
     staleTime: 60_000,
   });
