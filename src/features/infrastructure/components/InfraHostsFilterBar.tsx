@@ -16,10 +16,8 @@ export function InfraHostsFilterBar({ hosts, value, onChange }: InfraHostsFilter
     const roles = Array.from(new Set(hosts.flatMap((h) => h.services)))
       .slice(0, 5)
       .map((r) => `role:${r}`);
-    const kinds = ["kind:k8s", "kind:ec2", "kind:rds"];
-    const regions = ["region:us-east-1a", "region:us-east-1b", "region:us-east-1c"];
     const statuses = ["status:ok", "status:warn", "status:err"];
-    return [...roles, ...kinds, ...regions, ...statuses];
+    return [...roles, ...statuses];
   }, [hosts]);
 
   const suggestions = useMemo(() => {

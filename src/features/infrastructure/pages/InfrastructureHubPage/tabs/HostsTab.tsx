@@ -12,7 +12,6 @@ import { getNodes, getNodesSummary } from "../../../api/hostsApi";
 import { infraGet } from "../../../api/infrastructureApi";
 import { InfraHostsFilterBar } from "../../../components/InfraHostsFilterBar";
 import { InfraHostsTable } from "../../../components/InfraHostsTable";
-import { InfraTopConsumersSidebar } from "../../../components/InfraTopConsumersSidebar";
 import type { InfrastructureNode, InfrastructureNodeSummary, MetricValue } from "../../../types";
 
 function KpiCard({
@@ -77,38 +76,12 @@ export default function HostsTab() {
     const needle = q.trim().toLowerCase();
     if (!needle) return nodes;
 
-    // Parse query search filters like role: or kind: or region: or status:
+    // Parse query search filters like role: or status: (both real signals).
     if (needle.includes(":")) {
       const [key, val] = needle.split(":");
       const tagVal = val.trim();
       if (key === "role") {
         return nodes.filter((n) => n.services.some((s) => s.toLowerCase().includes(tagVal)));
-      }
-      if (key === "kind") {
-        return nodes.filter((n) => {
-          const name = n.host.toLowerCase();
-          const kind =
-            name.includes("pg") || name.includes("db")
-              ? "rds"
-              : name.includes("kafka") ||
-                  name.includes("redis") ||
-                  name.includes("runner") ||
-                  name.includes("build")
-                ? "ec2"
-                : "k8s";
-          return kind.includes(tagVal);
-        });
-      }
-      if (key === "region") {
-        return nodes.filter((n) => {
-          const region =
-            n.host.includes("2") || n.host.includes("4") || n.host.includes("worker2")
-              ? "us-east-1b"
-              : n.host.includes("3") || n.host.includes("replica")
-                ? "us-east-1c"
-                : "us-east-1a";
-          return region.includes(tagVal);
-        });
       }
       if (key === "status") {
         return nodes.filter((n) => {
@@ -152,7 +125,7 @@ export default function HostsTab() {
         <KpiCard
           label="Hosts up"
           value={String(hostsCount || hostsUpVal)}
-          subtext={`of ${totalHostsSummary || 34}`}
+          subtext={totalHostsSummary > 0 ? `of ${totalHostsSummary}` : "fleet"}
         />
         <KpiCard label="Pods" value={String(totalPods)} subtext="k8s cluster" />
         <KpiCard label="Avg CPU" value={avgCpuVal} subtext="fleet" />
@@ -172,9 +145,6 @@ export default function HostsTab() {
           <InfraHostsTable nodes={filtered} onOpenNode={onOpenNode} />
         )}
       </div>
-
-      {}
-      <InfraTopConsumersSidebar onOpenHost={onOpenNode} summary={summary} />
     </div>
   );
 }
