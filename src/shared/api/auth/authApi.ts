@@ -89,6 +89,7 @@ export interface SignupParams {
   readonly password: string;
   readonly name: string;
   readonly orgName: string;
+  readonly acceptedTerms: boolean;
 }
 
 interface VerifyResult {
@@ -128,6 +129,7 @@ export const authApi = {
         password: params.password,
         name: params.name,
         tenant_name: params.orgName,
+        accepted_terms: params.acceptedTerms,
       });
       const apiKey = extractApiKey(response.data);
       if (apiKey === "") {

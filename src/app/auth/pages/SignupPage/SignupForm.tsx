@@ -16,6 +16,9 @@ const signupSchema = z.object({
   orgName: z.string().trim().min(1, "Please enter your organization"),
   email: z.string().trim().min(1, "Please enter your email").email("Please enter a valid email"),
   password: z.string().min(8, "Password must be at least 8 characters"),
+  acceptedTerms: z
+    .boolean()
+    .refine((v) => v, { message: "Please accept the Terms of Service and Privacy Policy" }),
 });
 
 export function SignupForm() {
@@ -25,11 +28,12 @@ export function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    const parsed = signupSchema.safeParse({ name, orgName, email, password });
+    const parsed = signupSchema.safeParse({ name, orgName, email, password, acceptedTerms });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Check your details");
       return;
@@ -101,9 +105,9 @@ export function SignupForm() {
         autoComplete="new-password"
         endSlot={<ShowHideToggle show={showPassword} onToggle={setShowPassword} />}
       />
+      <TermsCheckbox checked={acceptedTerms} onChange={setAcceptedTerms} />
       <SubmitButton loading={isSubmitting} />
       <SignInLine />
-      <LegalLine />
     </form>
   );
 }
@@ -224,18 +228,34 @@ function SignInLine() {
   );
 }
 
-function LegalLine() {
+function TermsCheckbox({
+  checked,
+  onChange,
+}: {
+  readonly checked: boolean;
+  readonly onChange: (next: boolean) => void;
+}) {
   return (
-    <p className="mx-auto mt-[22px] max-w-[320px] text-center text-[11px] text-foreground-muted leading-[1.5]">
-      By creating an account you agree to Optikk&apos;s{" "}
-      <a href={ROUTES.terms} className="text-foreground-secondary underline">
-        Terms of Service
-      </a>{" "}
-      and{" "}
-      <a href={ROUTES.privacy} className="text-foreground-secondary underline">
-        Privacy Policy
-      </a>
-      .
-    </p>
+    <label className="mt-4 flex cursor-pointer items-start gap-2.5 text-[12px] text-foreground-muted leading-[1.5]">
+      <input
+        id="acceptedTerms"
+        data-testid="signup-terms"
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+      />
+      <span>
+        I agree to Optikk&apos;s{" "}
+        <a href={ROUTES.terms} className="text-foreground-secondary underline">
+          Terms of Service
+        </a>{" "}
+        and{" "}
+        <a href={ROUTES.privacy} className="text-foreground-secondary underline">
+          Privacy Policy
+        </a>
+        .
+      </span>
+    </label>
   );
 }
