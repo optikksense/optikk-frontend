@@ -1,10 +1,14 @@
 import { useCallback, useMemo, useRef } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
+import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
+import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
+import { StatPill } from "@shared/search/components/chrome/StatPill";
 import type { SuggestionOption } from "@shared/search/components/chrome/QuerySuggestions";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 
 import { resolveTimeRangeBounds } from "@shared/types";
+import { formatNumber } from "@shared/utils/formatters";
 
 import type { LogsFacets } from "@shared/logs/api/logsAnalyticsApi";
 import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
@@ -19,8 +23,6 @@ import { LogsTable } from "@shared/logs/components/table/LogsTable";
 import { LogsTableFooter } from "@shared/logs/components/table/LogsTableFooter";
 import { LogsTableToolbar } from "@shared/logs/components/table/LogsTableToolbar";
 import { LogsActions } from "../../components/toolbar/LogsActions";
-import { LogsToolbar } from "../../components/toolbar/LogsToolbar";
-import { LogsSummaryChips } from "../../components/trend/LogsSummaryChips";
 import { LogsTrendChart } from "../../components/trend/LogsTrendChart";
 
 function extractSearchTerm(filters: readonly ExplorerFilter[]): string | undefined {
@@ -61,7 +63,7 @@ function buildValueSuggestions(
 
 /**
  * Main logs explorer page — composes all zones: toolbar, facets, trend chart,
- * table, and detail panel as an inline 380px column on the right when open.
+ * table, and detail panel. Matches the DOM shape of TracesExplorerPage.
  */
 export default function LogsExplorerPage() {
   const { state, list, summary, trend, facets } = useLogsExplorer();
@@ -104,17 +106,22 @@ export default function LogsExplorerPage() {
   const detailOpen = Boolean(state.detail);
 
   return (
-    <div className="flex min-h-full min-w-0 flex-col bg-[var(--bg-0)] text-[13px] text-[var(--fg-1)] [font-family:Geist,'Inter_Tight',ui-sans-serif,system-ui,sans-serif] [font-feature-settings:'ss01','cv11','tnum']">
-      <div className="flex min-w-0 flex-1 flex-col gap-[14px] px-5 pt-4 pb-3">
-        <LogsToolbar
-          ref={searchInputRef}
-          filters={state.filters}
-          onChangeFilters={(f) => state.setFilters(f)}
-          actions={<LogsActions />}
-          valueSuggestions={valueSuggestions}
-        />
-
-        <div className="grid flex-1 grid-cols-[240px_1fr] items-start gap-[14px]">
+    <>
+      <ExplorerLayout
+        header={
+          <ExplorerHeader
+            ref={searchInputRef}
+            variant="dsl"
+            filters={state.filters}
+            onChangeFilters={(f) => state.setFilters(f)}
+            onSubmitFreeText={() => {}}
+            actions={<LogsActions />}
+            valueSuggestions={valueSuggestions}
+            searchPlaceholder='Search logs: service_name:checkout severity_text:ERROR "timeout"'
+            scope="logs"
+          />
+        }
+        facets={
           <LogsFacetPanel
             facets={facets.data}
             onInclude={onInclude}
@@ -122,50 +129,68 @@ export default function LogsExplorerPage() {
             activeFilterCount={state.filters.length}
             onClearAll={onClearFilters}
           />
-
-          <div className="flex min-w-0 flex-col gap-3">
-            <LogsSummaryChips summary={summary.data} />
-            <LogsTrendChart
-              trend={trend.data}
-              zoomed={timeRange.kind === "absolute"}
-              onTimeRangeChange={onTimeRangeChange}
-              minTimeMs={startTime}
-              maxTimeMs={endTime}
-            />
-
-            <div className="flex flex-col rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
-              <LogsTableToolbar />
-              <LogsTable
-                rows={results}
-                searchTerm={searchTerm}
-                loading={list.isPending}
-                selectedId={state.detail}
-                onRowClick={onRowClick}
+        }
+        content={
+          <>
+            <div className="mb-4 flex shrink-0 flex-row items-center gap-2.5">
+              <StatPill label="Total" value={formatNumber(summary.data?.total ?? 0)} />
+              <StatPill
+                label="Errors"
+                value={formatNumber(summary.data?.errors ?? 0)}
+                dot="var(--color-error)"
               />
-              {results.length > 0 || list.hasMore ? (
-                <LogsTableFooter
-                  pageIndex={list.pageIndex}
-                  pageCount={list.pageCount}
-                  pageRows={results.length}
-                  loadedRows={results.length}
-                  hasMore={list.hasMore}
-                  loadingNext={list.isPending && results.length === 0}
-                  onPrevious={goPrevPage}
-                  onNext={goNextPage}
-                />
-              ) : null}
+              <StatPill
+                label="Warnings"
+                value={formatNumber(summary.data?.warns ?? 0)}
+                dot="var(--color-warning)"
+              />
             </div>
-          </div>
-        </div>
 
-        <LogDetailDrawer
-          logId={state.detail ?? ""}
-          open={detailOpen}
-          onClose={() => state.setDetail(null)}
-          onPrev={onDetailPrev}
-          onNext={onDetailNext}
-        />
-      </div>
-    </div>
+            <div className="shrink-0">
+              <LogsTrendChart
+                trend={trend.data}
+                zoomed={timeRange.kind === "absolute"}
+                onTimeRangeChange={onTimeRangeChange}
+                minTimeMs={startTime}
+                maxTimeMs={endTime}
+              />
+            </div>
+
+            <div className="mt-4 flex flex-col">
+              <div className="flex flex-col rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
+                <LogsTableToolbar />
+                <LogsTable
+                  rows={results}
+                  searchTerm={searchTerm}
+                  loading={list.isPending}
+                  selectedId={state.detail}
+                  onRowClick={onRowClick}
+                />
+                {results.length > 0 || list.hasMore ? (
+                  <LogsTableFooter
+                    pageIndex={list.pageIndex}
+                    pageCount={list.pageCount}
+                    pageRows={results.length}
+                    loadedRows={results.length}
+                    hasMore={list.hasMore}
+                    loadingNext={list.isPending && results.length === 0}
+                    onPrevious={goPrevPage}
+                    onNext={goNextPage}
+                  />
+                ) : null}
+              </div>
+            </div>
+          </>
+        }
+      />
+
+      <LogDetailDrawer
+        logId={state.detail ?? ""}
+        open={detailOpen}
+        onClose={() => state.setDetail(null)}
+        onPrev={onDetailPrev}
+        onNext={onDetailNext}
+      />
+    </>
   );
 }

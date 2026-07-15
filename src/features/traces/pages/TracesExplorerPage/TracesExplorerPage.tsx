@@ -1,11 +1,20 @@
 import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
+import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
+import { StatPill } from "@shared/search/components/chrome/StatPill";
+import { TrendChart, type TrendChartBucket, type TrendChartSegment } from "@shared/search/components/trend/TrendChart";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 import { formatNumber } from "@shared/utils/formatters";
+import { useMemo } from "react";
 
 import { TracesFacetRail } from "./components/TracesFacetRail";
 import { TracesTable } from "./components/TracesTable";
-import { TrendStrip } from "./components/TrendStrip";
 import { useTracesExplorerPage } from "./useTracesExplorerPage";
+
+const TRACES_SEGMENTS: readonly TrendChartSegment[] = [
+  { key: "ok", label: "OK", color: "var(--ok)" },
+  { key: "warnings", label: "Warnings", color: "var(--color-warning)" },
+  { key: "errors", label: "Errors", color: "var(--err)" },
+];
 
 /**
  * Traces list page: query header + a two-zone body (facets rail | content),
@@ -15,9 +24,24 @@ import { useTracesExplorerPage } from "./useTracesExplorerPage";
 export default function TracesExplorerPage() {
   const p = useTracesExplorerPage();
 
+  const trendData = useMemo<TrendChartBucket[] | undefined>(() => {
+    if (!p.trendBuckets || p.trendBuckets.length === 0) return undefined;
+    return p.trendBuckets.map((b) => {
+      const ok = Math.max(0, b.counts.total - (b.counts.errors || 0) - (b.counts.warnings || 0));
+      return {
+        ts: b.ts,
+        counts: {
+          ok,
+          warnings: b.counts.warnings || 0,
+          errors: b.counts.errors || 0,
+        },
+      };
+    });
+  }, [p.trendBuckets]);
+
   return (
-    <div className="flex min-h-full flex-col bg-background">
-      <div className="bg-surface-muted">
+    <ExplorerLayout
+      header={
         <ExplorerHeader
           ref={p.searchInputRef}
           variant="dsl"
@@ -26,20 +50,18 @@ export default function TracesExplorerPage() {
           onSubmitFreeText={p.onFreeText}
           hideTimePicker={true}
         />
-      </div>
-
-      <div className="grid flex-1 grid-cols-[236px_1fr]">
-        {}
+      }
+      facets={
         <TracesFacetRail
           groups={p.facetGroups}
           onInclude={p.onInclude}
           activeFilterCount={p.state.filters.length}
           onClearAll={p.onClearFilters}
         />
-
-        {}
-        <div className="flex flex-col bg-background p-4 md:p-[18px_22px]">
-          <div className="flex flex-row items-center gap-2.5 mb-4 shrink-0">
+      }
+      content={
+        <>
+          <div className="mb-4 flex shrink-0 flex-row items-center gap-2.5">
             <StatPill label="Total" value={formatNumber(p.summary?.total ?? 0)} />
             <StatPill
               label="Errors"
@@ -48,11 +70,16 @@ export default function TracesExplorerPage() {
             />
           </div>
 
-          {p.trendBuckets.length > 0 ? (
-            <div className="shrink-0">
-              <TrendStrip buckets={p.trendBuckets} startTime={p.startTime} endTime={p.endTime} />
-            </div>
-          ) : null}
+          <div className="shrink-0">
+            <TrendChart
+              title="Trace Volume Over Time"
+              segments={TRACES_SEGMENTS}
+              data={trendData}
+              minTimeMs={p.startTime}
+              maxTimeMs={p.endTime}
+              onTimeRangeChange={p.onTimeRangeChange}
+            />
+          </div>
 
           <div className="mt-4 flex flex-col">
             <TracesTable
@@ -64,20 +91,8 @@ export default function TracesExplorerPage() {
               hasPrevPage={p.hasPrevPage}
             />
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StatPill({ label, value, dot }: { label: string; value: string; dot?: string }) {
-  return (
-    <div className="flex flex-row items-center gap-2 h-8 px-[14px] rounded-full border border-border bg-card">
-      {dot ? <span style={{ backgroundColor: dot }} className="w-2 h-2 rounded-full" /> : null}
-      <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-foreground-muted">
-        {label}
-      </span>
-      <span className="text-[15px] font-bold text-foreground">{value}</span>
-    </div>
+        </>
+      }
+    />
   );
 }
