@@ -17,6 +17,8 @@ const traceRecordSchema = z
     http_status_code: z.number().optional(),
     service_name_original: z.string().optional(),
     parent_span_id: z.string().optional(),
+    has_error: z.boolean().default(false),
+    start_ns: z.number().default(0),
   })
   .strict();
 
@@ -39,6 +41,8 @@ export const spanRecordSchema = z
     host: z.string().default(""),
     pod: z.string().default(""),
     attributes: z.string().default(""),
+    has_error: z.boolean().default(false),
+    start_ns: z.number().default(0),
   })
   .strict();
 export const traceLogSchema = z
