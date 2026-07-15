@@ -3,8 +3,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { cn } from "@shared/lib/utils";
 import { session } from "@shared/api/auth/session";
+import { cn } from "@shared/lib/utils";
 
 import type { ReactNode } from "react";
 
@@ -42,7 +42,8 @@ export function ForgotPasswordForm() {
       <div className="rounded-md border border-border bg-card p-4 text-[13.5px] text-foreground">
         <p className="mb-2 font-semibold">Check your inbox</p>
         <p className="text-foreground-muted">
-          We've sent a password reset link to <strong>{email}</strong>. It will expire in 30 minutes.
+          We've sent a password reset link to <strong>{email}</strong>. It will expire in 30
+          minutes.
         </p>
       </div>
     );

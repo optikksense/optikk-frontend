@@ -30,6 +30,7 @@ export default function ErrorTrackingPage(): JSX.Element {
   const [query, setQuery] = useState("");
   const cursor = page > 0 ? cursors[page - 1] : undefined;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Reset pagination when service filter changes
   useEffect(() => {
     setPage(0);
     setCursors({});

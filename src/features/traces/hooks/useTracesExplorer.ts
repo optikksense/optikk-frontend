@@ -28,7 +28,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     scope: "traces",
     filters: state.filters,
     cursor: state.cursor,
-    limit: args.limit ?? 50,
+    limit: args.limit ?? 100,
     include,
     enabled: args.enabled,
     fetcher: query,

@@ -4,9 +4,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { session } from "@shared/api/auth/session";
 import { ROUTES } from "@shared/constants/routes";
 import { cn } from "@shared/lib/utils";
-import { session } from "@shared/api/auth/session";
 
 import type { ReactNode } from "react";
 

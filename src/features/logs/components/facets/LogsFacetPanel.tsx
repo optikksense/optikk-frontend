@@ -8,8 +8,10 @@ import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
 import { ResourceFacet } from "./ResourceFacet";
 import { SeverityFacet } from "./SeverityFacet";
 
+// Sticks under the app header while the row list scrolls the page. The cap
+// stays just short of the scrollport so a long rail scrolls internally.
 const FACETS_ASIDE =
-  "flex min-w-0 flex-col gap-[14px] overflow-y-auto rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] p-[14px]";
+  "sticky top-4 flex max-h-[calc(100vh-var(--space-header-h,56px)-3rem)] min-w-0 flex-col gap-[14px] overflow-y-auto rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] p-[14px]";
 const ICON_BTN =
   "inline-grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[5px] border-0 bg-transparent text-[var(--fg-2)] hover:bg-[var(--bg-2)] hover:text-[var(--fg-0)]";
 

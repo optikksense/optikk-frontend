@@ -104,8 +104,8 @@ export default function LogsExplorerPage() {
   const detailOpen = Boolean(state.detail);
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-col bg-[var(--bg-0)] text-[13px] text-[var(--fg-1)] [font-family:Geist,'Inter_Tight',ui-sans-serif,system-ui,sans-serif] [font-feature-settings:'ss01','cv11','tnum']">
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-[14px] px-5 pt-4 pb-3">
+    <div className="flex min-h-full min-w-0 flex-col bg-[var(--bg-0)] text-[13px] text-[var(--fg-1)] [font-family:Geist,'Inter_Tight',ui-sans-serif,system-ui,sans-serif] [font-feature-settings:'ss01','cv11','tnum']">
+      <div className="flex min-w-0 flex-1 flex-col gap-[14px] px-5 pt-4 pb-3">
         <LogsToolbar
           ref={searchInputRef}
           filters={state.filters}
@@ -114,7 +114,7 @@ export default function LogsExplorerPage() {
           valueSuggestions={valueSuggestions}
         />
 
-        <div className="grid min-h-0 flex-1 grid-cols-[240px_1fr] gap-[14px]">
+        <div className="grid flex-1 grid-cols-[240px_1fr] items-start gap-[14px]">
           <LogsFacetPanel
             facets={facets.data}
             onInclude={onInclude}
@@ -123,7 +123,7 @@ export default function LogsExplorerPage() {
             onClearAll={onClearFilters}
           />
 
-          <div className="flex min-h-0 min-w-0 flex-col gap-3">
+          <div className="flex min-w-0 flex-col gap-3">
             <LogsSummaryChips summary={summary.data} />
             <LogsTrendChart
               trend={trend.data}
@@ -133,7 +133,7 @@ export default function LogsExplorerPage() {
               maxTimeMs={endTime}
             />
 
-            <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
+            <div className="flex flex-col rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)]">
               <LogsTableToolbar />
               <LogsTable
                 rows={results}

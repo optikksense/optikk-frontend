@@ -16,7 +16,7 @@ export default function TracesExplorerPage() {
   const p = useTracesExplorerPage();
 
   return (
-    <div className="flex h-full flex-col bg-background">
+    <div className="flex min-h-full flex-col bg-background">
       <div className="bg-surface-muted">
         <ExplorerHeader
           ref={p.searchInputRef}
@@ -28,7 +28,7 @@ export default function TracesExplorerPage() {
         />
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden grid grid-cols-[236px_1fr]">
+      <div className="grid flex-1 grid-cols-[236px_1fr]">
         {}
         <TracesFacetRail
           groups={p.facetGroups}
@@ -38,7 +38,7 @@ export default function TracesExplorerPage() {
         />
 
         {}
-        <div className="flex flex-col min-h-0 bg-background p-4 md:p-[18px_22px]">
+        <div className="flex flex-col bg-background p-4 md:p-[18px_22px]">
           <div className="flex flex-row items-center gap-2.5 mb-4 shrink-0">
             <StatPill label="Total" value={formatNumber(p.summary?.total ?? 0)} />
             <StatPill
@@ -54,7 +54,7 @@ export default function TracesExplorerPage() {
             </div>
           ) : null}
 
-          <div className="flex flex-1 min-h-0 flex-col mt-4">
+          <div className="mt-4 flex flex-col">
             <TracesTable
               traces={p.sortedTraces}
               onRowClick={(t) => p.onOpenTrace(t.trace_id)}
