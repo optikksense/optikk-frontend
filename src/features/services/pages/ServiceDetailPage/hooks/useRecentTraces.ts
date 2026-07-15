@@ -19,6 +19,8 @@ function toTraceRecord(summary: TraceSummary): TraceRecord {
     http_status_code: summary.root_http_status
       ? Number.parseInt(summary.root_http_status, 10) || undefined
       : undefined,
+    has_error: summary.has_error,
+    start_ns: summary.start_ms * 1_000_000,
   };
 }
 

@@ -87,6 +87,8 @@ export function normalizeSpan(
     http_method: span.http_method as string | undefined,
     http_url: span.http_url as string | undefined,
     http_status_code: span.http_status_code as number | undefined,
+    has_error: span.has_error ?? false,
+    start_ns: startNs ?? 0,
   };
 }
 
