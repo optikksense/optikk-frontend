@@ -15,6 +15,7 @@ import {
 export interface ObservabilityChartSeries {
   label: string;
   values: Array<number | null>;
+  tooltipValues?: Array<number | null>;
   color: string;
   fill?: boolean;
   dash?: number[];
@@ -136,7 +137,9 @@ function ObservabilityChart({
         .filter((item) => item.showInTooltip !== false)
         .map((item, seriesIndex) => ({
           label: item.label,
-          value: valueFormatter(item.values[idx] ?? null),
+          value: valueFormatter(
+            (item.tooltipValues ? item.tooltipValues[idx] : item.values[idx]) ?? null
+          ),
           color: item.color,
           order: seriesIndex,
         }))

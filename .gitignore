@@ -42,3 +42,6 @@ build
 # Firebase
 .firebase/
 
+
+# rollup-plugin-visualizer output
+stats.html

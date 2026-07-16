@@ -1,8 +1,12 @@
 import type { LogsTrendBucket } from "@shared/logs/api/logsAnalyticsApi";
 import { severityColor } from "@shared/logs/utils/severity";
+import {
+  TrendChart,
+  type TrendChartBucket,
+  type TrendChartSegment,
+} from "@shared/search/components/trend/TrendChart";
 import { memo, useMemo } from "react";
 import { parseBucketMs } from "./logsTrendDataUtils";
-import { TrendChart, type TrendChartBucket, type TrendChartSegment } from "@shared/search/components/trend/TrendChart";
 
 interface Props {
   readonly trend: readonly LogsTrendBucket[] | undefined;

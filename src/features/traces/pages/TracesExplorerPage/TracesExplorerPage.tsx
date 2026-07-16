@@ -1,7 +1,11 @@
 import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
 import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
 import { StatPill } from "@shared/search/components/chrome/StatPill";
-import { TrendChart, type TrendChartBucket, type TrendChartSegment } from "@shared/search/components/trend/TrendChart";
+import {
+  TrendChart,
+  type TrendChartBucket,
+  type TrendChartSegment,
+} from "@shared/search/components/trend/TrendChart";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 import { formatNumber } from "@shared/utils/formatters";
 import { useMemo } from "react";
@@ -12,7 +16,6 @@ import { useTracesExplorerPage } from "./useTracesExplorerPage";
 
 const TRACES_SEGMENTS: readonly TrendChartSegment[] = [
   { key: "ok", label: "OK", color: "var(--ok)" },
-  { key: "warnings", label: "Warnings", color: "var(--color-warning)" },
   { key: "errors", label: "Errors", color: "var(--err)" },
 ];
 
@@ -27,13 +30,12 @@ export default function TracesExplorerPage() {
   const trendData = useMemo<TrendChartBucket[] | undefined>(() => {
     if (!p.trendBuckets || p.trendBuckets.length === 0) return undefined;
     return p.trendBuckets.map((b) => {
-      const ok = Math.max(0, b.counts.total - (b.counts.errors || 0) - (b.counts.warnings || 0));
+      const errors = b.counts.errors || 0;
       return {
         ts: b.ts,
         counts: {
-          ok,
-          warnings: b.counts.warnings || 0,
-          errors: b.counts.errors || 0,
+          ok: Math.max(0, b.counts.total - errors),
+          errors,
         },
       };
     });

@@ -16,11 +16,11 @@ export interface ExplorerFacetBucket {
   readonly count: number;
 }
 
+/** Mirrors Go explorer.TrendBucket — traces are only ever OK or errored. */
 export interface ExplorerTrendBucket {
   readonly time_bucket: string;
   readonly total: number;
   readonly errors: number;
-  readonly warnings: number;
 }
 
 export interface ExplorerQueryWarnings {

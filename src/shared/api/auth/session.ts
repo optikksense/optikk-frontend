@@ -19,8 +19,6 @@ import { type SessionPayload, type SignupParams, authApi } from "./authApi";
 let accessToken: string | null = null;
 let refreshInflight: Promise<string | null> | null = null;
 
-localStorage.removeItem("optikk_auth_state");
-
 function toTenant(payload: SessionPayload): Tenant {
   const { id, name, role, accountStatus, trialEndsAt } = payload.tenant;
   return {

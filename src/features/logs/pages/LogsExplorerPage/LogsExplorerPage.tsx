@@ -3,8 +3,8 @@ import { useCallback, useMemo, useRef } from "react";
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
 import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
 import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
-import { StatPill } from "@shared/search/components/chrome/StatPill";
 import type { SuggestionOption } from "@shared/search/components/chrome/QuerySuggestions";
+import { StatPill } from "@shared/search/components/chrome/StatPill";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 
 import { resolveTimeRangeBounds } from "@shared/types";

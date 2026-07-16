@@ -13,16 +13,12 @@ export interface ExplorerLayoutProps {
 function ExplorerLayoutComponent({ header, facets, content }: ExplorerLayoutProps) {
   return (
     <div className="flex min-h-full flex-col bg-background">
-      <div className="bg-surface-muted">
-        {header}
-      </div>
+      <div className="bg-surface-muted">{header}</div>
 
       <div className="grid flex-1 grid-cols-[236px_1fr]">
         {facets}
 
-        <div className="flex flex-col bg-background p-4 md:p-[18px_22px] min-w-0">
-          {content}
-        </div>
+        <div className="flex flex-col bg-background p-4 md:p-[18px_22px] min-w-0">{content}</div>
       </div>
     </div>
   );

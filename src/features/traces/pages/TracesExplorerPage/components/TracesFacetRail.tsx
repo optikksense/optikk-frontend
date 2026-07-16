@@ -1,9 +1,9 @@
 import type { FacetGroupModel } from "@shared/search/components/facets/FacetGroup";
+import { FacetRailContainer } from "@shared/search/components/facets/FacetRailContainer";
 import { formatNumber } from "@shared/utils/formatters";
 import { ExternalLink, Search } from "lucide-react";
 import { useState } from "react";
 import { getServiceColor } from "../../../utils/serviceColor";
-import { FacetRailContainer } from "@shared/search/components/facets/FacetRailContainer";
 
 interface Props {
   groups: readonly FacetGroupModel[];

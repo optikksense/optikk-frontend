@@ -37,16 +37,16 @@ function TrendChartComponent({
   maxTimeMs,
   onTimeRangeChange,
 }: TrendChartProps) {
-  const chartData = useMemo(() => {
-    if (!data || data.length === 0) return null;
-    
+  const { timestamps, series } = useMemo(() => {
+    if (!data || data.length === 0) return { timestamps: null, series: [] };
+
     // Build cumulative series based on segment order (bottom to top).
     // The series that encompasses all counts must be drawn first (in the background).
-    const timestamps: number[] = [];
+    const tsArray: number[] = [];
     const seriesValues: number[][] = segments.map(() => []);
 
     for (const b of data) {
-      timestamps.push(b.ts / 1000);
+      tsArray.push(b.ts / 1000);
       let cumulative = 0;
       for (let i = 0; i < segments.length; i++) {
         const seg = segments[i];
@@ -55,26 +55,20 @@ function TrendChartComponent({
       }
     }
 
-    return [timestamps, ...seriesValues];
-  }, [data, segments]);
-
-  const series = useMemo<ObservabilityChartSeries[]>(() => {
-    if (!chartData) return [];
-    
-    // chartData is [timestamps, segment0_cumulative, segment1_cumulative, ...]
-    // We want to draw the largest cumulative series first (which is the last segment).
-    const out: ObservabilityChartSeries[] = [];
+    const outSeries: ObservabilityChartSeries[] = [];
     for (let i = segments.length - 1; i >= 0; i--) {
       const seg = segments[i];
-      out.push({
+      outSeries.push({
         label: seg.label,
-        values: chartData[i + 1] as number[],
+        values: seriesValues[i],
+        tooltipValues: data.map((b) => b.counts[seg.key] ?? 0),
         color: seg.color,
         fill: true,
       });
     }
-    return out;
-  }, [chartData, segments]);
+
+    return { timestamps: tsArray, series: outSeries };
+  }, [data, segments]);
 
   return (
     <div className="rounded-[8px] border border-[var(--line)] bg-[var(--bg-1)] pt-[14px] pr-[18px] pb-2 pl-[18px]">
@@ -82,7 +76,10 @@ function TrendChartComponent({
         <span className="font-semibold text-[var(--fg-0)] text-sm">{title}</span>
         <div className="flex gap-4">
           {segments.map((seg) => (
-            <span key={seg.key} className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs">
+            <span
+              key={seg.key}
+              className="inline-flex items-center gap-1.5 text-[var(--fg-2)] text-xs"
+            >
               <i className="h-[7px] w-[7px] rounded-full" style={{ background: seg.color }} />
               {seg.label}
             </span>
@@ -91,14 +88,14 @@ function TrendChartComponent({
       </div>
 
       <div className="h-[180px] w-full">
-        {!chartData ? (
+        {!timestamps ? (
           <div className="flex h-full items-center justify-center text-[var(--fg-3)] text-sm">
             —
           </div>
         ) : (
           <ObservabilityChart
             type="bar"
-            timestamps={chartData[0] as number[]}
+            timestamps={timestamps}
             series={series}
             yFormatter={compactY}
             xMin={minTimeMs ? minTimeMs / 1000 : undefined}

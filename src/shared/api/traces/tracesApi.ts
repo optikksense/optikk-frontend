@@ -206,7 +206,6 @@ export async function queryTrend(body: TracesQueryRequest) {
     time_bucket: b.time_bucket,
     total: b.total,
     errors: b.errors,
-    warnings: 0,
   }));
 }
 

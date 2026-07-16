@@ -16,7 +16,6 @@ export function toTrendBuckets(
     counts: {
       total: bucket.total,
       errors: bucket.errors,
-      warnings: bucket.warnings ?? 0,
     },
   }));
 }
