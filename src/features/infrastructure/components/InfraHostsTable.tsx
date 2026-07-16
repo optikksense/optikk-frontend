@@ -17,7 +17,7 @@ const STATUS_COLOR = {
 };
 
 function nodeStatus(errorRate: number): "ok" | "warn" | "err" {
-  return errorRate >= 0.1 ? "err" : errorRate >= 0.02 ? "warn" : "ok";
+  return errorRate >= 10 ? "err" : errorRate >= 2 ? "warn" : "ok";
 }
 
 export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
@@ -45,7 +45,7 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
         <tbody>
           {paged.map((n) => {
             const status = nodeStatus(n.error_rate);
-            const errPct = n.error_rate * 100;
+            const errPct = n.error_rate;
             const errColor =
               status === "err"
                 ? "var(--err)"

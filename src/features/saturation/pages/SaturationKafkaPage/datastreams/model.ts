@@ -3,8 +3,8 @@ import type { KafkaTopology } from "@/features/saturation/api/kafkaTopologySchem
 // Health level derived from error rate, matching the backend topology bands.
 export type Level = "ok" | "warn" | "err";
 
-const WARN_ERR = 0.01;
-const CRIT_ERR = 0.05;
+const WARN_ERR = 1;
+const CRIT_ERR = 5;
 
 export function levelFromError(errorRate: number): Level {
   if (errorRate >= CRIT_ERR) return "err";
@@ -29,8 +29,8 @@ export function fmtRate(n: number): string {
   return `${Math.round(n)}`;
 }
 
-export function fmtPct(fraction: number): string {
-  return `${(fraction * 100).toFixed(fraction >= 0.1 ? 0 : 1)}%`;
+export function fmtPct(percent: number): string {
+  return `${percent.toFixed(percent >= 10 ? 0 : 1)}%`;
 }
 
 interface ServiceConsume {

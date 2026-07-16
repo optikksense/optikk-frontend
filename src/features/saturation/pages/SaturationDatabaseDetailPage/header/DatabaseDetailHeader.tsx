@@ -18,7 +18,7 @@ import {
 function statusDetail(row: DatastoreSystemRow): string | null {
   const status = instanceStatus(row);
   if (status === "ok") return null;
-  if (row.error_rate >= 0.01) return `error rate ${fmtPct(row.error_rate, 1)}`;
+  if (row.error_rate >= 1) return `error rate ${fmtPct(row.error_rate, 1)}`;
   return `p95 ${fmtMs(row.p95_latency_ms)}`;
 }
 

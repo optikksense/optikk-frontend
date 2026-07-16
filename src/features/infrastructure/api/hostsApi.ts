@@ -64,9 +64,13 @@ export function getNodeServices(
   );
 }
 
-export async function getFleetPods(s: RequestTime, e: RequestTime): Promise<FleetPod[]> {
+export async function getFleetPods(
+  s: RequestTime,
+  e: RequestTime,
+  host?: string
+): Promise<FleetPod[]> {
   const data = await api.get<FleetPod[]>(`${V1}/infrastructure/fleet/pods`, {
-    params: range(s, e),
+    params: host ? { ...range(s, e), host } : range(s, e),
   });
   return Array.isArray(data) ? data : [];
 }

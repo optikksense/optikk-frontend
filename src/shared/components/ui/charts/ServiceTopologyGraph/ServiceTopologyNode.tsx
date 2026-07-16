@@ -33,7 +33,7 @@ export function ServiceTopologyNode({ data }: NodeProps) {
         <span className="text-foreground-muted">Errors</span>
         <span>
           {formatNumber(d.error_count)} (
-          {formatPercentage(d.error_rate * 100, d.error_rate >= 0.001 ? 1 : 2)})
+          {formatPercentage(d.error_rate, d.error_rate >= 0.1 ? 1 : 2)})
         </span>
       </div>
       <div className="flex justify-between gap-4">
@@ -84,10 +84,10 @@ export function ServiceTopologyNode({ data }: NodeProps) {
             <span className="text-foreground-muted">err</span>
             <span
               style={{
-                color: d.error_rate > 0.05 ? "var(--color-error)" : "var(--text-primary)",
+                color: d.error_rate > 5 ? "var(--color-error)" : "var(--text-primary)",
               }}
             >
-              {formatPercentage(d.error_rate * 100, d.error_rate >= 0.001 ? 1 : 2)}
+              {formatPercentage(d.error_rate, d.error_rate >= 0.1 ? 1 : 2)}
             </span>
           </div>
           <div className="flex flex-col">

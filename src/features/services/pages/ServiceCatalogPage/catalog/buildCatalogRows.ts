@@ -27,8 +27,8 @@ export interface CatalogRow {
 }
 
 function classifyStatus(errorRate: number, p99Ms: number): CatalogStatus {
-  if (errorRate >= 0.02 || p99Ms >= 2000) return "error";
-  if (errorRate >= 0.005 || p99Ms >= 1000) return "warn";
+  if (errorRate >= 2 || p99Ms >= 2000) return "error";
+  if (errorRate >= 0.5 || p99Ms >= 1000) return "warn";
   return "healthy";
 }
 
@@ -109,7 +109,7 @@ function buildCatalogRow(
   spark: Map<string, number[]>,
   prevP99: Map<string, number>
 ): CatalogRow {
-  const errorRate = row.request_count > 0 ? row.error_count / row.request_count : 0;
+  const errorRate = row.request_count > 0 ? (row.error_count * 100) / row.request_count : 0;
 
   const mappedMeta =
     SERVICE_METADATA_MAP[row.service_name] ?? getFallbackMetadata(row.service_name);

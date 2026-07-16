@@ -25,7 +25,9 @@ function buildSeries(rows: ErrorTimeSeriesPoint[] | undefined): ChartData {
     series: [
       {
         label: "error rate",
-        values: activeRows.map((r) => (r.request_count ? r.error_count / r.request_count : 0)),
+        values: activeRows.map((r) =>
+          r.request_count ? (r.error_count * 100) / r.request_count : 0
+        ),
         color: "var(--color-critical,#f04438)",
         fill: true,
       },
@@ -47,17 +49,17 @@ function ChartBody({ data }: { data: ChartData }) {
       timestamps={data.timestamps}
       series={data.series}
       height={200}
-      yFormatter={(v) => fmtPct(v, v < 0.01 ? 2 : 1)}
+      yFormatter={(v) => fmtPct(v, v < 0.1 ? 2 : 1)}
     />
   );
 }
 
 function CurrentRate({ value }: { value: number }) {
   const tone =
-    value >= 0.02 ? "text-error" : value >= 0.005 ? "text-warning" : "text-foreground-secondary";
+    value >= 2 ? "text-error" : value >= 0.5 ? "text-warning" : "text-foreground-secondary";
   return (
     <span className={`font-semibold text-[13px] ${tone}`}>
-      {fmtPct(value, value < 0.01 ? 2 : 1)}
+      {fmtPct(value, value < 0.1 ? 2 : 1)}
     </span>
   );
 }
@@ -72,7 +74,7 @@ export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
       req += r.request_count;
       err += r.error_count;
     }
-    return req > 0 ? err / req : 0;
+    return req > 0 ? (err * 100) / req : 0;
   }, [query.data]);
   return (
     <PanelCard title="Error rate" subtitle="last 60m" action={<CurrentRate value={current} />}>

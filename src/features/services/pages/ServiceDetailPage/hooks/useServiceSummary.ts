@@ -28,7 +28,7 @@ function extractServiceRow(row: ServiceSummaryResponse | undefined): ServiceSumm
     serviceName: row.service_name,
     requestCount: Number(row.request_count ?? 0),
     errorCount: Number(row.error_count ?? 0),
-    errorRate: Number(row.error_rate ?? 0) / 100, // percentage (0-100) -> decimal (0-1)
+    errorRate: Number(row.error_rate ?? 0),
     p50Ms: Number(row.p50_ms ?? 0),
     p95Ms: Number(row.p95_ms ?? 0),
     p99Ms: Number(row.p99_ms ?? 0),

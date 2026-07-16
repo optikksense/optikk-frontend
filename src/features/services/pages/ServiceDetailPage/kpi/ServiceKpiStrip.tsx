@@ -9,8 +9,8 @@ interface ServiceKpiStripProps {
 }
 
 function errorTone(errRate: number): KpiTone {
-  if (errRate >= 0.02) return "err";
-  if (errRate >= 0.005) return "warn";
+  if (errRate >= 2) return "err";
+  if (errRate >= 0.5) return "warn";
   return "ok";
 }
 
@@ -53,7 +53,7 @@ function safeSummary(summary: ServiceSummary | null, serviceName: string): Servi
 
 export function ServiceKpiStrip({ serviceName, summary, previous }: ServiceKpiStripProps) {
   const s = safeSummary(summary, serviceName);
-  const errorsPerSec = s.errorRate * s.rps;
+  const errorsPerSec = (s.errorRate / 100) * s.rps;
 
   const satVal = Math.max(s.cpuUtilization, s.memoryUtilization, s.diskUtilization);
   const prevSatVal = previous
@@ -71,7 +71,7 @@ export function ServiceKpiStrip({ serviceName, summary, previous }: ServiceKpiSt
       />
       <KpiCard
         label="Error rate"
-        value={fmtPct(s.errorRate, s.errorRate < 0.001 ? 3 : 2)}
+        value={fmtPct(s.errorRate, s.errorRate < 0.1 ? 3 : 2)}
         tone={errorTone(s.errorRate)}
         subtext={`${fmtNum(errorsPerSec)} errors/s`}
       />

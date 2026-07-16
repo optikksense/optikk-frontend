@@ -5,8 +5,8 @@ import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExp
 
 // Health thresholds shared across list + detail. Mirrors the old single-page
 // degraded heuristic (error rate 1% / p95 1s) with a critical tier on top.
-const ERROR_RATE_DEGRADED = 0.01;
-const ERROR_RATE_CRITICAL = 0.05;
+const ERROR_RATE_DEGRADED = 1;
+const ERROR_RATE_CRITICAL = 5;
 const P95_DEGRADED_MS = 1000;
 const P95_CRITICAL_MS = 2000;
 

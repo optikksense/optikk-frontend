@@ -58,7 +58,7 @@ export function getPodDetails(podName: string, errorRate: number) {
     if (podName.includes("old")) {
       status = "terminating";
       age = "8m";
-    } else if (podName.includes("pending") || errorRate > 0.05) {
+    } else if (podName.includes("pending") || errorRate > 5) {
       status = "pending";
       age = "2m";
     }
@@ -74,7 +74,7 @@ export function getPodDetails(podName: string, errorRate: number) {
     ns = "trust-prod";
     img = "fraud-detect:v0.7.2";
     age = "14h";
-    if (errorRate > 0.1) {
+    if (errorRate > 10) {
       status = "oomkilled";
     }
   } else if (podName.includes("tax")) {
@@ -95,7 +95,7 @@ export function getPodDetails(podName: string, errorRate: number) {
     age = "8d";
   }
 
-  if (errorRate > 0.1 && status === "running") {
+  if (errorRate > 10 && status === "running") {
     status = "crashloop";
   }
 
@@ -107,7 +107,7 @@ export function getPodDetails(podName: string, errorRate: number) {
 
   const cpu = status === "running" ? 10 + (hash % 81) : status === "terminating" ? 12 : 0;
   const mem = status === "running" ? 15 + ((hash >> 1) % 76) : status === "terminating" ? 18 : 0;
-  const restarts = errorRate > 0.1 ? 12 + (hash % 10) : errorRate > 0.02 ? 2 + (hash % 3) : 0;
+  const restarts = errorRate > 10 ? 12 + (hash % 10) : errorRate > 2 ? 2 + (hash % 3) : 0;
 
   return { status, ns, img, age, cpu, mem, restarts };
 }

@@ -1,23 +1,9 @@
-import { useMemo } from "react";
+import { formatNumber } from "@shared/utils/formatters";
 
-import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { firstValue } from "@shared/utils/chartDataUtils";
-
-import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
-
-import { API_CONFIG } from "@config/apiConfig";
-import { infraGet } from "../../api/infrastructureApi";
-
-const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
-
-interface ChartRow {
-  readonly [key: string]: unknown;
-}
+import type { PodOverview } from "../../api/podDetailApi";
 
 interface ContainerDetailKpiCardsProps {
-  readonly container: string;
-  readonly host: string;
-  readonly serviceName: string;
+  readonly overview: PodOverview | null;
 }
 
 type Tone = "ok" | "warn" | "err" | "neutral";
@@ -26,124 +12,61 @@ const VALUE_TONE: Record<Tone, string> = {
   ok: "text-foreground",
   warn: "text-warning",
   err: "text-error",
-  neutral: "text-foreground",
+  neutral: "text-foreground-muted",
 };
-
-function utilizationTone(v: number, warnAt: number, errAt: number): Tone {
-  if (v >= errAt) return "err";
-  if (v >= warnAt) return "warn";
-  return "ok";
-}
-
-function normalizePercent(raw: unknown): number | null {
-  const value = Number(raw);
-  if (!Number.isFinite(value)) return null;
-  return value <= 1 ? value * 100 : value;
-}
-
-function usePodSeries(
-  metricKey: string,
-  endpoint: string,
-  host: string,
-  pod: string,
-  serviceName: string
-) {
-  return useTimeRangeQuery<ChartRow[]>(
-    `container-detail.${metricKey}.${pod}`,
-    async (tenant, s, e) => {
-      if (!tenant || !host || !pod || !serviceName) return [];
-      const data = await infraGet<ChartRow[]>(endpoint, Number(s), Number(e), {
-        host,
-        pod,
-        serviceName,
-      });
-      return Array.isArray(data) ? data : [];
-    }
-  );
-}
-
-function extractValues(rows: ChartRow[] | undefined): number[] {
-  if (!rows) return [];
-  return rows
-    .map((row) => normalizePercent(firstValue(row, ["value"], 0)))
-    .filter((v): v is number => v != null);
-}
-
-function lastOf(values: number[]): number | null {
-  if (values.length === 0) return null;
-  const last = values[values.length - 1];
-  return Number.isFinite(last) ? last : null;
-}
 
 interface KpiTileProps {
   readonly label: string;
-  readonly endpoint: string;
-  readonly metricKey: string;
-  readonly container: string;
-  readonly host: string;
-  readonly serviceName: string;
-  readonly warnAt: number;
-  readonly errAt: number;
+  readonly value: string;
+  readonly tone: Tone;
+  readonly hint?: string;
 }
 
-function KpiTile({
-  label,
-  endpoint,
-  metricKey,
-  container,
-  host,
-  serviceName,
-  warnAt,
-  errAt,
-}: KpiTileProps) {
-  const query = usePodSeries(metricKey, endpoint, host, container, serviceName);
-  const values = useMemo(() => extractValues(query.data), [query.data]);
-  const last = lastOf(values);
-  const valueTone: Tone = last != null ? utilizationTone(last, warnAt, errAt) : "neutral";
-  const sparklineTone =
-    last == null ? "info" : last >= errAt ? "err" : last >= warnAt ? "warn" : "info";
+function KpiTile({ label, value, tone, hint }: KpiTileProps) {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-border bg-card px-4 py-3">
+    <div className="flex flex-col gap-1.5 rounded-md border border-border bg-card px-4 py-3">
       <div className="text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
-      <div
-        className={`flex items-baseline gap-1.5 font-semibold text-[32px] leading-none ${VALUE_TONE[valueTone]}`}
-      >
-        {last != null ? `${last.toFixed(0)}%` : "—"}
-      </div>
-      <div className="mt-1 px-0.5">
-        <SparklineCell values={values} tone={sparklineTone} width={220} height={36} />
-      </div>
+      <div className={`font-semibold text-[28px] leading-none ${VALUE_TONE[tone]}`}>{value}</div>
+      {hint && <div className="text-[11px] text-foreground-muted">{hint}</div>}
     </div>
   );
 }
 
-export function ContainerDetailKpiCards({
-  container,
-  host,
-  serviceName,
-}: ContainerDetailKpiCardsProps) {
+function fmtMs(v: number): string {
+  if (v >= 1000) return `${(v / 1000).toFixed(2)}s`;
+  return `${Math.round(v)}ms`;
+}
+
+const NO_TRAFFIC: Omit<KpiTileProps, "label"> = {
+  value: "—",
+  tone: "neutral",
+  hint: "no traffic",
+};
+
+function buildTiles(overview: PodOverview | null): KpiTileProps[] {
+  if (!overview || overview.request_count === 0) {
+    return [
+      { label: "Requests", ...NO_TRAFFIC },
+      { label: "Error rate", ...NO_TRAFFIC },
+      { label: "Avg latency", ...NO_TRAFFIC },
+      { label: "p95 latency", ...NO_TRAFFIC },
+    ];
+  }
+  const errTone: Tone = overview.error_rate >= 5 ? "err" : overview.error_rate >= 1 ? "warn" : "ok";
+  return [
+    { label: "Requests", value: formatNumber(overview.request_count), tone: "ok" },
+    { label: "Error rate", value: `${overview.error_rate.toFixed(2)}%`, tone: errTone },
+    { label: "Avg latency", value: fmtMs(overview.avg_latency_ms), tone: "ok" },
+    { label: "p95 latency", value: fmtMs(overview.p95_latency_ms), tone: "ok" },
+  ];
+}
+
+export function ContainerDetailKpiCards({ overview }: ContainerDetailKpiCardsProps) {
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-      <KpiTile
-        label="CPU"
-        endpoint={`${V1}/infrastructure/cpu/by-instance`}
-        metricKey="cpu"
-        container={container}
-        host={host}
-        serviceName={serviceName}
-        warnAt={75}
-        errAt={90}
-      />
-      <KpiTile
-        label="Memory"
-        endpoint={`${V1}/infrastructure/memory/by-instance`}
-        metricKey="memory"
-        container={container}
-        host={host}
-        serviceName={serviceName}
-        warnAt={80}
-        errAt={90}
-      />
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {buildTiles(overview).map((t) => (
+        <KpiTile key={t.label} {...t} />
+      ))}
     </div>
   );
 }

@@ -19,12 +19,12 @@ export function fmtMs(ms: number | null | undefined): string {
 
 export function fmtPct(value: number | null | undefined, digits = 2): string {
   if (value == null || !Number.isFinite(value)) return "—";
-  return `${(value * 100).toFixed(digits)}%`;
+  return `${value.toFixed(digits)}%`;
 }
 
 export function ratioFromCounts(numerator: number, denominator: number): number {
   if (!denominator) return 0;
-  return numerator / denominator;
+  return (numerator * 100) / denominator;
 }
 
 export function relativeTimeFromIso(iso: string | undefined | null): string {

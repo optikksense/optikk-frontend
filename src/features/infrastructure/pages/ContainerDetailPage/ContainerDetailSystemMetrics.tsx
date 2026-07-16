@@ -1,76 +1,61 @@
-import { API_CONFIG } from "@config/apiConfig";
 import { Card } from "@shared/components/primitives/ui";
 
-import InfraMultiSeriesChart from "../../components/InfraMultiSeriesChart";
-
-const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
+import { type PodMetricGroup, podSeriesEndpoint } from "../../api/podDetailApi";
+import { type ChartDef, SeriesChartCard, availableCharts } from "../../components/SeriesChartCard";
 
 interface ContainerDetailSystemMetricsProps {
-  readonly container: string;
-  readonly host: string;
-  readonly serviceName: string;
+  readonly pod: string;
+  /** Metric groups the pod reports; null while the overview is loading. */
+  readonly availableMetrics: readonly string[] | null;
 }
 
+const POD_CHARTS: readonly ChartDef<PodMetricGroup>[] = [
+  { group: "cpu", title: "CPU utilization", label: "CPU %", format: "percentage" },
+  { group: "memory", title: "Memory", label: "Bytes", format: "bytes" },
+  { group: "filesystem", title: "Filesystem", label: "Bytes", format: "bytes" },
+  { group: "network_io", title: "Network traffic", label: "Bytes/s", format: "bytes" },
+  { group: "network_errors", title: "Network errors", label: "Per second", format: "number" },
+  { group: "restarts", title: "Container restarts", label: "Restarts", format: "number" },
+  { group: "jvm_memory", title: "JVM memory", label: "Bytes", format: "bytes" },
+];
+
 export function ContainerDetailSystemMetrics({
-  container,
-  host,
-  serviceName,
+  pod,
+  availableMetrics,
 }: ContainerDetailSystemMetricsProps) {
-  const extraParams = { host, pod: container, serviceName };
+  const charts = availableCharts(POD_CHARTS, availableMetrics);
   return (
     <section className="flex flex-col gap-3">
       <header>
         <div className="font-semibold text-[13px] text-foreground">Container metrics</div>
         <div className="text-[11px] text-foreground-muted">
-          CPU · memory · network · disk — last 1 hour
+          {charts.map((c) => c.title.toLowerCase()).join(" · ") || "no container metrics reported"}
         </div>
       </header>
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card padding="md" className="min-h-[280px] border-border">
-          <InfraMultiSeriesChart
-            queryKey={`container-cpu-${container}`}
-            endpoint={`${V1}/infrastructure/cpu/by-instance`}
-            title="CPU"
-            groupByField="pod"
-            valueField="value"
-            formatType="percentage"
-            extraParams={extraParams}
-          />
+      {charts.length === 0 ? (
+        <Card padding="md" className="border-border">
+          <div className="grid h-[120px] place-items-center text-center text-[12px] text-foreground-muted">
+            <div>
+              This pod is not reporting container metrics in the selected range.
+              <br />
+              Enable the OpenTelemetry <code className="rounded bg-muted px-1">kubeletstats</code>{" "}
+              receiver on the cluster collector to populate CPU, memory, filesystem and network
+              charts.
+            </div>
+          </div>
         </Card>
-        <Card padding="md" className="min-h-[280px] border-border">
-          <InfraMultiSeriesChart
-            queryKey={`container-mem-${container}`}
-            endpoint={`${V1}/infrastructure/memory/by-instance`}
-            title="Memory"
-            groupByField="pod"
-            valueField="value"
-            formatType="percentage"
-            extraParams={extraParams}
-          />
-        </Card>
-        <Card padding="md" className="min-h-[280px] border-border">
-          <InfraMultiSeriesChart
-            queryKey={`container-net-${container}`}
-            endpoint={`${V1}/infrastructure/network/by-instance`}
-            title="Network"
-            groupByField="pod"
-            valueField="value"
-            formatType="bytes"
-            extraParams={extraParams}
-          />
-        </Card>
-        <Card padding="md" className="min-h-[280px] border-border">
-          <InfraMultiSeriesChart
-            queryKey={`container-disk-${container}`}
-            endpoint={`${V1}/infrastructure/disk/by-instance`}
-            title="Disk"
-            groupByField="pod"
-            valueField="value"
-            formatType="percentage"
-            extraParams={extraParams}
-          />
-        </Card>
-      </div>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {charts.map((def) => (
+            <SeriesChartCard
+              key={def.group}
+              endpoint={podSeriesEndpoint(pod)}
+              queryKeyPrefix={`container-detail.series.${pod}`}
+              def={def}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

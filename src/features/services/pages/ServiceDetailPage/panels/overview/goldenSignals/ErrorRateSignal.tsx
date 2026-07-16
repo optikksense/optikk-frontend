@@ -31,14 +31,14 @@ export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
     <PanelCard
       title="Error rate"
       subtitle="% · per endpoint"
-      action={<SignalLegend>peak {fmtPct(peak, peak < 0.01 ? 2 : 1)}</SignalLegend>}
+      action={<SignalLegend>peak {fmtPct(peak, peak < 0.1 ? 2 : 1)}</SignalLegend>}
     >
       <ObservabilityChart
         type="line"
         timestamps={timestamps}
         series={series}
         height={SIGNAL_CHART_HEIGHT}
-        yFormatter={(v) => fmtPct(v, v < 0.01 ? 2 : 1)}
+        yFormatter={(v) => fmtPct(v, v < 0.1 ? 2 : 1)}
         legend
       />
     </PanelCard>

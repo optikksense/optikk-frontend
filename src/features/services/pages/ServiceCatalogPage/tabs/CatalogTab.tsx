@@ -38,7 +38,7 @@ function toDrawerInitialData(row: CatalogRow | null): Record<string, unknown> | 
   return {
     request_count: row.requestCount,
     error_count: row.errorCount,
-    error_rate: row.errorRate * 100, // row is decimal (0-1); drawer expects percent
+    error_rate: row.errorRate,
     p95_latency: row.p95Ms,
     p99_latency: row.p99Ms,
     version: row.version,

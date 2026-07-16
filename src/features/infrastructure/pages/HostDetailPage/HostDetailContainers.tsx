@@ -14,13 +14,10 @@ interface HostDetailContainersProps {
 
 export function HostDetailContainers({ host }: HostDetailContainersProps) {
   const navigate = useNavigate();
-  const podsQ = useTimeRangeQuery<FleetPod[]>("host-detail.fleet-pods", (_tenant, s, e) =>
-    getFleetPods(s, e)
+  const podsQ = useTimeRangeQuery<FleetPod[]>(`host-detail.fleet-pods.${host}`, (_tenant, s, e) =>
+    getFleetPods(s, e, host)
   );
-  const pods = useMemo(
-    () => (podsQ.data ?? []).filter((pod) => pod.host === host),
-    [podsQ.data, host]
-  );
+  const pods = podsQ.data ?? [];
 
   const processedPods = useMemo(() => {
     return pods.map((p) => {

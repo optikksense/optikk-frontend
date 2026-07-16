@@ -29,7 +29,7 @@ export default function OverviewHero({ summary, loading }: Props) {
       <StatCard
         metric={{
           title: "Error rate",
-          value: loading ? "—" : formatPercentage(errRate * 100),
+          value: loading ? "—" : formatPercentage(errRate),
           description: loading ? undefined : "of total requests",
         }}
         visuals={{

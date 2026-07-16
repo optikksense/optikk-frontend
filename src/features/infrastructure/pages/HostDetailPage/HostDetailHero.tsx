@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { Server } from "lucide-react";
 
 import { Pill } from "@shared/components/primitives/ui/pill";
+import { formatRelativeTime } from "@shared/utils/formatters";
 
 import { ROUTES } from "@/shared/constants/routes";
 
+import type { HostOverview } from "../../api/hostDetailApi";
 import type { InfrastructureNode } from "../../types";
 
 export type HostStatus = "healthy" | "warn" | "alerting" | "unknown";
@@ -12,6 +14,7 @@ export type HostStatus = "healthy" | "warn" | "alerting" | "unknown";
 interface HostDetailHeroProps {
   readonly host: string;
   readonly node: InfrastructureNode | null;
+  readonly overview: HostOverview | null;
   readonly status: HostStatus;
 }
 
@@ -46,23 +49,41 @@ function MetaItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-function HostMeta({ node }: { node: InfrastructureNode }) {
-  const role = node.services[0] ?? null;
-  const items: Array<{ label: string; value: string }> = [];
-  if (role) items.push({ label: "role", value: role });
-  items.push({ label: "pods", value: String(node.pod_count) });
-  items.push({ label: "services", value: String(node.services.length) });
-  return (
-    <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[12px] text-foreground-muted">
-      {items.map((it) => (
-        <MetaItem key={it.label} label={it.label} value={it.value} />
-      ))}
-    </div>
-  );
+function loadSummary(overview: HostOverview): string | null {
+  const parts = [overview.load_1m, overview.load_5m, overview.load_15m];
+  if (parts.every((v) => v == null)) return null;
+  return parts.map((v) => (v == null ? "–" : v.toFixed(2))).join(" / ");
 }
 
-export function HostDetailHero({ host, node, status }: HostDetailHeroProps) {
+function buildMetaItems(
+  node: InfrastructureNode | null,
+  overview: HostOverview | null
+): Array<{ label: string; value: string }> {
+  const items: Array<{ label: string; value: string }> = [];
+  if (overview && overview.environments.length > 0) {
+    items.push({ label: "env", value: overview.environments.join(", ") });
+  }
+  if (overview && overview.namespaces.length > 0) {
+    items.push({ label: "namespaces", value: overview.namespaces.join(", ") });
+  }
+  if (node) {
+    items.push({ label: "services", value: String(node.services.length) });
+    items.push({ label: "pods", value: String(node.pod_count) });
+  }
+  const load = overview ? loadSummary(overview) : null;
+  if (load) items.push({ label: "load 1m/5m/15m", value: load });
+  if (overview?.process_count != null) {
+    items.push({ label: "processes", value: String(Math.round(overview.process_count)) });
+  }
+  if (overview?.last_seen) {
+    items.push({ label: "last seen", value: formatRelativeTime(overview.last_seen) });
+  }
+  return items;
+}
+
+export function HostDetailHero({ host, node, overview, status }: HostDetailHeroProps) {
   const pill = STATUS_PILL[status];
+  const meta = buildMetaItems(node, overview);
   return (
     <header>
       <Breadcrumb host={host} />
@@ -79,7 +100,13 @@ export function HostDetailHero({ host, node, status }: HostDetailHeroProps) {
               {pill.label}
             </Pill>
           </div>
-          {node && <HostMeta node={node} />}
+          {meta.length > 0 && (
+            <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[12px] text-foreground-muted">
+              {meta.map((it) => (
+                <MetaItem key={it.label} label={it.label} value={it.value} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </header>

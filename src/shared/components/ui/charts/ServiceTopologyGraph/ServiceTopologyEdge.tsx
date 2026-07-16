@@ -17,7 +17,7 @@ export interface TopologyEdgeData {
 }
 
 function edgeColor(d: TopologyEdgeData): string {
-  if (d.errorRate > 0.05) return "var(--color-error)";
+  if (d.errorRate > 5) return "var(--color-error)";
   if (d.p95LatencyMs > 500) return "var(--color-warning)";
   return "var(--border-color)";
 }
@@ -58,8 +58,7 @@ export function ServiceTopologyEdge(props: EdgeProps) {
       <div className="flex justify-between gap-4">
         <span className="text-foreground-muted">Errors</span>
         <span>
-          {formatNumber(d.errorCount)} (
-          {formatPercentage(d.errorRate * 100, d.errorRate >= 0.001 ? 1 : 2)})
+          {formatNumber(d.errorCount)} ({formatPercentage(d.errorRate, d.errorRate >= 0.1 ? 1 : 2)})
         </span>
       </div>
       <div className="flex justify-between gap-4">
@@ -96,7 +95,7 @@ export function ServiceTopologyEdge(props: EdgeProps) {
               {formatNumber(d.callCount)}
               {d.errorRate > 0 ? (
                 <span className="ml-1 text-error">
-                  {formatPercentage(d.errorRate * 100, d.errorRate >= 0.001 ? 1 : 2)}
+                  {formatPercentage(d.errorRate, d.errorRate >= 0.1 ? 1 : 2)}
                 </span>
               ) : null}
             </div>

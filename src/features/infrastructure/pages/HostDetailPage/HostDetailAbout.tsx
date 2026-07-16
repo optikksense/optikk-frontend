@@ -1,0 +1,44 @@
+import type { HostAbout } from "../../api/hostDetailApi";
+
+interface HostDetailAboutProps {
+  readonly about: HostAbout | undefined;
+}
+
+function cloudSummary(about: HostAbout): string | undefined {
+  const parts = [about.cloud_provider, about.cloud_region, about.cloud_zone].filter(Boolean);
+  return parts.length > 0 ? parts.join(" · ") : undefined;
+}
+
+function buildRows(about: HostAbout): Array<{ label: string; value: string }> {
+  const rows: Array<{ label: string; value: string | undefined }> = [
+    { label: "OS", value: about.os_description || about.os_type },
+    { label: "Architecture", value: about.arch },
+    { label: "Cloud", value: cloudSummary(about) },
+    { label: "Platform", value: about.cloud_platform },
+    { label: "Instance ID", value: about.host_id },
+    { label: "K8s node", value: about.k8s_node_name },
+  ];
+  return rows.filter((r): r is { label: string; value: string } => Boolean(r.value));
+}
+
+/** Machine metadata card; hidden until the host reports resource attributes. */
+export function HostDetailAbout({ about }: HostDetailAboutProps) {
+  if (!about) return null;
+  const rows = buildRows(about);
+  if (rows.length === 0) return null;
+  return (
+    <section className="rounded-md border border-border bg-card p-4">
+      <div className="mb-3 font-semibold text-[13px] text-foreground">About this host</div>
+      <dl className="grid grid-cols-1 gap-x-8 gap-y-2 text-[12px] sm:grid-cols-2 lg:grid-cols-3">
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-baseline justify-between gap-3">
+            <dt className="shrink-0 text-foreground-muted">{row.label}</dt>
+            <dd className="truncate text-right font-medium text-foreground" title={row.value}>
+              {row.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}

@@ -85,7 +85,7 @@ export default function HostsTab() {
       }
       if (key === "status") {
         return nodes.filter((n) => {
-          const rate = n.error_rate * 100;
+          const rate = n.error_rate;
           const status = rate >= 10 ? "err" : rate >= 2 ? "warn" : "ok";
           return status === tagVal;
         });

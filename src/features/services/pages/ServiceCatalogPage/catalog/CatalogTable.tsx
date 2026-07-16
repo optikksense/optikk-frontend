@@ -10,8 +10,8 @@ import { ServiceAvatar } from "../../../components/ServiceAvatar";
 import type { CatalogRow } from "./buildCatalogRows";
 
 function ErrorCell({ rate }: { rate: number }) {
-  const tone = rate >= 0.02 ? "text-error" : rate >= 0.005 ? "text-warning" : "text-foreground";
-  return <span className={tone}>{fmtPct(rate, rate < 0.001 ? 3 : 2)}</span>;
+  const tone = rate >= 2 ? "text-error" : rate >= 0.5 ? "text-warning" : "text-foreground";
+  return <span className={tone}>{fmtPct(rate, rate < 0.1 ? 3 : 2)}</span>;
 }
 
 function NameCell({ row }: { row: CatalogRow }) {

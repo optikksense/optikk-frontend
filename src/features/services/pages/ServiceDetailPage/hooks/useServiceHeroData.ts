@@ -12,8 +12,8 @@ export interface HeroData {
 
 function classifyStatus(summary: ServiceSummary | null): HeroStatus {
   if (!summary) return "unknown";
-  if (summary.errorRate >= 0.02 || summary.p99Ms >= 2000) return "error";
-  if (summary.errorRate >= 0.005 || summary.p99Ms >= 1000) return "warn";
+  if (summary.errorRate >= 2 || summary.p99Ms >= 2000) return "error";
+  if (summary.errorRate >= 0.5 || summary.p99Ms >= 1000) return "warn";
   return "healthy";
 }
 
