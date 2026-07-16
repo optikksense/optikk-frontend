@@ -2,14 +2,13 @@ import { useMemo } from "react";
 
 import { overviewHubApi } from "@/features/overview/api/overviewHubApi";
 import { OVERVIEW_QUERY_STALE_MS } from "@/features/overview/overviewHubConstants";
+import type { RequestErrorRatePoint } from "@shared/api/red/redApi";
 import type { ServiceMetricPoint } from "@shared/metrics/types";
 
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import type { UseQueryResult } from "@tanstack/react-query";
 
-import type { DashboardRecord } from "@shared/types/dashboardConfig";
-
-import { mapRedErrorPctRows, mapRedRequestRateRows, num } from "./mappers";
+import { num } from "./mappers";
 
 export type ServiceHealthStatus = "ok" | "warn" | "err";
 
@@ -62,14 +61,11 @@ export function useOverviewSummaryQuery() {
   );
 }
 
-export function useOverviewPerformanceQuery(enabled: boolean) {
-  return useTimeRangeQuery(
+export function useSystemPerformanceQuery(): UseQueryResult<RequestErrorRatePoint[]> {
+  return useTimeRangeQuery<RequestErrorRatePoint[]>(
     "overview-performance",
-    async (_tenant, start, end) => {
-      const pr = await overviewHubApi.getPerformanceSeries(start, end);
-      return { pr };
-    },
-    { staleTime: OVERVIEW_QUERY_STALE_MS, enabled, retry: false }
+    (_tenant, start, end) => overviewHubApi.getPerformanceSeries(start, end),
+    { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
 }
 
@@ -91,26 +87,6 @@ export function useTopErrorsQuery(enabled: boolean): UseQueryResult<ErrorHotspot
     },
     { staleTime: OVERVIEW_QUERY_STALE_MS, enabled }
   );
-}
-
-export interface PerformanceSeries {
-  readonly requestRows: DashboardRecord[];
-  readonly errorRows: DashboardRecord[];
-  readonly hasRequests: boolean;
-  readonly hasErrors: boolean;
-}
-
-export function usePerformanceSeries(prRaw: unknown[] | undefined): PerformanceSeries {
-  return useMemo(() => {
-    const rrRows = mapRedRequestRateRows(prRaw ?? []);
-    const erRows = mapRedErrorPctRows(prRaw ?? []);
-    return {
-      requestRows: rrRows,
-      errorRows: erRows,
-      hasRequests: rrRows.length > 0,
-      hasErrors: erRows.length > 0,
-    };
-  }, [prRaw]);
 }
 
 export function useServiceHealthCells(

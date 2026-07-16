@@ -8,9 +8,7 @@ import { existsSync, readFileSync } from "node:fs";
 
 // Files still importing uPlot directly. Do not add to this list — migrate to
 // ObservabilityChart (thresholds/plugins props) or extend the shared wrappers.
-const ALLOWLIST = new Set([
-  "src/features/overview/pages/OverviewHubPage/components/SystemPerformanceCard.tsx",
-]);
+const ALLOWLIST = new Set([]);
 
 const UPLOT_IMPORT_RE = /(?:from|import)\s*\(?\s*["']uplot(?:\/[^"']*)?["']/;
 

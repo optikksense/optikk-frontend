@@ -3,11 +3,9 @@ import StatCard from "@shared/components/ui/cards/StatCard";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
 import { num } from "../hooks/mappers";
-import type { PerformanceSeries } from "../hooks/useOverviewModel";
 
 interface Props {
   readonly summary: FleetRedMetrics | undefined;
-  readonly performance: PerformanceSeries;
   readonly loading: boolean;
 }
 

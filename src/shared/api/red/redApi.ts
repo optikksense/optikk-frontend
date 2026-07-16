@@ -110,14 +110,22 @@ export async function getRequestRateSeries(
   return unwrapEnvelope<RequestRatePoint[]>(raw);
 }
 
+export interface RequestErrorRatePoint {
+  readonly timestamp: string;
+  readonly rps: number;
+  readonly request_count: number;
+  readonly error_count: number;
+  readonly error_rate: number;
+}
+
 export async function getRequestAndErrorRateSeries(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[]
-): Promise<unknown[]> {
+): Promise<RequestErrorRatePoint[]> {
   const params = buildREDFilters(s, e, services);
   const raw = await api.get<unknown>(`${V1}/spans/red/request-and-error-rate`, { params });
-  return unwrapEnvelope<unknown[]>(raw);
+  return unwrapEnvelope<RequestErrorRatePoint[]>(raw);
 }
 
 // ─── Shared RED timeseries (fleet-wide or per-service) ───────────────

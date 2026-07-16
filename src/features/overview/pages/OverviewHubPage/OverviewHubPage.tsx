@@ -9,9 +9,7 @@ import ServiceHealthGrid from "./components/ServiceHealthGrid";
 import SystemPerformanceCard from "./components/SystemPerformanceCard";
 import TopErrorsCard from "./components/TopErrorsCard";
 import {
-  useOverviewPerformanceQuery,
   useOverviewSummaryQuery,
-  usePerformanceSeries,
   useRankedErrorRows,
   useServiceHealthCells,
   useTopErrorsQuery,
@@ -31,13 +29,11 @@ export default function OverviewHubPage() {
   const summaryQ = useOverviewSummaryQuery();
   const { ref: belowRef, inView: belowInView } = useInView<HTMLDivElement>();
 
-  const performanceQ = useOverviewPerformanceQuery(true);
   const errorsQ = useTopErrorsQuery(belowInView);
 
   const summary = summaryQ.data;
   const summaryLoading = summaryQ.isPending && !summaryQ.data;
 
-  const performance = usePerformanceSeries(performanceQ.data?.pr);
   const healthCells = useServiceHealthCells(summary?.services as unknown as ServiceMetricPoint[]);
   const topErrors = useRankedErrorRows(errorsQ.data);
 
@@ -56,15 +52,11 @@ export default function OverviewHubPage() {
         subtitle={`${serviceCount || 0} services · golden signals for the selected time range`}
       />
 
-      <OverviewHero summary={summary} performance={performance} loading={summaryLoading} />
+      <OverviewHero summary={summary} loading={summaryLoading} />
 
       <div ref={belowRef} className="flex flex-col gap-3">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1.5fr_1fr]">
-          <SystemPerformanceCard
-            series={performance}
-            loading={performanceQ.isPending}
-            error={performanceQ.isError}
-          />
+          <SystemPerformanceCard />
           <ServiceHealthGrid cells={healthCells} />
         </div>
 
