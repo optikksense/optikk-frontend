@@ -1,7 +1,5 @@
-import { Maximize2, Search, X } from "lucide-react";
+import { Maximize2, Search } from "lucide-react";
 import { memo, useState } from "react";
-
-import { cn } from "@shared/lib/utils";
 
 import type { LogsFacets } from "@shared/logs/api/logsAnalyticsApi";
 import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
@@ -10,8 +8,7 @@ import { ResourceFacet } from "./ResourceFacet";
 import { SeverityFacet } from "./SeverityFacet";
 
 // Sticks under the app header while the row list scrolls the page.
-const FACETS_ASIDE =
-  "flex min-w-0 flex-col gap-[14px]";
+const FACETS_ASIDE = "flex min-w-0 flex-col gap-[14px]";
 const ICON_BTN =
   "inline-grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[5px] border-0 bg-transparent text-[var(--fg-2)] hover:bg-[var(--bg-2)] hover:text-[var(--fg-0)]";
 

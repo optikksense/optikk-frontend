@@ -10,43 +10,42 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 import type { LogRecord, LogsQueryResponse } from "../types/log";
 import { buildLogsFilters } from "./buildLogsFilters";
 
-export const rawLogRowSchema = z
-  .object({
-    id: z.string().optional(),
-    log_id: z.string().optional(),
-    timestamp: z.union([z.string(), z.number()]),
-    observed_timestamp: z.union([z.string(), z.number()]).optional(),
-    severity_text: z.string().optional(),
-    severity_number: z.coerce.number().optional(),
-    severity_bucket: z.coerce.number(),
-    body: z.string(),
-    trace_id: z.string().optional(),
-    span_id: z.string().optional(),
-    trace_flags: z.coerce.number().optional(),
-    service_name: z.string(),
-    host: z.string().optional(),
-    pod: z.string().optional(),
-    container: z.string().optional(),
-    environment: z.string().optional(),
-    attributes_string: z.record(z.string(), z.string()).optional(),
-    attributes_number: z.record(z.string(), z.number()).optional(),
-    attributes_bool: z.record(z.string(), z.boolean()).optional(),
-    scope_name: z.string().optional(),
-    scope_version: z.string().optional(),
-  })
-  .strict();
+/**
+ * Mirrors logs models.Log. Only the `attributes_*` maps are `omitempty` on the
+ * Go side; every other field is always present on the wire.
+ */
+export const rawLogRowSchema = z.object({
+  id: z.string(),
+  // uint64 `json:",string"` on the Go side — always a JSON string.
+  timestamp: z.string(),
+  observed_timestamp: z.string(),
+  severity_text: z.string(),
+  severity_number: z.number(),
+  severity_bucket: z.number(),
+  body: z.string(),
+  trace_id: z.string(),
+  span_id: z.string(),
+  trace_flags: z.number(),
+  service_name: z.string(),
+  host: z.string(),
+  pod: z.string(),
+  container: z.string(),
+  environment: z.string(),
+  attributes_string: z.record(z.string(), z.string()).optional(),
+  attributes_number: z.record(z.string(), z.number()).optional(),
+  attributes_bool: z.record(z.string(), z.boolean()).optional(),
+  scope_name: z.string(),
+  scope_version: z.string(),
+});
 
-const pageInfoSchema = z
-  .object({
-    hasMore: z.boolean().optional(),
-    nextCursor: z.string().optional(),
-    limit: z.coerce.number().optional(),
-  })
-  .strict()
-  .optional();
+/** Mirrors logs models.PageInfo; only nextCursor is `omitempty`. */
+const pageInfoSchema = z.object({
+  hasMore: z.boolean(),
+  nextCursor: z.string().optional(),
+  limit: z.number(),
+});
 
-function tsToNsString(ts: string | number): string {
-  if (typeof ts === "number") return String(Math.round(ts));
+function tsToNsString(ts: string): string {
   if (ts.includes("T")) {
     const ms = Date.parse(ts);
     if (!Number.isNaN(ms)) return String(BigInt(ms) * 1_000_000n);
@@ -70,33 +69,30 @@ function fnv1a(s: string): string {
   return (h >>> 0).toString(36);
 }
 
+/** `id` is always present but may be empty when ClickHouse has no log_id. */
 function fallbackLogId(row: z.infer<typeof rawLogRowSchema>): string {
-  const payload = `${row.trace_id ?? ""}:${row.span_id ?? ""}:${tsToNsString(
-    row.timestamp
-  )}:${row.service_name ?? ""}:${fnv1a(row.body ?? "")}`;
+  const payload = `${row.trace_id}:${row.span_id}:${tsToNsString(row.timestamp)}:${
+    row.service_name
+  }:${fnv1a(row.body)}`;
   return base64UrlEncodeUtf8(payload);
 }
 
-function coerceTimestampToIso(ts: string | number): string {
-  if (typeof ts === "string") {
-    if (ts.includes("T")) return ts;
-    try {
-      const bi = BigInt(ts);
-      return new Date(Number(bi / 1_000_000n)).toISOString();
-    } catch {
-      return ts;
-    }
+function coerceTimestampToIso(ts: string): string {
+  if (ts.includes("T")) return ts;
+  try {
+    const bi = BigInt(ts);
+    return new Date(Number(bi / 1_000_000n)).toISOString();
+  } catch {
+    return ts;
   }
-  return new Date(ts / 1_000_000).toISOString();
 }
 
 export function normalizeLogRecord(row: z.infer<typeof rawLogRowSchema>): LogRecord {
-  const id = row.id || row.log_id || fallbackLogId(row);
+  const id = row.id || fallbackLogId(row);
   return {
     id,
     timestamp: coerceTimestampToIso(row.timestamp),
-    observed_timestamp:
-      row.observed_timestamp != null ? coerceTimestampToIso(row.observed_timestamp) : undefined,
+    observed_timestamp: coerceTimestampToIso(row.observed_timestamp),
     service_name: row.service_name,
     severity_text: row.severity_text,
     severity_bucket: row.severity_bucket,
@@ -120,12 +116,11 @@ const queryResponseSchema = z
     results: z.array(rawLogRowSchema),
     pageInfo: pageInfoSchema,
   })
-  .strict()
   .transform(
     (r): LogsQueryResponse => ({
       results: r.results.map(normalizeLogRecord),
-      cursor: r.pageInfo?.nextCursor || undefined,
-      hasMore: r.pageInfo?.hasMore ?? false,
+      cursor: r.pageInfo.nextCursor || undefined,
+      hasMore: r.pageInfo.hasMore,
     })
   );
 

@@ -2,41 +2,38 @@ import { z } from "zod";
 
 import { API_V1_BASE } from "@config/apiConfig";
 import api from "@shared/api/http/client";
+import { validateResponse } from "@shared/api/utils/validate";
 
-const numeric = z.coerce.number().default(0);
-const str = z.string().default("");
+/**
+ * Mirrors services/topology models. No field is `omitempty`, and `nodes`/
+ * `edges` are built with `make(..., 0, n)` so they are never null.
+ */
+const serviceNodeSchema = z.object({
+  name: z.string(),
+  request_count: z.number(),
+  error_count: z.number(),
+  error_rate: z.number(),
+  p50_latency_ms: z.number(),
+  p95_latency_ms: z.number(),
+  p99_latency_ms: z.number(),
+  // classifyHealth only ever returns these three constants.
+  health: z.enum(["healthy", "degraded", "unhealthy"]),
+});
 
-const serviceNodeSchema = z
-  .object({
-    name: str,
-    request_count: numeric,
-    error_count: numeric,
-    error_rate: numeric,
-    p50_latency_ms: numeric,
-    p95_latency_ms: numeric,
-    p99_latency_ms: numeric,
-    health: z.enum(["healthy", "degraded", "unhealthy"]).catch("healthy"),
-  })
-  .strict();
+const serviceEdgeSchema = z.object({
+  source: z.string(),
+  target: z.string(),
+  call_count: z.number(),
+  error_count: z.number(),
+  error_rate: z.number(),
+  p50_latency_ms: z.number(),
+  p95_latency_ms: z.number(),
+});
 
-const serviceEdgeSchema = z
-  .object({
-    source: str,
-    target: str,
-    call_count: numeric,
-    error_count: numeric,
-    error_rate: numeric,
-    p50_latency_ms: numeric,
-    p95_latency_ms: numeric,
-  })
-  .strict();
-
-export const topologyResponseSchema = z
-  .object({
-    nodes: z.array(serviceNodeSchema).default([]),
-    edges: z.array(serviceEdgeSchema).default([]),
-  })
-  .strict();
+export const topologyResponseSchema = z.object({
+  nodes: z.array(serviceNodeSchema),
+  edges: z.array(serviceEdgeSchema),
+});
 
 export type ServiceTopologyNode = z.infer<typeof serviceNodeSchema>;
 export type ServiceTopologyEdge = z.infer<typeof serviceEdgeSchema>;
@@ -56,5 +53,5 @@ export async function getServiceTopology(params: FetchParams): Promise<ServiceTo
       ...(params.service ? { service: params.service } : {}),
     },
   });
-  return topologyResponseSchema.parse(raw ?? { nodes: [], edges: [] });
+  return validateResponse(topologyResponseSchema, raw ?? { nodes: [], edges: [] });
 }

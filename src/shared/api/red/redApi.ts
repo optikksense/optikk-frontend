@@ -207,13 +207,13 @@ const topEndpointSchema = z.object({
   service_name: z.string(),
   span_kind: z.string(),
   http_route: z.string(),
-  rps: z.coerce.number(),
-  error_rate: z.coerce.number(),
-  error_count: z.coerce.number(),
-  total_count: z.coerce.number(),
-  p50_ms: z.coerce.number(),
-  p95_ms: z.coerce.number(),
-  p99_ms: z.coerce.number(),
+  rps: z.number(),
+  error_rate: z.number(),
+  error_count: z.number(),
+  total_count: z.number(),
+  p50_ms: z.number(),
+  p95_ms: z.number(),
+  p99_ms: z.number(),
 });
 
 const topEndpointsResponseSchema = z.object({
@@ -222,7 +222,7 @@ const topEndpointsResponseSchema = z.object({
     pageInfo: z.object({
       hasMore: z.boolean(),
       nextCursor: z.string().optional(),
-      limit: z.coerce.number(),
+      limit: z.number(),
     }),
   }),
   comparison: z
@@ -231,7 +231,7 @@ const topEndpointsResponseSchema = z.object({
       pageInfo: z.object({
         hasMore: z.boolean(),
         nextCursor: z.string().optional(),
-        limit: z.coerce.number(),
+        limit: z.number(),
       }),
     })
     .optional(),
@@ -257,13 +257,13 @@ const topDBQuerySchema = z.object({
   operation_name: z.string(),
   service_name: z.string(),
   db_system: z.string(),
-  rps: z.coerce.number(),
-  error_rate: z.coerce.number(),
-  error_count: z.coerce.number(),
-  total_count: z.coerce.number(),
-  p50_ms: z.coerce.number(),
-  p95_ms: z.coerce.number(),
-  p99_ms: z.coerce.number(),
+  rps: z.number(),
+  error_rate: z.number(),
+  error_count: z.number(),
+  total_count: z.number(),
+  p50_ms: z.number(),
+  p95_ms: z.number(),
+  p99_ms: z.number(),
 });
 
 const topDBQueriesResponseSchema = z.object({
@@ -272,7 +272,7 @@ const topDBQueriesResponseSchema = z.object({
     pageInfo: z.object({
       hasMore: z.boolean(),
       nextCursor: z.string().optional(),
-      limit: z.coerce.number(),
+      limit: z.number(),
     }),
   }),
   comparison: z
@@ -281,7 +281,7 @@ const topDBQueriesResponseSchema = z.object({
       pageInfo: z.object({
         hasMore: z.boolean(),
         nextCursor: z.string().optional(),
-        limit: z.coerce.number(),
+        limit: z.number(),
       }),
     })
     .optional(),
@@ -326,16 +326,16 @@ export interface SaturationTimeSeriesPoint {
 
 const serviceSummarySchema = z.object({
   service_name: z.string(),
-  request_count: z.coerce.number(),
-  error_count: z.coerce.number(),
-  rps: z.coerce.number(),
-  error_rate: z.coerce.number(),
-  p50_ms: z.coerce.number(),
-  p95_ms: z.coerce.number(),
-  p99_ms: z.coerce.number(),
-  cpu_utilization: z.coerce.number(),
-  memory_utilization: z.coerce.number(),
-  disk_utilization: z.coerce.number(),
+  request_count: z.number(),
+  error_count: z.number(),
+  rps: z.number(),
+  error_rate: z.number(),
+  p50_ms: z.number(),
+  p95_ms: z.number(),
+  p99_ms: z.number(),
+  cpu_utilization: z.number(),
+  memory_utilization: z.number(),
+  disk_utilization: z.number(),
 });
 
 const serviceSummaryComparisonSchema = z.object({

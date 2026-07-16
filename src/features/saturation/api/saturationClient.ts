@@ -7,9 +7,11 @@ import { API_CONFIG } from "@config/apiConfig";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export const numericValue = z.coerce.number().default(0);
-export const integerValue = z.coerce.number().int().default(0);
-export const stringValue = z.string().default("");
+// No saturation response field is `omitempty` on the Go side, so these are
+// required. Absence is contract drift and should surface, not default to zero.
+export const numericValue = z.number();
+export const integerValue = z.number().int();
+export const stringValue = z.string();
 
 export function rangeParams(
   startTime: RequestTime,

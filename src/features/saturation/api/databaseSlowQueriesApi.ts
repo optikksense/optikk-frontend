@@ -4,21 +4,19 @@ import type { RequestTime } from "@/shared/api/service-types";
 
 import { getSaturation, numericValue, rangeParams, stringValue } from "./saturationClient";
 
-const nullableNumber = z.coerce.number().nullable();
+const nullableNumber = z.number().nullable();
 
-const slowQueryPatternSchema = z
-  .object({
-    // Backend fingerprint; defaults to "" when the server is older.
-    query_hash: stringValue,
-    query_text: stringValue,
-    collection_name: stringValue,
-    p50_ms: nullableNumber,
-    p95_ms: nullableNumber,
-    p99_ms: nullableNumber,
-    call_count: numericValue,
-    error_count: numericValue,
-  })
-  .strict();
+const slowQueryPatternSchema = z.object({
+  // Backend fingerprint; defaults to "" when the server is older.
+  query_hash: stringValue,
+  query_text: stringValue,
+  collection_name: stringValue,
+  p50_ms: nullableNumber,
+  p95_ms: nullableNumber,
+  p99_ms: nullableNumber,
+  call_count: numericValue,
+  error_count: numericValue,
+});
 
 export type SlowQueryPatternRow = z.infer<typeof slowQueryPatternSchema>;
 

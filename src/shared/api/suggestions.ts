@@ -16,18 +16,16 @@ export interface SuggestionItem {
   readonly count: number;
 }
 
-const suggestionSchema = z
-  .object({
-    value: z.string(),
-    count: z.coerce.number(),
-  })
-  .strict();
+/** Mirrors explorer.Suggestion. */
+const suggestionSchema = z.object({
+  value: z.string(),
+  count: z.number(),
+});
 
-const suggestResponseSchema = z
-  .object({
-    suggestions: z.union([z.array(suggestionSchema), z.null()]).transform((v) => v ?? []),
-  })
-  .strict();
+/** Mirrors explorer.SuggestResponse; a nil slice encodes as JSON null. */
+const suggestResponseSchema = z.object({
+  suggestions: z.union([z.array(suggestionSchema), z.null()]).transform((v) => v ?? []),
+});
 
 export async function getSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
   const body = {

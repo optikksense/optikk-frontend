@@ -33,5 +33,10 @@ jobs:
       - name: Type check
         run: yarn type-check
 
+      # Includes the wire-contract tests, which parse fixtures generated from
+      # query's real Go response structs. See src/shared/api/utils/contract.test.ts.
+      - name: Test
+        run: yarn test
+
       - name: Build
         run: yarn build

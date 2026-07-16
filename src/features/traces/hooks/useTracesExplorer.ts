@@ -86,6 +86,5 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     summary,
     facets: facetsQuery.data,
     trend: trendQuery.data,
-    warnings: explorerQuery.data?.warnings ?? [],
   };
 }

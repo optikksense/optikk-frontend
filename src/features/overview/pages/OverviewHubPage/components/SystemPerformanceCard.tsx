@@ -1,3 +1,4 @@
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import type uPlot from "uplot";
 
@@ -14,6 +15,7 @@ const CHART_HEIGHT = 200;
 interface Props {
   readonly series: PerformanceSeries;
   readonly loading: boolean;
+  readonly error: boolean;
 }
 
 function formatAxisValue(value: number | null | undefined): string {
@@ -24,7 +26,7 @@ function formatAxisValue(value: number | null | undefined): string {
   return String(Math.round(value));
 }
 
-export default function SystemPerformanceCard({ series, loading }: Props) {
+export default function SystemPerformanceCard({ series, loading, error }: Props) {
   const showEmpty = !loading && !series.hasRequests && !series.hasErrors;
 
   // Resolve dynamic colors based on theme
@@ -194,7 +196,19 @@ export default function SystemPerformanceCard({ series, loading }: Props) {
         </div>
       </div>
 
-      {showEmpty ? (
+      {loading ? (
+        <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-foreground-muted">
+          <Loader2 size={22} className="animate-spin" />
+          <span className="text-[11px]">Loading system performance…</span>
+        </div>
+      ) : error ? (
+        <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-center">
+          <AlertCircle size={22} className="text-error" />
+          <span className="font-semibold text-[12px] text-error">
+            Failed to load system performance
+          </span>
+        </div>
+      ) : showEmpty ? (
         <div className="h-[200px]">
           <ChartNoDataOverlay />
         </div>

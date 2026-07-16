@@ -42,61 +42,56 @@ export interface LogsFacets {
   readonly environment?: readonly LogsFacetValue[];
 }
 
+/** Mirrors logs models.Summary — no field is `omitempty`. */
 const summarySchema = z
   .object({
-    summary: z
-      .object({
-        total: z.coerce.number(),
-        errors: z.coerce.number(),
-        warns: z.coerce.number().default(0),
-      })
-      .strict(),
+    summary: z.object({
+      total: z.number(),
+      errors: z.number(),
+      warns: z.number(),
+    }),
   })
-  .strict()
   .transform((r): LogsSummary => r.summary);
 
+/** Mirrors logs models.TrendBucket. */
 const trendSchema = z
   .object({
     trend: z
       .array(
-        z
-          .object({
-            time_bucket: z.string(),
-            total: z.coerce.number(),
-            error: z.coerce.number(),
-            warn: z.coerce.number(),
-            info: z.coerce.number(),
-            debug: z.coerce.number(),
-          })
-          .strict()
+        z.object({
+          time_bucket: z.string(),
+          total: z.number(),
+          error: z.number(),
+          warn: z.number(),
+          info: z.number(),
+          debug: z.number(),
+        })
       )
       .nullable()
       .transform((v) => v ?? []),
   })
-  .strict()
   .transform((r): readonly LogsTrendBucket[] => r.trend);
 
-const facetValueSchema = z.object({ value: z.string(), count: z.coerce.number() }).strict();
+/** Mirrors logs models.FacetValue. */
+const facetValueSchema = z.object({ value: z.string(), count: z.number() });
 
+/** Mirrors logs models.Facets; host/pod/environment are `omitempty`. */
 const facetsSchema = z
   .object({
-    facets: z
-      .object({
-        severity_bucket: z
-          .array(z.string())
-          .nullable()
-          .transform((v) => v ?? []),
-        service: z
-          .array(facetValueSchema)
-          .nullable()
-          .transform((v) => v ?? []),
-        host: z.array(facetValueSchema).optional(),
-        pod: z.array(facetValueSchema).optional(),
-        environment: z.array(facetValueSchema).optional(),
-      })
-      .strict(),
+    facets: z.object({
+      severity_bucket: z
+        .array(z.string())
+        .nullable()
+        .transform((v) => v ?? []),
+      service: z
+        .array(facetValueSchema)
+        .nullable()
+        .transform((v) => v ?? []),
+      host: z.array(facetValueSchema).optional(),
+      pod: z.array(facetValueSchema).optional(),
+      environment: z.array(facetValueSchema).optional(),
+    }),
   })
-  .strict()
   .transform((r): LogsFacets => r.facets);
 
 export interface LogsAnalyticsArgs {

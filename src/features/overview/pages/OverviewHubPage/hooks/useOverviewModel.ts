@@ -69,7 +69,7 @@ export function useOverviewPerformanceQuery(enabled: boolean) {
       const pr = await overviewHubApi.getPerformanceSeries(start, end);
       return { pr };
     },
-    { staleTime: OVERVIEW_QUERY_STALE_MS, enabled }
+    { staleTime: OVERVIEW_QUERY_STALE_MS, enabled, retry: false }
   );
 }
 

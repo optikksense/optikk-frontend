@@ -35,53 +35,44 @@ export function buildExplorerQueryRequest(
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-const metricNameEntrySchema = z
-  .object({
-    name: z.string(),
-    type: z.enum(["gauge", "counter", "histogram", "summary"]),
-    unit: z.string().optional(),
-    description: z.string().optional(),
-  })
-  .strict();
+/**
+ * Mirrors metrics/explorer FE* models. Only `unit` and `description` are
+ * `omitempty`; `normalizeMetricType` narrows type to these four values.
+ */
+const metricNameEntrySchema = z.object({
+  name: z.string(),
+  type: z.enum(["gauge", "counter", "histogram", "summary"]),
+  unit: z.string().optional(),
+  description: z.string().optional(),
+});
 
-const metricNamesResponseSchema = z
-  .object({
-    metrics: z.array(metricNameEntrySchema),
-  })
-  .strict();
+const metricNamesResponseSchema = z.object({
+  metrics: z.array(metricNameEntrySchema),
+});
 
-const metricTagSchema = z
-  .object({
-    key: z.string(),
-    values: z.array(z.string()),
-  })
-  .strict();
+const metricTagSchema = z.object({
+  key: z.string(),
+  values: z.array(z.string()),
+});
 
-const metricTagsResponseSchema = z
-  .object({
-    tags: z.array(metricTagSchema),
-  })
-  .strict();
+const metricTagsResponseSchema = z.object({
+  tags: z.array(metricTagSchema),
+});
 
-const metricSeriesSchema = z
-  .object({
-    tags: z.record(z.string(), z.string()),
-    values: z.array(z.number().nullable()),
-  })
-  .strict();
+const metricSeriesSchema = z.object({
+  tags: z.record(z.string(), z.string()),
+  // []*float64 on the Go side — gaps encode as null.
+  values: z.array(z.number().nullable()),
+});
 
-const metricQueryResultSchema = z
-  .object({
-    timestamps: z.array(z.number()),
-    series: z.array(metricSeriesSchema),
-  })
-  .strict();
+const metricQueryResultSchema = z.object({
+  timestamps: z.array(z.number()),
+  series: z.array(metricSeriesSchema),
+});
 
-const metricsExplorerResponseSchema = z
-  .object({
-    results: z.record(z.string(), metricQueryResultSchema),
-  })
-  .strict();
+const metricsExplorerResponseSchema = z.object({
+  results: z.record(z.string(), metricQueryResultSchema),
+});
 
 // Request types
 

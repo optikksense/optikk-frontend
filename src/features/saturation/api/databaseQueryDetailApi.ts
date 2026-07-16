@@ -5,60 +5,53 @@ import type { RequestTime } from "@/shared/api/service-types";
 import type { DatabaseFilters } from "./databaseSlowQueriesApi";
 import { getSaturation, numericValue, rangeParams, stringValue } from "./saturationClient";
 
-const nullableNumber = z.coerce.number().nullable();
+const nullableNumber = z.number().nullable();
 
-const serviceCallsSchema = z
-  .object({
-    service: stringValue,
-    call_count: numericValue,
-  })
-  .strict();
+const serviceCallsSchema = z.object({
+  service: stringValue,
+  call_count: numericValue,
+});
 
-const queryDetailSummarySchema = z
-  .object({
-    query_hash: stringValue,
-    query_text: stringValue,
-    db_system: stringValue,
-    collection_name: stringValue,
-    operation_name: stringValue,
-    call_count: numericValue,
-    error_count: numericValue,
-    p50_ms: nullableNumber,
-    p95_ms: nullableNumber,
-    p99_ms: nullableNumber,
-    avg_ms: numericValue,
-    total_time_ms: numericValue,
-    avg_rows: nullableNumber,
-    services: z.array(serviceCallsSchema).default([]),
-  })
-  .strict();
+const queryDetailSummarySchema = z.object({
+  query_hash: stringValue,
+  query_text: stringValue,
+  db_system: stringValue,
+  collection_name: stringValue,
+  operation_name: stringValue,
+  call_count: numericValue,
+  error_count: numericValue,
+  p50_ms: nullableNumber,
+  p95_ms: nullableNumber,
+  p99_ms: nullableNumber,
+  avg_ms: numericValue,
+  total_time_ms: numericValue,
+  avg_rows: nullableNumber,
+  // Always initialised to []ServiceCalls{} server-side.
+  services: z.array(serviceCallsSchema),
+});
 
 export type QueryDetailSummary = z.infer<typeof queryDetailSummarySchema>;
 
-const queryTimeseriesPointSchema = z
-  .object({
-    time_bucket: stringValue,
-    call_count: numericValue,
-    error_count: numericValue,
-    avg_ms: nullableNumber,
-    p99_ms: nullableNumber,
-  })
-  .strict();
+const queryTimeseriesPointSchema = z.object({
+  time_bucket: stringValue,
+  call_count: numericValue,
+  error_count: numericValue,
+  avg_ms: nullableNumber,
+  p99_ms: nullableNumber,
+});
 
 export type QueryTimeseriesPoint = z.infer<typeof queryTimeseriesPointSchema>;
 
-const queryExecutionSchema = z
-  .object({
-    timestamp: stringValue,
-    trace_id: stringValue,
-    span_id: stringValue,
-    duration_ms: numericValue,
-    is_error: z.boolean().default(false),
-    service: stringValue,
-    host: stringValue,
-    rows: nullableNumber,
-  })
-  .strict();
+const queryExecutionSchema = z.object({
+  timestamp: stringValue,
+  trace_id: stringValue,
+  span_id: stringValue,
+  duration_ms: numericValue,
+  is_error: z.boolean(),
+  service: stringValue,
+  host: stringValue,
+  rows: nullableNumber,
+});
 
 export type QueryExecutionRow = z.infer<typeof queryExecutionSchema>;
 

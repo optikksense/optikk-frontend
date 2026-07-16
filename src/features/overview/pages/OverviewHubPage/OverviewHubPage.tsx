@@ -60,7 +60,11 @@ export default function OverviewHubPage() {
 
       <div ref={belowRef} className="flex flex-col gap-3">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1.5fr_1fr]">
-          <SystemPerformanceCard series={performance} loading={performanceQ.isPending} />
+          <SystemPerformanceCard
+            series={performance}
+            loading={performanceQ.isPending}
+            error={performanceQ.isError}
+          />
           <ServiceHealthGrid cells={healthCells} />
         </div>
 

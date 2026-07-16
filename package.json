@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "ci": "yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn check:charts && yarn build",
+    "ci": "yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn check:charts && yarn test && yarn build",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "vite preview",
     "check:boundaries": "node scripts/check-boundaries.mjs",
     "check:charts": "node scripts/check-charts.mjs",

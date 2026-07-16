@@ -143,7 +143,8 @@ export function useTraceDetailEnhanced(
       dbName: spanAttributesData.db_name,
       dbStatement: spanAttributesData.db_statement,
       dbStatementNormalized: spanAttributesData.db_statement_normalized,
-      attributes: spanAttributesData.attributes,
+      // `attributes` is omitempty on the wire; the domain model always has one.
+      attributes: spanAttributesData.attributes ?? {},
       links: spanAttributesData.links?.map((l) => ({
         traceId: l.trace_id,
         spanId: l.span_id,
