@@ -18,28 +18,28 @@ import type {
 export function useTraceDetailEnhanced(
   traceId: string,
   selectedSpanId: string | null,
-  relatedContext?: { service_name?: string; operation_name?: string } | null,
-  startMs?: number,
-  endMs?: number,
+  relatedContext: { service_name?: string; operation_name?: string } | null,
+  startMs: number,
+  endMs: number,
   activeDetailTab = "attributes"
 ) {
   const enabled = !!traceId;
 
   const { data: criticalPathData } = useStandardQuery({
-    queryKey: ["trace-critical-path", traceId],
-    queryFn: () => tracesService.getCriticalPath(traceId),
+    queryKey: ["trace-critical-path", traceId, startMs, endMs],
+    queryFn: () => tracesService.getCriticalPath(traceId, startMs, endMs),
     enabled,
   });
 
   const { data: errorPathData } = useStandardQuery({
-    queryKey: ["trace-error-path", traceId],
-    queryFn: () => tracesService.getErrorPath(traceId),
+    queryKey: ["trace-error-path", traceId, startMs, endMs],
+    queryFn: () => tracesService.getErrorPath(traceId, startMs, endMs),
     enabled,
   });
 
   const { data: spanEventsData } = useStandardQuery({
-    queryKey: ["trace-span-events", traceId],
-    queryFn: () => tracesService.getSpanEvents(traceId),
+    queryKey: ["trace-span-events", traceId, startMs, endMs],
+    queryFn: () => tracesService.getSpanEvents(traceId, startMs, endMs),
     enabled: enabled && !!selectedSpanId,
   });
 
@@ -65,13 +65,13 @@ export function useTraceDetailEnhanced(
       activeDetailTab === "related" &&
       !!relatedContext?.service_name &&
       !!relatedContext?.operation_name &&
-      startMs != null &&
-      endMs != null,
+      startMs > 0 &&
+      endMs > startMs,
   });
 
   const { data: spanAttributesData, isPending: spanAttributesPending } = useStandardQuery({
-    queryKey: ["span-attributes", traceId, selectedSpanId],
-    queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!),
+    queryKey: ["span-attributes", traceId, selectedSpanId, startMs, endMs],
+    queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!, startMs, endMs),
     enabled: !!selectedSpanId,
   });
 

@@ -1,5 +1,6 @@
 import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { cn } from "@shared/lib/utils";
 import { formatRelativeTime } from "@shared/utils/formatters";
 import { memo } from "react";
@@ -54,9 +55,13 @@ interface Props {
 }
 
 function LogDetailRelatedTabComponent({ traceId, log, open, isActive }: Props) {
+  const { getTimeRange } = useTimeRange();
+  const { startTime, endTime } = getTimeRange();
+  const startTimeMs = Number(startTime);
+  const endTimeMs = Number(endTime);
   const relatedQuery = useStandardQuery({
-    queryKey: ["logs", "trace", traceId],
-    queryFn: () => getTraceLogs(traceId as string),
+    queryKey: ["logs", "trace", traceId, startTimeMs, endTimeMs],
+    queryFn: () => getTraceLogs(traceId as string, startTimeMs, endTimeMs),
     enabled: open && isActive && Boolean(traceId),
     staleTime: 30_000,
   });

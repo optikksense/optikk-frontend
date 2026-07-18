@@ -1,3 +1,5 @@
+import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
+import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import { useNavigate } from "@tanstack/react-router";
 import { Waypoints } from "lucide-react";
 import { memo } from "react";
@@ -10,6 +12,7 @@ interface Props {
 
 function LogDetailFooterComponent({ traceId, onPrev, onNext }: Props) {
   const navigate = useNavigate();
+  const { getTimeRange } = useTimeRange();
 
   return (
     <>
@@ -32,7 +35,12 @@ function LogDetailFooterComponent({ traceId, onPrev, onNext }: Props) {
       {traceId && (
         <button
           type="button"
-          onClick={() => navigate({ to: `/traces/${encodeURIComponent(traceId)}` })}
+          onClick={() => {
+            const { startTime, endTime } = getTimeRange();
+            navigate({
+              to: buildTraceDetailHref(traceId, Number(startTime), Number(endTime)) as never,
+            });
+          }}
           className="inline-flex h-[30px] cursor-pointer items-center gap-1.5 rounded-md border-0 bg-[var(--accent)] px-3 text-[12px] text-[var(--accent-fg,oklch(0.99_0.005_270))] hover:bg-[var(--accent-2)]"
         >
           <Waypoints size={13} /> Open trace

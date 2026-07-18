@@ -4,6 +4,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
+import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
+import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 import { useDashboardData } from "../hooks/useDashboardData";
 import { buildDashboardDrawerSearch } from "../utils/dashboardDrawerState";
@@ -21,6 +23,7 @@ export function TableRenderer({
   const { data: rows } = useDashboardData(chartConfig, dataSources);
   const location = useLocation();
   const navigate = useNavigate();
+  const { getTimeRange } = useTimeRange();
 
   const columns = useMemo(() => {
     if (rows.length === 0) return [];
@@ -56,7 +59,14 @@ export function TableRenderer({
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                navigate({ to: `/traces/${String(val)}` });
+                const { startTime, endTime } = getTimeRange();
+                navigate({
+                  to: buildTraceDetailHref(
+                    String(val),
+                    Number(startTime),
+                    Number(endTime)
+                  ) as never,
+                });
               }}
               className="group flex cursor-pointer items-center gap-1 text-primary hover:underline"
             >
@@ -101,7 +111,15 @@ export function TableRenderer({
         },
       },
     ];
-  }, [chartConfig.columns, chartConfig.drawerAction, location.pathname, location.search, rows]);
+  }, [
+    chartConfig.columns,
+    chartConfig.drawerAction,
+    getTimeRange,
+    location.pathname,
+    location.search,
+    navigate,
+    rows,
+  ]);
   if (rows.length === 0) {
     return <ChartNoDataOverlay />;
   }

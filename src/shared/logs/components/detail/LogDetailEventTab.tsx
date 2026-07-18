@@ -3,6 +3,8 @@ import { ExternalLink, GitFork } from "lucide-react";
 import { memo, useMemo } from "react";
 
 import { DrawerAttrTable, DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
+import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import type { LogRecord } from "../../types/log";
 import { buildAttrGroups } from "../../utils/logTransformers";
 import { severityStyle } from "../../utils/severity";
@@ -14,6 +16,7 @@ interface Props {
 
 function LogDetailEventTabComponent({ log, traceId }: Props) {
   const navigate = useNavigate();
+  const { getTimeRange } = useTimeRange();
 
   const sev = severityStyle(log.severity_bucket);
   const attrGroups = useMemo(
@@ -33,7 +36,12 @@ function LogDetailEventTabComponent({ log, traceId }: Props) {
         <DrawerSection title="Correlated trace">
           <button
             type="button"
-            onClick={() => navigate({ to: `/traces/${encodeURIComponent(traceId)}` })}
+            onClick={() => {
+              const { startTime, endTime } = getTimeRange();
+              navigate({
+                to: buildTraceDetailHref(traceId, Number(startTime), Number(endTime)) as never,
+              });
+            }}
             className="flex w-full items-center gap-3 rounded-lg border border-[var(--accent-ln)] bg-[var(--accent-bg)] p-[11px_13px] text-left"
           >
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--bg-card)] text-[var(--accent-2)]">

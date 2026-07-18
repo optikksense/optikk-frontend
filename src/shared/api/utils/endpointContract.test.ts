@@ -15,21 +15,25 @@ import fixtures from "./__fixtures__.json";
  */
 const f = fixtures as Record<string, unknown>;
 const realAdapter = api.raw.defaults.adapter;
+let lastRequest: AxiosRequestConfig | undefined;
 
 /** Serves a fixture as the next response instead of hitting the network. */
 function serve(payload: unknown): void {
-  api.raw.defaults.adapter = (config: AxiosRequestConfig): Promise<AxiosResponse> =>
-    Promise.resolve({
+  api.raw.defaults.adapter = (config: AxiosRequestConfig): Promise<AxiosResponse> => {
+    lastRequest = config;
+    return Promise.resolve({
       data: payload,
       status: 200,
       statusText: "OK",
       headers: {},
       config,
     } as AxiosResponse);
+  };
 }
 
 afterEach(() => {
   api.raw.defaults.adapter = realAdapter;
+  lastRequest = undefined;
 });
 
 const range = { startTime: 1, endTime: 2, filters: [], limit: 50 } as const;
@@ -80,10 +84,11 @@ describe("traces endpoints normalize the Go wire shape", () => {
 
   it("getTraceSpans() unwraps the spans envelope", async () => {
     serve(f.traceSpansEnvelope);
-    const spans = await tracesService.getTraceSpans(null, "t1");
+    const spans = await tracesService.getTraceSpans(null, "t1", 1, 2);
 
     expect(Array.isArray(spans)).toBe(true);
     expect(spans.length).toBeGreaterThan(0);
+    expect(lastRequest?.params).toEqual({ startTime: 1, endTime: 2 });
   });
 
   it("getServiceLatencyBaselines() keys p95/p99 by service", async () => {

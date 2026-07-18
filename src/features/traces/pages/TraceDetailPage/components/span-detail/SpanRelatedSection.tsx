@@ -1,6 +1,8 @@
 import { ExternalLink } from "lucide-react";
 import { memo } from "react";
 
+import { Route } from "@/routes/_app/traces/$traceId";
+import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import { formatDuration } from "@shared/utils/formatters";
 
 import type { RelatedTrace, SpanLink } from "../../../../types";
@@ -15,6 +17,7 @@ const row =
 
 /** Span links + related traces (folded into the Info tab). */
 function SpanRelatedSectionComponent({ links, relatedTraces }: Props) {
+  const { startTime, endTime } = Route.useSearch();
   if (links.length === 0 && relatedTraces.length === 0) return null;
 
   return (
@@ -27,7 +30,7 @@ function SpanRelatedSectionComponent({ links, relatedTraces }: Props) {
           {links.map((link, i) => (
             <a
               key={`${link.traceId}-${link.spanId}-${i}`}
-              href={`/traces/${link.traceId}?span=${link.spanId}`}
+              href={buildTraceDetailHref(link.traceId, startTime, endTime, link.spanId)}
               className={row}
             >
               <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-[var(--accent)]" />
@@ -46,16 +49,26 @@ function SpanRelatedSectionComponent({ links, relatedTraces }: Props) {
           <div className="font-semibold text-[10.5px] text-[var(--fg-3)] uppercase tracking-[0.06em]">
             Related traces ({relatedTraces.length})
           </div>
-          {relatedTraces.map((rt) => (
-            <a key={`${rt.traceId}-${rt.spanId}`} href={`/traces/${rt.traceId}`} className={row}>
-              <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-[var(--accent)]" />
-              <span className="text-[var(--fg-2)]">{rt.serviceName}</span>
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[var(--fg-0)]">
-                {rt.operationName}
-              </span>
-              <span className="font-mono text-[var(--fg-3)]">{formatDuration(rt.durationMs)}</span>
-            </a>
-          ))}
+          {relatedTraces.map((rt) => {
+            const relatedStart = new Date(rt.startTime).getTime();
+            const relatedEnd = relatedStart + Math.max(1, Math.ceil(rt.durationMs));
+            return (
+              <a
+                key={`${rt.traceId}-${rt.spanId}`}
+                href={buildTraceDetailHref(rt.traceId, relatedStart, relatedEnd)}
+                className={row}
+              >
+                <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-[var(--accent)]" />
+                <span className="text-[var(--fg-2)]">{rt.serviceName}</span>
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[var(--fg-0)]">
+                  {rt.operationName}
+                </span>
+                <span className="font-mono text-[var(--fg-3)]">
+                  {formatDuration(rt.durationMs)}
+                </span>
+              </a>
+            );
+          })}
         </div>
       )}
     </div>

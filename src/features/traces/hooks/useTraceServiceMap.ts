@@ -14,11 +14,13 @@ export function useTraceServiceMap(
   traceId: string,
   startMs: number,
   endMs: number,
-  latencyEnabled: boolean
+  latencyEnabled: boolean,
+  queryStartTime: number,
+  queryEndTime: number
 ) {
   const mapQuery = useImmutableQuery({
-    queryKey: ["trace-service-map", traceId],
-    queryFn: () => tracesService.getServiceMap(traceId),
+    queryKey: ["trace-service-map", traceId, queryStartTime, queryEndTime],
+    queryFn: () => tracesService.getServiceMap(traceId, queryStartTime, queryEndTime),
     enabled: !!traceId,
   });
 

@@ -30,6 +30,20 @@ export function traceIdEqualsFilter(traceId: string): StructuredFilter {
   return { field: "trace_id", operator: "equals", value: traceId };
 }
 
+export function buildTraceDetailHref(
+  traceId: string,
+  startTime: number,
+  endTime: number,
+  spanId?: string
+): string {
+  const params = new URLSearchParams({
+    startTime: String(startTime),
+    endTime: String(endTime),
+  });
+  if (spanId) params.set("span", spanId);
+  return `/traces/${encodeURIComponent(traceId)}?${params.toString()}`;
+}
+
 export function hostEqualsFilter(host: string): StructuredFilter {
   return { field: "host", operator: "equals", value: host };
 }

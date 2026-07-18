@@ -69,10 +69,10 @@ export function useLlmTraces(req: Omit<LlmTracesRequest, "startTime" | "endTime"
 }
 
 export function useLlmTraceDetail(traceId: string | null) {
-  const tenantId = useTenantId();
+  const { tenantId, startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "traceDetail", tenantId, traceId],
-    queryFn: () => getLlmTraceDetail(traceId ?? ""),
+    queryKey: ["llm", "traceDetail", tenantId, traceId, startTime, endTime],
+    queryFn: () => getLlmTraceDetail(traceId ?? "", startTime, endTime),
     enabled: Boolean(traceId),
   });
 }

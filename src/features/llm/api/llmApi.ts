@@ -198,7 +198,13 @@ export async function queryLlmTraces(req: LlmTracesRequest): Promise<LlmTracesRe
   return { results: data.results ?? [], pageInfo: data.pageInfo };
 }
 
-export async function getLlmTraceDetail(traceId: string): Promise<LlmTraceDetail> {
-  const res = await api.get<unknown>(`${BASE}/llm/traces/${encodeURIComponent(traceId)}`);
+export async function getLlmTraceDetail(
+  traceId: string,
+  startTime: number,
+  endTime: number
+): Promise<LlmTraceDetail> {
+  const res = await api.get<unknown>(`${BASE}/llm/traces/${encodeURIComponent(traceId)}`, {
+    params: { startTime, endTime },
+  });
   return validateResponse(traceDetailSchema, res);
 }

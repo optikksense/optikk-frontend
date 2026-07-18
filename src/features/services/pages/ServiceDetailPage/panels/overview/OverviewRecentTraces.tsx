@@ -1,4 +1,6 @@
+import type { TraceRecord } from "@shared/api/traces/schemas";
 import { PaginationFooter } from "@shared/components/table/PaginationFooter";
+import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import { relativeTimeFromIso } from "@shared/utils/metricFormatters";
 import { useNavigate } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
@@ -74,8 +76,10 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
     });
   }, [traces, filter, p95Threshold, p99Threshold]);
 
-  const handleRowClick = (traceId: string) => {
-    navigate({ to: `/traces/${encodeURIComponent(traceId)}` });
+  const handleRowClick = (trace: TraceRecord) => {
+    const startTime = new Date(trace.start_time).getTime();
+    const endTime = startTime + Math.max(1, Math.ceil(trace.duration_ms));
+    navigate({ to: buildTraceDetailHref(trace.trace_id, startTime, endTime) as never });
   };
 
   if (loading) {
@@ -151,7 +155,7 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
                 return (
                   <tr
                     key={i}
-                    onClick={() => handleRowClick(t.trace_id)}
+                    onClick={() => handleRowClick(t)}
                     className="cursor-pointer border-border/40 border-b last:border-b-0 hover:bg-muted/10"
                   >
                     <td className="px-3 py-3 pl-0">

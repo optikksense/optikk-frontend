@@ -67,7 +67,16 @@ export function useTracesExplorerPage() {
   );
 
   const onOpenTrace = useCallback(
-    (traceId: string) => navigate({ to: `/traces/${encodeURIComponent(traceId)}` }),
+    (trace: TraceSummary) => {
+      const endTime = Math.max(
+        trace.end_ms,
+        trace.start_ms + Math.ceil(trace.duration_ns / 1_000_000)
+      );
+      navigate({
+        to: `/traces/${encodeURIComponent(trace.trace_id)}`,
+        search: { startTime: trace.start_ms, endTime },
+      });
+    },
     [navigate]
   );
   const onFreeText = useCallback(
@@ -107,9 +116,9 @@ export function useTracesExplorerPage() {
       buildTraceContextMenu(row, {
         filters: state.filters,
         setFilters: applyFilters,
-        openTraceDetail: (id) => navigate({ to: `/traces/${encodeURIComponent(id)}` }),
+        openTraceDetail: (trace) => onOpenTrace(trace),
       }),
-    [state.filters, applyFilters, navigate]
+    [state.filters, applyFilters, onOpenTrace]
   );
 
   useExplorerKeyboard({
@@ -185,7 +194,7 @@ function buildKPIs(summary: { total: number; errors: number } | undefined): Summ
 interface ContextMenuArgs {
   readonly filters: readonly ExplorerFilter[];
   readonly setFilters: (next: readonly ExplorerFilter[]) => void;
-  readonly openTraceDetail: (traceId: string) => void;
+  readonly openTraceDetail: (trace: TraceSummary) => void;
 }
 
 function buildTraceContextMenu(
@@ -210,7 +219,7 @@ function buildTraceContextMenu(
     kind: "action",
     label: "Open trace",
     icon: <ExternalLink size={12} />,
-    onSelect: () => args.openTraceDetail(row.trace_id),
+    onSelect: () => args.openTraceDetail(row),
   });
 
   items.push({ kind: "separator" });

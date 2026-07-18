@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
 import { PageSurface, Skeleton } from "@shared/components/ui";
+import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 
 import type { ErrorGroupTrace } from "@shared/api/errors";
 
@@ -54,7 +55,11 @@ export function TracesPanel({
             <button
               key={`${t.trace_id}-${t.span_id}`}
               type="button"
-              onClick={() => navigate({ to: `/traces/${encodeURIComponent(t.trace_id)}` })}
+              onClick={() => {
+                const startTime = new Date(t.timestamp).getTime();
+                const endTime = startTime + Math.max(1, Math.ceil(t.duration_ms));
+                navigate({ to: buildTraceDetailHref(t.trace_id, startTime, endTime) as never });
+              }}
               className="flex items-center justify-between gap-3 border-border/60 border-b py-2.5 text-left last:border-b-0 hover:bg-muted/20"
             >
               <div className="flex min-w-0 items-center gap-2.5">

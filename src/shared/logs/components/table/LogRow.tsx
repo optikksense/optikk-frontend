@@ -3,6 +3,8 @@ import { ArrowRight, ChevronDown, ChevronRight, GitFork } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 
 import { HighlightedText } from "@shared/components/primitives/HighlightedText";
+import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
+import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import { formatTimestamp } from "@shared/utils/formatters";
 
 import { useTimezone } from "@/app/store/appStore";
@@ -44,6 +46,7 @@ interface Props {
 
 function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }: Props) {
   const navigate = useNavigate();
+  const { getTimeRange } = useTimeRange();
   const expanded = useLogsExplorerStore((s) => s.expandedRows.has(row.id));
   const toggleExpanded = useLogsExplorerStore((s) => s.toggleRowExpanded);
   const sev = severityStyle(row.severity_bucket);
@@ -84,9 +87,12 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
     (e: React.MouseEvent) => {
       e.stopPropagation();
       if (!traceId) return;
-      navigate({ to: `/traces/${encodeURIComponent(traceId)}` });
+      const { startTime, endTime } = getTimeRange();
+      navigate({
+        to: buildTraceDetailHref(traceId, Number(startTime), Number(endTime)) as never,
+      });
     },
-    [navigate, traceId]
+    [getTimeRange, navigate, traceId]
   );
 
   const isError = sev.slug === "error";

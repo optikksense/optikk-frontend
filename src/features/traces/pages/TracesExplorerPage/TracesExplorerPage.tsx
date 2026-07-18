@@ -86,7 +86,7 @@ export default function TracesExplorerPage() {
           <div className="mt-4 flex flex-col">
             <TracesTable
               traces={p.sortedTraces}
-              onRowClick={(t) => p.onOpenTrace(t.trace_id)}
+              onRowClick={p.onOpenTrace}
               onNextPage={p.onNextPage}
               onPrevPage={p.onPrevPage}
               hasNextPage={p.hasNextPage}
