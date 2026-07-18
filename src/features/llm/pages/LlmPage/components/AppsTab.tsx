@@ -9,12 +9,7 @@ import { formatDuration, formatNumber } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { LlmApp } from "../../../api/llmApi";
-import {
-  useLlmApps,
-  useLlmOverview,
-  useLlmRange,
-  useLlmTimeseries,
-} from "../../../hooks/useLlmQueries";
+import { useLlmApps, useLlmOverview, useLlmTimeseries } from "../../../hooks/useLlmQueries";
 import { alignSeries } from "../../../utils/alignSeries";
 import { deltaPct, formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
 import LiveTraceStream from "./LiveTraceStream";
@@ -57,7 +52,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
   const overviewQ = useLlmOverview();
   const tokensQ = useLlmTimeseries("tokens_by_vendor");
   const latencyQ = useLlmTimeseries("latency");
-  const { startTime, endTime } = useLlmRange();
 
   const apps = appsQ.data ?? [];
   const cur = overviewQ.data?.current;
@@ -71,11 +65,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
     }
     return `${counts.agent} agents · ${counts.rag} rag · ${counts.workflow} workflows`;
   }, [apps]);
-
-  const dailyProjection = useMemo(() => {
-    if (!cur || endTime <= startTime) return null;
-    return (cur.cost / (endTime - startTime)) * 86_400_000;
-  }, [cur, startTime, endTime]);
 
   const tokensAligned = useMemo(() => alignSeries(tokensQ.data ?? []), [tokensQ.data]);
   const latencyAligned = useMemo(() => alignSeries(latencyQ.data ?? []), [latencyQ.data]);
@@ -248,8 +237,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
           metric={{
             title: "Spend",
             value: formatCost(cur?.cost ?? 0),
-            description:
-              dailyProjection !== null ? `≈${formatCost(dailyProjection)}/day` : undefined,
           }}
           trend={{ value: deltaPct(cur?.cost ?? 0, prev?.cost ?? 0) ?? undefined }}
           visuals={{

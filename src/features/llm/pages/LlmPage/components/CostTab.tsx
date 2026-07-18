@@ -7,7 +7,7 @@ import { formatNumber } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { LlmCostGroupBy, LlmCostRow } from "../../../api/llmApi";
-import { useLlmCostBreakdown, useLlmOverview, useLlmRange } from "../../../hooks/useLlmQueries";
+import { useLlmCostBreakdown, useLlmOverview } from "../../../hooks/useLlmQueries";
 import { deltaPct, formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
 import { VendorChip } from "./LlmChips";
 
@@ -23,7 +23,6 @@ export default function CostTab() {
   const vendorsQ = useLlmCostBreakdown("vendor");
   const appsQ = useLlmCostBreakdown("service");
   const overviewQ = useLlmOverview();
-  const { startTime, endTime } = useLlmRange();
 
   const rows = breakdownQ.data ?? [];
   const vendors = vendorsQ.data ?? [];
@@ -32,11 +31,6 @@ export default function CostTab() {
   const topApp = appsQ.data?.[0];
   const total = useMemo(() => rows.reduce((acc, r) => acc + r.cost, 0), [rows]);
   const vendorTotal = useMemo(() => vendors.reduce((acc, v) => acc + v.cost, 0), [vendors]);
-
-  const dailyProjection = useMemo(() => {
-    if (!cur || endTime <= startTime) return null;
-    return (cur.cost / (endTime - startTime)) * 86_400_000;
-  }, [cur, startTime, endTime]);
 
   const columns: ColumnDef<LlmCostRow>[] = [
     {
@@ -130,8 +124,6 @@ export default function CostTab() {
           metric={{
             title: "Spend",
             value: formatCost(cur?.cost ?? 0),
-            description:
-              dailyProjection !== null ? `≈${formatCost(dailyProjection)}/day` : undefined,
           }}
           trend={{ value: deltaPct(cur?.cost ?? 0, prev?.cost ?? 0) ?? undefined }}
           visuals={{ loading: overviewQ.isPending }}

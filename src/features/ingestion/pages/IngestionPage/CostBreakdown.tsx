@@ -27,13 +27,8 @@ export function CostBreakdown({ cost }: Props) {
                 {fmtQuantity(line)} · {fmtMoney(currency, line.rate)}/{line.unit}
               </div>
             </div>
-            <div className="text-right">
-              <div className="mono font-semibold text-[13px] text-foreground">
-                {fmtMoney(currency, line.cost)}
-              </div>
-              <div className="mono text-[11.5px] text-foreground-muted">
-                proj {fmtMoney(currency, line.projectedCost)}
-              </div>
+            <div className="mono font-semibold text-[13px] text-foreground">
+              {fmtMoney(currency, line.cost)}
             </div>
           </div>
         ))}
@@ -45,12 +40,6 @@ export function CostBreakdown({ cost }: Props) {
         <span className="text-[12.5px] text-foreground-muted">Cost so far</span>
         <span className="mono font-semibold text-[13px] text-foreground">
           {fmtMoney(currency, cost?.currentCost)}
-        </span>
-      </div>
-      <div className="mt-1.5 flex items-center justify-between">
-        <span className="text-[12.5px] text-foreground-muted">Projected this month</span>
-        <span className="mono font-bold text-[14px] text-foreground">
-          {fmtMoney(currency, cost?.projectedMonthlyCost)}
         </span>
       </div>
       <p className="mt-3 text-[11.5px] text-foreground-muted leading-relaxed">

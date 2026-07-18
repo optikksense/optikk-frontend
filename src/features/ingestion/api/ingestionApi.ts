@@ -33,16 +33,10 @@ export interface IngestionSummary {
   readonly peak: { readonly date: string; readonly records: number; readonly bytes: number };
   readonly daysElapsed: number;
   readonly daysInMonth: number;
-  readonly projectedRecords: number;
-  readonly projectedBytes: number;
   readonly commitmentRecords: number;
   readonly commitmentBytes: number;
   readonly commitmentUsedPct: number;
   readonly commitmentUsedBytesPct: number;
-  readonly projectedPct: number;
-  readonly projectedBytesPct: number;
-  readonly onPace: boolean;
-  readonly onPaceBytes: boolean;
   readonly byType: readonly TypeShare[];
 }
 
@@ -87,14 +81,12 @@ export interface CostLine {
   readonly quantity: number;
   readonly rate: number;
   readonly cost: number;
-  readonly projectedCost: number;
 }
 
 export interface IngestionCost {
   readonly currency: string;
   readonly lines: readonly CostLine[];
   readonly currentCost: number;
-  readonly projectedMonthlyCost: number;
   readonly daysElapsed: number;
   readonly daysInMonth: number;
 }

@@ -14,18 +14,6 @@ import { SignalPillars } from "./SignalPillars";
 import { TelemetryTypeBreakdown } from "./TelemetryTypeBreakdown";
 import { TopServicesTable } from "./TopServicesTable";
 
-function PaceBadge({ onPace, pct }: { onPace: boolean; pct: number }) {
-  const tone = onPace ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning";
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold text-[12px] ${tone}`}
-    >
-      <span className="h-1.5 w-1.5 rounded-full bg-current" />
-      {onPace ? "On pace" : "Over pace"} · {Math.round(pct)}% of commit
-    </span>
-  );
-}
-
 const UNITS: { id: IngestionUnit; label: string }[] = [
   { id: "records", label: "Records" },
   { id: "bytes", label: "Volume" },
@@ -62,9 +50,6 @@ export default function IngestionPage(): JSX.Element {
   const costQ = useIngestionCost();
   const summary = summaryQ.data;
 
-  const onPace = unit === "bytes" ? summary?.onPaceBytes : summary?.onPace;
-  const pacePct = unit === "bytes" ? summary?.projectedBytesPct : summary?.projectedPct;
-
   return (
     <div className="flex min-w-0 flex-col gap-5 px-1 pt-1 pb-7">
       <header className="flex items-center gap-4">
@@ -79,7 +64,6 @@ export default function IngestionPage(): JSX.Element {
         </div>
         <div className="flex-1" />
         <UnitToggle unit={unit} onChange={setUnit} />
-        {summary && <PaceBadge onPace={Boolean(onPace)} pct={pacePct ?? 0} />}
       </header>
 
       {summaryQ.isError ? (
