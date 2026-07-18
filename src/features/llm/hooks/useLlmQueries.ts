@@ -10,18 +10,27 @@ import {
   type LlmTracesRequest,
   getLlmApps,
   getLlmCostBreakdown,
+  getLlmOverview,
   getLlmTimeseries,
   getLlmTraceDetail,
   queryLlmTraces,
 } from "../api/llmApi";
 
 // Shared page context: selected tenant + resolved time window + refresh tick.
-function useLlmRange() {
+export function useLlmRange() {
   const timeRange = useTimeRange();
   const tenantId = useTenantId();
   const refreshKey = useRefreshKey();
   const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
   return { tenantId, refreshKey, startTime, endTime };
+}
+
+export function useLlmOverview() {
+  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  return useStandardQuery({
+    queryKey: ["llm", "overview", tenantId, startTime, endTime, refreshKey],
+    queryFn: () => getLlmOverview({ startTime, endTime }),
+  });
 }
 
 export function useLlmApps() {

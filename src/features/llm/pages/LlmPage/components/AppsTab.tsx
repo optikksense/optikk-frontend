@@ -9,10 +9,17 @@ import { formatDuration, formatNumber } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { LlmApp } from "../../../api/llmApi";
-import { useLlmApps, useLlmTimeseries } from "../../../hooks/useLlmQueries";
+import {
+  useLlmApps,
+  useLlmOverview,
+  useLlmRange,
+  useLlmTimeseries,
+} from "../../../hooks/useLlmQueries";
 import { alignSeries } from "../../../utils/alignSeries";
-import { formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
-import { VendorChip } from "./LlmChips";
+import { deltaPct, formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
+import LiveTraceStream from "./LiveTraceStream";
+import { KindChip, VendorChip } from "./LlmChips";
+import SpanBreakdownRail from "./SpanBreakdownRail";
 
 function ChartCard({
   title,
@@ -40,26 +47,35 @@ const LATENCY_COLORS: Record<string, string> = {
   p99: "var(--chart-5)",
 };
 
+// Sparklines only render with two or more points.
+function spark(values?: number[] | null): number[] | undefined {
+  return values && values.length > 1 ? values : undefined;
+}
+
 export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: string) => void }) {
   const appsQ = useLlmApps();
+  const overviewQ = useLlmOverview();
   const tokensQ = useLlmTimeseries("tokens_by_vendor");
   const latencyQ = useLlmTimeseries("latency");
+  const { startTime, endTime } = useLlmRange();
 
   const apps = appsQ.data ?? [];
-  const totals = useMemo(
-    () =>
-      apps.reduce(
-        (acc, a) => ({
-          llm: acc.llm + a.llmSpans,
-          tool: acc.tool + a.toolSpans,
-          tokens: acc.tokens + a.inputTokens + a.outputTokens,
-          cost: acc.cost + a.cost,
-        }),
-        { llm: 0, tool: 0, tokens: 0, cost: 0 }
-      ),
-    [apps]
-  );
-  const maxP95 = useMemo(() => Math.max(0, ...apps.map((a) => a.p95Ms)), [apps]);
+  const cur = overviewQ.data?.current;
+  const prev = overviewQ.data?.previous;
+  const series = overviewQ.data?.series;
+
+  const kindMix = useMemo(() => {
+    const counts = { agent: 0, rag: 0, workflow: 0 };
+    for (const a of apps) {
+      counts[a.kind === "agent" || a.kind === "rag" ? a.kind : "workflow"] += 1;
+    }
+    return `${counts.agent} agents · ${counts.rag} rag · ${counts.workflow} workflows`;
+  }, [apps]);
+
+  const dailyProjection = useMemo(() => {
+    if (!cur || endTime <= startTime) return null;
+    return (cur.cost / (endTime - startTime)) * 86_400_000;
+  }, [cur, startTime, endTime]);
 
   const tokensAligned = useMemo(() => alignSeries(tokensQ.data ?? []), [tokensQ.data]);
   const latencyAligned = useMemo(() => alignSeries(latencyQ.data ?? []), [latencyQ.data]);
@@ -80,6 +96,11 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
           <span className="font-medium text-foreground">{a.service}</span>
         </div>
       ),
+    },
+    {
+      header: "Kind",
+      accessorKey: "kind",
+      cell: ({ row: { original: a } }) => <KindChip kind={a.kind ?? ""} />,
     },
     {
       header: "Primary model",
@@ -148,16 +169,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
       ),
     },
     {
-      header: "Tokens",
-      accessorKey: "tokens",
-      meta: { align: "right" },
-      cell: ({ row: { original: a } }) => (
-        <span className="font-mono text-foreground-secondary">
-          {formatNumber(a.inputTokens)} / {formatNumber(a.outputTokens)}
-        </span>
-      ),
-    },
-    {
       header: "Cost",
       accessorKey: "cost",
       meta: { align: "right" },
@@ -182,28 +193,70 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard
-          metric={{ title: "ML applications", value: apps.length }}
+          metric={{ title: "ML applications", value: apps.length, description: kindMix }}
           visuals={{ loading: appsQ.isPending }}
         />
         <StatCard
-          metric={{ title: "LLM spans", value: formatNumber(totals.llm) }}
-          visuals={{ loading: appsQ.isPending }}
+          metric={{ title: "LLM spans", value: formatNumber(cur?.llmSpans ?? 0) }}
+          trend={{ value: deltaPct(cur?.llmSpans ?? 0, prev?.llmSpans ?? 0) ?? undefined }}
+          visuals={{
+            loading: overviewQ.isPending,
+            sparklineData: spark(series?.llmSpans),
+            sparklineColor: "var(--chart-3)",
+          }}
         />
         <StatCard
-          metric={{ title: "Tool spans", value: formatNumber(totals.tool) }}
-          visuals={{ loading: appsQ.isPending }}
+          metric={{ title: "Tool spans", value: formatNumber(cur?.toolSpans ?? 0) }}
+          trend={{ value: deltaPct(cur?.toolSpans ?? 0, prev?.toolSpans ?? 0) ?? undefined }}
+          visuals={{
+            loading: overviewQ.isPending,
+            sparklineData: spark(series?.toolSpans),
+            sparklineColor: "var(--chart-1)",
+          }}
         />
         <StatCard
-          metric={{ title: "Slowest app p95", value: formatDuration(maxP95) }}
-          visuals={{ loading: appsQ.isPending }}
+          metric={{
+            title: "p95 latency",
+            value: formatDuration(cur?.p95Ms ?? 0),
+            description: cur
+              ? `p50 ${formatDuration(cur.p50Ms)} · p99 ${formatDuration(cur.p99Ms)}`
+              : undefined,
+          }}
+          trend={{
+            value: deltaPct(cur?.p95Ms ?? 0, prev?.p95Ms ?? 0) ?? undefined,
+            inverted: true,
+          }}
+          visuals={{
+            loading: overviewQ.isPending,
+            sparklineData: spark(series?.p95Ms),
+            sparklineColor: "var(--chart-1)",
+          }}
         />
         <StatCard
-          metric={{ title: "Tokens", value: formatNumber(totals.tokens) }}
-          visuals={{ loading: appsQ.isPending }}
+          metric={{ title: "Error rate", value: `${(cur?.errorRate ?? 0).toFixed(2)}%` }}
+          trend={{
+            value: deltaPct(cur?.errorRate ?? 0, prev?.errorRate ?? 0) ?? undefined,
+            inverted: true,
+          }}
+          visuals={{
+            loading: overviewQ.isPending,
+            sparklineData: spark(series?.errorRate),
+            sparklineColor: "var(--chart-5)",
+          }}
         />
         <StatCard
-          metric={{ title: "Spend", value: formatCost(totals.cost) }}
-          visuals={{ loading: appsQ.isPending }}
+          metric={{
+            title: "Spend",
+            value: formatCost(cur?.cost ?? 0),
+            description:
+              dailyProjection !== null ? `≈${formatCost(dailyProjection)}/day` : undefined,
+          }}
+          trend={{ value: deltaPct(cur?.cost ?? 0, prev?.cost ?? 0) ?? undefined }}
+          visuals={{
+            loading: overviewQ.isPending,
+            sparklineData: spark(series?.cost),
+            sparklineColor: "var(--chart-6)",
+          }}
         />
       </div>
 
@@ -238,25 +291,33 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
         </ChartCard>
       </div>
 
-      <Surface elevation={1} padding="md">
-        <div className="mb-3">
-          <div className="font-medium text-[13px] text-foreground">ML applications</div>
-          <div className="text-foreground-muted text-xs">
-            {apps.length} apps · services emitting gen_ai spans · click for traces
+      <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[1fr_300px]">
+        <Surface elevation={1} padding="md">
+          <div className="mb-3">
+            <div className="font-medium text-[13px] text-foreground">ML applications</div>
+            <div className="text-foreground-muted text-xs">
+              {apps.length} apps · services emitting gen_ai spans · click for traces
+            </div>
           </div>
-        </div>
-        <DataTable
-          data={{
-            columns,
-            rows: apps,
-            loading: appsQ.isPending,
-          }}
-          pagination={{ showPagination: false }}
-          config={{
-            onRow: (a) => ({ onClick: () => onOpenTrace(a.service), style: { cursor: "pointer" } }),
-          }}
-        />
-      </Surface>
+          <DataTable
+            data={{
+              columns,
+              rows: apps,
+              loading: appsQ.isPending,
+            }}
+            pagination={{ showPagination: false }}
+            config={{
+              onRow: (a) => ({
+                onClick: () => onOpenTrace(a.service),
+                style: { cursor: "pointer" },
+              }),
+            }}
+          />
+        </Surface>
+        <SpanBreakdownRail apps={apps} />
+      </div>
+
+      <LiveTraceStream service={null} />
     </div>
   );
 }

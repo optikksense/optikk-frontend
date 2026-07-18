@@ -7,8 +7,8 @@ import { formatNumber } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { LlmCostGroupBy, LlmCostRow } from "../../../api/llmApi";
-import { useLlmCostBreakdown } from "../../../hooks/useLlmQueries";
-import { formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
+import { useLlmCostBreakdown, useLlmOverview, useLlmRange } from "../../../hooks/useLlmQueries";
+import { deltaPct, formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
 import { VendorChip } from "./LlmChips";
 
 const GROUPS: Array<{ key: LlmCostGroupBy; label: string }> = [
@@ -21,16 +21,22 @@ export default function CostTab() {
   const [groupBy, setGroupBy] = useState<LlmCostGroupBy>("service");
   const breakdownQ = useLlmCostBreakdown(groupBy);
   const vendorsQ = useLlmCostBreakdown("vendor");
+  const appsQ = useLlmCostBreakdown("service");
+  const overviewQ = useLlmOverview();
+  const { startTime, endTime } = useLlmRange();
 
   const rows = breakdownQ.data ?? [];
   const vendors = vendorsQ.data ?? [];
+  const cur = overviewQ.data?.current;
+  const prev = overviewQ.data?.previous;
+  const topApp = appsQ.data?.[0];
   const total = useMemo(() => rows.reduce((acc, r) => acc + r.cost, 0), [rows]);
-  const totalTokens = useMemo(
-    () => rows.reduce((acc, r) => acc + r.inputTokens + r.outputTokens, 0),
-    [rows]
-  );
-  const totalSpans = useMemo(() => rows.reduce((acc, r) => acc + r.llmSpans, 0), [rows]);
   const vendorTotal = useMemo(() => vendors.reduce((acc, v) => acc + v.cost, 0), [vendors]);
+
+  const dailyProjection = useMemo(() => {
+    if (!cur || endTime <= startTime) return null;
+    return (cur.cost / (endTime - startTime)) * 86_400_000;
+  }, [cur, startTime, endTime]);
 
   const columns: ColumnDef<LlmCostRow>[] = [
     {
@@ -121,23 +127,49 @@ export default function CostTab() {
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard
-          metric={{ title: "Spend", value: formatCost(total) }}
-          visuals={{ loading: breakdownQ.isPending }}
+          metric={{
+            title: "Spend",
+            value: formatCost(cur?.cost ?? 0),
+            description:
+              dailyProjection !== null ? `≈${formatCost(dailyProjection)}/day` : undefined,
+          }}
+          trend={{ value: deltaPct(cur?.cost ?? 0, prev?.cost ?? 0) ?? undefined }}
+          visuals={{ loading: overviewQ.isPending }}
         />
         <StatCard
-          metric={{ title: "Tokens", value: formatNumber(totalTokens) }}
-          visuals={{ loading: breakdownQ.isPending }}
-        />
-        <StatCard
-          metric={{ title: "LLM spans", value: formatNumber(totalSpans) }}
-          visuals={{ loading: breakdownQ.isPending }}
+          metric={{
+            title: "Tokens",
+            value: formatNumber((cur?.inputTokens ?? 0) + (cur?.outputTokens ?? 0)),
+            description: cur
+              ? `${formatNumber(cur.inputTokens)} in · ${formatNumber(cur.outputTokens)} out`
+              : undefined,
+          }}
+          trend={{
+            value:
+              deltaPct(
+                (cur?.inputTokens ?? 0) + (cur?.outputTokens ?? 0),
+                (prev?.inputTokens ?? 0) + (prev?.outputTokens ?? 0)
+              ) ?? undefined,
+          }}
+          visuals={{ loading: overviewQ.isPending }}
         />
         <StatCard
           metric={{
             title: "$/1k LLM spans",
-            value: totalSpans > 0 ? formatCost((total / totalSpans) * 1000) : "—",
+            value: cur && cur.llmSpans > 0 ? formatCost((cur.cost / cur.llmSpans) * 1000) : "—",
+            description: cur ? `${formatNumber(cur.llmSpans)} LLM spans` : undefined,
           }}
-          visuals={{ loading: breakdownQ.isPending }}
+          visuals={{ loading: overviewQ.isPending }}
+        />
+        <StatCard
+          metric={{
+            title: "Top app by cost",
+            value: topApp?.key ?? "—",
+            description: topApp
+              ? `${formatCost(topApp.cost)} · ${total > 0 ? ((topApp.cost / total) * 100).toFixed(0) : 0}% of spend`
+              : undefined,
+          }}
+          visuals={{ loading: appsQ.isPending }}
         />
       </div>
 

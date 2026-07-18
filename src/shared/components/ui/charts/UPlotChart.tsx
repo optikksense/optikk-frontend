@@ -120,8 +120,8 @@ function UPlotChart({
                   const left = u.select.left;
                   const width = u.select.width;
                   if (width < 10) return;
-                  const startMs = u.posToVal(left, "x") * 1000;
-                  const endMs = u.posToVal(left + width, "x") * 1000;
+                  const startMs = Math.round(u.posToVal(left, "x") * 1000);
+                  const endMs = Math.round(u.posToVal(left + width, "x") * 1000);
                   if (startMs < endMs) onTimeBrush(startMs, endMs);
 
                   u.setSelect({ left: 0, width: 0, top: 0, height: 0 }, false);

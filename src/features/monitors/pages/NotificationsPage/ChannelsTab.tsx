@@ -1,25 +1,23 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
 
-import { type Channel, type ChannelType, testChannel } from "../../api/notificationsApi";
+import { type Channel, testChannel } from "../../api/notificationsApi";
 import { useChannels } from "../../hooks/useChannels";
 import { useChannelMutations } from "../../hooks/useNotificationMutations";
 
 interface ChannelForm {
   id: number | null;
-  type: ChannelType;
   name: string;
   webhookUrl: string;
 }
 
 function emptyForm(): ChannelForm {
-  return { id: null, type: "slack", name: "", webhookUrl: "" };
+  return { id: null, name: "", webhookUrl: "" };
 }
 
 function formFromChannel(ch: Channel): ChannelForm {
   return {
     id: ch.id,
-    type: ch.type,
     name: ch.name,
     webhookUrl: typeof ch.config.webhook_url === "string" ? ch.config.webhook_url : "",
   };
@@ -41,9 +39,9 @@ export default function ChannelsTab() {
   const handleSubmit = async () => {
     setStatus(null);
     const payload = {
-      type: form.type,
+      type: "slack" as const,
       name: form.name,
-      config: form.type === "slack" ? { webhook_url: form.webhookUrl } : {},
+      config: { webhook_url: form.webhookUrl },
     };
     try {
       if (form.id !== null) {
@@ -85,16 +83,7 @@ export default function ChannelsTab() {
       <div className="rounded-lg border border-border bg-card p-4">
         <div className="font-medium text-sm">{editing ? "Edit channel" : "Create channel"}</div>
         <div className="mt-3 grid grid-cols-[120px_1fr_1fr_auto] items-center gap-2">
-          <select
-            value={form.type}
-            onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as ChannelType }))}
-            className="rounded border border-border bg-card px-2 py-1.5 text-xs"
-          >
-            <option value="slack">Slack</option>
-            <option value="webhook">Webhook (stub)</option>
-            <option value="email">Email (stub)</option>
-            <option value="pagerduty">PagerDuty (stub)</option>
-          </select>
+          <div className="rounded border border-border bg-muted px-2 py-1.5 text-xs">Slack</div>
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -104,9 +93,8 @@ export default function ChannelsTab() {
           <input
             value={form.webhookUrl}
             onChange={(e) => setForm((f) => ({ ...f, webhookUrl: e.target.value }))}
-            placeholder={form.type === "slack" ? "Slack webhook URL" : "(config)"}
+            placeholder="Slack webhook URL"
             className="rounded border border-border bg-card px-2 py-1.5 font-mono text-xs"
-            disabled={form.type !== "slack"}
           />
           <div className="flex items-center gap-1.5">
             {editing && (

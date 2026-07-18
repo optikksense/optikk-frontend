@@ -7,6 +7,7 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
 const llmAppSchema = z.object({
   service: z.string(),
+  kind: z.string().nullish(),
   vendor: z.string(),
   primaryModel: z.string(),
   llmSpans: z.number(),
@@ -58,6 +59,7 @@ const llmTraceSchema = z.object({
   vendor: z.string(),
   model: z.string(),
   llmCalls: z.number(),
+  promptPreview: z.string().nullish(),
   inputTokens: z.number(),
   outputTokens: z.number(),
   cost: z.number(),
@@ -108,9 +110,46 @@ const traceDetailSchema = z.object({
 });
 export type LlmTraceDetail = z.infer<typeof traceDetailSchema>;
 
+const overviewWindowSchema = z.object({
+  llmSpans: z.number(),
+  toolSpans: z.number(),
+  totalSpans: z.number(),
+  traces: z.number(),
+  inputTokens: z.number(),
+  outputTokens: z.number(),
+  errorRate: z.number(),
+  p50Ms: z.number(),
+  p95Ms: z.number(),
+  p99Ms: z.number(),
+  cost: z.number(),
+});
+export type LlmOverviewWindow = z.infer<typeof overviewWindowSchema>;
+
+const overviewSeriesSchema = z.object({
+  timestamps: z.array(z.number()).nullish(),
+  llmSpans: z.array(z.number()).nullish(),
+  toolSpans: z.array(z.number()).nullish(),
+  errorRate: z.array(z.number()).nullish(),
+  p95Ms: z.array(z.number()).nullish(),
+  cost: z.array(z.number()).nullish(),
+});
+export type LlmOverviewSeries = z.infer<typeof overviewSeriesSchema>;
+
+const overviewResponseSchema = z.object({
+  current: overviewWindowSchema,
+  previous: overviewWindowSchema,
+  series: overviewSeriesSchema,
+});
+export type LlmOverview = z.infer<typeof overviewResponseSchema>;
+
 interface RangeParams {
   startTime: number;
   endTime: number;
+}
+
+export async function getLlmOverview(range: RangeParams): Promise<LlmOverview> {
+  const res = await api.get<unknown>(`${BASE}/llm/overview`, { params: range });
+  return validateResponse(overviewResponseSchema, res);
 }
 
 export async function getLlmApps(range: RangeParams): Promise<LlmApp[]> {

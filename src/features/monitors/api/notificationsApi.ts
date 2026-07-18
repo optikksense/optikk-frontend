@@ -4,18 +4,11 @@ import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export type ChannelType =
-  | "slack"
-  | "pagerduty"
-  | "opsgenie"
-  | "teams"
-  | "email"
-  | "webhook"
-  | "jira";
+export type ChannelType = "slack";
 
 export interface Channel {
   readonly id: number;
-  readonly type: ChannelType;
+  readonly type: string;
   readonly name: string;
   readonly config: Record<string, unknown>;
   readonly status: "ok" | "warn" | "muted";

@@ -14,6 +14,7 @@ const FILL_OPTIONS: readonly FillBy[] = ["Saturation", "CPU", "Memory", "Disk"];
 const GROUPS: ReadonlyArray<{ key: string; label: string }> = [
   { key: "kafka", label: "Kafka" },
   { key: "database", label: "Database" },
+  { key: "other", label: "Other" },
 ];
 
 function metricValue(host: HostSaturationRow, fill: FillBy): number {

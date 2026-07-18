@@ -31,6 +31,19 @@ export const OPERATION_META: Record<string, { label: string; color: string }> = 
   other: { label: "Other", color: "var(--chart-6)" },
 };
 
+// App-kind identity chips, derived server-side from the span mix.
+export const KIND_META: Record<string, { label: string; color: string }> = {
+  agent: { label: "agent", color: "var(--chart-5)" },
+  rag: { label: "rag", color: "var(--chart-2)" },
+  workflow: { label: "workflow", color: "var(--chart-6)" },
+};
+
+// Percent change vs the previous window; null when there is no baseline.
+export function deltaPct(current: number, previous: number): number | null {
+  if (previous === 0) return null;
+  return ((current - previous) / previous) * 100;
+}
+
 // Tokens/latency use shared formatNumber/formatDuration; only cost is local.
 export function formatCost(n: number): string {
   if (n >= 100) return `$${Math.round(n).toLocaleString()}`;
