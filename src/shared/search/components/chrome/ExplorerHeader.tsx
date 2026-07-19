@@ -4,7 +4,6 @@ import type { ExplorerFilter } from "../../types/filters";
 import type { ExplorerScope } from "../../types/filters";
 import { ExplorerSearchBar } from "./ExplorerSearchBar";
 import { ExplorerSearchBarDsl } from "./ExplorerSearchBarDsl";
-import { ExplorerTimePicker } from "./ExplorerTimePicker";
 import type { SuggestionOption } from "./QuerySuggestions";
 
 type SearchBarVariant = "classic" | "dsl";
@@ -14,8 +13,7 @@ interface Props {
   readonly onChangeFilters: (next: readonly ExplorerFilter[]) => void;
   readonly onSubmitFreeText: (text: string) => void;
   readonly kpiStrip?: ReactNode;
-  /** Slot rendered between the search bar and the time picker. Used for
-   * scope-specific affordances (Saved Views, Share, etc). */
+  /** Slot rendered beside the search bar. Used for scope-specific affordances (Saved Views, Share, etc). */
   readonly actions?: ReactNode;
   readonly searchPlaceholder?: string;
 
@@ -23,7 +21,6 @@ interface Props {
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
   readonly disableBareFreeTextFallback?: boolean;
-  readonly hideTimePicker?: boolean;
 }
 
 export const ExplorerHeader = memo(
@@ -35,7 +32,6 @@ export const ExplorerHeader = memo(
             <SearchBar props={props} inputRef={ref} />
           </div>
           {props.actions ? <div className="flex items-center gap-2">{props.actions}</div> : null}
-          {!props.hideTimePicker && <ExplorerTimePicker />}
         </div>
         {props.kpiStrip ? <div>{props.kpiStrip}</div> : null}
       </header>

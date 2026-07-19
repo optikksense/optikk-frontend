@@ -50,7 +50,6 @@ export default function TracesExplorerPage() {
           filters={p.state.filters}
           onChangeFilters={(f: readonly ExplorerFilter[]) => p.state.setFilters(f)}
           onSubmitFreeText={p.onFreeText}
-          hideTimePicker={true}
         />
       }
       facets={
