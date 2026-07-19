@@ -119,8 +119,8 @@ export default function Sidebar() {
         )}
         onClick={() => navigate({ to: ROUTES.overview })}
       >
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[calc(var(--card-radius)+1px)] bg-[linear-gradient(180deg,var(--color-primary),#7266ee)] text-white shadow-[var(--shadow-sm)]">
-          <OptikkLogo size={22} />
+        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[calc(var(--card-radius)+1px)] shadow-[var(--shadow-sm)]">
+          <OptikkLogo size={32} className="block" />
         </div>
         {!sidebarCollapsed && (
           <span className="whitespace-nowrap font-semibold text-[14px] text-foreground">
