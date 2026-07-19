@@ -4,7 +4,6 @@ import type { Level } from "../model";
 export interface ProducerNodeData {
   label: string;
   rate: number;
-  isSelected: boolean;
   [key: string]: unknown;
 }
 
@@ -23,7 +22,6 @@ export interface ConsumerNodeData {
   rate: number;
   topicCount: number;
   level: Level;
-  isSelected: boolean;
   [key: string]: unknown;
 }
 

@@ -8,11 +8,7 @@ export function ProducerNode({ data }: NodeProps) {
   return (
     <div
       className="flex items-center gap-2 rounded-[10px] border bg-[var(--bg-card)] px-[11px] py-[9px] shadow-[var(--shadow-sm)] transition-[border-color] duration-150"
-      style={{
-        width: 182,
-        minHeight: 56,
-        borderColor: d.isSelected ? "var(--brand)" : "var(--line)",
-      }}
+      style={{ width: 182, minHeight: 56, borderColor: "var(--line)" }}
     >
       <Handle type="source" position={Position.Right} className="!bg-border" />
       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] bg-[var(--brand-tint)] text-[var(--brand)]">

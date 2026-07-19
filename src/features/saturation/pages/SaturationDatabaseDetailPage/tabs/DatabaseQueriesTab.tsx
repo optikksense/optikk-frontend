@@ -29,7 +29,10 @@ const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
   {
     header: "Query",
     accessorKey: "query_text",
-    size: 460,
+    // Sized so Calls/p50/p99/Total time all stay visible without scrolling;
+    // drag the handle for more room on long statements.
+    size: 320,
+    minSize: 140,
     cell: ({ row: { original: row } }) => (
       <div className="flex min-w-0 items-center gap-2">
         <StatusDot status={INSTANCE_HEALTH[p99Status(row.p99_ms ?? 0)]} />
@@ -114,6 +117,7 @@ export function DatabaseQueriesTab({ system }: { system: string }) {
           rows: filtered,
           loading: isPending,
         }}
+        resize={{ storageKey: "saturation.database.queries" }}
         pagination={{ pageSize: 10 }}
         config={{
           emptyText: "No queries recorded for this instance in the current window.",

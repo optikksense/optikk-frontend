@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import type { KafkaTopology, TopicNode } from "@/features/saturation/api/kafkaTopologySchemas";
+import type { TopicNode } from "@/features/saturation/api/kafkaTopologySchemas";
 
+import { useKafkaClients } from "../hooks/useKafkaClients";
 import { useKafkaTopology } from "../hooks/useKafkaTopology";
 import { KafkaGroupDrawer } from "./KafkaGroupDrawer";
 import { KafkaPathwaysTable } from "./KafkaPathwaysTable";
@@ -9,62 +10,49 @@ import { KafkaServicesTable } from "./KafkaServicesTable";
 import { type GroupSelection, KafkaTopicDrawer } from "./KafkaTopicDrawer";
 import { KafkaTopicsTable } from "./KafkaTopicsTable";
 import { KafkaTopology as TopologyMap } from "./KafkaTopology";
-import { ServiceMultiSelect } from "./ServiceMultiSelect";
+import { ServiceSelect } from "./ServiceSelect";
 import { type Level, deriveServices, fmtPct, fmtRate, levelFromError } from "./model";
 
 const LV_COLOR: Record<Level, string> = { ok: "var(--ok)", warn: "var(--warn)", err: "var(--err)" };
 
 type TabId = "topology" | "services" | "topics" | "consumers";
 
-const EMPTY: KafkaTopology = { producers: [], topics: [], consumers: [], edges: [], pathways: [] };
+const EMPTY_TOPOLOGY = { producers: [], topics: [], consumers: [], edges: [], pathways: [] };
 
 export function KafkaDataStreams() {
-  const { data, isLoading } = useKafkaTopology();
-  const topo = data ?? EMPTY;
+  const { data: clients = [], isLoading: clientsLoading } = useKafkaClients();
+  const [selected, setSelected] = useState<string[]>([]);
+
+  // The roster is busiest-first, so the untouched default is the top client.
+  useEffect(() => {
+    if (selected.length === 0 && clients.length > 0) setSelected([clients[0]]);
+  }, [clients, selected.length]);
+
+  const { data, isLoading } = useKafkaTopology(selected);
+  const topo = data ?? EMPTY_TOPOLOGY;
   const services = useMemo(() => deriveServices(topo), [topo]);
 
   const [tab, setTab] = useState<TabId>("topology");
-  const [selected, setSelected] = useState<string[]>([]);
   const [openTopic, setOpenTopic] = useState<TopicNode | null>(null);
   const [openGroup, setOpenGroup] = useState<GroupSelection | null>(null);
 
-  const effectiveSel = selected.length > 0 ? selected : services[0] ? [services[0].id] : [];
-
-  const toggleSvc = (id: string) =>
-    setSelected((prev) => {
-      const base = prev.length > 0 ? prev : effectiveSel;
-      if (base.includes(id)) return base.length > 1 ? base.filter((x) => x !== id) : base;
-      return [...base, id];
-    });
-  const focusSvc = (id: string) => setSelected([id]);
-
-  const scopeTopics = useMemo(() => {
-    const s = new Set<string>();
-    const selSet = new Set(effectiveSel);
-    for (const e of topo.edges) {
-      if (e.kind === "produce" && selSet.has(e.source)) s.add(e.target);
-      if (e.kind === "consume" && selSet.has(e.target)) s.add(e.source);
-    }
-    return s;
-  }, [topo, effectiveSel]);
+  const scopeLabel = selected.join(", ");
 
   const pathways = useMemo(
     () =>
       topo.pathways
-        .filter((p) => effectiveSel.includes(p.producer) || effectiveSel.includes(p.consumer))
+        .slice()
         .sort(
           (a, b) => b.error_rate - a.error_rate || b.consume_rate_per_sec - a.consume_rate_per_sec
         ),
-    [topo, effectiveSel]
+    [topo]
   );
 
-  const scopeTopicNodes = topo.topics.filter((t) => scopeTopics.has(t.topic));
   const kpis = {
-    msgsIn: scopeTopicNodes.reduce((a, t) => a + t.rate_per_sec, 0),
-    topics: scopeTopicNodes.length,
+    msgsIn: topo.topics.reduce((a, t) => a + t.rate_per_sec, 0),
+    topics: topo.topics.length,
     maxErr: pathways.reduce((a, p) => Math.max(a, p.error_rate), 0),
   };
-  const scopeLabel = effectiveSel.length === 1 ? effectiveSel[0] : `${effectiveSel.length} clients`;
 
   const TABS: { id: TabId; label: string; badge?: number }[] = [
     { id: "topology", label: "Topology" },
@@ -73,9 +61,9 @@ export function KafkaDataStreams() {
     { id: "consumers", label: "Consumer groups", badge: topo.pathways.length },
   ];
 
-  if (isLoading)
+  if (clientsLoading || isLoading)
     return <div className="p-6 text-[13px] text-[var(--fg-3)]">Loading data streams…</div>;
-  if (services.length === 0)
+  if (clients.length === 0)
     return (
       <div className="p-6 text-[13px] text-[var(--fg-3)]">
         No Kafka producer/consumer telemetry in range. Instrument clients with messaging spans to
@@ -89,7 +77,7 @@ export function KafkaDataStreams() {
         <span className="font-semibold text-[10.5px] text-[var(--fg-3)] uppercase tracking-[0.06em]">
           Client
         </span>
-        <ServiceMultiSelect options={services} selected={effectiveSel} onToggle={toggleSvc} />
+        <ServiceSelect options={clients} selected={selected} onChange={setSelected} />
       </div>
 
       <nav className="flex border-[var(--line)] border-b">
@@ -133,8 +121,7 @@ export function KafkaDataStreams() {
             </div>
             <TopologyMap
               topo={topo}
-              selected={effectiveSel}
-              onToggleService={toggleSvc}
+              onSelectService={(id) => setSelected([id])}
               onOpenTopic={setOpenTopic}
             />
           </div>
@@ -166,7 +153,7 @@ export function KafkaDataStreams() {
           <KafkaServicesTable
             services={services}
             onServiceClick={(id) => {
-              focusSvc(id);
+              setSelected([id]);
               setTab("topology");
             }}
           />
@@ -178,7 +165,7 @@ export function KafkaDataStreams() {
           <div className="mb-2 font-semibold text-[14px] text-[var(--fg-0)]">
             Topics · {scopeLabel}
           </div>
-          <KafkaTopicsTable topics={scopeTopicNodes} onTopicClick={setOpenTopic} />
+          <KafkaTopicsTable topics={topo.topics} onTopicClick={setOpenTopic} />
         </div>
       )}
 

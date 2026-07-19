@@ -11,11 +11,8 @@ export function ConsumerNode({ data }: NodeProps) {
       style={{
         width: 182,
         minHeight: 56,
-        borderColor: d.isSelected
-          ? "var(--brand)"
-          : d.level === "err"
-            ? "color-mix(in oklab, var(--err) 45%, var(--line))"
-            : "var(--line)",
+        borderColor:
+          d.level === "err" ? "color-mix(in oklab, var(--err) 45%, var(--line))" : "var(--line)",
       }}
     >
       <Handle type="target" position={Position.Left} className="!bg-border" />

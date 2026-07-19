@@ -38,12 +38,7 @@ const CONS_X = 850;
 const GAP_Y = 90;
 
 // ─── Graph Builder ───────────────────────────────────────────────
-function buildKafkaGraph(
-  topo: Topo,
-  selected: readonly string[]
-): { nodes: Node[]; edges: Edge[] } {
-  const selSet = new Set(selected);
-
+function buildKafkaGraph(topo: Topo): { nodes: Node[]; edges: Edge[] } {
   // Compute topic health levels
   const topicLevel = new Map<string, Level>();
   for (const pw of topo.pathways) {
@@ -86,7 +81,6 @@ function buildKafkaGraph(
       data: {
         label: svc,
         rate: prod?.rate_per_sec ?? 0,
-        isSelected: selSet.has(svc),
       } satisfies ProducerNodeData,
     });
   });
@@ -120,7 +114,6 @@ function buildKafkaGraph(
         rate: st?.rate ?? 0,
         topicCount: st?.topics.size ?? 0,
         level: st?.level ?? "ok",
-        isSelected: selSet.has(svc),
       } satisfies ConsumerNodeData,
     });
   });
@@ -157,13 +150,12 @@ function buildKafkaGraph(
 // ─── Component ───────────────────────────────────────────────────
 interface Props {
   readonly topo: Topo;
-  readonly selected: readonly string[];
-  readonly onToggleService: (id: string) => void;
+  readonly onSelectService: (id: string) => void;
   readonly onOpenTopic: (topic: TopicNode) => void;
 }
 
-function KafkaTopologyInner({ topo, selected, onToggleService, onOpenTopic }: Props) {
-  const { nodes, edges } = useMemo(() => buildKafkaGraph(topo, selected), [topo, selected]);
+function KafkaTopologyInner({ topo, onSelectService, onOpenTopic }: Props) {
+  const { nodes, edges } = useMemo(() => buildKafkaGraph(topo), [topo]);
 
   return (
     <div
@@ -191,7 +183,7 @@ function KafkaTopologyInner({ topo, selected, onToggleService, onOpenTopic }: Pr
         onNodeClick={(_, node) => {
           if (node.type === "producer" || node.type === "consumer") {
             const svc = node.id.replace(/^(prod|cons)-/, "");
-            onToggleService(svc);
+            onSelectService(svc);
           } else if (node.type === "topic") {
             const d = node.data as TopicNodeData;
             onOpenTopic(d.topicNode);

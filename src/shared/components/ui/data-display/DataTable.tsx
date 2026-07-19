@@ -11,6 +11,8 @@ import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tan
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef } from "react";
 
+import { useColumnSizing } from "./useColumnSizing";
+
 interface DataTablePagination {
   page?: number;
   pageSize?: number;
@@ -25,6 +27,11 @@ interface DataTableConfig<TData> {
   onRow?: (record: TData, index?: number) => React.HTMLAttributes<HTMLTableRowElement>;
 }
 
+interface DataTableResize {
+  /** Persists widths under this key; omit to keep them for the session only. */
+  storageKey?: string;
+}
+
 export interface DataTableProps<TData, TValue> {
   data: {
     columns: ColumnDef<TData, TValue>[];
@@ -33,7 +40,13 @@ export interface DataTableProps<TData, TValue> {
   };
   pagination?: DataTablePagination;
   config?: DataTableConfig<TData>;
+  /** Presence enables drag-to-resize column headers. */
+  resize?: DataTableResize;
 }
+
+// TanStack assigns this width to any column without an explicit `size`, so it
+// doubles as the "author set no width" sentinel in the non-resizable layout.
+const DEFAULT_COLUMN_SIZE = 150;
 
 /**
  * Standard shadcn/ui DataTable wrapper with virtualization.
@@ -41,14 +54,21 @@ export interface DataTableProps<TData, TValue> {
 export default function DataTable<TData, TValue>({
   data,
   config = {},
+  resize,
 }: DataTableProps<TData, TValue>): JSX.Element {
   const { columns, rows, loading = false } = data;
   const { emptyText = "No data found", onRow } = config;
+  const resizable = resize !== undefined;
+  const { columnSizing, onColumnSizingChange } = useColumnSizing(resize?.storageKey);
 
   const table = useReactTable({
     data: rows,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    enableColumnResizing: resizable,
+    columnResizeMode: "onChange",
+    state: resizable ? { columnSizing } : {},
+    onColumnSizingChange,
   });
 
   const { rows: tableRows } = table.getRowModel();
@@ -83,26 +103,44 @@ export default function DataTable<TData, TValue>({
   return (
     <div
       ref={scrollRef}
-      className="rounded-md border overflow-y-auto relative"
+      className={`relative rounded-md border ${resizable ? "overflow-auto" : "overflow-y-auto"}`}
       style={{ maxHeight: config.scroll?.y ?? "calc(100vh - 200px)" }}
     >
-      <Table>
-        <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
+      {/* Fixed layout makes the header widths authoritative while dragging. */}
+      <Table
+        style={
+          resizable ? { tableLayout: "fixed", width: table.getTotalSize(), minWidth: "100%" } : {}
+        }
+      >
+        <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 const align = (header.column.columnDef.meta as { align?: string })?.align || "left";
-                const width =
-                  header.column.columnDef.size !== 150 ? header.column.columnDef.size : undefined;
+                const width = resizable
+                  ? header.getSize()
+                  : header.column.columnDef.size !== DEFAULT_COLUMN_SIZE
+                    ? header.column.columnDef.size
+                    : undefined;
                 return (
                   <TableHead
                     key={header.id}
                     style={{ width, textAlign: align as "left" | "center" | "right" }}
-                    className="bg-background"
+                    className={resizable ? "relative bg-background" : "bg-background"}
                   >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
+                    {resizable && header.column.getCanResize() && (
+                      <button
+                        type="button"
+                        aria-label={`Resize ${header.column.id} column`}
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none bg-border opacity-0 hover:opacity-100"
+                        style={{ opacity: header.column.getIsResizing() ? 1 : undefined }}
+                      />
+                    )}
                   </TableHead>
                 );
               })}
@@ -126,6 +164,7 @@ export default function DataTable<TData, TValue>({
                     <TableCell
                       key={cell.id}
                       style={{ textAlign: align as "left" | "center" | "right" }}
+                      className={resizable ? "overflow-hidden" : undefined}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

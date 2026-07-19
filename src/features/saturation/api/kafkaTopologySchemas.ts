@@ -52,5 +52,7 @@ export const kafkaTopologySchema = z.object({
   pathways: z.array(pathwaySchema),
 });
 
+export const kafkaClientsSchema = z.array(stringValue);
+
 export type TopicNode = z.infer<typeof topicNodeSchema>;
 export type KafkaTopology = z.infer<typeof kafkaTopologySchema>;
