@@ -81,7 +81,6 @@ export function useTimeRangeURL(): void {
   const setTimeRange = useAppStore((s) => s.setTimeRange);
   const setTimezone = useAppStore((s) => s.setTimezone);
   const initializedRef = useRef(false);
-  const skipNextUrlUpdateRef = useRef(false);
 
   useEffect(() => {
     if (initializedRef.current) return;
@@ -93,7 +92,6 @@ export function useTimeRangeURL(): void {
 
     const parsed = parseUrlTimeRange(urlFrom, urlTo);
     if (parsed) {
-      skipNextUrlUpdateRef.current = true;
       setTimeRange(parsed);
       if (urlTz) setTimezone(urlTz);
     } else {
@@ -115,12 +113,13 @@ export function useTimeRangeURL(): void {
 
   useEffect(() => {
     if (!initializedRef.current) return;
-    if (skipNextUrlUpdateRef.current) {
-      skipNextUrlUpdateRef.current = false;
-      return;
-    }
 
     const params = timeRangeToUrlParams(timeRange);
+    const urlFrom = searchParams.get(PARAM_FROM);
+    const urlTo = searchParams.get(PARAM_TO);
+
+    if (urlFrom === params.from && urlTo === params.to) return;
+
     setSearchParams(
       (prevSearchParams) => {
         const next = new URLSearchParams(prevSearchParams);
@@ -135,7 +134,7 @@ export function useTimeRangeURL(): void {
       },
       { replace: true }
     );
-  }, [timeRange, timezone, setSearchParams]);
+  }, [timeRange, timezone, searchParams, setSearchParams]);
 
   useEffect(() => {
     if (!initializedRef.current) return;
@@ -151,7 +150,6 @@ export function useTimeRangeURL(): void {
 
     if (currentParams.from === parsedParams.from && currentParams.to === parsedParams.to) return;
 
-    skipNextUrlUpdateRef.current = true;
     setTimeRange(parsed);
 
     const urlTz = searchParams.get(PARAM_TZ);

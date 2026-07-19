@@ -1,5 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 /**
  * A compatibility shim to support the legacy react-router-dom
@@ -34,6 +34,9 @@ export function useSearchParamsCompat(): [
     return params;
   }, [searchObj]);
 
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
+
   const setSearchParams = useCallback(
     (
       newParams: URLSearchParams | ((prev: URLSearchParams) => URLSearchParams),
@@ -41,7 +44,7 @@ export function useSearchParamsCompat(): [
     ) => {
       let finalParams: URLSearchParams;
       if (typeof newParams === "function") {
-        finalParams = newParams(searchParams);
+        finalParams = newParams(searchParamsRef.current);
       } else {
         finalParams = newParams;
       }
@@ -64,7 +67,7 @@ export function useSearchParamsCompat(): [
         replace: options?.replace,
       });
     },
-    [navigate, searchParams]
+    [navigate]
   );
 
   return [searchParams, setSearchParams];
