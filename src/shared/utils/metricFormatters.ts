@@ -1,4 +1,4 @@
-import { formatRelativeTime } from "@shared/utils/formatters";
+import { formatNumber, formatRelativeTime } from "@shared/utils/formatters";
 
 // Shared formatters for the Service Detail page. Mirror the prototype's
 // `sdNum`, `sdMs`, `sdPct`, `sdDelta` helpers so number rendering matches
@@ -6,9 +6,7 @@ import { formatRelativeTime } from "@shared/utils/formatters";
 
 export function fmtNum(n: number | null | undefined): string {
   if (n == null || !Number.isFinite(n)) return "—";
-  if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
-  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}k`;
-  return Math.round(n).toLocaleString();
+  return formatNumber(n);
 }
 
 export function fmtMs(ms: number | null | undefined): string {

@@ -24,10 +24,6 @@ const STATUS_DOT: Record<ServiceHealthStatus, string> = {
   err: "bg-[var(--err)]",
 };
 
-function rateLabel(req: number): string {
-  return req >= 1000 ? `${(req / 1000).toFixed(1)}k` : formatNumber(req);
-}
-
 function Tile({ cell, onOpen }: { readonly cell: ServiceHealthCell; readonly onOpen: () => void }) {
   return (
     <button
@@ -40,7 +36,7 @@ function Tile({ cell, onOpen }: { readonly cell: ServiceHealthCell; readonly onO
       </span>
       <span className="flex flex-col">
         <span className="font-bold font-mono text-[13px] leading-none">
-          {rateLabel(cell.requestCount)}
+          {formatNumber(cell.requestCount)}
         </span>
         <span className="font-mono text-[10px] opacity-70">
           {cell.errorRate.toFixed(2)}% · {Math.round(cell.p99Latency)}ms

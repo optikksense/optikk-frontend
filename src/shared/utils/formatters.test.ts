@@ -12,7 +12,9 @@ describe("formatters", () => {
     it("formats normal numbers correctly", () => {
       expect(formatNumber(100)).toBe("100");
       expect(formatNumber(1500)).toBe("1.5K");
+      expect(formatNumber(387800)).toBe("387.8K");
       expect(formatNumber(1000000)).toBe("1M");
+      expect(formatNumber(5547700)).toBe("5.5M");
     });
 
     it("handles zero and invalid inputs", () => {
