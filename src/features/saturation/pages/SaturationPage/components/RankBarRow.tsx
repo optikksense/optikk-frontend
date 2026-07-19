@@ -30,7 +30,17 @@ function RankBarRowImpl(props: RankBarRowProps): JSX.Element {
   const { primary, secondary, meta, bar, barLabel, tone, onClick } = props;
   const widthPct = Math.max(0, Math.min(100, bar * 100));
   return (
-    <tr className={toneRowClass(tone)} onClick={onClick}>
+    <tr
+      className={toneRowClass(tone)}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (onClick && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
+      tabIndex={onClick ? 0 : undefined}
+    >
       <td className="strong">{primary}</td>
       <td className="dim">{secondary ?? ""}</td>
       <td className="dim">{meta ?? ""}</td>

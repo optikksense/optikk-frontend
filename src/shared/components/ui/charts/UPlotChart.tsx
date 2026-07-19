@@ -175,6 +175,8 @@ function UPlotChart({
     const el = containerRef.current;
     if (!el) return;
 
+    el.dataset.chartStructure = `${structureKey}:${dataLayoutVersion}`;
+
     if (resizeObserverRef.current) {
       resizeObserverRef.current.disconnect();
       resizeObserverRef.current = null;
@@ -211,6 +213,7 @@ function UPlotChart({
       resizeObserverRef.current = null;
       chartRef.current?.destroy();
       chartRef.current = null;
+      delete el.dataset.chartStructure;
     };
   }, [mergedOptions, height, fillHeight, structureKey, dataLayoutVersion]);
 

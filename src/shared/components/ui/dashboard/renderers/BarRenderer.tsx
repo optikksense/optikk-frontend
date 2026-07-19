@@ -23,7 +23,7 @@ export function BarRenderer({
 
   const filterValue =
     typeof extraContext?.selectedModel === "string" ? extraContext.selectedModel : null;
-  const groupKey = chartConfig.groupByKey || "model_name";
+  const groupKey = chartConfig.groupByKey || "modelName";
   const labelKey = chartConfig.labelKey || groupKey;
   const valueKey = chartConfig.valueKey || "value";
   const stacked = chartConfig.stacked || false;
@@ -89,7 +89,7 @@ export function BarRenderer({
     ];
     const hasData = valArrays.some((arr) => arr.some((v) => Number(v) > 0));
     return { xVals, valArrays, series: seriesConfigs, labels, hasData };
-  }, [rows, filterValue, groupKey, labelKey, stacked, chartConfig, valueKey]);
+  }, [rows, filterValue, groupKey, labelKey, chartConfig, valueKey]);
 
   const plot = useMemo(() => {
     if (!chartResult || !chartResult.hasData) return null;

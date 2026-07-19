@@ -25,48 +25,48 @@ function fmtMs(v: number): string {
 }
 
 const SERVICE_COLUMNS: ColumnDef<InfrastructureNodeService>[] = [
-  { header: "Service", accessorKey: "service_name", size: 220 },
+  { header: "Service", accessorKey: "serviceName", size: 220 },
   {
     header: "Requests",
-    accessorKey: "request_count",
+    accessorKey: "requestCount",
     meta: { align: "right" },
     size: 120,
-    cell: ({ row: { original: row } }) => formatNumber(row.request_count),
+    cell: ({ row: { original: row } }) => formatNumber(row.requestCount),
   },
   {
     header: "Errors",
-    accessorKey: "error_count",
+    accessorKey: "errorCount",
     meta: { align: "right" },
     size: 100,
-    cell: ({ row: { original: row } }) => formatNumber(row.error_count),
+    cell: ({ row: { original: row } }) => formatNumber(row.errorCount),
   },
   {
     header: "Error %",
-    accessorKey: "error_rate",
+    accessorKey: "errorRate",
     meta: { align: "right" },
     size: 100,
-    cell: ({ row: { original: row } }) => `${row.error_rate.toFixed(2)}%`,
+    cell: ({ row: { original: row } }) => `${row.errorRate.toFixed(2)}%`,
   },
   {
     header: "Avg latency",
-    accessorKey: "avg_latency_ms",
+    accessorKey: "avgLatencyMs",
     meta: { align: "right" },
     size: 130,
-    cell: ({ row: { original: row } }) => fmtMs(row.avg_latency_ms),
+    cell: ({ row: { original: row } }) => fmtMs(row.avgLatencyMs),
   },
   {
     header: "p95",
-    accessorKey: "p95_latency_ms",
+    accessorKey: "p95LatencyMs",
     meta: { align: "right" },
     size: 110,
-    cell: ({ row: { original: row } }) => fmtMs(row.p95_latency_ms),
+    cell: ({ row: { original: row } }) => fmtMs(row.p95LatencyMs),
   },
   {
     header: "Pods",
-    accessorKey: "pod_count",
+    accessorKey: "podCount",
     meta: { align: "right" },
     size: 80,
-    cell: ({ row: { original: row } }) => formatNumber(row.pod_count),
+    cell: ({ row: { original: row } }) => formatNumber(row.podCount),
   },
 ];
 
@@ -124,7 +124,7 @@ export default function HostDetailPage(): JSX.Element {
     getHostOverview(host, s, e)
   );
   const overview = overviewQ.data ?? null;
-  const availableMetrics = overview ? overview.available_metrics : null;
+  const availableMetrics = overview ? overview.availableMetrics : null;
 
   const servicesQ = useTimeRangeQuery(`host-services-${host}`, (_t, s, e) =>
     getNodeServices(host, Number(s), Number(e))

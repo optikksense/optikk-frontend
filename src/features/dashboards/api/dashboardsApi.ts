@@ -1,6 +1,5 @@
 import api from "@/shared/api/http/client";
 import { API_CONFIG } from "@config/apiConfig";
-import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 import type {
   DashboardLayout,
   DashboardLayoutVariant,
@@ -21,27 +20,27 @@ export interface DashboardPage {
   readonly name: string;
   readonly description?: string;
   readonly icon: string;
-  readonly icon_color: string;
+  readonly iconColor: string;
   readonly tags: string[];
-  readonly is_favorite: boolean;
-  readonly widget_count: number;
+  readonly isFavorite: boolean;
+  readonly widgetCount: number;
   readonly owner?: DashboardPageOwner;
-  readonly created_at: string;
-  readonly updated_at?: string;
+  readonly createdAt: string;
+  readonly updatedAt?: string;
 }
 
 /** A persisted Dashboard (widget): its full definition round-trips via spec. */
 export interface Dashboard {
   readonly id: number;
-  readonly page_id: number;
+  readonly pageId: number;
   readonly title?: string;
-  readonly panel_type: DashboardPanelType;
-  readonly layout_variant?: DashboardLayoutVariant;
+  readonly panelType: DashboardPanelType;
+  readonly layoutVariant?: DashboardLayoutVariant;
   readonly spec: DashboardPanelSpec;
   readonly layout: DashboardLayout;
   readonly position: number;
-  readonly created_at: string;
-  readonly updated_at?: string;
+  readonly createdAt: string;
+  readonly updatedAt?: string;
 }
 
 export interface DashboardPageDetail extends DashboardPage {
@@ -65,15 +64,15 @@ export interface CreateDashboardPagePayload {
   name: string;
   description?: string;
   icon?: string;
-  icon_color?: string;
+  iconColor?: string;
   tags?: string[];
-  is_favorite?: boolean;
+  isFavorite?: boolean;
 }
 
 export interface CreateWidgetPayload {
   title?: string;
-  panel_type: DashboardPanelType;
-  layout_variant?: DashboardLayoutVariant;
+  panelType: DashboardPanelType;
+  layoutVariant?: DashboardLayoutVariant;
   spec: DashboardPanelSpec;
   layout: DashboardLayout;
   position?: number;
@@ -89,8 +88,8 @@ function normalizeWidget(widget: Dashboard): Dashboard {
     ...widget,
     spec: {
       ...widget.spec,
-      panelType: widget.spec.panelType || legacyType || widget.panel_type,
-      layoutVariant: widget.spec.layoutVariant || widget.layout_variant,
+      panelType: widget.spec.panelType || legacyType || widget.panelType,
+      layoutVariant: widget.spec.layoutVariant || widget.layoutVariant,
       layout: widget.spec.layout || widget.layout,
       title: widget.spec.title || widget.title,
     },
@@ -100,13 +99,11 @@ function normalizeWidget(widget: Dashboard): Dashboard {
 export async function listDashboardPages(
   params: ListDashboardPagesParams = {}
 ): Promise<DashboardPageListResponse> {
-  const raw = await api.get<unknown>(PAGES, { params });
-  return unwrapEnvelope<DashboardPageListResponse>(raw);
+  return api.get<DashboardPageListResponse>(PAGES, { params });
 }
 
 export async function getDashboardPage(id: number): Promise<DashboardPageDetail> {
-  const raw = await api.get<unknown>(`${PAGES}/${id}`);
-  const detail = unwrapEnvelope<DashboardPageDetail>(raw);
+  const detail = await api.get<DashboardPageDetail>(`${PAGES}/${id}`);
   return {
     ...detail,
     widgets: (detail.widgets || []).map(normalizeWidget),
@@ -116,16 +113,14 @@ export async function getDashboardPage(id: number): Promise<DashboardPageDetail>
 export async function createDashboardPage(
   payload: CreateDashboardPagePayload
 ): Promise<DashboardPage> {
-  const raw = await api.post<unknown>(PAGES, payload);
-  return unwrapEnvelope<DashboardPage>(raw);
+  return api.post<DashboardPage>(PAGES, payload);
 }
 
 export async function updateDashboardPage(
   id: number,
   payload: CreateDashboardPagePayload
 ): Promise<DashboardPage> {
-  const raw = await api.put<unknown>(`${PAGES}/${id}`, payload);
-  return unwrapEnvelope<DashboardPage>(raw);
+  return api.put<DashboardPage>(`${PAGES}/${id}`, payload);
 }
 
 export async function deleteDashboardPage(id: number): Promise<void> {
@@ -136,8 +131,8 @@ export async function createWidget(
   pageId: number,
   payload: CreateWidgetPayload
 ): Promise<Dashboard> {
-  const raw = await api.post<unknown>(`${PAGES}/${pageId}/dashboards`, payload);
-  return normalizeWidget(unwrapEnvelope<Dashboard>(raw));
+  const dashboard = await api.post<Dashboard>(`${PAGES}/${pageId}/dashboards`, payload);
+  return normalizeWidget(dashboard);
 }
 
 export async function updateWidget(
@@ -145,8 +140,8 @@ export async function updateWidget(
   widgetId: number,
   payload: CreateWidgetPayload
 ): Promise<Dashboard> {
-  const raw = await api.put<unknown>(`${PAGES}/${pageId}/dashboards/${widgetId}`, payload);
-  return normalizeWidget(unwrapEnvelope<Dashboard>(raw));
+  const dashboard = await api.put<Dashboard>(`${PAGES}/${pageId}/dashboards/${widgetId}`, payload);
+  return normalizeWidget(dashboard);
 }
 
 export async function deleteWidget(pageId: number, widgetId: number): Promise<void> {

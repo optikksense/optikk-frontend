@@ -21,7 +21,7 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
 
   const processedPods = useMemo(() => {
     return pods.map((p) => {
-      const details = getPodDetails(p.pod_name, p.error_rate);
+      const details = getPodDetails(p.podName, p.errorRate);
       return {
         ...p,
         ...details,

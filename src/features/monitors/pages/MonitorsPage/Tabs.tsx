@@ -28,7 +28,7 @@ function Tabs({ tab, setTab, counts }: Props) {
     {
       id: "no_data",
       label: "No data",
-      badge: counts.no_data,
+      badge: counts.noData,
       tone: "bg-muted text-foreground-secondary",
     },
   ];

@@ -10,12 +10,23 @@ import type { ExplorerFilter, TranslationWarning } from "@shared/search/types/fi
  * so the UI can surface them — nothing is dropped silently.
  */
 
+type AttributeOperator =
+  | "eq"
+  | "neq"
+  | "contains"
+  | "regex"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "exists"
+  | "not_exists";
+
 export interface TracesFiltersBody {
   startTime: number;
   endTime: number;
   limit?: number;
   cursor?: string;
-
   services?: string[];
   excludeServices?: string[];
   operations?: string[];
@@ -32,12 +43,7 @@ export interface TracesFiltersBody {
   hasError?: boolean;
   search?: string;
   searchMode?: string;
-
-  attributes?: Array<{
-    key: string;
-    op?: string;
-    value: string;
-  }>;
+  attributes?: Array<{ key: string; op?: AttributeOperator; value: string }>;
 }
 
 export interface TracesBuildResult {
@@ -46,7 +52,7 @@ export interface TracesBuildResult {
 }
 
 /** Ops the backend implements on `attributes[]` (traces filter.go). */
-const ATTR_OPS = new Set([
+const ATTR_OPS = new Set<AttributeOperator>([
   "eq",
   "neq",
   "contains",
@@ -59,20 +65,24 @@ const ATTR_OPS = new Set([
   "not_exists",
 ]);
 
+function isAttributeOperator(op: string): op is AttributeOperator {
+  return ATTR_OPS.has(op as AttributeOperator);
+}
+
 /** field -> include array, plus optional exclude array for neq/not_in. */
 const LIST_FIELDS: Record<
   string,
   { include: keyof TracesFiltersBody; exclude?: keyof TracesFiltersBody }
 > = {
   service: { include: "services", exclude: "excludeServices" },
-  service_name: { include: "services", exclude: "excludeServices" },
+  serviceName: { include: "services", exclude: "excludeServices" },
   operation: { include: "operations" },
-  span_kind: { include: "spanKinds" },
-  http_method: { include: "httpMethods" },
-  http_status: { include: "httpStatuses" },
+  spanKind: { include: "spanKinds" },
+  httpMethod: { include: "httpMethods" },
+  httpStatus: { include: "httpStatuses" },
   status: { include: "statuses", exclude: "excludeStatuses" },
   environment: { include: "environments" },
-  peer_service: { include: "peerServices" },
+  peerService: { include: "peerServices" },
 };
 
 export function buildTracesFilters(
@@ -101,20 +111,20 @@ export function buildTracesFilters(
     }
 
     switch (field) {
-      case "trace_id":
+      case "traceId":
         if (op !== "eq") {
           pushUnsupportedOp(warnings, field, op, "only exact match");
         } else if (body.traceId) {
           warnings.push({
             code: "duplicate_single_value",
             field,
-            message: "Multiple trace_id filters — only the first applies.",
+            message: "Multiple traceId filters — only the first applies.",
           });
         } else {
           body.traceId = value;
         }
         break;
-      case "duration_ms": {
+      case "durationMs": {
         const ms = Number(value);
         if (Number.isNaN(ms) || !["gte", "gt", "lte", "lt", "eq"].includes(op)) {
           pushUnsupportedOp(warnings, field, op, "use a numeric value with comparisons or exact");
@@ -125,9 +135,9 @@ export function buildTracesFilters(
         if (op === "lte" || op === "lt" || op === "eq") body.maxDurationNs = ns;
         break;
       }
-      case "has_error":
+      case "hasError":
         if (op === "eq") body.hasError = value === "true";
-        else pushUnsupportedOp(warnings, field, op, "only has_error:true or has_error:false");
+        else pushUnsupportedOp(warnings, field, op, "only hasError:true or hasError:false");
         break;
       case "search":
       case "body":
@@ -175,7 +185,7 @@ function handleAttribute(
   body: TracesFiltersBody,
   warnings: TranslationWarning[]
 ): void {
-  if (!ATTR_OPS.has(op)) {
+  if (!isAttributeOperator(op)) {
     pushUnsupportedOp(warnings, field, op, "supported: eq/neq/contains/regex/comparisons/exists");
     return;
   }

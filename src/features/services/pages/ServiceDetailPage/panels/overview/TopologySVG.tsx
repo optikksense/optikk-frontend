@@ -151,6 +151,14 @@ export function TopologySVG({
             key={n.name}
             transform={`translate(${n.x}, ${n.y})`}
             onClick={() => n.name !== selectedFocus && onNodeClick(n.name)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                if (n.name !== selectedFocus) onNodeClick(n.name);
+              }
+            }}
+            tabIndex={0}
+            aria-label={`Focus ${n.name}`}
             className="cursor-pointer"
           >
             <rect
@@ -199,6 +207,15 @@ export function TopologySVG({
                     e.stopPropagation();
                     onNavigate(n.name);
                   }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onNavigate(n.name);
+                    }
+                  }}
+                  tabIndex={0}
+                  aria-label={`View ${n.name} detail page`}
                   className="hover:underline"
                 >
                   view detail page →

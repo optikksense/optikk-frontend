@@ -48,19 +48,19 @@ function extractNextCursor(pageInfo: unknown): string | undefined {
 
 /** Mirrors explorer.Trace — POST /traces/query results[]. */
 const rawTraceRowSchema = z.object({
-  trace_id: z.string(),
-  start_ms: z.number(),
-  end_ms: z.number(),
-  duration_ms: z.number(),
-  root_service: z.string(),
-  root_operation: z.string(),
-  root_status: z.string().optional(),
-  root_http_method: z.string().optional(),
-  root_http_status: z.string().optional(),
-  span_count: z.number(),
-  has_error: z.boolean(),
-  error_count: z.number(),
-  service_set: z.array(z.string()).optional(),
+  traceId: z.string(),
+  startMs: z.number(),
+  endMs: z.number(),
+  durationMs: z.number(),
+  rootService: z.string(),
+  rootOperation: z.string(),
+  rootStatus: z.string().optional(),
+  rootHttpMethod: z.string().optional(),
+  rootHttpStatus: z.string().optional(),
+  spanCount: z.number(),
+  hasError: z.boolean(),
+  errorCount: z.number(),
+  serviceSet: z.array(z.string()).optional(),
   truncated: z.boolean().optional(),
 });
 
@@ -70,24 +70,24 @@ function normalizeHttpStatus(v: string | undefined): string | undefined {
 }
 
 function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSummary {
-  const durationNs = Math.round(row.duration_ms * 1_000_000);
+  const durationNs = Math.round(row.durationMs * 1_000_000);
   return {
-    trace_id: row.trace_id,
-    tenant_id: 0,
-    start_ms: row.start_ms,
-    end_ms: row.end_ms,
-    duration_ns: durationNs,
-    root_service: row.root_service,
-    root_operation: row.root_operation,
-    root_status: row.root_status ?? "",
-    root_http_method: row.root_http_method,
-    root_http_status: normalizeHttpStatus(row.root_http_status),
-    root_endpoint: undefined,
-    span_count: row.span_count,
-    has_error: row.has_error,
-    error_count: row.error_count,
+    traceId: row.traceId,
+    tenantId: 0,
+    startMs: row.startMs,
+    endMs: row.endMs,
+    durationNs: durationNs,
+    rootService: row.rootService,
+    rootOperation: row.rootOperation,
+    rootStatus: row.rootStatus ?? "",
+    rootHttpMethod: row.rootHttpMethod,
+    rootHttpStatus: normalizeHttpStatus(row.rootHttpStatus),
+    rootEndpoint: undefined,
+    spanCount: row.spanCount,
+    hasError: row.hasError,
+    errorCount: row.errorCount,
     environment: undefined,
-    service_set: row.service_set,
+    serviceSet: row.serviceSet,
     truncated: row.truncated,
   };
 }
@@ -106,8 +106,8 @@ const rawFacetsSchema = z
   .object({
     service: facetBucketsArraySchema.optional(),
     operation: facetBucketsArraySchema.optional(),
-    http_method: facetBucketsArraySchema.optional(),
-    http_status: facetBucketsArraySchema.optional(),
+    httpMethod: facetBucketsArraySchema.optional(),
+    httpStatus: facetBucketsArraySchema.optional(),
     status: facetBucketsArraySchema.optional(),
   })
   .partial()
@@ -127,7 +127,7 @@ function normalizeFacets(raw: z.infer<typeof rawFacetsSchema>): TracesFacets | u
 
 /** Mirrors explorer.TrendBucket — POST /traces/trend. */
 const rawTrendRowSchema = z.object({
-  time_bucket: z.string(),
+  timeBucket: z.string(),
   total: z.number(),
   errors: z.number(),
 });
@@ -203,7 +203,7 @@ export async function queryTrend(body: TracesQueryRequest) {
   const raw = await api.post<unknown>(`${BASE}/traces/trend`, reqBody);
   const validated = validateResponse(z.union([z.array(rawTrendRowSchema), z.null()]), raw) ?? [];
   return validated.map((b) => ({
-    time_bucket: b.time_bucket,
+    timeBucket: b.timeBucket,
     total: b.total,
     errors: b.errors,
   }));
@@ -214,10 +214,7 @@ const traceSpansEnvelopeSchema = z.object({
   spans: z.array(spanRecordSchema),
 });
 
-async function getTraceSpans(
-  _tenantId: number | null,
-  traceId: string
-): Promise<SpanRecord[]> {
+async function getTraceSpans(_tenantId: number | null, traceId: string): Promise<SpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans`);
   return validateResponse(traceSpansEnvelopeSchema, data).spans;
 }
@@ -237,10 +234,7 @@ async function getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
   return validateResponse(z.array(errorPathSpanSchema), data);
 }
 
-async function getSpanAttributes(
-  traceId: string,
-  spanId: string
-): Promise<SpanAttributesRecord> {
+async function getSpanAttributes(traceId: string, spanId: string): Promise<SpanAttributesRecord> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`);
   return validateResponse(spanAttributesSchema, data);
 }
@@ -281,12 +275,12 @@ interface ServiceLatencyBaseline {
  */
 const redServicesSchema = z.array(
   z.object({
-    service_name: z.string(),
-    request_count: z.number(),
-    error_count: z.number(),
-    avg_latency: z.number(),
-    p95_latency: z.number(),
-    p99_latency: z.number(),
+    serviceName: z.string(),
+    requestCount: z.number(),
+    errorCount: z.number(),
+    avgLatency: z.number(),
+    p95Latency: z.number(),
+    p99Latency: z.number(),
   })
 );
 
@@ -300,7 +294,7 @@ async function getServiceLatencyBaselines(
   const parsed = validateResponse(redServicesSchema, data ?? []);
   const out = new Map<string, ServiceLatencyBaseline>();
   for (const s of parsed) {
-    out.set(s.service_name, { p95: s.p95_latency, p99: s.p99_latency });
+    out.set(s.serviceName, { p95: s.p95Latency, p99: s.p99Latency });
   }
   return out;
 }

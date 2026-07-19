@@ -34,10 +34,10 @@ function ActivityCard({ events, loading }: Props) {
               />
               <div className="flex-1">
                 <div className="text-foreground text-xs">
-                  <span className="font-medium">{e.monitor_name}</span> · {e.kind}
+                  <span className="font-medium">{e.monitorName}</span> · {e.kind}
                 </div>
                 <div className="text-[10px] text-foreground-muted">
-                  {formatRelativeTime(e.started_at)}
+                  {formatRelativeTime(e.startedAt)}
                 </div>
               </div>
             </div>

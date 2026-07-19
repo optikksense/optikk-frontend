@@ -20,19 +20,19 @@ export function ServiceHealthGridRenderer({
 
   const serviceHealth = useMemo(() => {
     return services.slice(0, 8).map((s: Record<string, unknown>) => {
-      const requestCount = Number(s.request_count ?? 0);
-      const errorCount = Number(s.error_count ?? 0);
+      const requestCount = Number(s.requestCount ?? 0);
+      const errorCount = Number(s.errorCount ?? 0);
       const errorRate = requestCount > 0 ? (errorCount / requestCount) * 100 : 0;
       const status = classifyHealth(errorRate, SERVICE_HEALTH_THRESHOLDS);
       return {
-        name: String(s.service_name ?? ""),
+        name: String(s.serviceName ?? ""),
         status,
         requestCount,
         errorCount,
         errorRate,
-        avgLatency: Number(s.avg_latency ?? 0),
-        p95Latency: Number(s.p95_latency ?? 0),
-        p99Latency: Number(s.p99_latency ?? 0),
+        avgLatency: Number(s.avgLatency ?? 0),
+        p95Latency: Number(s.p95Latency ?? 0),
+        p99Latency: Number(s.p99Latency ?? 0),
       };
     });
   }, [services]);

@@ -6,10 +6,10 @@ export interface TopOpRow {
   readonly badge: string;
   readonly badgeVariant: "brand" | "success";
   readonly label: string;
-  readonly total_count: number;
-  readonly error_rate: number;
-  readonly p99_ms: number;
-  readonly p99_delta_pct: number | null;
+  readonly totalCount: number;
+  readonly errorRate: number;
+  readonly p99Ms: number;
+  readonly p99DeltaPct: number | null;
 }
 
 interface TopOpsTableProps {
@@ -64,7 +64,7 @@ export function TopOpsTable({
         </thead>
         <tbody>
           {rows.map((r) => {
-            const health = classifyHealth(r.error_rate, ENDPOINT_HEALTH_THRESHOLDS);
+            const health = classifyHealth(r.errorRate, ENDPOINT_HEALTH_THRESHOLDS);
             return (
               <tr
                 key={r.key}
@@ -87,7 +87,7 @@ export function TopOpsTable({
                   </div>
                 </td>
                 <td className="px-3 py-3 text-right font-mono text-[12.5px] tabular-nums">
-                  {fmtNum(r.total_count)}
+                  {fmtNum(r.totalCount)}
                 </td>
                 <td
                   className={`px-3 py-3 text-right font-mono font-semibold text-[12.5px] tabular-nums ${
@@ -98,12 +98,12 @@ export function TopOpsTable({
                         : "text-foreground-muted"
                   }`}
                 >
-                  {r.error_rate.toFixed(2)}%
+                  {r.errorRate.toFixed(2)}%
                 </td>
                 <td className="px-3 py-3 text-right font-mono font-semibold text-[12.5px] tabular-nums">
-                  {Math.round(r.p99_ms)}ms
+                  {Math.round(r.p99Ms)}ms
                 </td>
-                <td className="px-3 py-3 text-right">{renderLatencyDelta(r.p99_delta_pct)}</td>
+                <td className="px-3 py-3 text-right">{renderLatencyDelta(r.p99DeltaPct)}</td>
               </tr>
             );
           })}

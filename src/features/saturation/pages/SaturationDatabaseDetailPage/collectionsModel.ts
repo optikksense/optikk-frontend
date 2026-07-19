@@ -28,12 +28,12 @@ export function aggregateCollections(rows: SlowQueryPatternRow[]): CollectionRow
     { queryCount: number; calls: number; p99: number; totalMs: number }
   >();
   for (const row of rows) {
-    const name = row.collection_name || "—";
+    const name = row.collectionName || "—";
     const agg = byName.get(name) ?? { queryCount: 0, calls: 0, p99: 0, totalMs: 0 };
     agg.queryCount += 1;
-    agg.calls += row.call_count;
-    agg.p99 = Math.max(agg.p99, row.p99_ms ?? 0);
-    agg.totalMs += row.call_count * (row.p95_ms ?? 0);
+    agg.calls += row.callCount;
+    agg.p99 = Math.max(agg.p99, row.p99Ms ?? 0);
+    agg.totalMs += row.callCount * (row.p95Ms ?? 0);
     byName.set(name, agg);
   }
   return Array.from(byName.entries())

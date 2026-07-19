@@ -6,31 +6,31 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 /** Host machine metadata from retained resource attributes. */
 export interface HostAbout {
-  readonly os_type?: string;
-  readonly os_description?: string;
+  readonly osType?: string;
+  readonly osDescription?: string;
   readonly arch?: string;
-  readonly host_id?: string;
-  readonly cloud_provider?: string;
-  readonly cloud_platform?: string;
-  readonly cloud_region?: string;
-  readonly cloud_zone?: string;
-  readonly k8s_node_name?: string;
+  readonly hostId?: string;
+  readonly cloudProvider?: string;
+  readonly cloudPlatform?: string;
+  readonly cloudRegion?: string;
+  readonly cloudZone?: string;
+  readonly k8sNodeName?: string;
 }
 
 /** Mirrors hostdetail.HostOverview; nil KPIs mean the metric is not reported. */
 export interface HostOverview {
   readonly host: string;
-  readonly last_seen?: string;
+  readonly lastSeen?: string;
   readonly environments: readonly string[];
   readonly namespaces: readonly string[];
-  readonly cpu_pct: number | null;
-  readonly memory_pct: number | null;
-  readonly disk_pct: number | null;
-  readonly load_1m: number | null;
-  readonly load_5m: number | null;
-  readonly load_15m: number | null;
-  readonly process_count: number | null;
-  readonly available_metrics: readonly string[];
+  readonly cpuPct: number | null;
+  readonly memoryPct: number | null;
+  readonly diskPct: number | null;
+  readonly load1m: number | null;
+  readonly load5m: number | null;
+  readonly load15m: number | null;
+  readonly processCount: number | null;
+  readonly availableMetrics: readonly string[];
   readonly about?: HostAbout;
 }
 

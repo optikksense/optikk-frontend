@@ -99,7 +99,6 @@ export function formatUniqueAxisValues(
   });
 }
 
-
 export function uLine(
   label: string,
   color: string,

@@ -11,15 +11,15 @@ function RunbookCard({ monitor }: Props) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="font-medium text-foreground text-sm">Runbook & context</div>
-      {monitor.message_body && (
+      {monitor.messageBody && (
         <div className="mt-2 whitespace-pre-line text-foreground-muted text-xs leading-6">
-          {monitor.message_body}
+          {monitor.messageBody}
         </div>
       )}
       <div className="mt-3 flex flex-col gap-1.5">
-        {monitor.runbook_url && (
+        {monitor.runbookUrl && (
           <a
-            href={monitor.runbook_url}
+            href={monitor.runbookUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 rounded bg-secondary px-3 py-2 text-primary text-xs hover:underline"

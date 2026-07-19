@@ -81,7 +81,7 @@ function chipTone(
   f: ExplorerFilter,
   fields: readonly ReturnType<typeof knownFieldsForScope>[number][]
 ): string {
-  if (f.field === "severity_text") {
+  if (f.field === "severityText") {
     return SEVERITY_TONE[f.value.toUpperCase()] ?? CHIP_TONE.Common;
   }
   if (f.field === "search" || f.field === "body") return CHIP_TONE.Search;

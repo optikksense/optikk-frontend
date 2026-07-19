@@ -10,9 +10,9 @@ describe("formatDsl", () => {
     const cases: ReadonlyArray<[ExplorerFilter, string]> = [
       [{ field: "service", op: "eq", value: "api" }, "service:api"],
       [{ field: "service", op: "neq", value: "api" }, "-service:api"],
-      [{ field: "duration_ms", op: "gte", value: "500" }, "duration_ms:>=500"],
-      [{ field: "duration_ms", op: "lt", value: "10" }, "duration_ms:<10"],
-      [{ field: "http_status", op: "in", value: "500,503" }, "http_status:(500 OR 503)"],
+      [{ field: "durationMs", op: "gte", value: "500" }, "durationMs:>=500"],
+      [{ field: "durationMs", op: "lt", value: "10" }, "durationMs:<10"],
+      [{ field: "httpStatus", op: "in", value: "500,503" }, "httpStatus:(500 OR 503)"],
       [{ field: "service", op: "not_in", value: "a,b" }, "-service:(a OR b)"],
       [{ field: "@user.id", op: "exists", value: "" }, "@user.id:*"],
       [{ field: "@user.id", op: "not_exists", value: "" }, "-@user.id:*"],
@@ -28,8 +28,8 @@ describe("formatDsl", () => {
     const filters: readonly ExplorerFilter[] = [
       { field: "service", op: "eq", value: "api" },
       { field: "service", op: "neq", value: "web" },
-      { field: "duration_ms", op: "gte", value: "500" },
-      { field: "http_status", op: "in", value: "500,503" },
+      { field: "durationMs", op: "gte", value: "500" },
+      { field: "httpStatus", op: "in", value: "500,503" },
       { field: "@user.id", op: "exists", value: "" },
       { field: "search", op: "contains", value: "timeout" },
     ];

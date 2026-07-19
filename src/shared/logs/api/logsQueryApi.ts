@@ -18,24 +18,24 @@ export const rawLogRowSchema = z.object({
   id: z.string(),
   // uint64 `json:",string"` on the Go side — always a JSON string.
   timestamp: z.string(),
-  observed_timestamp: z.string(),
-  severity_text: z.string(),
-  severity_number: z.number(),
-  severity_bucket: z.number(),
+  observedTimestamp: z.string(),
+  severityText: z.string(),
+  severityNumber: z.number(),
+  severityBucket: z.number(),
   body: z.string(),
-  trace_id: z.string(),
-  span_id: z.string(),
-  trace_flags: z.number(),
-  service_name: z.string(),
+  traceId: z.string(),
+  spanId: z.string(),
+  traceFlags: z.number(),
+  serviceName: z.string(),
   host: z.string(),
   pod: z.string(),
   container: z.string(),
   environment: z.string(),
-  attributes_string: z.record(z.string(), z.string()).optional(),
-  attributes_number: z.record(z.string(), z.number()).optional(),
-  attributes_bool: z.record(z.string(), z.boolean()).optional(),
-  scope_name: z.string(),
-  scope_version: z.string(),
+  attributesString: z.record(z.string(), z.string()).optional(),
+  attributesNumber: z.record(z.string(), z.number()).optional(),
+  attributesBool: z.record(z.string(), z.boolean()).optional(),
+  scopeName: z.string(),
+  scopeVersion: z.string(),
 });
 
 /** Mirrors logs models.PageInfo; only nextCursor is `omitempty`. */
@@ -71,8 +71,8 @@ function fnv1a(s: string): string {
 
 /** `id` is always present but may be empty when ClickHouse has no log_id. */
 function fallbackLogId(row: z.infer<typeof rawLogRowSchema>): string {
-  const payload = `${row.trace_id}:${row.span_id}:${tsToNsString(row.timestamp)}:${
-    row.service_name
+  const payload = `${row.traceId}:${row.spanId}:${tsToNsString(row.timestamp)}:${
+    row.serviceName
   }:${fnv1a(row.body)}`;
   return base64UrlEncodeUtf8(payload);
 }
@@ -92,22 +92,22 @@ export function normalizeLogRecord(row: z.infer<typeof rawLogRowSchema>): LogRec
   return {
     id,
     timestamp: coerceTimestampToIso(row.timestamp),
-    observed_timestamp: coerceTimestampToIso(row.observed_timestamp),
-    service_name: row.service_name,
-    severity_text: row.severity_text,
-    severity_bucket: row.severity_bucket,
+    observedTimestamp: coerceTimestampToIso(row.observedTimestamp),
+    serviceName: row.serviceName,
+    severityText: row.severityText,
+    severityBucket: row.severityBucket,
     body: row.body,
     host: row.host,
     pod: row.pod,
     container: row.container,
     environment: row.environment,
-    scope_name: row.scope_name,
-    scope_version: row.scope_version,
-    trace_id: row.trace_id,
-    span_id: row.span_id,
-    attributes_string: row.attributes_string,
-    attributes_number: row.attributes_number,
-    attributes_bool: row.attributes_bool,
+    scopeName: row.scopeName,
+    scopeVersion: row.scopeVersion,
+    traceId: row.traceId,
+    spanId: row.spanId,
+    attributesString: row.attributesString,
+    attributesNumber: row.attributesNumber,
+    attributesBool: row.attributesBool,
   };
 }
 
@@ -162,7 +162,7 @@ function enforceIdFilters(
   const spanFilter = body.spanId;
   if (!traceFilter && !spanFilter) return resp;
   const filtered = resp.results.filter(
-    (r) => (!traceFilter || r.trace_id === traceFilter) && (!spanFilter || r.span_id === spanFilter)
+    (r) => (!traceFilter || r.traceId === traceFilter) && (!spanFilter || r.spanId === spanFilter)
   );
   if (filtered.length !== resp.results.length) {
     console.warn(

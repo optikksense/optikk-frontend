@@ -6,35 +6,35 @@ import { numericValue, stringValue } from "./saturationClient";
 
 const producerNodeSchema = z.object({
   service: stringValue,
-  rate_per_sec: numericValue,
-  error_rate: numericValue,
-  p50_ms: numericValue,
-  p95_ms: numericValue,
-  p99_ms: numericValue,
+  ratePerSec: numericValue,
+  errorRate: numericValue,
+  p50Ms: numericValue,
+  p95Ms: numericValue,
+  p99Ms: numericValue,
 });
 
 const topicNodeSchema = z.object({
   topic: stringValue,
-  rate_per_sec: numericValue,
-  producer_count: numericValue,
-  consumer_group_count: numericValue,
+  ratePerSec: numericValue,
+  producerCount: numericValue,
+  consumerGroupCount: numericValue,
 });
 
 const consumerNodeSchema = z.object({
   service: stringValue,
   group: stringValue,
-  rate_per_sec: numericValue,
-  error_rate: numericValue,
-  p50_ms: numericValue,
-  p95_ms: numericValue,
-  p99_ms: numericValue,
+  ratePerSec: numericValue,
+  errorRate: numericValue,
+  p50Ms: numericValue,
+  p95Ms: numericValue,
+  p99Ms: numericValue,
 });
 
 const streamEdgeSchema = z.object({
   source: stringValue,
   target: stringValue,
   kind: z.enum(["produce", "consume"]),
-  rate_per_sec: numericValue,
+  ratePerSec: numericValue,
 });
 
 const pathwaySchema = z.object({
@@ -42,9 +42,9 @@ const pathwaySchema = z.object({
   topic: stringValue,
   group: stringValue,
   consumer: stringValue,
-  produce_rate_per_sec: numericValue,
-  consume_rate_per_sec: numericValue,
-  error_rate: numericValue,
+  produceRatePerSec: numericValue,
+  consumeRatePerSec: numericValue,
+  errorRate: numericValue,
 });
 
 // Every slice is built with `make(..., 0, n)` server-side, so none are null.

@@ -48,11 +48,11 @@ function toEdge(
   maxCallCount: number
 ): Edge {
   const data: TopologyEdgeData = {
-    callCount: row.call_count,
-    errorCount: row.error_count,
-    errorRate: row.error_rate,
-    p50LatencyMs: row.p50_latency_ms,
-    p95LatencyMs: row.p95_latency_ms,
+    callCount: row.callCount,
+    errorCount: row.errorCount,
+    errorRate: row.errorRate,
+    p50LatencyMs: row.p50LatencyMs,
+    p95LatencyMs: row.p95LatencyMs,
     source: row.source,
     target: row.target,
     dimmed: !(matches(row.source) || matches(row.target)),
@@ -63,7 +63,7 @@ function toEdge(
     source: row.source,
     target: row.target,
     type: "service",
-    animated: row.call_count > 0,
+    animated: row.callCount > 0,
     data: data as unknown as Record<string, unknown>,
   };
 }
@@ -71,7 +71,7 @@ function toEdge(
 export function buildTopologyGraph({ data, filter = "", onOpen }: BuildGraphArgs): BuiltGraph {
   const matches = matcher(filter);
   const handleOpen = onOpen ?? NOOP_OPEN;
-  const maxCallCount = data.edges.reduce((acc, edge) => Math.max(acc, edge.call_count), 1);
+  const maxCallCount = data.edges.reduce((acc, edge) => Math.max(acc, edge.callCount), 1);
   const rawNodes = data.nodes.map((row) => toNode(row, matches, handleOpen));
   const edges = data.edges.map((row) => toEdge(row, matches, maxCallCount));
   return { nodes: layoutTopology(rawNodes, edges), edges };

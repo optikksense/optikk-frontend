@@ -20,13 +20,13 @@ export function StatCardsGridRenderer({
     // If backend returns a single summary object it's often in rawData (not data array)
     if (rawData && typeof rawData === "object" && !Array.isArray(rawData)) {
       const s = rawData as Record<string, unknown>;
-      const totalRequests = Number(s.total_requests ?? 0);
-      const errorCount = Number(s.error_count ?? 0);
+      const totalRequests = Number(s.totalRequests ?? 0);
+      const errorCount = Number(s.errorCount ?? 0);
       return {
         totalRequests,
         errorRate: totalRequests > 0 ? (errorCount / totalRequests) * 100 : 0,
-        avgLatency: Number(s.avg_latency ?? 0),
-        p95Latency: Number(s.p95_latency ?? 0),
+        avgLatency: Number(s.avgLatency ?? 0),
+        p95Latency: Number(s.p95Latency ?? 0),
       };
     }
 
@@ -40,12 +40,12 @@ export function StatCardsGridRenderer({
     let p95Max = 0;
 
     for (const s of services) {
-      const { request_count, error_count, avg_latency, p95_latency } = s as Record<string, unknown>;
-      const req = Number(request_count ?? 0);
+      const { requestCount, errorCount, avgLatency, p95Latency } = s as Record<string, unknown>;
+      const req = Number(requestCount ?? 0);
       totalRequests += req;
-      totalErrors += Number(error_count ?? 0);
-      latencySum += Number(avg_latency ?? 0) * req;
-      p95Max = Math.max(p95Max, Number(p95_latency ?? 0));
+      totalErrors += Number(errorCount ?? 0);
+      latencySum += Number(avgLatency ?? 0) * req;
+      p95Max = Math.max(p95Max, Number(p95Latency ?? 0));
     }
 
     const errorRate = totalRequests > 0 ? (totalErrors / totalRequests) * 100 : 0;

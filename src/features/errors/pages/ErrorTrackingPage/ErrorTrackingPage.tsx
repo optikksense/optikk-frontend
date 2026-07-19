@@ -68,13 +68,13 @@ export default function ErrorTrackingPage(): JSX.Element {
   const volumeSeries = useMemo(() => volumeQ.data ?? [], [volumeQ.data]);
 
   const kpis = useMemo<ErrorsKpis>(() => {
-    const totalErrorsSeries = volumeSeries.map((p) => p.error_count);
+    const totalErrorsSeries = volumeSeries.map((p) => p.errorCount);
     const cutoff = Date.now() - ONE_DAY_MS;
     let newIssues = 0;
     const services = new Set<string>();
     for (const g of allGroups) {
-      services.add(g.service_name);
-      const first = new Date(g.first_occurrence).getTime();
+      services.add(g.serviceName);
+      const first = new Date(g.firstOccurrence).getTime();
       if (!Number.isNaN(first) && first >= cutoff) newIssues += 1;
     }
     return {
@@ -89,7 +89,7 @@ export default function ErrorTrackingPage(): JSX.Element {
   const facets = useMemo<ServiceFacet[]>(() => {
     const counts = new Map<string, number>();
     for (const g of allGroups) {
-      counts.set(g.service_name, (counts.get(g.service_name) ?? 0) + 1);
+      counts.set(g.serviceName, (counts.get(g.serviceName) ?? 0) + 1);
     }
     return [...counts.entries()]
       .map(([service, count]) => ({ service, count }))
@@ -101,7 +101,7 @@ export default function ErrorTrackingPage(): JSX.Element {
     const q = query.trim().toLowerCase();
     if (!q) return rows;
     return rows.filter((r) =>
-      `${r.operation_name} ${r.status_message} ${r.service_name}`.toLowerCase().includes(q)
+      `${r.operationName} ${r.statusMessage} ${r.serviceName}`.toLowerCase().includes(q)
     );
   }, [groupsQ.data, query]);
 

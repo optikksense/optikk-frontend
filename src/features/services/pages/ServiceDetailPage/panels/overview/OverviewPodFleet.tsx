@@ -53,10 +53,11 @@ export function OverviewPodFleet({ serviceName }: { serviceName: string }) {
             const mem = pod.mem;
 
             return (
-              <div
+              <button
+                type="button"
                 key={i}
                 onClick={() => handlePodClick(pod.host)}
-                className="flex cursor-pointer flex-col justify-between rounded border border-border bg-muted/20 p-3.5 transition-colors hover:bg-muted/40"
+                className="flex cursor-pointer flex-col justify-between rounded border border-border bg-muted/20 p-3.5 text-left transition-colors hover:bg-muted/40"
               >
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -80,7 +81,7 @@ export function OverviewPodFleet({ serviceName }: { serviceName: string }) {
                     <strong className="font-medium text-foreground">{Math.round(mem)}%</strong>
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

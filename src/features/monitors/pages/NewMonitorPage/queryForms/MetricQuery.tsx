@@ -14,7 +14,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
   const q: MetricQueryShape = draft.query.metric ?? {
     metric: "",
     aggregation: "avg",
-    window_sec: 300,
+    windowSec: 300,
   };
 
   const update = (patch: Partial<MetricQueryShape>) =>
@@ -54,12 +54,12 @@ export default function MetricQuery({ draft, setDraft }: Props) {
           })}
           <span className="text-foreground-muted text-xs">over</span>
           {WINDOWS.map((w) => {
-            const active = q.window_sec === w;
+            const active = q.windowSec === w;
             return (
               <button
                 key={w}
                 type="button"
-                onClick={() => update({ window_sec: w })}
+                onClick={() => update({ windowSec: w })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
                     ? "bg-primary text-white"

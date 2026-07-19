@@ -5,10 +5,10 @@ import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 
 import { approveDevice } from "../../api/deviceAuthApi";
 
-// Reads an optional ?user_code= to prefill the code shown by the CLI.
+// Reads an optional ?userCode= to prefill the code shown by the CLI.
 function initialCode(): string {
   const params = new URLSearchParams(window.location.search);
-  return (params.get("user_code") ?? "").toUpperCase();
+  return (params.get("userCode") ?? "").toUpperCase();
 }
 
 function DeviceApprovePage() {

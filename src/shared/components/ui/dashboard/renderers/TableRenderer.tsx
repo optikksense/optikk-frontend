@@ -51,18 +51,19 @@ export function TableRenderer({
       cell: ({ getValue }) => {
         const val = getValue();
         if (val == null || val === "") return "—";
-        if (column.key === "sample_trace_id" || column.key === "trace_id") {
+        if (column.key === "sampleTraceId" || column.key === "traceId") {
           return (
-            <span
+            <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 navigate({ to: buildTraceDetailHref(String(val)) as never });
               }}
-              className="group flex cursor-pointer items-center gap-1 text-primary hover:underline"
+              className="group flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 text-primary hover:underline"
             >
               {String(val)}
-            </span>
+            </button>
           );
         }
 

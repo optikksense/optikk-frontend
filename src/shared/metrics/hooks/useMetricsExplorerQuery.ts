@@ -4,18 +4,10 @@ import {
   buildExplorerQueryRequest,
   metricsExplorerApi,
 } from "@shared/metrics/api/metricsExplorerApi";
-import type {
-  MetricQueryDefinition,
-  MetricSpaceAggregation,
-  TimeStep,
-} from "@shared/metrics/types";
+import type { MetricQueryDefinition, TimeStep } from "@shared/metrics/types";
 import { resolveTimeBounds } from "@shared/utils/timeBounds";
 
-export function useMetricsExplorerQuery(
-  queries: MetricQueryDefinition[],
-  step: TimeStep,
-  spaceAgg: MetricSpaceAggregation
-) {
+export function useMetricsExplorerQuery(queries: MetricQueryDefinition[], step: TimeStep) {
   const selectedTenantId = useTenantId();
   const timeRange = useTimeRange();
   const refreshKey = useRefreshKey();
@@ -33,12 +25,12 @@ export function useMetricsExplorerQuery(
       startTime,
       endTime,
       step,
-      spaceAgg,
       refreshKey,
     ],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       metricsExplorerApi.query(
-        buildExplorerQueryRequest(queries, startTime, endTime, step, spaceAgg)
+        buildExplorerQueryRequest(queries, startTime, endTime, step),
+        signal
       ),
     enabled: Boolean(selectedTenantId) && activeQueries.length > 0,
     retry: false,

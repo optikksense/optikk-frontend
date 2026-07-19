@@ -74,7 +74,7 @@ export default function NewMonitorPage() {
       <WizardDefineStep draft={draft} setDraft={setDraft} />
 
       <WizardFooter
-        evalEverySec={draft.eval_every_sec}
+        evalEverySec={draft.evalEverySec}
         editMode={editMode}
         saving={saving}
         error={error}

@@ -35,7 +35,7 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
   };
 
   const errorsList = results;
-  const topGroupId = errorsList[0]?.group_id ?? "";
+  const topGroupId = errorsList[0]?.groupId ?? "";
 
   // Latest occurrence of the top error group (to get its real stacktrace)
   const detailQ = useTimeRangeQuery(
@@ -45,7 +45,7 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
   );
 
   const totalErrors = useMemo(() => {
-    return errorsList.reduce((sum, e) => sum + e.error_count, 0);
+    return errorsList.reduce((sum, e) => sum + e.errorCount, 0);
   }, [errorsList]);
 
   const stackFrames = useMemo(() => {
@@ -97,25 +97,32 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
                 </thead>
                 <tbody>
                   {errorsList.map((e) => {
-                    const pct = totalErrors > 0 ? (e.error_count / totalErrors) * 100 : 0;
+                    const pct = totalErrors > 0 ? (e.errorCount / totalErrors) * 100 : 0;
                     return (
                       <tr
-                        key={e.group_id}
-                        onClick={() => handleRowClick(e.group_id)}
+                        key={e.groupId}
+                        onClick={() => handleRowClick(e.groupId)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            handleRowClick(e.groupId);
+                          }
+                        }}
+                        tabIndex={0}
                         className="cursor-pointer border-border/40 border-b last:border-b-0 hover:bg-muted/10"
                       >
                         <td className="px-3 py-3 pl-0">
                           <div>
                             <div className="font-mono font-semibold text-[12.5px] text-foreground leading-tight">
-                              {e.group_id}
+                              {e.groupId}
                             </div>
                             <div className="mt-0.5 font-mono text-[10.5px] text-foreground-muted">
-                              {e.operation_name}
+                              {e.operationName}
                             </div>
                           </div>
                         </td>
                         <td className="px-3 py-3 text-right font-mono font-semibold text-foreground tabular-nums">
-                          {fmtNum(e.error_count)}
+                          {fmtNum(e.errorCount)}
                         </td>
                         <td className="px-3 py-3">
                           <div className="flex items-center justify-end gap-2 text-right">
@@ -131,7 +138,7 @@ export function OverviewErrors({ serviceName }: { serviceName: string }) {
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-3 py-3 text-right font-mono text-[11px] text-foreground-muted">
-                          {relativeTimeFromIso(e.last_occurrence)}
+                          {relativeTimeFromIso(e.lastOccurrence)}
                         </td>
                       </tr>
                     );

@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import {
-  type ComparisonPayload,
+  type Comparable,
   type ServiceSummaryResponse,
   getServiceSummary,
 } from "@shared/api/red/redApi";
@@ -25,22 +25,22 @@ export interface ServiceSummary {
 function extractServiceRow(row: ServiceSummaryResponse | undefined): ServiceSummary | null {
   if (!row) return null;
   return {
-    serviceName: row.service_name,
-    requestCount: Number(row.request_count ?? 0),
-    errorCount: Number(row.error_count ?? 0),
-    errorRate: Number(row.error_rate ?? 0),
-    p50Ms: Number(row.p50_ms ?? 0),
-    p95Ms: Number(row.p95_ms ?? 0),
-    p99Ms: Number(row.p99_ms ?? 0),
+    serviceName: row.serviceName,
+    requestCount: Number(row.requestCount ?? 0),
+    errorCount: Number(row.errorCount ?? 0),
+    errorRate: Number(row.errorRate ?? 0),
+    p50Ms: Number(row.p50Ms ?? 0),
+    p95Ms: Number(row.p95Ms ?? 0),
+    p99Ms: Number(row.p99Ms ?? 0),
     rps: Number(row.rps ?? 0),
-    cpuUtilization: Number(row.cpu_utilization ?? 0),
-    memoryUtilization: Number(row.memory_utilization ?? 0),
-    diskUtilization: Number(row.disk_utilization ?? 0),
+    cpuUtilization: Number(row.cpuUtilization ?? 0),
+    memoryUtilization: Number(row.memoryUtilization ?? 0),
+    diskUtilization: Number(row.diskUtilization ?? 0),
   };
 }
 
 export function useServiceSummary(serviceName: string, _windowMs?: number) {
-  const query = useTimeRangeQuery<ComparisonPayload<ServiceSummaryResponse>>(
+  const query = useTimeRangeQuery<Comparable<ServiceSummaryResponse>>(
     `service-detail.summary:${serviceName}`,
     (_tenant, start, end) => getServiceSummary(start, end, serviceName),
     { enabled: Boolean(serviceName) }

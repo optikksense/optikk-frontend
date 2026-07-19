@@ -25,7 +25,7 @@ export default function ContainersTab() {
 
   const processedPods = useMemo(() => {
     return pods.map((p) => {
-      const details = getPodDetails(p.pod_name, p.error_rate);
+      const details = getPodDetails(p.podName, p.errorRate);
       return {
         ...p,
         ...details,
@@ -38,7 +38,7 @@ export default function ContainersTab() {
     if (!needle) return processedPods;
     return processedPods.filter(
       (p) =>
-        p.pod_name.toLowerCase().includes(needle) ||
+        p.podName.toLowerCase().includes(needle) ||
         p.host.toLowerCase().includes(needle) ||
         p.img.toLowerCase().includes(needle) ||
         p.ns.toLowerCase().includes(needle)

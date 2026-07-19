@@ -67,7 +67,7 @@ function ApiKeySection({ isAdmin }: { readonly isAdmin: boolean }): JSX.Element 
     setRotating(true);
     try {
       const resp = await rotateApiKey();
-      setNewKey(resp.api_key);
+      setNewKey(resp.apiKey);
       toast.success("New API key generated", { duration: 2000 });
     } catch {
       toast.error("Unable to regenerate API key");

@@ -33,13 +33,13 @@ export function PagesRail({ currentPageId }: PagesRailProps) {
   const pages = listQ.data?.items ?? [];
 
   const filtered = useMemo(() => {
-    if (tab === "favorites") return pages.filter((p) => p.is_favorite);
+    if (tab === "favorites") return pages.filter((p) => p.isFavorite);
     if (tab === "mine") return pages.filter((p) => p.owner?.name && p.owner.name === user?.name);
     return pages;
   }, [pages, tab, user]);
 
-  const favorites = filtered.filter((p) => p.is_favorite);
-  const rest = filtered.filter((p) => !p.is_favorite);
+  const favorites = filtered.filter((p) => p.isFavorite);
+  const rest = filtered.filter((p) => !p.isFavorite);
 
   return (
     <div className="flex min-h-0 flex-col gap-3 border-border border-r bg-card/40 p-3">
@@ -140,7 +140,7 @@ function PageRow({ page, active }: { readonly page: DashboardPage; readonly acti
     >
       <Icon size={14} className="shrink-0" />
       <span className="min-w-0 flex-1 truncate">{page.name}</span>
-      <span className="shrink-0 font-mono text-foreground-muted text-xs">{page.widget_count}</span>
+      <span className="shrink-0 font-mono text-foreground-muted text-xs">{page.widgetCount}</span>
     </Link>
   );
 }

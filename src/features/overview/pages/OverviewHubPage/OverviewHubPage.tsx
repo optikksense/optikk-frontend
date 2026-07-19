@@ -1,6 +1,5 @@
 import { PageHeader, PageShell } from "@shared/components/ui";
 import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
-import { useInView } from "@shared/hooks/useInView";
 
 import type { ServiceMetricPoint } from "@shared/metrics/types";
 import InfrastructureStrip from "./components/InfrastructureStrip";
@@ -27,9 +26,7 @@ function DegradedBadge({ count }: { readonly count: number }) {
 
 export default function OverviewHubPage() {
   const summaryQ = useOverviewSummaryQuery();
-  const { ref: belowRef, inView: belowInView } = useInView<HTMLDivElement>();
-
-  const errorsQ = useTopErrorsQuery(belowInView);
+  const errorsQ = useTopErrorsQuery();
 
   const summary = summaryQ.data;
   const summaryLoading = summaryQ.isPending && !summaryQ.data;
@@ -37,7 +34,7 @@ export default function OverviewHubPage() {
   const healthCells = useServiceHealthCells(summary?.services as unknown as ServiceMetricPoint[]);
   const topErrors = useRankedErrorRows(errorsQ.data);
 
-  const serviceCount = summary?.service_count ?? healthCells.length;
+  const serviceCount = summary?.serviceCount ?? healthCells.length;
   const degradedCount = healthCells.filter((c) => c.status !== "ok").length;
 
   return (
@@ -54,7 +51,7 @@ export default function OverviewHubPage() {
 
       <OverviewHero summary={summary} loading={summaryLoading} />
 
-      <div ref={belowRef} className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1.5fr_1fr]">
           <SystemPerformanceCard />
           <ServiceHealthGrid cells={healthCells} />

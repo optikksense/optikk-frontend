@@ -80,10 +80,14 @@ export function AbsoluteTimeTab({ timeRange, onClose }: Props) {
       <div className="border-border border-t px-3 pt-1 pb-3">
         <div className="mt-3 flex gap-3">
           <div className="flex flex-1 flex-col gap-1">
-            <label className="font-semibold text-[11px] text-foreground-tertiary uppercase tracking-wider">
+            <label
+              htmlFor="absolute-time-from"
+              className="font-semibold text-[11px] text-foreground-tertiary uppercase tracking-wider"
+            >
               From
             </label>
             <input
+              id="absolute-time-from"
               className="w-full rounded-md border border-border bg-background px-2.5 py-1.5 font-mono text-[13px] text-foreground outline-none transition-colors hover:border-foreground-tertiary focus:border-primary"
               placeholder="YYYY-MM-DD HH:mm:ss"
               value={fromStr}
@@ -92,10 +96,14 @@ export function AbsoluteTimeTab({ timeRange, onClose }: Props) {
           </div>
           <div className="flex items-end pb-1.5 text-[13px] text-foreground-tertiary">to</div>
           <div className="flex flex-1 flex-col gap-1">
-            <label className="font-semibold text-[11px] text-foreground-tertiary uppercase tracking-wider">
+            <label
+              htmlFor="absolute-time-to"
+              className="font-semibold text-[11px] text-foreground-tertiary uppercase tracking-wider"
+            >
               To
             </label>
             <input
+              id="absolute-time-to"
               className="w-full rounded-md border border-border bg-background px-2.5 py-1.5 font-mono text-[13px] text-foreground outline-none transition-colors hover:border-foreground-tertiary focus:border-primary"
               placeholder="YYYY-MM-DD HH:mm:ss"
               value={toStr}

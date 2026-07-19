@@ -116,14 +116,14 @@ export default function ErrorGroupDetailPage(): JSX.Element {
   const occurrence = occurrenceQ.data;
   const points = timeseriesQ.data ?? [];
 
-  const totalErrors = detail?.error_count ?? points.reduce((a, p) => a + (p.error_count ?? 0), 0);
+  const totalErrors = detail?.errorCount ?? points.reduce((a, p) => a + (p.errorCount ?? 0), 0);
   const cutoff = Date.now() - 3_600_000;
   const lastHour = points.reduce(
-    (a, p) => (new Date(p.timestamp).getTime() >= cutoff ? a + (p.error_count ?? 0) : a),
+    (a, p) => (new Date(p.timestamp).getTime() >= cutoff ? a + (p.errorCount ?? 0) : a),
     0
   );
 
-  const title = detail?.exception_type || detail?.operation_name || groupId;
+  const title = detail?.exceptionType || detail?.operationName || groupId;
 
   return (
     <PageShell>
@@ -137,15 +137,15 @@ export default function ErrorGroupDetailPage(): JSX.Element {
             <span className="font-mono">{title}</span>
           </span>
         }
-        subtitle={detail ? `${detail.service_name} · ${detail.operation_name}` : "Loading…"}
+        subtitle={detail ? `${detail.serviceName} · ${detail.operationName}` : "Loading…"}
         icon={<AlertOctagon size={24} className="text-[var(--err)]" />}
       />
 
       {}
       <Surface elevation={1} padding="md">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <MetaStat label="First seen" value={fmtDate(detail?.first_occurrence ?? "")} />
-          <MetaStat label="Last seen" value={fmtDate(detail?.last_occurrence ?? "")} />
+          <MetaStat label="First seen" value={fmtDate(detail?.firstOccurrence ?? "")} />
+          <MetaStat label="Last seen" value={fmtDate(detail?.lastOccurrence ?? "")} />
           <MetaStat
             label="Occurrences"
             value={formatNumber(totalErrors)}
@@ -154,7 +154,7 @@ export default function ErrorGroupDetailPage(): JSX.Element {
         </div>
       </Surface>
 
-      <OccurrenceTimeline counts={points.map((p) => p.error_count ?? 0)} />
+      <OccurrenceTimeline counts={points.map((p) => p.errorCount ?? 0)} />
 
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[1.55fr_1fr]">
         <RequestContextCard occurrence={occurrence} />

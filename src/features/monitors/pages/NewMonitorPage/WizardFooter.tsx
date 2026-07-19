@@ -25,18 +25,18 @@ function TestReadout({ result }: { readonly result: TestResult }) {
         threshold <span className="text-foreground">{result.threshold}</span>
       </span>
       <span className="font-mono text-foreground-secondary">
-        has data <span className="text-foreground">{result.has_data ? "yes" : "no"}</span>
+        has data <span className="text-foreground">{result.hasData ? "yes" : "no"}</span>
       </span>
       <span
         className={`rounded px-1.5 py-0.5 font-medium text-[10px] ${
-          result.would_decide_as === "alert"
+          result.wouldDecideAs === "alert"
             ? "bg-error-subtle text-error"
-            : result.would_decide_as === "warn"
+            : result.wouldDecideAs === "warn"
               ? "bg-warning-subtle text-warning"
               : "bg-success-subtle text-success"
         }`}
       >
-        would decide: {result.would_decide_as}
+        would decide: {result.wouldDecideAs}
       </span>
     </div>
   );

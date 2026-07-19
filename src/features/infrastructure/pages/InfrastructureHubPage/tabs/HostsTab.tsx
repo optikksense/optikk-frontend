@@ -85,7 +85,7 @@ export default function HostsTab() {
       }
       if (key === "status") {
         return nodes.filter((n) => {
-          const rate = n.error_rate;
+          const rate = n.errorRate;
           const status = rate >= 10 ? "err" : rate >= 2 ? "warn" : "ok";
           return status === tagVal;
         });
@@ -104,12 +104,12 @@ export default function HostsTab() {
   };
 
   const hostsCount = nodes.length;
-  const totalPods = summary?.total_pods ?? 0;
+  const totalPods = summary?.totalPods ?? 0;
 
   const totalHostsSummary = summary
-    ? summary.healthy_nodes + summary.degraded_nodes + summary.unhealthy_nodes
+    ? summary.healthyNodes + summary.degradedNodes + summary.unhealthyNodes
     : 0;
-  const hostsUpVal = summary ? summary.healthy_nodes + summary.degraded_nodes : 0;
+  const hostsUpVal = summary ? summary.healthyNodes + summary.degradedNodes : 0;
 
   const avgCpuVal = avgCpuQ.data
     ? `${(avgCpuQ.data.value <= 1 ? avgCpuQ.data.value * 100 : avgCpuQ.data.value).toFixed(0)}%`

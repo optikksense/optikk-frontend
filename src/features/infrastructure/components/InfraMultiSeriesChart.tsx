@@ -80,7 +80,7 @@ export default memo(function InfraMultiSeriesChart({
         // Use latest present value (a genuine 0 is valid; only skip missing samples).
         let latestValue = 0;
         for (let i = rows.length - 1; i >= 0; i--) {
-          const raw = firstValue(rows[i], [valueField, "value", "request_count"], null);
+          const raw = firstValue(rows[i], [valueField, "value", "requestCount"], null);
           if (raw === null) continue;
           const val = Number(raw);
           if (Number.isFinite(val)) {
@@ -101,9 +101,9 @@ export default memo(function InfraMultiSeriesChart({
     const rows = q.data ?? [];
     if (rows.length === 0) return false;
     return rows.some((row) => {
-      const ts = firstValue(row, ["timestamp", "time_bucket"], "");
+      const ts = firstValue(row, ["timestamp", "timeBucket"], "");
       if (!ts) return false;
-      const v = Number(firstValue(row, [valueField, "value", "request_count"], 0));
+      const v = Number(firstValue(row, [valueField, "value", "requestCount"], 0));
       return Number.isFinite(v);
     });
   }, [q.data, valueField]);

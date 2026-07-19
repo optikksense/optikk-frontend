@@ -15,7 +15,7 @@ export function LatencyHistogramRenderer({
   const { rawData } = useDashboardData(chartConfig, dataSources);
   const traces = useMemo(() => {
     const arr = Array.isArray(rawData) ? rawData : [];
-    if (arr.length > 0 && arr[0].duration_ms != null) return arr;
+    if (arr.length > 0 && arr[0].durationMs != null) return arr;
     const bucketMidpoint = (bucket: string): number =>
       (
         ({
@@ -32,8 +32,8 @@ export function LatencyHistogramRenderer({
         }) as Record<string, number>
       )[bucket] ?? 0;
     return arr.flatMap((bucket) => {
-      const count = Number(bucket.span_count) || 0;
-      return Array(count).fill({ duration_ms: bucketMidpoint(bucket.bucket) });
+      const count = Number(bucket.spanCount) || 0;
+      return Array(count).fill({ durationMs: bucketMidpoint(bucket.bucket) });
     });
   }, [rawData]);
   return <LatencyHistogram traces={traces} fillHeight={fillHeight} />;

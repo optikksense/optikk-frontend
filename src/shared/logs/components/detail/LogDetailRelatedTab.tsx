@@ -15,7 +15,7 @@ interface RelatedLogRowProps {
 }
 
 const MemoizedRelatedLogRow = memo(function RelatedLogRow({ l, isSelf }: RelatedLogRowProps) {
-  const lsev = severityStyle(l.severity_bucket);
+  const lsev = severityStyle(l.severityBucket);
   return (
     <div
       className={cn(
@@ -76,7 +76,7 @@ function LogDetailRelatedTabComponent({ traceId, log, open, isActive }: Props) {
         <button
           type="button"
           onClick={() => {
-            void navigator.clipboard?.writeText(`trace_id:${traceId}`);
+            void navigator.clipboard?.writeText(`traceId:${traceId}`);
             toast.success("Trace filter copied — paste into search", {
               duration: 2000,
             });

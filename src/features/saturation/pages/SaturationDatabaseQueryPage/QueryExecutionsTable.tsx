@@ -27,14 +27,12 @@ const COLUMNS: ColumnDef<QueryExecutionRow>[] = [
   },
   {
     header: "Duration",
-    accessorKey: "duration_ms",
+    accessorKey: "durationMs",
     size: 90,
     meta: { align: "right" },
     cell: ({ row: { original: row } }) => (
-      <span
-        className={`font-mono font-semibold ${row.is_error ? "text-error" : "text-foreground"}`}
-      >
-        {fmtMs(row.duration_ms)}
+      <span className={`font-mono font-semibold ${row.isError ? "text-error" : "text-foreground"}`}>
+        {fmtMs(row.durationMs)}
       </span>
     ),
   },
@@ -94,7 +92,7 @@ export function QueryExecutionsTable({
           onRow: (row) => ({
             onClick: () =>
               navigate({
-                to: ROUTES.traceDetail.replace("$traceId", row.trace_id) as never,
+                to: ROUTES.traceDetail.replace("$traceId", row.traceId) as never,
               }),
             style: { cursor: "pointer" },
           }),

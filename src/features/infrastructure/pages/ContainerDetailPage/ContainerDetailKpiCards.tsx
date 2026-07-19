@@ -44,7 +44,7 @@ const NO_TRAFFIC: Omit<KpiTileProps, "label"> = {
 };
 
 function buildTiles(overview: PodOverview | null): KpiTileProps[] {
-  if (!overview || overview.request_count === 0) {
+  if (!overview || overview.requestCount === 0) {
     return [
       { label: "Requests", ...NO_TRAFFIC },
       { label: "Error rate", ...NO_TRAFFIC },
@@ -52,12 +52,12 @@ function buildTiles(overview: PodOverview | null): KpiTileProps[] {
       { label: "p95 latency", ...NO_TRAFFIC },
     ];
   }
-  const errTone: Tone = overview.error_rate >= 5 ? "err" : overview.error_rate >= 1 ? "warn" : "ok";
+  const errTone: Tone = overview.errorRate >= 5 ? "err" : overview.errorRate >= 1 ? "warn" : "ok";
   return [
-    { label: "Requests", value: formatNumber(overview.request_count), tone: "ok" },
-    { label: "Error rate", value: `${overview.error_rate.toFixed(2)}%`, tone: errTone },
-    { label: "Avg latency", value: fmtMs(overview.avg_latency_ms), tone: "ok" },
-    { label: "p95 latency", value: fmtMs(overview.p95_latency_ms), tone: "ok" },
+    { label: "Requests", value: formatNumber(overview.requestCount), tone: "ok" },
+    { label: "Error rate", value: `${overview.errorRate.toFixed(2)}%`, tone: errTone },
+    { label: "Avg latency", value: fmtMs(overview.avgLatencyMs), tone: "ok" },
+    { label: "p95 latency", value: fmtMs(overview.p95LatencyMs), tone: "ok" },
   ];
 }
 

@@ -13,12 +13,10 @@ interface RequestChartEndpoint {
   key?: string;
   endpoint?: string;
   seriesKey?: string;
-  series_key?: string;
-  service_name?: string;
-  http_method?: string;
+  serviceName?: string;
   httpMethod?: string;
-  operation_name?: string;
-  endpoint_name?: string;
+  operationName?: string;
+  endpointName?: string;
 }
 
 interface RequestChartProps {
@@ -55,7 +53,7 @@ export default memo(function RequestChart({
   fillHeight = false,
   datasetLabel = "Requests/min",
   color = getChartColor(0),
-  valueKey = "request_count",
+  valueKey = "requestCount",
   yFormatter,
   legend = false,
 }: RequestChartProps) {
@@ -72,23 +70,23 @@ export default memo(function RequestChart({
 
       const firstSvc = activeEntries[0]?.[1] ?? [];
       activeTimestamps = firstSvc
-        .map((row) => tsMs(firstValue(row, ["timestamp", "time_bucket"], "")) / 1000)
+        .map((row) => tsMs(firstValue(row, ["timestamp", "timeBucket"], "")) / 1000)
         .filter((t) => !Number.isNaN(t));
 
       seriesList = activeEntries.map(([svcName, rows], idx) => {
         const values = rows.map((row) => {
-          return Number(firstValue(row, [valueKey, "request_count", "value"], 0));
+          return Number(firstValue(row, [valueKey, "requestCount", "value"], 0));
         });
         return { label: svcName, values, color: getChartColor(idx), fill: false };
       });
     } else {
       activeTimestamps = data
-        .map((d) => tsMs(firstValue(d, ["timestamp", "time_bucket"], "")) / 1000)
+        .map((d) => tsMs(firstValue(d, ["timestamp", "timeBucket"], "")) / 1000)
         .filter((t) => !Number.isNaN(t));
       seriesList = [
         {
           label: datasetLabel,
-          values: data.map((d) => Number(firstValue(d, [valueKey, "request_count", "value"], 0))),
+          values: data.map((d) => Number(firstValue(d, [valueKey, "requestCount", "value"], 0))),
           color,
           fill: true,
         },

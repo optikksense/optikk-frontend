@@ -20,7 +20,7 @@ function buildKpis(counts: MonitorListStatusCounts): Kpi[] {
     { label: "OK", value: counts.ok, color: "text-success", sub: "within bounds" },
     {
       label: "No data",
-      value: counts.no_data,
+      value: counts.noData,
       color: "text-foreground-secondary",
       sub: "stopped reporting",
     },

@@ -50,21 +50,21 @@ function buildColumns(sparklines: Map<string, number[]>): ColumnDef<DatastoreSys
     },
     {
       header: "Region",
-      accessorKey: "server_hint",
+      accessorKey: "serverHint",
       size: 150,
       cell: ({ row: { original: row } }) => (
         <span className="font-mono text-[12px] text-foreground-secondary">
-          {row.server_hint || "—"}
+          {row.serverHint || "—"}
         </span>
       ),
     },
     {
       header: "Queries",
-      accessorKey: "query_count",
+      accessorKey: "queryCount",
       size: 100,
       meta: { align: "right" },
       cell: ({ row: { original: row } }) => (
-        <span className="font-mono font-semibold text-foreground">{fmtNum(row.query_count)}</span>
+        <span className="font-mono font-semibold text-foreground">{fmtNum(row.queryCount)}</span>
       ),
     },
     {
@@ -85,31 +85,29 @@ function buildColumns(sparklines: Map<string, number[]>): ColumnDef<DatastoreSys
     },
     {
       header: "Avg",
-      accessorKey: "avg_latency_ms",
+      accessorKey: "avgLatencyMs",
       size: 84,
       meta: { align: "right" },
       cell: ({ row: { original: row } }) => (
-        <span className="font-mono">{fmtMs(row.avg_latency_ms)}</span>
+        <span className="font-mono">{fmtMs(row.avgLatencyMs)}</span>
       ),
     },
     {
       header: "p95",
-      accessorKey: "p95_latency_ms",
+      accessorKey: "p95LatencyMs",
       size: 84,
       meta: { align: "right" },
       cell: ({ row: { original: row } }) => (
-        <span className={`font-mono ${p95Class(row.p95_latency_ms)}`}>
-          {fmtMs(row.p95_latency_ms)}
-        </span>
+        <span className={`font-mono ${p95Class(row.p95LatencyMs)}`}>{fmtMs(row.p95LatencyMs)}</span>
       ),
     },
     {
       header: "Connections",
-      accessorKey: "active_connections",
+      accessorKey: "activeConnections",
       size: 110,
       meta: { align: "right" },
       cell: ({ row: { original: row } }) => (
-        <span className="font-mono">{fmtNum(row.active_connections)}</span>
+        <span className="font-mono">{fmtNum(row.activeConnections)}</span>
       ),
     },
     {

@@ -47,7 +47,7 @@ function ChannelChip({
 export default function WizardNotifyStep({ draft, setDraft }: Props) {
   const navigate = useNavigate();
   const channelsQ = useChannels();
-  const ids = draft.notify.channel_ids ?? [];
+  const ids = draft.notify.channelIds ?? [];
 
   return (
     <StepShell n={4} title="Configure notifications" sub="Who should be alerted, and how?">
@@ -76,7 +76,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
                 onToggle={() =>
                   setDraft((prev) => ({
                     ...prev,
-                    notify: { channel_ids: toggle(prev.notify.channel_ids ?? [], ch.id) },
+                    notify: { channelIds: toggle(prev.notify.channelIds ?? [], ch.id) },
                   }))
                 }
               />
@@ -93,8 +93,8 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Message template">
         <textarea
-          value={draft.message_body ?? ""}
-          onChange={(e) => setDraft((prev) => ({ ...prev, message_body: e.target.value }))}
+          value={draft.messageBody ?? ""}
+          onChange={(e) => setDraft((prev) => ({ ...prev, messageBody: e.target.value }))}
           rows={4}
           placeholder="Error rate {{value}}% exceeds threshold ({{threshold}}%) for {{service.name}} {{#is_alert}}@oncall{{/is_alert}}"
           className="w-full rounded border border-border bg-card px-2.5 py-2 font-mono text-xs"
@@ -103,7 +103,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
       <FieldRow label="Renotify if unresolved">
         <div className="flex items-center gap-1.5">
           {[900, 1800, 3600, 7200, 0].map((sec) => {
-            const active = (draft.renotify_every_sec ?? 0) === sec;
+            const active = (draft.renotifyEverySec ?? 0) === sec;
             const label = sec === 0 ? "never" : sec >= 3600 ? `${sec / 3600}h` : `${sec / 60}m`;
             return (
               <button
@@ -112,7 +112,7 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
                 onClick={() =>
                   setDraft((prev) => ({
                     ...prev,
-                    renotify_every_sec: sec === 0 ? undefined : sec,
+                    renotifyEverySec: sec === 0 ? undefined : sec,
                   }))
                 }
                 className={`rounded px-2 py-0.5 text-xs ${

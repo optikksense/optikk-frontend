@@ -37,7 +37,7 @@ function RecentTriggersCard({ events, loading }: Props) {
           ) : (
             events.map((e) => (
               <tr key={e.id} className="border-border border-t">
-                <td className="py-1.5 font-mono">{new Date(e.started_at).toLocaleString()}</td>
+                <td className="py-1.5 font-mono">{new Date(e.startedAt).toLocaleString()}</td>
                 <td className="py-1.5">{e.kind}</td>
                 <td className="py-1.5 text-right font-mono">
                   {e.value !== undefined ? e.value.toFixed(2) : "—"}

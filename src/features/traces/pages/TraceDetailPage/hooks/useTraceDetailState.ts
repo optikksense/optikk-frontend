@@ -29,7 +29,7 @@ export function useTraceDetailState() {
   const data = useTraceDetailData(selectedTenantId, traceIdParam);
 
   const resolvedTraceId = useMemo(
-    () => (data.spans.length > 0 ? data.spans[0].trace_id || traceIdParam : traceIdParam),
+    () => (data.spans.length > 0 ? data.spans[0].traceId || traceIdParam : traceIdParam),
     [data.spans, traceIdParam]
   );
 

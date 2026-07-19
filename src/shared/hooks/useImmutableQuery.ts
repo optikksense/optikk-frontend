@@ -21,7 +21,6 @@ export function useImmutableQuery<T>(
     placeholderData: keepPreviousData,
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: HOUR_MS,
-    retry: 2,
     ...options,
   } as UseQueryOptions<T, Error, T>);
 }

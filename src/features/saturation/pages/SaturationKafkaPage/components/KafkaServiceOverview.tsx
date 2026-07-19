@@ -230,11 +230,11 @@ export function KafkaServiceOverview({
                     <tr key={topic.topic}>
                       <td className={`${TD} font-medium font-mono`}>{topic.topic}</td>
                       <td className={`${TD} text-right tabular-nums`}>
-                        {formatRate(topic.rate_per_sec)}
+                        {formatRate(topic.ratePerSec)}
                       </td>
-                      <td className={`${TD} text-right tabular-nums`}>{topic.producer_count}</td>
+                      <td className={`${TD} text-right tabular-nums`}>{topic.producerCount}</td>
                       <td className={`${TD} text-right tabular-nums`}>
-                        {topic.consumer_group_count}
+                        {topic.consumerGroupCount}
                       </td>
                     </tr>
                   ))}

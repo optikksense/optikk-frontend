@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import { cn } from "@shared/lib/utils";
 
-import { QUERY_LABELS } from "@shared/metrics/constants";
+import { validateFormulaExpression } from "@shared/metrics/utils/formulaEvaluator";
 
 interface FormulaRowProps {
   readonly id: string;
@@ -15,25 +15,6 @@ interface FormulaRowProps {
 
 const FORMULA_COLOR = "#f59e0b";
 
-function validateExpression(expr: string, activeIds: string[]): string | null {
-  if (!expr.trim()) return null;
-  const activeSet = new Set(activeIds);
-  const tokens = expr.match(/[a-zA-Z]+|[0-9.]+|[+\-*/()]/g);
-  if (!tokens) return "Invalid expression";
-
-  for (const token of tokens) {
-    if (/^[a-zA-Z]$/.test(token)) {
-      if (!QUERY_LABELS.includes(token as (typeof QUERY_LABELS)[number])) {
-        return `Unknown label: ${token}`;
-      }
-      if (!activeSet.has(token)) {
-        return `Query "${token}" has no metric selected`;
-      }
-    }
-  }
-  return null;
-}
-
 export function FormulaRow({
   expression,
   activeQueryIds,
@@ -42,7 +23,7 @@ export function FormulaRow({
 }: FormulaRowProps) {
   const [focused, setFocused] = useState(false);
   const error = useMemo(
-    () => validateExpression(expression, activeQueryIds),
+    () => validateFormulaExpression(expression, activeQueryIds),
     [expression, activeQueryIds]
   );
 

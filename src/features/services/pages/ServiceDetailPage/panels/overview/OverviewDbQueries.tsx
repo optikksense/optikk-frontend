@@ -35,14 +35,14 @@ export function OverviewDbQueries({ serviceName }: { serviceName: string }) {
   }
 
   const rows: TopOpRow[] = results.map((r, i) => ({
-    key: `${r.operation_name}-${i}`,
-    badge: (r.db_system || "DB").toUpperCase(),
+    key: `${r.operationName}-${i}`,
+    badge: (r.dbSystem || "DB").toUpperCase(),
     badgeVariant: "brand",
-    label: r.operation_name,
-    total_count: r.total_count,
-    error_rate: r.error_rate,
-    p99_ms: r.p99_ms,
-    p99_delta_pct: r.p99_delta_pct,
+    label: r.operationName,
+    totalCount: r.totalCount,
+    errorRate: r.errorRate,
+    p99Ms: r.p99Ms,
+    p99DeltaPct: r.p99DeltaPct,
   }));
 
   return (

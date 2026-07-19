@@ -49,14 +49,14 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
 
   const stats = useMemo(() => calculateTraceStats(spans), [spans]);
   const selectedSpan = useMemo(
-    () => spans.find((s) => s.span_id === selectedSpanId),
+    () => spans.find((s) => s.spanId === selectedSpanId),
     [spans, selectedSpanId]
   );
 
   return {
     spans,
     traceLogs,
-    traceLogsIsSpeculative: logsData?.is_speculative ?? false,
+    traceLogsIsSpeculative: logsData?.isSpeculative ?? false,
     stats,
     selectedSpan,
     selectedSpanId,

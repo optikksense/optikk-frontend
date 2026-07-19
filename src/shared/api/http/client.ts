@@ -1,5 +1,13 @@
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 
+declare module "axios" {
+  // The response interceptor lifts the envelope's comparison sibling here so
+  // `data` stays the payload for every caller.
+  interface AxiosResponse {
+    comparison?: unknown;
+  }
+}
+
 import { API_CONFIG } from "@config/apiConfig";
 
 import {
@@ -45,6 +53,10 @@ axiosClient.interceptors.response.use((response) => {
     return {
       ...response,
       data: normalizeApiPayload(normalized.data),
+      comparison:
+        normalized.comparison === undefined
+          ? undefined
+          : normalizeApiPayload(normalized.comparison),
     };
   }
 
@@ -60,6 +72,17 @@ async function unwrapResponse<T>(request: Promise<AxiosResponse<T>>): Promise<T>
   return response.data;
 }
 
+/** A payload plus the same shape for the previous period, when requested. */
+export interface Comparable<T> {
+  readonly data: T;
+  readonly comparison?: T;
+}
+
+async function unwrapComparable<T>(request: Promise<AxiosResponse<T>>): Promise<Comparable<T>> {
+  const response = await request;
+  return { data: response.data, comparison: response.comparison as T | undefined };
+}
+
 const api = {
   raw: axiosClient,
   request<T = unknown>(config: AxiosRequestConfig): Promise<T> {
@@ -67,6 +90,10 @@ const api = {
   },
   get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return unwrapResponse(axiosClient.get<T>(url, config));
+  },
+  /** Use for endpoints called with compareTo; otherwise use get. */
+  getComparable<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<Comparable<T>> {
+    return unwrapComparable(axiosClient.get<T>(url, config));
   },
   post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     return unwrapResponse(axiosClient.post<T>(url, data, config));

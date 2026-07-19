@@ -44,8 +44,8 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
         </thead>
         <tbody>
           {paged.map((n) => {
-            const status = nodeStatus(n.error_rate);
-            const errPct = n.error_rate;
+            const status = nodeStatus(n.errorRate);
+            const errPct = n.errorRate;
             const errColor =
               status === "err"
                 ? "var(--err)"
@@ -57,6 +57,13 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
               <tr
                 key={n.host}
                 onClick={() => onOpenNode(n.host)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onOpenNode(n.host);
+                  }
+                }}
+                tabIndex={0}
                 className="cursor-pointer transition-colors hover:bg-muted/40"
               >
                 <td style={{ paddingLeft: 18, paddingTop: "10px", paddingBottom: "10px" }}>
@@ -79,21 +86,21 @@ export function InfraHostsTable({ nodes, onOpenNode }: InfraHostsTableProps) {
                   <div className="font-mono text-[13px] text-foreground">
                     {n.services.length > 0 ? n.services.join(", ") : "—"}
                   </div>
-                  {n.pod_count > 0 && (
-                    <div className="text-[11.5px] text-foreground-muted">{n.pod_count} pods</div>
+                  {n.podCount > 0 && (
+                    <div className="text-[11.5px] text-foreground-muted">{n.podCount} pods</div>
                   )}
                 </td>
                 <td className="font-mono text-[12.5px] text-foreground-muted">
-                  {formatNumber(n.request_count)}
+                  {formatNumber(n.requestCount)}
                 </td>
                 <td className="font-mono font-semibold text-[12.5px]" style={{ color: errColor }}>
                   {errPct.toFixed(errPct >= 10 ? 0 : 1)}%
                 </td>
                 <td className="font-mono text-[12.5px] text-foreground-muted">
-                  {formatDuration(n.p95_latency_ms)}
+                  {formatDuration(n.p95LatencyMs)}
                 </td>
                 <td className="font-mono text-[12px] text-foreground-muted">
-                  {formatRelativeTime(n.last_seen)}
+                  {formatRelativeTime(n.lastSeen)}
                 </td>
                 <td>
                   <ChevronRight size={13} className="text-foreground-muted" />

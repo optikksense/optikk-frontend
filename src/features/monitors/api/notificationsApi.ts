@@ -1,6 +1,5 @@
 import api from "@/shared/api/http/client";
 import { API_CONFIG } from "@config/apiConfig";
-import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -12,11 +11,11 @@ export interface Channel {
   readonly name: string;
   readonly config: Record<string, unknown>;
   readonly status: "ok" | "warn" | "muted";
-  readonly used_by_count: number;
-  readonly last_used_at?: string;
-  readonly last_delivery_at?: string;
-  readonly last_error_text?: string;
-  readonly created_at: string;
+  readonly usedByCount: number;
+  readonly lastUsedAt?: string;
+  readonly lastDeliveryAt?: string;
+  readonly lastErrorText?: string;
+  readonly createdAt: string;
 }
 
 export interface Integration {
@@ -31,13 +30,13 @@ export interface Integration {
 export interface Policy {
   readonly id: number;
   readonly name: string;
-  readonly match_dsl: string;
+  readonly matchDsl: string;
   readonly actions: unknown[];
-  readonly hits_30d: number;
-  readonly last_used_at?: string;
+  readonly hits30d: number;
+  readonly lastUsedAt?: string;
   readonly enabled: boolean;
   readonly position: number;
-  readonly created_at: string;
+  readonly createdAt: string;
 }
 
 export interface Template {
@@ -45,15 +44,14 @@ export interface Template {
   readonly name: string;
   readonly description?: string;
   readonly body: string;
-  readonly used_count: number;
-  readonly created_at: string;
+  readonly usedCount: number;
+  readonly createdAt: string;
 }
 
 // Channels ------------------------------------------------------------------
 
 export async function listChannels(): Promise<Channel[]> {
-  const raw = await api.get<unknown>(`${V1}/notifications/channels`);
-  return unwrapEnvelope<Channel[]>(raw);
+  return api.get<Channel[]>(`${V1}/notifications/channels`);
 }
 
 export interface CreateChannelPayload {
@@ -62,56 +60,51 @@ export interface CreateChannelPayload {
   config: Record<string, unknown>;
 }
 export async function createChannel(payload: CreateChannelPayload): Promise<Channel> {
-  const raw = await api.post<unknown>(`${V1}/notifications/channels`, payload);
-  return unwrapEnvelope<Channel>(raw);
+  return api.post<Channel>(`${V1}/notifications/channels`, payload);
 }
 
 export async function updateChannel(id: number, payload: CreateChannelPayload): Promise<Channel> {
-  const raw = await api.put<unknown>(`${V1}/notifications/channels/${id}`, payload);
-  return unwrapEnvelope<Channel>(raw);
+  return api.put<Channel>(`${V1}/notifications/channels/${id}`, payload);
 }
 
 export async function deleteChannel(id: number): Promise<void> {
   await api.delete<unknown>(`${V1}/notifications/channels/${id}`);
 }
 
-export async function testChannel(id: number): Promise<{ ok: boolean; error_text?: string }> {
-  const raw = await api.post<unknown>(`${V1}/notifications/channels/${id}/test`, {});
-  return unwrapEnvelope(raw);
+export async function testChannel(id: number): Promise<{ ok: boolean; errorText?: string }> {
+  return api.post<{ ok: boolean; errorText?: string }>(
+    `${V1}/notifications/channels/${id}/test`,
+    {}
+  );
 }
 
 export async function listIntegrations(): Promise<Integration[]> {
-  const raw = await api.get<unknown>(`${V1}/notifications/integrations`);
-  return unwrapEnvelope<Integration[]>(raw);
+  return api.get<Integration[]>(`${V1}/notifications/integrations`);
 }
 
 export async function listPolicies(): Promise<Policy[]> {
-  const raw = await api.get<unknown>(`${V1}/notifications/policies`);
-  return unwrapEnvelope<Policy[]>(raw);
+  return api.get<Policy[]>(`${V1}/notifications/policies`);
 }
 
 export interface CreatePolicyPayload {
   name: string;
-  match_dsl: string;
+  matchDsl: string;
   actions: unknown[];
   enabled?: boolean;
   position?: number;
 }
 export async function createPolicy(payload: CreatePolicyPayload): Promise<Policy> {
-  const raw = await api.post<unknown>(`${V1}/notifications/policies`, payload);
-  return unwrapEnvelope<Policy>(raw);
+  return api.post<Policy>(`${V1}/notifications/policies`, payload);
 }
 export async function updatePolicy(id: number, payload: CreatePolicyPayload): Promise<Policy> {
-  const raw = await api.put<unknown>(`${V1}/notifications/policies/${id}`, payload);
-  return unwrapEnvelope<Policy>(raw);
+  return api.put<Policy>(`${V1}/notifications/policies/${id}`, payload);
 }
 export async function deletePolicy(id: number): Promise<void> {
   await api.delete<unknown>(`${V1}/notifications/policies/${id}`);
 }
 
 export async function listTemplates(): Promise<Template[]> {
-  const raw = await api.get<unknown>(`${V1}/notifications/templates`);
-  return unwrapEnvelope<Template[]>(raw);
+  return api.get<Template[]>(`${V1}/notifications/templates`);
 }
 
 export interface CreateTemplatePayload {
@@ -120,15 +113,13 @@ export interface CreateTemplatePayload {
   body: string;
 }
 export async function createTemplate(payload: CreateTemplatePayload): Promise<Template> {
-  const raw = await api.post<unknown>(`${V1}/notifications/templates`, payload);
-  return unwrapEnvelope<Template>(raw);
+  return api.post<Template>(`${V1}/notifications/templates`, payload);
 }
 export async function updateTemplate(
   id: number,
   payload: CreateTemplatePayload
 ): Promise<Template> {
-  const raw = await api.put<unknown>(`${V1}/notifications/templates/${id}`, payload);
-  return unwrapEnvelope<Template>(raw);
+  return api.put<Template>(`${V1}/notifications/templates/${id}`, payload);
 }
 export async function deleteTemplate(id: number): Promise<void> {
   await api.delete<unknown>(`${V1}/notifications/templates/${id}`);

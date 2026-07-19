@@ -1,6 +1,6 @@
 interface SpanLike {
-  start_time?: string | number | null;
-  end_time?: string | number | null;
+  startTime?: string | number | null;
+  endTime?: string | number | null;
 }
 
 export interface TraceTimeBounds {
@@ -9,7 +9,7 @@ export interface TraceTimeBounds {
 }
 
 /**
- * Scans the span list once to find the min start_time and max end_time in
+ * Scans the span list once to find the min startTime and max endTime in
  * millis. Invalid/missing timestamps are skipped, not treated as zero.
  */
 export function computeTraceTimeBounds(spans: readonly SpanLike[]): TraceTimeBounds {
@@ -19,8 +19,8 @@ export function computeTraceTimeBounds(spans: readonly SpanLike[]): TraceTimeBou
   let maxEnd = Number.NEGATIVE_INFINITY;
 
   for (const span of spans) {
-    const start = span.start_time ? new Date(span.start_time).getTime() : Number.NaN;
-    const end = span.end_time ? new Date(span.end_time).getTime() : Number.NaN;
+    const start = span.startTime ? new Date(span.startTime).getTime() : Number.NaN;
+    const end = span.endTime ? new Date(span.endTime).getTime() : Number.NaN;
     if (Number.isFinite(start) && start < minStart) minStart = start;
     if (Number.isFinite(end) && end > maxEnd) maxEnd = end;
   }

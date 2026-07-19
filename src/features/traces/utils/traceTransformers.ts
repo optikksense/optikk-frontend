@@ -55,15 +55,15 @@ export function buildFlatTree(
   let maxEnd = Number.NEGATIVE_INFINITY;
 
   for (const s of spans) {
-    byId.set(s.span_id, s);
-    const startMs = s.start_time ? new Date(s.start_time).getTime() : 0;
-    const endMs = s.end_time ? new Date(s.end_time).getTime() : startMs;
+    byId.set(s.spanId, s);
+    const startMs = s.startTime ? new Date(s.startTime).getTime() : 0;
+    const endMs = s.endTime ? new Date(s.endTime).getTime() : startMs;
     if (Number.isFinite(startMs) && startMs > 0 && startMs < minStart) minStart = startMs;
     if (Number.isFinite(endMs) && endMs > maxEnd) maxEnd = endMs;
   }
 
   for (const s of spans) {
-    const p = s.parent_span_id ?? "";
+    const p = s.parentSpanId ?? "";
     if (p && byId.has(p)) {
       if (!children.has(p)) children.set(p, []);
       children.get(p)!.push(s);
@@ -72,26 +72,26 @@ export function buildFlatTree(
 
   for (const arr of children.values()) {
     arr.sort((a, b) => {
-      const sa = a.start_time ? new Date(a.start_time).getTime() : 0;
-      const sb = b.start_time ? new Date(b.start_time).getTime() : 0;
+      const sa = a.startTime ? new Date(a.startTime).getTime() : 0;
+      const sb = b.startTime ? new Date(b.startTime).getTime() : 0;
       return sa - sb;
     });
   }
 
-  const roots = spans.filter((s) => !s.parent_span_id || !byId.has(s.parent_span_id));
+  const roots = spans.filter((s) => !s.parentSpanId || !byId.has(s.parentSpanId));
   roots.sort((a, b) => {
-    const sa = a.start_time ? new Date(a.start_time).getTime() : 0;
-    const sb = b.start_time ? new Date(b.start_time).getTime() : 0;
+    const sa = a.startTime ? new Date(a.startTime).getTime() : 0;
+    const sb = b.startTime ? new Date(b.startTime).getTime() : 0;
     return sa - sb;
   });
 
   const flat: FlatSpan[] = [];
   const visit = (s: TraceRecord, depth: number) => {
-    const startMs = s.start_time ? new Date(s.start_time).getTime() : 0;
-    const endMs = s.end_time ? new Date(s.end_time).getTime() : startMs + (s.duration_ms ?? 0);
-    const kids = children.get(s.span_id) ?? [];
+    const startMs = s.startTime ? new Date(s.startTime).getTime() : 0;
+    const endMs = s.endTime ? new Date(s.endTime).getTime() : startMs + (s.durationMs ?? 0);
+    const kids = children.get(s.spanId) ?? [];
     flat.push({ span: s, depth, hasChildren: kids.length > 0, startMs, endMs });
-    if (collapsed.has(s.span_id)) return;
+    if (collapsed.has(s.spanId)) return;
     for (const k of kids) visit(k, depth + 1);
   };
   for (const r of roots) visit(r, 0);
@@ -107,6 +107,6 @@ export function matchesQuery(span: TraceRecord, q: string): boolean {
   if (!q) return true;
   const ql = q.toLowerCase();
   const hay =
-    `${span.service_name} ${span.operation_name} ${span.http_method ?? ""} ${span.http_status_code ?? ""}`.toLowerCase();
+    `${span.serviceName} ${span.operationName} ${span.httpMethod ?? ""} ${span.httpStatusCode ?? ""}`.toLowerCase();
   return hay.includes(ql);
 }

@@ -1,6 +1,5 @@
 export const API_PROXY_BASE = "/api";
 const API_TIMEOUT_MS = 30000;
-const API_RETRY_ATTEMPTS = 3;
 
 export const DEV_FRONTEND_PORT = 3000;
 const DEV_BACKEND_HOST = "localhost";
@@ -34,6 +33,5 @@ export const API_V1_BASE = API_ENDPOINTS.V1_BASE;
 export const API_CONFIG = {
   BASE_URL: API_PROXY_BASE,
   TIMEOUT: API_TIMEOUT_MS,
-  RETRY_ATTEMPTS: API_RETRY_ATTEMPTS,
   ENDPOINTS: API_ENDPOINTS,
 } as const;

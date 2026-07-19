@@ -11,11 +11,25 @@ import fixtures from "./__fixtures__.json";
  * unwrapping, schema and transform — against fixtures marshalled from the Go
  * response structs. `contract.test.ts` covers the schemas in isolation; this
  * covers the normalization those schemas feed, which is where field drift
- * actually surfaced (a `has_error` rename reaching the browser).
+ * actually surfaced (a `hasError` rename reaching the browser).
  */
 const f = fixtures as Record<string, unknown>;
+const lowerCamelName = /^[a-z][A-Za-z0-9]*$/;
 const realAdapter = api.raw.defaults.adapter;
 let lastRequest: AxiosRequestConfig | undefined;
+
+function collectInvalidKeys(value: unknown, path = "fixtures"): string[] {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => collectInvalidKeys(item, `${path}[${index}]`));
+  }
+  if (value === null || typeof value !== "object") return [];
+
+  return Object.entries(value).flatMap(([key, child]) => {
+    const childPath = `${path}.${key}`;
+    const invalid = lowerCamelName.test(key) ? [] : [childPath];
+    return [...invalid, ...collectInvalidKeys(child, childPath)];
+  });
+}
 
 /** Serves a fixture as the next response instead of hitting the network. */
 function serve(payload: unknown): void {
@@ -39,6 +53,10 @@ afterEach(() => {
 const range = { startTime: 1, endTime: 2, filters: [], limit: 50 } as const;
 
 describe("traces endpoints normalize the Go wire shape", () => {
+  it("uses lower camelCase for every application-owned fixture key", () => {
+    expect(collectInvalidKeys(fixtures)).toEqual([]);
+  });
+
   it("query() maps results and lifts nextCursor out of pageInfo", async () => {
     serve(f.tracesQuery);
     const res = await query(range);
@@ -46,11 +64,11 @@ describe("traces endpoints normalize the Go wire shape", () => {
     expect(res.traces).toHaveLength(2);
     expect(res.nextCursor).toBe("c");
     expect(res.traces[0]).toMatchObject({
-      trace_id: "t1",
-      root_service: "s",
-      has_error: true,
-      error_count: 1,
-      duration_ns: 1_000_000,
+      traceId: "t1",
+      rootService: "s",
+      hasError: true,
+      errorCount: 1,
+      durationNs: 1_000_000,
     });
   });
 

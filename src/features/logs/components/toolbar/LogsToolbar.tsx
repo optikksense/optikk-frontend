@@ -22,7 +22,7 @@ export const LogsToolbar = memo(
             ref={ref}
             filters={props.filters}
             onApply={(f) => props.onChangeFilters(f)}
-            placeholder='Search logs: service_name:checkout severity_text:ERROR "timeout"'
+            placeholder='Search logs: serviceName:checkout severityText:ERROR "timeout"'
             scope="logs"
             valueSuggestions={props.valueSuggestions}
           />

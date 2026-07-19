@@ -1,11 +1,7 @@
 import { DatabaseZap } from "lucide-react";
 import { useState } from "react";
 
-import {
-  useIngestionCost,
-  useIngestionServices,
-  useIngestionSummary,
-} from "../../hooks/useIngestion";
+import { useIngestionOverview } from "../../hooks/useIngestion";
 import type { IngestionUnit } from "../../utils/format";
 import { CostBreakdown } from "./CostBreakdown";
 import { IngestedVolumeChart } from "./IngestedVolumeChart";
@@ -45,10 +41,9 @@ function UnitToggle({
 
 export default function IngestionPage(): JSX.Element {
   const [unit, setUnit] = useState<IngestionUnit>("records");
-  const summaryQ = useIngestionSummary();
-  const servicesQ = useIngestionServices();
-  const costQ = useIngestionCost();
-  const summary = summaryQ.data;
+  const overviewQ = useIngestionOverview();
+  const overview = overviewQ.data;
+  const summary = overview?.summary;
 
   return (
     <div className="flex min-w-0 flex-col gap-5 px-1 pt-1 pb-7">
@@ -59,36 +54,42 @@ export default function IngestionPage(): JSX.Element {
         <div className="min-w-0">
           <h1 className="font-bold text-[22px] text-foreground tracking-tight">Data Ingestion</h1>
           <p className="text-[13px] text-foreground-muted">
-            Usage across logs, spans and custom metrics · current billing month
+            Estimated accepted usage across logs, spans and custom metrics · current billing month
           </p>
         </div>
         <div className="flex-1" />
         <UnitToggle unit={unit} onChange={setUnit} />
       </header>
 
-      {summaryQ.isError ? (
+      {overviewQ.isError ? (
         <div
           className="rounded-lg border border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-error-subtle px-3.5 py-2.5 text-[12.5px] text-error"
           role="alert"
         >
-          Could not load ingestion summary: {summaryQ.error.message}
+          Could not load ingestion overview: {overviewQ.error.message}
         </div>
       ) : null}
 
       <IngestionKpiStrip summary={summary} unit={unit} />
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.1fr_1fr]">
-        <IngestedVolumeChart unit={unit} />
+        <IngestedVolumeChart
+          unit={unit}
+          byType={overview?.timeseriesByType}
+          byService={overview?.timeseriesByService}
+          isPending={overviewQ.isPending}
+          isError={overviewQ.isError}
+        />
         <TelemetryTypeBreakdown summary={summary} unit={unit} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.1fr_1fr]">
-        <CostBreakdown cost={costQ.data} />
+        <CostBreakdown cost={overview?.cost} />
       </div>
 
       <SignalPillars summary={summary} unit={unit} />
 
-      <TopServicesTable data={servicesQ.data} isPending={servicesQ.isPending} unit={unit} />
+      <TopServicesTable data={overview?.services} isPending={overviewQ.isPending} unit={unit} />
     </div>
   );
 }

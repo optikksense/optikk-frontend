@@ -68,16 +68,16 @@ export function OverviewEndpointsAndResources({ serviceName }: { serviceName: st
   }
 
   const endpointRows: TopOpRow[] = results.map((r, i) => {
-    const method = r.http_route ? (r.operation_name.split(" ")[0] ?? "HTTP") : "RPC";
+    const method = r.httpRoute ? (r.operationName.split(" ")[0] ?? "HTTP") : "RPC";
     return {
-      key: `${r.operation_name}-${i}`,
+      key: `${r.operationName}-${i}`,
       badge: method,
       badgeVariant: method === "POST" || method === "PUT" ? "brand" : "success",
-      label: r.http_route || r.operation_name,
-      total_count: r.total_count,
-      error_rate: r.error_rate,
-      p99_ms: r.p99_ms,
-      p99_delta_pct: r.p99_delta_pct,
+      label: r.httpRoute || r.operationName,
+      totalCount: r.totalCount,
+      errorRate: r.errorRate,
+      p99Ms: r.p99Ms,
+      p99DeltaPct: r.p99DeltaPct,
     };
   });
 

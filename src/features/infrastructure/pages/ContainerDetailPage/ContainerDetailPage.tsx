@@ -17,7 +17,7 @@ export default function ContainerDetailPage(): JSX.Element {
     getPodOverview(pod, s, e)
   );
   const overview = overviewQ.data ?? null;
-  const availableMetrics = overview ? overview.available_metrics : null;
+  const availableMetrics = overview ? overview.availableMetrics : null;
 
   return (
     <PageShell>

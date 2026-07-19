@@ -3,18 +3,13 @@ import { z } from "zod";
 import api from "@/shared/api/http/client";
 import { decodeApiResponse } from "@/shared/api/utils/validate";
 import { API_CONFIG } from "@config/apiConfig";
-import type {
-  MetricQueryDefinition,
-  MetricSpaceAggregation,
-  TimeStep,
-} from "@shared/metrics/types";
+import type { MetricQueryDefinition, TimeStep } from "@shared/metrics/types";
 
 export function buildExplorerQueryRequest(
   queries: MetricQueryDefinition[],
   startTime: number,
   endTime: number,
-  step: TimeStep,
-  spaceAgg: MetricSpaceAggregation
+  step: TimeStep
 ): MetricExplorerQueryRequest {
   return {
     startTime,
@@ -28,7 +23,6 @@ export function buildExplorerQueryRequest(
         metricName: q.metricName,
         where: q.where.map((w) => ({ key: w.key, operator: w.operator, value: w.value })),
         groupBy: [...q.groupBy],
-        spaceAggregation: spaceAgg,
       })),
   };
 }
@@ -103,7 +97,6 @@ export interface MetricExplorerQueryRequest {
       readonly value: string | string[];
     }>;
     readonly groupBy: string[];
-    readonly spaceAggregation?: string;
   }>;
 }
 
@@ -153,8 +146,11 @@ export const metricsExplorerApi = {
     });
   },
 
-  async query(body: MetricExplorerQueryRequest): Promise<MetricsExplorerResponse> {
-    const response = await api.post(`${BASE}/metrics/explorer/query`, body);
+  async query(
+    body: MetricExplorerQueryRequest,
+    signal?: AbortSignal
+  ): Promise<MetricsExplorerResponse> {
+    const response = await api.post(`${BASE}/metrics/explorer/query`, body, { signal });
     const decoded = decodeApiResponse(metricsExplorerResponseSchema, response, {
       context: "metrics explorer query",
       expectedType: "object",

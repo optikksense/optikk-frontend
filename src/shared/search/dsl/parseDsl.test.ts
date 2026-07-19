@@ -29,21 +29,21 @@ describe("parseDsl", () => {
   });
 
   it("parses comparison prefixes", () => {
-    expect(parseDsl("duration_ms:>=500", traceFields).filters[0]).toEqual({
-      field: "duration_ms",
+    expect(parseDsl("durationMs:>=500", traceFields).filters[0]).toEqual({
+      field: "durationMs",
       op: "gte",
       value: "500",
     });
-    expect(parseDsl("duration_ms:<10", traceFields).filters[0]).toEqual({
-      field: "duration_ms",
+    expect(parseDsl("durationMs:<10", traceFields).filters[0]).toEqual({
+      field: "durationMs",
       op: "lt",
       value: "10",
     });
   });
 
   it("parses (a OR b) as in", () => {
-    const r = parseDsl("http_status:(500 OR 503)", traceFields);
-    expect(r.filters).toEqual([{ field: "http_status", op: "in", value: "500,503" }]);
+    const r = parseDsl("httpStatus:(500 OR 503)", traceFields);
+    expect(r.filters).toEqual([{ field: "httpStatus", op: "in", value: "500,503" }]);
   });
 
   it("parses -field:(a OR b) as not_in", () => {
@@ -52,8 +52,8 @@ describe("parseDsl", () => {
   });
 
   it("parses @key:value as attribute eq", () => {
-    const r = parseDsl("@http.status_code:500", traceFields);
-    expect(r.filters).toEqual([{ field: "@http.status_code", op: "eq", value: "500" }]);
+    const r = parseDsl("@http.statusCode:500", traceFields);
+    expect(r.filters).toEqual([{ field: "@http.statusCode", op: "eq", value: "500" }]);
   });
 
   it("parses @key:* as exists and -@key:* as not_exists", () => {
@@ -84,11 +84,11 @@ describe("parseDsl", () => {
   });
 
   it("parses mixed structured and free-text queries", () => {
-    const r = parseDsl('service:checkout -severity_text:INFO "timeout"', LOGS_TEST_FIELDS);
+    const r = parseDsl('service:checkout -severityText:INFO "timeout"', LOGS_TEST_FIELDS);
     // service is not a logs field -> error; the rest parse.
     expect(r.errors).toHaveLength(1);
     expect(r.filters).toEqual([
-      { field: "severity_text", op: "neq", value: "INFO" },
+      { field: "severityText", op: "neq", value: "INFO" },
       { field: "search", op: "contains", value: "timeout" },
     ]);
   });
@@ -105,10 +105,10 @@ describe("parseDsl", () => {
   });
 
   it("treats a quoted value as a literal, not an operator or any-of list", () => {
-    const r = parseDsl('body:">=5" service_name:"(a OR b)"', LOGS_TEST_FIELDS);
+    const r = parseDsl('body:">=5" serviceName:"(a OR b)"', LOGS_TEST_FIELDS);
     expect(r.filters).toEqual([
       { field: "body", op: "eq", value: ">=5" },
-      { field: "service_name", op: "eq", value: "(a OR b)" },
+      { field: "serviceName", op: "eq", value: "(a OR b)" },
     ]);
   });
 

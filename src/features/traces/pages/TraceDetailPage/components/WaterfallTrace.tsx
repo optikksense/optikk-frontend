@@ -18,7 +18,7 @@ const ROW_HEIGHT = 28;
 interface Props {
   readonly spans: readonly TraceRecord[];
   readonly selectedSpanId: string | null;
-  readonly onSpanClick: (span: { span_id: string }) => void;
+  readonly onSpanClick: (span: { spanId: string }) => void;
   readonly criticalPathSpanIds: ReadonlySet<string>;
   readonly errorPathSpanIds: ReadonlySet<string>;
   readonly search: string;
@@ -122,7 +122,7 @@ function WaterfallTraceComponent({
             const row = flat[virtualRow.index];
             return (
               <div
-                key={row.span.span_id}
+                key={row.span.spanId}
                 className="absolute top-0 left-0 w-full"
                 style={{
                   height: `${virtualRow.size}px`,
@@ -134,13 +134,13 @@ function WaterfallTraceComponent({
                   selectedSpanId={selectedSpanId}
                   traceStartMs={traceStartMs}
                   totalMs={totalMs}
-                  isCrit={showCritDot && criticalPathSpanIds.has(row.span.span_id)}
-                  isErrPath={errorPathSpanIds.has(row.span.span_id)}
+                  isCrit={showCritDot && criticalPathSpanIds.has(row.span.spanId)}
+                  isErrPath={errorPathSpanIds.has(row.span.spanId)}
                   dim={!matchesQuery(row.span, search)}
-                  collapsed={collapsed.has(row.span.span_id)}
-                  events={eventsBySpan.get(row.span.span_id)}
-                  onClick={() => onSpanClick({ span_id: row.span.span_id })}
-                  onToggle={() => toggle(row.span.span_id)}
+                  collapsed={collapsed.has(row.span.spanId)}
+                  events={eventsBySpan.get(row.span.spanId)}
+                  onClick={() => onSpanClick({ spanId: row.span.spanId })}
+                  onToggle={() => toggle(row.span.spanId)}
                 />
               </div>
             );

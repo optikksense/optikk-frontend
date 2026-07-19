@@ -8,32 +8,32 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export interface InfrastructureNode {
   readonly host: string;
-  readonly pod_count: number;
-  readonly container_count: number;
+  readonly podCount: number;
+  readonly containerCount: number;
   readonly services: readonly string[];
-  readonly request_count: number;
-  readonly error_count: number;
-  readonly error_rate: number;
-  readonly avg_latency_ms: number;
-  readonly p95_latency_ms: number;
-  readonly last_seen: string;
+  readonly requestCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly avgLatencyMs: number;
+  readonly p95LatencyMs: number;
+  readonly lastSeen: string;
 }
 
 export interface InfrastructureNodeService {
-  readonly service_name: string;
-  readonly request_count: number;
-  readonly error_count: number;
-  readonly error_rate: number;
-  readonly avg_latency_ms: number;
-  readonly p95_latency_ms: number;
-  readonly pod_count: number;
+  readonly serviceName: string;
+  readonly requestCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly avgLatencyMs: number;
+  readonly p95LatencyMs: number;
+  readonly podCount: number;
 }
 
 export interface InfrastructureNodeSummary {
-  readonly healthy_nodes: number;
-  readonly degraded_nodes: number;
-  readonly unhealthy_nodes: number;
-  readonly total_pods: number;
+  readonly healthyNodes: number;
+  readonly degradedNodes: number;
+  readonly unhealthyNodes: number;
+  readonly totalPods: number;
 }
 
 function range(s: RequestTime, e: RequestTime) {

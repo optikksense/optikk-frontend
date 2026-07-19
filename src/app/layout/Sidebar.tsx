@@ -112,9 +112,10 @@ export default function Sidebar() {
         sidebarCollapsed && "w-[var(--space-sidebar-collapsed,56px)]"
       )}
     >
-      <div
+      <button
+        type="button"
         className={cn(
-          "flex h-[var(--space-header-h,56px)] shrink-0 cursor-pointer items-center justify-center gap-3 border-border border-b px-[var(--space-lg)]",
+          "flex h-[var(--space-header-h,56px)] shrink-0 cursor-pointer items-center justify-center gap-3 border-border border-x-0 border-t-0 border-b bg-transparent px-[var(--space-lg)]",
           sidebarCollapsed && "px-0"
         )}
         onClick={() => navigate({ to: ROUTES.overview })}
@@ -127,7 +128,7 @@ export default function Sidebar() {
             Optikk
           </span>
         )}
-      </div>
+      </button>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <nav

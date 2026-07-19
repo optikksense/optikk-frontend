@@ -58,16 +58,13 @@ export default function SaturationDatabasePage() {
           </div>
         </header>
 
-        <SaturationSubnav
-          active="database"
-          counts={{ database: summaryQ.data?.database_systems }}
-        />
+        <SaturationSubnav active="database" counts={{ database: summaryQ.data?.databaseSystems }} />
 
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <KpiCard label="Instances" value={fmtNum(systems.length)} subtext="monitored" />
           <KpiCard
             label="Queries"
-            value={summaryQ.data ? fmtNum(summaryQ.data.query_count) : "—"}
+            value={summaryQ.data ? fmtNum(summaryQ.data.queryCount) : "—"}
             subtext="in window"
           />
           <KpiCard label="Healthy" value={fmtNum(healthy)} tone="ok" subtext="instances" />

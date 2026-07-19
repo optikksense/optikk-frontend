@@ -24,22 +24,22 @@ interface Props {
 function computeMaxDepth(spans: readonly TraceRecord[]): number {
   if (spans.length === 0) return 0;
   const byId = new Map<string, TraceRecord>();
-  for (const s of spans) byId.set(s.span_id, s);
+  for (const s of spans) byId.set(s.spanId, s);
   const depthCache = new Map<string, number>();
   const depthOf = (span: TraceRecord, seen: Set<string>): number => {
-    const cached = depthCache.get(span.span_id);
+    const cached = depthCache.get(span.spanId);
     if (cached != null) return cached;
-    const parentId = span.parent_span_id;
+    const parentId = span.parentSpanId;
     let d = 1;
     if (parentId && byId.has(parentId) && !seen.has(parentId)) {
-      seen.add(span.span_id);
+      seen.add(span.spanId);
       d = depthOf(byId.get(parentId)!, seen) + 1;
     }
-    depthCache.set(span.span_id, d);
+    depthCache.set(span.spanId, d);
     return d;
   };
   let max = 1;
-  for (const s of spans) max = Math.max(max, depthOf(s, new Set<string>([s.span_id])));
+  for (const s of spans) max = Math.max(max, depthOf(s, new Set<string>([s.spanId])));
   return max;
 }
 
@@ -49,25 +49,25 @@ function summarizeCriticalPath(
   totalDurationMs: number
 ): { label: string; pct: number } {
   if (ids.size === 0) return { label: "—", pct: 0 };
-  const onPath = spans.filter((s) => ids.has(s.span_id));
-  const byId = new Map(onPath.map((s) => [s.span_id, s]));
+  const onPath = spans.filter((s) => ids.has(s.spanId));
+  const byId = new Map(onPath.map((s) => [s.spanId, s]));
   const childrenOf = new Map<string, TraceRecord[]>();
   for (const s of onPath) {
-    const p = s.parent_span_id ?? "";
+    const p = s.parentSpanId ?? "";
     if (!childrenOf.has(p)) childrenOf.set(p, []);
     childrenOf.get(p)!.push(s);
   }
-  const pathRoots = onPath.filter((s) => !s.parent_span_id || !byId.has(s.parent_span_id));
+  const pathRoots = onPath.filter((s) => !s.parentSpanId || !byId.has(s.parentSpanId));
   let cursor: TraceRecord | undefined = pathRoots.sort(
-    (a, b) => (b.duration_ms ?? 0) - (a.duration_ms ?? 0)
+    (a, b) => (b.durationMs ?? 0) - (a.durationMs ?? 0)
   )[0];
   const labels: string[] = [];
   while (cursor) {
-    labels.push(cursor.operation_name || cursor.service_name || cursor.span_id.slice(0, 6));
-    const kids = childrenOf.get(cursor.span_id) ?? [];
-    cursor = kids.sort((a, b) => (b.duration_ms ?? 0) - (a.duration_ms ?? 0))[0];
+    labels.push(cursor.operationName || cursor.serviceName || cursor.spanId.slice(0, 6));
+    const kids = childrenOf.get(cursor.spanId) ?? [];
+    cursor = kids.sort((a, b) => (b.durationMs ?? 0) - (a.durationMs ?? 0))[0];
   }
-  const pathMs = onPath.reduce((acc, s) => acc + (s.duration_ms ?? 0), 0);
+  const pathMs = onPath.reduce((acc, s) => acc + (s.durationMs ?? 0), 0);
   const pct = totalDurationMs > 0 ? Math.min(100, (pathMs / totalDurationMs) * 100) : 0;
   return {
     label: labels.slice(0, 4).join(" → "),

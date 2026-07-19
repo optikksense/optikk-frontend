@@ -14,9 +14,9 @@ export function HeatmapRenderer({
 }: DashboardPanelRendererProps) {
   const { data: rows } = useDashboardData(chartConfig, dataSources);
 
-  const xKey = chartConfig.xKey || "operation_name";
-  const yKey = chartConfig.yKey || "service_name";
-  const valueKey = chartConfig.valueKey || "error_rate";
+  const xKey = chartConfig.xKey || "operationName";
+  const yKey = chartConfig.yKey || "serviceName";
+  const valueKey = chartConfig.valueKey || "errorRate";
 
   const xValues = useMemo(
     () =>

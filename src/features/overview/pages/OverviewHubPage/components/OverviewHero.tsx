@@ -10,9 +10,9 @@ interface Props {
 }
 
 export default function OverviewHero({ summary, loading }: Props) {
-  const totalReq = num(summary?.total_span_count);
-  const errRate = num(summary?.avg_error_rate);
-  const errCount = num(summary?.total_errors);
+  const totalReq = num(summary?.totalSpanCount);
+  const errRate = num(summary?.avgErrorRate);
+  const errCount = num(summary?.totalErrors);
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -39,7 +39,7 @@ export default function OverviewHero({ summary, loading }: Props) {
       <StatCard
         metric={{
           title: "Latency p50",
-          value: loading ? "—" : formatDuration(summary?.avg_p50_ms),
+          value: loading ? "—" : formatDuration(summary?.avgP50Ms),
           description: loading ? undefined : "median latency",
         }}
         visuals={{ loading }}
@@ -47,7 +47,7 @@ export default function OverviewHero({ summary, loading }: Props) {
       <StatCard
         metric={{
           title: "Latency p95",
-          value: loading ? "—" : formatDuration(summary?.avg_p95_ms),
+          value: loading ? "—" : formatDuration(summary?.avgP95Ms),
           description: loading ? undefined : "upper latency",
         }}
         visuals={{ loading }}
@@ -55,7 +55,7 @@ export default function OverviewHero({ summary, loading }: Props) {
       <StatCard
         metric={{
           title: "Latency p99",
-          value: loading ? "—" : formatDuration(summary?.avg_p99_ms),
+          value: loading ? "—" : formatDuration(summary?.avgP99Ms),
           description: loading ? undefined : "tail latency",
         }}
         visuals={{ loading }}

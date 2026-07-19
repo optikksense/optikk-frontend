@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
+import { redSchemas } from "@shared/api/red/redApi";
 import {
   criticalPathSpanSchema,
   errorPathSpanSchema,
@@ -29,6 +30,7 @@ const cases: ReadonlyArray<readonly [string, z.ZodTypeAny]> = [
   ["errorPath", z.array(errorPathSpanSchema)],
   ["traceErrors", z.array(traceErrorGroupSchema)],
   ["traceLogs", z.array(traceLogSchema)],
+  ...Object.entries(redSchemas),
 ];
 
 describe("wire contract: Go structs parse against the web schemas", () => {

@@ -20,7 +20,7 @@ function formFromPolicy(p: Policy): PolicyForm {
   return {
     id: p.id,
     name: p.name,
-    matchDsl: p.match_dsl,
+    matchDsl: p.matchDsl,
     actionsJson: JSON.stringify(p.actions, null, 2),
     enabled: p.enabled,
   };
@@ -60,7 +60,7 @@ export default function PoliciesTab() {
     }
     const payload = {
       name: form.name,
-      match_dsl: form.matchDsl,
+      matchDsl: form.matchDsl,
       actions,
       enabled: form.enabled,
     };
@@ -107,7 +107,7 @@ export default function PoliciesTab() {
             value={form.actionsJson}
             onChange={(e) => setForm((f) => ({ ...f, actionsJson: e.target.value }))}
             rows={3}
-            placeholder='Actions (JSON array, e.g. [{"channel_id": 1}])'
+            placeholder='Actions (JSON array, e.g. [{"channelId": 1}])'
             className="rounded border border-border bg-card px-2 py-1.5 font-mono text-xs"
           />
           <div className="flex items-center gap-3">
@@ -187,9 +187,9 @@ export default function PoliciesTab() {
                     </div>
                   </td>
                   <td className="py-2 font-mono text-[11px] text-foreground-secondary">
-                    {p.match_dsl}
+                    {p.matchDsl}
                   </td>
-                  <td className="py-2 text-right font-mono">{p.hits_30d}</td>
+                  <td className="py-2 text-right font-mono">{p.hits30d}</td>
                   <td className="py-2">
                     <span
                       className={`rounded px-1.5 py-0.5 text-[10px] ${

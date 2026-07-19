@@ -9,7 +9,7 @@ export function useServiceLogs(serviceName: string, limit = 25, cursor?: string)
       queryLogs({
         startTime: Number(start),
         endTime: Number(end),
-        filters: [{ field: "service_name", op: "eq", value: serviceName }],
+        filters: [{ field: "serviceName", op: "eq", value: serviceName }],
         limit,
         cursor,
       }),

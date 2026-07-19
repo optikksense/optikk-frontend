@@ -10,14 +10,14 @@ import {
 } from "@/features/saturation/api/databaseQueryDetailApi";
 import type { DatabaseFilters } from "@/features/saturation/api/databaseSlowQueriesApi";
 
-// Backend query_hash is hex(UInt64): exactly 16 lowercase hex chars.
+// Backend queryHash is hex(UInt64): exactly 16 lowercase hex chars.
 // Legacy client-side djb2 ids are base36 and shorter, so this is unambiguous.
 export function isBackendQueryHash(queryId: string): boolean {
   return /^[0-9a-f]{16}$/.test(queryId);
 }
 
 function scopeKeys(hash: string, filters: DatabaseFilters) {
-  return [hash, filters.db_system, filters.collection, filters.namespace, filters.server];
+  return [hash, filters.dbSystem, filters.collection, filters.namespace, filters.server];
 }
 
 export function useQueryDetailSummary(hash: string, filters: DatabaseFilters, enabled: boolean) {

@@ -24,10 +24,10 @@ export function QueryDetailKpiStrip({
   timeseries?: QueryTimeseriesPoint[];
 }) {
   const errorRate = ratioFromCounts(view.errorCount, view.callCount);
-  const calls = timeseries.map((p) => p.call_count);
-  const avg = timeseries.map((p) => p.avg_ms ?? 0);
-  const p99 = timeseries.map((p) => p.p99_ms ?? 0);
-  const totalTime = timeseries.map((p) => (p.avg_ms ?? 0) * p.call_count);
+  const calls = timeseries.map((p) => p.callCount);
+  const avg = timeseries.map((p) => p.avgMs ?? 0);
+  const p99 = timeseries.map((p) => p.p99Ms ?? 0);
+  const totalTime = timeseries.map((p) => (p.avgMs ?? 0) * p.callCount);
   const showRows = view.avgRows != null;
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">

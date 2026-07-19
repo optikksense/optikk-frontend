@@ -94,11 +94,9 @@ export default function InfrastructureHubPage() {
   };
 
   const hostCount =
-    summary != null
-      ? summary.healthy_nodes + summary.degraded_nodes + summary.unhealthy_nodes
-      : null;
-  const podCount = summary?.total_pods ?? null;
-  const alertCount = summary?.unhealthy_nodes ?? null;
+    summary != null ? summary.healthyNodes + summary.degradedNodes + summary.unhealthyNodes : null;
+  const podCount = summary?.totalPods ?? null;
+  const alertCount = summary?.unhealthyNodes ?? null;
 
   return (
     <PageShell>

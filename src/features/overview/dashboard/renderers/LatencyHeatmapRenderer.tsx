@@ -19,11 +19,11 @@ export function LatencyHeatmapRenderer({
     () =>
       data
         .map((row) => ({
-          time_bucket: String(row.time_bucket ?? row.timestamp ?? ""),
-          latency_bucket: String(row.latency_bucket ?? row.bucket ?? ""),
-          span_count: Number(row.span_count ?? row.value ?? 0),
+          timeBucket: String(row.timeBucket ?? row.timestamp ?? ""),
+          latencyBucket: String(row.latencyBucket ?? row.bucket ?? ""),
+          spanCount: Number(row.spanCount ?? row.value ?? 0),
         }))
-        .filter((row) => row.time_bucket && row.latency_bucket),
+        .filter((row) => row.timeBucket && row.latencyBucket),
     [data]
   );
 

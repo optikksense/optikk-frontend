@@ -18,8 +18,8 @@ function pickEnvironment(rows: ReadonlyArray<CatalogRow>): string | null {
 }
 
 function HubBody() {
-  const { rows, comparison, windowSec } = useCatalogList();
-  const aggregate = useCatalogAggregate(rows, comparison, windowSec);
+  const { rows, summary, comparison } = useCatalogList();
+  const aggregate = useCatalogAggregate(rows, summary, comparison);
   const { tab, setTab } = useServiceHubTab();
   const environment = useMemo(() => pickEnvironment(rows), [rows]);
   const counts = {

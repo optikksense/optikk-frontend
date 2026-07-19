@@ -16,7 +16,7 @@ interface Props {
 function LogDetailEventTabComponent({ log, traceId }: Props) {
   const navigate = useNavigate();
 
-  const sev = severityStyle(log.severity_bucket);
+  const sev = severityStyle(log.severityBucket);
   const attrGroups = useMemo(
     () => buildAttrGroups(log, sev.label, sev.color),
     [log, sev.label, sev.color]

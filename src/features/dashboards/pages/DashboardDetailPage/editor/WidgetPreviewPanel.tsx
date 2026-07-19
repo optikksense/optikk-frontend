@@ -20,7 +20,7 @@ export function WidgetPreviewPanel({
   onTitleChange,
   onStepChange,
 }: WidgetPreviewPanelProps) {
-  const query = useMetricsExplorerQuery(state.queries, state.step, state.spaceAgg);
+  const query = useMetricsExplorerQuery(state.queries, state.step);
 
   return (
     <div className="flex h-full flex-col gap-3">

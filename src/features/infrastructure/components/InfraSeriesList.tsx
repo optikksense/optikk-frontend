@@ -67,6 +67,13 @@ const InfraSeriesList = memo(function InfraSeriesList({
                 <tr
                   key={item.key}
                   onClick={() => onToggle?.(item.key)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      onToggle?.(item.key);
+                    }
+                  }}
+                  tabIndex={0}
                   className={`cursor-pointer transition-colors hover:bg-[var(--white-04)] ${
                     isFaded ? "opacity-40" : "opacity-100"
                   } ${isSelected ? "bg-[var(--white-04)]" : "bg-transparent"}`}

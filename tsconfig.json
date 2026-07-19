@@ -24,7 +24,7 @@
     "verbatimModuleSyntax": false,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "paths": {
       "@/*": ["./src/*"],
       "@app/*": ["./src/app/*"],

@@ -31,9 +31,9 @@ function pagePayload(
     name: page.name,
     description: page.description,
     icon: page.icon,
-    icon_color: page.icon_color,
+    iconColor: page.iconColor,
     tags: page.tags,
-    is_favorite: page.is_favorite,
+    isFavorite: page.isFavorite,
     ...overrides,
   };
 }
@@ -219,13 +219,13 @@ function DetailHeader({ page, editing, onToggleEditing, onAddWidget }: DetailHea
     <div className="flex items-start gap-3">
       <button
         type="button"
-        onClick={() => commit({ is_favorite: !page.is_favorite })}
-        title={page.is_favorite ? "Unfavorite" : "Favorite"}
+        onClick={() => commit({ isFavorite: !page.isFavorite })}
+        title={page.isFavorite ? "Unfavorite" : "Favorite"}
         className="mt-1.5"
       >
         <Star
           size={18}
-          className={page.is_favorite ? "fill-warning text-warning" : "text-foreground-muted"}
+          className={page.isFavorite ? "fill-warning text-warning" : "text-foreground-muted"}
         />
       </button>
       <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-primary-subtle-12)] text-primary">

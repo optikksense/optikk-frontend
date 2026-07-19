@@ -43,11 +43,11 @@ function pctTile(label: string, v: number | null, warnAt: number, errAt: number)
 
 export function HostDetailKpiCards({ overview }: HostDetailKpiCardsProps) {
   const tiles: KpiTileProps[] = [
-    pctTile("CPU", overview?.cpu_pct ?? null, 75, 90),
-    pctTile("Memory", overview?.memory_pct ?? null, 80, 90),
-    pctTile("Disk (max volume)", overview?.disk_pct ?? null, 80, 90),
-    overview?.load_1m != null
-      ? { label: "Load (1m)", value: overview.load_1m.toFixed(2), tone: "ok" }
+    pctTile("CPU", overview?.cpuPct ?? null, 75, 90),
+    pctTile("Memory", overview?.memoryPct ?? null, 80, 90),
+    pctTile("Disk (max volume)", overview?.diskPct ?? null, 80, 90),
+    overview?.load1m != null
+      ? { label: "Load (1m)", value: overview.load1m.toFixed(2), tone: "ok" }
       : { label: "Load (1m)", value: "—", tone: "neutral", hint: "not reported" },
   ];
   return (

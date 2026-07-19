@@ -6,21 +6,21 @@ import type { TraceSummary } from "@shared/api/traces/types";
 
 function toTraceRecord(summary: TraceSummary): TraceRecord {
   return {
-    span_id: "",
-    trace_id: summary.trace_id,
-    service_name: summary.root_service,
-    operation_name: summary.root_operation,
-    start_time: new Date(summary.start_ms).toISOString(),
-    end_time: new Date(summary.end_ms).toISOString(),
-    duration_ms: summary.duration_ns / 1_000_000,
-    status: summary.root_status,
-    span_kind: "SERVER",
-    http_method: summary.root_http_method,
-    http_status_code: summary.root_http_status
-      ? Number.parseInt(summary.root_http_status, 10) || undefined
+    spanId: "",
+    traceId: summary.traceId,
+    serviceName: summary.rootService,
+    operationName: summary.rootOperation,
+    startTime: new Date(summary.startMs).toISOString(),
+    endTime: new Date(summary.endMs).toISOString(),
+    durationMs: summary.durationNs / 1_000_000,
+    status: summary.rootStatus,
+    spanKind: "SERVER",
+    httpMethod: summary.rootHttpMethod,
+    httpStatusCode: summary.rootHttpStatus
+      ? Number.parseInt(summary.rootHttpStatus, 10) || undefined
       : undefined,
-    has_error: summary.has_error,
-    start_ns: summary.start_ms * 1_000_000,
+    hasError: summary.hasError,
+    startNs: summary.startMs * 1_000_000,
   };
 }
 
@@ -31,14 +31,14 @@ export function useRecentTraces(serviceName: string, limit = 25, cursor?: string
       const response = await query({
         startTime: Number(start),
         endTime: Number(end),
-        filters: [{ field: "service_name", op: "eq", value: serviceName }],
+        filters: [{ field: "serviceName", op: "eq", value: serviceName }],
         limit,
         cursor,
       });
       return {
         traces: response.traces.map(toTraceRecord),
-        has_more: Boolean(response.nextCursor),
-        next_cursor: response.nextCursor,
+        hasMore: Boolean(response.nextCursor),
+        nextCursor: response.nextCursor,
         limit,
       };
     },

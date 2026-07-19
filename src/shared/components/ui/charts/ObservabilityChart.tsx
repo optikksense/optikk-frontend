@@ -13,6 +13,7 @@ import {
   uLine,
 } from "./uplotHelpers";
 
+import { resolveThemeColor } from "@shared/utils/chartTheme";
 
 export interface ObservabilityChartSeries {
   label: string;
@@ -23,6 +24,7 @@ export interface ObservabilityChartSeries {
   dash?: number[];
   width?: number;
   showInTooltip?: boolean;
+  scale?: string;
 }
 
 interface ObservabilityChartProps {
@@ -93,46 +95,62 @@ function ObservabilityChart({
       values: (_u: uPlot, vals: number[]) => formatUniqueAxisValues(vals, yFormatter),
     };
 
+    const scales: uPlot.Scales = {
+      x: {
+        time: true,
+        ...(xRange ? { range: xRange } : {}),
+      },
+      y: {
+        ...(yMin != null ? { min: yMin } : {}),
+        ...(yMax != null ? { max: yMax } : {}),
+      },
+    };
+
+    const labelColor = resolveThemeColor("--chart-axis", "#b9c0cf");
+    const font = "11px Inter, sans-serif";
+
+    for (const item of series) {
+      if (item.scale && item.scale !== "y" && item.scale !== "x" && !scales[item.scale]) {
+        scales[item.scale] = { min: 0 };
+        axes.push({
+          scale: item.scale,
+          side: 1,
+          stroke: resolveThemeColor(item.color, labelColor),
+          grid: { show: false },
+          ticks: { show: false },
+          font,
+          size: yAxisSize,
+          gap: 8,
+          values: (_u, vals) => formatUniqueAxisValues(vals, yFormatter),
+        });
+      }
+    }
+
     return {
       padding: [10, 16, 6, 12],
       legend: { show: legend },
       axes,
-      scales: {
-        x: {
-          time: true,
-          ...(xRange ? { range: xRange } : {}),
-        },
-        y: {
-          ...(yMin != null ? { min: yMin } : {}),
-          ...(yMax != null ? { max: yMax } : {}),
-        },
-      },
+      scales,
       series: [
         {},
         ...series.map((item) => {
-          if (type === "bar") {
-            return uBars(item.label, item.color);
+          const s =
+            type === "bar"
+              ? uBars(item.label, item.color)
+              : uLine(item.label, item.color, {
+                  fill: type === "area" || item.fill,
+                  dash: item.dash,
+                  width: item.width ?? 2,
+                });
+          if (item.scale) {
+            s.scale = item.scale;
           }
-          return uLine(item.label, item.color, {
-            fill: type === "area" || item.fill,
-            dash: item.dash,
-            width: item.width ?? 2,
-          });
+          return s;
         }),
       ],
       ...(allPlugins.length > 0 ? { plugins: allPlugins } : {}),
     };
-  }, [
-    legend,
-    series,
-    yAxisSize,
-    yFormatter,
-    xRange,
-    yMin,
-    yMax,
-    type,
-    allPlugins,
-  ]);
+  }, [legend, series, yAxisSize, yFormatter, xRange, yMin, yMax, type, allPlugins]);
 
   const tooltipContent = useMemo(() => {
     const defaultXFormatter = (timestampSeconds: number) =>

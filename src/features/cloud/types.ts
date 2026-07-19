@@ -22,16 +22,16 @@ export interface ProviderSummary {
   readonly restarts: number;
   readonly categories: readonly CategoryCount[];
   readonly health: HealthCounts;
-  readonly last_seen: string;
+  readonly lastSeen: string;
 }
 
 export interface CloudOverview {
   readonly providers: readonly ProviderSummary[];
-  readonly total_resources: number;
-  readonly total_accounts: number;
-  readonly total_regions: number;
-  readonly total_nodes: number;
-  readonly total_pods: number;
+  readonly totalResources: number;
+  readonly totalAccounts: number;
+  readonly totalRegions: number;
+  readonly totalNodes: number;
+  readonly totalPods: number;
   readonly unhealthy: number;
   readonly degraded: number;
 }
@@ -55,9 +55,9 @@ export interface AttentionResource {
   readonly region: string;
   readonly platform: string;
   readonly health: string;
-  readonly error_rate: number;
-  readonly avg_latency_ms: number;
-  readonly request_count: number;
+  readonly errorRate: number;
+  readonly avgLatencyMs: number;
+  readonly requestCount: number;
 }
 
 export interface CloudProviderDetail {

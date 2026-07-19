@@ -45,9 +45,9 @@ export function buildFleetDistribution(result: MetricQueryResult | undefined): {
     }
     for (const band of FLEET_LATENCY_BANDS) {
       points.push({
-        time_bucket: ts * 1000,
-        latency_bucket: band.label,
-        span_count: counts.get(band.label) ?? 0,
+        timeBucket: ts * 1000,
+        latencyBucket: band.label,
+        spanCount: counts.get(band.label) ?? 0,
       });
     }
   });

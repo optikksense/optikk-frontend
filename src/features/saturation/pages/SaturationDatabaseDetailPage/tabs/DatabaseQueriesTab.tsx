@@ -28,42 +28,42 @@ function p99Status(p99: number) {
 const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
   {
     header: "Query",
-    accessorKey: "query_text",
+    accessorKey: "queryText",
     // Sized so Calls/p50/p99/Total time all stay visible without scrolling;
     // drag the handle for more room on long statements.
     size: 320,
     minSize: 140,
     cell: ({ row: { original: row } }) => (
       <div className="flex min-w-0 items-center gap-2">
-        <StatusDot status={INSTANCE_HEALTH[p99Status(row.p99_ms ?? 0)]} />
+        <StatusDot status={INSTANCE_HEALTH[p99Status(row.p99Ms ?? 0)]} />
         <span className="block truncate font-mono text-[11.5px] text-foreground">
-          {row.query_text || "—"}
+          {row.queryText || "—"}
         </span>
       </div>
     ),
   },
   {
     header: "Calls",
-    accessorKey: "call_count",
+    accessorKey: "callCount",
     size: 90,
     meta: { align: "right" },
     cell: ({ row: { original: row } }) => (
-      <span className="font-mono">{fmtNum(row.call_count)}</span>
+      <span className="font-mono">{fmtNum(row.callCount)}</span>
     ),
   },
   {
     header: "p50",
-    accessorKey: "p50_ms",
+    accessorKey: "p50Ms",
     size: 84,
     meta: { align: "right" },
-    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.p50_ms)}</span>,
+    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.p50Ms)}</span>,
   },
   {
     header: "p99",
-    accessorKey: "p99_ms",
+    accessorKey: "p99Ms",
     size: 84,
     meta: { align: "right" },
-    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.p99_ms)}</span>,
+    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.p99Ms)}</span>,
   },
   {
     header: "Total time",
@@ -72,7 +72,7 @@ const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
     meta: { align: "right" },
     cell: ({ row: { original: row } }) => (
       <span className="font-mono font-semibold text-foreground">
-        {fmtMs(row.call_count * (row.p95_ms ?? 0))}
+        {fmtMs(row.callCount * (row.p95Ms ?? 0))}
       </span>
     ),
   },
@@ -93,7 +93,7 @@ export function DatabaseQueriesTab({ system }: { system: string }) {
     if (!search) return rows;
     const q = search.toLowerCase();
     return rows.filter(
-      (r) => r.query_text.toLowerCase().includes(q) || r.collection_name.toLowerCase().includes(q)
+      (r) => r.queryText.toLowerCase().includes(q) || r.collectionName.toLowerCase().includes(q)
     );
   }, [rows, search]);
 
@@ -126,11 +126,11 @@ export function DatabaseQueriesTab({ system }: { system: string }) {
               navigate({
                 to: ROUTES.saturationDatabaseQuery.replace(
                   "$queryId",
-                  row.query_hash || queryFingerprintId(row)
+                  row.queryHash || queryFingerprintId(row)
                 ) as never,
                 search: {
-                  db_system: row.db_system || system,
-                  collection: row.collection_name || undefined,
+                  dbSystem: row.dbSystem || system,
+                  collection: row.collectionName || undefined,
                   namespace: row.namespace || undefined,
                   server: row.server || undefined,
                 } as never,

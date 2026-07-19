@@ -82,10 +82,11 @@ export function TracesFacetRail({ groups, onInclude, onClearAll, activeFilterCou
             {visibleBuckets.map((b) => {
               const dot = dotColor(g.field, b.value);
               return (
-                <div
+                <button
+                  type="button"
                   key={b.value}
                   onClick={() => onInclude(g.field, b.value)}
-                  className="flex cursor-pointer flex-row items-center justify-between rounded-md hover:bg-card-hover"
+                  className="flex w-full cursor-pointer flex-row items-center justify-between rounded-md border-0 bg-transparent text-left hover:bg-card-hover"
                   style={{ padding: "5px 6px" }}
                 >
                   <div className="flex flex-row items-center" style={{ gap: 8, minWidth: 0 }}>
@@ -108,7 +109,7 @@ export function TracesFacetRail({ groups, onInclude, onClearAll, activeFilterCou
                   <span className="ml-2 font-mono text-[12px] text-foreground-muted">
                     {formatNumber(b.count)}
                   </span>
-                </div>
+                </button>
               );
             })}
             {hasMore && (

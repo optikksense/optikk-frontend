@@ -26,10 +26,10 @@ export function renderStatSummary(
   }
 
   const defaultFields: StatSummaryField[] = [
-    { label: "P50", keys: ["p50", "p50_ms", "p50Latency", "p50_latency"] },
-    { label: "P95", keys: ["p95", "p95_ms", "p95Latency", "p95_latency"] },
-    { label: "P99", keys: ["p99", "p99_ms", "p99Latency", "p99_latency"] },
-    { label: "Avg", keys: ["avg", "avg_ms", "avgLatency", "avg_latency"] },
+    { label: "P50", keys: ["p50", "p50Ms", "p50Latency"] },
+    { label: "P95", keys: ["p95", "p95Ms", "p95Latency"] },
+    { label: "P99", keys: ["p99", "p99Ms", "p99Latency"] },
+    { label: "Avg", keys: ["avg", "avgMs", "avgLatency"] },
   ];
   const fields = options?.fields && options.fields.length > 0 ? options.fields : defaultFields;
 

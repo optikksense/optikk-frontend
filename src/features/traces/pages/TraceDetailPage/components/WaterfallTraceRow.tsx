@@ -42,8 +42,8 @@ export function WaterfallTraceRow({
   const endPct = leftPct + widthPct;
   const flipLeft = endPct > 80;
   const isErr = (span.status ?? "").toUpperCase() === "ERROR";
-  const isSelected = selectedSpanId === span.span_id;
-  const hue = svcHue(span.service_name || "");
+  const isSelected = selectedSpanId === span.spanId;
+  const hue = svcHue(span.serviceName || "");
   const barColor = `oklch(0.62 0.14 ${hue})`;
   const swatchColor = barColor;
 
@@ -56,10 +56,13 @@ export function WaterfallTraceRow({
         dim && "opacity-[0.35]"
       )}
       onClick={onClick}
-      role="button"
-      tabIndex={0}
+      role="treeitem"
+      aria-expanded={hasChildren ? !collapsed : undefined}
       onKeyDown={(e) => {
-        if (e.key === "Enter") onClick();
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
       }}
     >
       <div
@@ -87,9 +90,9 @@ export function WaterfallTraceRow({
         />
         <span
           className="max-w-[110px] flex-none overflow-hidden text-ellipsis whitespace-nowrap text-[11.5px] text-foreground-muted"
-          title={span.service_name}
+          title={span.serviceName}
         >
-          {span.service_name || "—"}
+          {span.serviceName || "—"}
           {isCrit && (
             <span
               aria-hidden
@@ -99,9 +102,9 @@ export function WaterfallTraceRow({
         </span>
         <span
           className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[12.5px] text-foreground"
-          title={span.operation_name}
+          title={span.operationName}
         >
-          {span.operation_name || "(no name)"}
+          {span.operationName || "(no name)"}
         </span>
         {isErr && (
           <span className="ml-auto inline-flex flex-none items-center gap-[3px] rounded-full bg-error-subtle px-1.5 py-px font-mono text-[10px] text-error">
@@ -129,7 +132,7 @@ export function WaterfallTraceRow({
               width: `${widthPct}%`,
               background: isErr ? undefined : barColor,
             }}
-            title={`${span.service_name} · ${span.operation_name}\n${formatDuration(dur)} · starts +${formatDuration(startMs - traceStartMs)}`}
+            title={`${span.serviceName} · ${span.operationName}\n${formatDuration(dur)} · starts +${formatDuration(startMs - traceStartMs)}`}
           />
           <span
             className={cn(

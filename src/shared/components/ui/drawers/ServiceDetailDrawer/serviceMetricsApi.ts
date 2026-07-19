@@ -15,12 +15,12 @@ export async function getServiceMetrics(
 ): Promise<ServiceMetricPoint[]> {
   const topology = await getServiceTopology({ startTime, endTime });
   return topology.nodes.map((node) => ({
-    service_name: node.name,
-    request_count: node.request_count,
-    error_count: node.error_count,
-    avg_latency: node.p50_latency_ms,
-    p50_latency: node.p50_latency_ms,
-    p95_latency: node.p95_latency_ms,
-    p99_latency: node.p99_latency_ms,
+    serviceName: node.name,
+    requestCount: node.requestCount,
+    errorCount: node.errorCount,
+    avgLatency: node.p50LatencyMs,
+    p50Latency: node.p50LatencyMs,
+    p95Latency: node.p95LatencyMs,
+    p99Latency: node.p99LatencyMs,
   }));
 }

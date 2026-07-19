@@ -9,23 +9,23 @@ const scopedString = stringValue.optional().default("");
 
 export const slowQueryPatternSchema = z.object({
   // Backend fingerprint; defaults to "" when the server is older.
-  query_hash: scopedString,
-  query_text: stringValue,
-  db_system: scopedString,
-  collection_name: stringValue,
+  queryHash: scopedString,
+  queryText: stringValue,
+  dbSystem: scopedString,
+  collectionName: stringValue,
   namespace: scopedString,
   server: scopedString,
-  p50_ms: nullableNumber,
-  p95_ms: nullableNumber,
-  p99_ms: nullableNumber,
-  call_count: numericValue,
-  error_count: numericValue,
+  p50Ms: nullableNumber,
+  p95Ms: nullableNumber,
+  p99Ms: nullableNumber,
+  callCount: numericValue,
+  errorCount: numericValue,
 });
 
 export type SlowQueryPatternRow = z.infer<typeof slowQueryPatternSchema>;
 
 export interface DatabaseFilters {
-  readonly db_system?: string;
+  readonly dbSystem?: string;
   readonly collection?: string;
   readonly server?: string;
   readonly namespace?: string;

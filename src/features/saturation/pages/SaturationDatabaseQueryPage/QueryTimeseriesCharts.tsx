@@ -15,14 +15,14 @@ interface ChartSeries {
 
 function buildSeries(points: QueryTimeseriesPoint[]): ChartSeries {
   const rows = points
-    .map((p) => ({ ts: Math.floor(new Date(p.time_bucket).getTime() / 1000), p }))
+    .map((p) => ({ ts: Math.floor(new Date(p.timeBucket).getTime() / 1000), p }))
     .filter((r) => Number.isFinite(r.ts))
     .sort((a, b) => a.ts - b.ts);
   return {
     timestamps: rows.map((r) => r.ts),
-    avgMs: rows.map((r) => r.p.avg_ms),
-    p99Ms: rows.map((r) => r.p.p99_ms),
-    calls: rows.map((r) => r.p.call_count),
+    avgMs: rows.map((r) => r.p.avgMs),
+    p99Ms: rows.map((r) => r.p.p99Ms),
+    calls: rows.map((r) => r.p.callCount),
   };
 }
 

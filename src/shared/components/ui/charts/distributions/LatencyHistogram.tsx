@@ -17,7 +17,6 @@ const BUCKETS = [
 
 interface LatencyHistogramTrace {
   durationMs?: number;
-  duration_ms?: number;
 }
 
 interface LatencyHistogramProps {
@@ -29,7 +28,7 @@ interface LatencyHistogramProps {
 function bucketize(traces: LatencyHistogramTrace[]): number[] {
   const counts = BUCKETS.map(() => 0);
   for (const trace of traces) {
-    const duration = trace.durationMs || trace.duration_ms || 0;
+    const duration = trace.durationMs || 0;
     for (let i = 0; i < BUCKETS.length; i++) {
       if (duration <= BUCKETS[i].max) {
         counts[i]++;

@@ -4,16 +4,16 @@ import { Check, Copy, Zap } from "lucide-react";
 import { useState } from "react";
 
 export interface SelectedSpan {
-  readonly span_id?: string;
-  readonly operation_name?: string;
-  readonly service_name?: string;
+  readonly spanId?: string;
+  readonly operationName?: string;
+  readonly serviceName?: string;
   readonly status?: string;
-  readonly span_kind?: string;
-  readonly duration_ms?: number;
-  readonly http_method?: string;
-  readonly response_status_code?: string;
-  readonly start_time?: string;
-  readonly end_time?: string;
+  readonly spanKind?: string;
+  readonly durationMs?: number;
+  readonly httpMethod?: string;
+  readonly responseStatusCode?: string;
+  readonly startTime?: string;
+  readonly endTime?: string;
 }
 
 interface SpanDrawerHeaderProps {
@@ -41,11 +41,11 @@ export function SpanDrawerHeader({
   onClose,
 }: SpanDrawerHeaderProps) {
   const isError = (span.status ?? "").toUpperCase() === "ERROR";
-  const httpStatus = span.response_status_code ? Number(span.response_status_code) : undefined;
-  const dur = span.duration_ms ?? 0;
+  const httpStatus = span.responseStatusCode ? Number(span.responseStatusCode) : undefined;
+  const dur = span.durationMs ?? 0;
 
-  const spanStartMs = span.start_time ? new Date(span.start_time).getTime() : undefined;
-  const spanEndMs = span.end_time ? new Date(span.end_time).getTime() : undefined;
+  const spanStartMs = span.startTime ? new Date(span.startTime).getTime() : undefined;
+  const spanEndMs = span.endTime ? new Date(span.endTime).getTime() : undefined;
   const traceWindow = traceStartMs != null && traceEndMs != null ? traceEndMs - traceStartMs : 0;
   const offsetMs = spanStartMs != null && traceStartMs != null ? spanStartMs - traceStartMs : 0;
 
@@ -69,11 +69,11 @@ export function SpanDrawerHeader({
     <DrawerHeader onClose={onClose} actions={<CopySpanId spanId={spanId} />}>
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-medium text-[12.5px] text-[var(--fg-0)]">
-          {span.service_name || "unknown"}
+          {span.serviceName || "unknown"}
         </span>
-        {span.span_kind && (
+        {span.spanKind && (
           <span className="rounded-[4px] bg-[var(--bg-inset)] px-1.5 py-px font-mono text-[10.5px] text-[var(--fg-3)]">
-            {span.span_kind}
+            {span.spanKind}
           </span>
         )}
         <span
@@ -97,7 +97,7 @@ export function SpanDrawerHeader({
       </div>
 
       <h2 className="mt-2 break-words font-semibold text-[16px] text-[var(--fg-0)] leading-[1.3]">
-        {span.operation_name || "(no operation)"}
+        {span.operationName || "(no operation)"}
       </h2>
 
       {traceWindow > 0 && (
@@ -121,7 +121,7 @@ export function SpanDrawerHeader({
 
       <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-x-4 gap-y-2.5">
         <Stat label="Duration" value={formatDuration(dur)} />
-        {span.http_method && <Stat label="Method" value={span.http_method} />}
+        {span.httpMethod && <Stat label="Method" value={span.httpMethod} />}
         {httpStatus != null && (
           <Stat label="Status" value={String(httpStatus)} color={statusColor(httpStatus)} />
         )}

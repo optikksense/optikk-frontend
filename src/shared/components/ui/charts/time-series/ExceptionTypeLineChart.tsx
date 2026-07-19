@@ -31,7 +31,7 @@ export default memo(function ExceptionTypeLineChart({
     const activeTimestamps = firstGroupRows
       .map(
         (row: Record<string, unknown>) =>
-          tsMs(String(row.timestamp ?? row.time_bucket ?? row.timeBucket ?? "")) / 1000
+          tsMs(String(row.timestamp ?? row.timeBucket ?? row.timeBucket ?? "")) / 1000
       )
       .filter((t) => !Number.isNaN(t));
 

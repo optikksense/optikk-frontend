@@ -36,11 +36,11 @@ function applyFilters(rows: CatalogRow[], search: string, status: StatusFilter):
 function toDrawerInitialData(row: CatalogRow | null): Record<string, unknown> | null {
   if (!row) return null;
   return {
-    request_count: row.requestCount,
-    error_count: row.errorCount,
-    error_rate: row.errorRate,
-    p95_latency: row.p95Ms,
-    p99_latency: row.p99Ms,
+    requestCount: row.requestCount,
+    errorCount: row.errorCount,
+    errorRate: row.errorRate,
+    p95Latency: row.p95Ms,
+    p99Latency: row.p99Ms,
     version: row.version,
     environment: row.environment,
     lang: row.lang,

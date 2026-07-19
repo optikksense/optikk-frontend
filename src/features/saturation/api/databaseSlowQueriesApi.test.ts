@@ -5,18 +5,18 @@ import { slowQueryPatternSchema } from "./databaseSlowQueriesApi";
 describe("slowQueryPatternSchema", () => {
   it("accepts responses from backends without query scope fields", () => {
     const row = slowQueryPatternSchema.parse({
-      query_text: "SELECT * FROM orders WHERE id = ?",
-      collection_name: "orders",
-      p50_ms: 1,
-      p95_ms: 2,
-      p99_ms: 3,
-      call_count: 10,
-      error_count: 0,
+      queryText: "SELECT * FROM orders WHERE id = ?",
+      collectionName: "orders",
+      p50Ms: 1,
+      p95Ms: 2,
+      p99Ms: 3,
+      callCount: 10,
+      errorCount: 0,
     });
 
     expect(row).toMatchObject({
-      query_hash: "",
-      db_system: "",
+      queryHash: "",
+      dbSystem: "",
       namespace: "",
       server: "",
     });

@@ -15,7 +15,7 @@ interface ContainerDetailLogsProps {
 }
 
 function LogPreviewRow({ log }: { log: LogRecord }) {
-  const sev = severityStyle(log.severity_bucket);
+  const sev = severityStyle(log.severityBucket);
   return (
     <div className="flex items-baseline gap-3 border-border/60 border-b px-1 py-1.5 font-mono text-[11.5px] last:border-b-0">
       <span className="shrink-0 text-foreground-muted tabular-nums">
@@ -25,7 +25,7 @@ function LogPreviewRow({ log }: { log: LogRecord }) {
         {sev.shortLabel}
       </span>
       <span className="max-w-[160px] shrink-0 truncate text-foreground-muted">
-        {log.service_name || "—"}
+        {log.serviceName || "—"}
       </span>
       <span className="min-w-0 flex-1 truncate text-foreground">{log.body}</span>
     </div>

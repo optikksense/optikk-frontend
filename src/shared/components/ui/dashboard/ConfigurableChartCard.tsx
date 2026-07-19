@@ -8,7 +8,7 @@ import ChartErrorOverlay from "@shared/components/ui/feedback/ChartErrorOverlay"
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 
 import { useLocation } from "@tanstack/react-router";
-import { memo, useMemo, useState } from "react";
+import { Suspense, memo, useMemo, useState } from "react";
 
 import QueueMetricsList, {
   type QueueMetricsItem,
@@ -257,7 +257,17 @@ function ConfigurableChartCard(props: ConfigurableChartCardProps) {
       title={titleContent}
       showDetails={import.meta.env.DEV}
     >
-      <ConfigurableChartCardContent {...props} titleContent={titleContent} />
+      <Suspense
+        fallback={
+          <DashboardCardFrame titleContent={titleContent}>
+            <div className="grid h-full place-items-center text-[12px] text-foreground-muted">
+              Loading visualization…
+            </div>
+          </DashboardCardFrame>
+        }
+      >
+        <ConfigurableChartCardContent {...props} titleContent={titleContent} />
+      </Suspense>
     </DashboardCardErrorBoundary>
   );
 }

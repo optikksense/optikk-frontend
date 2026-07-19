@@ -13,7 +13,7 @@ export interface TopEndpointListItem {
   key?: string;
   endpoint?: string;
   service?: string;
-  request_count?: number;
+  requestCount?: number;
   errorRate?: number;
   value?: number;
   latency?: number;
@@ -72,7 +72,7 @@ function getRowDisplayConfig(
     selectedBg: "rgba(124, 127, 242, 0.12)",
     hoverBg: "rgba(255,255,255,0.04)",
     valueColor: "var(--text-primary)",
-    displayValue: formatNumber(endpoint.request_count ?? 0),
+    displayValue: formatNumber(endpoint.requestCount ?? 0),
   };
 }
 
@@ -147,7 +147,7 @@ export default function TopEndpointsList({
                   ? (ep.errorRate ?? ep.value ?? 0)
                   : type === "latency"
                     ? (ep.latency ?? 0)
-                    : (ep.request_count ?? 0);
+                    : (ep.requestCount ?? 0);
               const maxValInList = Math.max(...visibleEndpoints.map(getVal), 1);
               const currentVal = getVal(endpoint);
               const pct = (currentVal / maxValInList) * 100;
@@ -167,6 +167,14 @@ export default function TopEndpointsList({
                     event.stopPropagation();
                     onToggle?.(endpointKey);
                   }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onToggle?.(endpointKey);
+                    }
+                  }}
+                  tabIndex={0}
                   style={{
                     background: isSelected ? selectedBg : "transparent",
                     cursor: "pointer",

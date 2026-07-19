@@ -21,21 +21,21 @@ export function buildServiceDrawerSearch(
   const serviceName = typeof service === "string" ? service : service.name;
   const row =
     typeof service === "string"
-      ? { service_name: serviceName }
+      ? { serviceName: serviceName }
       : {
-          service_name: service.name,
-          request_count: service.requestCount,
-          error_count: service.errorCount,
-          error_rate: service.errorRate,
-          avg_latency: service.avgLatency,
-          p95_latency: service.p95Latency,
-          p99_latency: service.p99Latency,
+          serviceName: service.name,
+          requestCount: service.requestCount,
+          errorCount: service.errorCount,
+          errorRate: service.errorRate,
+          avgLatency: service.avgLatency,
+          p95Latency: service.p95Latency,
+          p99Latency: service.p99Latency,
         };
 
   return (
     buildDashboardDrawerSearch(
       currentSearch,
-      { entity: "service", idField: "service_name", titleField: "service_name" },
+      { entity: "service", idField: "serviceName", titleField: "serviceName" },
       row
     ) ?? buildLegacyDashboardDrawerSearch(currentSearch, "service", serviceName, serviceName)
   );
@@ -97,6 +97,6 @@ export function buildServiceLogsSearch(
   next.delete("topologyFocus");
   next.delete("service");
   next.delete("serviceName");
-  next.set("filters", `service_name:equals:${encodeURIComponent(serviceName)}`);
+  next.set("filters", `serviceName:equals:${encodeURIComponent(serviceName)}`);
   return searchParamsToObject(next);
 }

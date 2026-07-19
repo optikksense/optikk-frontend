@@ -17,7 +17,7 @@ interface Props {
   readonly spans: readonly TraceRecord[];
   readonly traceId: string;
   readonly selectedSpanId: string | null;
-  readonly onSpanClick: (span: { span_id: string }) => void;
+  readonly onSpanClick: (span: { spanId: string }) => void;
   readonly criticalPathSpanIds: Set<string>;
   readonly errorPathSpanIds: Set<string>;
   readonly serviceMap: ServiceTopologyResponse | null;

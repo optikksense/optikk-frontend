@@ -7,8 +7,8 @@ import type { ExplorerFilter, TranslationWarning } from "@shared/search/types/fi
  * `filter.Filters` shape on the backend (`internal/modules/logs/filter/filter.go`).
  *
  *   Resource dims (service/host/pod/…)  → typed include/exclude arrays
- *   `severity_text` (eq/neq)            → `severities` / `excludeSeverities`
- *   `trace_id` / `span_id` (eq)         → single-value fields (later wins logged)
+ *   `severityText` (eq/neq)            → `severities` / `excludeSeverities`
+ *   `traceId` / `spanId` (eq)         → single-value fields (later wins logged)
  *   `body` / `search` (contains|eq)     → joined into `search` (substring)
  *   `@<key>`                            → `attributes[]` with eq/neq/contains/regex/gt/gte/lt/lte/exists/not_exists
  *   anything else                       → `warnings[]` so the UI can surface a soft
@@ -75,10 +75,10 @@ export function buildLogsFilters(
   return { body, warnings };
 }
 
-const RESOURCE_DIMS = new Set(["service_name", "host", "pod", "container", "environment"]);
+const RESOURCE_DIMS = new Set(["serviceName", "host", "pod", "container", "environment"]);
 
 const RESOURCE_INCLUDE: Record<string, keyof LogsFiltersBody> = {
-  service_name: "services",
+  serviceName: "services",
   host: "hosts",
   pod: "pods",
   container: "containers",
@@ -86,7 +86,7 @@ const RESOURCE_INCLUDE: Record<string, keyof LogsFiltersBody> = {
 };
 
 const RESOURCE_EXCLUDE: Record<string, keyof LogsFiltersBody> = {
-  service_name: "excludeServices",
+  serviceName: "excludeServices",
   host: "excludeHosts",
 };
 
@@ -119,15 +119,15 @@ function dispatchFilter(field: string, op: string, value: string, ctx: DispatchC
     handleSearch(op, value, ctx);
     return;
   }
-  if (field === "trace_id") {
+  if (field === "traceId") {
     handleSingle(ctx, "traceId", value);
     return;
   }
-  if (field === "span_id") {
+  if (field === "spanId") {
     handleSingle(ctx, "spanId", value);
     return;
   }
-  if (field === "severity_text") {
+  if (field === "severityText") {
     handleSeverity(op, value, ctx);
     return;
   }
@@ -178,7 +178,7 @@ function handleSeverity(op: string, value: string, ctx: DispatchCtx): void {
   }
   ctx.warnings.push({
     code: "unsupported_op",
-    field: "severity_text",
+    field: "severityText",
     message: `Operator "${op}" not supported on severity — only match / any-of.`,
   });
 }

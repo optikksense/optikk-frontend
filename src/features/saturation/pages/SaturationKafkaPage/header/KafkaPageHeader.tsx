@@ -43,8 +43,8 @@ function Subtitle({
   }
   return (
     <div className="text-[12px] text-foreground-muted">
-      {fmtNum(summary.topic_count)} topics · {fmtNum(summary.group_count)} consumer groups ·{" "}
-      {fmtNum(summary.assigned_partitions)} partitions
+      {fmtNum(summary.topicCount)} topics · {fmtNum(summary.groupCount)} consumer groups ·{" "}
+      {fmtNum(summary.assignedPartitions)} partitions
     </div>
   );
 }

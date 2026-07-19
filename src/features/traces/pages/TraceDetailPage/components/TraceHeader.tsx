@@ -126,7 +126,7 @@ function TraceHeaderComponent({
         </div>
 
         <div className="mt-2.5 flex flex-wrap items-center gap-2 text-[11.5px] text-foreground-caption">
-          <span className={tidLabel}>trace_id</span>
+          <span className={tidLabel}>traceId</span>
           <code className={tidMonoSmall}>{traceId}</code>
           <CopyTraceId traceId={traceId} />
           {startMs && startMs > 0 && (

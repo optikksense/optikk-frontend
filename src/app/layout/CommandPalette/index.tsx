@@ -78,14 +78,14 @@ export function CommandPalette() {
         ))}
 
       {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-[20vh] backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="fade-in zoom-in-95 relative w-full max-w-lg animate-in shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-[20vh] backdrop-blur-sm">
+          <button
+            type="button"
+            aria-label="Close command palette"
+            className="absolute inset-0 cursor-default border-0 bg-transparent"
+            onClick={() => setOpen(false)}
+          />
+          <div className="fade-in zoom-in-95 relative w-full max-w-lg animate-in shadow-2xl">
             <Command className="rounded-xl border border-border shadow-md">
               <CommandInput placeholder="Type a command or search..." />
               <CommandList>

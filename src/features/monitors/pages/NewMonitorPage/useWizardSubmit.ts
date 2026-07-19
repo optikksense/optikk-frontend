@@ -6,8 +6,8 @@ import { useUpdateMonitor } from "../../hooks/useMonitorMutations";
 
 export interface TestResult {
   readonly value: number;
-  readonly has_data: boolean;
-  readonly would_decide_as: string;
+  readonly hasData: boolean;
+  readonly wouldDecideAs: string;
   readonly threshold: number;
 }
 

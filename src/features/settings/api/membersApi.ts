@@ -1,6 +1,5 @@
 import api from "@/shared/api/http/client";
 import { API_CONFIG } from "@config/apiConfig";
-import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -23,22 +22,19 @@ export interface CreateMemberPayload {
 }
 
 export async function listMembers(): Promise<Member[]> {
-  const raw = await api.get<unknown>(`${V1}/users`);
-  return unwrapEnvelope<Member[]>(raw);
+  return api.get<Member[]>(`${V1}/users`);
 }
 
 export async function createMember(payload: CreateMemberPayload): Promise<Member> {
-  const raw = await api.post<unknown>(`${V1}/users`, payload);
-  return unwrapEnvelope<Member>(raw);
+  return api.post<Member>(`${V1}/users`, payload);
 }
 
 export async function updateMemberRole(id: number, role: MemberRole): Promise<Member> {
-  const raw = await api.request<unknown>({
+  return api.request<Member>({
     method: "PATCH",
     url: `${V1}/users/${id}/role`,
     data: { role },
   });
-  return unwrapEnvelope<Member>(raw);
 }
 
 export async function removeMember(id: number): Promise<void> {

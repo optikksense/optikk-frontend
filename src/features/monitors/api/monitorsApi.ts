@@ -1,6 +1,5 @@
 import api from "@/shared/api/http/client";
 import { API_CONFIG } from "@config/apiConfig";
-import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -19,18 +18,18 @@ interface MonitorScope {
 export interface MetricQueryShape {
   readonly metric: string;
   readonly aggregation: string;
-  readonly window_sec: number;
+  readonly windowSec: number;
 }
 export interface APMQueryShape {
   readonly service: string;
   readonly resource?: string;
   readonly track: string;
-  readonly window_sec: number;
+  readonly windowSec: number;
 }
 export interface LogQueryShape {
   readonly query: string;
-  readonly group_by?: string;
-  readonly window_sec: number;
+  readonly groupBy?: string;
+  readonly windowSec: number;
 }
 interface MonitorQuery {
   readonly metric?: MetricQueryShape;
@@ -40,16 +39,16 @@ interface MonitorQuery {
 
 export interface MonitorConditions {
   readonly comparator: "above" | "below" | "equal";
-  readonly alert_threshold?: number;
-  readonly warn_threshold?: number;
-  readonly recovery_threshold?: number;
-  readonly no_data_after_sec: number;
-  readonly no_data_as?: "no_data" | "alert" | "ok";
-  readonly min_sample?: number;
+  readonly alertThreshold?: number;
+  readonly warnThreshold?: number;
+  readonly recoveryThreshold?: number;
+  readonly noDataAfterSec: number;
+  readonly noDataAs?: "no_data" | "alert" | "ok";
+  readonly minSample?: number;
 }
 
 interface MonitorNotifyTargets {
-  readonly channel_ids: number[];
+  readonly channelIds: number[];
 }
 
 export interface Monitor {
@@ -58,29 +57,29 @@ export interface Monitor {
   readonly type: MonitorType;
   readonly priority: MonitorPriority;
   readonly status: MonitorStatus;
-  readonly current_value?: number;
+  readonly currentValue?: number;
   readonly scope: MonitorScope;
   readonly query: MonitorQuery;
   readonly conditions: MonitorConditions;
   readonly notify: MonitorNotifyTargets;
-  readonly message_body?: string;
-  readonly runbook_url?: string;
+  readonly messageBody?: string;
+  readonly runbookUrl?: string;
   readonly tags: string[];
-  readonly eval_every_sec: number;
-  readonly renotify_every_sec?: number;
-  readonly muted_until?: string;
+  readonly evalEverySec: number;
+  readonly renotifyEverySec?: number;
+  readonly mutedUntil?: string;
   readonly active: boolean;
-  readonly last_evaluated_at?: string;
-  readonly triggered_at?: string;
-  readonly created_at: string;
-  readonly updated_at?: string;
+  readonly lastEvaluatedAt?: string;
+  readonly triggeredAt?: string;
+  readonly createdAt: string;
+  readonly updatedAt?: string;
 }
 
 export interface MonitorListStatusCounts {
   readonly alert: number;
   readonly warn: number;
   readonly ok: number;
-  readonly no_data: number;
+  readonly noData: number;
   readonly muted: number;
   readonly total: number;
 }
@@ -92,37 +91,37 @@ export interface MonitorListResponse {
 
 export interface MonitorEvent {
   readonly id: number;
-  readonly monitor_id: number;
-  readonly monitor_name: string;
+  readonly monitorId: number;
+  readonly monitorName: string;
   readonly kind: "triggered" | "recovered" | "acked" | "muted" | "test";
   readonly value?: number;
   readonly threshold?: number;
-  readonly started_at: string;
-  readonly ended_at?: string;
+  readonly startedAt: string;
+  readonly endedAt?: string;
 }
 
 interface SeriesPoint {
-  readonly bucket_ms: number;
+  readonly bucketMs: number;
   readonly value: number;
 }
 
 export interface MonitorSeriesResponse {
   readonly points: SeriesPoint[];
-  readonly alert_threshold?: number;
-  readonly warn_threshold?: number;
-  readonly recovery_threshold?: number;
+  readonly alertThreshold?: number;
+  readonly warnThreshold?: number;
+  readonly recoveryThreshold?: number;
 }
 
 interface StatusBand {
   readonly status: MonitorStatus;
-  readonly started_at: string;
-  readonly ended_at: string;
+  readonly startedAt: string;
+  readonly endedAt: string;
 }
 
 export interface StatusTimelineResponse {
   readonly bands: StatusBand[];
-  readonly started_at: string;
-  readonly ended_at: string;
+  readonly startedAt: string;
+  readonly endedAt: string;
 }
 
 export interface ListMonitorsParams {
@@ -136,13 +135,11 @@ export interface ListMonitorsParams {
 }
 
 export async function listMonitors(params: ListMonitorsParams = {}): Promise<MonitorListResponse> {
-  const raw = await api.get<unknown>(`${V1}/monitors`, { params });
-  return unwrapEnvelope<MonitorListResponse>(raw);
+  return api.get<MonitorListResponse>(`${V1}/monitors`, { params });
 }
 
 export async function getMonitor(id: number): Promise<Monitor> {
-  const raw = await api.get<unknown>(`${V1}/monitors/${id}`);
-  return unwrapEnvelope<Monitor>(raw);
+  return api.get<Monitor>(`${V1}/monitors/${id}`);
 }
 
 export interface CreateMonitorPayload {
@@ -153,21 +150,19 @@ export interface CreateMonitorPayload {
   query: MonitorQuery;
   conditions: MonitorConditions;
   notify: MonitorNotifyTargets;
-  message_body?: string;
-  runbook_url?: string;
+  messageBody?: string;
+  runbookUrl?: string;
   tags?: string[];
-  eval_every_sec: number;
-  renotify_every_sec?: number;
+  evalEverySec: number;
+  renotifyEverySec?: number;
 }
 
 export async function createMonitor(payload: CreateMonitorPayload): Promise<Monitor> {
-  const raw = await api.post<unknown>(`${V1}/monitors`, payload);
-  return unwrapEnvelope<Monitor>(raw);
+  return api.post<Monitor>(`${V1}/monitors`, payload);
 }
 
 export async function updateMonitor(id: number, payload: CreateMonitorPayload): Promise<Monitor> {
-  const raw = await api.put<unknown>(`${V1}/monitors/${id}`, payload);
-  return unwrapEnvelope<Monitor>(raw);
+  return api.put<Monitor>(`${V1}/monitors/${id}`, payload);
 }
 
 export async function deleteMonitor(id: number): Promise<void> {
@@ -179,47 +174,47 @@ export async function ackMonitor(id: number): Promise<void> {
 }
 
 export async function muteMonitor(id: number, durationSec: number): Promise<void> {
-  await api.post<unknown>(`${V1}/monitors/${id}/mute`, { duration_sec: durationSec });
+  await api.post<unknown>(`${V1}/monitors/${id}/mute`, { durationSec: durationSec });
 }
 
 export async function testMonitor(id: number): Promise<{
   value: number;
-  has_data: boolean;
-  would_decide_as: string;
+  hasData: boolean;
+  wouldDecideAs: string;
   threshold: number;
 }> {
-  const raw = await api.post<unknown>(`${V1}/monitors/${id}/test`, {});
-  return unwrapEnvelope(raw);
+  return api.post<{
+    value: number;
+    hasData: boolean;
+    wouldDecideAs: string;
+    threshold: number;
+  }>(`${V1}/monitors/${id}/test`, {});
 }
 
 export async function getMonitorSeries(
   id: number,
   windowMs: number
 ): Promise<MonitorSeriesResponse> {
-  const raw = await api.get<unknown>(`${V1}/monitors/${id}/series`, {
-    params: { window_ms: windowMs },
+  return api.get<MonitorSeriesResponse>(`${V1}/monitors/${id}/series`, {
+    params: { windowMs: windowMs },
   });
-  return unwrapEnvelope<MonitorSeriesResponse>(raw);
 }
 
 export async function getMonitorEvents(id: number, limit = 20): Promise<MonitorEvent[]> {
-  const raw = await api.get<unknown>(`${V1}/monitors/${id}/events`, { params: { limit } });
-  return unwrapEnvelope<MonitorEvent[]>(raw);
+  return api.get<MonitorEvent[]>(`${V1}/monitors/${id}/events`, { params: { limit } });
 }
 
 export async function getMonitorStatusTimeline(
   id: number,
   windowMs = 24 * 60 * 60 * 1000
 ): Promise<StatusTimelineResponse> {
-  const raw = await api.get<unknown>(`${V1}/monitors/${id}/status-timeline`, {
-    params: { window_ms: windowMs },
+  return api.get<StatusTimelineResponse>(`${V1}/monitors/${id}/status-timeline`, {
+    params: { windowMs: windowMs },
   });
-  return unwrapEnvelope<StatusTimelineResponse>(raw);
 }
 
 export async function getMonitorsActivity(sinceMs?: number, limit = 20): Promise<MonitorEvent[]> {
   const params: Record<string, number> = { limit };
   if (sinceMs) params.since = sinceMs;
-  const raw = await api.get<unknown>(`${V1}/monitors/activity`, { params });
-  return unwrapEnvelope<MonitorEvent[]>(raw);
+  return api.get<MonitorEvent[]>(`${V1}/monitors/activity`, { params });
 }

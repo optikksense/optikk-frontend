@@ -63,8 +63,8 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Runbook URL">
         <input
-          value={draft.runbook_url ?? ""}
-          onChange={(e) => setDraft((p) => ({ ...p, runbook_url: e.target.value }))}
+          value={draft.runbookUrl ?? ""}
+          onChange={(e) => setDraft((p) => ({ ...p, runbookUrl: e.target.value }))}
           placeholder="https://…"
           className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
@@ -72,12 +72,12 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
       <FieldRow label="Eval every">
         <div className="flex items-center gap-1.5">
           {[60, 300, 900, 3600].map((sec) => {
-            const active = draft.eval_every_sec === sec;
+            const active = draft.evalEverySec === sec;
             return (
               <button
                 key={sec}
                 type="button"
-                onClick={() => setDraft((d) => ({ ...d, eval_every_sec: sec }))}
+                onClick={() => setDraft((d) => ({ ...d, evalEverySec: sec }))}
                 className={`rounded px-2 py-0.5 text-xs ${
                   active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}

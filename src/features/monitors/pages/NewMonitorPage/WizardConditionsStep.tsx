@@ -14,7 +14,7 @@ const COMPARATORS: { id: MonitorConditions["comparator"]; label: string }[] = [
   { id: "equal", label: "equal to" },
 ];
 
-const NO_DATA_AS: { id: NonNullable<MonitorConditions["no_data_as"]>; label: string }[] = [
+const NO_DATA_AS: { id: NonNullable<MonitorConditions["noDataAs"]>; label: string }[] = [
   { id: "no_data", label: "no-data" },
   { id: "alert", label: "alert" },
   { id: "ok", label: "ok" },
@@ -74,10 +74,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Alert threshold">
         <div className="flex items-center gap-2">
-          <NumericInput
-            value={c.alert_threshold}
-            onChange={(v) => update({ alert_threshold: v })}
-          />
+          <NumericInput value={c.alertThreshold} onChange={(v) => update({ alertThreshold: v })} />
           <span className="rounded bg-error-subtle px-1.5 py-0.5 text-[10px] text-error">
             critical
           </span>
@@ -85,7 +82,7 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Warn threshold">
         <div className="flex items-center gap-2">
-          <NumericInput value={c.warn_threshold} onChange={(v) => update({ warn_threshold: v })} />
+          <NumericInput value={c.warnThreshold} onChange={(v) => update({ warnThreshold: v })} />
           <span className="rounded bg-warning-subtle px-1.5 py-0.5 text-[10px] text-warning">
             warn
           </span>
@@ -93,25 +90,25 @@ export default function WizardConditionsStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Recovery threshold">
         <NumericInput
-          value={c.recovery_threshold}
-          onChange={(v) => update({ recovery_threshold: v })}
+          value={c.recoveryThreshold}
+          onChange={(v) => update({ recoveryThreshold: v })}
         />
       </FieldRow>
       <FieldRow label="No data after">
         <div className="flex items-center gap-2">
           <NumericInput
-            value={c.no_data_after_sec}
-            onChange={(v) => update({ no_data_after_sec: v ?? 0 })}
+            value={c.noDataAfterSec}
+            onChange={(v) => update({ noDataAfterSec: v ?? 0 })}
           />
           <span className="text-foreground-muted text-xs">seconds · treat as</span>
           <div className="flex items-center gap-1">
             {NO_DATA_AS.map((opt) => {
-              const active = c.no_data_as === opt.id;
+              const active = c.noDataAs === opt.id;
               return (
                 <button
                   key={opt.id}
                   type="button"
-                  onClick={() => update({ no_data_as: opt.id })}
+                  onClick={() => update({ noDataAs: opt.id })}
                   className={`rounded px-2 py-0.5 text-xs ${
                     active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                   }`}

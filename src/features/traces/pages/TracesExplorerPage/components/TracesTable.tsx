@@ -24,7 +24,7 @@ export function TracesTable({
   const maxDur = useMemo(() => {
     let max = 1;
     for (let i = 0; i < traces.length; i++) {
-      const dur = traces[i].duration_ns / 1e6;
+      const dur = traces[i].durationNs / 1e6;
       if (dur > max) max = dur;
     }
     return max;
@@ -91,7 +91,7 @@ export function TracesTable({
         </thead>
         <tbody className="text-[13px]">
           {traces.map((t) => (
-            <TraceRow key={t.trace_id} t={t} maxDur={maxDur} onRowClick={onRowClick} />
+            <TraceRow key={t.traceId} t={t} maxDur={maxDur} onRowClick={onRowClick} />
           ))}
         </tbody>
       </table>

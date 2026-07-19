@@ -13,7 +13,7 @@ export interface TopSeriesRow {
 }
 
 const GROUP_BY_TAG_KEYS: Record<TopSeriesGroupBy, string[]> = {
-  host: ["host", "hostname", "instance", "pod", "instance_id"],
+  host: ["host", "hostname", "instance", "pod", "instanceId"],
   region: ["region", "az", "availability_zone", "datacenter"],
   version: ["version", "ver", "release", "image_tag"],
 };

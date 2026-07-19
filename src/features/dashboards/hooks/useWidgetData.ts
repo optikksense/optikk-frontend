@@ -5,7 +5,6 @@ import { useInView } from "@/shared/hooks/useInView";
 import { useTimeRange } from "@/shared/hooks/useTimeRangeQuery";
 import { API_CONFIG } from "@config/apiConfig";
 import { type ApiErrorShape, toApiErrorShape } from "@shared/api/utils/errorNormalization";
-import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 import {
   type DashboardDataSources,
   type DashboardPanelSpec,
@@ -48,10 +47,9 @@ export function useWidgetData(spec: DashboardPanelSpec): WidgetDataResult {
     queryKey: ["dashboard-widget", selectedTenantId, endpoint, params, rangeKey(timeRange)],
     queryFn: async () => {
       const { startTime, endTime } = getTimeRange();
-      const raw = await api.get<unknown>(`${V1}${endpoint}`, {
+      return api.get<unknown>(`${V1}${endpoint}`, {
         params: { ...params, startTime, endTime },
       });
-      return unwrapEnvelope<unknown>(raw);
     },
     enabled,
     staleTime: STALE_MS,

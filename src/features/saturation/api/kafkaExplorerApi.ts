@@ -23,24 +23,24 @@ export async function getKafkaSummary(
     getGroupPartitions(startTime, endTime),
   ]);
 
-  const topic_count = throughput.length;
-  const group_count = partitions.length;
+  const topicCount = throughput.length;
+  const groupCount = partitions.length;
 
-  let messages_per_sec = 0;
+  let messagesPerSec = 0;
   for (const t of throughput) {
-    messages_per_sec += t.records_per_sec ?? 0;
+    messagesPerSec += t.recordsPerSec ?? 0;
   }
 
-  let assigned_partitions = 0;
+  let assignedPartitions = 0;
   for (const g of partitions) {
-    assigned_partitions += g.assigned_partitions ?? 0;
+    assignedPartitions += g.assignedPartitions ?? 0;
   }
 
   return {
-    topic_count,
-    group_count,
-    messages_per_sec,
-    assigned_partitions,
+    topicCount,
+    groupCount,
+    messagesPerSec,
+    assignedPartitions,
   };
 }
 

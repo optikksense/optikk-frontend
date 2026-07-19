@@ -26,7 +26,7 @@ export default function CloudPage(): JSX.Element {
   const activeSummary = providers.find((p) => p.provider === active);
 
   const subtitle = overview
-    ? `${overview.total_resources.toLocaleString()} resources · ${overview.total_accounts} accounts · ${overview.total_regions} regions across ${providers.length} provider${providers.length === 1 ? "" : "s"}`
+    ? `${overview.totalResources.toLocaleString()} resources · ${overview.totalAccounts} accounts · ${overview.totalRegions} regions across ${providers.length} provider${providers.length === 1 ? "" : "s"}`
     : "Cloud & Kubernetes inventory derived from telemetry";
 
   return (

@@ -27,17 +27,17 @@ export function buildInitialSummary(
     return null;
   }
 
-  const requestCount = readNumber(data.request_count) ?? 0;
-  const errorCount = readNumber(data.error_count) ?? 0;
-  const explicitErrorRate = readNumber(data.error_rate);
+  const requestCount = readNumber(data.requestCount) ?? 0;
+  const errorCount = readNumber(data.errorCount) ?? 0;
+  const explicitErrorRate = readNumber(data.errorRate);
 
   return {
     requestCount,
     errorCount,
     errorRate: explicitErrorRate ?? (requestCount > 0 ? (errorCount * 100) / requestCount : 0),
-    avgLatency: readNumber(data.avg_latency) ?? 0,
-    p95Latency: readNumber(data.p95_latency) ?? 0,
-    p99Latency: readNumber(data.p99_latency) ?? 0,
+    avgLatency: readNumber(data.avgLatency) ?? 0,
+    p95Latency: readNumber(data.p95Latency) ?? 0,
+    p99Latency: readNumber(data.p99Latency) ?? 0,
   };
 }
 
@@ -54,48 +54,48 @@ export function buildDependencyRows(
         ? normalizeServiceKey(edge.target) === normalizedServiceName
         : normalizeServiceKey(edge.source) === normalizedServiceName
     )
-    .sort((left, right) => Number(right.call_count ?? 0) - Number(left.call_count ?? 0))
+    .sort((left, right) => Number(right.callCount ?? 0) - Number(left.callCount ?? 0))
     .slice(0, 6)
     .map((edge) => ({
       id: `${direction}:${edge.source}->${edge.target}`,
       serviceName: direction === "upstream" ? edge.source : edge.target,
-      callCount: Number(edge.call_count ?? 0),
-      p95LatencyMs: Number(edge.p95_latency_ms ?? 0),
+      callCount: Number(edge.callCount ?? 0),
+      p95LatencyMs: Number(edge.p95LatencyMs ?? 0),
     }));
 }
 
 export function buildLatencyTrendSeries(points: readonly LatencyPercentilesPoint[]) {
   return points.map((point) => ({
     timestamp: point.timestamp,
-    p50_ms: point.p50_ms,
-    p95_ms: point.p95_ms,
-    p99_ms: point.p99_ms,
+    p50Ms: point.p50Ms,
+    p95Ms: point.p95Ms,
+    p99Ms: point.p99Ms,
   }));
 }
 
 export function buildRequestTrendSeries(points: readonly StatusTimeseriesPoint[]) {
   return points.map((point) => {
     const total =
-      (point.status_2xx ?? 0) +
-      (point.status_4xx ?? 0) +
-      (point.status_5xx ?? 0) +
-      (point.status_other ?? 0);
+      (point.status2xx ?? 0) +
+      (point.status4xx ?? 0) +
+      (point.status5xx ?? 0) +
+      (point.statusOther ?? 0);
     return {
       timestamp: point.timestamp,
-      request_count: total,
+      requestCount: total,
     };
   });
 }
 
 export function buildErrorTrendSeries(points: readonly ErrorTimeSeriesPoint[]) {
   return points.map((point) => {
-    const requests = point.request_count ?? 0;
-    const errors = point.error_count ?? 0;
+    const requests = point.requestCount ?? 0;
+    const errors = point.errorCount ?? 0;
     return {
       timestamp: point.timestamp,
-      request_count: requests,
-      error_count: errors,
-      error_rate: requests > 0 ? (errors / requests) * 100 : 0,
+      requestCount: requests,
+      errorCount: errors,
+      errorRate: requests > 0 ? (errors / requests) * 100 : 0,
     };
   });
 }
@@ -115,10 +115,10 @@ export function healthLabelForErrorRate(errorRate: number | undefined): string {
 }
 
 export function formatEndpointLabel(
-  row: Pick<EndpointRow, "endpoint_name" | "operation_name">
+  row: Pick<EndpointRow, "endpointName" | "operationName">
 ): string {
-  const endpointName = row.endpoint_name?.trim();
-  const operationName = row.operation_name.trim();
+  const endpointName = row.endpointName?.trim();
+  const operationName = row.operationName.trim();
 
   if (endpointName) {
     return endpointName;
@@ -132,10 +132,10 @@ export function formatEndpointLabel(
 }
 
 export function formatEndpointMeta(
-  row: Pick<EndpointRow, "endpoint_name" | "operation_name">
+  row: Pick<EndpointRow, "endpointName" | "operationName">
 ): string | null {
-  const endpointName = row.endpoint_name?.trim();
-  const operationName = row.operation_name.trim();
+  const endpointName = row.endpointName?.trim();
+  const operationName = row.operationName.trim();
 
   if (endpointName && operationName && endpointName !== operationName) {
     return `Span: ${operationName}`;

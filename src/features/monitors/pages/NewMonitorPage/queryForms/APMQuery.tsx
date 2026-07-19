@@ -20,7 +20,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
   const q: APMQueryShape = draft.query.apm ?? {
     service: "",
     track: "errors",
-    window_sec: 300,
+    windowSec: 300,
   };
 
   const update = (patch: Partial<APMQueryShape>) =>
@@ -75,12 +75,12 @@ export default function APMQuery({ draft, setDraft }: Props) {
       <FieldRow label="Window">
         <div className="flex items-center gap-1.5">
           {WINDOWS.map((w) => {
-            const active = q.window_sec === w;
+            const active = q.windowSec === w;
             return (
               <button
                 key={w}
                 type="button"
-                onClick={() => update({ window_sec: w })}
+                onClick={() => update({ windowSec: w })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active
                     ? "bg-primary text-white"

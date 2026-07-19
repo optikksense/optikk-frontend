@@ -33,7 +33,7 @@ export function DatabaseKpiStrip({ summary, system }: DatabaseKpiStripProps) {
         label="Queries /s"
         value={fmtNum(qpsLast)}
         secondary="ops/s"
-        subtext={summary ? `across ${fmtNum(summary.database_systems)} systems` : "across systems"}
+        subtext={summary ? `across ${fmtNum(summary.databaseSystems)} systems` : "across systems"}
       />
       <KpiCard label="p99 latency" value={fmtMs(p99)} tone={latencyTone(p99)} subtext="99th pct" />
     </div>

@@ -101,14 +101,14 @@ type SignupResult =
   | { readonly kind: "verificationRequired" }
   | { readonly kind: "signedIn"; readonly session: SessionPayload; readonly apiKey: string };
 
-// Signup's envelope carries the tenant's api_key alongside the session.
-const signupKeySchema = z.object({ api_key: z.string().min(1) });
+// Signup's envelope carries the tenant's apiKey alongside the session.
+const signupKeySchema = z.object({ apiKey: z.string().min(1) });
 
 function extractApiKey(responseBody: unknown): string {
   const envelope = envelopeSchema.safeParse(responseBody);
   const candidate = envelope.success ? envelope.data.data : responseBody;
   const parsed = signupKeySchema.safeParse(candidate);
-  return parsed.success ? parsed.data.api_key : "";
+  return parsed.success ? parsed.data.apiKey : "";
 }
 
 export const authApi = {
@@ -128,8 +128,8 @@ export const authApi = {
         email: params.email,
         password: params.password,
         name: params.name,
-        tenant_name: params.orgName,
-        accepted_terms: params.acceptedTerms,
+        tenantName: params.orgName,
+        acceptedTerms: params.acceptedTerms,
       });
       const apiKey = extractApiKey(response.data);
       if (apiKey === "") {

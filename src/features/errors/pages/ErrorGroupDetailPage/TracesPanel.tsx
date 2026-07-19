@@ -53,22 +53,22 @@ export function TracesPanel({
         <div className="flex flex-col">
           {traces.map((t) => (
             <button
-              key={`${t.trace_id}-${t.span_id}`}
+              key={`${t.traceId}-${t.spanId}`}
               type="button"
               onClick={() => {
-                navigate({ to: buildTraceDetailHref(t.trace_id) as never });
+                navigate({ to: buildTraceDetailHref(t.traceId) as never });
               }}
               className="flex items-center justify-between gap-3 border-border/60 border-b py-2.5 text-left last:border-b-0 hover:bg-muted/20"
             >
               <div className="flex min-w-0 items-center gap-2.5">
                 <ExternalLink size={13} className="shrink-0 text-foreground-muted" />
                 <span className="truncate font-mono text-[12.5px] text-foreground">
-                  {t.trace_id}
+                  {t.traceId}
                 </span>
               </div>
               <div className="flex shrink-0 items-center gap-4">
                 <span className="font-mono text-[11.5px] text-foreground-muted tabular-nums">
-                  {fmtDuration(t.duration_ms)}
+                  {fmtDuration(t.durationMs)}
                 </span>
                 <span className="w-[150px] text-right font-mono text-[11px] text-foreground-muted">
                   {fmtTime(t.timestamp)}

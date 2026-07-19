@@ -43,7 +43,7 @@ export default function MonitorsPage() {
     alert: 0,
     warn: 0,
     ok: 0,
-    no_data: 0,
+    noData: 0,
     muted: 0,
     total: 0,
   };
@@ -53,7 +53,7 @@ export default function MonitorsPage() {
     <PageShell>
       <PageHeader
         title="Monitors"
-        subtitle={`${counts.total} monitors · ${counts.muted} muted · ${counts.no_data} no data · evaluated continuously`}
+        subtitle={`${counts.total} monitors · ${counts.muted} muted · ${counts.noData} no data · evaluated continuously`}
         icon={<Bell size={22} />}
         actions={
           <div className="flex items-center gap-2">

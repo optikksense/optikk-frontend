@@ -84,10 +84,10 @@ export default function TimeRangePicker() {
       </button>
 
       {open && (
-        <div
-          className="absolute top-[calc(100%+4px)] left-0 z-[1000] max-h-[calc(100vh-70px)] animate-trp-slide-in overflow-hidden rounded-lg border border-border bg-secondary shadow-xl"
+        <dialog
+          open
+          className="absolute top-[calc(100%+4px)] left-0 z-[1000] m-0 max-h-[calc(100vh-70px)] animate-trp-slide-in overflow-hidden rounded-lg border border-border bg-secondary shadow-xl"
           style={{ width: activeTab === "relative" ? 380 : 560 }}
-          role="dialog"
           aria-label="Time range picker"
           data-testid="time-range-dropdown"
         >
@@ -128,7 +128,7 @@ export default function TimeRangePicker() {
           ) : (
             <AbsoluteTimeTab timeRange={timeRange} onClose={closeDropdown} />
           )}
-        </div>
+        </dialog>
       )}
     </div>
   );

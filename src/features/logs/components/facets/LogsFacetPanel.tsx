@@ -100,14 +100,14 @@ function LogsFacetPanelComponent({
           <>
             {matchesSearch("severity") ? (
               <SeverityFacet
-                labels={facets.severity_bucket}
+                labels={facets.severityBucket}
                 onInclude={onInclude}
                 onExclude={onExclude}
               />
             ) : null}
             {facets.service.length > 0 && matchesSearch("service") ? (
               <ResourceFacet
-                field="service_name"
+                field="serviceName"
                 label="Service"
                 values={facets.service}
                 onInclude={onInclude}

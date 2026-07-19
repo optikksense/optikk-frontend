@@ -13,7 +13,7 @@ interface Props {
 function EvalChartCard({ data, loading }: Props) {
   const timestamps = useMemo(() => {
     if (!data?.points) return [];
-    return data.points.map((p) => Math.floor(p.bucket_ms / 1000));
+    return data.points.map((p) => Math.floor(p.bucketMs / 1000));
   }, [data]);
 
   const series = useMemo<ObservabilityChartSeries[]>(() => {
@@ -31,10 +31,10 @@ function EvalChartCard({ data, loading }: Props) {
   const thresholds = useMemo<ThresholdLine[]>(() => {
     if (!data) return [];
     const lines: ThresholdLine[] = [];
-    if (data.warn_threshold !== undefined)
-      lines.push({ value: data.warn_threshold, color: "var(--color-warning)" });
-    if (data.alert_threshold !== undefined)
-      lines.push({ value: data.alert_threshold, color: "var(--color-error)" });
+    if (data.warnThreshold !== undefined)
+      lines.push({ value: data.warnThreshold, color: "var(--color-warning)" });
+    if (data.alertThreshold !== undefined)
+      lines.push({ value: data.alertThreshold, color: "var(--color-error)" });
     return lines;
   }, [data]);
 
@@ -49,11 +49,11 @@ function EvalChartCard({ data, loading }: Props) {
         </div>
         {data && (
           <div className="flex items-center gap-3 text-[11px] text-foreground-muted">
-            {data.warn_threshold !== undefined && (
-              <span className="font-mono">warn ≥ {data.warn_threshold}</span>
+            {data.warnThreshold !== undefined && (
+              <span className="font-mono">warn ≥ {data.warnThreshold}</span>
             )}
-            {data.alert_threshold !== undefined && (
-              <span className="font-mono">alert ≥ {data.alert_threshold}</span>
+            {data.alertThreshold !== undefined && (
+              <span className="font-mono">alert ≥ {data.alertThreshold}</span>
             )}
           </div>
         )}

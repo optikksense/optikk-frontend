@@ -26,7 +26,7 @@ export function SpanDrawerLogs({ spanLogs, onOpenInLogs }: SpanDrawerLogsProps) 
       ) : (
         <div className="flex flex-col gap-1.5">
           {spanLogs.map((l, i) => {
-            const { level, color } = getSeverityTheme(l.severity_text);
+            const { level, color } = getSeverityTheme(l.severityText);
             return (
               <div
                 key={l.id || `${l.timestamp}-${i}`}
@@ -37,7 +37,7 @@ export function SpanDrawerLogs({ spanLogs, onOpenInLogs }: SpanDrawerLogsProps) 
                   <span className="font-mono text-[11px] text-foreground-muted">
                     {String(l.timestamp)}
                   </span>
-                  {l.severity_text && (
+                  {l.severityText && (
                     <span
                       className="rounded px-1.5 py-0.5 font-semibold text-[10px] uppercase tracking-wider"
                       style={{ color, background: `${color}15` }}

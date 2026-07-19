@@ -39,7 +39,7 @@ export default function MetricsExplorerPage() {
     setSpaceAgg,
   } = useMetricsExplorer();
 
-  const { data, isLoading, isError, refetch } = useMetricsExplorerQuery(queries, step, spaceAgg);
+  const { data, isLoading, isError, refetch } = useMetricsExplorerQuery(queries, step);
   const results = (data?.results ?? {}) as MetricExplorerResults;
 
   useRecordRecentMetrics(queries);

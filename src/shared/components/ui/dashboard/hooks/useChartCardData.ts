@@ -35,11 +35,11 @@ function buildFlatChartData(
   panelType: DashboardPanelType
 ): DashboardRecord[] {
   return timeseriesData.map((d: DashboardRecord) => ({
-    timestamp: strValue(d, ["timestamp", "time_bucket", "timeBucket"], ""),
+    timestamp: strValue(d, ["timestamp", "timeBucket"], ""),
     value: (() => {
       const explicit = firstValue(
         d,
-        [chartConfig.valueField || chartConfig.valueKey || "value", "value"],
+        [chartConfig.valueField || chartConfig.valueKey || "value"],
         null
       );
       if (explicit !== null && explicit !== undefined && explicit !== "") {
@@ -48,40 +48,24 @@ function buildFlatChartData(
       }
 
       if (panelType === "request") {
-        return numValue(d, ["request_count", "requestCount", "req_count", "value", "val"], 0);
+        return numValue(d, ["requestCount", "reqCount", "value", "val"], 0);
       }
       if (panelType === "error-rate") {
-        const total = numValue(d, ["request_count", "requestCount", "req_count"], 0);
-        const errors = numValue(d, ["error_count", "errorCount"], 0);
+        const total = numValue(d, ["requestCount", "reqCount"], 0);
+        const errors = numValue(d, ["errorCount"], 0);
         if (total > 0) return (errors * 100.0) / total;
-        return numValue(d, ["error_rate", "errorRate"], 0);
+        return numValue(d, ["errorRate"], 0);
       }
       if (panelType === "latency") {
-        return numValue(
-          d,
-          [
-            "avg_latency",
-            "avgLatency",
-            "avg_latency_ms",
-            "avgLatencyMs",
-            "p50_latency",
-            "p50Latency",
-            "p50",
-          ],
-          0
-        );
+        return numValue(d, ["avgLatency", "avgLatencyMs", "p50Latency", "p50"], 0);
       }
       return 0;
     })(),
     ...(panelType === "latency"
       ? {
-          p50: numValue(
-            d,
-            ["p50_latency", "p50Latency", "p50", "avg_latency_ms", "avgLatencyMs"],
-            0
-          ),
-          p95: numValue(d, ["p95_latency", "p95Latency", "p95", "p95_latency_ms"], 0),
-          p99: numValue(d, ["p99_latency", "p99Latency", "p99"], 0),
+          p50: numValue(d, ["p50Latency", "p50", "avgLatencyMs"], 0),
+          p95: numValue(d, ["p95Latency", "p95", "p95LatencyMs"], 0),
+          p99: numValue(d, ["p99Latency", "p99"], 0),
         }
       : {}),
   }));
@@ -111,7 +95,7 @@ export function useChartCardData(
       if (rawData.length === 0) return true;
 
       const primaryKey = chartConfig.valueKey || chartConfig.valueField || "value";
-      const fallbacks = ["span_count", "request_count", "error_count"];
+      const fallbacks = ["spanCount", "requestCount", "errorCount"];
       const metricsToCheck = [primaryKey, ...fallbacks].filter(Boolean) as string[];
 
       if (metricsToCheck.length > 0) {

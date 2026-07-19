@@ -4,21 +4,21 @@ import { API_CONFIG } from "@config/apiConfig";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-/** Mirrors containerdetail.PodOverview; request_count 0 means no traffic. */
+/** Mirrors containerdetail.PodOverview; requestCount 0 means no traffic. */
 export interface PodOverview {
   readonly pod: string;
   readonly host?: string;
-  readonly last_seen?: string;
+  readonly lastSeen?: string;
   readonly containers: readonly string[];
   readonly services: readonly string[];
   readonly environments: readonly string[];
   readonly namespaces: readonly string[];
-  readonly request_count: number;
-  readonly error_count: number;
-  readonly error_rate: number;
-  readonly avg_latency_ms: number;
-  readonly p95_latency_ms: number;
-  readonly available_metrics: readonly string[];
+  readonly requestCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly avgLatencyMs: number;
+  readonly p95LatencyMs: number;
+  readonly availableMetrics: readonly string[];
 }
 
 export type PodMetricGroup =

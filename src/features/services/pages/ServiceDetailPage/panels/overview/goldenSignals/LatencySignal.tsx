@@ -11,7 +11,7 @@ export function LatencySignal({ serviceName }: { serviceName: string }) {
   const query = useREDByEndpoint(serviceName);
   const rows = query.data ?? [];
 
-  const { timestamps, series } = useMemo(() => pivotByRoute(rows, (r) => r.p99_ms, false), [rows]);
+  const { timestamps, series } = useMemo(() => pivotByRoute(rows, (r) => r.p99Ms, false), [rows]);
 
   // Latest non-null p99 across routes, for the legend.
   const latestP99 = useMemo(() => {

@@ -37,9 +37,9 @@ export function TopContainersList({ title, metricType, containers, onOpenContain
 
           return (
             <button
-              key={c.pod_name}
+              key={c.podName}
               type="button"
-              onClick={() => onOpenContainer(c.pod_name)}
+              onClick={() => onOpenContainer(c.podName)}
               className="flex items-center justify-between rounded-md p-1.5 text-left transition-colors hover:bg-muted"
             >
               <div className="flex min-w-0 items-center gap-2">
@@ -53,7 +53,7 @@ export function TopContainersList({ title, metricType, containers, onOpenContain
                   }}
                 />
                 <span className="truncate font-medium font-mono text-[12.5px] text-foreground">
-                  {c.pod_name}
+                  {c.podName}
                 </span>
               </div>
               <span

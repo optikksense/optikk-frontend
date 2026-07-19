@@ -17,67 +17,67 @@ function isFreshlySeen(iso: string): boolean {
 const columns: ColumnDef<ErrorGroup>[] = [
   {
     header: "Issue",
-    accessorKey: "operation_name",
+    accessorKey: "operationName",
     cell: ({ row: { original: row } }) => (
       <div className="flex min-w-0 items-start gap-2.5">
         <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-error" />
         <div className="min-w-0">
           <span className="font-mono font-semibold text-[13px] text-foreground">
-            {row.operation_name || "—"}
+            {row.operationName || "—"}
           </span>
-          {row.status_message ? (
+          {row.statusMessage ? (
             <div className="mt-0.5 max-w-[460px] truncate text-[12px] text-foreground-muted">
-              {row.status_message}
+              {row.statusMessage}
             </div>
           ) : null}
-          <div className="mt-1 font-mono text-[11.5px] text-primary">{row.service_name}</div>
+          <div className="mt-1 font-mono text-[11.5px] text-primary">{row.serviceName}</div>
         </div>
       </div>
     ),
   },
   {
     header: "HTTP",
-    accessorKey: "http_status_code",
+    accessorKey: "httpStatusCode",
     size: 80,
     meta: { align: "right" },
     cell: ({ row: { original: row } }) => (
       <span className="font-mono text-[12.5px] text-foreground-secondary">
-        {row.http_status_code || "—"}
+        {row.httpStatusCode || "—"}
       </span>
     ),
   },
   {
     header: "Errors",
-    accessorKey: "error_count",
+    accessorKey: "errorCount",
     size: 100,
     meta: { align: "right" },
     cell: ({ row: { original: row } }) => (
       <span className="font-mono font-semibold text-[13px] text-foreground tabular-nums">
-        {formatNumber(row.error_count)}
+        {formatNumber(row.errorCount)}
       </span>
     ),
   },
   {
     header: "First seen",
-    accessorKey: "first_occurrence",
+    accessorKey: "firstOccurrence",
     size: 110,
     cell: ({ row: { original: row } }) => (
       <span className="font-mono text-[12.5px] text-foreground-muted">
-        {row.first_occurrence ? formatRelativeTime(row.first_occurrence) : "—"}
+        {row.firstOccurrence ? formatRelativeTime(row.firstOccurrence) : "—"}
       </span>
     ),
   },
   {
     header: "Last seen",
-    accessorKey: "last_occurrence",
+    accessorKey: "lastOccurrence",
     size: 100,
     cell: ({ row: { original: row } }) => (
       <span
         className={`font-mono text-[12.5px] ${
-          isFreshlySeen(row.last_occurrence) ? "text-error" : "text-foreground-secondary"
+          isFreshlySeen(row.lastOccurrence) ? "text-error" : "text-foreground-secondary"
         }`}
       >
-        {row.last_occurrence ? formatRelativeTime(row.last_occurrence) : "—"}
+        {row.lastOccurrence ? formatRelativeTime(row.lastOccurrence) : "—"}
       </span>
     ),
   },
@@ -104,7 +104,7 @@ export function IssuesTable({ rows, onOpen }: IssuesTableProps): JSX.Element {
       }}
       config={{
         onRow: (record) => ({
-          onClick: () => onOpen(record.group_id),
+          onClick: () => onOpen(record.groupId),
           style: { cursor: "pointer" },
         }),
       }}

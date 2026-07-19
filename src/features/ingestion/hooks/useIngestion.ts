@@ -2,12 +2,7 @@ import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import { useTenantId } from "@app/store/appStore";
 
-import {
-  getIngestionCost,
-  getIngestionServices,
-  getIngestionSummary,
-  getIngestionTimeseries,
-} from "../api/ingestionApi";
+import { getIngestionOverview } from "../api/ingestionApi";
 
 // Ingestion is a billing-period view, so it ignores the global time selector
 // and always reports the current calendar month to date (UTC).
@@ -18,45 +13,12 @@ function monthToDateRange(): { startTime: number; endTime: number; monthKey: str
   return { startTime, endTime: now.getTime(), monthKey };
 }
 
-export function useIngestionSummary() {
+export function useIngestionOverview() {
   const tenantId = useTenantId();
   const { startTime, endTime, monthKey } = monthToDateRange();
   return useStandardQuery({
-    queryKey: ["ingestion.summary", tenantId, monthKey],
-    queryFn: () => getIngestionSummary(startTime, endTime),
-    enabled: Boolean(tenantId),
-    staleTime: 60_000,
-  });
-}
-
-export function useIngestionTimeseries(groupBy: "type" | "service") {
-  const tenantId = useTenantId();
-  const { startTime, endTime, monthKey } = monthToDateRange();
-  return useStandardQuery({
-    queryKey: ["ingestion.timeseries", tenantId, monthKey, groupBy],
-    queryFn: () => getIngestionTimeseries(startTime, endTime, groupBy),
-    enabled: Boolean(tenantId),
-    staleTime: 60_000,
-  });
-}
-
-export function useIngestionCost() {
-  const tenantId = useTenantId();
-  const { startTime, endTime, monthKey } = monthToDateRange();
-  return useStandardQuery({
-    queryKey: ["ingestion.cost", tenantId, monthKey],
-    queryFn: () => getIngestionCost(startTime, endTime),
-    enabled: Boolean(tenantId),
-    staleTime: 60_000,
-  });
-}
-
-export function useIngestionServices() {
-  const tenantId = useTenantId();
-  const { startTime, endTime, monthKey } = monthToDateRange();
-  return useStandardQuery({
-    queryKey: ["ingestion.services", tenantId, monthKey],
-    queryFn: () => getIngestionServices(startTime, endTime),
+    queryKey: ["ingestion.overview", tenantId, monthKey],
+    queryFn: ({ signal }) => getIngestionOverview(startTime, endTime, signal),
     enabled: Boolean(tenantId),
     staleTime: 60_000,
   });

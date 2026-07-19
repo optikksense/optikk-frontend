@@ -17,7 +17,7 @@ function djb2(str: string): number {
 }
 
 export function queryFingerprintId(
-  row: Pick<SlowQueryPatternRow, "query_text" | "collection_name">
+  row: Pick<SlowQueryPatternRow, "queryText" | "collectionName">
 ): string {
-  return djb2(`${row.query_text}::${row.collection_name}`).toString(36);
+  return djb2(`${row.queryText}::${row.collectionName}`).toString(36);
 }

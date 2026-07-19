@@ -27,16 +27,15 @@ export function FleetDistributionPanel({ result }: FleetDistributionPanelProps) 
     const seen: number[] = [];
     let maxCount = 1;
     for (const p of points) {
-      const ts = Number(p.time_bucket);
+      const ts = Number(p.timeBucket);
       if (!seen.includes(ts)) seen.push(ts);
-      if ((p.span_count ?? 0) > maxCount) maxCount = p.span_count ?? 0;
+      if ((p.spanCount ?? 0) > maxCount) maxCount = p.spanCount ?? 0;
     }
     return { buckets: seen.sort((a, b) => a - b), max: maxCount };
   }, [points]);
 
   const countAt = (band: string, bucket: number): number =>
-    points.find((p) => p.latency_bucket === band && Number(p.time_bucket) === bucket)?.span_count ??
-    0;
+    points.find((p) => p.latencyBucket === band && Number(p.timeBucket) === bucket)?.spanCount ?? 0;
 
   const displayBands = [...bandLabels].reverse();
 

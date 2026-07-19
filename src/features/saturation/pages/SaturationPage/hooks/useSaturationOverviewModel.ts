@@ -66,7 +66,7 @@ export function useSaturationOverviewModel(): SaturationOverviewModel {
   const counts = useMemo(
     () => ({
       database: systems.filter((row) => row.category === "database").length,
-      topics: kafkaSummary.data?.topic_count ?? 0,
+      topics: kafkaSummary.data?.topicCount ?? 0,
     }),
     [systems, kafkaSummary.data]
   );

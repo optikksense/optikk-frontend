@@ -24,8 +24,8 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
 
   const loading = tracesQ.isPending;
   const traces = tracesQ.data?.traces ?? [];
-  const hasMore = tracesQ.data?.has_more ?? false;
-  const nextCursor = tracesQ.data?.next_cursor;
+  const hasMore = tracesQ.data?.hasMore ?? false;
+  const nextCursor = tracesQ.data?.nextCursor;
 
   const handleNext = () => {
     if (hasMore) {
@@ -48,7 +48,7 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
       return { p95Threshold: 0, p99Threshold: 0, maxDuration: 1 };
     }
 
-    const sortedDurations = [...traces].map((t) => t.duration_ms).sort((a, b) => a - b);
+    const sortedDurations = [...traces].map((t) => t.durationMs).sort((a, b) => a - b);
     const maxDur = Math.max(...sortedDurations, 1);
 
     const p95Idx = Math.min(sortedDurations.length - 1, Math.floor(sortedDurations.length * 0.95));
@@ -67,17 +67,17 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
         return t.status === "error";
       }
       if (filter === "p95") {
-        return t.duration_ms >= p95Threshold;
+        return t.durationMs >= p95Threshold;
       }
       if (filter === "p99") {
-        return t.duration_ms >= p99Threshold;
+        return t.durationMs >= p99Threshold;
       }
       return true;
     });
   }, [traces, filter, p95Threshold, p99Threshold]);
 
   const handleRowClick = (trace: TraceRecord) => {
-    navigate({ to: buildTraceDetailHref(trace.trace_id) as never });
+    navigate({ to: buildTraceDetailHref(trace.traceId) as never });
   };
 
   if (loading) {
@@ -146,14 +146,21 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
               </tr>
             ) : (
               filteredTraces.map((t, i) => {
-                const method = t.http_method ?? "POST";
-                const route = t.operation_name;
-                const barPercent = Math.max(1, Math.min(100, (t.duration_ms / maxDuration) * 100));
+                const method = t.httpMethod ?? "POST";
+                const route = t.operationName;
+                const barPercent = Math.max(1, Math.min(100, (t.durationMs / maxDuration) * 100));
 
                 return (
                   <tr
                     key={i}
                     onClick={() => handleRowClick(t)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        handleRowClick(t);
+                      }
+                    }}
+                    tabIndex={0}
                     className="cursor-pointer border-border/40 border-b last:border-b-0 hover:bg-muted/10"
                   >
                     <td className="px-3 py-3 pl-0">
@@ -186,16 +193,16 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
                     </td>
                     <td
                       className={`px-3 py-3 text-right font-bold font-mono text-[12px] tabular-nums ${
-                        t.duration_ms > p95Threshold
+                        t.durationMs > p95Threshold
                           ? "text-[var(--err)]"
-                          : t.duration_ms > 100
+                          : t.durationMs > 100
                             ? "text-[var(--warn)]"
                             : "text-foreground-secondary"
                       }`}
                     >
-                      {t.duration_ms >= 1000
-                        ? `${(t.duration_ms / 1000).toFixed(2)}s`
-                        : `${Math.round(t.duration_ms)}ms`}
+                      {t.durationMs >= 1000
+                        ? `${(t.durationMs / 1000).toFixed(2)}s`
+                        : `${Math.round(t.durationMs)}ms`}
                     </td>
                     <td className="w-[140px] px-3 py-3">
                       <div className="h-1.5 w-full overflow-hidden rounded bg-muted">
@@ -209,7 +216,7 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-3 text-right text-[12px] text-foreground-muted">
-                      {relativeTimeFromIso(t.start_time)}
+                      {relativeTimeFromIso(t.startTime)}
                     </td>
                   </tr>
                 );

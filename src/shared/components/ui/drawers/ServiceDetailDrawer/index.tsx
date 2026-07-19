@@ -45,15 +45,15 @@ export default function ServiceDetailDrawer({
   const statusColor = STATUS_COLOR[variant];
 
   const requestSpark = useMemo(
-    () => model.requestTrendSeries.map((p) => p.request_count),
+    () => model.requestTrendSeries.map((p) => p.requestCount),
     [model.requestTrendSeries]
   );
   const errorSpark = useMemo(
-    () => model.errorTrendSeries.map((p) => p.error_rate),
+    () => model.errorTrendSeries.map((p) => p.errorRate),
     [model.errorTrendSeries]
   );
   const latencySpark = useMemo(
-    () => model.latencyTrendSeries.map((p) => p.p99_ms),
+    () => model.latencyTrendSeries.map((p) => p.p99Ms),
     [model.latencyTrendSeries]
   );
 
@@ -199,7 +199,7 @@ export default function ServiceDetailDrawer({
               <DrawerMiniSignal
                 label="Latency p95"
                 legend={formatDuration(m?.p95Latency ?? 0)}
-                values={model.latencyTrendSeries.map((p) => p.p95_ms)}
+                values={model.latencyTrendSeries.map((p) => p.p95Ms)}
                 tone="warn"
               />
             </div>

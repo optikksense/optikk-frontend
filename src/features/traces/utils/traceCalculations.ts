@@ -24,11 +24,11 @@ export const calculateTraceStats = (spans: TraceRecord[]): TraceStats => {
   let maxEnd = Number.NEGATIVE_INFINITY;
 
   spans.forEach((span) => {
-    if (span.service_name) stats.services.add(span.service_name);
+    if (span.serviceName) stats.services.add(span.serviceName);
     if (span.status === "ERROR") stats.errors++;
 
-    const start = span.start_time ? new Date(span.start_time).getTime() : 0;
-    const end = span.end_time ? new Date(span.end_time).getTime() : 0;
+    const start = span.startTime ? new Date(span.startTime).getTime() : 0;
+    const end = span.endTime ? new Date(span.endTime).getTime() : 0;
 
     if (start && start < minStart) minStart = start;
     if (end && end > maxEnd) maxEnd = end;
@@ -43,52 +43,52 @@ export const calculateTraceStats = (spans: TraceRecord[]): TraceStats => {
 
 export function normalizeSpan(
   span: Partial<TraceRecord> & {
-    start_ns?: number;
+    startNs?: number;
     kind?: string;
-    has_error?: boolean;
-    status_code?: string;
+    hasError?: boolean;
+    statusCode?: string;
     [key: string]: unknown;
   }
 ): TraceRecord {
-  const durationMs = Number(span.duration_ms ?? 0);
-  const startNsRaw = span.start_ns;
+  const durationMs = Number(span.durationMs ?? 0);
+  const startNsRaw = span.startNs;
   const startNs = typeof startNsRaw === "number" && Number.isFinite(startNsRaw) ? startNsRaw : null;
 
-  let start_time = span.start_time ?? "";
-  let end_time = span.end_time ?? "";
+  let startTime = span.startTime ?? "";
+  let endTime = span.endTime ?? "";
   if (startNs != null && startNs > 0) {
     const startMs = startNs / 1_000_000;
     const endMs = startMs + durationMs;
-    start_time = new Date(startMs).toISOString();
-    end_time = new Date(endMs).toISOString();
+    startTime = new Date(startMs).toISOString();
+    endTime = new Date(endMs).toISOString();
   }
 
-  const span_kind = span.span_kind ?? span.kind ?? "";
+  const spanKind = span.spanKind ?? span.kind ?? "";
   const statusFromWire =
-    span.has_error === true
+    span.hasError === true
       ? "ERROR"
-      : typeof span.status_code === "string" && span.status_code.toUpperCase().includes("ERROR")
+      : typeof span.statusCode === "string" && span.statusCode.toUpperCase().includes("ERROR")
         ? "ERROR"
-        : span.status_code || span.status;
+        : span.statusCode || span.status;
 
   return {
     ...span,
-    span_id: span.span_id as string,
-    trace_id: span.trace_id as string,
-    service_name: span.service_name ?? "",
-    operation_name: span.operation_name ?? "",
-    parent_span_id: span.parent_span_id as string | undefined,
-    span_kind: span_kind as string,
-    duration_ms: durationMs,
-    start_time,
-    end_time,
+    spanId: span.spanId as string,
+    traceId: span.traceId as string,
+    serviceName: span.serviceName ?? "",
+    operationName: span.operationName ?? "",
+    parentSpanId: span.parentSpanId as string | undefined,
+    spanKind: spanKind as string,
+    durationMs: durationMs,
+    startTime,
+    endTime,
     status: (statusFromWire || "OK") as string,
-    status_message: span.status_message as string | undefined,
-    http_method: span.http_method as string | undefined,
-    http_url: span.http_url as string | undefined,
-    http_status_code: span.http_status_code as number | undefined,
-    has_error: span.has_error ?? false,
-    start_ns: startNs ?? 0,
+    statusMessage: span.statusMessage as string | undefined,
+    httpMethod: span.httpMethod as string | undefined,
+    httpUrl: span.httpUrl as string | undefined,
+    httpStatusCode: span.httpStatusCode as number | undefined,
+    hasError: span.hasError ?? false,
+    startNs: startNs ?? 0,
   };
 }
 
@@ -96,10 +96,10 @@ export function normalizeTraceLog<T extends Record<string, unknown>>(log: T) {
   return {
     ...log,
     timestamp: log.timestamp,
-    service_name: log.service_name,
-    trace_id: log.trace_id,
-    span_id: log.span_id,
-    level: (log.level as string | undefined) || (log.severity_text as string | undefined) || "INFO",
+    serviceName: log.serviceName,
+    traceId: log.traceId,
+    spanId: log.spanId,
+    level: (log.level as string | undefined) || (log.severityText as string | undefined) || "INFO",
     message: (log.message as string | undefined) || (log.body as string | undefined) || "",
   };
 }

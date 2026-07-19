@@ -1,41 +1,67 @@
-import api from "@/shared/api/http/client";
-import type { PaginatedResponse, RequestTime } from "@/shared/api/service-types";
+import api, { type Comparable } from "@/shared/api/http/client";
+import type { RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
-import { unwrapEnvelope } from "@shared/api/utils/unwrapEnvelope";
 import { validateResponse } from "@shared/api/utils/validate";
 import { z } from "zod";
 import { type REDFiltersParams, buildREDFilters } from "./buildREDFilters";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
+export type { Comparable };
+
 // ─── Shared helpers ──────────────────────────────────────────────────
 
-async function getJson<T>(path: string, params: REDFiltersParams): Promise<T> {
-  const raw = await api.get<unknown>(`${V1}${path}`, { params });
-  return unwrapEnvelope<T>(raw);
+/**
+ * Every RED response is validated. The generic on api.get is only a claim;
+ * a schema is what actually catches the backend renaming or reshaping a field,
+ * which is the failure mode that silently zeroes charts instead of erroring.
+ */
+async function getJson<S extends z.ZodTypeAny>(
+  path: string,
+  params: REDFiltersParams,
+  schema: S,
+  signal?: AbortSignal
+): Promise<z.infer<S>> {
+  return validateResponse(schema, await api.get<unknown>(`${V1}${path}`, { params, signal }));
 }
+
+/** Same, for the endpoints that may carry a previous-period sibling. */
+async function getComparableJson<S extends z.ZodTypeAny>(
+  path: string,
+  params: REDFiltersParams,
+  schema: S,
+  signal?: AbortSignal
+): Promise<Comparable<z.infer<S>>> {
+  const { data, comparison } = await api.getComparable<unknown>(`${V1}${path}`, { params, signal });
+  return {
+    data: validateResponse(schema, data),
+    comparison: comparison === undefined ? undefined : validateResponse(schema, comparison),
+  };
+}
+
+const timestamped = { timestamp: z.string() };
 
 // ─── Topology (unchanged) ────────────────────────────────────────────
 
 interface ServiceNode {
   readonly name: string;
-  readonly request_count: number;
-  readonly error_count: number;
-  readonly error_rate: number;
-  readonly p50_latency_ms: number;
-  readonly p95_latency_ms: number;
-  readonly p99_latency_ms: number;
+  readonly requestCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly p50LatencyMs: number;
+  readonly p95LatencyMs: number;
+  readonly p99LatencyMs: number;
   readonly health: string;
 }
 
 interface ServiceEdge {
   readonly source: string;
   readonly target: string;
-  readonly call_count: number;
-  readonly error_count: number;
-  readonly error_rate: number;
-  readonly p50_latency_ms: number;
-  readonly p95_latency_ms: number;
+  readonly callCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly p50LatencyMs: number;
+  readonly p95LatencyMs: number;
 }
 
 export interface TopologyResponse {
@@ -55,143 +81,152 @@ export function getTopology(
 
 // ─── Fleet overview / catalog ────────────────────────────────────────
 
-export interface RedServiceRow {
-  readonly service_name: string;
-  readonly request_count: number;
-  readonly error_count: number;
-  readonly avg_latency: number;
-  readonly p95_latency: number;
-  readonly p99_latency: number;
-}
+const redServiceRowSchema = z.object({
+  serviceName: z.string(),
+  requestCount: z.number(),
+  errorCount: z.number(),
+  avgLatency: z.number(),
+  p95Latency: z.number(),
+  p99Latency: z.number(),
+});
 
-export interface ServiceCatalogRedSummary {
-  readonly service_count: number;
-  readonly total_span_count: number;
-  readonly total_errors: number;
-  readonly total_rps: number;
-  readonly avg_error_rate: number;
-  readonly avg_p50_ms: number;
-  readonly avg_p95_ms: number;
-  readonly avg_p99_ms: number;
+const fleetOverviewSchema = z.object({
+  totals: z.object({
+    serviceCount: z.number(),
+    totalSpanCount: z.number(),
+    totalErrors: z.number(),
+    totalRps: z.number(),
+    avgErrorRate: z.number(),
+    avgP50Ms: z.number(),
+    avgP95Ms: z.number(),
+    avgP99Ms: z.number(),
+  }),
+  services: z.array(redServiceRowSchema),
+});
+
+export type RedServiceRow = z.infer<typeof redServiceRowSchema>;
+type FleetOverview = z.infer<typeof fleetOverviewSchema>;
+
+/** The catalog wants totals and services on one flat object. */
+export type ServiceCatalogRedSummary = FleetOverview["totals"] & {
   readonly services: RedServiceRow[];
+};
+
+function normalizeFleetOverview(overview: FleetOverview): ServiceCatalogRedSummary {
+  return { ...overview.totals, services: overview.services };
 }
 
-export interface RedSummaryWithComparison {
-  readonly data: ServiceCatalogRedSummary;
-  readonly comparison?: ServiceCatalogRedSummary;
+export async function getRedSummary(
+  s: RequestTime,
+  e: RequestTime,
+  services?: string | readonly string[],
+  signal?: AbortSignal
+): Promise<ServiceCatalogRedSummary> {
+  const params = buildREDFilters(s, e, services);
+  return normalizeFleetOverview(
+    await getJson("/spans/red/fleet-overview", params, fleetOverviewSchema, signal)
+  );
 }
 
 export async function getRedSummaryWithComparison(
   s: RequestTime,
   e: RequestTime,
-  services?: string | readonly string[]
-): Promise<RedSummaryWithComparison> {
-  const params = buildREDFilters(s, e, services);
-  const overview = await api.get<{
-    totals: Omit<ServiceCatalogRedSummary, "services">;
-    services: RedServiceRow[];
-  }>(`${V1}/spans/red/fleet-overview`, { params });
-  return { data: { ...overview.totals, services: overview.services } };
+  services?: string | readonly string[],
+  signal?: AbortSignal
+): Promise<Comparable<ServiceCatalogRedSummary>> {
+  const params = { ...buildREDFilters(s, e, services), compareTo: "previous_period" };
+  const { data, comparison } = await getComparableJson(
+    "/spans/red/fleet-overview",
+    params,
+    fleetOverviewSchema,
+    signal
+  );
+  return {
+    data: normalizeFleetOverview(data),
+    comparison: comparison && normalizeFleetOverview(comparison),
+  };
 }
 
-export interface RequestRatePoint {
-  readonly timestamp: string;
-  readonly service_name: string;
-  readonly rps: number;
-}
+const requestRatePointSchema = z.object({
+  ...timestamped,
+  serviceName: z.string(),
+  rps: z.number(),
+});
 
-export async function getRequestRateSeries(
+export type RequestRatePoint = z.infer<typeof requestRatePointSchema>;
+
+export function getRequestRateSeries(
   s: RequestTime,
   e: RequestTime,
-  services?: string | readonly string[]
+  services?: string | readonly string[],
+  signal?: AbortSignal
 ): Promise<RequestRatePoint[]> {
   const params = buildREDFilters(s, e, services);
-  const raw = await api.get<unknown>(`${V1}/spans/red/request-rate`, { params });
-  return unwrapEnvelope<RequestRatePoint[]>(raw);
+  return getJson("/spans/red/request-rate", params, z.array(requestRatePointSchema), signal);
 }
 
-export interface RequestErrorRatePoint {
-  readonly timestamp: string;
-  readonly rps: number;
-  readonly request_count: number;
-  readonly error_count: number;
-  readonly error_rate: number;
-}
+const requestErrorRatePointSchema = z.object({
+  ...timestamped,
+  rps: z.number(),
+  requestCount: z.number(),
+  errorCount: z.number(),
+  errorRate: z.number(),
+});
 
-export async function getRequestAndErrorRateSeries(
+export type RequestErrorRatePoint = z.infer<typeof requestErrorRatePointSchema>;
+
+export function getRequestAndErrorRateSeries(
   s: RequestTime,
   e: RequestTime,
-  services?: string | readonly string[]
+  services?: string | readonly string[],
+  signal?: AbortSignal
 ): Promise<RequestErrorRatePoint[]> {
   const params = buildREDFilters(s, e, services);
-  const raw = await api.get<unknown>(`${V1}/spans/red/request-and-error-rate`, { params });
-  return unwrapEnvelope<RequestErrorRatePoint[]>(raw);
+  return getJson(
+    "/spans/red/request-and-error-rate",
+    params,
+    z.array(requestErrorRatePointSchema),
+    signal
+  );
 }
 
 // ─── Shared RED timeseries (fleet-wide or per-service) ───────────────
 
-export interface StatusTimeseriesPoint {
-  readonly timestamp: string;
-  readonly status_2xx: number;
-  readonly status_4xx: number;
-  readonly status_5xx: number;
-  readonly status_other: number;
-}
+const statusTimeseriesPointSchema = z.object({
+  ...timestamped,
+  status2xx: z.number(),
+  status4xx: z.number(),
+  status5xx: z.number(),
+  statusOther: z.number(),
+});
 
-export interface LatencyPercentilesPoint {
-  readonly timestamp: string;
-  readonly p50_ms: number;
-  readonly p95_ms: number;
-  readonly p99_ms: number;
-}
+const latencyPercentilesPointSchema = z.object({
+  ...timestamped,
+  p50Ms: z.number(),
+  p95Ms: z.number(),
+  p99Ms: z.number(),
+});
 
-export interface EndpointRatePoint {
-  readonly timestamp: string;
-  readonly http_route: string;
-  readonly rps: number;
+const endpointRatePointSchema = z.object({
+  ...timestamped,
+  httpRoute: z.string(),
+  rps: z.number(),
   // null for buckets with no traffic, so the chart breaks the line.
-  readonly error_rate: number | null;
-  readonly p99_ms: number | null;
-}
+  errorRate: z.number().nullable(),
+  p99Ms: z.number().nullable(),
+});
 
-export interface TopEndpoint {
-  readonly operation_name: string;
-  readonly service_name: string;
-  readonly span_kind: string;
-  readonly http_route: string;
-  readonly rps: number;
-  readonly error_rate: number;
-  readonly error_count: number;
-  readonly total_count: number;
-  readonly p50_ms: number;
-  readonly p95_ms: number;
-  readonly p99_ms: number;
-}
-
-export interface TopDBQuery {
-  readonly operation_name: string;
-  readonly service_name: string;
-  readonly db_system: string;
-  readonly rps: number;
-  readonly error_rate: number;
-  readonly error_count: number;
-  readonly total_count: number;
-  readonly p50_ms: number;
-  readonly p95_ms: number;
-  readonly p99_ms: number;
-}
-
-export interface ComparisonPayload<T> {
-  readonly data: T;
-  readonly comparison?: T;
-}
+export type StatusTimeseriesPoint = z.infer<typeof statusTimeseriesPointSchema>;
+export type LatencyPercentilesPoint = z.infer<typeof latencyPercentilesPointSchema>;
+export type EndpointRatePoint = z.infer<typeof endpointRatePointSchema>;
 
 export function getStatusTimeseries(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[]
 ): Promise<StatusTimeseriesPoint[]> {
-  return getJson("/spans/red/status-timeseries", buildREDFilters(s, e, services));
+  const params = buildREDFilters(s, e, services);
+  return getJson("/spans/red/status-timeseries", params, z.array(statusTimeseriesPointSchema));
 }
 
 export function getREDByEndpoint(
@@ -199,7 +234,8 @@ export function getREDByEndpoint(
   e: RequestTime,
   services?: string | readonly string[]
 ): Promise<EndpointRatePoint[]> {
-  return getJson("/spans/red/red-by-endpoint", buildREDFilters(s, e, services));
+  const params = buildREDFilters(s, e, services);
+  return getJson("/spans/red/red-by-endpoint", params, z.array(endpointRatePointSchema));
 }
 
 export function getLatencyPercentilesTimeseries(
@@ -207,159 +243,114 @@ export function getLatencyPercentilesTimeseries(
   e: RequestTime,
   services?: string | readonly string[]
 ): Promise<LatencyPercentilesPoint[]> {
-  return getJson("/spans/red/latency-percentiles-timeseries", buildREDFilters(s, e, services));
+  const params = buildREDFilters(s, e, services);
+  return getJson(
+    "/spans/red/latency-percentiles-timeseries",
+    params,
+    z.array(latencyPercentilesPointSchema)
+  );
 }
 
 const topEndpointSchema = z.object({
-  operation_name: z.string(),
-  service_name: z.string(),
-  span_kind: z.string(),
-  http_route: z.string(),
+  operationName: z.string(),
+  serviceName: z.string(),
+  spanKind: z.string(),
+  httpRoute: z.string(),
   rps: z.number(),
-  error_rate: z.number(),
-  error_count: z.number(),
-  total_count: z.number(),
-  p50_ms: z.number(),
-  p95_ms: z.number(),
-  p99_ms: z.number(),
+  errorRate: z.number(),
+  errorCount: z.number(),
+  totalCount: z.number(),
+  p50Ms: z.number(),
+  p95Ms: z.number(),
+  p99Ms: z.number(),
 });
 
-const topEndpointsResponseSchema = z.object({
-  data: z.object({
-    results: z.array(topEndpointSchema),
+/** Wraps a row schema in the standard cursor-paginated page shape. */
+function pageOf<S extends z.ZodTypeAny>(row: S) {
+  return z.object({
+    results: z.array(row),
     pageInfo: z.object({
       hasMore: z.boolean(),
       nextCursor: z.string().optional(),
       limit: z.number(),
     }),
-  }),
-  comparison: z
-    .object({
-      results: z.array(topEndpointSchema),
-      pageInfo: z.object({
-        hasMore: z.boolean(),
-        nextCursor: z.string().optional(),
-        limit: z.number(),
-      }),
-    })
-    .optional(),
-});
+  });
+}
 
-export async function getTopEndpoints(
+const topEndpointsPageSchema = pageOf(topEndpointSchema);
+
+export type TopEndpoint = z.infer<typeof topEndpointSchema>;
+
+export function getTopEndpoints(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[],
   limit = 50,
   compareTo?: "previous_period",
   cursor?: string
-): Promise<ComparisonPayload<PaginatedResponse<TopEndpoint[]>>> {
-  const params = buildREDFilters(s, e, services, { limit, cursor });
-  if (compareTo) {
-    Object.assign(params, { compareTo });
-  }
-  const raw = await api.get<unknown>(`${V1}/spans/red/top-endpoints`, { params });
-  return validateResponse(topEndpointsResponseSchema, raw);
+): Promise<Comparable<z.infer<typeof topEndpointsPageSchema>>> {
+  const params = buildREDFilters(s, e, services, { limit, cursor, compareTo });
+  return getComparableJson("/spans/red/top-endpoints", params, topEndpointsPageSchema);
 }
 
 const topDBQuerySchema = z.object({
-  operation_name: z.string(),
-  service_name: z.string(),
-  db_system: z.string(),
+  operationName: z.string(),
+  serviceName: z.string(),
+  dbSystem: z.string(),
   rps: z.number(),
-  error_rate: z.number(),
-  error_count: z.number(),
-  total_count: z.number(),
-  p50_ms: z.number(),
-  p95_ms: z.number(),
-  p99_ms: z.number(),
+  errorRate: z.number(),
+  errorCount: z.number(),
+  totalCount: z.number(),
+  p50Ms: z.number(),
+  p95Ms: z.number(),
+  p99Ms: z.number(),
 });
 
-const topDBQueriesResponseSchema = z.object({
-  data: z.object({
-    results: z.array(topDBQuerySchema),
-    pageInfo: z.object({
-      hasMore: z.boolean(),
-      nextCursor: z.string().optional(),
-      limit: z.number(),
-    }),
-  }),
-  comparison: z
-    .object({
-      results: z.array(topDBQuerySchema),
-      pageInfo: z.object({
-        hasMore: z.boolean(),
-        nextCursor: z.string().optional(),
-        limit: z.number(),
-      }),
-    })
-    .optional(),
-});
+const topDBQueriesPageSchema = pageOf(topDBQuerySchema);
 
-export async function getTopDBQueries(
+export type TopDBQuery = z.infer<typeof topDBQuerySchema>;
+
+export function getTopDBQueries(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[],
   limit = 50,
   compareTo?: "previous_period",
   cursor?: string
-): Promise<ComparisonPayload<PaginatedResponse<TopDBQuery[]>>> {
-  const params = buildREDFilters(s, e, services, { limit, cursor });
-  if (compareTo) {
-    Object.assign(params, { compareTo });
-  }
-  const raw = await api.get<unknown>(`${V1}/spans/red/top-db-queries`, { params });
-  return validateResponse(topDBQueriesResponseSchema, raw);
+): Promise<Comparable<z.infer<typeof topDBQueriesPageSchema>>> {
+  const params = buildREDFilters(s, e, services, { limit, cursor, compareTo });
+  return getComparableJson("/spans/red/top-db-queries", params, topDBQueriesPageSchema);
 }
 
 // ─── Service Detail (consolidated from serviceDetailApi.ts) ───────────
 
-export interface ServiceSummaryResponse {
-  readonly service_name: string;
-  readonly request_count: number;
-  readonly error_count: number;
-  readonly rps: number;
-  readonly error_rate: number;
-  readonly p50_ms: number;
-  readonly p95_ms: number;
-  readonly p99_ms: number;
-  readonly cpu_utilization: number;
-  readonly memory_utilization: number;
-  readonly disk_utilization: number;
-}
-
-export interface SaturationTimeSeriesPoint {
-  readonly timestamp: string;
-  readonly value: number;
-}
-
 const serviceSummarySchema = z.object({
-  service_name: z.string(),
-  request_count: z.number(),
-  error_count: z.number(),
+  serviceName: z.string(),
+  requestCount: z.number(),
+  errorCount: z.number(),
   rps: z.number(),
-  error_rate: z.number(),
-  p50_ms: z.number(),
-  p95_ms: z.number(),
-  p99_ms: z.number(),
-  cpu_utilization: z.number(),
-  memory_utilization: z.number(),
-  disk_utilization: z.number(),
+  errorRate: z.number(),
+  p50Ms: z.number(),
+  p95Ms: z.number(),
+  p99Ms: z.number(),
+  cpuUtilization: z.number(),
+  memoryUtilization: z.number(),
+  diskUtilization: z.number(),
 });
 
-const serviceSummaryComparisonSchema = z.object({
-  data: serviceSummarySchema,
-  comparison: serviceSummarySchema.optional(),
-});
+const saturationPointSchema = z.object({ ...timestamped, value: z.number() });
 
-export async function getServiceSummary(
+export type ServiceSummaryResponse = z.infer<typeof serviceSummarySchema>;
+export type SaturationTimeSeriesPoint = z.infer<typeof saturationPointSchema>;
+
+export function getServiceSummary(
   s: RequestTime,
   e: RequestTime,
   services: string | readonly string[],
   compareTo?: "previous_period"
-): Promise<ComparisonPayload<ServiceSummaryResponse>> {
+): Promise<Comparable<ServiceSummaryResponse>> {
   const params = buildREDFilters(s, e, services, { compareTo });
-  const raw = await api.get<unknown>(`${V1}/spans/red/summary`, { params });
-  return validateResponse(serviceSummaryComparisonSchema, raw);
+  return getComparableJson("/spans/red/summary", params, serviceSummarySchema);
 }
 
 export function getServiceSaturationTimeseries(
@@ -368,5 +359,23 @@ export function getServiceSaturationTimeseries(
   services: string | readonly string[]
 ): Promise<SaturationTimeSeriesPoint[]> {
   const params = buildREDFilters(s, e, services);
-  return getJson<SaturationTimeSeriesPoint[]>("/spans/red/saturation-timeseries", params);
+  return getJson("/spans/red/saturation-timeseries", params, z.array(saturationPointSchema));
 }
+
+/**
+ * Exposed so contract.test.ts can parse them against fixtures marshalled from
+ * the Go response structs. Keys match the fixture names.
+ */
+export const redSchemas = {
+  redServices: z.array(redServiceRowSchema),
+  redFleetOverview: fleetOverviewSchema,
+  redRequestAndErrorRate: z.array(requestErrorRatePointSchema),
+  redRequestRate: z.array(requestRatePointSchema),
+  redStatusTimeseries: z.array(statusTimeseriesPointSchema),
+  redLatencyPercentiles: z.array(latencyPercentilesPointSchema),
+  redByEndpoint: z.array(endpointRatePointSchema),
+  redTopEndpoints: topEndpointsPageSchema,
+  redTopDBQueries: topDBQueriesPageSchema,
+  redServiceSummary: serviceSummarySchema,
+  redSaturation: z.array(saturationPointSchema),
+} as const;

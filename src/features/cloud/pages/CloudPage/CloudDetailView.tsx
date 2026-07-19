@@ -42,9 +42,9 @@ export function CloudDetailView({ summary }: CloudDetailViewProps): JSX.Element 
                 <span className="h-1.5 w-1.5 rounded-full bg-current" />
                 connected
               </span>
-              {summary.last_seen ? (
+              {summary.lastSeen ? (
                 <span className="font-mono text-[12px] text-foreground-muted">
-                  last seen {new Date(summary.last_seen).toLocaleString()}
+                  last seen {new Date(summary.lastSeen).toLocaleString()}
                 </span>
               ) : null}
             </div>
@@ -200,10 +200,10 @@ function ResourcesTable({ rows }: { rows: readonly AttentionResource[] }): JSX.E
               className="text-right font-mono text-[13px] tabular-nums"
               style={{ color: HEALTH_COLOR[r.health] }}
             >
-              {r.error_rate.toFixed(1)}%
+              {r.errorRate.toFixed(1)}%
             </TableCell>
             <TableCell className="text-right font-mono text-[13px] text-foreground tabular-nums">
-              {r.request_count.toLocaleString()}
+              {r.requestCount.toLocaleString()}
             </TableCell>
           </TableRow>
         ))}

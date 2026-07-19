@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import type { VisualizationTab } from "../../../store/tracesStore";
 
 interface SpanLite {
-  readonly span_id: string;
+  readonly spanId: string;
 }
 
 interface Args {
@@ -113,7 +113,7 @@ function moveSpan(
 ) {
   if (spans.length === 0) return;
   e.preventDefault();
-  const ids = spans.map((s) => s.span_id);
+  const ids = spans.map((s) => s.spanId);
   const cur = selectedSpanId ? ids.indexOf(selectedSpanId) : -1;
   const next =
     cur === -1

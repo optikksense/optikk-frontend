@@ -13,9 +13,13 @@ const __dirname = path.dirname(__filename);
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const devBackendUrl = env.VITE_DEV_BACKEND_URL || DEV_BACKEND_URL;
+  const plugins = [TanStackRouterVite(), react()];
+  if (env.ANALYZE_BUNDLE === "true") {
+    plugins.push(visualizer({ filename: "stats.html" }));
+  }
 
   return {
-    plugins: [TanStackRouterVite(), react(), visualizer({ filename: "stats.html" })],
+    plugins,
     resolve: {
       alias: [
         { find: "@app", replacement: path.resolve(__dirname, "./src/app") },
@@ -48,8 +52,37 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 300,
       rollupOptions: {
         output: {
-          // Allowing Vite/Rollup to handle chunking automatically
-          // to take full advantage of tree-shaking and dynamic imports.
+          manualChunks(id) {
+            if (
+              id.includes("node_modules/react/") ||
+              id.includes("node_modules/react-dom/") ||
+              id.includes("node_modules/scheduler/")
+            ) {
+              return "vendor-react";
+            }
+            if (id.includes("node_modules/@tanstack/")) return "vendor-tanstack";
+            if (
+              id.includes("node_modules/react-aria") ||
+              id.includes("node_modules/react-stately") ||
+              id.includes("node_modules/@react-aria/") ||
+              id.includes("node_modules/@react-stately/") ||
+              id.includes("node_modules/@internationalized/")
+            ) {
+              return "vendor-react-aria";
+            }
+            if (
+              id.includes("node_modules/@radix-ui/") ||
+              id.includes("node_modules/@floating-ui/")
+            ) {
+              return "vendor-radix";
+            }
+            if (id.includes("node_modules/date-fns/")) return "vendor-date";
+            if (id.includes("node_modules/zod/")) return "vendor-zod";
+            if (id.includes("node_modules/axios/")) return "vendor-http";
+            if (id.includes("node_modules/lucide-react/")) return "vendor-icons";
+            if (id.includes("node_modules/uplot/")) return "vendor-charts";
+            return undefined;
+          },
         },
       },
     },

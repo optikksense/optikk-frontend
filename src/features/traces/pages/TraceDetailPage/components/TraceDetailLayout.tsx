@@ -12,16 +12,16 @@ import { TraceTabBar } from "./TraceTabBar";
 import { VizArea } from "./VizArea";
 
 interface SelectedSpan {
-  readonly span_id?: string;
-  readonly operation_name?: string;
-  readonly service_name?: string;
+  readonly spanId?: string;
+  readonly operationName?: string;
+  readonly serviceName?: string;
   readonly status?: string;
-  readonly span_kind?: string;
-  readonly duration_ms?: number;
-  readonly http_method?: string;
-  readonly response_status_code?: string;
-  readonly start_time?: string;
-  readonly end_time?: string;
+  readonly spanKind?: string;
+  readonly durationMs?: number;
+  readonly httpMethod?: string;
+  readonly responseStatusCode?: string;
+  readonly startTime?: string;
+  readonly endTime?: string;
 }
 
 export interface TraceDetailLayoutProps {
@@ -32,7 +32,7 @@ export interface TraceDetailLayoutProps {
   readonly errorCount: number;
   readonly selectedSpanId: string | null;
   readonly selectedSpan: SelectedSpan | null;
-  readonly onSpanClick: (span: { span_id: string }) => void;
+  readonly onSpanClick: (span: { spanId: string }) => void;
   readonly onCloseSpan: () => void;
   readonly criticalPathSpanIds: Set<string>;
   readonly errorPathSpanIds: Set<string>;

@@ -42,25 +42,25 @@ export default memo(function ErrorRateChart({
 
       const firstSvc = activeEntries[0]?.[1] ?? [];
       activeTimestamps = firstSvc
-        .map((row) => tsMs(firstValue(row, ["timestamp", "time_bucket"], "")) / 1000)
+        .map((row) => tsMs(firstValue(row, ["timestamp", "timeBucket"], "")) / 1000)
         .filter((t) => !Number.isNaN(t));
 
       seriesList = activeEntries.map(([svcName, rows], idx) => {
         const values = rows.map((row) => {
-          const total = Number(firstValue(row, ["request_count", "req_count"], 0));
-          const errors = Number(firstValue(row, ["error_count"], 0));
+          const total = Number(firstValue(row, ["requestCount", "reqCount"], 0));
+          const errors = Number(firstValue(row, ["errorCount"], 0));
           return total === 0 ? 0 : (errors / total) * 100;
         });
         return { label: svcName, values, color: getChartColor(idx), fill: false };
       });
     } else {
       activeTimestamps = data
-        .map((d) => tsMs(firstValue(d, ["timestamp", "time_bucket"], "")) / 1000)
+        .map((d) => tsMs(firstValue(d, ["timestamp", "timeBucket"], "")) / 1000)
         .filter((t) => !Number.isNaN(t));
       seriesList = [
         {
           label: datasetLabel,
-          values: data.map((d) => Number(firstValue(d, ["value", "error_rate"], 0))),
+          values: data.map((d) => Number(firstValue(d, ["value", "errorRate"], 0))),
           color,
           fill: true,
         },

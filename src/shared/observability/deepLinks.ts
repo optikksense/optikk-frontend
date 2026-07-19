@@ -27,7 +27,7 @@ export function buildLogsHubHref(opts: {
 }
 
 export function traceIdEqualsFilter(traceId: string): StructuredFilter {
-  return { field: "trace_id", operator: "equals", value: traceId };
+  return { field: "traceId", operator: "equals", value: traceId };
 }
 
 /** A trace is addressed by id alone, so the link never goes stale. */

@@ -15,6 +15,11 @@ function ErrorCell({ rate }: { rate: number }) {
 }
 
 function NameCell({ row }: { row: CatalogRow }) {
+  const metadata = [
+    row.lang === "—" ? null : row.lang,
+    row.instances == null ? null : `${row.instances} inst`,
+    row.version === "—" ? null : row.version,
+  ].filter((value): value is string => value != null);
   return (
     <div className="flex min-w-0 items-center gap-2.5">
       <StatusDot status={row.status} ring className="h-2 w-2" />
@@ -24,7 +29,7 @@ function NameCell({ row }: { row: CatalogRow }) {
           {row.serviceName}
         </span>
         <span className="truncate font-mono text-[11px] text-foreground-muted">
-          {row.lang} · {row.instances} inst · {row.version}
+          {metadata.length > 0 ? metadata.join(" · ") : "Metadata unavailable"}
         </span>
       </div>
     </div>

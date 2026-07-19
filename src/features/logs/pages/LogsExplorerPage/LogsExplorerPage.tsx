@@ -38,14 +38,14 @@ function buildValueSuggestions(
   facets: LogsFacets | undefined
 ): Readonly<Record<string, readonly SuggestionOption[]>> {
   const suggestions: Record<string, readonly SuggestionOption[]> = {
-    severity_text: SEVERITY_STYLES.map((s) => ({
+    severityText: SEVERITY_STYLES.map((s) => ({
       value: s.label.toUpperCase(),
       label: s.label.toUpperCase(),
       hint: s.shortLabel,
     })),
   };
   if (facets?.service.length) {
-    suggestions.service_name = facets.service.map((i) => ({
+    suggestions.serviceName = facets.service.map((i) => ({
       value: i.value,
       label: i.value,
       hint: i.count.toLocaleString(),
@@ -124,7 +124,7 @@ export default function LogsExplorerPage() {
               onSubmitFreeText={() => {}}
               actions={<LogsActions />}
               valueSuggestions={valueSuggestions}
-              searchPlaceholder='Search logs: service_name:checkout severity_text:ERROR "timeout"'
+              searchPlaceholder='Search logs: serviceName:checkout severityText:ERROR "timeout"'
               scope="logs"
             />
             <SearchTranslationNotice warnings={translationWarnings} />

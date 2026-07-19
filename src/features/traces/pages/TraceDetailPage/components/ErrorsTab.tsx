@@ -10,7 +10,7 @@ import { TraceErrorSummary } from "./TraceErrorSummary";
 
 interface Props {
   readonly spans: readonly TraceRecord[];
-  readonly onSelect: (span: { span_id: string }) => void;
+  readonly onSelect: (span: { spanId: string }) => void;
   readonly errorGroups?: readonly TraceErrorGroup[];
 }
 
@@ -42,19 +42,19 @@ function ErrorsTabComponent({ spans, onSelect, errorGroups }: Props) {
       )}
       {errs.map((s) => (
         <button
-          key={s.span_id}
+          key={s.spanId}
           type="button"
           className="cursor-pointer rounded-[10px] border border-error-subtle bg-secondary p-3 text-left hover:bg-muted"
-          onClick={() => onSelect({ span_id: s.span_id })}
+          onClick={() => onSelect({ spanId: s.spanId })}
         >
           <div className="mb-2 flex flex-wrap items-center gap-2.5">
             <span className="inline-flex items-center gap-1 rounded-full bg-error-subtle px-[7px] py-[2px] font-mono text-[10.5px] text-error">
               <AlertCircle size={11} /> error
             </span>
-            <span className="text-[12px] text-foreground-muted">{s.service_name}</span>
-            <span className="font-mono text-[12.5px] text-foreground">{s.operation_name}</span>
+            <span className="text-[12px] text-foreground-muted">{s.serviceName}</span>
+            <span className="font-mono text-[12.5px] text-foreground">{s.operationName}</span>
             <span className="ml-auto font-mono text-foreground-muted">
-              {formatDuration(s.duration_ms ?? 0)}
+              {formatDuration(s.durationMs ?? 0)}
             </span>
           </div>
           <div className="flex flex-col gap-2">
@@ -62,28 +62,28 @@ function ErrorsTabComponent({ spans, onSelect, errorGroups }: Props) {
               <div>
                 <div className="text-[11px] text-foreground-caption">span kind</div>
                 <div className="break-words font-mono text-[12px] text-foreground">
-                  {s.span_kind || "—"}
+                  {s.spanKind || "—"}
                 </div>
               </div>
               <div>
                 <div className="text-[11px] text-foreground-caption">http.status</div>
                 <div className="break-words font-mono text-[12px] text-foreground">
-                  {s.http_status_code ?? "—"}
+                  {s.httpStatusCode ?? "—"}
                 </div>
               </div>
-              {s.http_method && (
+              {s.httpMethod && (
                 <div>
                   <div className="text-[11px] text-foreground-caption">http.method</div>
                   <div className="break-words font-mono text-[12px] text-foreground">
-                    {s.http_method}
+                    {s.httpMethod}
                   </div>
                 </div>
               )}
-              {s.status_message && (
+              {s.statusMessage && (
                 <div>
-                  <div className="text-[11px] text-foreground-caption">status_message</div>
+                  <div className="text-[11px] text-foreground-caption">statusMessage</div>
                   <div className="break-words font-mono text-[12px] text-foreground">
-                    {s.status_message}
+                    {s.statusMessage}
                   </div>
                 </div>
               )}

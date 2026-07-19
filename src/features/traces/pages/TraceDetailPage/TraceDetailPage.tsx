@@ -22,8 +22,8 @@ export default function TraceDetailPage() {
   const [activeService, setActiveService] = useState<string | null>(null);
 
   const baseline = useTraceOperationBaseline(
-    data.spans[0]?.service_name,
-    data.spans[0]?.operation_name
+    data.spans[0]?.serviceName,
+    data.spans[0]?.operationName
   );
 
   if (data.isPending)
@@ -48,15 +48,15 @@ export default function TraceDetailPage() {
 
   const rootSpan = data.spans[0];
   const httpStatus =
-    rootSpan?.http_status_code != null && rootSpan.http_status_code > 0
-      ? rootSpan.http_status_code
+    rootSpan?.httpStatusCode != null && rootSpan.httpStatusCode > 0
+      ? rootSpan.httpStatusCode
       : undefined;
 
   const onServiceChange = (svc: string | null) => {
     setActiveService(svc);
     if (svc) {
-      const first = data.spans.find((s) => s.service_name === svc);
-      if (first?.span_id) actions.handleSpanClick({ span_id: first.span_id });
+      const first = data.spans.find((s) => s.serviceName === svc);
+      if (first?.spanId) actions.handleSpanClick({ spanId: first.spanId });
     }
   };
 
@@ -66,9 +66,9 @@ export default function TraceDetailPage() {
         traceId={resolvedTraceId}
         stats={stats}
         startMs={traceTimeBounds.startMs}
-        rootService={rootSpan?.service_name}
-        rootOperation={rootSpan?.operation_name}
-        httpMethod={rootSpan?.http_method}
+        rootService={rootSpan?.serviceName}
+        rootOperation={rootSpan?.operationName}
+        httpMethod={rootSpan?.httpMethod}
         httpStatus={httpStatus}
         onOpenInLogs={actions.openInLogs}
         onBack={actions.goBack}
@@ -77,8 +77,8 @@ export default function TraceDetailPage() {
         stats={stats}
         spans={data.spans}
         criticalPathSpanIds={layoutProps.criticalPathSpanIds}
-        p50Ms={baseline.data?.p50_ms}
-        p95Ms={baseline.data?.p95_ms}
+        p50Ms={baseline.data?.p50Ms}
+        p95Ms={baseline.data?.p95Ms}
       />
       <ServiceStrip
         spans={data.spans}

@@ -21,7 +21,7 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
         key: "method",
         label: "Method",
         render: (row) => (
-          <span className="font-medium text-foreground-secondary">{row.http_method || "—"}</span>
+          <span className="font-medium text-foreground-secondary">{row.httpMethod || "—"}</span>
         ),
       },
       {
@@ -40,7 +40,7 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
         key: "requests",
         label: "Requests",
         align: "right",
-        render: (row) => formatNumber(row.request_count),
+        render: (row) => formatNumber(row.requestCount),
       },
       {
         key: "errors",
@@ -48,8 +48,8 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
         align: "right",
         render: (row) =>
           formatPercentage(
-            Number(row.request_count ?? 0) > 0
-              ? (Number(row.error_count ?? 0) * 100) / Number(row.request_count ?? 0)
+            Number(row.requestCount ?? 0) > 0
+              ? (Number(row.errorCount ?? 0) * 100) / Number(row.requestCount ?? 0)
               : 0
           ),
       },
@@ -57,13 +57,13 @@ function ServiceDrawerEndpointsSectionComponent({ isError, isLoading, endpointRo
         key: "avg",
         label: "Avg",
         align: "right",
-        render: (row) => formatDuration(row.avg_latency),
+        render: (row) => formatDuration(row.avgLatency),
       },
       {
         key: "latency",
         label: "p95",
         align: "right",
-        render: (row) => formatDuration(row.p95_latency),
+        render: (row) => formatDuration(row.p95Latency),
       },
     ],
     []

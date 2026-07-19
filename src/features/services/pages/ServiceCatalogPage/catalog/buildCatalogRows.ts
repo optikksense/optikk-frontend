@@ -23,7 +23,7 @@ export interface CatalogRow {
   readonly tier: string;
   readonly tenant: string;
   readonly lang: string;
-  readonly instances: number;
+  readonly instances: number | null;
 }
 
 function classifyStatus(errorRate: number, p99Ms: number): CatalogStatus {
@@ -42,9 +42,9 @@ function bySparkline(points: RequestRatePoint[]): Map<string, number[]> {
   for (const p of points) {
     const ts = new Date(p.timestamp).getTime();
     if (!Number.isFinite(ts)) continue;
-    const list = grouped.get(p.service_name) ?? [];
+    const list = grouped.get(p.serviceName) ?? [];
     list.push({ t: ts, v: p.rps });
-    grouped.set(p.service_name, list);
+    grouped.set(p.serviceName, list);
   }
   const out = new Map<string, number[]>();
   for (const [name, list] of grouped) {
@@ -60,7 +60,7 @@ function bySparkline(points: RequestRatePoint[]): Map<string, number[]> {
 function byPrevP99(prev: ServiceCatalogRedSummary | undefined): Map<string, number> {
   const m = new Map<string, number>();
   if (!prev) return m;
-  for (const row of prev.services ?? []) m.set(row.service_name, row.p99_latency);
+  for (const row of prev.services ?? []) m.set(row.serviceName, row.p99Latency);
   return m;
 }
 
@@ -71,67 +71,32 @@ export interface BuildCatalogInputs {
   readonly windowSec: number;
 }
 
-const SERVICE_METADATA_MAP: Record<
-  string,
-  { tier: string; tenant: string; lang: string; instances: number }
-> = {
-  "payment-svc": { tier: "Tier 0", tenant: "payments", lang: "Node", instances: 12 },
-  "checkout-bff": { tier: "Tier 0", tenant: "payments", lang: "Go", instances: 8 },
-  cart: { tier: "Tier 1", tenant: "shopping", lang: "Java", instances: 6 },
-  search: { tier: "Tier 0", tenant: "discovery", lang: "Go", instances: 10 },
-  "user-profile": { tier: "Tier 1", tenant: "identity", lang: "Ruby", instances: 4 },
-  notifications: { tier: "Tier 2", tenant: "messaging", lang: "Node", instances: 3 },
-  "shipping-rates": { tier: "Tier 1", tenant: "logistics", lang: "Java", instances: 4 },
-  inventory: { tier: "Tier 0", tenant: "shopping", lang: "Java", instances: 6 },
-  "tax-calc": { tier: "Tier 1", tenant: "payments", lang: "Python", instances: 3 },
-  "fraud-detect": { tier: "Tier 0", tenant: "trust", lang: "Python", instances: 5 },
-};
-
-function getFallbackMetadata(serviceName: string) {
-  let hash = 0;
-  for (let i = 0; i < serviceName.length; i++) {
-    hash = serviceName.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const uHash = Math.abs(hash);
-  const tiers = ["Tier 0", "Tier 1", "Tier 2"];
-  const tenants = ["platform", "infra", "core", "frontend", "billing"];
-  const langs = ["Go", "Java", "Node", "Python", "Rust"];
-  const tier = tiers[uHash % tiers.length];
-  const tenant = tenants[uHash % tenants.length];
-  const lang = langs[uHash % langs.length];
-  const instances = (uHash % 8) + 2;
-  return { tier, tenant, lang, instances };
-}
-
 function buildCatalogRow(
   row: RedServiceRow,
   windowSec: number,
   spark: Map<string, number[]>,
   prevP99: Map<string, number>
 ): CatalogRow {
-  const errorRate = row.request_count > 0 ? (row.error_count * 100) / row.request_count : 0;
-
-  const mappedMeta =
-    SERVICE_METADATA_MAP[row.service_name] ?? getFallbackMetadata(row.service_name);
+  const errorRate = row.requestCount > 0 ? (row.errorCount * 100) / row.requestCount : 0;
 
   return {
-    serviceName: row.service_name,
-    requestCount: row.request_count,
-    errorCount: row.error_count,
+    serviceName: row.serviceName,
+    requestCount: row.requestCount,
+    errorCount: row.errorCount,
     errorRate,
-    rps: windowSec > 0 ? row.request_count / windowSec : 0,
-    p50Ms: row.avg_latency,
-    p95Ms: row.p95_latency,
-    p99Ms: row.p99_latency,
-    p99DeltaPct: deltaPct(row.p99_latency, prevP99.get(row.service_name)),
-    status: classifyStatus(errorRate, row.p99_latency),
-    sparkline: spark.get(row.service_name) ?? [],
+    rps: windowSec > 0 ? row.requestCount / windowSec : 0,
+    p50Ms: row.avgLatency,
+    p95Ms: row.p95Latency,
+    p99Ms: row.p99Latency,
+    p99DeltaPct: deltaPct(row.p99Latency, prevP99.get(row.serviceName)),
+    status: classifyStatus(errorRate, row.p99Latency),
+    sparkline: spark.get(row.serviceName) ?? [],
     version: "—",
     environment: "—",
-    tier: mappedMeta.tier,
-    tenant: mappedMeta.tenant,
-    lang: mappedMeta.lang,
-    instances: mappedMeta.instances,
+    tier: "—",
+    tenant: "—",
+    lang: "—",
+    instances: null,
   };
 }
 

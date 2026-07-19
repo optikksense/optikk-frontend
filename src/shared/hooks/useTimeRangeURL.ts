@@ -111,7 +111,7 @@ export function useTimeRangeURL(): void {
         { replace: true }
       );
     }
-  }, []);
+  }, [searchParams, setSearchParams, setTimeRange, setTimezone, timeRange, timezone]);
 
   useEffect(() => {
     if (!initializedRef.current) return;
@@ -135,7 +135,7 @@ export function useTimeRangeURL(): void {
       },
       { replace: true }
     );
-  }, [timeRange, timezone]);
+  }, [timeRange, timezone, setSearchParams]);
 
   useEffect(() => {
     if (!initializedRef.current) return;
@@ -156,5 +156,5 @@ export function useTimeRangeURL(): void {
 
     const urlTz = searchParams.get(PARAM_TZ);
     if (urlTz && urlTz !== timezone) setTimezone(urlTz);
-  }, [searchParams]);
+  }, [searchParams, setTimeRange, setTimezone, timeRange, timezone]);
 }

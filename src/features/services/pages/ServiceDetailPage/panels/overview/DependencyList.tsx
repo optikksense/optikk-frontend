@@ -38,9 +38,10 @@ function DependencyItem({
   onSelect: (name: string) => void;
 }) {
   return (
-    <div
+    <button
+      type="button"
       onClick={() => onSelect(item.name)}
-      className="flex cursor-pointer items-center justify-between rounded-md border border-border/40 bg-muted/15 p-2.5 transition-colors hover:bg-muted/30"
+      className="flex w-full cursor-pointer items-center justify-between rounded-md border border-border/40 bg-muted/15 p-2.5 text-left transition-colors hover:bg-muted/30"
     >
       <div className="min-w-0">
         <div className="flex items-center gap-2">
@@ -69,6 +70,6 @@ function DependencyItem({
         </div>
         <span className="text-[9.5px] text-foreground-muted">err rate</span>
       </div>
-    </div>
+    </button>
   );
 }

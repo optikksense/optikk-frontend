@@ -27,41 +27,42 @@ export function ServiceTopologyNode({ data }: NodeProps) {
       <div className="font-semibold text-foreground">{d.name}</div>
       <div className="flex justify-between gap-4">
         <span className="text-foreground-muted">Requests</span>
-        <span>{formatNumber(d.request_count)}</span>
+        <span>{formatNumber(d.requestCount)}</span>
       </div>
       <div className="flex justify-between gap-4">
         <span className="text-foreground-muted">Errors</span>
         <span>
-          {formatNumber(d.error_count)} (
-          {formatPercentage(d.error_rate, d.error_rate >= 0.1 ? 1 : 2)})
+          {formatNumber(d.errorCount)} ({formatPercentage(d.errorRate, d.errorRate >= 0.1 ? 1 : 2)})
         </span>
       </div>
       <div className="flex justify-between gap-4">
         <span className="text-foreground-muted">p50</span>
-        <span>{formatMs(d.p50_latency_ms)}</span>
+        <span>{formatMs(d.p50LatencyMs)}</span>
       </div>
       <div className="flex justify-between gap-4">
         <span className="text-foreground-muted">p95</span>
-        <span>{formatMs(d.p95_latency_ms)}</span>
+        <span>{formatMs(d.p95LatencyMs)}</span>
       </div>
       <div className="flex justify-between gap-4">
         <span className="text-foreground-muted">p99</span>
-        <span>{formatMs(d.p99_latency_ms)}</span>
+        <span>{formatMs(d.p99LatencyMs)}</span>
       </div>
     </div>
   );
 
   return (
     <Tooltip content={tooltip} placement="top">
-      <div
+      <button
+        type="button"
         onClick={() => d.onOpen(d.name)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") d.onOpen(d.name);
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            d.onOpen(d.name);
+          }
         }}
-        role="button"
-        tabIndex={0}
         style={{ width: NODE_WIDTH, height: NODE_HEIGHT, opacity: d.dimmed ? 0.25 : 1 }}
-        className="group flex cursor-pointer flex-col justify-between rounded-[var(--card-radius)] border border-border bg-muted px-3 py-2 shadow-[var(--shadow-sm)] transition-all hover:border-primary hover:shadow-[var(--shadow-md)]"
+        className="group flex cursor-pointer flex-col justify-between rounded-[var(--card-radius)] border border-border bg-muted px-3 py-2 text-left shadow-[var(--shadow-sm)] transition-all hover:border-primary hover:shadow-[var(--shadow-md)]"
       >
         <Handle type="target" position={Position.Left} className="!bg-border" />
         <Handle type="source" position={Position.Right} className="!bg-border" />
@@ -78,24 +79,24 @@ export function ServiceTopologyNode({ data }: NodeProps) {
         <div className="grid grid-cols-3 gap-1 text-[11px] leading-tight">
           <div className="flex flex-col">
             <span className="text-foreground-muted">req</span>
-            <span className="text-foreground">{formatNumber(d.request_count)}</span>
+            <span className="text-foreground">{formatNumber(d.requestCount)}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-foreground-muted">err</span>
             <span
               style={{
-                color: d.error_rate > 5 ? "var(--color-error)" : "var(--text-primary)",
+                color: d.errorRate > 5 ? "var(--color-error)" : "var(--text-primary)",
               }}
             >
-              {formatPercentage(d.error_rate, d.error_rate >= 0.1 ? 1 : 2)}
+              {formatPercentage(d.errorRate, d.errorRate >= 0.1 ? 1 : 2)}
             </span>
           </div>
           <div className="flex flex-col">
             <span className="text-foreground-muted">p95</span>
-            <span className="text-foreground">{formatMs(d.p95_latency_ms)}</span>
+            <span className="text-foreground">{formatMs(d.p95LatencyMs)}</span>
           </div>
         </div>
-      </div>
+      </button>
     </Tooltip>
   );
 }

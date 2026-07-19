@@ -9,23 +9,23 @@ const nullableNumber = z.number().nullable();
 
 const serviceCallsSchema = z.object({
   service: stringValue,
-  call_count: numericValue,
+  callCount: numericValue,
 });
 
 const queryDetailSummarySchema = z.object({
-  query_hash: stringValue,
-  query_text: stringValue,
-  db_system: stringValue,
-  collection_name: stringValue,
-  operation_name: stringValue,
-  call_count: numericValue,
-  error_count: numericValue,
-  p50_ms: nullableNumber,
-  p95_ms: nullableNumber,
-  p99_ms: nullableNumber,
-  avg_ms: numericValue,
-  total_time_ms: numericValue,
-  avg_rows: nullableNumber,
+  queryHash: stringValue,
+  queryText: stringValue,
+  dbSystem: stringValue,
+  collectionName: stringValue,
+  operationName: stringValue,
+  callCount: numericValue,
+  errorCount: numericValue,
+  p50Ms: nullableNumber,
+  p95Ms: nullableNumber,
+  p99Ms: nullableNumber,
+  avgMs: numericValue,
+  totalTimeMs: numericValue,
+  avgRows: nullableNumber,
   // Always initialised to []ServiceCalls{} server-side.
   services: z.array(serviceCallsSchema),
 });
@@ -33,21 +33,21 @@ const queryDetailSummarySchema = z.object({
 export type QueryDetailSummary = z.infer<typeof queryDetailSummarySchema>;
 
 const queryTimeseriesPointSchema = z.object({
-  time_bucket: stringValue,
-  call_count: numericValue,
-  error_count: numericValue,
-  avg_ms: nullableNumber,
-  p99_ms: nullableNumber,
+  timeBucket: stringValue,
+  callCount: numericValue,
+  errorCount: numericValue,
+  avgMs: nullableNumber,
+  p99Ms: nullableNumber,
 });
 
 export type QueryTimeseriesPoint = z.infer<typeof queryTimeseriesPointSchema>;
 
 const queryExecutionSchema = z.object({
   timestamp: stringValue,
-  trace_id: stringValue,
-  span_id: stringValue,
-  duration_ms: numericValue,
-  is_error: z.boolean(),
+  traceId: stringValue,
+  spanId: stringValue,
+  durationMs: numericValue,
+  isError: z.boolean(),
   service: stringValue,
   host: stringValue,
   rows: nullableNumber,

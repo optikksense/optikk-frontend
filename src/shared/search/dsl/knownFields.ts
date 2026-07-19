@@ -65,7 +65,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "field",
   },
   {
-    key: "span_kind",
+    key: "spanKind",
     label: "Span kind",
     type: "string",
     ops: STRING_OPS,
@@ -75,7 +75,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "field",
   },
   {
-    key: "http_method",
+    key: "httpMethod",
     label: "HTTP method",
     type: "string",
     ops: STRING_OPS,
@@ -85,7 +85,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "field",
   },
   {
-    key: "http_status",
+    key: "httpStatus",
     label: "HTTP status",
     type: "number",
     ops: NUMBER_OPS,
@@ -115,7 +115,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "resource",
   },
   {
-    key: "peer_service",
+    key: "peerService",
     label: "Peer service",
     type: "string",
     ops: STRING_OPS,
@@ -125,7 +125,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "field",
   },
   {
-    key: "trace_id",
+    key: "traceId",
     label: "Trace ID",
     type: "string",
     ops: ID_OPS,
@@ -135,7 +135,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "id",
   },
   {
-    key: "duration_ms",
+    key: "durationMs",
     label: "Duration (ms)",
     type: "number",
     ops: NUMBER_OPS,
@@ -145,7 +145,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "field",
   },
   {
-    key: "has_error",
+    key: "hasError",
     label: "Has error",
     type: "bool",
     ops: BOOL_OPS,
@@ -158,7 +158,7 @@ export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
 
 const LOG_KNOWN_FIELDS: readonly KnownField[] = [
   {
-    key: "service_name",
+    key: "serviceName",
     label: "Service",
     type: "string",
     ops: STRING_OPS,
@@ -168,7 +168,7 @@ const LOG_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "field",
   },
   {
-    key: "severity_text",
+    key: "severityText",
     label: "Severity",
     type: "string",
     ops: STRING_OPS,
@@ -188,7 +188,7 @@ const LOG_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "body",
   },
   {
-    key: "trace_id",
+    key: "traceId",
     label: "Trace ID",
     type: "string",
     ops: ID_OPS,
@@ -198,7 +198,7 @@ const LOG_KNOWN_FIELDS: readonly KnownField[] = [
     icon: "id",
   },
   {
-    key: "span_id",
+    key: "spanId",
     label: "Span ID",
     type: "string",
     ops: ID_OPS,
@@ -384,15 +384,15 @@ export function findKnownField(
 const SUGGESTABLE_TRACE_FIELDS = new Set([
   "service",
   "operation",
-  "http_method",
-  "http_status",
+  "httpMethod",
+  "httpStatus",
   "status",
   "environment",
 ]);
 
 const SUGGESTABLE_LOG_FIELDS = new Set([
-  "service_name",
-  "severity_text",
+  "serviceName",
+  "severityText",
   "host",
   "pod",
   "container",
@@ -420,7 +420,7 @@ export const OPERATOR_OPTIONS: readonly OperatorOption[] = [
   {
     insert: ":>=",
     label: ">=",
-    description: "greater or equal — duration_ms:>=500",
+    description: "greater or equal — durationMs:>=500",
     typeBadge: "OP",
   },
   { insert: ":>", label: ">", description: "greater than", typeBadge: "OP" },
@@ -435,23 +435,23 @@ export interface QuickTemplate {
 }
 
 const QUICK_TEMPLATES_LOGS: readonly QuickTemplate[] = [
-  { label: "Errors only", query: "severity_text:ERROR", description: "ERROR-level logs" },
+  { label: "Errors only", query: "severityText:ERROR", description: "ERROR-level logs" },
   {
     label: "Errors and fatals",
-    query: "severity_text:(ERROR OR FATAL)",
+    query: "severityText:(ERROR OR FATAL)",
     description: "ERROR + FATAL severity",
   },
-  { label: "By service", query: "service_name:", description: "Filter by service — type a name" },
-  { label: "By trace ID", query: "trace_id:", description: "Lookup logs for a trace" },
+  { label: "By service", query: "serviceName:", description: "Filter by service — type a name" },
+  { label: "By trace ID", query: "traceId:", description: "Lookup logs for a trace" },
   { label: "Body contains", query: '"timeout"', description: "Free-text body search" },
 ];
 
 const QUICK_TEMPLATES_TRACES: readonly QuickTemplate[] = [
-  { label: "Errors only", query: "has_error:true", description: "Traces with recorded errors" },
-  { label: "Slow requests", query: "duration_ms:>=500", description: "Traces ≥ 500ms" },
+  { label: "Errors only", query: "hasError:true", description: "Traces with recorded errors" },
+  { label: "Slow requests", query: "durationMs:>=500", description: "Traces ≥ 500ms" },
   {
     label: "5xx responses",
-    query: "http_status:(500 OR 502 OR 503 OR 504)",
+    query: "httpStatus:(500 OR 502 OR 503 OR 504)",
     description: "Server-error responses",
   },
   { label: "By service", query: "service:", description: "Filter by service — type a name" },
@@ -470,15 +470,15 @@ export function quickTemplatesForScope(scope: ExplorerScope | undefined): readon
 }
 
 const SYNTAX_EXAMPLES_LOGS: readonly QuickTemplate[] = [
-  { label: "Exclude", query: "-severity_text:INFO", description: "Leading - negates a filter" },
+  { label: "Exclude", query: "-severityText:INFO", description: "Leading - negates a filter" },
   {
     label: "Any of",
-    query: "severity_text:(ERROR OR FATAL)",
+    query: "severityText:(ERROR OR FATAL)",
     description: "Match any listed value",
   },
   {
     label: "Attribute",
-    query: "@http.status_code:500",
+    query: "@http.statusCode:500",
     description: "@key filters custom attributes",
   },
   {
@@ -490,7 +490,7 @@ const SYNTAX_EXAMPLES_LOGS: readonly QuickTemplate[] = [
 
 const SYNTAX_EXAMPLES_TRACES: readonly QuickTemplate[] = [
   { label: "Exclude", query: "-service:noisy-svc", description: "Leading - negates a filter" },
-  { label: "Any of", query: "http_status:(500 OR 503)", description: "Match any listed value" },
+  { label: "Any of", query: "httpStatus:(500 OR 503)", description: "Match any listed value" },
   { label: "Compare", query: "@retry.count:>=3", description: ">= > <= < on numeric values" },
   {
     label: "Has attribute",
@@ -506,7 +506,7 @@ export function syntaxExamplesForScope(scope: ExplorerScope | undefined): readon
 }
 
 export const POPULAR_ATTRIBUTE_KEYS: readonly { key: string; description: string }[] = [
-  { key: "@http.status_code", description: "HTTP response status code" },
+  { key: "@http.statusCode", description: "HTTP response status code" },
   { key: "@http.method", description: "HTTP request method" },
   { key: "@http.route", description: "Matched HTTP route template" },
   { key: "@http.url", description: "Full request URL" },

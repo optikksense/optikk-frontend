@@ -5,17 +5,17 @@ import { stringValue } from "./saturationClient";
 const nullableNumber = z.number().nullable();
 
 export const latencySeriesSchema = z.object({
-  time_bucket: stringValue,
-  group_by: stringValue,
-  p50_ms: nullableNumber,
-  p95_ms: nullableNumber,
-  p99_ms: nullableNumber,
+  timeBucket: stringValue,
+  groupBy: stringValue,
+  p50Ms: nullableNumber,
+  p95Ms: nullableNumber,
+  p99Ms: nullableNumber,
 });
 
 export const opsSeriesSchema = z.object({
-  time_bucket: stringValue,
-  group_by: stringValue,
-  ops_per_sec: nullableNumber,
+  timeBucket: stringValue,
+  groupBy: stringValue,
+  opsPerSec: nullableNumber,
 });
 
 export type LatencySeriesPoint = z.infer<typeof latencySeriesSchema>;

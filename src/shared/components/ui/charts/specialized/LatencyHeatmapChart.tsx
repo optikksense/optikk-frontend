@@ -6,9 +6,9 @@ import { APP_COLORS } from "@config/colorLiterals";
 const LATENCY_BUCKETS = ["0-50ms", "50-100ms", "100-250ms", "250-500ms", "500ms-1s", ">1s"];
 
 export interface LatencyHeatmapDataPoint {
-  time_bucket: string | number;
-  latency_bucket: string;
-  span_count?: number;
+  timeBucket: string | number;
+  latencyBucket: string;
+  spanCount?: number;
 }
 
 interface LatencyHeatmapChartProps {
@@ -18,17 +18,14 @@ interface LatencyHeatmapChartProps {
 /**
  * 2D latency heatmap: time on X axis, latency bucket on Y axis, color intensity = span count.
  * Props:
- *   data: Array<{ time_bucket, latency_bucket, span_count }>
+ *   data: Array<{ timeBucket, latencyBucket, spanCount }>
  * @param props Component props.
  * @returns Heatmap chart for latency bucket density by time.
  */
 export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartProps): JSX.Element {
-  const timeBuckets = useMemo(() => [...new Set(data.map((d) => d.time_bucket))].sort(), [data]);
+  const timeBuckets = useMemo(() => [...new Set(data.map((d) => d.timeBucket))].sort(), [data]);
 
-  const maxCount = useMemo(
-    () => Math.max(...data.map((d) => Number(d.span_count) || 0), 1),
-    [data]
-  );
+  const maxCount = useMemo(() => Math.max(...data.map((d) => Number(d.spanCount) || 0), 1), [data]);
 
   const getColor = (count: number): string => {
     const n = Number(count) || 0;
@@ -63,9 +60,9 @@ export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartPr
             <div className="flex flex-1 gap-px">
               {timeBuckets.map((tb) => {
                 const cell = data.find(
-                  (d) => d.latency_bucket === lb && String(d.time_bucket) === String(tb)
+                  (d) => d.latencyBucket === lb && String(d.timeBucket) === String(tb)
                 );
-                const count = Number(cell?.span_count) || 0;
+                const count = Number(cell?.spanCount) || 0;
                 return (
                   <Tooltip
                     key={String(tb)}

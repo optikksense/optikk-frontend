@@ -26,7 +26,8 @@ interface TimeRangeBounds {
 type TimeRangeQueryFunction<TData> = (
   tenantId: number | null,
   startTime: QueryTime,
-  endTime: QueryTime
+  endTime: QueryTime,
+  signal: AbortSignal
 ) => Promise<TData>;
 
 type TimeRangeQueryOptions<TData> = Omit<
@@ -61,9 +62,9 @@ export function useTimeRangeQuery<TData = unknown>(
 
   return useQuery<TData, Error>({
     queryKey: ["component-query", selectedTenantId, key, rangeKey(timeRange), ...extraKeys],
-    queryFn: async (): Promise<TData> => {
+    queryFn: async ({ signal }): Promise<TData> => {
       const { startTime, endTime } = getBounds(timeRange);
-      return queryFn(selectedTenantId, startTime, endTime);
+      return queryFn(selectedTenantId, startTime, endTime, signal);
     },
     enabled: Boolean(selectedTenantId) && enabled !== false,
     staleTime: 30_000,

@@ -13,18 +13,18 @@ export function buildAttrGroups(
   const source: DrawerAttrGroup = {
     label: "Source",
     rows: [
-      ["service.name", log.service_name, "var(--accent-2)"],
+      ["service.name", log.serviceName, "var(--accent-2)"],
       ...(log.environment ? ([["env", log.environment]] as const) : []),
-      ...(log.scope_name ? ([["scope.name", log.scope_name]] as const) : []),
-      ...(log.scope_version ? ([["scope.version", log.scope_version]] as const) : []),
+      ...(log.scopeName ? ([["scope.name", log.scopeName]] as const) : []),
+      ...(log.scopeVersion ? ([["scope.version", log.scopeVersion]] as const) : []),
     ],
   };
 
   const severity: DrawerAttrGroup = {
     label: "Severity",
     rows: [
-      ["severity_text", log.severity_text ?? sevLabel, sevColor],
-      ["severity_bucket", String(log.severity_bucket)],
+      ["severityText", log.severityText ?? sevLabel, sevColor],
+      ["severityBucket", String(log.severityBucket)],
     ],
   };
 
@@ -48,11 +48,11 @@ export function buildAttrGroups(
   };
 
   const dynamic: [string, string][] = [
-    ...Object.entries(log.attributes_string ?? {}),
-    ...Object.entries(log.attributes_number ?? {}).map(
+    ...Object.entries(log.attributesString ?? {}),
+    ...Object.entries(log.attributesNumber ?? {}).map(
       ([k, v]) => [k, String(v)] as [string, string]
     ),
-    ...Object.entries(log.attributes_bool ?? {}).map(
+    ...Object.entries(log.attributesBool ?? {}).map(
       ([k, v]) => [k, v ? "true" : "false"] as [string, string]
     ),
   ].sort(([a], [b]) => a.localeCompare(b));

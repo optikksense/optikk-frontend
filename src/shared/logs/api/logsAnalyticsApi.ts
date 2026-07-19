@@ -17,11 +17,11 @@ export interface LogsSummary {
 
 /**
  * Wide-format trend bucket from `POST /api/v1/logs/trend`. One row per
- * `time_bucket` (UTC, display grain) with per-severity counts pre-aggregated
+ * `timeBucket` (UTC, display grain) with per-severity counts pre-aggregated
  * by the backend. Invariant: `total === error + warn + info + debug`.
  */
 export interface LogsTrendBucket {
-  readonly time_bucket: string;
+  readonly timeBucket: string;
   readonly total: number;
   readonly error: number;
   readonly warn: number;
@@ -35,7 +35,7 @@ export interface LogsFacetValue {
 }
 
 export interface LogsFacets {
-  readonly severity_bucket: readonly string[];
+  readonly severityBucket: readonly string[];
   readonly service: readonly LogsFacetValue[];
   readonly host?: readonly LogsFacetValue[];
   readonly pod?: readonly LogsFacetValue[];
@@ -59,7 +59,7 @@ const trendSchema = z
     trend: z
       .array(
         z.object({
-          time_bucket: z.string(),
+          timeBucket: z.string(),
           total: z.number(),
           error: z.number(),
           warn: z.number(),
@@ -79,7 +79,7 @@ const facetValueSchema = z.object({ value: z.string(), count: z.number() });
 const facetsSchema = z
   .object({
     facets: z.object({
-      severity_bucket: z
+      severityBucket: z
         .array(z.string())
         .nullable()
         .transform((v) => v ?? []),

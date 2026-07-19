@@ -18,8 +18,8 @@ import {
 function statusDetail(row: DatastoreSystemRow): string | null {
   const status = instanceStatus(row);
   if (status === "ok") return null;
-  if (row.error_rate >= 1) return `error rate ${fmtPct(row.error_rate, 1)}`;
-  return `p95 ${fmtMs(row.p95_latency_ms)}`;
+  if (row.errorRate >= 1) return `error rate ${fmtPct(row.errorRate, 1)}`;
+  return `p95 ${fmtMs(row.p95LatencyMs)}`;
 }
 
 export function DatabaseDetailHeader({ row }: { row: DatastoreSystemRow }) {
@@ -43,7 +43,7 @@ export function DatabaseDetailHeader({ row }: { row: DatastoreSystemRow }) {
             <StatusPill status={INSTANCE_HEALTH[status]} label={detail ?? STATUS_LABEL[status]} />
           </div>
           <div className="text-[12px] text-foreground-muted">
-            {row.category} · {row.server_hint || "unknown region"}
+            {row.category} · {row.serverHint || "unknown region"}
           </div>
         </div>
       </div>

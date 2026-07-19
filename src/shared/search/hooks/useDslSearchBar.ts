@@ -169,7 +169,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
 }
 
 function normalizeSuggestField(field: string): string {
-  if (field === "http_status_code") return "http_status";
+  if (field === "httpStatusCode") return "httpStatus";
   return field;
 }
 

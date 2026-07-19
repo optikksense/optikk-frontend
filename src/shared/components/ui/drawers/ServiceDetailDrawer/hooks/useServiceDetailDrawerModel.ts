@@ -41,7 +41,7 @@ export function useServiceDetailDrawerModel(
   const selectedServiceMetrics = useMemo(
     () =>
       metricsQuery.data?.find(
-        (entry) => normalizeServiceKey(entry.service_name) === normalizedServiceName
+        (entry) => normalizeServiceKey(entry.serviceName) === normalizedServiceName
       ) ?? null,
     [metricsQuery.data, normalizedServiceName]
   );
@@ -49,16 +49,16 @@ export function useServiceDetailDrawerModel(
   const summaryMetrics = useMemo<ServiceSummarySnapshot | null>(() => {
     if (selectedServiceMetrics) {
       return {
-        requestCount: selectedServiceMetrics.request_count ?? 0,
-        errorCount: selectedServiceMetrics.error_count ?? 0,
+        requestCount: selectedServiceMetrics.requestCount ?? 0,
+        errorCount: selectedServiceMetrics.errorCount ?? 0,
         errorRate:
-          Number(selectedServiceMetrics.request_count ?? 0) > 0
-            ? (Number(selectedServiceMetrics.error_count ?? 0) * 100) /
-              Number(selectedServiceMetrics.request_count ?? 0)
+          Number(selectedServiceMetrics.requestCount ?? 0) > 0
+            ? (Number(selectedServiceMetrics.errorCount ?? 0) * 100) /
+              Number(selectedServiceMetrics.requestCount ?? 0)
             : 0,
-        avgLatency: selectedServiceMetrics.avg_latency ?? 0,
-        p95Latency: selectedServiceMetrics.p95_latency ?? 0,
-        p99Latency: selectedServiceMetrics.p99_latency ?? 0,
+        avgLatency: selectedServiceMetrics.avgLatency ?? 0,
+        p95Latency: selectedServiceMetrics.p95Latency ?? 0,
+        p99Latency: selectedServiceMetrics.p99Latency ?? 0,
       };
     }
 
@@ -83,20 +83,20 @@ export function useServiceDetailDrawerModel(
   const endpointRows = useMemo(() => {
     const results = endpointsQuery.data?.data?.results ?? [];
     return [...results]
-      .sort((left, right) => Number(right.total_count ?? 0) - Number(left.total_count ?? 0))
+      .sort((left, right) => Number(right.totalCount ?? 0) - Number(left.totalCount ?? 0))
       .slice(0, 6)
       .map((row, index) => {
-        const method = row.http_route ? (row.operation_name.split(" ")[0] ?? "HTTP") : "RPC";
+        const method = row.httpRoute ? (row.operationName.split(" ")[0] ?? "HTTP") : "RPC";
         return {
-          id: `${method}:${row.operation_name}:${index}`,
-          service_name: row.service_name,
-          operation_name: row.operation_name,
-          endpoint_name: row.http_route,
-          http_method: method,
-          request_count: row.total_count,
-          error_count: row.error_count,
-          avg_latency: row.p50_ms,
-          p95_latency: row.p95_ms,
+          id: `${method}:${row.operationName}:${index}`,
+          serviceName: row.serviceName,
+          operationName: row.operationName,
+          endpointName: row.httpRoute,
+          httpMethod: method,
+          requestCount: row.totalCount,
+          errorCount: row.errorCount,
+          avgLatency: row.p50Ms,
+          p95Latency: row.p95Ms,
         };
       });
   }, [endpointsQuery.data]);

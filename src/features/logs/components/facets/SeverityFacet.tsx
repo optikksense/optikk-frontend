@@ -41,7 +41,7 @@ function SeverityFacetComponent({ labels, onInclude }: Props) {
             <button
               key={s.bucket}
               type="button"
-              onClick={() => onInclude("severity_text", s.label.toUpperCase())}
+              onClick={() => onInclude("severityText", s.label.toUpperCase())}
               className={cn(
                 "grid w-full cursor-pointer grid-cols-[14px_1fr_auto] items-center gap-[10px] rounded-[5px] border-0 bg-transparent p-[6px] text-left text-[13px] hover:bg-[var(--bg-2)] hover:text-[var(--fg-0)]",
                 active ? "text-[var(--fg-1)]" : "text-[var(--fg-3)]"

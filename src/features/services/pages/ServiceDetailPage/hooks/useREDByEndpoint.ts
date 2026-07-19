@@ -30,7 +30,7 @@ export function pivotByRoute(
   const routes: string[] = [];
   for (const row of rows) {
     tsSet.add(tsMs(row.timestamp) / 1000);
-    if (!routes.includes(row.http_route)) routes.push(row.http_route);
+    if (!routes.includes(row.httpRoute)) routes.push(row.httpRoute);
   }
   const timestamps = [...tsSet].sort((a, b) => a - b);
   const tsIndex = new Map(timestamps.map((t, i) => [t, i]));
@@ -42,7 +42,7 @@ export function pivotByRoute(
   for (const row of rows) {
     const idx = tsIndex.get(tsMs(row.timestamp) / 1000);
     if (idx === undefined) continue;
-    byRoute.get(row.http_route)?.splice(idx, 1, pick(row));
+    byRoute.get(row.httpRoute)?.splice(idx, 1, pick(row));
   }
 
   const series: ObservabilityChartSeries[] = routes.map((route, i) => ({

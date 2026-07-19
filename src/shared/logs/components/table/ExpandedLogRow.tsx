@@ -52,18 +52,18 @@ function ExpandedLogRowComponent({ row }: Props) {
         ) : null}
 
         {}
-        {row.trace_id || row.span_id ? (
+        {row.traceId || row.spanId ? (
           <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1">
-            {row.trace_id ? (
+            {row.traceId ? (
               <span className="font-mono text-[11px]">
-                <span className="text-foreground-muted">trace_id:</span>{" "}
-                <span className="text-primary">{row.trace_id}</span>
+                <span className="text-foreground-muted">traceId:</span>{" "}
+                <span className="text-primary">{row.traceId}</span>
               </span>
             ) : null}
-            {row.span_id ? (
+            {row.spanId ? (
               <span className="font-mono text-[11px]">
-                <span className="text-foreground-muted">span_id:</span>{" "}
-                <span className="text-primary">{row.span_id}</span>
+                <span className="text-foreground-muted">spanId:</span>{" "}
+                <span className="text-primary">{row.spanId}</span>
               </span>
             ) : null}
           </div>

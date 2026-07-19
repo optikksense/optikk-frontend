@@ -12,7 +12,7 @@ export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
   const rows = query.data ?? [];
 
   const { timestamps, series } = useMemo(
-    () => pivotByRoute(rows, (r) => r.error_rate, false),
+    () => pivotByRoute(rows, (r) => r.errorRate, false),
     [rows]
   );
 

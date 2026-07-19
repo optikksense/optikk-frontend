@@ -11,9 +11,9 @@ interface Bar {
 // Horizontal percentile bars (design's latency distribution), scaled to p99.
 export function QueryLatencyBars({ row }: { row: SlowQueryPatternRow }) {
   const bars: Bar[] = [
-    { label: "p50", value: row.p50_ms ?? 0, color: "var(--color-info)" },
-    { label: "p95", value: row.p95_ms ?? 0, color: "var(--color-warning)" },
-    { label: "p99", value: row.p99_ms ?? 0, color: "var(--color-error)" },
+    { label: "p50", value: row.p50Ms ?? 0, color: "var(--color-info)" },
+    { label: "p95", value: row.p95Ms ?? 0, color: "var(--color-warning)" },
+    { label: "p99", value: row.p99Ms ?? 0, color: "var(--color-error)" },
   ];
   const max = Math.max(...bars.map((b) => b.value), 1);
   return (

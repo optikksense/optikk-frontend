@@ -23,7 +23,7 @@ interface Props {
   readonly relatedTraces: readonly RelatedTrace[];
   readonly traceStartMs?: number;
   readonly traceEndMs?: number;
-  readonly onSpanClick?: (span: { span_id: string }) => void;
+  readonly onSpanClick?: (span: { spanId: string }) => void;
   readonly onAddFilter?: (key: string, value: string) => void;
 }
 
@@ -61,21 +61,19 @@ function computeTiming(
   };
   if (!selectedSpanId) return empty;
   const byId = new Map<string, TraceRecord>();
-  for (const s of spans) byId.set(s.span_id, s);
+  for (const s of spans) byId.set(s.spanId, s);
   const span = byId.get(selectedSpanId);
   if (!span) return empty;
 
-  const startMs = span.start_time ? new Date(span.start_time).getTime() : 0;
-  const endMs = span.end_time
-    ? new Date(span.end_time).getTime()
-    : startMs + (span.duration_ms ?? 0);
+  const startMs = span.startTime ? new Date(span.startTime).getTime() : 0;
+  const endMs = span.endTime ? new Date(span.endTime).getTime() : startMs + (span.durationMs ?? 0);
   const durMs = Math.max(0, endMs - startMs);
 
   const children = spans
-    .filter((s) => s.parent_span_id === span.span_id)
+    .filter((s) => s.parentSpanId === span.spanId)
     .map((s) => ({
-      start: s.start_time ? new Date(s.start_time).getTime() : 0,
-      end: s.end_time ? new Date(s.end_time).getTime() : 0,
+      start: s.startTime ? new Date(s.startTime).getTime() : 0,
+      end: s.endTime ? new Date(s.endTime).getTime() : 0,
     }))
     .filter((iv) => iv.end > iv.start)
     .sort((a, b) => a.start - b.start);
@@ -90,11 +88,11 @@ function computeTiming(
 
   const ancestors: TraceRecord[] = [];
   let cursor: TraceRecord | undefined = span;
-  const visited = new Set<string>([span.span_id]);
-  while (cursor?.parent_span_id) {
-    const parent = byId.get(cursor.parent_span_id);
-    if (!parent || visited.has(parent.span_id)) break;
-    visited.add(parent.span_id);
+  const visited = new Set<string>([span.spanId]);
+  while (cursor?.parentSpanId) {
+    const parent = byId.get(cursor.parentSpanId);
+    if (!parent || visited.has(parent.spanId)) break;
+    visited.add(parent.spanId);
     ancestors.unshift(parent);
     cursor = parent;
   }
@@ -188,20 +186,20 @@ function SpanInfoTabComponent({
         <DrawerSection title="Where this happens">
           <div className="flex flex-wrap items-center gap-1">
             {timing.ancestors.map((a) => (
-              <span key={a.span_id} className="inline-flex items-center">
+              <span key={a.spanId} className="inline-flex items-center">
                 <button
                   type="button"
                   className={ancLink}
-                  onClick={() => onSpanClick?.({ span_id: a.span_id })}
-                  title={`${a.service_name} · ${a.operation_name}`}
+                  onClick={() => onSpanClick?.({ spanId: a.spanId })}
+                  title={`${a.serviceName} · ${a.operationName}`}
                 >
                   <span
                     className="h-[7px] w-[7px] shrink-0 rounded-full"
-                    style={{ background: `oklch(0.62 0.14 ${svcHue(a.service_name || "")})` }}
+                    style={{ background: `oklch(0.62 0.14 ${svcHue(a.serviceName || "")})` }}
                   />
-                  <span className="text-[var(--fg-3)]">{a.service_name || "—"}</span>
+                  <span className="text-[var(--fg-3)]">{a.serviceName || "—"}</span>
                   <span className="font-mono text-[11px] text-[var(--fg-0)]">
-                    {a.operation_name || "(no name)"}
+                    {a.operationName || "(no name)"}
                   </span>
                 </button>
                 <span className="inline-flex text-[var(--fg-3)]">
@@ -212,11 +210,11 @@ function SpanInfoTabComponent({
             <span className={ancHere}>
               <span
                 className="h-[7px] w-[7px] shrink-0 rounded-full"
-                style={{ background: `oklch(0.62 0.14 ${svcHue(span.service_name || "")})` }}
+                style={{ background: `oklch(0.62 0.14 ${svcHue(span.serviceName || "")})` }}
               />
-              <span className="text-[var(--fg-3)]">{span.service_name || "—"}</span>
+              <span className="text-[var(--fg-3)]">{span.serviceName || "—"}</span>
               <span className="font-mono text-[11px] text-[var(--fg-0)]">
-                {span.operation_name || "(no name)"}
+                {span.operationName || "(no name)"}
               </span>
             </span>
           </div>
@@ -250,10 +248,10 @@ function SpanInfoTabComponent({
                 <div className={kvV}>{timing.pctOfTrace.toFixed(1)}%</div>
               </div>
             )}
-            {span.span_kind && (
+            {span.spanKind && (
               <div>
                 <div className={kvK}>Span kind</div>
-                <div className={kvV}>{span.span_kind}</div>
+                <div className={kvV}>{span.spanKind}</div>
               </div>
             )}
           </div>

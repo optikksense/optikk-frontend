@@ -7,22 +7,22 @@
 export interface LogRecord {
   readonly id: string;
   readonly timestamp: string;
-  readonly observed_timestamp?: string;
-  readonly service_name: string;
-  readonly severity_text?: string;
-  readonly severity_bucket: number;
+  readonly observedTimestamp?: string;
+  readonly serviceName: string;
+  readonly severityText?: string;
+  readonly severityBucket: number;
   readonly body: string;
   readonly host?: string;
   readonly pod?: string;
   readonly container?: string;
   readonly environment?: string;
-  readonly scope_name?: string;
-  readonly scope_version?: string;
-  readonly trace_id?: string;
-  readonly span_id?: string;
-  readonly attributes_string?: Readonly<Record<string, string>>;
-  readonly attributes_number?: Readonly<Record<string, number>>;
-  readonly attributes_bool?: Readonly<Record<string, boolean>>;
+  readonly scopeName?: string;
+  readonly scopeVersion?: string;
+  readonly traceId?: string;
+  readonly spanId?: string;
+  readonly attributesString?: Readonly<Record<string, string>>;
+  readonly attributesNumber?: Readonly<Record<string, number>>;
+  readonly attributesBool?: Readonly<Record<string, boolean>>;
   readonly resource?: Readonly<Record<string, unknown>>;
 }
 

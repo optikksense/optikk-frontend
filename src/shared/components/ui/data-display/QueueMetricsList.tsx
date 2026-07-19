@@ -13,12 +13,12 @@ export type QueueMetricsListType = "depth" | "consumerLag" | "productionRate" | 
 
 export interface QueueMetricsItem {
   key?: string;
-  queue_name?: string;
-  service_name?: string;
-  avg_queue_depth?: number;
-  max_consumer_lag?: number;
-  avg_publish_rate?: number;
-  avg_receive_rate?: number;
+  queueName?: string;
+  serviceName?: string;
+  avgQueueDepth?: number;
+  maxConsumerLag?: number;
+  avgPublishRate?: number;
+  avgReceiveRate?: number;
   [key: string]: unknown;
 }
 
@@ -45,7 +45,7 @@ function getQueueDisplayConfig(
   queue: QueueMetricsItem
 ): QueueRowDisplayConfig {
   if (type === "consumerLag") {
-    const lag = queue.max_consumer_lag ?? 0;
+    const lag = queue.maxConsumerLag ?? 0;
     return {
       selectedBgClass: "bg-[#f04438]/12",
       valueColorClass: lag > 100 ? "text-[var(--color-error)]" : "text-[var(--text-primary)]",
@@ -57,7 +57,7 @@ function getQueueDisplayConfig(
     return {
       selectedBgClass: "bg-[#f7b63a]/12",
       valueColorClass: "text-[var(--text-primary)]",
-      displayValue: `${formatNumber(queue.avg_publish_rate ?? 0)}/s`,
+      displayValue: `${formatNumber(queue.avgPublishRate ?? 0)}/s`,
     };
   }
 
@@ -65,22 +65,22 @@ function getQueueDisplayConfig(
     return {
       selectedBgClass: "bg-[#73c991]/12",
       valueColorClass: "text-[var(--text-primary)]",
-      displayValue: `${formatNumber(queue.avg_receive_rate ?? 0)}/s`,
+      displayValue: `${formatNumber(queue.avgReceiveRate ?? 0)}/s`,
     };
   }
 
   return {
     selectedBgClass: "bg-[#7c7ff2]/12",
     valueColorClass: "text-[var(--text-primary)]",
-    displayValue: formatNumber(queue.avg_queue_depth ?? 0),
+    displayValue: formatNumber(queue.avgQueueDepth ?? 0),
   };
 }
 
 const getVal = (type: QueueMetricsListType, q: QueueMetricsItem) => {
-  if (type === "consumerLag") return q.max_consumer_lag ?? 0;
-  if (type === "productionRate") return q.avg_publish_rate ?? 0;
-  if (type === "consumptionRate") return q.avg_receive_rate ?? 0;
-  return q.avg_queue_depth ?? 0;
+  if (type === "consumerLag") return q.maxConsumerLag ?? 0;
+  if (type === "productionRate") return q.avgPublishRate ?? 0;
+  if (type === "consumptionRate") return q.avgReceiveRate ?? 0;
+  return q.avgQueueDepth ?? 0;
 };
 
 /**
@@ -127,7 +127,7 @@ export default function QueueMetricsList({
             {visibleQueues.map((queue, index) => {
               const queueKey =
                 queue.key ??
-                `${queue.queue_name ?? "unknown"}::${queue.service_name ?? "unknown"}::${index}`;
+                `${queue.queueName ?? "unknown"}::${queue.serviceName ?? "unknown"}::${index}`;
               const detailSearch = buildDashboardDrawerSearch(
                 currentSearch,
                 drawerAction,
@@ -160,6 +160,14 @@ export default function QueueMetricsList({
                     event.stopPropagation();
                     onToggle?.(queueKey);
                   }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onToggle?.(queueKey);
+                    }
+                  }}
+                  tabIndex={0}
                   className={cn(
                     "cursor-pointer transition-colors duration-200",
                     isFaded ? "opacity-40" : "opacity-100",
@@ -169,11 +177,11 @@ export default function QueueMetricsList({
                   <td className="flex flex-col gap-1 px-2 py-1">
                     <div className="flex flex-col">
                       <span className="font-medium text-[var(--text-primary)]">
-                        {queue.queue_name}
+                        {queue.queueName}
                       </span>
-                      {queue.service_name && queue.service_name !== "unknown" && (
+                      {queue.serviceName && queue.serviceName !== "unknown" && (
                         <span className="text-[11px] text-[var(--text-muted)]">
-                          {queue.service_name}
+                          {queue.serviceName}
                         </span>
                       )}
                     </div>

@@ -44,7 +44,7 @@ export function CreatePageDrawer({ open, onOpenChange }: CreatePageDrawerProps) 
         name: name.trim(),
         description: description.trim() || undefined,
         tags: parseTags(tags),
-        is_favorite: isFavorite,
+        isFavorite: isFavorite,
       },
       {
         onSuccess: (page) => {

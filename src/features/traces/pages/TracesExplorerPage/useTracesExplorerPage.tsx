@@ -68,7 +68,7 @@ export function useTracesExplorerPage() {
 
   const onOpenTrace = useCallback(
     (trace: TraceSummary) => {
-      navigate({ to: `/traces/${encodeURIComponent(trace.trace_id)}` });
+      navigate({ to: `/traces/${encodeURIComponent(trace.traceId)}` });
     },
     [navigate]
   );
@@ -160,8 +160,8 @@ function facetsToGroups(
 function humanLabel(field: string): string {
   if (field === "service") return "Service";
   if (field === "operation") return "Operation";
-  if (field === "http_method") return "Method";
-  if (field === "http_status") return "HTTP";
+  if (field === "httpMethod") return "Method";
+  if (field === "httpStatus") return "HTTP";
   if (field === "status") return "Status";
   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, " ");
 }
@@ -196,12 +196,12 @@ function buildTraceContextMenu(
 ): readonly ContextMenuEntry[] {
   const items: ContextMenuEntry[] = [];
 
-  pushIncludeExcludeFilter(items, args, "service", row.root_service, "service");
-  if (row.root_operation) {
-    pushIncludeExcludeFilter(items, args, "operation", row.root_operation, "operation");
+  pushIncludeExcludeFilter(items, args, "service", row.rootService, "service");
+  if (row.rootOperation) {
+    pushIncludeExcludeFilter(items, args, "operation", row.rootOperation, "operation");
   }
-  if (row.root_http_method) {
-    pushIncludeExcludeFilter(items, args, "http_method", row.root_http_method, "method");
+  if (row.rootHttpMethod) {
+    pushIncludeExcludeFilter(items, args, "httpMethod", row.rootHttpMethod, "method");
   }
   if (row.environment) {
     pushIncludeExcludeFilter(items, args, "environment", row.environment, "env");
@@ -220,14 +220,14 @@ function buildTraceContextMenu(
     kind: "action",
     label: "Copy trace id",
     icon: <Copy size={12} />,
-    onSelect: () => copyToClipboard(row.trace_id),
+    onSelect: () => copyToClipboard(row.traceId),
   });
-  if (row.root_endpoint) {
+  if (row.rootEndpoint) {
     items.push({
       kind: "action",
       label: "Copy endpoint",
       icon: <Copy size={12} />,
-      onSelect: () => copyToClipboard(row.root_endpoint ?? ""),
+      onSelect: () => copyToClipboard(row.rootEndpoint ?? ""),
     });
   }
 

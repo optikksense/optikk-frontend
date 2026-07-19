@@ -19,12 +19,12 @@ export interface Host {
   readonly tone: string;
   readonly zone?: string;
   readonly rps?: number;
-  readonly error_rate?: number;
-  readonly p99_ms?: number;
+  readonly errorRate?: number;
+  readonly p99Ms?: number;
   readonly status?: HostStatus;
-  readonly last_seen?: string;
-  readonly request_count?: number;
-  readonly error_count?: number;
+  readonly lastSeen?: string;
+  readonly requestCount?: number;
+  readonly errorCount?: number;
 }
 
 export function getHosts(s: RequestTime, e: RequestTime, serviceName?: string): Promise<Host[]> {

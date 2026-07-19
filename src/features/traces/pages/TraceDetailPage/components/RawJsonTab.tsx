@@ -13,7 +13,7 @@ const btnSmGhost =
 
 function RawJsonTabComponent({ traceId, spans }: Props) {
   const json = useMemo(
-    () => JSON.stringify({ trace_id: traceId, spans }, null, 2),
+    () => JSON.stringify({ traceId: traceId, spans }, null, 2),
     [traceId, spans]
   );
 

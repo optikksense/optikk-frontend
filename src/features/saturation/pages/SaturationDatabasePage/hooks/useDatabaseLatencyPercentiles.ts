@@ -30,11 +30,11 @@ function pushValue(map: Map<number, number[]>, key: number, value: number | null
 }
 
 function ingestRow(buckets: Buckets, row: LatencySeriesPoint) {
-  const ts = Math.floor(new Date(row.time_bucket).getTime() / 1000);
+  const ts = Math.floor(new Date(row.timeBucket).getTime() / 1000);
   if (!Number.isFinite(ts)) return;
-  pushValue(buckets.p50, ts, row.p50_ms);
-  pushValue(buckets.p95, ts, row.p95_ms);
-  pushValue(buckets.p99, ts, row.p99_ms);
+  pushValue(buckets.p50, ts, row.p50Ms);
+  pushValue(buckets.p95, ts, row.p95Ms);
+  pushValue(buckets.p99, ts, row.p99Ms);
 }
 
 function maxAt(map: Map<number, number[]>, key: number): number {
@@ -61,7 +61,7 @@ function buildSeries(rows: LatencySeriesPoint[]): LatencyPercentileSeries {
 }
 
 export function useDatabaseLatencyPercentiles(system?: string) {
-  const filters = system ? { db_system: system } : undefined;
+  const filters = system ? { dbSystem: system } : undefined;
   const query = useTimeRangeQuery<LatencySeriesPoint[]>(
     "saturation-db.latency-percentiles",
     (_tenant, s, e) => getLatencyBySystem(s, e, filters),

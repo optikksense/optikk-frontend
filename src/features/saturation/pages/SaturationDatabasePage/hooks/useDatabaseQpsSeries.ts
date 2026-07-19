@@ -13,16 +13,16 @@ interface QpsSeries {
 function sumByTimestamp(rows: OpsSeriesPoint[]): QpsSeries {
   const map = new Map<number, number>();
   for (const r of rows) {
-    const ts = Math.floor(new Date(r.time_bucket).getTime() / 1000);
+    const ts = Math.floor(new Date(r.timeBucket).getTime() / 1000);
     if (!Number.isFinite(ts)) continue;
-    map.set(ts, (map.get(ts) ?? 0) + (r.ops_per_sec ?? 0));
+    map.set(ts, (map.get(ts) ?? 0) + (r.opsPerSec ?? 0));
   }
   const timestamps = Array.from(map.keys()).sort((a, b) => a - b);
   return { timestamps, opsPerSec: timestamps.map((t) => map.get(t) ?? 0) };
 }
 
 export function useDatabaseQpsSeries(system?: string) {
-  const filters = system ? { db_system: system } : undefined;
+  const filters = system ? { dbSystem: system } : undefined;
   const query = useTimeRangeQuery<OpsSeriesPoint[]>(
     "saturation-db.qps",
     (_tenant, s, e) => getOpsBySystem(s, e, filters),

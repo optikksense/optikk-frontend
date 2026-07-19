@@ -13,8 +13,8 @@ const WINDOWS = [60, 300, 900, 3600];
 export default function LogQuery({ draft, setDraft }: Props) {
   const q: LogQueryShape = draft.query.log ?? {
     query: "",
-    group_by: "service",
-    window_sec: 300,
+    groupBy: "service",
+    windowSec: 300,
   };
 
   const update = (patch: Partial<LogQueryShape>) =>
@@ -37,12 +37,12 @@ export default function LogQuery({ draft, setDraft }: Props) {
       <FieldRow label="Group by">
         <div className="flex items-center gap-1.5">
           {GROUPS.map((g) => {
-            const active = q.group_by === g;
+            const active = q.groupBy === g;
             return (
               <button
                 key={g}
                 type="button"
-                onClick={() => update({ group_by: g })}
+                onClick={() => update({ groupBy: g })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}
@@ -56,12 +56,12 @@ export default function LogQuery({ draft, setDraft }: Props) {
       <FieldRow label="Window">
         <div className="flex items-center gap-1.5">
           {WINDOWS.map((w) => {
-            const active = q.window_sec === w;
+            const active = q.windowSec === w;
             return (
               <button
                 key={w}
                 type="button"
-                onClick={() => update({ window_sec: w })}
+                onClick={() => update({ windowSec: w })}
                 className={`rounded px-2 py-0.5 font-mono text-xs ${
                   active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}

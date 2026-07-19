@@ -67,11 +67,11 @@ export interface FormulaDefinition {
 }
 
 export interface ServiceMetricPoint extends DomainRecord {
-  service_name: string;
-  request_count: number;
-  error_count: number;
-  avg_latency: number;
-  p50_latency: number;
-  p95_latency: number;
-  p99_latency: number;
+  serviceName: string;
+  requestCount: number;
+  errorCount: number;
+  avgLatency: number;
+  p50Latency: number;
+  p95Latency: number;
+  p99Latency: number;
 }

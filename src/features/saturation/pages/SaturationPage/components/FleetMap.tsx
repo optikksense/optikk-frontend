@@ -48,10 +48,11 @@ function Hex({ host, fill }: { host: HostSaturationRow; fill: FillBy }) {
   const navigate = useNavigate();
 
   return (
-    <div
+    <button
+      type="button"
       title={`${host.host} · ${Math.round(value)}%`}
       className={cn(
-        "flex h-14 w-[50px] cursor-pointer flex-col items-center justify-center font-bold text-[12px] text-white hover:opacity-90",
+        "flex h-14 w-[50px] cursor-pointer flex-col items-center justify-center border-0 font-bold text-[12px] text-white hover:opacity-90",
         fillToneClass(value)
       )}
       style={{ clipPath: HEX_CLIP }}
@@ -61,7 +62,7 @@ function Hex({ host, fill }: { host: HostSaturationRow; fill: FillBy }) {
     >
       {Math.round(value)}
       <span className="mt-px font-semibold text-[10px] opacity-90">{shortLabel(host.host)}</span>
-    </div>
+    </button>
   );
 }
 

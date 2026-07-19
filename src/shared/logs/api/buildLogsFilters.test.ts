@@ -13,7 +13,7 @@ function build(filters: readonly ExplorerFilter[]) {
 describe("buildLogsFilters", () => {
   it("maps resource dims to include arrays", () => {
     const { body, warnings } = build([
-      { field: "service_name", op: "eq", value: "api" },
+      { field: "serviceName", op: "eq", value: "api" },
       { field: "host", op: "eq", value: "h1" },
     ]);
     expect(body.services).toEqual(["api"]);
@@ -22,7 +22,7 @@ describe("buildLogsFilters", () => {
   });
 
   it("maps neq to exclude arrays where supported", () => {
-    const { body } = build([{ field: "service_name", op: "neq", value: "noise" }]);
+    const { body } = build([{ field: "serviceName", op: "neq", value: "noise" }]);
     expect(body.excludeServices).toEqual(["noise"]);
   });
 
@@ -33,15 +33,15 @@ describe("buildLogsFilters", () => {
   });
 
   it("expands severity in-lists (the Errors-and-fatals template)", () => {
-    const { body, warnings } = build([{ field: "severity_text", op: "in", value: "ERROR,FATAL" }]);
+    const { body, warnings } = build([{ field: "severityText", op: "in", value: "ERROR,FATAL" }]);
     expect(body.severities).toEqual(["ERROR", "FATAL"]);
     expect(warnings).toHaveLength(0);
   });
 
   it("maps severity eq/neq", () => {
     const { body } = build([
-      { field: "severity_text", op: "eq", value: "ERROR" },
-      { field: "severity_text", op: "neq", value: "INFO" },
+      { field: "severityText", op: "eq", value: "ERROR" },
+      { field: "severityText", op: "neq", value: "INFO" },
     ]);
     expect(body.severities).toEqual(["ERROR"]);
     expect(body.excludeSeverities).toEqual(["INFO"]);
@@ -63,11 +63,11 @@ describe("buildLogsFilters", () => {
 
   it("passes attribute ops through, including comparisons and exists", () => {
     const { body, warnings } = build([
-      { field: "@http.status_code", op: "gte", value: "500" },
+      { field: "@http.statusCode", op: "gte", value: "500" },
       { field: "@user.id", op: "not_exists", value: "" },
     ]);
     expect(body.attributes).toEqual([
-      { key: "http.status_code", op: "gte", value: "500" },
+      { key: "http.statusCode", op: "gte", value: "500" },
       { key: "user.id", op: "not_exists", value: "" },
     ]);
     expect(warnings).toHaveLength(0);
@@ -78,10 +78,10 @@ describe("buildLogsFilters", () => {
     expect(warnings[0].code).toBe("unsupported_op");
   });
 
-  it("keeps only the first trace_id and warns on duplicates", () => {
+  it("keeps only the first traceId and warns on duplicates", () => {
     const { body, warnings } = build([
-      { field: "trace_id", op: "eq", value: "t1" },
-      { field: "trace_id", op: "eq", value: "t2" },
+      { field: "traceId", op: "eq", value: "t1" },
+      { field: "traceId", op: "eq", value: "t2" },
     ]);
     expect(body.traceId).toBe("t1");
     expect(warnings[0].code).toBe("duplicate_single_value");

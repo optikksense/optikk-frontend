@@ -73,11 +73,7 @@ function MetricsWidgetBody({
 }) {
   // Narrow before the hook; parent only mounts this for metrics specs.
   const query = isMetricsQuerySpec(spec.query) ? spec.query : null;
-  const result = useMetricsExplorerQuery(
-    query?.queries ?? [],
-    query?.step ?? "5m",
-    query?.spaceAggregation ?? "avg"
-  );
+  const result = useMetricsExplorerQuery(query?.queries ?? [], query?.step ?? "5m");
   if (!query) return null;
 
   return (

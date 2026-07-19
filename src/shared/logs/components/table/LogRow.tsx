@@ -47,7 +47,7 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
   const navigate = useNavigate();
   const expanded = useLogsExplorerStore((s) => s.expandedRows.has(row.id));
   const toggleExpanded = useLogsExplorerStore((s) => s.toggleRowExpanded);
-  const sev = severityStyle(row.severity_bucket);
+  const sev = severityStyle(row.severityBucket);
   const tz = useTimezone();
   const traceId = getTraceId(row);
 
@@ -103,10 +103,11 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
         )}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
-        role="button"
-        tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === "Enter") handleClick();
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleClick();
+          }
         }}
       >
         <button
@@ -124,9 +125,9 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
         <span className="inline-flex items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap text-[var(--fg-1)]">
           <span
             className="h-1.5 w-1.5 shrink-0 rounded-full"
-            style={{ background: serviceSwatchColor(row.service_name) }}
+            style={{ background: serviceSwatchColor(row.serviceName) }}
           />
-          {row.service_name}
+          {row.serviceName}
         </span>
 
         <span>

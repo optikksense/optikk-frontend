@@ -5,18 +5,18 @@ interface HostDetailAboutProps {
 }
 
 function cloudSummary(about: HostAbout): string | undefined {
-  const parts = [about.cloud_provider, about.cloud_region, about.cloud_zone].filter(Boolean);
+  const parts = [about.cloudProvider, about.cloudRegion, about.cloudZone].filter(Boolean);
   return parts.length > 0 ? parts.join(" · ") : undefined;
 }
 
 function buildRows(about: HostAbout): Array<{ label: string; value: string }> {
   const rows: Array<{ label: string; value: string | undefined }> = [
-    { label: "OS", value: about.os_description || about.os_type },
+    { label: "OS", value: about.osDescription || about.osType },
     { label: "Architecture", value: about.arch },
     { label: "Cloud", value: cloudSummary(about) },
-    { label: "Platform", value: about.cloud_platform },
-    { label: "Instance ID", value: about.host_id },
-    { label: "K8s node", value: about.k8s_node_name },
+    { label: "Platform", value: about.cloudPlatform },
+    { label: "Instance ID", value: about.hostId },
+    { label: "K8s node", value: about.k8sNodeName },
   ];
   return rows.filter((r): r is { label: string; value: string } => Boolean(r.value));
 }

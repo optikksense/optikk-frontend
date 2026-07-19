@@ -8,8 +8,8 @@ interface GroupedEndpointListRow {
   endpoint: string;
   service: string;
   key: string;
-  request_count: number;
-  error_count: number;
+  requestCount: number;
+  errorCount: number;
   errorRate: number;
   latency: number;
   value: number;
@@ -21,14 +21,10 @@ function isEndpointListType(value: string): value is EndpointListType {
 }
 
 function buildEndpointKey(row: DashboardRecord) {
-  const method = strValue(row, ["http_method", "httpMethod"]).toUpperCase();
-  const op = strValue(
-    row,
-    ["operation_name", "operationName", "endpoint_name", "endpointName"],
-    "Unknown"
-  );
+  const method = strValue(row, ["httpMethod"]).toUpperCase();
+  const op = strValue(row, ["operationName", "endpointName"], "Unknown");
   const cleanOp = op.startsWith(`${method} `) ? op.substring(method.length + 1) : op;
-  const serviceName = strValue(row, ["service_name", "serviceName"]);
+  const serviceName = strValue(row, ["serviceName"]);
   return `${method} ${cleanOp}_${serviceName}`;
 }
 
@@ -38,11 +34,11 @@ export function groupTimeseries(
 ): Record<string, DashboardRecord[]> {
   const map: Record<string, DashboardRecord[]> = {};
   for (const row of rows) {
-    const serviceName = strValue(row, ["service_name", "serviceName"]);
-    const queueName = strValue(row, ["queue_name", "queueName", "queue"], "unknown");
-    const tableName = strValue(row, ["table_name", "tableName", "table"], "unknown");
-    const podName = strValue(row, ["pod", "pod_name", "podName"]);
-    const exceptionType = strValue(row, ["exceptionType", "exception_type"], "unknown");
+    const serviceName = strValue(row, ["serviceName"]);
+    const queueName = strValue(row, ["queueName", "queue"], "unknown");
+    const tableName = strValue(row, ["tableName", "table"], "unknown");
+    const podName = strValue(row, ["pod", "podName"]);
+    const exceptionType = strValue(row, ["exceptionType"], "unknown");
     let key;
     if (groupByKey === "queue") {
       key = `${queueName || "unknown"}::${serviceName || "unknown"}`;
@@ -74,12 +70,12 @@ export function buildQueueEndpoints(
 ) {
   if (!Array.isArray(topQueues)) return [];
   const queueSeriesKey = (queue: DashboardRecord) =>
-    `${strValue(queue, ["queue_name", "queueName"], "unknown")}::${strValue(queue, ["service_name", "serviceName"], "unknown")}`;
+    `${strValue(queue, ["queueName"], "unknown")}::${strValue(queue, ["serviceName"], "unknown")}`;
   return [...topQueues]
     .sort((a, b) => Number(b[sortField] || 0) - Number(a[sortField] || 0))
     .map((queue) => ({
       ...queue,
-      endpoint: strValue(queue, ["queue_name", "queueName"], "unknown"),
+      endpoint: strValue(queue, ["queueName"], "unknown"),
       seriesKey: queueSeriesKey(queue),
       key: `${scope}::${queueSeriesKey(queue)}`,
     }));
@@ -89,25 +85,21 @@ export function buildEndpointList(endpointMetrics: DashboardRecord[], listType: 
   if (!Array.isArray(endpointMetrics) || endpointMetrics.length === 0) return [];
 
   const mapped = endpointMetrics.map((endpoint) => {
-    const method = strValue(endpoint, ["http_method", "httpMethod"]).toUpperCase();
-    const op = strValue(
-      endpoint,
-      ["operation_name", "operationName", "endpoint_name", "endpointName"],
-      "Unknown"
-    );
+    const method = strValue(endpoint, ["httpMethod"]).toUpperCase();
+    const op = strValue(endpoint, ["operationName", "endpointName"], "Unknown");
     const cleanOp = op.startsWith(`${method} `) ? op.substring(method.length + 1) : op;
-    const serviceName = strValue(endpoint, ["service_name", "serviceName"]);
-    const requestCount = numValue(endpoint, ["request_count", "requestCount", "req_count"]);
-    const errorCount = numValue(endpoint, ["error_count", "errorCount"]);
-    const avgLatency = numValue(endpoint, ["avg_latency", "avgLatency"]);
+    const serviceName = strValue(endpoint, ["serviceName"]);
+    const requestCount = numValue(endpoint, ["requestCount", "reqCount"]);
+    const errorCount = numValue(endpoint, ["errorCount"]);
+    const avgLatency = numValue(endpoint, ["avgLatency"]);
     return {
       ...endpoint,
       endpoint: `${method} ${cleanOp}`,
-      service_name: serviceName,
+      serviceName: serviceName,
       service: serviceName,
-      request_count: requestCount,
-      error_count: errorCount,
-      avg_latency: avgLatency,
+      requestCount: requestCount,
+      errorCount: errorCount,
+      avgLatency: avgLatency,
       latency: avgLatency,
       key: `${method} ${cleanOp}_${serviceName || ""}`,
       errorRate: requestCount > 0 ? (errorCount / requestCount) * 100 : 0,
@@ -121,9 +113,9 @@ export function buildEndpointList(endpointMetrics: DashboardRecord[], listType: 
       .slice(0, 10);
   }
   if (listType === "latency") {
-    return mapped.sort((a, b) => (b.avg_latency || 0) - (a.avg_latency || 0)).slice(0, 10);
+    return mapped.sort((a, b) => (b.avgLatency || 0) - (a.avgLatency || 0)).slice(0, 10);
   }
-  return mapped.sort((a, b) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);
+  return mapped.sort((a, b) => (b.requestCount || 0) - (a.requestCount || 0)).slice(0, 10);
 }
 
 export function buildServiceListFromMetrics(serviceMetrics: DashboardRecord[], listType: string) {
@@ -131,20 +123,20 @@ export function buildServiceListFromMetrics(serviceMetrics: DashboardRecord[], l
 
   const mapped = serviceMetrics
     .map((service) => {
-      const name = strValue(service, ["service_name", "serviceName", "service"], "");
+      const name = strValue(service, ["serviceName", "service"], "");
       if (!name) return null;
-      const requestCount = numValue(service, ["request_count", "requestCount", "req_count"]);
-      const errorCount = numValue(service, ["error_count", "errorCount"]);
-      const avgLatency = numValue(service, ["avg_latency", "avgLatency"]);
+      const requestCount = numValue(service, ["requestCount", "reqCount"]);
+      const errorCount = numValue(service, ["errorCount"]);
+      const avgLatency = numValue(service, ["avgLatency"]);
       const errorRate = requestCount > 0 ? (errorCount * 100.0) / requestCount : 0;
       return {
         ...service,
-        service_name: name,
+        serviceName: name,
         endpoint: name,
         service: name,
         key: name,
-        request_count: requestCount,
-        error_count: errorCount,
+        requestCount: requestCount,
+        errorCount: errorCount,
         errorRate,
         latency: avgLatency,
       };
@@ -160,7 +152,7 @@ export function buildServiceListFromMetrics(serviceMetrics: DashboardRecord[], l
   if (listType === "latency") {
     return mapped.sort((a, b) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);
   }
-  return mapped.sort((a, b) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);
+  return mapped.sort((a, b) => (b.requestCount || 0) - (a.requestCount || 0)).slice(0, 10);
 }
 
 export function defaultListTypeForChart(chartConfig: DashboardPanelSpec): EndpointListType {
@@ -190,7 +182,7 @@ export function buildGroupedListFromTimeseries(
   chartConfig: DashboardPanelSpec
 ) {
   const listType = defaultListTypeForChart(chartConfig);
-  const valueKey = chartConfig.valueKey || "request_count";
+  const valueKey = chartConfig.valueKey || "requestCount";
   const groupByKey = String(chartConfig.groupByKey || "group");
 
   const rows = Object.entries(serviceTimeseriesMap || {})
@@ -204,16 +196,12 @@ export function buildGroupedListFromTimeseries(
       let valueTotal = 0;
 
       for (const row of groupRows) {
-        const req = numValue(row, ["request_count", "requestCount", "req_count"]);
-        const err = numValue(row, ["error_count", "errorCount"]);
+        const req = numValue(row, ["requestCount", "reqCount"]);
+        const err = numValue(row, ["errorCount"]);
         if (!Number.isNaN(req)) requestCount += req;
         if (!Number.isNaN(err)) errorCount += err;
 
-        const latencyVal = numValue(
-          row,
-          ["avg_latency", "avgLatency", "avg_duration_ms", "avgDurationMs", valueKey],
-          0
-        );
+        const latencyVal = numValue(row, ["avgLatency", "avgDurationMs", valueKey], 0);
         if (!Number.isNaN(latencyVal) && latencyVal > 0) {
           latencySum += latencyVal;
           latencyCount += 1;
@@ -231,8 +219,8 @@ export function buildGroupedListFromTimeseries(
         service: chartConfig.groupByKey === "service" ? groupName : "",
         key: groupName,
         [groupByKey]: groupName,
-        request_count: valueTotal > 0 ? valueTotal : requestCount,
-        error_count: errorCount,
+        requestCount: valueTotal > 0 ? valueTotal : requestCount,
+        errorCount: errorCount,
         errorRate,
         latency,
         value: valueTotal,
@@ -249,5 +237,5 @@ export function buildGroupedListFromTimeseries(
   if (listType === "latency") {
     return rows.sort((a, b) => (b.latency || 0) - (a.latency || 0)).slice(0, 10);
   }
-  return rows.sort((a, b) => (b.request_count || 0) - (a.request_count || 0)).slice(0, 10);
+  return rows.sort((a, b) => (b.requestCount || 0) - (a.requestCount || 0)).slice(0, 10);
 }

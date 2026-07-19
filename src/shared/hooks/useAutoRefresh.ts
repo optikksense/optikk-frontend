@@ -1,5 +1,5 @@
 import { formatRelativeTime } from "@shared/utils/formatters";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useVisibilityInterval } from "./useVisibilityInterval";
 
 interface UseAutoRefreshOptions {
@@ -22,7 +22,7 @@ export function useAutoRefresh({
   onRefresh,
 }: UseAutoRefreshOptions): UseAutoRefreshResult {
   const [lastRefreshAt, setLastRefreshAt] = useState<number>(() => Date.now());
-  const [now, setNow] = useState<number>(() => Date.now());
+  const [, setNow] = useState<number>(() => Date.now());
 
   const refreshRef = useRef(onRefresh);
   refreshRef.current = onRefresh;
@@ -39,7 +39,7 @@ export function useAutoRefresh({
     setLastRefreshAt(Date.now());
   }, autoRefreshInterval);
 
-  const refreshLabel = useMemo(() => formatRelativeTime(lastRefreshAt), [now, lastRefreshAt]);
+  const refreshLabel = formatRelativeTime(lastRefreshAt);
 
   return { lastRefreshAt, refreshLabel, triggerRefresh };
 }

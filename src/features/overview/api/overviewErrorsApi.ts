@@ -8,9 +8,9 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export async function getErrorHotspot(
   startTime: RequestTime,
-  endTime: RequestTime
+  endTime: RequestTime,
+  signal?: AbortSignal
 ): Promise<unknown[]> {
   const params = buildREDFilters(startTime, endTime);
-  const raw = await api.get<unknown>(`${V1}/spans/error-hotspot`, { params });
-  return raw as unknown[];
+  return api.get<unknown[]>(`${V1}/spans/error-hotspot`, { params, signal });
 }

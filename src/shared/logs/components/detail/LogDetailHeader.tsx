@@ -20,7 +20,7 @@ function LogDetailHeaderComponent({ log, onClose }: Props) {
     );
   }
 
-  const sev = severityStyle(log.severity_bucket);
+  const sev = severityStyle(log.severityBucket);
 
   return (
     <DrawerHeader onClose={onClose}>
@@ -48,7 +48,7 @@ function LogDetailHeaderComponent({ log, onClose }: Props) {
       <div className="mt-1.5 flex flex-wrap items-center gap-2 font-mono text-[12.5px] text-[var(--fg-3)]">
         <span>{formatTimestamp(log.timestamp)}</span>
         <span>·</span>
-        <span style={{ color: serviceSwatchColor(log.service_name) }}>{log.service_name}</span>
+        <span style={{ color: serviceSwatchColor(log.serviceName) }}>{log.serviceName}</span>
         {log.host && (
           <>
             <span>·</span>

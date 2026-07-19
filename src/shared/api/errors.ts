@@ -5,43 +5,43 @@ import { API_CONFIG } from "@config/apiConfig";
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export interface ErrorGroup {
-  readonly group_id: string;
-  readonly service_name: string;
-  readonly operation_name: string;
-  readonly status_message: string;
-  readonly http_status_code: number;
-  readonly error_count: number;
-  readonly last_occurrence: string;
-  readonly first_occurrence: string;
-  readonly sample_trace_id: string;
+  readonly groupId: string;
+  readonly serviceName: string;
+  readonly operationName: string;
+  readonly statusMessage: string;
+  readonly httpStatusCode: number;
+  readonly errorCount: number;
+  readonly lastOccurrence: string;
+  readonly firstOccurrence: string;
+  readonly sampleTraceId: string;
 }
 
 /**
  * Group-level identity + aggregates. Per-occurrence details (stacktrace, message,
- * trace_id, request context) come from {@link getErrorGroupLatestOccurrence}.
+ * traceId, request context) come from {@link getErrorGroupLatestOccurrence}.
  */
 export interface ErrorGroupDetail {
-  readonly group_id: string;
-  readonly service_name: string;
-  readonly operation_name: string;
-  readonly http_status_code: number;
-  readonly error_count: number;
-  readonly last_occurrence: string;
-  readonly first_occurrence: string;
-  readonly exception_type?: string;
+  readonly groupId: string;
+  readonly serviceName: string;
+  readonly operationName: string;
+  readonly httpStatusCode: number;
+  readonly errorCount: number;
+  readonly lastOccurrence: string;
+  readonly firstOccurrence: string;
+  readonly exceptionType?: string;
 }
 
 export interface ErrorLatestOccurrence {
-  readonly trace_id: string;
-  readonly span_id: string;
+  readonly traceId: string;
+  readonly spanId: string;
   readonly timestamp: string;
-  readonly duration_ms: number;
+  readonly durationMs: number;
   readonly message: string;
   readonly stacktrace?: string;
-  readonly http_method: string;
-  readonly http_route: string;
-  readonly http_status_code: string;
-  readonly service_version: string;
+  readonly httpMethod: string;
+  readonly httpRoute: string;
+  readonly httpStatusCode: string;
+  readonly serviceVersion: string;
   readonly environment: string;
   readonly pod: string;
   readonly host: string;
@@ -59,18 +59,18 @@ export interface ErrorFacetGroup {
 }
 
 export interface ErrorGroupTrace {
-  readonly trace_id: string;
-  readonly span_id: string;
+  readonly traceId: string;
+  readonly spanId: string;
   readonly timestamp: string;
-  readonly duration_ms: number;
-  readonly status_code: string;
+  readonly durationMs: number;
+  readonly statusCode: string;
 }
 
 export interface ErrorTimeSeriesPoint {
-  readonly service_name: string;
+  readonly serviceName: string;
   readonly timestamp: string;
-  readonly request_count: number;
-  readonly error_count: number;
+  readonly requestCount: number;
+  readonly errorCount: number;
 }
 
 import type { PaginatedResponse } from "@/shared/api/service-types";

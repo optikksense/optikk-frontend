@@ -80,9 +80,9 @@ export function buildKafkaPageModel(topo: KafkaTopology, service: string): Kafka
       const topic = topicsByName.get(edge.target);
       return {
         topic: edge.target,
-        rate: edge.rate_per_sec,
-        producerCount: topic?.producer_count ?? 0,
-        consumerGroupCount: topic?.consumer_group_count ?? 0,
+        rate: edge.ratePerSec,
+        producerCount: topic?.producerCount ?? 0,
+        consumerGroupCount: topic?.consumerGroupCount ?? 0,
       };
     })
     .sort((a, b) => b.rate - a.rate || a.topic.localeCompare(b.topic));
@@ -98,11 +98,11 @@ export function buildKafkaPageModel(topo: KafkaTopology, service: string): Kafka
             .map((pathway) => pathway.topic)
         )
       ).sort(),
-      rate: consumer.rate_per_sec,
-      errorRate: consumer.error_rate,
-      p50Ms: consumer.p50_ms,
-      p95Ms: consumer.p95_ms,
-      p99Ms: consumer.p99_ms,
+      rate: consumer.ratePerSec,
+      errorRate: consumer.errorRate,
+      p50Ms: consumer.p50Ms,
+      p95Ms: consumer.p95Ms,
+      p99Ms: consumer.p99Ms,
     }))
     .sort((a, b) => b.rate - a.rate || a.group.localeCompare(b.group));
 
@@ -111,17 +111,17 @@ export function buildKafkaPageModel(topo: KafkaTopology, service: string): Kafka
       group: pathway.group,
       consumer: pathway.consumer,
       topic: pathway.topic,
-      rate: pathway.consume_rate_per_sec,
-      errorRate: pathway.error_rate,
+      rate: pathway.consumeRatePerSec,
+      errorRate: pathway.errorRate,
     }))
     .sort((a, b) => b.rate - a.rate || a.group.localeCompare(b.group));
 
   return {
-    productionRate: producer?.rate_per_sec ?? 0,
-    productionErrorRate: producer?.error_rate ?? 0,
-    productionP50Ms: producer?.p50_ms ?? 0,
-    productionP95Ms: producer?.p95_ms ?? 0,
-    productionP99Ms: producer?.p99_ms ?? 0,
+    productionRate: producer?.ratePerSec ?? 0,
+    productionErrorRate: producer?.errorRate ?? 0,
+    productionP50Ms: producer?.p50Ms ?? 0,
+    productionP95Ms: producer?.p95Ms ?? 0,
+    productionP99Ms: producer?.p99Ms ?? 0,
     consumptionRate: consumption.reduce((total, row) => total + row.rate, 0),
     topicCount: topo.topics.length,
     consumerGroupCount: new Set(topo.pathways.map((pathway) => pathway.group)).size,

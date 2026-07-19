@@ -6,8 +6,7 @@ import ObservabilityChart, {
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
 
-import type { TimeseriesSeries } from "../../api/ingestionApi";
-import { useIngestionTimeseries } from "../../hooks/useIngestion";
+import type { IngestionTimeseries, TimeseriesSeries } from "../../api/ingestionApi";
 import { type IngestionUnit, SERVICE_PALETTE, SIGNAL_COLORS, fmtValue } from "../../utils/format";
 
 type GroupBy = "type" | "service";
@@ -54,9 +53,23 @@ const TOGGLE: { id: GroupBy; label: string }[] = [
   { id: "service", label: "By service" },
 ];
 
-export function IngestedVolumeChart({ unit }: { unit: IngestionUnit }) {
+interface IngestedVolumeChartProps {
+  readonly unit: IngestionUnit;
+  readonly byType?: IngestionTimeseries;
+  readonly byService?: IngestionTimeseries;
+  readonly isPending: boolean;
+  readonly isError: boolean;
+}
+
+export function IngestedVolumeChart({
+  unit,
+  byType,
+  byService,
+  isPending,
+  isError,
+}: IngestedVolumeChartProps) {
   const [groupBy, setGroupBy] = useState<GroupBy>("type");
-  const { data, isPending, isError } = useIngestionTimeseries(groupBy);
+  const data = groupBy === "type" ? byType : byService;
 
   const timestamps = useMemo(() => (data?.dates ?? []).map(dateToSeconds), [data?.dates]);
   const series = useMemo(() => stackSeries(data?.series ?? [], unit), [data?.series, unit]);

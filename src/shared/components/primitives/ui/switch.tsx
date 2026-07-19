@@ -1,4 +1,5 @@
 import * as SwitchPrimitive from "@radix-ui/react-switch";
+import { useId } from "react";
 
 import { cn } from "@shared/lib/utils";
 
@@ -21,8 +22,10 @@ function Switch({
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   checked?: boolean;
 }) {
+  const labelId = useId();
+
   return (
-    <label
+    <div
       className={cn(
         "inline-flex cursor-pointer items-center gap-2",
         disabled && "cursor-not-allowed opacity-50",
@@ -32,6 +35,7 @@ function Switch({
       <SwitchPrimitive.Root
         {...props}
         ref={ref}
+        aria-labelledby={label ? labelId : undefined}
         checked={checked}
         onCheckedChange={(val) => {
           // Synthesize a change event shape for compatibility with existing onChange handlers
@@ -50,8 +54,12 @@ function Switch({
           )}
         />
       </SwitchPrimitive.Root>
-      {label ? <span className="text-[13px] text-foreground-secondary">{label}</span> : null}
-    </label>
+      {label ? (
+        <span id={labelId} className="text-[13px] text-foreground-secondary">
+          {label}
+        </span>
+      ) : null}
+    </div>
   );
 }
 

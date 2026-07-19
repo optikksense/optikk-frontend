@@ -25,7 +25,7 @@ interface Props {
   readonly traceStartMs?: number;
   readonly traceEndMs?: number;
   readonly isCritical: boolean;
-  readonly onSpanClick: (span: { span_id: string }) => void;
+  readonly onSpanClick: (span: { spanId: string }) => void;
   readonly onAddFilter: (key: string, value: string) => void;
   readonly onOpenInLogs: () => void;
 }
@@ -40,28 +40,28 @@ function SpanDetailDrawerComponent(props: Props) {
   }, [open]);
 
   const record = useMemo(
-    () => (spanId ? (spans.find((s) => s.span_id === spanId) ?? null) : null),
+    () => (spanId ? (spans.find((s) => s.spanId === spanId) ?? null) : null),
     [spans, spanId]
   );
 
   const spanLogs = useMemo(
-    () => (spanId ? traceLogs.filter((l) => l.span_id === spanId) : []),
+    () => (spanId ? traceLogs.filter((l) => l.spanId === spanId) : []),
     [traceLogs, spanId]
   );
 
   const jsonDoc = useMemo(() => {
-    if (!record) return { span_id: spanId };
+    if (!record) return { spanId: spanId };
     return {
-      span_id: record.span_id,
-      trace_id: record.trace_id || traceId,
-      parent_span_id: record.parent_span_id ?? null,
-      name: record.operation_name,
-      service: record.service_name,
-      kind: record.span_kind,
+      spanId: record.spanId,
+      traceId: record.traceId || traceId,
+      parentSpanId: record.parentSpanId ?? null,
+      name: record.operationName,
+      service: record.serviceName,
+      kind: record.spanKind,
       status: record.status,
-      duration_ms: record.duration_ms,
-      start_time: record.start_time,
-      end_time: record.end_time,
+      durationMs: record.durationMs,
+      startTime: record.startTime,
+      endTime: record.endTime,
       attributes: props.spanAttributes?.attributesString ?? {},
       resource: props.spanAttributes?.resourceAttributes ?? {},
     };

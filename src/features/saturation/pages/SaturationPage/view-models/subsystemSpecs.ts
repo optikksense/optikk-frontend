@@ -34,9 +34,9 @@ function chipStatus(tone: Tone, count: number, what: string): string {
 }
 
 export function buildKafkaCardSpec(summary: KafkaSummary | undefined): SubsystemCardSpec {
-  const mps = summary?.messages_per_sec ?? 0;
-  const topics = summary?.topic_count ?? 0;
-  const groups = summary?.group_count ?? 0;
+  const mps = summary?.messagesPerSec ?? 0;
+  const topics = summary?.topicCount ?? 0;
+  const groups = summary?.groupCount ?? 0;
   const hasData = summary !== undefined && (mps > 0 || topics > 0 || groups > 0);
   return {
     id: "kafka",
@@ -46,7 +46,7 @@ export function buildKafkaCardSpec(summary: KafkaSummary | undefined): Subsystem
     tone: hasData ? "ok" : "neutral",
     statusText: hasData ? "streaming" : "no data",
     primary: `${formatNumber(mps)} msg/s traffic`,
-    secondary: `${formatNumber(summary?.assigned_partitions ?? 0)} partitions assigned`,
+    secondary: `${formatNumber(summary?.assignedPartitions ?? 0)} partitions assigned`,
     iconName: "kafka",
   };
 }
@@ -65,12 +65,12 @@ function reduceCategory(rows: DatastoreSystemRow[]) {
   let totalConns = 0;
   let slow = 0;
   for (const row of rows) {
-    const qps = row.query_count ?? 0;
+    const qps = row.queryCount ?? 0;
     totalQps += qps;
-    weightedLatency += (row.p95_latency_ms ?? 0) * Math.max(qps, 1);
-    totalErrors += (row.error_rate ?? 0) * Math.max(qps, 1);
-    totalConns += row.active_connections ?? 0;
-    if ((row.p95_latency_ms ?? 0) >= 100) slow += 1;
+    weightedLatency += (row.p95LatencyMs ?? 0) * Math.max(qps, 1);
+    totalErrors += (row.errorRate ?? 0) * Math.max(qps, 1);
+    totalConns += row.activeConnections ?? 0;
+    if ((row.p95LatencyMs ?? 0) >= 100) slow += 1;
   }
   const denom = Math.max(1, totalQps);
   return {
@@ -122,13 +122,13 @@ export function buildOverviewSummary(
   ds: DatastoreSummary | undefined,
   kafka: KafkaSummary | undefined
 ): OverviewSummary {
-  const totalSystems = ds?.total_systems ?? 0;
-  const totalQueries = ds?.query_count ?? 0;
-  const p95 = ds?.p95_latency_ms ?? 0;
-  const err = ds?.error_rate ?? 0;
+  const totalSystems = ds?.totalSystems ?? 0;
+  const totalQueries = ds?.queryCount ?? 0;
+  const p95 = ds?.p95LatencyMs ?? 0;
+  const err = ds?.errorRate ?? 0;
   const hasData = ds !== undefined || kafka !== undefined;
   const tone = hasData ? toneFromHealth(p95, err) : "neutral";
-  const subsystemCount = (totalSystems > 0 ? 2 : 0) + (kafka?.topic_count ? 1 : 0);
+  const subsystemCount = (totalSystems > 0 ? 2 : 0) + (kafka?.topicCount ? 1 : 0);
   const statusText = !hasData
     ? "no data"
     : tone === "ok"

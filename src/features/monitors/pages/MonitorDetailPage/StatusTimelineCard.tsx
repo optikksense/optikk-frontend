@@ -15,8 +15,8 @@ const COLORS: Record<string, string> = {
 
 function StatusTimelineCard({ data }: Props) {
   const bands = data?.bands ?? [];
-  const start = data ? new Date(data.started_at).getTime() : 0;
-  const end = data ? new Date(data.ended_at).getTime() : 1;
+  const start = data ? new Date(data.startedAt).getTime() : 0;
+  const end = data ? new Date(data.endedAt).getTime() : 1;
   const total = Math.max(1, end - start);
   return (
     <div className="rounded-lg border border-border bg-card p-4">
@@ -27,8 +27,8 @@ function StatusTimelineCard({ data }: Props) {
           <div className="h-full w-full bg-accent" />
         ) : (
           bands.map((b, i) => {
-            const bandStart = new Date(b.started_at).getTime();
-            const bandEnd = new Date(b.ended_at).getTime();
+            const bandStart = new Date(b.startedAt).getTime();
+            const bandEnd = new Date(b.endedAt).getTime();
             const width = ((bandEnd - bandStart) / total) * 100;
             return (
               <div

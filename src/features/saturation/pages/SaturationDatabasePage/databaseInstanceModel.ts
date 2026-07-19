@@ -40,8 +40,8 @@ const ENGINE_BADGE: Record<string, string> = {
 };
 
 export function instanceStatus(row: DatastoreSystemRow): InstanceStatus {
-  if (row.error_rate >= ERROR_RATE_CRITICAL || row.p95_latency_ms >= P95_CRITICAL_MS) return "err";
-  if (row.error_rate >= ERROR_RATE_DEGRADED || row.p95_latency_ms >= P95_DEGRADED_MS) return "warn";
+  if (row.errorRate >= ERROR_RATE_CRITICAL || row.p95LatencyMs >= P95_CRITICAL_MS) return "err";
+  if (row.errorRate >= ERROR_RATE_DEGRADED || row.p95LatencyMs >= P95_DEGRADED_MS) return "warn";
   return "ok";
 }
 

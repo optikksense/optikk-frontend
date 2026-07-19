@@ -91,28 +91,26 @@ export interface IngestionCost {
   readonly daysInMonth: number;
 }
 
+export interface IngestionOverview {
+  readonly summary: IngestionSummary;
+  readonly cost: IngestionCost;
+  readonly timeseriesByType: IngestionTimeseries;
+  readonly timeseriesByService: IngestionTimeseries;
+  readonly services: IngestionServices;
+  readonly usageSemantics: "attempted" | "accepted";
+}
+
 function range(s: RequestTime, e: RequestTime) {
   return { startTime: s, endTime: e };
 }
 
-export function getIngestionSummary(s: RequestTime, e: RequestTime): Promise<IngestionSummary> {
-  return api.get<IngestionSummary>(`${V1}/ingestion/summary`, { params: range(s, e) });
-}
-
-export function getIngestionTimeseries(
+export function getIngestionOverview(
   s: RequestTime,
   e: RequestTime,
-  groupBy: "type" | "service"
-): Promise<IngestionTimeseries> {
-  return api.get<IngestionTimeseries>(`${V1}/ingestion/timeseries`, {
-    params: { ...range(s, e), groupBy },
+  signal?: AbortSignal
+): Promise<IngestionOverview> {
+  return api.get<IngestionOverview>(`${V1}/ingestion/overview`, {
+    params: range(s, e),
+    signal,
   });
-}
-
-export function getIngestionServices(s: RequestTime, e: RequestTime): Promise<IngestionServices> {
-  return api.get<IngestionServices>(`${V1}/ingestion/services`, { params: range(s, e) });
-}
-
-export function getIngestionCost(s: RequestTime, e: RequestTime): Promise<IngestionCost> {
-  return api.get<IngestionCost>(`${V1}/ingestion/cost`, { params: range(s, e) });
 }

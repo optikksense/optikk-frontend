@@ -9,16 +9,16 @@ import { buildDashboardDrawerSearch } from "@shared/components/ui/dashboard/util
 import { formatDuration, formatNumber, normalizePercentage } from "@shared/utils/formatters";
 
 interface DbSystemRow extends Record<string, unknown> {
-  readonly db_system: string;
-  readonly avg_latency_ms?: number;
-  readonly avg_latency?: number;
-  readonly avg_query_latency_ms?: number;
-  readonly p95_latency_ms?: number;
-  readonly p95_query_latency?: number;
-  readonly p95_latency?: number;
-  readonly span_count?: number;
-  readonly query_count?: number;
-  readonly error_count?: number;
+  readonly dbSystem: string;
+  readonly avgLatencyMs?: number;
+  readonly avgLatency?: number;
+  readonly avgQueryLatencyMs?: number;
+  readonly p95LatencyMs?: number;
+  readonly p95QueryLatency?: number;
+  readonly p95Latency?: number;
+  readonly spanCount?: number;
+  readonly queryCount?: number;
+  readonly errorCount?: number;
 }
 
 const DB_SYSTEM_META: Record<string, { label: string; color: string; gradient: string }> = {
@@ -90,11 +90,11 @@ function n(value: unknown): number {
 }
 
 function DbSystemCard({ system }: { system: DbSystemRow }) {
-  const meta = getDbMeta(system.db_system);
-  const avgLatency = n(system.avg_latency_ms ?? system.avg_latency ?? system.avg_query_latency_ms);
-  const p95Latency = n(system.p95_latency_ms ?? system.p95_query_latency ?? system.p95_latency);
-  const spanCount = n(system.span_count ?? system.query_count);
-  const errorCount = n(system.error_count);
+  const meta = getDbMeta(system.dbSystem);
+  const avgLatency = n(system.avgLatencyMs ?? system.avgLatency ?? system.avgQueryLatencyMs);
+  const p95Latency = n(system.p95LatencyMs ?? system.p95QueryLatency ?? system.p95Latency);
+  const spanCount = n(system.spanCount ?? system.queryCount);
+  const errorCount = n(system.errorCount);
   const errorRate = spanCount > 0 ? normalizePercentage((errorCount / spanCount) * 100) : 0;
 
   return (
@@ -140,7 +140,7 @@ function DbSystemCard({ system }: { system: DbSystemRow }) {
           <div style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}>
             {meta.label}
           </div>
-          <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>{system.db_system}</div>
+          <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>{system.dbSystem}</div>
         </div>
       </div>
 
@@ -250,15 +250,15 @@ export function DbSystemsRenderer({
         const card = <DbSystemCard system={system} />;
 
         if (!search) {
-          return <div key={system.db_system}>{card}</div>;
+          return <div key={system.dbSystem}>{card}</div>;
         }
 
         return (
           <Link
-            key={system.db_system}
+            key={system.dbSystem}
             to={location.pathname + search}
             style={{ display: "block", textDecoration: "none" }}
-            aria-label={`Open ${system.db_system} database detail`}
+            aria-label={`Open ${system.dbSystem} database detail`}
           >
             {card}
           </Link>

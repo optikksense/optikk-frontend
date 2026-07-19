@@ -25,9 +25,7 @@ function buildSeries(rows: ErrorTimeSeriesPoint[] | undefined): ChartData {
     series: [
       {
         label: "error rate",
-        values: activeRows.map((r) =>
-          r.request_count ? (r.error_count * 100) / r.request_count : 0
-        ),
+        values: activeRows.map((r) => (r.requestCount ? (r.errorCount * 100) / r.requestCount : 0)),
         color: "var(--color-critical,#f04438)",
         fill: true,
       },
@@ -71,8 +69,8 @@ export function ErrorRatePanel({ serviceName }: { serviceName: string }) {
     let req = 0;
     let err = 0;
     for (const r of query.data ?? []) {
-      req += r.request_count;
-      err += r.error_count;
+      req += r.requestCount;
+      err += r.errorCount;
     }
     return req > 0 ? (err * 100) / req : 0;
   }, [query.data]);

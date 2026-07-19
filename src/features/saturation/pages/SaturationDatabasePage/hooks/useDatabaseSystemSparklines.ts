@@ -9,12 +9,12 @@ import type { LatencySeriesPoint } from "@/features/saturation/api/databaseSerie
 function groupP95BySystem(rows: LatencySeriesPoint[]): Map<string, number[]> {
   const byKey = new Map<string, Array<{ ts: number; v: number }>>();
   for (const row of rows) {
-    if (row.p95_ms == null) continue;
-    const ts = new Date(row.time_bucket).getTime();
+    if (row.p95Ms == null) continue;
+    const ts = new Date(row.timeBucket).getTime();
     if (!Number.isFinite(ts)) continue;
-    const list = byKey.get(row.group_by) ?? [];
-    list.push({ ts, v: row.p95_ms });
-    byKey.set(row.group_by, list);
+    const list = byKey.get(row.groupBy) ?? [];
+    list.push({ ts, v: row.p95Ms });
+    byKey.set(row.groupBy, list);
   }
   const out = new Map<string, number[]>();
   for (const [key, list] of byKey) {

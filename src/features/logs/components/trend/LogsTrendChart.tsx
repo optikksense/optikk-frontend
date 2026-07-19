@@ -33,7 +33,7 @@ function LogsTrendChartComponent({ trend, onTimeRangeChange, minTimeMs, maxTimeM
     if (!trend || trend.length === 0) return undefined;
     return trend
       .map((b, idx) => ({
-        ts: parseBucketMs(b.time_bucket, idx),
+        ts: parseBucketMs(b.timeBucket, idx),
         counts: {
           debug: b.debug,
           info: b.info,

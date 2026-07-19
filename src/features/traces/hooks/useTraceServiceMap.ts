@@ -42,7 +42,7 @@ export function useTraceServiceMap(
     return {
       nodes: base.nodes.map((n) => {
         const b = latency.get(n.name);
-        return b ? { ...n, p95_latency_ms: b.p95, p99_latency_ms: b.p99 } : n;
+        return b ? { ...n, p95LatencyMs: b.p95, p99LatencyMs: b.p99 } : n;
       }),
       edges: base.edges,
     };

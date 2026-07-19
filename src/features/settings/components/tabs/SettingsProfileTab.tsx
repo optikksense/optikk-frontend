@@ -67,10 +67,14 @@ export default function SettingsProfileTab(): JSX.Element {
 
       <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-sm py-md">
         <div className="flex flex-col gap-xs">
-          <label className="font-semibold text-foreground-secondary text-xs uppercase tracking-wide">
+          <label
+            htmlFor="current-password"
+            className="font-semibold text-foreground-secondary text-xs uppercase tracking-wide"
+          >
             Current Password
           </label>
           <input
+            id="current-password"
             className="w-full rounded border border-border bg-card px-sm py-xs text-sm"
             type="password"
             value={currentPassword}
@@ -79,10 +83,14 @@ export default function SettingsProfileTab(): JSX.Element {
           />
         </div>
         <div className="flex flex-col gap-xs">
-          <label className="font-semibold text-foreground-secondary text-xs uppercase tracking-wide">
+          <label
+            htmlFor="new-password"
+            className="font-semibold text-foreground-secondary text-xs uppercase tracking-wide"
+          >
             New Password
           </label>
           <input
+            id="new-password"
             className="w-full rounded border border-border bg-card px-sm py-xs text-sm"
             type="password"
             value={newPassword}

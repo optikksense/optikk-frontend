@@ -55,13 +55,13 @@ function DetailHeader({ monitor, onAck, onMute, onEdit, onDelete, deleting, dele
             )}
             <span>
               Eval every{" "}
-              <span className="font-mono text-foreground-secondary">{monitor.eval_every_sec}s</span>
+              <span className="font-mono text-foreground-secondary">{monitor.evalEverySec}s</span>
             </span>
-            {monitor.last_evaluated_at && (
+            {monitor.lastEvaluatedAt && (
               <span>
                 Last eval{" "}
                 <span className="font-mono text-foreground-secondary">
-                  {new Date(monitor.last_evaluated_at).toLocaleString()}
+                  {new Date(monitor.lastEvaluatedAt).toLocaleString()}
                 </span>
               </span>
             )}

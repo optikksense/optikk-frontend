@@ -1,181 +1,132 @@
+import {
+  type ConstantNode,
+  type EvalFunction,
+  type MathNode,
+  type OperatorNode,
+  type SymbolNode,
+  addDependencies,
+  create,
+  divideDependencies,
+  multiplyDependencies,
+  parseDependencies,
+  subtractDependencies,
+} from "mathjs/number";
+
 import type { MetricExplorerResults } from "@shared/metrics/types";
 
-type Token =
-  | { type: "number"; value: number }
-  | { type: "ref"; value: string }
-  | { type: "op"; value: "+" | "-" | "*" | "/" }
-  | { type: "lparen" }
-  | { type: "rparen" };
+const ALLOWED_OPERATORS = new Set(["+", "-", "*", "/"]);
+const math = create({
+  add: addDependencies,
+  divide: divideDependencies,
+  multiply: multiplyDependencies,
+  parse: parseDependencies,
+  subtract: subtractDependencies,
+});
 
-function tokenize(expr: string): Token[] {
-  const tokens: Token[] = [];
-  let i = 0;
-  while (i < expr.length) {
-    const ch = expr[i];
-    if (ch === " ") {
-      i++;
-      continue;
-    }
-    if (ch === "(") {
-      tokens.push({ type: "lparen" });
-      i++;
-    } else if (ch === ")") {
-      tokens.push({ type: "rparen" });
-      i++;
-    } else if ("+-*/".includes(ch)) {
-      tokens.push({ type: "op", value: ch as "+" | "-" | "*" | "/" });
-      i++;
-    } else if (/[0-9.]/.test(ch)) {
-      let num = "";
-      while (i < expr.length && /[0-9.]/.test(expr[i])) {
-        num += expr[i++];
+type ParsedFormula =
+  | { readonly compiled: EvalFunction; readonly symbols: readonly string[]; readonly error: null }
+  | { readonly compiled: null; readonly symbols: readonly []; readonly error: string };
+
+function invalidFormula(error: string): ParsedFormula {
+  return { compiled: null, symbols: [], error };
+}
+
+function parseFormula(expression: string, activeQueryIds: readonly string[]): ParsedFormula {
+  let root: MathNode;
+  try {
+    root = math.parse(expression);
+  } catch {
+    return invalidFormula("Invalid expression");
+  }
+
+  const activeIds = new Set(activeQueryIds);
+  const symbols = new Set<string>();
+  let error: string | null = null;
+
+  root.traverse((node) => {
+    if (error) return;
+
+    switch (node.type) {
+      case "ConstantNode": {
+        const value = (node as ConstantNode).value;
+        if (typeof value !== "number" || !Number.isFinite(value)) {
+          error = "Only finite numbers are supported";
+        }
+        return;
       }
-      tokens.push({ type: "number", value: Number.parseFloat(num) });
-    } else if (/[a-zA-Z]/.test(ch)) {
-      let ref = "";
-      while (i < expr.length && /[a-zA-Z]/.test(expr[i])) {
-        ref += expr[i++];
+      case "SymbolNode": {
+        const symbol = (node as SymbolNode).name;
+        if (!activeIds.has(symbol)) {
+          error = `Query "${symbol}" has no metric selected`;
+          return;
+        }
+        symbols.add(symbol);
+        return;
       }
-      tokens.push({ type: "ref", value: ref });
-    } else {
-      i++;
-    }
-  }
-  return tokens;
-}
-
-type Expr =
-  | { kind: "num"; value: number }
-  | { kind: "ref"; label: string }
-  | { kind: "binop"; op: string; left: Expr; right: Expr };
-
-function parse(tokens: Token[]): Expr | null {
-  let pos = 0;
-
-  function peek(): Token | undefined {
-    return tokens[pos];
-  }
-  function consume(): Token {
-    return tokens[pos++];
-  }
-
-  function parseAtom(): Expr | null {
-    const t = peek();
-    if (!t) return null;
-    if (t.type === "number") {
-      consume();
-      return { kind: "num", value: (t as Extract<Token, { type: "number" }>).value };
-    }
-    if (t.type === "ref") {
-      consume();
-      return { kind: "ref", label: (t as Extract<Token, { type: "ref" }>).value };
-    }
-    if (t.type === "lparen") {
-      consume();
-      const inner = parseAddSub();
-      if (peek()?.type === "rparen") consume();
-      return inner;
-    }
-    return null;
-  }
-
-  function parseMulDiv(): Expr | null {
-    let left = parseAtom();
-    if (!left) return null;
-    while (isOperator(peek(), ["*", "/"])) {
-      const op = consume() as Extract<Token, { type: "op" }>;
-      const right = parseAtom();
-      if (!right) return left;
-      left = { kind: "binop", op: op.value, left, right };
-    }
-    return left;
-  }
-
-  function parseAddSub(): Expr | null {
-    let left = parseMulDiv();
-    if (!left) return null;
-    while (isOperator(peek(), ["+", "-"])) {
-      const op = consume() as Extract<Token, { type: "op" }>;
-      const right = parseMulDiv();
-      if (!right) return left;
-      left = { kind: "binop", op: op.value, left, right };
-    }
-    return left;
-  }
-
-  return parseAddSub();
-}
-
-function isOperator(
-  token: Token | undefined,
-  values: string[]
-): token is Extract<Token, { type: "op" }> {
-  if (token?.type !== "op") return false;
-  return values.includes(token.value);
-}
-
-function evaluate(expr: Expr, queryValues: Record<string, number | null>): number | null {
-  switch (expr.kind) {
-    case "num":
-      return expr.value;
-    case "ref": {
-      const v = queryValues[expr.label];
-      return v ?? null;
-    }
-    case "binop": {
-      const l = evaluate(expr.left, queryValues);
-      const r = evaluate(expr.right, queryValues);
-      if (l === null || r === null) return null;
-      switch (expr.op) {
-        case "+":
-          return l + r;
-        case "-":
-          return l - r;
-        case "*":
-          return l * r;
-        case "/":
-          return r === 0 ? null : l / r;
-        default:
-          return null;
+      case "OperatorNode": {
+        const operator = node as OperatorNode;
+        if (operator.implicit || !ALLOWED_OPERATORS.has(operator.op) || !operator.isBinary()) {
+          error = `Unsupported operator: ${operator.op}`;
+        }
+        return;
       }
+      case "ParenthesisNode":
+        return;
+      default:
+        error = "Only numbers, query labels, and + - * / are supported";
     }
-  }
+  });
+
+  if (error) return invalidFormula(error);
+  return { compiled: root.compile(), symbols: [...symbols], error: null };
 }
 
-/**
- * Evaluates a formula expression against metric query results.
- * Returns an array of values aligned with the given timestamps.
- * Each query result must have exactly one series (first series is used).
- */
+export function validateFormulaExpression(
+  expression: string,
+  activeQueryIds: readonly string[]
+): string | null {
+  if (!expression.trim()) return null;
+  return parseFormula(expression, activeQueryIds).error;
+}
+
+/** Evaluates a formula against the first series of each metric query. */
 export function evaluateFormula(
   expression: string,
   results: MetricExplorerResults,
   timestamps: number[]
 ): Array<number | null> {
-  const tokens = tokenize(expression);
-  const ast = parse(tokens);
-  if (!ast) return timestamps.map(() => null);
+  const formula = parseFormula(expression, Object.keys(results));
+  if (!formula.compiled) return timestamps.map(() => null);
 
   const queryLookups: Record<string, Map<number, number>> = {};
-  for (const [id, result] of Object.entries(results)) {
+  for (const symbol of formula.symbols) {
     const lookup = new Map<number, number>();
-    if (result.series.length > 0) {
-      const series = result.series[0];
+    const result = results[symbol];
+    const series = result?.series[0];
+    if (result && series) {
       for (let i = 0; i < result.timestamps.length; i++) {
-        const v = series.values[i];
-        if (v !== null && v !== undefined) {
-          lookup.set(result.timestamps[i], v);
+        const value = series.values[i];
+        if (value !== null && value !== undefined) {
+          lookup.set(result.timestamps[i], value);
         }
       }
     }
-    queryLookups[id] = lookup;
+    queryLookups[symbol] = lookup;
   }
 
-  return timestamps.map((ts) => {
-    const queryValues: Record<string, number | null> = {};
-    for (const [id, lookup] of Object.entries(queryLookups)) {
-      queryValues[id] = lookup.get(ts) ?? null;
+  return timestamps.map((timestamp) => {
+    const scope: Record<string, number> = {};
+    for (const symbol of formula.symbols) {
+      const value = queryLookups[symbol].get(timestamp);
+      if (value === undefined) return null;
+      scope[symbol] = value;
     }
-    return evaluate(ast, queryValues);
+
+    try {
+      const value: unknown = formula.compiled.evaluate(scope);
+      return typeof value === "number" && Number.isFinite(value) ? value : null;
+    } catch {
+      return null;
+    }
   });
 }

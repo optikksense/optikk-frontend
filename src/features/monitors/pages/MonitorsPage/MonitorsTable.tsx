@@ -72,20 +72,20 @@ const columns: ColumnDef<Monitor>[] = [
   },
   {
     header: "Current",
-    accessorKey: "current_value",
+    accessorKey: "currentValue",
     size: 100,
     meta: { align: "right" },
     cell: ({ row: { original: m } }) => (
-      <span className="font-mono">{formatValue(m.current_value, m.type)}</span>
+      <span className="font-mono">{formatValue(m.currentValue, m.type)}</span>
     ),
   },
   {
     header: "Last eval",
-    accessorKey: "last_evaluated_at",
+    accessorKey: "lastEvaluatedAt",
     size: 130,
     cell: ({ row: { original: m } }) => (
       <span className="font-mono text-[11px] text-foreground-muted">
-        {m.last_evaluated_at ? new Date(m.last_evaluated_at).toLocaleTimeString() : "—"}
+        {m.lastEvaluatedAt ? new Date(m.lastEvaluatedAt).toLocaleTimeString() : "—"}
       </span>
     ),
   },

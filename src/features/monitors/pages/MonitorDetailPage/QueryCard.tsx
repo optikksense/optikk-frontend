@@ -8,18 +8,18 @@ interface Props {
 
 function formatQuery(m: Monitor): string {
   if (m.query.metric) {
-    const { metric, aggregation, window_sec } = m.query.metric;
-    return `${aggregation}(last_${window_sec}s):${metric}`;
+    const { metric, aggregation, windowSec } = m.query.metric;
+    return `${aggregation}(last_${windowSec}s):${metric}`;
   }
   if (m.query.apm) {
-    const { service, resource, track, window_sec } = m.query.apm;
+    const { service, resource, track, windowSec } = m.query.apm;
     const res = resource ? `,resource:${resource}` : "";
-    return `apm(last_${window_sec}s):${track}{service:${service}${res}}`;
+    return `apm(last_${windowSec}s):${track}{service:${service}${res}}`;
   }
   if (m.query.log) {
-    const { query, group_by, window_sec } = m.query.log;
-    const grp = group_by && group_by !== "none" ? `.by("${group_by}")` : "";
-    return `logs("${query}").rollup("count","last_${window_sec}s")${grp}`;
+    const { query, groupBy, windowSec } = m.query.log;
+    const grp = groupBy && groupBy !== "none" ? `.by("${groupBy}")` : "";
+    return `logs("${query}").rollup("count","last_${windowSec}s")${grp}`;
   }
   return "—";
 }
@@ -39,12 +39,12 @@ function QueryCard({ monitor }: Props) {
         <div className="rounded bg-secondary p-2.5">
           <div className="text-[10px] text-foreground-muted">Recovery</div>
           <div className="mt-0.5 font-mono text-xs">
-            {monitor.conditions.recovery_threshold ?? "—"}
+            {monitor.conditions.recoveryThreshold ?? "—"}
           </div>
         </div>
         <div className="rounded bg-secondary p-2.5">
           <div className="text-[10px] text-foreground-muted">No-data after</div>
-          <div className="mt-0.5 font-mono text-xs">{monitor.conditions.no_data_after_sec}s</div>
+          <div className="mt-0.5 font-mono text-xs">{monitor.conditions.noDataAfterSec}s</div>
         </div>
       </div>
     </div>

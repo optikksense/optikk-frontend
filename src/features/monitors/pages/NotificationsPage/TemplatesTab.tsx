@@ -125,7 +125,7 @@ export default function TemplatesTab() {
               <div className="flex items-baseline justify-between">
                 <div className="font-medium text-sm">{t.name}</div>
                 <span className="font-mono text-[10px] text-foreground-muted">
-                  {t.used_count} in use
+                  {t.usedCount} in use
                 </span>
               </div>
               {t.description && (

@@ -50,7 +50,7 @@ function MetaItem({ label, value }: { label: string; value: string }) {
 }
 
 function loadSummary(overview: HostOverview): string | null {
-  const parts = [overview.load_1m, overview.load_5m, overview.load_15m];
+  const parts = [overview.load1m, overview.load5m, overview.load15m];
   if (parts.every((v) => v == null)) return null;
   return parts.map((v) => (v == null ? "–" : v.toFixed(2))).join(" / ");
 }
@@ -68,15 +68,15 @@ function buildMetaItems(
   }
   if (node) {
     items.push({ label: "services", value: String(node.services.length) });
-    items.push({ label: "pods", value: String(node.pod_count) });
+    items.push({ label: "pods", value: String(node.podCount) });
   }
   const load = overview ? loadSummary(overview) : null;
   if (load) items.push({ label: "load 1m/5m/15m", value: load });
-  if (overview?.process_count != null) {
-    items.push({ label: "processes", value: String(Math.round(overview.process_count)) });
+  if (overview?.processCount != null) {
+    items.push({ label: "processes", value: String(Math.round(overview.processCount)) });
   }
-  if (overview?.last_seen) {
-    items.push({ label: "last seen", value: formatRelativeTime(overview.last_seen) });
+  if (overview?.lastSeen) {
+    items.push({ label: "last seen", value: formatRelativeTime(overview.lastSeen) });
   }
   return items;
 }

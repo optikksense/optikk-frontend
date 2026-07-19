@@ -27,8 +27,8 @@ export function useTraceDetailActions({
   const waterfallSearch = search.q ?? "";
 
   const handleSpanClick = useCallback(
-    (span: { span_id?: string }) => {
-      const id = span.span_id ?? null;
+    (span: { spanId?: string }) => {
+      const id = span.spanId ?? null;
       const next = id && id === selectedSpanId ? null : id;
       setSelectedSpanId(next);
       navigate({

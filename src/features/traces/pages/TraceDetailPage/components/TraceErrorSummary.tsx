@@ -8,7 +8,7 @@ import type { TraceErrorGroup } from "@shared/api/traces/schemas";
 
 interface Props {
   readonly groups: readonly TraceErrorGroup[];
-  readonly onSpanClick: (span: { span_id: string }) => void;
+  readonly onSpanClick: (span: { spanId: string }) => void;
 }
 
 const sectT = "text-[10.5px] tracking-[0.06em] uppercase text-foreground-caption";
@@ -33,7 +33,7 @@ function TraceErrorSummaryComponent({ groups, onSpanClick }: Props) {
       </div>
       <div className="flex flex-col gap-1.5">
         {ordered.map((g) => (
-          <ErrorGroupRow key={g.exception_type} group={g} onSpanClick={onSpanClick} />
+          <ErrorGroupRow key={g.exceptionType} group={g} onSpanClick={onSpanClick} />
         ))}
       </div>
     </div>
@@ -45,7 +45,7 @@ function ErrorGroupRow({
   onSpanClick,
 }: {
   group: TraceErrorGroup;
-  onSpanClick: (span: { span_id: string }) => void;
+  onSpanClick: (span: { spanId: string }) => void;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -62,7 +62,7 @@ function ErrorGroupRow({
         />
         <AlertTriangle size={13} className="flex-none text-error" />
         <span className="truncate font-mono text-[12.5px] text-foreground">
-          {group.exception_type || "Error"}
+          {group.exceptionType || "Error"}
         </span>
         <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-error-subtle px-[7px] py-[2px] font-mono text-[10.5px] text-error">
           ×{group.count}
@@ -72,23 +72,23 @@ function ErrorGroupRow({
         <div className="flex flex-col gap-px border-border border-t">
           {group.spans.map((s) => (
             <button
-              key={s.span_id}
+              key={s.spanId}
               type="button"
               className="flex cursor-pointer flex-col gap-0.5 border-border border-b bg-background px-3 py-2 text-left last:border-b-0 hover:bg-muted"
-              onClick={() => onSpanClick({ span_id: s.span_id })}
+              onClick={() => onSpanClick({ spanId: s.spanId })}
             >
               <div className="flex items-center gap-2">
-                <span className="text-[11.5px] text-foreground-muted">{s.service_name}</span>
+                <span className="text-[11.5px] text-foreground-muted">{s.serviceName}</span>
                 <span className="truncate font-mono text-[12px] text-foreground">
-                  {s.operation_name}
+                  {s.operationName}
                 </span>
                 <span className="ml-auto font-mono text-[11px] text-foreground-caption">
-                  {formatDuration(s.duration_ms)}
+                  {formatDuration(s.durationMs)}
                 </span>
               </div>
-              {(s.exception_message || s.status_message) && (
+              {(s.exceptionMessage || s.statusMessage) && (
                 <div className="break-words text-[11.5px] text-foreground-secondary leading-[1.45]">
-                  {s.exception_message || s.status_message}
+                  {s.exceptionMessage || s.statusMessage}
                 </div>
               )}
             </button>

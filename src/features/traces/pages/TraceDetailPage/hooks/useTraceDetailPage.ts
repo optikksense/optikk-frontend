@@ -24,7 +24,7 @@ export function useTraceDetailPage() {
     [state.enhanced.errorPathSpanIds]
   );
   const onSelectSpan = useCallback(
-    (id: string) => actions.handleSpanClick({ span_id: id }),
+    (id: string) => actions.handleSpanClick({ spanId: id }),
     [actions]
   );
 

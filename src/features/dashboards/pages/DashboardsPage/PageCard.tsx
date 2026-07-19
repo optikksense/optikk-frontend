@@ -20,9 +20,9 @@ export function PageCard({ page }: PageCardProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const deletePage = useDeleteDashboardPage();
   const widgetLabel =
-    page.widget_count === 0
+    page.widgetCount === 0
       ? "Empty page · no widgets yet"
-      : `${page.widget_count} widget${page.widget_count === 1 ? "" : "s"}`;
+      : `${page.widgetCount} widget${page.widgetCount === 1 ? "" : "s"}`;
 
   return (
     <div className="group relative">
@@ -72,7 +72,7 @@ export function PageCard({ page }: PageCardProps) {
               <div className="truncate font-semibold text-foreground text-sm">{page.name}</div>
               <div className="mt-0.5 text-foreground-muted text-xs">{widgetLabel}</div>
             </div>
-            {page.is_favorite && <Star size={14} className="shrink-0 fill-warning text-warning" />}
+            {page.isFavorite && <Star size={14} className="shrink-0 fill-warning text-warning" />}
           </div>
 
           {page.description && (
@@ -130,8 +130,8 @@ export function PageCard({ page }: PageCardProps) {
       >
         <p className="text-foreground-secondary text-sm">
           Delete <span className="font-medium text-foreground">{page.name}</span>?
-          {page.widget_count > 0 &&
-            ` This permanently removes the page and its ${page.widget_count} widget${page.widget_count === 1 ? "" : "s"}.`}{" "}
+          {page.widgetCount > 0 &&
+            ` This permanently removes the page and its ${page.widgetCount} widget${page.widgetCount === 1 ? "" : "s"}.`}{" "}
           This cannot be undone.
         </p>
         {deletePage.error && <p className="mt-2 text-error text-xs">{deletePage.error.message}</p>}

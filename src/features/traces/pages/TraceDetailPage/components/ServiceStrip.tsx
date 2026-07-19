@@ -31,10 +31,10 @@ function ServiceStripComponent({ spans, activeService, onActiveServiceChange }: 
   const tallies = useMemo<ServiceTally[]>(() => {
     const m = new Map<string, { count: number; errors: number; totalDur: number }>();
     for (const s of spans) {
-      const k = s.service_name || "unknown";
+      const k = s.serviceName || "unknown";
       const cur = m.get(k) ?? { count: 0, errors: 0, totalDur: 0 };
       cur.count += 1;
-      cur.totalDur += s.duration_ms ?? 0;
+      cur.totalDur += s.durationMs ?? 0;
       if (s.status === "ERROR") cur.errors += 1;
       m.set(k, cur);
     }

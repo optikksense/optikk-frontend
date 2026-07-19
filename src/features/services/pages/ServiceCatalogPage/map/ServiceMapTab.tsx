@@ -43,7 +43,7 @@ export function ServiceMapTab() {
   const data = query.data ?? EMPTY;
 
   const services = useMemo(
-    () => [...data.nodes].sort((a, b) => b.request_count - a.request_count).map((n) => n.name),
+    () => [...data.nodes].sort((a, b) => b.requestCount - a.requestCount).map((n) => n.name),
     [data]
   );
   const effectiveFocus = focus || highestTrafficService(data);

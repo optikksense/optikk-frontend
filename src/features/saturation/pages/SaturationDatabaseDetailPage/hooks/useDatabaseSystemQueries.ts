@@ -18,7 +18,7 @@ interface SystemQueriesResult {
 export function useDatabaseSystemQueries(system: string): SystemQueriesResult {
   const { data, isPending, isError } = useTimeRangeQuery<SlowQueryPatternRow[]>(
     "saturation-db.system-queries",
-    (_tenant, s, e) => getSlowQueryPatterns(s, e, { db_system: system }, SYSTEM_QUERY_LIMIT),
+    (_tenant, s, e) => getSlowQueryPatterns(s, e, { dbSystem: system }, SYSTEM_QUERY_LIMIT),
     { extraKeys: [system, SYSTEM_QUERY_LIMIT] }
   );
   return {

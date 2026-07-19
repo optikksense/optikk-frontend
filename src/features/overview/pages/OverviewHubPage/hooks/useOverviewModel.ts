@@ -38,17 +38,17 @@ function statusFromRate(rate: number): ServiceHealthStatus {
 }
 
 function toCell(row: ServiceMetricPoint): ServiceHealthCell {
-  const requestCount = num(row.request_count);
-  const errorCount = num(row.error_count);
+  const requestCount = num(row.requestCount);
+  const errorCount = num(row.errorCount);
   const errorRate = requestCount > 0 ? (errorCount / requestCount) * 100 : 0;
   return {
-    name: String(row.service_name ?? ""),
+    name: String(row.serviceName ?? ""),
     requestCount,
     errorCount,
     errorRate,
-    avgLatency: num(row.avg_latency),
-    p95Latency: num(row.p95_latency),
-    p99Latency: num(row.p99_latency),
+    avgLatency: num(row.avgLatency),
+    p95Latency: num(row.p95Latency),
+    p99Latency: num(row.p99Latency),
     status: statusFromRate(errorRate),
   };
 }
@@ -56,7 +56,7 @@ function toCell(row: ServiceMetricPoint): ServiceHealthCell {
 export function useOverviewSummaryQuery() {
   return useTimeRangeQuery(
     "overview-summary",
-    (_tenant, start, end) => overviewHubApi.getFleetRedMetrics(start, end),
+    (_tenant, start, end, signal) => overviewHubApi.getFleetRedMetrics(start, end, signal),
     { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
 }
@@ -64,24 +64,25 @@ export function useOverviewSummaryQuery() {
 export function useSystemPerformanceQuery(): UseQueryResult<RequestErrorRatePoint[]> {
   return useTimeRangeQuery<RequestErrorRatePoint[]>(
     "overview-performance",
-    (_tenant, start, end) => overviewHubApi.getPerformanceSeries(start, end),
+    (_tenant, start, end, signal) =>
+      overviewHubApi.getPerformanceSeries(start, end, undefined, signal),
     { staleTime: OVERVIEW_QUERY_STALE_MS }
   );
 }
 
-export function useTopErrorsQuery(enabled: boolean): UseQueryResult<ErrorHotspotRow[]> {
+export function useTopErrorsQuery(enabled = true): UseQueryResult<ErrorHotspotRow[]> {
   return useTimeRangeQuery<ErrorHotspotRow[]>(
     "overview-top-errors",
-    async (_tenant, start, end) => {
-      const rows = await overviewHubApi.getErrorHotspot(start, end);
+    async (_tenant, start, end, signal) => {
+      const rows = await overviewHubApi.getErrorHotspot(start, end, signal);
       return rows.map((raw) => {
         const r = raw as Record<string, unknown>;
         return {
-          key: `${r.service_name}::${r.group_id}`,
-          groupId: String(r.group_id ?? ""),
-          serviceName: String(r.service_name ?? "unknown"),
-          operationName: String(r.operation_name ?? "unknown"),
-          errorCount: num(r.error_count),
+          key: `${r.serviceName}::${r.groupId}`,
+          groupId: String(r.groupId ?? ""),
+          serviceName: String(r.serviceName ?? "unknown"),
+          operationName: String(r.operationName ?? "unknown"),
+          errorCount: num(r.errorCount),
         };
       });
     },

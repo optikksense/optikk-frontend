@@ -12,40 +12,40 @@ import { z } from "zod";
 /**
  * Domain model for a span as rendered by the trace detail UI. This is *not* a
  * wire shape: `normalizeSpan` builds it from `SpanRecord`, deriving
- * start/end times from `start_ns`. Never parsed against a response.
+ * start/end times from `startNs`. Never parsed against a response.
  */
 const traceRecordSchema = z.object({
-  span_id: z.string(),
-  trace_id: z.string(),
-  service_name: z.string().default(""),
-  operation_name: z.string().default(""),
-  start_time: z.string().default(""),
-  end_time: z.string().default(""),
-  duration_ms: z.number().default(0),
+  spanId: z.string(),
+  traceId: z.string(),
+  serviceName: z.string().default(""),
+  operationName: z.string().default(""),
+  startTime: z.string().default(""),
+  endTime: z.string().default(""),
+  durationMs: z.number().default(0),
   status: z.string().default("UNSET"),
-  span_kind: z.string().default(""),
-  status_message: z.string().optional(),
-  http_method: z.string().optional(),
-  http_url: z.string().optional(),
-  http_status_code: z.number().optional(),
-  service_name_original: z.string().optional(),
-  parent_span_id: z.string().optional(),
-  has_error: z.boolean().default(false),
-  start_ns: z.number().default(0),
+  spanKind: z.string().default(""),
+  statusMessage: z.string().optional(),
+  httpMethod: z.string().optional(),
+  httpUrl: z.string().optional(),
+  httpStatusCode: z.number().optional(),
+  serviceNameOriginal: z.string().optional(),
+  parentSpanId: z.string().optional(),
+  hasError: z.boolean().default(false),
+  startNs: z.number().default(0),
 });
 
 /** Mirrors detail.SpanListItem — GET /traces/{traceId}/spans. */
 export const spanRecordSchema = z.object({
-  span_id: z.string(),
-  parent_span_id: z.string(),
-  trace_id: z.string(),
-  service_name: z.string(),
-  operation_name: z.string(),
-  span_kind: z.string(),
+  spanId: z.string(),
+  parentSpanId: z.string(),
+  traceId: z.string(),
+  serviceName: z.string(),
+  operationName: z.string(),
+  spanKind: z.string(),
   status: z.string(),
-  has_error: z.boolean(),
-  duration_ms: z.number(),
-  start_ns: z.number(),
+  hasError: z.boolean(),
+  durationMs: z.number(),
+  startNs: z.number(),
 });
 
 /** Mirrors logs models.Log — GET /logs/trace/{traceID}. */
@@ -53,97 +53,97 @@ export const traceLogSchema = z.object({
   id: z.string(),
   // uint64 `json:",string"` on the Go side — always a JSON string.
   timestamp: z.string(),
-  observed_timestamp: z.string(),
-  severity_text: z.string(),
-  severity_number: z.number(),
-  severity_bucket: z.number(),
+  observedTimestamp: z.string(),
+  severityText: z.string(),
+  severityNumber: z.number(),
+  severityBucket: z.number(),
   body: z.string(),
-  trace_id: z.string(),
-  span_id: z.string(),
-  trace_flags: z.number(),
-  service_name: z.string(),
+  traceId: z.string(),
+  spanId: z.string(),
+  traceFlags: z.number(),
+  serviceName: z.string(),
   host: z.string(),
   pod: z.string(),
   container: z.string(),
   environment: z.string(),
-  attributes_string: z.record(z.string(), z.string()).optional(),
-  attributes_number: z.record(z.string(), z.number()).optional(),
-  attributes_bool: z.record(z.string(), z.boolean()).optional(),
-  scope_name: z.string(),
-  scope_version: z.string(),
+  attributesString: z.record(z.string(), z.string()).optional(),
+  attributesNumber: z.record(z.string(), z.number()).optional(),
+  attributesBool: z.record(z.string(), z.boolean()).optional(),
+  scopeName: z.string(),
+  scopeVersion: z.string(),
 });
 
 /** Client-side envelope built by `getTraceLogs`; the wire is a bare array. */
 const traceLogsResponseSchema = z.object({
   logs: z.array(traceLogSchema).default([]),
-  is_speculative: z.boolean().default(false),
+  isSpeculative: z.boolean().default(false),
 });
 
 /** Mirrors detail.SpanEvent — GET /traces/{traceId}/span-events. */
 export const spanEventSchema = z.object({
-  span_id: z.string(),
-  trace_id: z.string(),
-  event_name: z.string(),
+  spanId: z.string(),
+  traceId: z.string(),
+  eventName: z.string(),
   timestamp: z.string(),
   attributes: z.string(),
 });
 
 /** Mirrors paths.CriticalPathSpan — GET /traces/{traceId}/critical-path. */
 export const criticalPathSpanSchema = z.object({
-  span_id: z.string(),
-  operation_name: z.string(),
-  service_name: z.string(),
-  duration_ms: z.number(),
+  spanId: z.string(),
+  operationName: z.string(),
+  serviceName: z.string(),
+  durationMs: z.number(),
 });
 
 /** Mirrors paths.ErrorPathSpan — GET /traces/{traceId}/error-path. */
 export const errorPathSpanSchema = z.object({
-  span_id: z.string(),
-  parent_span_id: z.string(),
-  operation_name: z.string(),
-  service_name: z.string(),
+  spanId: z.string(),
+  parentSpanId: z.string(),
+  operationName: z.string(),
+  serviceName: z.string(),
   status: z.string(),
-  status_message: z.string(),
-  start_time: z.string(),
-  duration_ms: z.number(),
+  statusMessage: z.string(),
+  startTime: z.string(),
+  durationMs: z.number(),
 });
 
 /** Mirrors detail.SpanLink. */
 const spanLinkSchema = z.object({
-  trace_id: z.string(),
-  span_id: z.string(),
-  trace_state: z.string().optional(),
+  traceId: z.string(),
+  spanId: z.string(),
+  traceState: z.string().optional(),
   attributes: z.record(z.string(), z.string()).optional(),
 });
 
 /** Mirrors detail.SpanAttributes — GET /traces/{traceId}/spans/{spanId}/attributes. */
 export const spanAttributesSchema = z.object({
-  span_id: z.string(),
-  trace_id: z.string(),
-  operation_name: z.string(),
-  service_name: z.string(),
-  attributes_string: z.record(z.string(), z.string()),
-  resource_attributes: z.record(z.string(), z.string()),
+  spanId: z.string(),
+  traceId: z.string(),
+  operationName: z.string(),
+  serviceName: z.string(),
+  attributesString: z.record(z.string(), z.string()),
+  resourceAttributes: z.record(z.string(), z.string()),
   links: z.array(spanLinkSchema).optional(),
-  exception_type: z.string().optional(),
-  exception_message: z.string().optional(),
-  exception_stacktrace: z.string().optional(),
-  db_system: z.string().optional(),
-  db_name: z.string().optional(),
-  db_statement: z.string().optional(),
-  db_statement_normalized: z.string().optional(),
+  exceptionType: z.string().optional(),
+  exceptionMessage: z.string().optional(),
+  exceptionStacktrace: z.string().optional(),
+  dbSystem: z.string().optional(),
+  dbName: z.string().optional(),
+  dbStatement: z.string().optional(),
+  dbStatementNormalized: z.string().optional(),
   attributes: z.record(z.string(), z.string()).optional(),
 });
 
 /** Mirrors detail.RelatedTrace — GET /traces/{traceId}/related. */
 export const relatedTraceSchema = z.object({
-  trace_id: z.string(),
-  span_id: z.string(),
-  operation_name: z.string(),
-  service_name: z.string(),
-  duration_ms: z.number(),
+  traceId: z.string(),
+  spanId: z.string(),
+  operationName: z.string(),
+  serviceName: z.string(),
+  durationMs: z.number(),
   status: z.string(),
-  start_time: z.string(),
+  startTime: z.string(),
 });
 
 export type TraceRecord = z.infer<typeof traceRecordSchema>;
@@ -158,18 +158,18 @@ export type RelatedTraceRecord = z.infer<typeof relatedTraceSchema>;
 
 /** Mirrors servicemap.TraceErrorSpan. */
 const traceErrorSpanSchema = z.object({
-  span_id: z.string(),
-  service_name: z.string(),
-  operation_name: z.string(),
-  exception_message: z.string().optional(),
-  status_message: z.string().optional(),
-  start_time: z.string(),
-  duration_ms: z.number(),
+  spanId: z.string(),
+  serviceName: z.string(),
+  operationName: z.string(),
+  exceptionMessage: z.string().optional(),
+  statusMessage: z.string().optional(),
+  startTime: z.string(),
+  durationMs: z.number(),
 });
 
 /** Mirrors servicemap.TraceErrorGroup. */
 export const traceErrorGroupSchema = z.object({
-  exception_type: z.string(),
+  exceptionType: z.string(),
   count: z.number(),
   spans: z.array(traceErrorSpanSchema),
 });
@@ -178,18 +178,18 @@ export type TraceErrorGroup = z.infer<typeof traceErrorGroupSchema>;
 
 /** Domain models for the service-detail recent-traces list, built client-side. */
 const traceSummarySchema = z.object({
-  total_traces: z.number().default(0),
-  error_traces: z.number().default(0),
-  avg_duration: z.number().default(0),
-  p50_duration: z.number().default(0),
-  p95_duration: z.number().default(0),
-  p99_duration: z.number().default(0),
+  totalTraces: z.number().default(0),
+  errorTraces: z.number().default(0),
+  avgDuration: z.number().default(0),
+  p50Duration: z.number().default(0),
+  p95Duration: z.number().default(0),
+  p99Duration: z.number().default(0),
 });
 
 const tracesResponseSchema = z.object({
   traces: z.array(traceRecordSchema),
-  has_more: z.boolean().optional(),
-  next_cursor: z.string().optional(),
+  hasMore: z.boolean().optional(),
+  nextCursor: z.string().optional(),
   limit: z.number().optional(),
   summary: traceSummarySchema.optional(),
 });

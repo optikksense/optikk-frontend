@@ -10,12 +10,12 @@ import { validateResponse } from "@shared/api/utils/validate";
  */
 const serviceNodeSchema = z.object({
   name: z.string(),
-  request_count: z.number(),
-  error_count: z.number(),
-  error_rate: z.number(),
-  p50_latency_ms: z.number(),
-  p95_latency_ms: z.number(),
-  p99_latency_ms: z.number(),
+  requestCount: z.number(),
+  errorCount: z.number(),
+  errorRate: z.number(),
+  p50LatencyMs: z.number(),
+  p95LatencyMs: z.number(),
+  p99LatencyMs: z.number(),
   // classifyHealth only ever returns these three constants.
   health: z.enum(["healthy", "degraded", "unhealthy"]),
 });
@@ -23,11 +23,11 @@ const serviceNodeSchema = z.object({
 const serviceEdgeSchema = z.object({
   source: z.string(),
   target: z.string(),
-  call_count: z.number(),
-  error_count: z.number(),
-  error_rate: z.number(),
-  p50_latency_ms: z.number(),
-  p95_latency_ms: z.number(),
+  callCount: z.number(),
+  errorCount: z.number(),
+  errorRate: z.number(),
+  p50LatencyMs: z.number(),
+  p95LatencyMs: z.number(),
 });
 
 export const topologyResponseSchema = z.object({

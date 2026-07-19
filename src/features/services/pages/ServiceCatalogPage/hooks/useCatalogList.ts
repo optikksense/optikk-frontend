@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import {
-  type RedSummaryWithComparison,
+  type Comparable,
   type RequestRatePoint,
   type ServiceCatalogRedSummary,
   getRedSummaryWithComparison,
@@ -14,6 +14,7 @@ import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 
 export interface UseCatalogListResult {
   readonly rows: CatalogRow[];
+  readonly summary?: ServiceCatalogRedSummary;
   /** Prior-window RED summary, when present — powers the KPI strip deltas. */
   readonly comparison?: ServiceCatalogRedSummary;
   readonly windowSec: number;
@@ -22,15 +23,16 @@ export interface UseCatalogListResult {
 }
 
 function useRedSummary() {
-  return useTimeRangeQuery<RedSummaryWithComparison>(
+  return useTimeRangeQuery<Comparable<ServiceCatalogRedSummary>>(
     "service-hub.red-summary-cmp",
-    (_tenant, s, e) => getRedSummaryWithComparison(s, e)
+    (_tenant, s, e, signal) => getRedSummaryWithComparison(s, e, undefined, signal)
   );
 }
 
 function useRateSeries() {
-  return useTimeRangeQuery<RequestRatePoint[]>("service-hub.request-rate", (_tenant, s, e) =>
-    getRequestRateSeries(s, e)
+  return useTimeRangeQuery<RequestRatePoint[]>(
+    "service-hub.request-rate",
+    (_tenant, s, e, signal) => getRequestRateSeries(s, e, undefined, signal)
   );
 }
 
@@ -56,6 +58,7 @@ export function useCatalogList(): UseCatalogListResult {
 
   return {
     rows,
+    summary: summary.data?.data,
     comparison: summary.data?.comparison,
     windowSec,
     isPending: summary.isPending,

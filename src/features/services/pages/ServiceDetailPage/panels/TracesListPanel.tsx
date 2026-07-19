@@ -37,7 +37,7 @@ function DurationBar({ ms, max }: { ms: number; max: number }) {
 }
 
 function TraceRow({ trace, max }: { trace: TraceRecord; max: number }) {
-  const detail = ROUTES.traceDetail.replace("$traceId", encodeURIComponent(trace.trace_id));
+  const detail = ROUTES.traceDetail.replace("$traceId", encodeURIComponent(trace.traceId));
   return (
     <li className="border-border border-t first:border-t-0">
       <Link
@@ -47,16 +47,16 @@ function TraceRow({ trace, max }: { trace: TraceRecord; max: number }) {
         <StatusDot status={trace.status} />
         <div className="min-w-0">
           <div className="truncate font-mono text-[12px] text-foreground">
-            {trace.operation_name}
+            {trace.operationName}
           </div>
           <div className="truncate font-mono text-[11px] text-foreground-muted">
-            {trace.trace_id}
+            {trace.traceId}
           </div>
         </div>
-        <DurationBar ms={trace.duration_ms} max={max} />
-        <div className="font-mono text-[12px] text-foreground">{fmtMs(trace.duration_ms)}</div>
+        <DurationBar ms={trace.durationMs} max={max} />
+        <div className="font-mono text-[12px] text-foreground">{fmtMs(trace.durationMs)}</div>
         <div className="text-right text-[11px] text-foreground-muted">
-          {relativeTimeFromIso(trace.start_time)}
+          {relativeTimeFromIso(trace.startTime)}
         </div>
       </Link>
     </li>
@@ -76,7 +76,7 @@ export function TracesListPanel({
 }: TracesListPanelProps) {
   const { data, isPending } = useRecentTraces(serviceName, Math.max(maxRows, 25));
   const traces = (data?.traces ?? []).slice(0, maxRows);
-  const max = traces.reduce((acc, t) => Math.max(acc, t.duration_ms), 0);
+  const max = traces.reduce((acc, t) => Math.max(acc, t.durationMs), 0);
   return (
     <PanelCard
       title={title}
@@ -90,7 +90,7 @@ export function TracesListPanel({
       ) : (
         <ul>
           {traces.map((trace) => (
-            <TraceRow key={trace.trace_id} trace={trace} max={max} />
+            <TraceRow key={trace.traceId} trace={trace} max={max} />
           ))}
         </ul>
       )}

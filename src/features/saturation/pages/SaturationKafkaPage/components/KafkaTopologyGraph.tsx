@@ -87,7 +87,7 @@ const ROW_GAP = 88;
 function graphElements(topo: KafkaTopology): { nodes: Node[]; edges: Edge[] } {
   const topicHealth = new Map<string, Health>();
   for (const pathway of topo.pathways) {
-    const next = healthFromError(pathway.error_rate);
+    const next = healthFromError(pathway.errorRate);
     const current = topicHealth.get(pathway.topic) ?? "healthy";
     if (next === "critical" || (next === "warning" && current === "healthy")) {
       topicHealth.set(pathway.topic, next);
@@ -101,8 +101,8 @@ function graphElements(topo: KafkaTopology): { nodes: Node[]; edges: Edge[] } {
       topics: new Set<string>(),
       health: "healthy" as Health,
     };
-    current.rate += consumer.rate_per_sec;
-    const next = healthFromError(consumer.error_rate);
+    current.rate += consumer.ratePerSec;
+    const next = healthFromError(consumer.errorRate);
     if (next === "critical" || (next === "warning" && current.health === "healthy")) {
       current.health = next;
     }
@@ -121,8 +121,8 @@ function graphElements(topo: KafkaTopology): { nodes: Node[]; edges: Edge[] } {
         role: "producer",
         entityId: producer.service,
         label: producer.service,
-        detail: `produces · ${formatRate(producer.rate_per_sec)}/s`,
-        health: healthFromError(producer.error_rate),
+        detail: `produces · ${formatRate(producer.ratePerSec)}/s`,
+        health: healthFromError(producer.errorRate),
       } satisfies KafkaGraphNodeData,
     })),
     ...topo.topics.map((topic, index) => ({
@@ -133,7 +133,7 @@ function graphElements(topo: KafkaTopology): { nodes: Node[]; edges: Edge[] } {
         role: "topic",
         entityId: topic.topic,
         label: topic.topic,
-        detail: `${topic.producer_count} producers · ${topic.consumer_group_count} groups`,
+        detail: `${topic.producerCount} producers · ${topic.consumerGroupCount} groups`,
         health: topicHealth.get(topic.topic) ?? "healthy",
       } satisfies KafkaGraphNodeData,
     })),

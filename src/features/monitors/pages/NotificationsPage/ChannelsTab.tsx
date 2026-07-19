@@ -19,7 +19,7 @@ function formFromChannel(ch: Channel): ChannelForm {
   return {
     id: ch.id,
     name: ch.name,
-    webhookUrl: typeof ch.config.webhook_url === "string" ? ch.config.webhook_url : "",
+    webhookUrl: typeof ch.config.webhookUrl === "string" ? ch.config.webhookUrl : "",
   };
 }
 
@@ -41,7 +41,7 @@ export default function ChannelsTab() {
     const payload = {
       type: "slack" as const,
       name: form.name,
-      config: { webhook_url: form.webhookUrl },
+      config: { webhookUrl: form.webhookUrl },
     };
     try {
       if (form.id !== null) {
@@ -69,7 +69,7 @@ export default function ChannelsTab() {
     setStatus(null);
     try {
       const res = await testChannel(id);
-      setStatus(res.ok ? "Test delivery sent." : `Test failed: ${res.error_text}`);
+      setStatus(res.ok ? "Test delivery sent." : `Test failed: ${res.errorText}`);
       channelsQ.refetch();
     } catch (err) {
       setStatus(errorMessage(err, "Failed to test channel"));
@@ -153,9 +153,9 @@ export default function ChannelsTab() {
                     </div>
                   </td>
                   <td className="py-2 font-bold font-mono text-[10px] uppercase">{ch.type}</td>
-                  <td className="py-2 text-right font-mono">{ch.used_by_count}</td>
+                  <td className="py-2 text-right font-mono">{ch.usedByCount}</td>
                   <td className="py-2 font-mono text-[11px] text-foreground-muted">
-                    {ch.last_delivery_at ? new Date(ch.last_delivery_at).toLocaleString() : "—"}
+                    {ch.lastDeliveryAt ? new Date(ch.lastDeliveryAt).toLocaleString() : "—"}
                   </td>
                   <td className="py-2 pr-4 text-right">
                     <button

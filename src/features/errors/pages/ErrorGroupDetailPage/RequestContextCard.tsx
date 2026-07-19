@@ -20,19 +20,19 @@ function fmtDuration(ms: number): string {
 export function RequestContextCard({ occurrence }: Props): JSX.Element | null {
   if (!occurrence) return null;
 
-  const statusNum = Number.parseInt(occurrence.http_status_code, 10);
+  const statusNum = Number.parseInt(occurrence.httpStatusCode, 10);
   const rows: Row[] = [
-    { k: "http.method", v: occurrence.http_method },
-    { k: "http.route", v: occurrence.http_route },
+    { k: "http.method", v: occurrence.httpMethod },
+    { k: "http.route", v: occurrence.httpRoute },
     {
       k: "http.status",
-      v: occurrence.http_status_code,
+      v: occurrence.httpStatusCode,
       bad: Number.isFinite(statusNum) && statusNum >= 400,
     },
-    { k: "duration", v: fmtDuration(occurrence.duration_ms), bad: occurrence.duration_ms >= 1000 },
-    { k: "trace_id", v: occurrence.trace_id },
-    { k: "span_id", v: occurrence.span_id },
-    { k: "service.version", v: occurrence.service_version },
+    { k: "duration", v: fmtDuration(occurrence.durationMs), bad: occurrence.durationMs >= 1000 },
+    { k: "traceId", v: occurrence.traceId },
+    { k: "spanId", v: occurrence.spanId },
+    { k: "service.version", v: occurrence.serviceVersion },
     { k: "env", v: occurrence.environment },
     { k: "kube_pod", v: occurrence.pod },
     { k: "host", v: occurrence.host },

@@ -150,8 +150,15 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
 
             return (
               <tr
-                key={`${c.pod_name}\0${c.host}`}
-                onClick={() => onOpenContainer(c.pod_name)}
+                key={`${c.podName}\0${c.host}`}
+                onClick={() => onOpenContainer(c.podName)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onOpenContainer(c.podName);
+                  }
+                }}
+                tabIndex={0}
                 className="cursor-pointer transition-colors hover:bg-muted/40"
               >
                 <td style={{ paddingLeft: 18, paddingTop: "10px", paddingBottom: "10px" }}>
@@ -167,10 +174,10 @@ export default function InfraPodsTable({ pods, onOpenContainer, onOpenHost }: In
                     />
                     <div>
                       <div className="font-medium font-mono text-[13px] text-foreground">
-                        {c.pod_name}
+                        {c.podName}
                       </div>
                       <div className="font-mono text-[11.5px] text-foreground-muted">
-                        {c.ns} · pod {c.pod_name}
+                        {c.ns} · pod {c.podName}
                       </div>
                     </div>
                   </div>

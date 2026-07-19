@@ -25,7 +25,7 @@ interface SeriesChartCardProps {
   readonly def: ChartDef;
 }
 
-/** Chart card over a `{time_bucket, series, value}` series endpoint. */
+/** Chart card over a `{timeBucket, series, value}` series endpoint. */
 export function SeriesChartCard({ endpoint, queryKeyPrefix, def }: SeriesChartCardProps) {
   return (
     <Card padding="md" className="min-h-[280px] border-border">

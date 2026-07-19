@@ -51,8 +51,8 @@ export function highestTrafficService(data: ServiceTopologyResponse): string {
   let best = "";
   let bestCount = -1;
   for (const node of data.nodes) {
-    if (node.request_count > bestCount) {
-      bestCount = node.request_count;
+    if (node.requestCount > bestCount) {
+      bestCount = node.requestCount;
       best = node.name;
     }
   }

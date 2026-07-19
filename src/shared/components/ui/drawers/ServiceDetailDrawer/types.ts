@@ -33,12 +33,12 @@ export interface DependencyRow {
 
 export interface EndpointRow {
   id: string;
-  service_name: string;
-  operation_name: string;
-  endpoint_name?: string;
-  http_method: string;
-  request_count: number;
-  error_count: number;
-  avg_latency: number;
-  p95_latency: number;
+  serviceName: string;
+  operationName: string;
+  endpointName?: string;
+  httpMethod: string;
+  requestCount: number;
+  errorCount: number;
+  avgLatency: number;
+  p95Latency: number;
 }

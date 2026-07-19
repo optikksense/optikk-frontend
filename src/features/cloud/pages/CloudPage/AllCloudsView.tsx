@@ -13,11 +13,11 @@ interface AllCloudsViewProps {
 
 export function AllCloudsView({ overview, onOpenProvider }: AllCloudsViewProps): JSX.Element {
   const kpis = [
-    { title: "Resources", value: overview.total_resources.toLocaleString() },
-    { title: "Accounts", value: overview.total_accounts.toLocaleString() },
-    { title: "Regions", value: overview.total_regions.toLocaleString() },
-    { title: "Nodes", value: overview.total_nodes.toLocaleString() },
-    { title: "Pods", value: overview.total_pods.toLocaleString() },
+    { title: "Resources", value: overview.totalResources.toLocaleString() },
+    { title: "Accounts", value: overview.totalAccounts.toLocaleString() },
+    { title: "Regions", value: overview.totalRegions.toLocaleString() },
+    { title: "Nodes", value: overview.totalNodes.toLocaleString() },
+    { title: "Pods", value: overview.totalPods.toLocaleString() },
     {
       title: "Unhealthy",
       value: overview.unhealthy.toLocaleString(),

@@ -13,7 +13,7 @@ export function sortTraces(
   if (mode === "recent" || rows.length === 0) return rows;
   const copy = rows.slice();
   if (mode === "slowest") {
-    copy.sort((a, b) => b.duration_ns - a.duration_ns);
+    copy.sort((a, b) => b.durationNs - a.durationNs);
     return copy;
   }
   copy.sort(byErrorsThenRecent);
@@ -21,6 +21,6 @@ export function sortTraces(
 }
 
 function byErrorsThenRecent(a: TraceSummary, b: TraceSummary): number {
-  if (a.has_error !== b.has_error) return a.has_error ? -1 : 1;
-  return b.start_ms - a.start_ms;
+  if (a.hasError !== b.hasError) return a.hasError ? -1 : 1;
+  return b.startMs - a.startMs;
 }

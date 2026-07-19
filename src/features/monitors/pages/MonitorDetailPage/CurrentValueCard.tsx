@@ -7,9 +7,9 @@ interface Props {
 }
 
 function CurrentValueCard({ monitor }: Props) {
-  const value = monitor.current_value;
-  const alert = monitor.conditions.alert_threshold;
-  const warn = monitor.conditions.warn_threshold;
+  const value = monitor.currentValue;
+  const alert = monitor.conditions.alertThreshold;
+  const warn = monitor.conditions.warnThreshold;
   // Ratio is only meaningful with a non-zero threshold; avoid divide-by-zero.
   const ratio =
     value !== undefined && alert !== undefined && alert !== 0 ? value / alert : undefined;

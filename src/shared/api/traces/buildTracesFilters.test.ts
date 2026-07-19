@@ -17,8 +17,8 @@ describe("buildTracesFilters", () => {
     expect(warnings).toHaveLength(0);
   });
 
-  it("maps service_name to services for compatibility", () => {
-    const { body } = build([{ field: "service_name", op: "eq", value: "checkout" }]);
+  it("maps serviceName to services for compatibility", () => {
+    const { body } = build([{ field: "serviceName", op: "eq", value: "checkout" }]);
     expect(body.services).toEqual(["checkout"]);
   });
 
@@ -28,7 +28,7 @@ describe("buildTracesFilters", () => {
   });
 
   it("expands in-lists into the include array", () => {
-    const { body, warnings } = build([{ field: "http_status", op: "in", value: "500,502, 503" }]);
+    const { body, warnings } = build([{ field: "httpStatus", op: "in", value: "500,502, 503" }]);
     expect(body.httpStatuses).toEqual(["500", "502", "503"]);
     expect(warnings).toHaveLength(0);
   });
@@ -45,10 +45,10 @@ describe("buildTracesFilters", () => {
     expect(warnings[0].code).toBe("unknown_field");
   });
 
-  it("converts duration_ms comparisons to nanoseconds", () => {
+  it("converts durationMs comparisons to nanoseconds", () => {
     const { body } = build([
-      { field: "duration_ms", op: "gte", value: "500" },
-      { field: "duration_ms", op: "lt", value: "2000" },
+      { field: "durationMs", op: "gte", value: "500" },
+      { field: "durationMs", op: "lt", value: "2000" },
     ]);
     expect(body.minDurationNs).toBe(500_000_000);
     expect(body.maxDurationNs).toBe(2_000_000_000);
@@ -56,11 +56,11 @@ describe("buildTracesFilters", () => {
 
   it("passes attribute ops through, including comparisons and exists", () => {
     const { body, warnings } = build([
-      { field: "@http.status_code", op: "gte", value: "500" },
+      { field: "@http.statusCode", op: "gte", value: "500" },
       { field: "@user.id", op: "exists", value: "" },
     ]);
     expect(body.attributes).toEqual([
-      { key: "http.status_code", op: "gte", value: "500" },
+      { key: "http.statusCode", op: "gte", value: "500" },
       { key: "user.id", op: "exists", value: "" },
     ]);
     expect(warnings).toHaveLength(0);
@@ -80,17 +80,17 @@ describe("buildTracesFilters", () => {
     expect(body.search).toBe("timeout checkout");
   });
 
-  it("keeps only the first trace_id and warns on duplicates", () => {
+  it("keeps only the first traceId and warns on duplicates", () => {
     const { body, warnings } = build([
-      { field: "trace_id", op: "eq", value: "t1" },
-      { field: "trace_id", op: "eq", value: "t2" },
+      { field: "traceId", op: "eq", value: "t1" },
+      { field: "traceId", op: "eq", value: "t2" },
     ]);
     expect(body.traceId).toBe("t1");
     expect(warnings[0].code).toBe("duplicate_single_value");
   });
 
-  it("maps has_error", () => {
-    expect(build([{ field: "has_error", op: "eq", value: "true" }]).body.hasError).toBe(true);
-    expect(build([{ field: "has_error", op: "eq", value: "false" }]).body.hasError).toBe(false);
+  it("maps hasError", () => {
+    expect(build([{ field: "hasError", op: "eq", value: "true" }]).body.hasError).toBe(true);
+    expect(build([{ field: "hasError", op: "eq", value: "false" }]).body.hasError).toBe(false);
   });
 });

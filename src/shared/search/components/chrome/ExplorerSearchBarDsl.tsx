@@ -107,7 +107,7 @@ function DslBarLayout(p: LayoutProps) {
         <Input
           ref={p.inputRef}
           placeholder={
-            p.placeholder ?? 'service:checkout duration_ms:>=500 @http.status_code:500 "timeout"'
+            p.placeholder ?? 'service:checkout durationMs:>=500 @http.statusCode:500 "timeout"'
           }
           onChange={(e) => {
             s.onChange(e.target.value, e.target.selectionStart ?? e.target.value.length);

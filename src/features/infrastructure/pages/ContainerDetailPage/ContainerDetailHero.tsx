@@ -76,8 +76,8 @@ function PodMeta({ overview }: { overview: PodOverview }) {
       {overview.environments.length > 0 && (
         <MetaItem label="env" value={overview.environments.join(", ")} />
       )}
-      {overview.last_seen && (
-        <MetaItem label="last seen" value={formatRelativeTime(overview.last_seen)} />
+      {overview.lastSeen && (
+        <MetaItem label="last seen" value={formatRelativeTime(overview.lastSeen)} />
       )}
     </div>
   );

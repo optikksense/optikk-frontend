@@ -6,10 +6,10 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export interface OperationBaseline {
-  readonly p50_ms: number;
-  readonly p95_ms: number;
-  readonly p99_ms: number;
-  readonly span_count: number;
+  readonly p50Ms: number;
+  readonly p95Ms: number;
+  readonly p99Ms: number;
+  readonly spanCount: number;
 }
 
 async function fetchOperationBaseline(

@@ -8,18 +8,18 @@ const DEFAULT: CreateMonitorPayload = {
   priority: "P2",
   scope: { tags: [] },
   query: {
-    metric: { metric: "", aggregation: "avg", window_sec: 300 },
+    metric: { metric: "", aggregation: "avg", windowSec: 300 },
   },
   conditions: {
     comparator: "above",
-    alert_threshold: 0.05,
-    warn_threshold: 0.02,
-    recovery_threshold: 0.03,
-    no_data_after_sec: 1800,
-    no_data_as: "no_data",
+    alertThreshold: 0.05,
+    warnThreshold: 0.02,
+    recoveryThreshold: 0.03,
+    noDataAfterSec: 1800,
+    noDataAs: "no_data",
   },
-  notify: { channel_ids: [] },
-  eval_every_sec: 300,
+  notify: { channelIds: [] },
+  evalEverySec: 300,
   tags: [],
 };
 
@@ -60,7 +60,7 @@ function applyTypeDefaults(payload: CreateMonitorPayload, type: MonitorType): Cr
         type,
         query: payload.query.metric
           ? payload.query
-          : { metric: { metric: "", aggregation: "avg", window_sec: 300 } },
+          : { metric: { metric: "", aggregation: "avg", windowSec: 300 } },
       };
     case "apm":
       return {
@@ -68,7 +68,7 @@ function applyTypeDefaults(payload: CreateMonitorPayload, type: MonitorType): Cr
         type,
         query: payload.query.apm
           ? payload.query
-          : { apm: { service: "", track: "errors", window_sec: 300 } },
+          : { apm: { service: "", track: "errors", windowSec: 300 } },
       };
     case "log":
       return {
@@ -76,7 +76,7 @@ function applyTypeDefaults(payload: CreateMonitorPayload, type: MonitorType): Cr
         type,
         query: payload.query.log
           ? payload.query
-          : { log: { query: "", group_by: "service", window_sec: 300 } },
+          : { log: { query: "", groupBy: "service", windowSec: 300 } },
       };
   }
 }

@@ -1,13 +1,33 @@
 import { lazy } from "react";
 
 import type { DashboardPanelRegistration } from "./dashboardPanelRegistry";
-import { BarRenderer } from "./renderers/BarRenderer";
-import { GaugeRenderer } from "./renderers/GaugeRenderer";
-import { HeatmapRenderer } from "./renderers/HeatmapRenderer";
-import { PieRenderer } from "./renderers/PieRenderer";
-import { StatCardRenderer, StatSummaryRenderer } from "./renderers/StatCardRenderer";
-import { StatCardsGridRenderer } from "./renderers/StatCardsGridRenderer";
-import { TableRenderer } from "./renderers/TableRenderer";
+
+const BarRenderer = lazy(() =>
+  import("./renderers/BarRenderer").then((module) => ({ default: module.BarRenderer }))
+);
+const GaugeRenderer = lazy(() =>
+  import("./renderers/GaugeRenderer").then((module) => ({ default: module.GaugeRenderer }))
+);
+const HeatmapRenderer = lazy(() =>
+  import("./renderers/HeatmapRenderer").then((module) => ({ default: module.HeatmapRenderer }))
+);
+const PieRenderer = lazy(() =>
+  import("./renderers/PieRenderer").then((module) => ({ default: module.PieRenderer }))
+);
+const StatCardRenderer = lazy(() =>
+  import("./renderers/StatCardRenderer").then((module) => ({ default: module.StatCardRenderer }))
+);
+const StatSummaryRenderer = lazy(() =>
+  import("./renderers/StatCardRenderer").then((module) => ({ default: module.StatSummaryRenderer }))
+);
+const StatCardsGridRenderer = lazy(() =>
+  import("./renderers/StatCardsGridRenderer").then((module) => ({
+    default: module.StatCardsGridRenderer,
+  }))
+);
+const TableRenderer = lazy(() =>
+  import("./renderers/TableRenderer").then((module) => ({ default: module.TableRenderer }))
+);
 
 const RequestChart = lazy(() =>
   import("@shared/components/ui/charts/time-series/RequestChart").then((module) => ({

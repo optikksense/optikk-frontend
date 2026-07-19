@@ -10,10 +10,10 @@ interface Props {
 
 /** Human labels for the facet dimension keys returned by the backend. */
 const FACET_LABELS: Record<string, string> = {
-  service_version: "service.version",
+  serviceVersion: "service.version",
   environment: "env",
   pod: "kube_pod",
-  http_route: "http.route",
+  httpRoute: "http.route",
 };
 
 function FacetRow({ name, pct, count }: { name: string; pct: number; count: number }) {

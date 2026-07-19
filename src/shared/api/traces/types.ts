@@ -6,22 +6,22 @@
 import type { ExplorerFilter, ExplorerIncludeFlag } from "@shared/search/types";
 
 export interface TraceSummary {
-  readonly trace_id: string;
-  readonly tenant_id: number;
-  readonly start_ms: number;
-  readonly end_ms: number;
-  readonly duration_ns: number;
-  readonly root_service: string;
-  readonly root_operation: string;
-  readonly root_status: string;
-  readonly root_http_method?: string;
-  readonly root_http_status?: string;
-  readonly root_endpoint?: string;
-  readonly span_count: number;
-  readonly has_error: boolean;
-  readonly error_count: number;
+  readonly traceId: string;
+  readonly tenantId: number;
+  readonly startMs: number;
+  readonly endMs: number;
+  readonly durationNs: number;
+  readonly rootService: string;
+  readonly rootOperation: string;
+  readonly rootStatus: string;
+  readonly rootHttpMethod?: string;
+  readonly rootHttpStatus?: string;
+  readonly rootEndpoint?: string;
+  readonly spanCount: number;
+  readonly hasError: boolean;
+  readonly errorCount: number;
   readonly environment?: string;
-  readonly service_set?: readonly string[];
+  readonly serviceSet?: readonly string[];
   readonly truncated?: boolean;
 }
 

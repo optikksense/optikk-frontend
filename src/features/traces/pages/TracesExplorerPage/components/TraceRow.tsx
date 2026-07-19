@@ -13,34 +13,39 @@ export const TraceRow = memo(function TraceRow({
   maxDur: number;
   onRowClick: (t: TraceSummary) => void;
 }) {
-  const durMs = t.duration_ns / 1e6;
+  const durMs = t.durationNs / 1e6;
   const pct = Math.min((durMs / maxDur) * 100, 100);
-  const color = getServiceColor(t.root_service);
-  const isErr = t.has_error || t.root_status?.toUpperCase() === "ERROR";
+  const color = getServiceColor(t.rootService);
+  const isErr = t.hasError || t.rootStatus?.toUpperCase() === "ERROR";
 
   return (
     <tr
       onClick={() => onRowClick(t)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onRowClick(t);
+        }
+      }}
+      tabIndex={0}
       className="cursor-pointer hover:bg-card-hover"
       style={{ borderBottom: "1px solid var(--line-2)" }}
     >
       <td className="py-2 pl-[18px]">
         <div className="max-w-full truncate whitespace-nowrap font-mono text-[12.5px] text-foreground-secondary">
-          {formatTimestamp(t.start_ms)}
+          {formatTimestamp(t.startMs)}
         </div>
-        <div className="font-mono text-[12px] text-foreground-muted">
-          {t.trace_id.slice(0, 10)}…
-        </div>
+        <div className="font-mono text-[12px] text-foreground-muted">{t.traceId.slice(0, 10)}…</div>
       </td>
       <td className="py-2">
         <div className="flex items-center gap-2">
           <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
           <div className="min-w-0">
             <div className="truncate font-medium font-mono text-[13px] text-foreground">
-              {t.root_operation || "—"}
+              {t.rootOperation || "—"}
             </div>
             <div className="truncate font-mono text-[12px] text-foreground-muted">
-              {t.root_service}
+              {t.rootService}
               {t.environment ? ` · ${t.environment}` : ""}
             </div>
           </div>
@@ -81,14 +86,14 @@ export const TraceRow = memo(function TraceRow({
             className="mr-1.5 size-1.5 rounded-full"
             style={{ backgroundColor: "currentColor" }}
           />
-          {t.root_http_status || (isErr ? "ERR" : "OK")}
+          {t.rootHttpStatus || (isErr ? "ERR" : "OK")}
         </span>
       </td>
       <td className="py-2 text-right">
-        <span className="font-mono text-[13px]">{t.span_count}</span>
-        {t.error_count > 0 && (
+        <span className="font-mono text-[13px]">{t.spanCount}</span>
+        {t.errorCount > 0 && (
           <span className="ml-1 inline-block rounded-sm bg-error/10 px-1 py-px font-medium text-[11px] text-error">
-            {t.error_count}
+            {t.errorCount}
           </span>
         )}
       </td>
