@@ -26,21 +26,8 @@ interface UPlotChartProps {
   } | null;
 }
 
-function seriesLikeLength(value: unknown): number {
-  if (value == null) return 0;
-  if (Array.isArray(value)) return value.length;
-  if (typeof (value as ArrayLike<number>).length === "number") {
-    return (value as ArrayLike<number>).length;
-  }
-  return 0;
-}
-
 function isAlignedDataShapeCompatible(next: uPlot.AlignedData, prev: uPlot.AlignedData): boolean {
-  if (next.length !== prev.length) return false;
-  for (let i = 0; i < next.length; i += 1) {
-    if (seriesLikeLength(next[i]) !== seriesLikeLength(prev[i])) return false;
-  }
-  return true;
+  return next?.length === prev?.length;
 }
 
 function UPlotChart({

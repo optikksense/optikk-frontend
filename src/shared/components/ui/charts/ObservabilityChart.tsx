@@ -88,6 +88,17 @@ function ObservabilityChart({
     [timestamps, series]
   );
 
+  const seriesKey = useMemo(
+    () =>
+      series
+        .map(
+          (s) =>
+            `${s.label}:${s.color}:${s.fill ? 1 : 0}:${s.dash?.join(",") ?? ""}:${s.width ?? ""}:${s.scale ?? ""}`
+        )
+        .join("|"),
+    [series]
+  );
+
   const options = useMemo<Omit<uPlot.Options, "width" | "height">>(() => {
     const axes = defaultAxes({ yAxisSize });
     axes[1] = {
@@ -101,8 +112,10 @@ function ObservabilityChart({
         ...(xRange ? { range: xRange } : {}),
       },
       y: {
-        ...(yMin != null ? { min: yMin } : {}),
-        ...(yMax != null ? { max: yMax } : {}),
+        range: (_u, min, max) => [
+          yMin ?? (min != null && min < 0 ? min : 0),
+          yMax ?? (max != null && max > 0 ? Math.ceil(max * 1.25) : 1),
+        ],
       },
     };
 
@@ -150,7 +163,7 @@ function ObservabilityChart({
       ],
       ...(allPlugins.length > 0 ? { plugins: allPlugins } : {}),
     };
-  }, [legend, series, yAxisSize, yFormatter, xRange, yMin, yMax, type, allPlugins]);
+  }, [legend, seriesKey, yAxisSize, yFormatter, xRange, yMin, yMax, type, allPlugins]);
 
   const tooltipContent = useMemo(() => {
     const defaultXFormatter = (timestampSeconds: number) =>

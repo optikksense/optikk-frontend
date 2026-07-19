@@ -1,9 +1,9 @@
 import { memo, useMemo } from "react";
 
-import { firstValue, tsMs } from "@shared/utils/chartDataUtils";
+import { extractTimeseries } from "@shared/utils/chartDataUtils";
 import { getChartColor } from "@shared/utils/charting";
 
-import ObservabilityChart, { type ObservabilityChartSeries } from "../ObservabilityChart";
+import ObservabilityChart from "../ObservabilityChart";
 
 interface ChartRow {
   [key: string]: unknown;
@@ -57,64 +57,18 @@ export default memo(function RequestChart({
   yFormatter,
   legend = false,
 }: RequestChartProps) {
-  const hasServiceData = Object.keys(serviceTimeseriesMap).length > 0;
-
-  const { timestamps, chartData } = useMemo(() => {
-    let activeTimestamps: number[] = [];
-    let seriesList: ObservabilityChartSeries[] = [];
-
-    if (hasServiceData) {
-      const activeEntries = Object.entries(serviceTimeseriesMap)
-        .filter(([key]) => selectedEndpoints.length === 0 || selectedEndpoints.includes(key))
-        .slice(0, 10);
-
-      const firstSvc = activeEntries[0]?.[1] ?? [];
-      activeTimestamps = firstSvc
-        .map((row) => tsMs(firstValue(row, ["timestamp", "timeBucket"], "")) / 1000)
-        .filter((t) => !Number.isNaN(t));
-
-      seriesList = activeEntries.map(([svcName, rows], idx) => {
-        const values = rows.map((row) => {
-          return Number(firstValue(row, [valueKey, "requestCount", "value"], 0));
-        });
-        return { label: svcName, values, color: getChartColor(idx), fill: false };
-      });
-    } else {
-      activeTimestamps = data
-        .map((d) => tsMs(firstValue(d, ["timestamp", "timeBucket"], "")) / 1000)
-        .filter((t) => !Number.isNaN(t));
-      seriesList = [
-        {
-          label: datasetLabel,
-          values: data.map((d) => Number(firstValue(d, [valueKey, "requestCount", "value"], 0))),
-          color,
-          fill: true,
-        },
-      ];
-    }
-
-    return { timestamps: activeTimestamps, chartData: seriesList };
-  }, [
-    data,
-    serviceTimeseriesMap,
-    hasServiceData,
-    selectedEndpoints,
-    valueKey,
-    datasetLabel,
-    color,
-  ]);
-
-  const yAxisMax = useMemo(() => {
-    let maxVal = 0;
-    chartData.forEach((s) => {
-      const dsMax = Math.max(...s.values.map((v) => Number(v) || 0), 0);
-      if (dsMax > maxVal) maxVal = dsMax;
-    });
-    if (maxVal <= 0) return 1;
-    if (maxVal < 1) return Math.max(Number((maxVal * 1.4).toFixed(3)), 0.05);
-    if (maxVal < 10) return Math.max(Number((maxVal * 1.25).toFixed(2)), 1);
-    return Math.max(Math.ceil(maxVal * 1.5), 1);
-  }, [chartData]);
+  const { timestamps, chartData } = useMemo(
+    () =>
+      extractTimeseries(
+        data,
+        serviceTimeseriesMap,
+        selectedEndpoints,
+        [valueKey, "requestCount", "value"],
+        datasetLabel,
+        color
+      ),
+    [data, serviceTimeseriesMap, selectedEndpoints, valueKey, datasetLabel, color]
+  );
 
   if (timestamps.length === 0) {
     return (
@@ -130,7 +84,6 @@ export default memo(function RequestChart({
         timestamps={timestamps}
         series={chartData}
         yMin={0}
-        yMax={yAxisMax}
         yFormatter={yFormatter || formatAxisValue}
         height={height}
         fillHeight={fillHeight}

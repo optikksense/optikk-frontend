@@ -27,11 +27,17 @@ export function pivotByRoute(
   fill: boolean
 ): PivotedSeries {
   const tsSet = new Set<number>();
+  const routeSet = new Set<string>();
   const routes: string[] = [];
+
   for (const row of rows) {
     tsSet.add(tsMs(row.timestamp) / 1000);
-    if (!routes.includes(row.httpRoute)) routes.push(row.httpRoute);
+    if (!routeSet.has(row.httpRoute)) {
+      routeSet.add(row.httpRoute);
+      routes.push(row.httpRoute);
+    }
   }
+
   const timestamps = [...tsSet].sort((a, b) => a - b);
   const tsIndex = new Map(timestamps.map((t, i) => [t, i]));
 
@@ -39,10 +45,12 @@ export function pivotByRoute(
   for (const route of routes) {
     byRoute.set(route, new Array(timestamps.length).fill(null));
   }
+
   for (const row of rows) {
     const idx = tsIndex.get(tsMs(row.timestamp) / 1000);
     if (idx === undefined) continue;
-    byRoute.get(row.httpRoute)?.splice(idx, 1, pick(row));
+    const target = byRoute.get(row.httpRoute);
+    if (target) target[idx] = pick(row);
   }
 
   const series: ObservabilityChartSeries[] = routes.map((route, i) => ({
@@ -51,6 +59,7 @@ export function pivotByRoute(
     color: ROUTE_COLORS[i % ROUTE_COLORS.length] ?? "var(--chart-1)",
     fill,
   }));
+
   return { timestamps, series };
 }
 
