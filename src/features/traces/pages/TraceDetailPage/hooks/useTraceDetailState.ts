@@ -1,7 +1,6 @@
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import { Route } from "@/routes/_app/traces/$traceId";
 import { useAppStore } from "@app/store/appStore";
 
 import { useTraceDetailData } from "../../../hooks/useTraceDetailData";
@@ -14,7 +13,6 @@ import { computeTraceTimeBounds } from "../utils";
 export function useTraceDetailState() {
   const { traceId } = useParams({ strict: false });
   const traceIdParam = traceId ?? "";
-  const { startTime, endTime } = Route.useSearch();
   const selectedTenantId = useAppStore((state) => state.selectedTenantId);
 
   const rawActiveTab = useTracesStore((s) => s.visualizationTab);
@@ -28,7 +26,7 @@ export function useTraceDetailState() {
       : "timeline";
   const setActiveTab = useTracesStore((s) => s.setVisualizationTab);
 
-  const data = useTraceDetailData(selectedTenantId, traceIdParam, startTime, endTime);
+  const data = useTraceDetailData(selectedTenantId, traceIdParam);
 
   const resolvedTraceId = useMemo(
     () => (data.spans.length > 0 ? data.spans[0].trace_id || traceIdParam : traceIdParam),
@@ -37,16 +35,9 @@ export function useTraceDetailState() {
 
   const traceTimeBounds = useMemo(() => computeTraceTimeBounds(data.spans), [data.spans]);
 
-  const serviceMap = useTraceServiceMap(
-    traceIdParam,
-    traceTimeBounds.startMs ?? 0,
-    traceTimeBounds.endMs ?? 0,
-    activeTab === "servicemap",
-    startTime,
-    endTime
-  );
+  const serviceMap = useTraceServiceMap(traceIdParam, traceTimeBounds, activeTab === "servicemap");
 
-  const traceErrors = useTraceErrors(traceIdParam, startTime, endTime, activeTab === "errors");
+  const traceErrors = useTraceErrors(traceIdParam, activeTab === "errors");
 
   const enhancedTab = data.selectedSpanId ? "related" : "attributes";
 
@@ -54,8 +45,7 @@ export function useTraceDetailState() {
     traceIdParam,
     data.selectedSpanId,
     data.selectedSpan ?? data.spans[0] ?? null,
-    startTime,
-    endTime,
+    traceTimeBounds,
     enhancedTab
   );
 

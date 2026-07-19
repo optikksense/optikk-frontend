@@ -77,9 +77,7 @@ export function OverviewRecentTraces({ serviceName }: { serviceName: string }) {
   }, [traces, filter, p95Threshold, p99Threshold]);
 
   const handleRowClick = (trace: TraceRecord) => {
-    const startTime = new Date(trace.start_time).getTime();
-    const endTime = startTime + Math.max(1, Math.ceil(trace.duration_ms));
-    navigate({ to: buildTraceDetailHref(trace.trace_id, startTime, endTime) as never });
+    navigate({ to: buildTraceDetailHref(trace.trace_id) as never });
   };
 
   if (loading) {

@@ -1,7 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { memo } from "react";
 
-import { Route } from "@/routes/_app/traces/$traceId";
 import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import { formatDuration } from "@shared/utils/formatters";
 
@@ -17,7 +16,6 @@ const row =
 
 /** Span links + related traces (folded into the Info tab). */
 function SpanRelatedSectionComponent({ links, relatedTraces }: Props) {
-  const { startTime, endTime } = Route.useSearch();
   if (links.length === 0 && relatedTraces.length === 0) return null;
 
   return (
@@ -30,7 +28,7 @@ function SpanRelatedSectionComponent({ links, relatedTraces }: Props) {
           {links.map((link, i) => (
             <a
               key={`${link.traceId}-${link.spanId}-${i}`}
-              href={buildTraceDetailHref(link.traceId, startTime, endTime, link.spanId)}
+              href={buildTraceDetailHref(link.traceId, link.spanId)}
               className={row}
             >
               <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-[var(--accent)]" />
@@ -50,12 +48,10 @@ function SpanRelatedSectionComponent({ links, relatedTraces }: Props) {
             Related traces ({relatedTraces.length})
           </div>
           {relatedTraces.map((rt) => {
-            const relatedStart = new Date(rt.startTime).getTime();
-            const relatedEnd = relatedStart + Math.max(1, Math.ceil(rt.durationMs));
             return (
               <a
                 key={`${rt.traceId}-${rt.spanId}`}
-                href={buildTraceDetailHref(rt.traceId, relatedStart, relatedEnd)}
+                href={buildTraceDetailHref(rt.traceId)}
                 className={row}
               >
                 <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-[var(--accent)]" />

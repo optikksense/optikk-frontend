@@ -216,58 +216,32 @@ const traceSpansEnvelopeSchema = z.object({
 
 async function getTraceSpans(
   _tenantId: number | null,
-  traceId: string,
-  startTime: number,
-  endTime: number
+  traceId: string
 ): Promise<SpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/spans`, {
-    params: { startTime, endTime },
-  });
+  const data = await api.get(`${BASE}/traces/${traceId}/spans`);
   return validateResponse(traceSpansEnvelopeSchema, data).spans;
 }
 
-async function getSpanEvents(
-  traceId: string,
-  startTime: number,
-  endTime: number
-): Promise<SpanEventRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/span-events`, {
-    params: { startTime, endTime },
-  });
+async function getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/span-events`);
   return validateResponse(z.array(spanEventSchema), data);
 }
 
-async function getCriticalPath(
-  traceId: string,
-  startTime: number,
-  endTime: number
-): Promise<CriticalPathSpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/critical-path`, {
-    params: { startTime, endTime },
-  });
+async function getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
   return validateResponse(z.array(criticalPathSpanSchema), data);
 }
 
-async function getErrorPath(
-  traceId: string,
-  startTime: number,
-  endTime: number
-): Promise<ErrorPathSpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/error-path`, {
-    params: { startTime, endTime },
-  });
+async function getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/error-path`);
   return validateResponse(z.array(errorPathSpanSchema), data);
 }
 
 async function getSpanAttributes(
   traceId: string,
-  spanId: string,
-  startTime: number,
-  endTime: number
+  spanId: string
 ): Promise<SpanAttributesRecord> {
-  const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`, {
-    params: { startTime, endTime },
-  });
+  const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`);
   return validateResponse(spanAttributesSchema, data);
 }
 
@@ -290,14 +264,8 @@ async function getRelatedTraces(
 }
 
 // Serves topology.BuildGraph output, identical to GET /services/topology.
-async function getServiceMap(
-  traceId: string,
-  startTime: number,
-  endTime: number
-): Promise<ServiceTopologyResponse> {
-  const data = await api.get(`${BASE}/traces/${traceId}/service-map`, {
-    params: { startTime, endTime },
-  });
+async function getServiceMap(traceId: string): Promise<ServiceTopologyResponse> {
+  const data = await api.get(`${BASE}/traces/${traceId}/service-map`);
   return validateResponse(topologyResponseSchema, data ?? { nodes: [], edges: [] });
 }
 
@@ -337,14 +305,8 @@ async function getServiceLatencyBaselines(
   return out;
 }
 
-async function getTraceErrors(
-  traceId: string,
-  startTime: number,
-  endTime: number
-): Promise<TraceErrorGroup[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/errors`, {
-    params: { startTime, endTime },
-  });
+async function getTraceErrors(traceId: string): Promise<TraceErrorGroup[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/errors`);
   return validateResponse(z.array(traceErrorGroupSchema), data);
 }
 

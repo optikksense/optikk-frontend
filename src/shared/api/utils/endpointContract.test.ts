@@ -84,11 +84,12 @@ describe("traces endpoints normalize the Go wire shape", () => {
 
   it("getTraceSpans() unwraps the spans envelope", async () => {
     serve(f.traceSpansEnvelope);
-    const spans = await tracesService.getTraceSpans(null, "t1", 1, 2);
+    const spans = await tracesService.getTraceSpans(null, "t1");
 
     expect(Array.isArray(spans)).toBe(true);
     expect(spans.length).toBeGreaterThan(0);
-    expect(lastRequest?.params).toEqual({ startTime: 1, endTime: 2 });
+    // A trace is addressed by id alone — no time window may be sent.
+    expect(lastRequest?.params).toBeUndefined();
   });
 
   it("getServiceLatencyBaselines() keys p95/p99 by service", async () => {

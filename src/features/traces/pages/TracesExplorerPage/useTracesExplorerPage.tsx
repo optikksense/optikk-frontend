@@ -68,14 +68,7 @@ export function useTracesExplorerPage() {
 
   const onOpenTrace = useCallback(
     (trace: TraceSummary) => {
-      const endTime = Math.max(
-        trace.end_ms,
-        trace.start_ms + Math.ceil(trace.duration_ns / 1_000_000)
-      );
-      navigate({
-        to: `/traces/${encodeURIComponent(trace.trace_id)}`,
-        search: { startTime: trace.start_ms, endTime },
-      });
+      navigate({ to: `/traces/${encodeURIComponent(trace.trace_id)}` });
     },
     [navigate]
   );

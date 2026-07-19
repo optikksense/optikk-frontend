@@ -3,7 +3,6 @@ import { ExternalLink, GitFork } from "lucide-react";
 import { memo, useMemo } from "react";
 
 import { DrawerAttrTable, DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
-import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import type { LogRecord } from "../../types/log";
 import { buildAttrGroups } from "../../utils/logTransformers";
@@ -16,7 +15,6 @@ interface Props {
 
 function LogDetailEventTabComponent({ log, traceId }: Props) {
   const navigate = useNavigate();
-  const { getTimeRange } = useTimeRange();
 
   const sev = severityStyle(log.severity_bucket);
   const attrGroups = useMemo(
@@ -37,10 +35,7 @@ function LogDetailEventTabComponent({ log, traceId }: Props) {
           <button
             type="button"
             onClick={() => {
-              const { startTime, endTime } = getTimeRange();
-              navigate({
-                to: buildTraceDetailHref(traceId, Number(startTime), Number(endTime)) as never,
-              });
+              navigate({ to: buildTraceDetailHref(traceId) as never });
             }}
             className="flex w-full items-center gap-3 rounded-lg border border-[var(--accent-ln)] bg-[var(--accent-bg)] p-[11px_13px] text-left"
           >

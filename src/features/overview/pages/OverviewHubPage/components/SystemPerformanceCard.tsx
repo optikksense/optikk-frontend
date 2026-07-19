@@ -71,6 +71,7 @@ export default function SystemPerformanceCard() {
             height={CHART_HEIGHT}
             yMin={0}
             yFormatter={(v) => fmtNum(v)}
+            isLoading={query.isPending}
           />
         )}
       </div>

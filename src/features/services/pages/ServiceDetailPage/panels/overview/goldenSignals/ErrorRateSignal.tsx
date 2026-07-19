@@ -40,6 +40,7 @@ export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
         height={SIGNAL_CHART_HEIGHT}
         yFormatter={(v) => fmtPct(v, v < 0.1 ? 2 : 1)}
         legend
+        isLoading={query.isLoading}
       />
     </PanelCard>
   );

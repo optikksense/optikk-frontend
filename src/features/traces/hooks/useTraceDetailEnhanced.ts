@@ -19,29 +19,33 @@ export function useTraceDetailEnhanced(
   traceId: string,
   selectedSpanId: string | null,
   relatedContext: { service_name?: string; operation_name?: string } | null,
-  startMs: number,
-  endMs: number,
+  bounds: { startMs?: number; endMs?: number },
   activeDetailTab = "attributes"
 ) {
   const enabled = !!traceId;
 
   const { data: criticalPathData } = useStandardQuery({
-    queryKey: ["trace-critical-path", traceId, startMs, endMs],
-    queryFn: () => tracesService.getCriticalPath(traceId, startMs, endMs),
+    queryKey: ["trace-critical-path", traceId],
+    queryFn: () => tracesService.getCriticalPath(traceId),
     enabled,
   });
 
   const { data: errorPathData } = useStandardQuery({
-    queryKey: ["trace-error-path", traceId, startMs, endMs],
-    queryFn: () => tracesService.getErrorPath(traceId, startMs, endMs),
+    queryKey: ["trace-error-path", traceId],
+    queryFn: () => tracesService.getErrorPath(traceId),
     enabled,
   });
 
   const { data: spanEventsData } = useStandardQuery({
-    queryKey: ["trace-span-events", traceId, startMs, endMs],
-    queryFn: () => tracesService.getSpanEvents(traceId, startMs, endMs),
+    queryKey: ["trace-span-events", traceId],
+    queryFn: () => tracesService.getSpanEvents(traceId),
     enabled: enabled && !!selectedSpanId,
   });
+
+  // Related traces stay range-scoped: "other recent traces like this one" is a
+  // range query, not a lookup by trace identity.
+  const startMs = bounds.startMs ?? 0;
+  const endMs = bounds.endMs ?? 0;
 
   const { data: relatedTracesData } = useStandardQuery({
     queryKey: [
@@ -70,8 +74,8 @@ export function useTraceDetailEnhanced(
   });
 
   const { data: spanAttributesData, isPending: spanAttributesPending } = useStandardQuery({
-    queryKey: ["span-attributes", traceId, selectedSpanId, startMs, endMs],
-    queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!, startMs, endMs),
+    queryKey: ["span-attributes", traceId, selectedSpanId],
+    queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!),
     enabled: !!selectedSpanId,
   });
 

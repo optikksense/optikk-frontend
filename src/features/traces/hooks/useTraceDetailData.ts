@@ -6,12 +6,7 @@ import { getTraceLogs } from "@shared/logs/api/traceLogsApi";
 import { useEffect, useMemo, useState } from "react";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
-export function useTraceDetailData(
-  selectedTenantId: number | null,
-  traceIdParam: string,
-  startTime: number,
-  endTime: number
-) {
+export function useTraceDetailData(selectedTenantId: number | null, traceIdParam: string) {
   const [searchParams] = useSearchParams();
   const [selectedSpanId, setSelectedSpanId] = useState<string | null>(
     () => searchParams.get("span") || null
@@ -29,8 +24,8 @@ export function useTraceDetailData(
     isError: spansIsError,
     error: spansError,
   } = useStandardQuery({
-    queryKey: ["trace-spans", selectedTenantId, traceIdParam, startTime, endTime],
-    queryFn: () => tracesService.getTraceSpans(selectedTenantId, traceIdParam, startTime, endTime),
+    queryKey: ["trace-spans", selectedTenantId, traceIdParam],
+    queryFn: () => tracesService.getTraceSpans(selectedTenantId, traceIdParam),
     enabled: !!selectedTenantId && !!traceIdParam,
   });
 
@@ -45,8 +40,8 @@ export function useTraceDetailData(
     isError: logsIsError,
     error: logsError,
   } = useStandardQuery({
-    queryKey: ["trace-logs", selectedTenantId, traceIdParam, startTime, endTime],
-    queryFn: () => getTraceLogs(traceIdParam, startTime, endTime),
+    queryKey: ["trace-logs", selectedTenantId, traceIdParam],
+    queryFn: () => getTraceLogs(traceIdParam),
     enabled: !!selectedTenantId && !!traceIdParam,
   });
 

@@ -12,15 +12,8 @@ const traceLogArraySchema = z
   .nullish()
   .transform((v) => v ?? []);
 
-export async function getTraceLogs(
-  traceId: string,
-  startTime: number,
-  endTime: number,
-  limit?: number
-): Promise<TraceLogsResponse> {
-  const data = await api.get(`${BASE}/logs/trace/${traceId}`, {
-    params: { startTime, endTime, limit },
-  });
+export async function getTraceLogs(traceId: string, limit?: number): Promise<TraceLogsResponse> {
+  const data = await api.get(`${BASE}/logs/trace/${traceId}`, { params: { limit } });
   const logs = validateResponse(traceLogArraySchema, data ?? []);
   return { logs, is_speculative: false };
 }

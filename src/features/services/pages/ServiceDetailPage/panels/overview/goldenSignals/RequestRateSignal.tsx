@@ -36,6 +36,7 @@ export function RequestRateSignal({ serviceName }: { serviceName: string }) {
         height={SIGNAL_CHART_HEIGHT}
         yFormatter={(v) => fmtNum(v)}
         legend
+        isLoading={query.isLoading}
       />
     </PanelCard>
   );

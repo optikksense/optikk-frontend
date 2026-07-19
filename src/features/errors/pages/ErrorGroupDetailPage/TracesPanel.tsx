@@ -56,9 +56,7 @@ export function TracesPanel({
               key={`${t.trace_id}-${t.span_id}`}
               type="button"
               onClick={() => {
-                const startTime = new Date(t.timestamp).getTime();
-                const endTime = startTime + Math.max(1, Math.ceil(t.duration_ms));
-                navigate({ to: buildTraceDetailHref(t.trace_id, startTime, endTime) as never });
+                navigate({ to: buildTraceDetailHref(t.trace_id) as never });
               }}
               className="flex items-center justify-between gap-3 border-border/60 border-b py-2.5 text-left last:border-b-0 hover:bg-muted/20"
             >

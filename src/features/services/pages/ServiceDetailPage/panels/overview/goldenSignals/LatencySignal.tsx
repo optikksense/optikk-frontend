@@ -41,6 +41,7 @@ export function LatencySignal({ serviceName }: { serviceName: string }) {
         height={SIGNAL_CHART_HEIGHT}
         yFormatter={(v) => fmtMs(v)}
         legend
+        isLoading={query.isLoading}
       />
     </PanelCard>
   );

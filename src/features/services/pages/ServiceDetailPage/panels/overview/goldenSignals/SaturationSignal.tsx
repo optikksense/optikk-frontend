@@ -38,6 +38,7 @@ export function SaturationSignal({ serviceName }: { serviceName: string }) {
         series={series}
         height={SIGNAL_CHART_HEIGHT}
         yFormatter={fmtSat}
+        isLoading={query.isLoading}
       />
     </PanelCard>
   );

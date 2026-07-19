@@ -45,6 +45,7 @@ interface ObservabilityChartProps {
   /** Horizontal reference lines (e.g. monitor warn/alert thresholds). */
   thresholds?: ThresholdLine[];
   onTimeBrush?: (startMs: number, endMs: number) => void;
+  isLoading?: boolean;
 }
 
 function ObservabilityChart({
@@ -65,6 +66,7 @@ function ObservabilityChart({
   plugins,
   thresholds,
   onTimeBrush,
+  isLoading = false,
 }: ObservabilityChartProps) {
   const hasCustomXRange = xMin != null || xMax != null;
   const xRange = useMemo<[number, number] | undefined>(() => {
@@ -91,9 +93,8 @@ function ObservabilityChart({
       values: (_u: uPlot, vals: number[]) => formatUniqueAxisValues(vals, yFormatter),
     };
 
-
     return {
-      padding: [10, 12, 4, 0],
+      padding: [10, 16, 6, 12],
       legend: { show: legend },
       axes,
       scales: {
@@ -177,7 +178,7 @@ function ObservabilityChart({
   }, [timestamps, series, yFormatter, xFormatter]);
 
   return (
-    <div className={cn("h-full min-h-0", className)}>
+    <div className={cn("relative h-full min-h-0", className)}>
       <UPlotChart
         options={options}
         data={alignedData}
@@ -186,6 +187,11 @@ function ObservabilityChart({
         tooltipContent={tooltipContent}
         onTimeBrush={onTimeBrush}
       />
+      {isLoading ? (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-[2px]">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      ) : null}
     </div>
   );
 }
