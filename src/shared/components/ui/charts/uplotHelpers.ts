@@ -83,6 +83,23 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
   ];
 }
 
+/** Formats axis tick numbers and suppresses duplicate consecutive/identical formatted labels. */
+export function formatUniqueAxisValues(
+  vals: number[],
+  formatter?: (val: number) => string
+): string[] {
+  const seen = new Set<string>();
+  return vals.map((v) => {
+    const formatted = formatter ? formatter(v) : String(v);
+    if (!formatted || seen.has(formatted)) {
+      return "";
+    }
+    seen.add(formatted);
+    return formatted;
+  });
+}
+
+
 export function uLine(
   label: string,
   color: string,

@@ -10,10 +10,12 @@ import UPlotChart from "./UPlotChart";
 import {
   type ThresholdLine,
   defaultAxes,
+  formatUniqueAxisValues,
   thresholdLinesPlugin,
   uBars,
   uLine,
 } from "./uplotHelpers";
+
 
 export interface ObservabilityChartSeries {
   label: string;
@@ -86,10 +88,9 @@ function ObservabilityChart({
     const axes = defaultAxes({ yAxisSize });
     axes[1] = {
       ...axes[1],
-      values: yFormatter
-        ? (_u: uPlot, vals: number[]) => vals.map((value) => yFormatter(value))
-        : axes[1].values,
+      values: (_u: uPlot, vals: number[]) => formatUniqueAxisValues(vals, yFormatter),
     };
+
 
     return {
       padding: [10, 12, 4, 0],

@@ -11,8 +11,12 @@ export function fmtNum(n: number | null | undefined): string {
 
 export function fmtMs(ms: number | null | undefined): string {
   if (ms == null || !Number.isFinite(ms)) return "—";
-  if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
-  return `${Math.round(ms)}ms`;
+  if (ms === 0) return "0ms";
+  const abs = Math.abs(ms);
+  if (abs >= 1000) return `${+(ms / 1000).toFixed(2)}s`;
+  if (abs >= 10) return `${+ms.toFixed(1)}ms`;
+  if (abs >= 1) return `${+ms.toFixed(2)}ms`;
+  return `${+ms.toFixed(3)}ms`;
 }
 
 export function fmtPct(value: number | null | undefined, digits = 2): string {
