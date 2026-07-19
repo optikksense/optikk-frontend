@@ -5,7 +5,6 @@ export type HeroStatus = "healthy" | "warn" | "error" | "unknown";
 
 export interface HeroData {
   readonly summary: ServiceSummary | null;
-  readonly previous: ServiceSummary | null;
   readonly status: HeroStatus;
   readonly loading: boolean;
 }
@@ -21,7 +20,6 @@ export function useServiceHeroData(serviceName: string, windowMs: number): HeroD
   const summaryQ = useServiceSummary(serviceName, windowMs);
   return {
     summary: summaryQ.summary,
-    previous: summaryQ.previous,
     status: classifyStatus(summaryQ.summary),
     loading: summaryQ.isPending,
   };

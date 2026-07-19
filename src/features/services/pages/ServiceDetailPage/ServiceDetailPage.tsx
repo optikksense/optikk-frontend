@@ -49,7 +49,7 @@ function ServiceDetailBody({ serviceName }: { serviceName: string }) {
   return (
     <div className="flex flex-col gap-4">
       <ServiceHeroHeader serviceName={serviceName} hero={hero} instanceCount={instanceCount} />
-      <ServiceKpiStrip serviceName={serviceName} summary={hero.summary} previous={hero.previous} />
+      <ServiceKpiStrip serviceName={serviceName} summary={hero.summary} />
       <ServiceDetailTabs active={tab} counts={counts} onChange={setTab} />
       <ServiceTabContent tab={tab} serviceName={serviceName} />
     </div>

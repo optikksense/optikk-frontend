@@ -42,10 +42,9 @@ function extractServiceRow(row: ServiceSummaryResponse | undefined): ServiceSumm
 export function useServiceSummary(serviceName: string, _windowMs?: number) {
   const query = useTimeRangeQuery<ComparisonPayload<ServiceSummaryResponse>>(
     `service-detail.summary:${serviceName}`,
-    (_tenant, start, end) => getServiceSummary(start, end, serviceName, "previous_period"),
+    (_tenant, start, end) => getServiceSummary(start, end, serviceName),
     { enabled: Boolean(serviceName) }
   );
   const summary = useMemo(() => extractServiceRow(query.data?.data), [query.data]);
-  const previous = useMemo(() => extractServiceRow(query.data?.comparison), [query.data]);
-  return { ...query, summary, previous };
+  return { ...query, summary };
 }
