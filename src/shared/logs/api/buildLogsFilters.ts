@@ -9,7 +9,7 @@ import type { ExplorerFilter, TranslationWarning } from "@shared/search/types/fi
  *   Resource dims (service/host/pod/…)  → typed include/exclude arrays
  *   `severity_text` (eq/neq)            → `severities` / `excludeSeverities`
  *   `trace_id` / `span_id` (eq)         → single-value fields (later wins logged)
- *   `body` / `search` (contains|eq)     → joined into `search` with mode
+ *   `body` / `search` (contains|eq)     → joined into `search` (substring)
  *   `@<key>`                            → `attributes[]` with eq/neq/contains/regex/gt/gte/lt/lte/exists/not_exists
  *   anything else                       → `warnings[]` so the UI can surface a soft
  *                                          notice under the search bar
@@ -36,7 +36,6 @@ interface LogsFiltersBody {
   traceId?: string;
   spanId?: string;
   search?: string;
-  searchMode?: "ngram" | "exact";
 
   attributes?: ReadonlyArray<{
     readonly key: string;
@@ -67,33 +66,12 @@ export function buildLogsFilters(
 
   const warnings: TranslationWarning[] = [];
   const searchTerms: string[] = [];
-  let searchMode: "ngram" | "exact" | undefined;
-  let searchModeConflict = false;
 
   for (const filter of filters) {
-    dispatchFilter(filter.field, filter.op, filter.value, {
-      body,
-      warnings,
-      searchTerms,
-      setSearchMode: (mode) => {
-        if (searchMode === undefined) searchMode = mode;
-        else if (searchMode !== mode) searchModeConflict = true;
-      },
-    });
+    dispatchFilter(filter.field, filter.op, filter.value, { body, warnings, searchTerms });
   }
 
-  if (searchTerms.length > 0) {
-    body.search = searchTerms.join(" ");
-    body.searchMode = searchMode ?? "ngram";
-    // Wire format carries one mode for the joined search; surface lossy mixing.
-    if (searchModeConflict) {
-      warnings.push({
-        code: "unsupported_op",
-        field: "search",
-        message: `Mixed exact and substring search terms — all applied as "${body.searchMode}".`,
-      });
-    }
-  }
+  if (searchTerms.length > 0) body.search = searchTerms.join(" ");
   return { body, warnings };
 }
 
@@ -130,7 +108,6 @@ interface DispatchCtx {
   readonly body: LogsFiltersBody;
   readonly warnings: TranslationWarning[];
   readonly searchTerms: string[];
-  readonly setSearchMode: (mode: "ngram" | "exact") => void;
 }
 
 function dispatchFilter(field: string, op: string, value: string, ctx: DispatchCtx): void {
@@ -227,15 +204,12 @@ function handleSingle(ctx: DispatchCtx, key: "traceId" | "spanId", value: string
   ctx.body[key] = value;
 }
 
+// Body search is always case-insensitive substring; `body:"x"` and a bare
+// `x` mean the same thing. Quoting only groups a phrase, it does not
+// switch to exact matching.
 function handleSearch(op: string, value: string, ctx: DispatchCtx): void {
-  if (op === "contains") {
+  if (op === "contains" || op === "eq") {
     ctx.searchTerms.push(value);
-    ctx.setSearchMode("ngram");
-    return;
-  }
-  if (op === "eq") {
-    ctx.searchTerms.push(value);
-    ctx.setSearchMode("exact");
     return;
   }
   ctx.warnings.push({

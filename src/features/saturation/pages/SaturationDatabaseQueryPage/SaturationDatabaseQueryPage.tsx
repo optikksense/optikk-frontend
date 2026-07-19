@@ -1,6 +1,8 @@
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 
+import type { DatabaseFilters } from "@/features/saturation/api/databaseSlowQueriesApi";
+import { Route } from "@/routes/_app/saturation/database/query/$queryId";
 import { PageShell } from "@shared/components/ui";
 
 import { QueryDetailHeader } from "./QueryDetailHeader";
@@ -36,10 +38,10 @@ function downloadJson(name: string, payload: unknown) {
 }
 
 // Backend-hash mode: full drill-in from the query-detail endpoints.
-function BackendQueryDetail({ hash }: { hash: string }) {
-  const summary = useQueryDetailSummary(hash, true);
-  const timeseries = useQueryDetailTimeseries(hash, true);
-  const executions = useQueryDetailExecutions(hash, true);
+function BackendQueryDetail({ hash, filters }: { hash: string; filters: DatabaseFilters }) {
+  const summary = useQueryDetailSummary(hash, filters, true);
+  const timeseries = useQueryDetailTimeseries(hash, filters, true);
+  const executions = useQueryDetailExecutions(hash, filters, true);
 
   const view = useMemo(() => (summary.data ? viewFromSummary(summary.data) : null), [summary.data]);
 
@@ -99,11 +101,12 @@ function LegacyQueryDetail({ queryId }: { queryId: string }) {
 export default function SaturationDatabaseQueryPage(): JSX.Element {
   const params = useParams({ strict: false });
   const queryId = typeof params.queryId === "string" ? params.queryId : "";
+  const filters = Route.useSearch();
 
   return (
     <PageShell>
       {isBackendQueryHash(queryId) ? (
-        <BackendQueryDetail hash={queryId} />
+        <BackendQueryDetail hash={queryId} filters={filters} />
       ) : (
         <LegacyQueryDetail queryId={queryId} />
       )}

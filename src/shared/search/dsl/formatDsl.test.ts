@@ -38,4 +38,11 @@ describe("formatDsl", () => {
     expect(reparsed.errors).toHaveLength(0);
     expect(reparsed.filters).toEqual(filters);
   });
+
+  it("round-trips a value containing whitespace", () => {
+    const filter: ExplorerFilter = { field: "service", op: "eq", value: "upi payments" };
+    const dsl = formatDsl([filter]);
+    expect(dsl).toBe('service:"upi payments"');
+    expect(parseDsl(dsl, TRACE_KNOWN_FIELDS).filters).toEqual([filter]);
+  });
 });

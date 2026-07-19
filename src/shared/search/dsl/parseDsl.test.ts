@@ -92,4 +92,29 @@ describe("parseDsl", () => {
       { field: "search", op: "contains", value: "timeout" },
     ]);
   });
+
+  it("strips quotes from a kv value", () => {
+    const r = parseDsl('body:"request"', LOGS_TEST_FIELDS);
+    expect(r.errors).toHaveLength(0);
+    expect(r.filters).toEqual([{ field: "body", op: "eq", value: "request" }]);
+  });
+
+  it("keeps a quoted phrase as a single value", () => {
+    const r = parseDsl('body:"request rejected"', LOGS_TEST_FIELDS);
+    expect(r.filters).toEqual([{ field: "body", op: "eq", value: "request rejected" }]);
+  });
+
+  it("treats a quoted value as a literal, not an operator or any-of list", () => {
+    const r = parseDsl('body:">=5" service_name:"(a OR b)"', LOGS_TEST_FIELDS);
+    expect(r.filters).toEqual([
+      { field: "body", op: "eq", value: ">=5" },
+      { field: "service_name", op: "eq", value: "(a OR b)" },
+    ]);
+  });
+
+  it("errors on an empty quoted value", () => {
+    const r = parseDsl('body:""', LOGS_TEST_FIELDS);
+    expect(r.filters).toHaveLength(0);
+    expect(r.errors).toHaveLength(1);
+  });
 });

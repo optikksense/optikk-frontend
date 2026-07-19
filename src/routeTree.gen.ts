@@ -25,6 +25,7 @@ import { Route as AppServicesMapRouteImport } from './routes/_app/services/map'
 import { Route as AppLogsTransactionsRouteImport } from './routes/_app/logs/transactions'
 import { Route as AppLogsPatternsRouteImport } from './routes/_app/logs/patterns'
 import { Route as AppAlertsNewRouteImport } from './routes/_app/alerts.new'
+import { Route as AppSaturationDatabaseQueryQueryIdRouteImport } from './routes/_app/saturation/database/query/$queryId'
 
 const AppSettingsLazyRouteImport = createFileRoute('/_app/settings')()
 const AppOverviewLazyRouteImport = createFileRoute('/_app/overview')()
@@ -72,9 +73,6 @@ const AppInfrastructureHostsHostLazyRouteImport = createFileRoute(
 )()
 const AppInfrastructureContainersContainerLazyRouteImport = createFileRoute(
   '/_app/infrastructure/containers/$container',
-)()
-const AppSaturationDatabaseQueryQueryIdLazyRouteImport = createFileRoute(
-  '/_app/saturation/database/query/$queryId',
 )()
 const AppSaturationDatabaseInstanceSystemLazyRouteImport = createFileRoute(
   '/_app/saturation/database/instance/$system',
@@ -330,16 +328,6 @@ const AppInfrastructureContainersContainerLazyRoute =
       (d) => d.Route,
     ),
   )
-const AppSaturationDatabaseQueryQueryIdLazyRoute =
-  AppSaturationDatabaseQueryQueryIdLazyRouteImport.update({
-    id: '/saturation/database/query/$queryId',
-    path: '/saturation/database/query/$queryId',
-    getParentRoute: () => AppRoute,
-  } as any).lazy(() =>
-    import('./routes/_app/saturation/database/query/$queryId.lazy').then(
-      (d) => d.Route,
-    ),
-  )
 const AppSaturationDatabaseInstanceSystemLazyRoute =
   AppSaturationDatabaseInstanceSystemLazyRouteImport.update({
     id: '/saturation/database/instance/$system',
@@ -347,6 +335,16 @@ const AppSaturationDatabaseInstanceSystemLazyRoute =
     getParentRoute: () => AppRoute,
   } as any).lazy(() =>
     import('./routes/_app/saturation/database/instance/$system.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AppSaturationDatabaseQueryQueryIdRoute =
+  AppSaturationDatabaseQueryQueryIdRouteImport.update({
+    id: '/saturation/database/query/$queryId',
+    path: '/saturation/database/query/$queryId',
+    getParentRoute: () => AppRoute,
+  } as any).lazy(() =>
+    import('./routes/_app/saturation/database/query/$queryId.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -390,8 +388,8 @@ export interface FileRoutesByFullPath {
   '/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
   '/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
   '/saturation/database/': typeof AppSaturationDatabaseIndexLazyRoute
+  '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
   '/saturation/database/instance/$system': typeof AppSaturationDatabaseInstanceSystemLazyRoute
-  '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -432,8 +430,8 @@ export interface FileRoutesByTo {
   '/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
   '/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
   '/saturation/database': typeof AppSaturationDatabaseIndexLazyRoute
+  '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
   '/saturation/database/instance/$system': typeof AppSaturationDatabaseInstanceSystemLazyRoute
-  '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -476,8 +474,8 @@ export interface FileRoutesById {
   '/_app/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
   '/_app/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
   '/_app/saturation/database/': typeof AppSaturationDatabaseIndexLazyRoute
+  '/_app/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
   '/_app/saturation/database/instance/$system': typeof AppSaturationDatabaseInstanceSystemLazyRoute
-  '/_app/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -520,8 +518,8 @@ export interface FileRouteTypes {
     | '/infrastructure/hosts/$host'
     | '/monitors/$monitorId/edit'
     | '/saturation/database/'
-    | '/saturation/database/instance/$system'
     | '/saturation/database/query/$queryId'
+    | '/saturation/database/instance/$system'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -562,8 +560,8 @@ export interface FileRouteTypes {
     | '/infrastructure/hosts/$host'
     | '/monitors/$monitorId/edit'
     | '/saturation/database'
-    | '/saturation/database/instance/$system'
     | '/saturation/database/query/$queryId'
+    | '/saturation/database/instance/$system'
   id:
     | '__root__'
     | '/'
@@ -605,8 +603,8 @@ export interface FileRouteTypes {
     | '/_app/infrastructure/hosts/$host'
     | '/_app/monitors/$monitorId/edit'
     | '/_app/saturation/database/'
-    | '/_app/saturation/database/instance/$system'
     | '/_app/saturation/database/query/$queryId'
+    | '/_app/saturation/database/instance/$system'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -895,18 +893,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppInfrastructureContainersContainerLazyRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/saturation/database/query/$queryId': {
-      id: '/_app/saturation/database/query/$queryId'
-      path: '/saturation/database/query/$queryId'
-      fullPath: '/saturation/database/query/$queryId'
-      preLoaderRoute: typeof AppSaturationDatabaseQueryQueryIdLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/saturation/database/instance/$system': {
       id: '/_app/saturation/database/instance/$system'
       path: '/saturation/database/instance/$system'
       fullPath: '/saturation/database/instance/$system'
       preLoaderRoute: typeof AppSaturationDatabaseInstanceSystemLazyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/saturation/database/query/$queryId': {
+      id: '/_app/saturation/database/query/$queryId'
+      path: '/saturation/database/query/$queryId'
+      fullPath: '/saturation/database/query/$queryId'
+      preLoaderRoute: typeof AppSaturationDatabaseQueryQueryIdRouteImport
       parentRoute: typeof AppRoute
     }
   }
@@ -957,8 +955,8 @@ interface AppRouteChildren {
   AppInfrastructureContainersContainerLazyRoute: typeof AppInfrastructureContainersContainerLazyRoute
   AppInfrastructureHostsHostLazyRoute: typeof AppInfrastructureHostsHostLazyRoute
   AppSaturationDatabaseIndexLazyRoute: typeof AppSaturationDatabaseIndexLazyRoute
+  AppSaturationDatabaseQueryQueryIdRoute: typeof AppSaturationDatabaseQueryQueryIdRoute
   AppSaturationDatabaseInstanceSystemLazyRoute: typeof AppSaturationDatabaseInstanceSystemLazyRoute
-  AppSaturationDatabaseQueryQueryIdLazyRoute: typeof AppSaturationDatabaseQueryQueryIdLazyRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -993,10 +991,10 @@ const AppRouteChildren: AppRouteChildren = {
     AppInfrastructureContainersContainerLazyRoute,
   AppInfrastructureHostsHostLazyRoute: AppInfrastructureHostsHostLazyRoute,
   AppSaturationDatabaseIndexLazyRoute: AppSaturationDatabaseIndexLazyRoute,
+  AppSaturationDatabaseQueryQueryIdRoute:
+    AppSaturationDatabaseQueryQueryIdRoute,
   AppSaturationDatabaseInstanceSystemLazyRoute:
     AppSaturationDatabaseInstanceSystemLazyRoute,
-  AppSaturationDatabaseQueryQueryIdLazyRoute:
-    AppSaturationDatabaseQueryQueryIdLazyRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

@@ -5,12 +5,16 @@ import type { RequestTime } from "@/shared/api/service-types";
 import { getSaturation, numericValue, rangeParams, stringValue } from "./saturationClient";
 
 const nullableNumber = z.number().nullable();
+const scopedString = stringValue.optional().default("");
 
-const slowQueryPatternSchema = z.object({
+export const slowQueryPatternSchema = z.object({
   // Backend fingerprint; defaults to "" when the server is older.
-  query_hash: stringValue,
+  query_hash: scopedString,
   query_text: stringValue,
+  db_system: scopedString,
   collection_name: stringValue,
+  namespace: scopedString,
+  server: scopedString,
   p50_ms: nullableNumber,
   p95_ms: nullableNumber,
   p99_ms: nullableNumber,

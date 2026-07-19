@@ -47,21 +47,18 @@ describe("buildLogsFilters", () => {
     expect(body.excludeSeverities).toEqual(["INFO"]);
   });
 
-  it("joins search terms and picks a mode", () => {
+  it("joins search terms", () => {
     const { body } = build([
       { field: "search", op: "contains", value: "timeout" },
       { field: "body", op: "contains", value: "upstream" },
     ]);
     expect(body.search).toBe("timeout upstream");
-    expect(body.searchMode).toBe("ngram");
   });
 
-  it("warns when exact and substring search terms are mixed", () => {
-    const { warnings } = build([
-      { field: "body", op: "eq", value: "a" },
-      { field: "body", op: "contains", value: "b" },
-    ]);
-    expect(warnings.some((w) => w.field === "search")).toBe(true);
+  it("treats body eq as substring, same as contains", () => {
+    const { body, warnings } = build([{ field: "body", op: "eq", value: "request" }]);
+    expect(body.search).toBe("request");
+    expect(warnings).toEqual([]);
   });
 
   it("passes attribute ops through, including comparisons and exists", () => {

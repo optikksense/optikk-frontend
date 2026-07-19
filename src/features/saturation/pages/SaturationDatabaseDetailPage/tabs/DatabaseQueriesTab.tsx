@@ -86,7 +86,7 @@ const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
 
 export function DatabaseQueriesTab({ system }: { system: string }) {
   const navigate = useNavigate();
-  const { rows, isPending } = useDatabaseSystemQueries(system);
+  const { rows, isPending, error } = useDatabaseSystemQueries(system);
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -120,7 +120,7 @@ export function DatabaseQueriesTab({ system }: { system: string }) {
         resize={{ storageKey: "saturation.database.queries" }}
         pagination={{ pageSize: 10 }}
         config={{
-          emptyText: "No queries recorded for this instance in the current window.",
+          emptyText: error ?? "No queries recorded for this instance in the current window.",
           onRow: (row) => ({
             onClick: () =>
               navigate({
@@ -128,6 +128,12 @@ export function DatabaseQueriesTab({ system }: { system: string }) {
                   "$queryId",
                   row.query_hash || queryFingerprintId(row)
                 ) as never,
+                search: {
+                  db_system: row.db_system || system,
+                  collection: row.collection_name || undefined,
+                  namespace: row.namespace || undefined,
+                  server: row.server || undefined,
+                } as never,
               }),
             style: { cursor: "pointer" },
           }),

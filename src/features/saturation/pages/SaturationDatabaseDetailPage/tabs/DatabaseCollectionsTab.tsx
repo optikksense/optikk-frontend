@@ -69,7 +69,7 @@ const COLUMNS: ColumnDef<CollectionRow>[] = [
 ];
 
 export function DatabaseCollectionsTab({ system }: { system: string }) {
-  const { rows, isPending } = useDatabaseSystemQueries(system);
+  const { rows, isPending, error } = useDatabaseSystemQueries(system);
   const collections = useMemo(() => aggregateCollections(rows), [rows]);
 
   return (
@@ -81,7 +81,9 @@ export function DatabaseCollectionsTab({ system }: { system: string }) {
       <DataTable
         data={{ columns: COLUMNS, rows: collections, loading: isPending }}
         pagination={{ pageSize: 10 }}
-        config={{ emptyText: "No collection activity for this instance in the current window." }}
+        config={{
+          emptyText: error ?? "No collection activity for this instance in the current window.",
+        }}
       />
     </PanelCard>
   );

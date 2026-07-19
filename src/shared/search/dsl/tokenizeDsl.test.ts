@@ -44,4 +44,17 @@ describe("tokenizeDsl", () => {
     expect(toks[1].offset).toBe(3);
     expect(toks[1].length).toBe(2);
   });
+
+  it("keeps a quoted value in one kv token, spaces included", () => {
+    const [tok] = tokenizeDsl('body:"request rejected"');
+    expect(tok.kind).toBe("kv");
+    expect(tok.key).toBe("body");
+    expect(tok.value).toBe('"request rejected"');
+  });
+
+  it("ignores a colon inside a quoted value", () => {
+    const [tok] = tokenizeDsl('body:"a:b"');
+    expect(tok.key).toBe("body");
+    expect(tok.value).toBe('"a:b"');
+  });
 });

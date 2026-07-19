@@ -46,12 +46,14 @@ function readBareOrKv(input: string, start: number, out: Token[]): number {
   let j = start;
   let colonAt = -1;
   let inParens = false;
+  let inQuotes = false;
   while (j < input.length) {
     const c = input[j];
-    if ((c === " " || c === "\t") && !inParens) break;
-    if (c === "(") inParens = true;
+    if (c === '"') inQuotes = !inQuotes;
+    else if ((c === " " || c === "\t") && !inParens && !inQuotes) break;
+    else if (c === "(") inParens = true;
     else if (c === ")") inParens = false;
-    else if (c === ":" && colonAt === -1) colonAt = j;
+    else if (c === ":" && colonAt === -1 && !inQuotes) colonAt = j;
     j += 1;
   }
   const raw = input.slice(start, j);
