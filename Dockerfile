@@ -1,32 +1,12 @@
-# Multi-stage build for React frontend
-
-# Stage 1: Build the React app
-FROM node:22-alpine AS builder
-
-WORKDIR /app
-
-RUN corepack enable
-
-# Copy package files
-COPY package.json yarn.lock ./
-
-# Install dependencies
-RUN yarn install --frozen-lockfile --network-timeout 1000000
-
-# Copy source code
-COPY . .
-
-# Build the app
-RUN yarn build
-
-# Stage 2: Serve with NGINX
+# Stage: Serve with NGINX
 FROM nginx:alpine
 
 # Install OpenSSL for certificate generation
 RUN apk add --no-cache openssl
 
-# Copy built files from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built files
+COPY dist /usr/share/nginx/html
+
 
 # Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
