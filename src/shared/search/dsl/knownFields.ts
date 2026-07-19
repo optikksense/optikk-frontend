@@ -381,7 +381,7 @@ export function findKnownField(
   return fields.find((f) => f.key === key);
 }
 
-export const SUGGESTABLE_SCALAR_FIELDS = new Set([
+const SUGGESTABLE_TRACE_FIELDS = new Set([
   "service",
   "operation",
   "http_method",
@@ -389,6 +389,22 @@ export const SUGGESTABLE_SCALAR_FIELDS = new Set([
   "status",
   "environment",
 ]);
+
+const SUGGESTABLE_LOG_FIELDS = new Set([
+  "service_name",
+  "severity_text",
+  "host",
+  "pod",
+  "container",
+  "environment",
+]);
+
+/** Scalar fields with live value autocomplete (per-scope suggest endpoint). */
+export function suggestableScalarFieldsForScope(
+  scope: ExplorerScope | undefined
+): ReadonlySet<string> {
+  return scope === "logs" ? SUGGESTABLE_LOG_FIELDS : SUGGESTABLE_TRACE_FIELDS;
+}
 
 export interface OperatorOption {
   readonly insert: string;
@@ -431,9 +447,13 @@ const QUICK_TEMPLATES_LOGS: readonly QuickTemplate[] = [
 ];
 
 const QUICK_TEMPLATES_TRACES: readonly QuickTemplate[] = [
-  { label: "Errors only", query: "has_error:true", description: "Spans with recorded errors" },
-  { label: "Slow requests", query: "duration_ms:>=500", description: "Spans ≥ 500ms" },
-  { label: "5xx responses", query: "http_status:>=500", description: "Server-error responses" },
+  { label: "Errors only", query: "has_error:true", description: "Traces with recorded errors" },
+  { label: "Slow requests", query: "duration_ms:>=500", description: "Traces ≥ 500ms" },
+  {
+    label: "5xx responses",
+    query: "http_status:(500 OR 502 OR 503 OR 504)",
+    description: "Server-error responses",
+  },
   { label: "By service", query: "service:", description: "Filter by service — type a name" },
 ];
 
@@ -447,6 +467,42 @@ const QUICK_TEMPLATES_AI: readonly QuickTemplate[] = [
 export function quickTemplatesForScope(scope: ExplorerScope | undefined): readonly QuickTemplate[] {
   if (scope === "ai") return QUICK_TEMPLATES_AI;
   return scope === "logs" ? QUICK_TEMPLATES_LOGS : QUICK_TEMPLATES_TRACES;
+}
+
+const SYNTAX_EXAMPLES_LOGS: readonly QuickTemplate[] = [
+  { label: "Exclude", query: "-severity_text:INFO", description: "Leading - negates a filter" },
+  {
+    label: "Any of",
+    query: "severity_text:(ERROR OR FATAL)",
+    description: "Match any listed value",
+  },
+  {
+    label: "Attribute",
+    query: "@http.status_code:500",
+    description: "@key filters custom attributes",
+  },
+  {
+    label: "Has attribute",
+    query: "@user.id:*",
+    description: ":* matches when the attribute exists",
+  },
+];
+
+const SYNTAX_EXAMPLES_TRACES: readonly QuickTemplate[] = [
+  { label: "Exclude", query: "-service:noisy-svc", description: "Leading - negates a filter" },
+  { label: "Any of", query: "http_status:(500 OR 503)", description: "Match any listed value" },
+  { label: "Compare", query: "@retry.count:>=3", description: ">= > <= < on numeric values" },
+  {
+    label: "Has attribute",
+    query: "@user.id:*",
+    description: ":* matches when the attribute exists",
+  },
+];
+
+/** Static example rows shown under "Syntax" in the empty-state popover. */
+export function syntaxExamplesForScope(scope: ExplorerScope | undefined): readonly QuickTemplate[] {
+  if (scope === "ai") return [];
+  return scope === "logs" ? SYNTAX_EXAMPLES_LOGS : SYNTAX_EXAMPLES_TRACES;
 }
 
 export const POPULAR_ATTRIBUTE_KEYS: readonly { key: string; description: string }[] = [

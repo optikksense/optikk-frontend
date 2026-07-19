@@ -28,6 +28,15 @@ const suggestResponseSchema = z.object({
 });
 
 export async function getSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
+  return fetchSuggestions("/traces/suggest", req);
+}
+
+/** Same contract as traces, served by POST /logs/suggest. */
+export async function getLogsSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
+  return fetchSuggestions("/logs/suggest", req);
+}
+
+async function fetchSuggestions(path: string, req: SuggestRequest): Promise<SuggestionItem[]> {
   const body = {
     startTime: req.startTime,
     endTime: req.endTime,
@@ -35,6 +44,6 @@ export async function getSuggestions(req: SuggestRequest): Promise<SuggestionIte
     prefix: req.prefix ?? "",
     limit: req.limit ?? 10,
   };
-  const raw = await api.post<unknown>(`${API_CONFIG.ENDPOINTS.V1_BASE}/traces/suggest`, body);
+  const raw = await api.post<unknown>(`${API_CONFIG.ENDPOINTS.V1_BASE}${path}`, body);
   return validateResponse(suggestResponseSchema, raw).suggestions;
 }

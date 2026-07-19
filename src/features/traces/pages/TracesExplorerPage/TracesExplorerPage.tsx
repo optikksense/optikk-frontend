@@ -1,5 +1,7 @@
+import { buildTracesFilters } from "@shared/api/traces/buildTracesFilters";
 import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
 import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
+import { SearchTranslationNotice } from "@shared/search/components/chrome/SearchTranslationNotice";
 import { StatPill } from "@shared/search/components/chrome/StatPill";
 import {
   TrendChart,
@@ -27,6 +29,11 @@ const TRACES_SEGMENTS: readonly TrendChartSegment[] = [
 export default function TracesExplorerPage() {
   const p = useTracesExplorerPage();
 
+  const translationWarnings = useMemo(
+    () => buildTracesFilters(p.state.filters, p.startTime, p.endTime).warnings,
+    [p.state.filters, p.startTime, p.endTime]
+  );
+
   const trendData = useMemo<TrendChartBucket[] | undefined>(() => {
     if (!p.trendBuckets || p.trendBuckets.length === 0) return undefined;
     return p.trendBuckets.map((b) => {
@@ -44,13 +51,17 @@ export default function TracesExplorerPage() {
   return (
     <ExplorerLayout
       header={
-        <ExplorerHeader
-          ref={p.searchInputRef}
-          variant="dsl"
-          filters={p.state.filters}
-          onChangeFilters={(f: readonly ExplorerFilter[]) => p.state.setFilters(f)}
-          onSubmitFreeText={p.onFreeText}
-        />
+        <>
+          <ExplorerHeader
+            ref={p.searchInputRef}
+            variant="dsl"
+            scope="traces"
+            filters={p.state.filters}
+            onChangeFilters={(f: readonly ExplorerFilter[]) => p.state.setFilters(f)}
+            onSubmitFreeText={p.onFreeText}
+          />
+          <SearchTranslationNotice warnings={translationWarnings} />
+        </>
       }
       facets={
         <TracesFacetRail

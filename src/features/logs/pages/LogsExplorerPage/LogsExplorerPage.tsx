@@ -4,12 +4,14 @@ import { useAppStore, useTimeRange } from "@/app/store/appStore";
 import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
 import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
 import type { SuggestionOption } from "@shared/search/components/chrome/QuerySuggestions";
+import { SearchTranslationNotice } from "@shared/search/components/chrome/SearchTranslationNotice";
 import { StatPill } from "@shared/search/components/chrome/StatPill";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 
 import { resolveTimeRangeBounds } from "@shared/types";
 import { formatNumber } from "@shared/utils/formatters";
 
+import { buildLogsFilters } from "@shared/logs/api/buildLogsFilters";
 import type { LogsFacets } from "@shared/logs/api/logsAnalyticsApi";
 import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
 import type { LogRecord } from "@shared/logs/types/log";
@@ -77,6 +79,10 @@ export default function LogsExplorerPage() {
 
   const searchTerm = useMemo(() => extractSearchTerm(state.filters), [state.filters]);
   const valueSuggestions = useMemo(() => buildValueSuggestions(facets.data), [facets.data]);
+  const translationWarnings = useMemo(
+    () => buildLogsFilters(state.filters, startTime, endTime).warnings,
+    [state.filters, startTime, endTime]
+  );
 
   const onInclude = useCallback(
     (field: string, value: string) =>
@@ -109,17 +115,20 @@ export default function LogsExplorerPage() {
     <>
       <ExplorerLayout
         header={
-          <ExplorerHeader
-            ref={searchInputRef}
-            variant="dsl"
-            filters={state.filters}
-            onChangeFilters={(f) => state.setFilters(f)}
-            onSubmitFreeText={() => {}}
-            actions={<LogsActions />}
-            valueSuggestions={valueSuggestions}
-            searchPlaceholder='Search logs: service_name:checkout severity_text:ERROR "timeout"'
-            scope="logs"
-          />
+          <>
+            <ExplorerHeader
+              ref={searchInputRef}
+              variant="dsl"
+              filters={state.filters}
+              onChangeFilters={(f) => state.setFilters(f)}
+              onSubmitFreeText={() => {}}
+              actions={<LogsActions />}
+              valueSuggestions={valueSuggestions}
+              searchPlaceholder='Search logs: service_name:checkout severity_text:ERROR "timeout"'
+              scope="logs"
+            />
+            <SearchTranslationNotice warnings={translationWarnings} />
+          </>
         }
         facets={
           <LogsFacetPanel

@@ -26,4 +26,15 @@ export type ExplorerFilterOp =
 
 export type ExplorerMode = "list" | "analytics";
 
+/**
+ * Soft failure emitted when a filter can't be expressed on the wire.
+ * Builders return these instead of dropping filters silently; the explorer
+ * pages surface them under the search bar.
+ */
+export interface TranslationWarning {
+  readonly code: "unsupported_op" | "unknown_field" | "duplicate_single_value";
+  readonly field: string;
+  readonly message: string;
+}
+
 export type ExplorerScope = "ai" | "logs" | "traces";

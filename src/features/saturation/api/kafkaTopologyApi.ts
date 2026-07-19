@@ -14,14 +14,14 @@ export function getKafkaClients(startTime: RequestTime, endTime: RequestTime): P
   });
 }
 
-/** Topology scoped to `services`; an empty list returns an empty graph. */
+/** Topology scoped to one service. */
 export function getKafkaTopology(
   startTime: RequestTime,
   endTime: RequestTime,
-  services: string[]
+  service: string
 ): Promise<KafkaTopology> {
   return getSaturation("/saturation/kafka/topology", kafkaTopologySchema, {
     ...rangeParams(startTime, endTime),
-    services: services.join(","),
+    services: service,
   });
 }

@@ -26,22 +26,31 @@ interface Props {
 /**
  * Datadog-style single-line DSL query bar. Parses filters on every keystroke
  * for inline error feedback, pops a suggestions menu on context, applies on
- * Enter. See `parseDsl` for the accepted grammar.
+ * Enter.
+ *
+ * Keyboard contract: typing opens the popover with nothing highlighted;
+ * arrows/hover highlight; Tab accepts the highlighted (or top) suggestion;
+ * Enter accepts only an explicitly highlighted suggestion, otherwise it runs
+ * the search; Esc closes the popover first, then blurs the input.
+ * See `parseDsl` for the accepted grammar.
  */
 function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputElement>) {
   const seed = formatDsl(props.filters);
   const [showPopover, setShowPopover] = useState(false);
+  const innerRef = useRef<HTMLInputElement>(null);
+  const mergedRef = useMergedRef(innerRef, ref);
   const s = useDslSearchBar({
     initial: seed,
     scope: props.scope,
     valueSuggestions: props.valueSuggestions,
   });
-  useSyncSeedOnExternalChange(seed, s.input, s.setInput, s.setCaret);
-  const activeOpt = s.suggestions[s.activeIdx];
+  useSyncSeedOnExternalChange(seed, s.input, s.setInput, s.setCaret, innerRef);
+  const activeOpt = s.activeIdx >= 0 ? s.suggestions[s.activeIdx] : undefined;
   const onSelect = useCallback(
     (opt: SuggestionOption) => {
       s.acceptSuggestion(opt);
       setShowPopover(true);
+      innerRef.current?.focus();
     },
     [s]
   );
@@ -61,7 +70,7 @@ function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputEle
   );
   return (
     <DslBarLayout
-      inputRef={ref}
+      inputRef={mergedRef}
       state={s}
       showPopover={showPopover}
       setShowPopover={setShowPopover}
@@ -97,13 +106,16 @@ function DslBarLayout(p: LayoutProps) {
       <Group ref={triggerRef} className={inputClass(s.parsed.errors.length > 0)}>
         <Input
           ref={p.inputRef}
-          placeholder={p.placeholder ?? 'service:foo -env:prod @http.status_code:>=500 "timeout"'}
+          placeholder={
+            p.placeholder ?? 'service:checkout duration_ms:>=500 @http.status_code:500 "timeout"'
+          }
           onChange={(e) => {
             s.onChange(e.target.value, e.target.selectionStart ?? e.target.value.length);
             p.setShowPopover(true);
           }}
           onSelect={(e) => s.setCaret((e.target as HTMLInputElement).selectionStart ?? 0)}
           onFocus={() => p.setShowPopover(true)}
+          onBlur={() => p.setShowPopover(false)}
           onKeyDown={p.onKeyDown}
           className="w-full bg-transparent outline-none"
           spellCheck={false}
@@ -160,7 +172,15 @@ function handleKeyDown(
   disableBareFreeTextFallback: boolean | undefined
 ) {
   if (e.key === "Escape") {
-    setShowPopover(false);
+    // First Esc closes the popover (and must not clear the input via
+    // SearchField's default); second Esc leaves the bar.
+    e.preventDefault();
+    e.stopPropagation();
+    if (showPopover) {
+      setShowPopover(false);
+    } else {
+      e.currentTarget.blur();
+    }
     return;
   }
   if (e.key === "ArrowDown" && showPopover && s.suggestions.length > 0) {
@@ -170,16 +190,22 @@ function handleKeyDown(
   }
   if (e.key === "ArrowUp" && showPopover && s.suggestions.length > 0) {
     e.preventDefault();
-    s.setActiveIdx((s.activeIdx - 1 + s.suggestions.length) % s.suggestions.length);
+    s.setActiveIdx(s.activeIdx <= 0 ? s.suggestions.length - 1 : s.activeIdx - 1);
     return;
   }
-  if ((e.key === "Tab" || e.key === "Enter") && showPopover && activeOpt) {
+  if (e.key === "Tab" && showPopover && s.suggestions.length > 0) {
     e.preventDefault();
-    s.acceptSuggestion(activeOpt);
+    s.acceptSuggestion(activeOpt ?? s.suggestions[0]);
     return;
   }
   if (e.key === "Enter") {
     e.preventDefault();
+    // Enter only accepts a suggestion the user explicitly highlighted;
+    // otherwise it always runs the search.
+    if (showPopover && activeOpt) {
+      s.acceptSuggestion(activeOpt);
+      return;
+    }
     setShowPopover(false);
     s.commit();
     onApply(effectiveFilters(s, { disableBareFreeTextFallback }), s.input);
@@ -201,18 +227,37 @@ function useSyncSeedOnExternalChange(
   seed: string,
   current: string,
   setInput: (v: string) => void,
-  setCaret: (v: number) => void
+  setCaret: (v: number) => void,
+  inputRef: React.RefObject<HTMLInputElement | null>
 ) {
   const [lastSeed, setLastSeed] = useState(seed);
   useEffect(() => {
-    if (seed !== lastSeed) {
-      setLastSeed(seed);
-      if (seed !== current) {
-        setInput(seed);
-        setCaret(seed.length);
-      }
+    if (seed === lastSeed) return;
+    // Never clobber in-progress typing: if the input is focused and the user
+    // has edited past the previous seed, keep their text.
+    const el = inputRef.current;
+    const typing = el !== null && document.activeElement === el && current !== lastSeed;
+    setLastSeed(seed);
+    if (seed !== current && !typing) {
+      setInput(seed);
+      setCaret(seed.length);
     }
-  }, [seed, lastSeed, current, setInput, setCaret]);
+  }, [seed, lastSeed, current, setInput, setCaret, inputRef]);
+}
+
+function useMergedRef(
+  inner: React.RefObject<HTMLInputElement | null>,
+  forwarded: React.Ref<HTMLInputElement>
+): React.RefCallback<HTMLInputElement> {
+  return useCallback(
+    (el: HTMLInputElement | null) => {
+      inner.current = el;
+      if (typeof forwarded === "function") forwarded(el);
+      else if (forwarded)
+        (forwarded as React.MutableRefObject<HTMLInputElement | null>).current = el;
+    },
+    [inner, forwarded]
+  );
 }
 
 export const ExplorerSearchBarDsl = memo(forwardRef(ExplorerSearchBarDslComponent));

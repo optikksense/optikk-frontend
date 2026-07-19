@@ -8,7 +8,9 @@ const producerNodeSchema = z.object({
   service: stringValue,
   rate_per_sec: numericValue,
   error_rate: numericValue,
+  p50_ms: numericValue,
   p95_ms: numericValue,
+  p99_ms: numericValue,
 });
 
 const topicNodeSchema = z.object({
@@ -23,7 +25,9 @@ const consumerNodeSchema = z.object({
   group: stringValue,
   rate_per_sec: numericValue,
   error_rate: numericValue,
+  p50_ms: numericValue,
   p95_ms: numericValue,
+  p99_ms: numericValue,
 });
 
 const streamEdgeSchema = z.object({

@@ -1,8 +1,9 @@
 import { X } from "lucide-react";
 import { forwardRef, memo } from "react";
 
+import { formatDsl, formatFilter } from "../../dsl/formatDsl";
 import { findKnownField, knownFieldsForScope } from "../../dsl/knownFields";
-import type { ExplorerFilter, ExplorerFilterOp, ExplorerScope } from "../../types/filters";
+import type { ExplorerFilter, ExplorerScope } from "../../types/filters";
 import { ExplorerSearchBarDsl } from "./ExplorerSearchBarDsl";
 import type { SuggestionOption } from "./QuerySuggestions";
 
@@ -47,7 +48,8 @@ function DslSearchBarWithChipsComponent(props: Props, ref: React.Ref<HTMLInputEl
   const fields = knownFieldsForScope(props.scope);
   const onRemoveAt = (idx: number) => {
     const next = props.filters.filter((_, i) => i !== idx);
-    props.onApply(next, "");
+    // Keep the input in sync with the remaining chips instead of wiping it.
+    props.onApply(next, formatDsl(next));
   };
   return (
     <div className="flex flex-col gap-1.5">
@@ -99,10 +101,8 @@ function Chip({ filter, tone, onRemove }: ChipProps) {
     <span
       className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[11px] ${tone}`}
     >
-      <span className="max-w-[260px] truncate">
-        {filter.field === "search" ? "" : `${filter.field}${opLabel(filter.op)}`}
-        {filter.value}
-      </span>
+      {/* Chip text is the retypeable DSL form, so what you see is what you can type. */}
+      <span className="max-w-[260px] truncate">{formatFilter(filter)}</span>
       <button
         type="button"
         onClick={onRemove}
@@ -113,37 +113,6 @@ function Chip({ filter, tone, onRemove }: ChipProps) {
       </button>
     </span>
   );
-}
-
-function opLabel(op: ExplorerFilterOp): string {
-  switch (op) {
-    case "eq":
-      return ":";
-    case "neq":
-      return "!=";
-    case "contains":
-      return "~";
-    case "not_contains":
-      return "!~";
-    case "in":
-      return ":";
-    case "not_in":
-      return "!:";
-    case "gt":
-      return ":>";
-    case "gte":
-      return ":>=";
-    case "lt":
-      return ":<";
-    case "lte":
-      return ":<=";
-    case "exists":
-      return ":*";
-    case "not_exists":
-      return "!:*";
-    default:
-      return ":";
-  }
 }
 
 export const DslSearchBarWithChips = memo(forwardRef(DslSearchBarWithChipsComponent));

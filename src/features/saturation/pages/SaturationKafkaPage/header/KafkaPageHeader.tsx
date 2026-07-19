@@ -8,7 +8,8 @@ import { fmtNum } from "@shared/utils/metricFormatters";
 
 interface KafkaPageHeaderProps {
   readonly summary: KafkaSummary | undefined;
-  readonly degraded?: { readonly label: string } | null;
+  readonly isLoading: boolean;
+  readonly isError: boolean;
 }
 
 function RefreshButton() {
@@ -25,8 +26,19 @@ function RefreshButton() {
   );
 }
 
-function Subtitle({ summary }: { summary: KafkaSummary | undefined }) {
-  if (!summary) {
+function Subtitle({
+  summary,
+  isLoading,
+  isError,
+}: {
+  summary: KafkaSummary | undefined;
+  isLoading: boolean;
+  isError: boolean;
+}) {
+  if (isError) {
+    return <div className="text-[12px] text-foreground-muted">Cluster summary unavailable</div>;
+  }
+  if (isLoading || !summary) {
     return <div className="text-[12px] text-foreground-muted">Loading cluster summary…</div>;
   }
   return (
@@ -37,7 +49,7 @@ function Subtitle({ summary }: { summary: KafkaSummary | undefined }) {
   );
 }
 
-export function KafkaPageHeader({ summary, degraded }: KafkaPageHeaderProps) {
+export function KafkaPageHeader({ summary, isLoading, isError }: KafkaPageHeaderProps) {
   return (
     <header className="flex items-start justify-between gap-3">
       <div className="flex items-start gap-3">
@@ -47,13 +59,13 @@ export function KafkaPageHeader({ summary, degraded }: KafkaPageHeaderProps) {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="font-semibold text-[20px] text-foreground">Kafka</h1>
-            {degraded && (
+            {isError && (
               <Pill variant="warning" dot>
-                {degraded.label}
+                Partial data
               </Pill>
             )}
           </div>
-          <Subtitle summary={summary} />
+          <Subtitle summary={summary} isLoading={isLoading} isError={isError} />
         </div>
       </div>
       <RefreshButton />

@@ -7,9 +7,10 @@ import {
   type KnownField,
   OPERATOR_OPTIONS,
   POPULAR_ATTRIBUTE_KEYS,
-  SUGGESTABLE_SCALAR_FIELDS,
   knownFieldsForScope,
   quickTemplatesForScope,
+  suggestableScalarFieldsForScope,
+  syntaxExamplesForScope,
 } from "../dsl/knownFields";
 import { parseDsl } from "../dsl/parseDsl";
 import { getRecent, pushRecent } from "../dsl/recentSearches";
@@ -52,7 +53,8 @@ function decodeSuggest(value: string): { prefix: string; value: string } | null 
 export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
   const [input, setInput] = useState(initial);
   const [caret, setCaret] = useState(initial.length);
-  const [activeIdx, setActiveIdx] = useState(0);
+  // -1 = nothing highlighted, so Enter submits instead of accepting.
+  const [activeIdx, setActiveIdx] = useState(-1);
   const knownFields = useMemo(() => knownFieldsForScope(scope), [scope]);
 
   const parsed = useMemo(() => parseDsl(input, knownFields), [input, knownFields]);
@@ -66,6 +68,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
   );
 
   const valueQuery = useQuerySuggestions({
+    scope,
     field:
       context.kind === "value" && context.field !== null
         ? normalizeSuggestField(context.field)
@@ -74,12 +77,12 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
     enabled:
       context.kind === "value" &&
       localValueSuggestions.length === 0 &&
-      scope !== "logs" &&
-      isSuggestableField(context.field),
+      isSuggestableField(context.field, scope),
   });
 
   const recents = useMemo(() => (scope ? getRecent(scope) : []), [scope]);
   const templates = useMemo(() => quickTemplatesForScope(scope), [scope]);
+  const syntax = useMemo(() => syntaxExamplesForScope(scope), [scope]);
 
   const suggestions = useMemo<readonly SuggestionOption[]>(
     () =>
@@ -90,8 +93,9 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
         knownFields,
         recents,
         templates,
+        syntax,
       }),
-    [context, valueQuery.data, localValueSuggestions, knownFields, recents, templates]
+    [context, valueQuery.data, localValueSuggestions, knownFields, recents, templates, syntax]
   );
 
   const isLoading =
@@ -100,7 +104,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
   const onChange = useCallback((next: string, pos: number) => {
     setInput(next);
     setCaret(pos);
-    setActiveIdx(0);
+    setActiveIdx(-1);
   }, []);
 
   const acceptSuggestion = useCallback(
@@ -110,7 +114,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
         const next = decoded.value;
         setInput(next);
         setCaret(next.length);
-        setActiveIdx(0);
+        setActiveIdx(-1);
         return;
       }
       if (decoded?.prefix === BODY_HINT_PREFIX) {
@@ -121,7 +125,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
         const nextCaret = head.length + insert.length;
         setInput(nextInput);
         setCaret(nextCaret);
-        setActiveIdx(0);
+        setActiveIdx(-1);
         return;
       }
       if (decoded?.prefix === OPERATOR_PREFIX) {
@@ -129,7 +133,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
         const nextInput = applyOperator(input, context.field ?? "", op);
         setInput(nextInput);
         setCaret(nextInput.length);
-        setActiveIdx(0);
+        setActiveIdx(-1);
         return;
       }
       const { head, tail } = splitAroundToken(input, context.tokenStart, caret);
@@ -138,7 +142,7 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
       const nextCaret = head.length + insert.length;
       setInput(nextInput);
       setCaret(nextCaret);
-      setActiveIdx(0);
+      setActiveIdx(-1);
     },
     [input, caret, context]
   );
@@ -169,10 +173,10 @@ function normalizeSuggestField(field: string): string {
   return field;
 }
 
-function isSuggestableField(field: string | null): boolean {
+function isSuggestableField(field: string | null, scope: ExplorerScope | undefined): boolean {
   if (field === null) return false;
   if (field.startsWith("@")) return true;
-  return SUGGESTABLE_SCALAR_FIELDS.has(normalizeSuggestField(field));
+  return suggestableScalarFieldsForScope(scope).has(normalizeSuggestField(field));
 }
 
 interface BuildArgs {
@@ -182,6 +186,7 @@ interface BuildArgs {
   readonly knownFields: readonly KnownField[];
   readonly recents: readonly { q: string; ts: number }[];
   readonly templates: readonly { label: string; query: string; description: string }[];
+  readonly syntax: readonly { label: string; query: string; description: string }[];
 }
 
 function buildSuggestions(a: BuildArgs): readonly SuggestionOption[] {
@@ -266,6 +271,16 @@ function buildEmptyState(a: BuildArgs): readonly SuggestionOption[] {
       hint: t.query,
       icon: "template",
       category: "Suggested filters",
+    });
+  }
+  for (const s of a.syntax) {
+    out.push({
+      value: encodeSuggest(TEMPLATE_PREFIX, s.query),
+      label: s.label,
+      description: s.description,
+      hint: s.query,
+      icon: "operator",
+      category: "Syntax",
     });
   }
   return out;

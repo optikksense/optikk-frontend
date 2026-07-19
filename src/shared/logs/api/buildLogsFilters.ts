@@ -1,4 +1,4 @@
-import type { ExplorerFilter } from "@shared/search/types/filters";
+import type { ExplorerFilter, TranslationWarning } from "@shared/search/types/filters";
 
 /**
  * Single source of truth for translating `ExplorerFilter[]` (FE chip model)
@@ -10,7 +10,7 @@ import type { ExplorerFilter } from "@shared/search/types/filters";
  *   `severity_text` (eq/neq)            → `severities` / `excludeSeverities`
  *   `trace_id` / `span_id` (eq)         → single-value fields (later wins logged)
  *   `body` / `search` (contains|eq)     → joined into `search` with mode
- *   `@<key>`                            → `attributes[]` with eq/neq/contains/regex
+ *   `@<key>`                            → `attributes[]` with eq/neq/contains/regex/gt/gte/lt/lte/exists/not_exists
  *   anything else                       → `warnings[]` so the UI can surface a soft
  *                                          notice under the search bar
  */
@@ -40,15 +40,9 @@ interface LogsFiltersBody {
 
   attributes?: ReadonlyArray<{
     readonly key: string;
-    readonly op?: "eq" | "neq" | "contains" | "regex";
+    readonly op?: string;
     readonly value: string;
   }>;
-}
-
-interface TranslationWarning {
-  readonly code: "unsupported_op" | "unknown_field" | "duplicate_single_value";
-  readonly field: string;
-  readonly message: string;
 }
 
 export interface BuildResult {
@@ -118,12 +112,19 @@ const RESOURCE_EXCLUDE: Record<string, keyof LogsFiltersBody> = {
   host: "excludeHosts",
 };
 
-const ATTR_OP_MAP: Record<string, "eq" | "neq" | "contains" | "regex"> = {
-  eq: "eq",
-  neq: "neq",
-  contains: "contains",
-  regex: "regex",
-};
+/** Ops the backend implements on `attributes[]` (logs filter.go). */
+const ATTR_OPS = new Set([
+  "eq",
+  "neq",
+  "contains",
+  "regex",
+  "gt",
+  "gte",
+  "lt",
+  "lte",
+  "exists",
+  "not_exists",
+]);
 
 interface DispatchCtx {
   readonly body: LogsFiltersBody;
@@ -165,11 +166,11 @@ function dispatchFilter(field: string, op: string, value: string, ctx: DispatchC
 }
 
 function handleResourceDim(field: string, op: string, value: string, ctx: DispatchCtx): void {
-  if (op === "eq") {
-    appendArr(ctx.body, RESOURCE_INCLUDE[field], value);
+  if (op === "eq" || op === "in") {
+    appendArr(ctx.body, RESOURCE_INCLUDE[field], ...listValues(op, value));
     return;
   }
-  if (op === "neq") {
+  if (op === "neq" || op === "not_in") {
     const key = RESOURCE_EXCLUDE[field];
     if (!key) {
       ctx.warnings.push({
@@ -179,30 +180,39 @@ function handleResourceDim(field: string, op: string, value: string, ctx: Dispat
       });
       return;
     }
-    appendArr(ctx.body, key, value);
+    appendArr(ctx.body, key, ...listValues(op, value));
     return;
   }
   ctx.warnings.push({
     code: "unsupported_op",
     field,
-    message: `Operator "${op}" not supported on resource dim "${field}" — only eq/neq.`,
+    message: `Operator "${op}" not supported on resource dim "${field}" — only match / any-of.`,
   });
 }
 
 function handleSeverity(op: string, value: string, ctx: DispatchCtx): void {
-  if (op === "eq") {
-    appendArr(ctx.body, "severities", value);
+  if (op === "eq" || op === "in") {
+    appendArr(ctx.body, "severities", ...listValues(op, value));
     return;
   }
-  if (op === "neq") {
-    appendArr(ctx.body, "excludeSeverities", value);
+  if (op === "neq" || op === "not_in") {
+    appendArr(ctx.body, "excludeSeverities", ...listValues(op, value));
     return;
   }
   ctx.warnings.push({
     code: "unsupported_op",
     field: "severity_text",
-    message: `Operator "${op}" not supported on severity — only eq/neq.`,
+    message: `Operator "${op}" not supported on severity — only match / any-of.`,
   });
+}
+
+/** in/not_in carry comma-joined values from the `(a OR b)` DSL form. */
+function listValues(op: string, value: string): string[] {
+  if (op !== "in" && op !== "not_in") return [value];
+  return value
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 
 function handleSingle(ctx: DispatchCtx, key: "traceId" | "spanId", value: string): void {
@@ -236,22 +246,21 @@ function handleSearch(op: string, value: string, ctx: DispatchCtx): void {
 }
 
 function handleAttribute(key: string, op: string, value: string, ctx: DispatchCtx): void {
-  const beOp = ATTR_OP_MAP[op];
-  if (!beOp) {
+  if (!ATTR_OPS.has(op)) {
     ctx.warnings.push({
       code: "unsupported_op",
       field: `@${key}`,
-      message: `Operator "${op}" not supported on attribute "@${key}" — only eq/neq/contains/regex.`,
+      message: `Operator "${op}" not supported on attribute "@${key}" — supported: eq/neq/contains/regex/comparisons/exists.`,
     });
     return;
   }
   const list = ctx.body.attributes ? [...ctx.body.attributes] : [];
-  list.push({ key, op: beOp, value });
+  list.push({ key, op, value });
   ctx.body.attributes = list;
 }
 
-function appendArr(body: LogsFiltersBody, key: keyof LogsFiltersBody, value: string): void {
+function appendArr(body: LogsFiltersBody, key: keyof LogsFiltersBody, ...values: string[]): void {
   const val = body[key];
   const current = Array.isArray(val) && val.every((v) => typeof v === "string") ? val : [];
-  Object.assign(body, { [key]: [...current, value] });
+  Object.assign(body, { [key]: [...current, ...values] });
 }

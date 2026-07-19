@@ -58,6 +58,18 @@ function handleKv(
     errors.push({ offset: tok.offset, length: tok.length, message: `Unknown field "${key}"` });
     return;
   }
+  if (valueRaw === "*") {
+    if (!key.startsWith("@")) {
+      errors.push({
+        offset: tok.offset,
+        length: tok.length,
+        message: "The :* exists operator only works on @attributes",
+      });
+      return;
+    }
+    out.push({ field: key, op: negate ? "not_exists" : "exists", value: "" });
+    return;
+  }
   const parsed = parseValue(valueRaw);
   if (parsed === null) {
     errors.push({ offset: tok.offset, length: tok.length, message: "Could not parse value" });

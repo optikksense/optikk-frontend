@@ -161,7 +161,7 @@ function logDevSnippet(raw: unknown, err: unknown) {
 }
 
 export async function query(body: TracesQueryRequest): Promise<TracesQueryResponse> {
-  const reqBody = buildTracesFilters(body.filters, body.startTime, body.endTime, {
+  const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime, {
     limit: body.limit,
     cursor: body.cursor,
   });
@@ -188,7 +188,7 @@ export async function query(body: TracesQueryRequest): Promise<TracesQueryRespon
 }
 
 export async function queryFacets(body: TracesQueryRequest) {
-  const reqBody = buildTracesFilters(body.filters, body.startTime, body.endTime, {
+  const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime, {
     limit: 0,
   });
   const raw = await api.post<unknown>(`${BASE}/traces/facets`, reqBody);
@@ -197,7 +197,7 @@ export async function queryFacets(body: TracesQueryRequest) {
 }
 
 export async function queryTrend(body: TracesQueryRequest) {
-  const reqBody = buildTracesFilters(body.filters, body.startTime, body.endTime, {
+  const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime, {
     limit: 0,
   });
   const raw = await api.post<unknown>(`${BASE}/traces/trend`, reqBody);

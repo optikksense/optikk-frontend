@@ -62,16 +62,8 @@ export function ServiceKpiStrip({ serviceName, summary }: ServiceKpiStripProps) 
         tone={errorTone(s.errorRate)}
         subtext={`${fmtNum(errorsPerSec)} errors/s`}
       />
-      <KpiCard
-        label="p99 Latency"
-        value={fmtMs(s.p99Ms)}
-        tone={p99Tone(s.p99Ms)}
-      />
-      <KpiCard
-        label="Saturation"
-        value={fmtPct(satVal / 100, 1)}
-        tone={saturationTone(satVal)}
-      />
+      <KpiCard label="p99 Latency" value={fmtMs(s.p99Ms)} tone={p99Tone(s.p99Ms)} />
+      <KpiCard label="Saturation" value={fmtPct(satVal / 100, 1)} tone={saturationTone(satVal)} />
     </div>
   );
 }
