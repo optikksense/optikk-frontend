@@ -1,7 +1,6 @@
 import { AlertCircle, BarChart3 } from "lucide-react";
 import { useMemo } from "react";
 
-import { useTimeRange } from "@app/store/appStore";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
 import type {
@@ -14,7 +13,6 @@ import type {
 import { buildSeries } from "@shared/metrics/utils/chartSeries";
 import { formatStatValue } from "@shared/metrics/utils/formatStat";
 import { computeQuerySummary, computeSeriesStats } from "@shared/metrics/utils/seriesStats";
-import { resolveTimeBounds } from "@shared/utils/timeBounds";
 
 import type { WidgetDisplayOptions, WidgetVizType } from "../builder/metricsWidget";
 
@@ -80,8 +78,6 @@ interface TimeseriesVizProps {
 }
 
 function TimeseriesViz({ queries, formulas, results, display, height }: TimeseriesVizProps) {
-  const timeRange = useTimeRange();
-  const { startTime, endTime } = resolveTimeBounds(timeRange);
   const { timestamps, series } = useMemo(
     () => buildSeries(queries, formulas, results, "line"),
     [queries, formulas, results]
@@ -97,8 +93,6 @@ function TimeseriesViz({ queries, formulas, results, display, height }: Timeseri
       type="line"
       height={height}
       legend={display.legend}
-      xMin={Math.floor(startTime / 1000)}
-      xMax={Math.floor(endTime / 1000)}
     />
   );
 }
