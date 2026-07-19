@@ -3,9 +3,6 @@ import type uPlot from "uplot";
 
 import { cn } from "@shared/lib/utils";
 
-import { useTimeRange } from "@app/store/appStore";
-import { resolveTimeBounds } from "@shared/utils/timeBounds";
-
 import UPlotChart from "./UPlotChart";
 import {
   type ThresholdLine,
@@ -69,10 +66,13 @@ function ObservabilityChart({
   thresholds,
   onTimeBrush,
 }: ObservabilityChartProps) {
-  const storeTimeRange = useTimeRange();
-  const defaultBounds = useMemo(() => resolveTimeBounds(storeTimeRange), [storeTimeRange]);
-  const effectiveXMin = xMin ?? Math.floor(defaultBounds.startTime / 1000);
-  const effectiveXMax = xMax ?? Math.floor(defaultBounds.endTime / 1000);
+  const hasCustomXRange = xMin != null || xMax != null;
+  const xRange = useMemo<[number, number] | undefined>(() => {
+    if (!hasCustomXRange) return undefined;
+    const first = timestamps[0] ?? 0;
+    const last = timestamps[timestamps.length - 1] ?? 1;
+    return [xMin ?? first, xMax ?? (last > first ? last : first + 1)];
+  }, [xMin, xMax, hasCustomXRange, timestamps]);
 
   const allPlugins = useMemo<uPlot.Plugin[]>(() => {
     const list = plugins ? [...plugins] : [];
@@ -97,7 +97,10 @@ function ObservabilityChart({
       legend: { show: legend },
       axes,
       scales: {
-        x: { time: true, range: [effectiveXMin, effectiveXMax] as [number, number] },
+        x: {
+          time: true,
+          ...(xRange ? { range: xRange } : {}),
+        },
         y: {
           ...(yMin != null ? { min: yMin } : {}),
           ...(yMax != null ? { max: yMax } : {}),
@@ -123,8 +126,7 @@ function ObservabilityChart({
     series,
     yAxisSize,
     yFormatter,
-    effectiveXMin,
-    effectiveXMax,
+    xRange,
     yMin,
     yMax,
     type,

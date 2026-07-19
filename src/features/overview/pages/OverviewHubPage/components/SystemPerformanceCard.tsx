@@ -23,13 +23,13 @@ export default function SystemPerformanceCard() {
     const series: ObservabilityChartSeries[] = [
       {
         label: "Requests",
-        values: rows.map((r) => r.request_count),
+        values: rows.map((r) => Number(r.request_count ?? 0)),
         color: REQUESTS_COLOR,
         fill: true,
       },
       {
         label: "Errors",
-        values: rows.map((r) => r.error_count),
+        values: rows.map((r) => Number(r.error_count ?? 0)),
         color: ERRORS_COLOR,
         width: 1.5,
       },
@@ -69,6 +69,7 @@ export default function SystemPerformanceCard() {
             timestamps={timestamps}
             series={series}
             height={CHART_HEIGHT}
+            yMin={0}
             yFormatter={(v) => fmtNum(v)}
           />
         )}
