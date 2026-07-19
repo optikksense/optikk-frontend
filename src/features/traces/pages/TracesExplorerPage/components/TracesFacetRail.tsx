@@ -120,7 +120,7 @@ export function TracesFacetRail({ groups, onInclude, onClearAll, activeFilterCou
                     [g.field]: !prev[g.field],
                   }))
                 }
-                className="mt-1 text-[11px] font-medium text-brand hover:underline"
+                className="mt-1 font-medium text-[11px] text-brand hover:underline"
                 style={{ padding: "2px 6px" }}
               >
                 {isExpanded ? "Show Less" : "Show More"}

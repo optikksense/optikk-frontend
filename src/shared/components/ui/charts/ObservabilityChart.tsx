@@ -117,7 +117,18 @@ function ObservabilityChart({
       ],
       ...(allPlugins.length > 0 ? { plugins: allPlugins } : {}),
     };
-  }, [legend, series, yAxisSize, yFormatter, effectiveXMin, effectiveXMax, yMin, yMax, type, allPlugins]);
+  }, [
+    legend,
+    series,
+    yAxisSize,
+    yFormatter,
+    effectiveXMin,
+    effectiveXMax,
+    yMin,
+    yMax,
+    type,
+    allPlugins,
+  ]);
 
   const tooltipContent = useMemo(() => {
     const defaultXFormatter = (timestampSeconds: number) =>

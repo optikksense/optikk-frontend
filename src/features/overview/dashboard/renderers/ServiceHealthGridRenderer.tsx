@@ -52,7 +52,7 @@ export function ServiceHealthGridRenderer({
             <div key={service.name}>
               <button
                 type="button"
-                className="hover:-translate-y-px cursor-pointer rounded-lg border border-border bg-muted p-3 text-center transition-all duration-200 hover:border-primary block w-full"
+                className="hover:-translate-y-px block w-full cursor-pointer rounded-lg border border-border bg-muted p-3 text-center transition-all duration-200 hover:border-primary"
                 onClick={() =>
                   navigate({
                     to:

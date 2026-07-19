@@ -49,7 +49,7 @@ export default function SettingsProfileTab(): JSX.Element {
       <div className="border-t" />
 
       <div className="py-md">
-        <div className="flex flex-col gap-xs mb-md">
+        <div className="mb-md flex flex-col gap-xs">
           <span className="text-muted text-xs uppercase tracking-wide">Name</span>
           <span className="font-medium">{user?.name ?? "No name set"}</span>
         </div>
@@ -65,9 +65,9 @@ export default function SettingsProfileTab(): JSX.Element {
       </div>
       <div className="border-t" />
 
-      <form onSubmit={handleSubmit} className="py-md max-w-sm flex flex-col gap-sm">
+      <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-sm py-md">
         <div className="flex flex-col gap-xs">
-          <label className="text-xs font-semibold uppercase tracking-wide text-foreground-secondary">
+          <label className="font-semibold text-foreground-secondary text-xs uppercase tracking-wide">
             Current Password
           </label>
           <input
@@ -79,7 +79,7 @@ export default function SettingsProfileTab(): JSX.Element {
           />
         </div>
         <div className="flex flex-col gap-xs">
-          <label className="text-xs font-semibold uppercase tracking-wide text-foreground-secondary">
+          <label className="font-semibold text-foreground-secondary text-xs uppercase tracking-wide">
             New Password
           </label>
           <input

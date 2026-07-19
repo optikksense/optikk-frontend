@@ -22,6 +22,7 @@ export default function QueryLifecycleBridge({ children }: QueryLifecycleBridgeP
   const isFirstTenantScope = useRef(true);
 
   useEffect(() => {
+    void tenantScopeKey;
     if (isFirstTenantScope.current) {
       isFirstTenantScope.current = false;
       return;

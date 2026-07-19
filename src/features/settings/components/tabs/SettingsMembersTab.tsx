@@ -149,7 +149,7 @@ export default function SettingsMembersTab(): JSX.Element {
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
-          <p className="text-xs text-muted mt-[-4px]">
+          <p className="mt-[-4px] text-muted text-xs">
             Leave blank to email the user an invite link to set their own password.
           </p>
           <Select

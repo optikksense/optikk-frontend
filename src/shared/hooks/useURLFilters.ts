@@ -126,7 +126,7 @@ export function useURLFilters(config: URLFilterConfig): {
       values[param.key] = parseParamValue(searchParams.get(param.key), param.type, fallback);
     }
     return values;
-  }, []);
+  }, [config.params, searchParams]);
 
   const [values, setValues] = useState<URLFilterValues>(initialValues);
 
@@ -135,7 +135,7 @@ export function useURLFilters(config: URLFilterConfig): {
       return [];
     }
     return decodeStructuredFiltersParam(searchParams.get("filters"));
-  }, []);
+  }, [config.syncStructuredFilters, searchParams]);
 
   const [structuredFilters, setStructuredFilters] =
     useState<StructuredFilter[]>(initialStructuredFilters);
@@ -231,7 +231,7 @@ export function useURLFilters(config: URLFilterConfig): {
         setStructuredFilters(urlFilters);
       }
     }
-  }, [searchParams]);
+  }, [config.params, config.syncStructuredFilters, searchParams, structuredFilters, values]);
 
   useEffect(() => {
     if (isFirstRenderRef.current) {

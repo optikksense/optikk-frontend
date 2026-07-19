@@ -68,11 +68,11 @@ export function LoginForm() {
       <Field
         id="password"
         label={
-          <div className="flex items-center justify-between w-full">
+          <div className="flex w-full items-center justify-between">
             <span>Password</span>
             <Link
               to="/forgot-password"
-              className="font-normal normal-case tracking-normal text-[var(--login-link)] no-underline hover:underline"
+              className="font-normal text-[var(--login-link)] normal-case tracking-normal no-underline hover:underline"
             >
               Forgot password?
             </Link>

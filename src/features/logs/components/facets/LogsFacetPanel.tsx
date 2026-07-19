@@ -33,7 +33,7 @@ function LogsFacetPanelComponent({
 
   if (collapsed) {
     return (
-      <div className="border-border border-r bg-background flex flex-col items-center py-4">
+      <div className="flex flex-col items-center border-border border-r bg-background py-4">
         <button
           type="button"
           onClick={() => setCollapsed(false)}
