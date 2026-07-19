@@ -71,7 +71,6 @@ export const useAppStore = create<AppState>()(
 
           return {
             timeRange: range,
-            refreshKey: state.refreshKey + 1,
             recentTimeRanges: pushRecentRange(state.recentTimeRanges, range),
           };
         });
@@ -94,7 +93,6 @@ export const useAppStore = create<AppState>()(
           };
           return {
             timeRange: range,
-            refreshKey: state.refreshKey + 1,
             recentTimeRanges: pushRecentRange(state.recentTimeRanges, range),
           };
         });
