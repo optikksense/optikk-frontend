@@ -183,18 +183,14 @@ export async function query(body: TracesQueryRequest): Promise<TracesQueryRespon
 }
 
 export async function queryFacets(body: TracesQueryRequest) {
-  const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime, {
-    limit: 0,
-  });
+  const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime);
   const raw = await api.post<unknown>(`${BASE}/traces/facets`, reqBody);
   const validated = validateResponse(rawFacetsSchema, raw);
   return normalizeFacets(validated);
 }
 
 export async function queryTrend(body: TracesQueryRequest) {
-  const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime, {
-    limit: 0,
-  });
+  const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime);
   const raw = await api.post<unknown>(`${BASE}/traces/trend`, reqBody);
   const validated = validateResponse(z.union([z.array(rawTrendRowSchema), z.null()]), raw) ?? [];
   return validated.map((b) => ({
