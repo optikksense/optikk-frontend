@@ -46,7 +46,7 @@ function urlValueToPreset(val: string): RelativeTimeRange | null {
   return { kind: "relative", preset: presetStr, label: `Last ${num}${unit}`, minutes };
 }
 
-function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | null {
+export function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | null {
   if (!from) return null;
 
   if (from.startsWith("now-") && (!to || to === "now")) {
@@ -67,7 +67,7 @@ function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | 
   return null;
 }
 
-function timeRangeToUrlParams(r: TimeRange): { from: string; to: string } {
+export function timeRangeToUrlParams(r: TimeRange): { from: string; to: string } {
   if (r.kind === "relative") {
     return { from: presetToUrlValue(r.preset), to: "now" };
   }
@@ -80,12 +80,9 @@ export function useTimeRangeURL(): void {
   const timezone = useAppStore((s) => s.timezone);
   const setTimeRange = useAppStore((s) => s.setTimeRange);
   const setTimezone = useAppStore((s) => s.setTimezone);
-  const initializedRef = useRef(false);
 
+  // 1. Initial hydration on mount: read URL or push store default to URL
   useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
     const urlFrom = searchParams.get(PARAM_FROM);
     const urlTo = searchParams.get(PARAM_TO);
     const urlTz = searchParams.get(PARAM_TZ);
@@ -93,40 +90,44 @@ export function useTimeRangeURL(): void {
     const parsed = parseUrlTimeRange(urlFrom, urlTo);
     if (parsed) {
       setTimeRange(parsed);
-      if (urlTz) setTimezone(urlTz);
+      if (urlTz && urlTz !== timezone) setTimezone(urlTz);
     } else {
       const params = timeRangeToUrlParams(timeRange);
+      const expectedTz = timezone !== "local" ? timezone : null;
       setSearchParams(
-        (prevSearchParams) => {
-          const next = new URLSearchParams(prevSearchParams);
+        (prev) => {
+          const next = new URLSearchParams(prev);
           next.set(PARAM_FROM, params.from);
           next.set(PARAM_TO, params.to);
-          if (timezone !== "local") {
-            next.set(PARAM_TZ, timezone);
-          }
+          if (expectedTz) next.set(PARAM_TZ, expectedTz);
           return next;
         },
         { replace: true }
       );
     }
-  }, [searchParams, setSearchParams, setTimeRange, setTimezone, timeRange, timezone]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // 2. Sync Store -> URL when store timeRange or timezone changes
   useEffect(() => {
-    if (!initializedRef.current) return;
-
     const params = timeRangeToUrlParams(timeRange);
+    const expectedTz = timezone !== "local" ? timezone : null;
+
     const urlFrom = searchParams.get(PARAM_FROM);
     const urlTo = searchParams.get(PARAM_TO);
+    const urlTz = searchParams.get(PARAM_TZ);
 
-    if (urlFrom === params.from && urlTo === params.to) return;
+    if (urlFrom === params.from && urlTo === params.to && (urlTz ?? null) === expectedTz) {
+      return;
+    }
 
     setSearchParams(
-      (prevSearchParams) => {
-        const next = new URLSearchParams(prevSearchParams);
+      (prev) => {
+        const next = new URLSearchParams(prev);
         next.set(PARAM_FROM, params.from);
         next.set(PARAM_TO, params.to);
-        if (timezone !== "local") {
-          next.set(PARAM_TZ, timezone);
+        if (expectedTz) {
+          next.set(PARAM_TZ, expectedTz);
         } else {
           next.delete(PARAM_TZ);
         }
@@ -136,23 +137,26 @@ export function useTimeRangeURL(): void {
     );
   }, [timeRange, timezone, searchParams, setSearchParams]);
 
+  // 3. Sync URL -> Store when URL searchParams change (e.g. browser back/forward)
   useEffect(() => {
-    if (!initializedRef.current) return;
-
     const urlFrom = searchParams.get(PARAM_FROM);
     const urlTo = searchParams.get(PARAM_TO);
-    const parsed = parseUrlTimeRange(urlFrom, urlTo);
+    const urlTz = searchParams.get(PARAM_TZ);
 
+    const parsed = parseUrlTimeRange(urlFrom, urlTo);
     if (!parsed) return;
 
     const currentParams = timeRangeToUrlParams(timeRange);
     const parsedParams = timeRangeToUrlParams(parsed);
 
-    if (currentParams.from === parsedParams.from && currentParams.to === parsedParams.to) return;
+    // Stop sync loop if store already matches URL params
+    if (currentParams.from === parsedParams.from && currentParams.to === parsedParams.to) {
+      return;
+    }
 
     setTimeRange(parsed);
-
-    const urlTz = searchParams.get(PARAM_TZ);
     if (urlTz && urlTz !== timezone) setTimezone(urlTz);
   }, [searchParams, setTimeRange, setTimezone, timeRange, timezone]);
 }
+
+
