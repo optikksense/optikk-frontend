@@ -1,7 +1,6 @@
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useMemo } from "react";
 
-import { useExplorerQuery } from "@shared/search/hooks/useExplorerQuery";
+import { useExplorerQuery, useExplorerSubQuery } from "@shared/search/hooks/useExplorerQuery";
 import { useExplorerState } from "@shared/search/hooks/useExplorerState";
 import type { ExplorerIncludeFlag } from "@shared/search/types";
 
@@ -34,38 +33,20 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     fetcher: query,
   });
 
-  const { startTime, endTime, tenantId, refreshKey } = explorerQuery;
-
-  const needsFacets = include.includes("facets");
-  const facetsQuery = useStandardQuery({
-    queryKey: [
-      "traces",
-      "explorer",
-      "facets",
-      tenantId ?? "none",
-      refreshKey,
-      startTime,
-      endTime,
-      JSON.stringify(state.filters),
-    ],
-    queryFn: () => queryFacets({ startTime, endTime, filters: state.filters, limit: 0 }),
-    enabled: (args.enabled ?? true) && needsFacets,
+  const facetsQuery = useExplorerSubQuery({
+    scope: "traces",
+    subKey: "facets",
+    filters: state.filters,
+    enabled: (args.enabled ?? true) && include.includes("facets"),
+    fetcher: (req) => queryFacets({ ...req, limit: 0 }),
   });
 
-  const needsTrend = include.includes("trend") || include.includes("summary");
-  const trendQuery = useStandardQuery({
-    queryKey: [
-      "traces",
-      "explorer",
-      "trend",
-      tenantId ?? "none",
-      refreshKey,
-      startTime,
-      endTime,
-      JSON.stringify(state.filters),
-    ],
-    queryFn: () => queryTrend({ startTime, endTime, filters: state.filters, limit: 0 }),
-    enabled: (args.enabled ?? true) && needsTrend,
+  const trendQuery = useExplorerSubQuery({
+    scope: "traces",
+    subKey: "trend",
+    filters: state.filters,
+    enabled: (args.enabled ?? true) && (include.includes("trend") || include.includes("summary")),
+    fetcher: (req) => queryTrend({ ...req, limit: 0 }),
   });
 
   const summary = useMemo(() => {

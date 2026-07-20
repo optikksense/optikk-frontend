@@ -34,18 +34,7 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
   const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
-
-  const body: ExplorerQueryRequest = useMemo(
-    () => ({
-      startTime,
-      endTime,
-      filters: args.filters,
-      cursor: args.cursor ?? undefined,
-      limit: args.limit,
-      include: args.include,
-    }),
-    [startTime, endTime, args.filters, args.cursor, args.limit, args.include]
-  );
+  const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
 
   const query = useStandardQuery<TResponse>({
     queryKey: [
@@ -54,16 +43,70 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
       "query",
       tenantId ?? "none",
       refreshKey,
-      startTime,
-      endTime,
+      timeRangeKey,
       JSON.stringify(args.filters),
       args.cursor,
       args.limit,
       args.include.join(","),
     ],
-    queryFn: () => args.fetcher(body),
+    queryFn: () => {
+      const bounds = resolveTimeBounds(timeRange);
+      return args.fetcher({
+        startTime: bounds.startTime,
+        endTime: bounds.endTime,
+        filters: args.filters,
+        cursor: args.cursor ?? undefined,
+        limit: args.limit,
+        include: args.include,
+      });
+    },
     enabled: args.enabled ?? true,
   });
 
   return { ...query, startTime, endTime, tenantId, refreshKey };
+}
+
+export interface UseExplorerSubQueryArgs<TResponse> {
+  readonly scope: "logs" | "traces";
+  readonly subKey: string;
+  readonly filters: readonly ExplorerFilter[];
+  readonly enabled?: boolean;
+  readonly fetcher: (req: {
+    startTime: number;
+    endTime: number;
+    filters: readonly ExplorerFilter[];
+  }) => Promise<TResponse>;
+}
+
+/**
+ * Standardized sub-query helper for explorer secondary reads (facets, trend,
+ * summary) that shares tenantId, refreshKey, timeRangeKey, and live bounds.
+ */
+export function useExplorerSubQuery<TResponse>(args: UseExplorerSubQueryArgs<TResponse>) {
+  const tenantId = useTenantId();
+  const refreshKey = useRefreshKey();
+  const timeRange = useTimeRange();
+  const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
+  const filtersKey = useMemo(() => JSON.stringify(args.filters), [args.filters]);
+
+  return useStandardQuery<TResponse>({
+    queryKey: [
+      args.scope,
+      "explorer",
+      args.subKey,
+      tenantId ?? "none",
+      refreshKey,
+      timeRangeKey,
+      filtersKey,
+    ],
+    queryFn: () => {
+      const bounds = resolveTimeBounds(timeRange);
+      return args.fetcher({
+        startTime: bounds.startTime,
+        endTime: bounds.endTime,
+        filters: args.filters,
+      });
+    },
+    enabled: args.enabled ?? true,
+  });
 }
