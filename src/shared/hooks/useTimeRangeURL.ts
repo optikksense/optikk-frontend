@@ -1,5 +1,5 @@
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 import type { RelativeTimeRange, TimeRange } from "@shared/types";
 
