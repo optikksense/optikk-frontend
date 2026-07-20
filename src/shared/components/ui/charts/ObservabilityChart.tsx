@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useRef } from "react";
 import type uPlot from "uplot";
 
 import { cn } from "@shared/lib/utils";
@@ -70,6 +70,32 @@ function ObservabilityChart({
   onTimeBrush,
   isLoading = false,
 }: ObservabilityChartProps) {
+  // Display-only inputs are read through refs so the option/tooltip objects
+  // handed to UPlotChart stay referentially stable across renders. Inline
+  // `yFormatter={(v) => ...}` props (used at most call sites) would otherwise
+  // change identity every render and force a full uPlot destroy+recreate.
+  // Structural inputs (colors, scales, thresholds, type) stay real deps below
+  // so genuine changes still rebuild the chart.
+  const yFormatterRef = useRef(yFormatter);
+  yFormatterRef.current = yFormatter;
+  const xFormatterRef = useRef(xFormatter);
+  xFormatterRef.current = xFormatter;
+  const timestampsRef = useRef(timestamps);
+  timestampsRef.current = timestamps;
+  const seriesRef = useRef(series);
+  seriesRef.current = series;
+  const onTimeBrushRef = useRef(onTimeBrush);
+  onTimeBrushRef.current = onTimeBrush;
+
+  const hasBrush = onTimeBrush != null;
+  const handleTimeBrush = useMemo(
+    () =>
+      hasBrush
+        ? (startMs: number, endMs: number) => onTimeBrushRef.current?.(startMs, endMs)
+        : undefined,
+    [hasBrush]
+  );
+
   const hasCustomXRange = xMin != null || xMax != null;
   const xRange = useMemo<[number, number] | undefined>(() => {
     if (!hasCustomXRange) return undefined;
@@ -103,7 +129,7 @@ function ObservabilityChart({
     const axes = defaultAxes({ yAxisSize });
     axes[1] = {
       ...axes[1],
-      values: (_u: uPlot, vals: number[]) => formatUniqueAxisValues(vals, yFormatter),
+      values: (_u: uPlot, vals: number[]) => formatUniqueAxisValues(vals, yFormatterRef.current),
     };
 
     const scales: uPlot.Scales = {
@@ -134,7 +160,7 @@ function ObservabilityChart({
           font,
           size: yAxisSize,
           gap: 8,
-          values: (_u, vals) => formatUniqueAxisValues(vals, yFormatter),
+          values: (_u, vals) => formatUniqueAxisValues(vals, yFormatterRef.current),
         });
       }
     }
@@ -163,8 +189,10 @@ function ObservabilityChart({
       ],
       ...(allPlugins.length > 0 ? { plugins: allPlugins } : {}),
     };
-  }, [legend, seriesKey, yAxisSize, yFormatter, xRange, yMin, yMax, type, allPlugins]);
+  }, [legend, seriesKey, yAxisSize, xRange, yMin, yMax, type, allPlugins]);
 
+  // Stable identity: reads live data/formatters via refs so it never changes
+  // reference. uPlot invokes it on cursor move against the latest drawn data.
   const tooltipContent = useMemo(() => {
     const defaultXFormatter = (timestampSeconds: number) =>
       new Intl.DateTimeFormat(undefined, {
@@ -174,18 +202,19 @@ function ObservabilityChart({
         minute: "2-digit",
       }).format(new Date(timestampSeconds * 1000));
 
-    const valueFormatter = (value: number | null) => {
-      if (value == null || Number.isNaN(value)) return "—";
-      return yFormatter ? yFormatter(value) : value.toLocaleString();
-    };
-
     return ({ idx }: { u: uPlot; idx: number; data: uPlot.AlignedData }) => {
-      const timestampSeconds = timestamps[idx];
+      const yFmt = yFormatterRef.current;
+      const valueFormatter = (value: number | null) => {
+        if (value == null || Number.isNaN(value)) return "—";
+        return yFmt ? yFmt(value) : value.toLocaleString();
+      };
+
+      const timestampSeconds = timestampsRef.current[idx];
       if (timestampSeconds == null) {
         return null;
       }
 
-      const rows = series
+      const rows = seriesRef.current
         .filter((item) => item.showInTooltip !== false)
         .map((item, seriesIndex) => ({
           label: item.label,
@@ -202,11 +231,11 @@ function ObservabilityChart({
       }
 
       return {
-        title: (xFormatter ?? defaultXFormatter)(timestampSeconds),
+        title: (xFormatterRef.current ?? defaultXFormatter)(timestampSeconds),
         rows: rows.map(({ order: _order, ...row }) => row),
       };
     };
-  }, [timestamps, series, yFormatter, xFormatter]);
+  }, []);
 
   return (
     <div className={cn("relative h-full min-h-0", className)}>
@@ -216,7 +245,7 @@ function ObservabilityChart({
         height={height}
         fillHeight={fillHeight}
         tooltipContent={tooltipContent}
-        onTimeBrush={onTimeBrush}
+        onTimeBrush={handleTimeBrush}
       />
       {isLoading ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-[2px]">

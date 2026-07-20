@@ -175,13 +175,14 @@ export function useTimeRangeURL(): void {
   // 1. Mount hydration: the URL wins over the persisted store on first load.
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount only
   useEffect(() => {
-    const parsed = parseUrlTimeRange(searchParams.get(PARAM_FROM), searchParams.get(PARAM_TO));
+    const url = readUrl(searchParams);
+    const parsed = parseUrlTimeRange(url.from, url.to);
     if (parsed) {
       setTimeRange(parsed);
-      const urlTz = searchParams.get(PARAM_TZ);
-      if (urlTz && urlTz !== timezone) setTimezone(urlTz);
+      if (url.tz && url.tz !== timezone) setTimezone(url.tz);
     } else {
-      writeStoreToUrl(setSearchParams, timeRange, timezone);
+      const write = resolveUrlWrite(timeRange, timezone, url);
+      if (write) applyUrlWrite(setSearchParams, write);
     }
     initialized.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -190,38 +191,17 @@ export function useTimeRangeURL(): void {
   // 2. Store -> URL: fires only on store changes (not on URL changes).
   useEffect(() => {
     if (!initialized.current) return;
-
-    const params = timeRangeToUrlParams(timeRange);
-    const expectedTz = timezone !== "local" ? timezone : null;
-
-    const sp = searchParamsRef.current;
-    if (
-      sp.get(PARAM_FROM) === params.from &&
-      sp.get(PARAM_TO) === params.to &&
-      (sp.get(PARAM_TZ) ?? null) === expectedTz
-    ) {
-      return;
-    }
-
-    writeStoreToUrl(setSearchParams, timeRange, timezone);
+    const write = resolveUrlWrite(timeRange, timezone, readUrl(searchParamsRef.current));
+    if (write) applyUrlWrite(setSearchParams, write);
   }, [timeRange, timezone, setSearchParams]);
 
   // 3. URL -> Store: fires only on URL changes (browser back/forward, hydration).
   //    Reads the store via getState so store changes never re-trigger this.
   useEffect(() => {
     if (!initialized.current) return;
-
-    const parsed = parseUrlTimeRange(searchParams.get(PARAM_FROM), searchParams.get(PARAM_TO));
-    if (!parsed) return;
-
-    const current = useAppStore.getState().timeRange;
-    const currentParams = timeRangeToUrlParams(current);
-    const parsedParams = timeRangeToUrlParams(parsed);
-    if (currentParams.from !== parsedParams.from || currentParams.to !== parsedParams.to) {
-      setTimeRange(parsed);
-    }
-
-    const urlTz = searchParams.get(PARAM_TZ);
-    if (urlTz && urlTz !== useAppStore.getState().timezone) setTimezone(urlTz);
+    const url = readUrl(searchParams);
+    const next = resolveStoreWrite(useAppStore.getState().timeRange, url);
+    if (next) setTimeRange(next);
+    if (url.tz && url.tz !== useAppStore.getState().timezone) setTimezone(url.tz);
   }, [searchParams, setTimeRange, setTimezone]);
 }
