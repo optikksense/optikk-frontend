@@ -50,10 +50,9 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
       args.include.join(","),
     ],
     queryFn: () => {
-      const bounds = resolveTimeBounds(timeRange);
       return args.fetcher({
-        startTime: bounds.startTime,
-        endTime: bounds.endTime,
+        startTime,
+        endTime,
         filters: args.filters,
         cursor: args.cursor ?? undefined,
         limit: args.limit,
@@ -87,6 +86,7 @@ export function useExplorerSubQuery<TResponse>(args: UseExplorerSubQueryArgs<TRe
   const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
   const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
+  const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
   const filtersKey = useMemo(() => JSON.stringify(args.filters), [args.filters]);
 
   return useStandardQuery<TResponse>({
@@ -100,10 +100,9 @@ export function useExplorerSubQuery<TResponse>(args: UseExplorerSubQueryArgs<TRe
       filtersKey,
     ],
     queryFn: () => {
-      const bounds = resolveTimeBounds(timeRange);
       return args.fetcher({
-        startTime: bounds.startTime,
-        endTime: bounds.endTime,
+        startTime,
+        endTime,
         filters: args.filters,
       });
     },

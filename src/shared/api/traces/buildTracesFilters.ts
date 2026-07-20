@@ -1,4 +1,14 @@
 import type { ExplorerFilter, TranslationWarning } from "@shared/search/types/filters";
+import {
+  type BuildExtras,
+  type BuildResult,
+  dispatchCommonFilter,
+  finalizeSearch,
+  handleListField,
+  handleSingleValue,
+  pushUnsupportedOp,
+  pushUnknownField,
+} from "@shared/search/utils/buildFilters";
 
 /**
  * Single source of truth for translating `ExplorerFilter[]` (FE chip model)
@@ -9,18 +19,6 @@ import type { ExplorerFilter, TranslationWarning } from "@shared/search/types/fi
  * Filters that cannot be expressed on the wire are reported via `warnings`
  * so the UI can surface them — nothing is dropped silently.
  */
-
-type AttributeOperator =
-  | "eq"
-  | "neq"
-  | "contains"
-  | "regex"
-  | "gt"
-  | "gte"
-  | "lt"
-  | "lte"
-  | "exists"
-  | "not_exists";
 
 export interface TracesFiltersBody {
   startTime: number;
@@ -43,31 +41,10 @@ export interface TracesFiltersBody {
   hasError?: boolean;
   search?: string;
   searchMode?: string;
-  attributes?: Array<{ key: string; op?: AttributeOperator; value: string }>;
+  attributes?: Array<{ key: string; op?: string; value: string }>;
 }
 
-export interface TracesBuildResult {
-  readonly body: TracesFiltersBody;
-  readonly warnings: readonly TranslationWarning[];
-}
-
-/** Ops the backend implements on `attributes[]` (traces filter.go). */
-const ATTR_OPS = new Set<AttributeOperator>([
-  "eq",
-  "neq",
-  "contains",
-  "regex",
-  "gt",
-  "gte",
-  "lt",
-  "lte",
-  "exists",
-  "not_exists",
-]);
-
-function isAttributeOperator(op: string): op is AttributeOperator {
-  return ATTR_OPS.has(op as AttributeOperator);
-}
+export type TracesBuildResult = BuildResult<TracesFiltersBody>;
 
 /** field -> include array, plus optional exclude array for neq/not_in. */
 const LIST_FIELDS: Record<
@@ -89,7 +66,7 @@ export function buildTracesFilters(
   filters: readonly ExplorerFilter[],
   startTime: number,
   endTime: number,
-  extras: { limit?: number; cursor?: string } = {}
+  extras: BuildExtras = {}
 ): TracesBuildResult {
   const body: TracesFiltersBody = { startTime, endTime };
   if (extras.limit !== undefined) body.limit = extras.limit;
@@ -99,14 +76,13 @@ export function buildTracesFilters(
   const searchTerms: string[] = [];
 
   for (const filter of filters) {
+    // Try shared handlers first (attributes, search/body)
+    if (dispatchCommonFilter(filter, body, warnings, searchTerms)) continue;
+
     const { field, op, value } = filter;
 
-    if (field.startsWith("@")) {
-      handleAttribute(field, op, value, body, warnings);
-      continue;
-    }
     if (field in LIST_FIELDS) {
-      handleListField(field, op, value, body, warnings);
+      handleListField(field, op, value, body, warnings, LIST_FIELDS[field]);
       continue;
     }
 
@@ -114,14 +90,8 @@ export function buildTracesFilters(
       case "traceId":
         if (op !== "eq") {
           pushUnsupportedOp(warnings, field, op, "only exact match");
-        } else if (body.traceId) {
-          warnings.push({
-            code: "duplicate_single_value",
-            field,
-            message: "Multiple traceId filters — only the first applies.",
-          });
         } else {
-          body.traceId = value;
+          handleSingleValue(body, "traceId", value, warnings);
         }
         break;
       case "durationMs": {
@@ -139,82 +109,11 @@ export function buildTracesFilters(
         if (op === "eq") body.hasError = value === "true";
         else pushUnsupportedOp(warnings, field, op, "only hasError:true or hasError:false");
         break;
-      case "search":
-      case "body":
-        searchTerms.push(value);
-        break;
       default:
-        warnings.push({
-          code: "unknown_field",
-          field,
-          message: `Field "${field}" is not a known traces field — ignored. Use @${field} for custom attributes.`,
-        });
+        pushUnknownField(warnings, field, "traces");
     }
   }
 
-  if (searchTerms.length > 0) {
-    body.search = searchTerms.join(" ");
-  }
+  finalizeSearch(body, searchTerms);
   return { body, warnings };
-}
-
-function handleListField(
-  field: string,
-  op: string,
-  value: string,
-  body: TracesFiltersBody,
-  warnings: TranslationWarning[]
-): void {
-  const mapping = LIST_FIELDS[field];
-  const values = op === "in" || op === "not_in" ? splitInList(value) : [value];
-  if (op === "eq" || op === "in") {
-    appendArr(body, mapping.include, values);
-    return;
-  }
-  if ((op === "neq" || op === "not_in") && mapping.exclude) {
-    appendArr(body, mapping.exclude, values);
-    return;
-  }
-  pushUnsupportedOp(warnings, field, op, "only match / any-of supported");
-}
-
-function handleAttribute(
-  field: string,
-  op: string,
-  value: string,
-  body: TracesFiltersBody,
-  warnings: TranslationWarning[]
-): void {
-  if (!isAttributeOperator(op)) {
-    pushUnsupportedOp(warnings, field, op, "supported: eq/neq/contains/regex/comparisons/exists");
-    return;
-  }
-  body.attributes = body.attributes ?? [];
-  body.attributes.push({ key: field.slice(1), op, value });
-}
-
-function splitInList(value: string): string[] {
-  return value
-    .split(",")
-    .map((v) => v.trim())
-    .filter(Boolean);
-}
-
-function appendArr(body: TracesFiltersBody, key: keyof TracesFiltersBody, values: string[]): void {
-  const current = body[key];
-  const list = Array.isArray(current) ? (current as string[]) : [];
-  Object.assign(body, { [key]: [...list, ...values] });
-}
-
-function pushUnsupportedOp(
-  warnings: TranslationWarning[],
-  field: string,
-  op: string,
-  hint: string
-): void {
-  warnings.push({
-    code: "unsupported_op",
-    field,
-    message: `Operator "${op}" not supported on "${field}" — ${hint}.`,
-  });
 }

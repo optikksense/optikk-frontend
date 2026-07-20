@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Copy, ExternalLink } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAppStore, useTimeRange } from "@/app/store/appStore";
 import type { SummaryKPI } from "@shared/search/components/chrome/SummaryStrip";
@@ -49,21 +49,19 @@ export function useTracesExplorerPage() {
     [setCustomTimeRange]
   );
   // Changing the filter set invalidates the keyset cursor; reset pagination too.
-  const applyFilters = useCallback(
-    (next: readonly ExplorerFilter[]) => {
-      state.setFilters(next);
-      setCursorHistory([]);
-      state.setCursor(null);
-    },
+  const filtersJson = useMemo(() => JSON.stringify(state.filters), [state.filters]);
+  useEffect(() => {
+    setCursorHistory([]);
+    state.setCursor(null);
+  }, [filtersJson, state.setCursor]);
+
+  const onInclude = useCallback(
+    (field: string, value: string) => state.addFilter({ field, op: "eq", value }),
     [state]
   );
-  const onInclude = useCallback(
-    (field: string, value: string) => applyFilters([...state.filters, { field, op: "eq", value }]),
-    [applyFilters, state.filters]
-  );
   const onExclude = useCallback(
-    (field: string, value: string) => applyFilters([...state.filters, { field, op: "neq", value }]),
-    [applyFilters, state.filters]
+    (field: string, value: string) => state.addFilter({ field, op: "neq", value }),
+    [state]
   );
 
   const onOpenTrace = useCallback(
@@ -75,16 +73,16 @@ export function useTracesExplorerPage() {
   const onFreeText = useCallback(
     (text: string) => {
       if (!text) return;
-      applyFilters([...state.filters, { field: "search", op: "contains", value: text }]);
+      state.addFilter({ field: "search", op: "contains", value: text });
     },
-    [applyFilters, state.filters]
+    [state]
   );
   const onRetry = useCallback(() => {
     void query.refetch();
     if (facetsQuery) void facetsQuery.refetch();
     if (trendQuery) void trendQuery.refetch();
   }, [query, facetsQuery, trendQuery]);
-  const onClearFilters = useCallback(() => applyFilters([]), [applyFilters]);
+  const onClearFilters = useCallback(() => state.clearAll(), [state]);
 
   const onNextPage = useCallback(() => {
     if (query.data?.nextCursor) {
@@ -108,10 +106,10 @@ export function useTracesExplorerPage() {
     (row: TraceSummary): readonly ContextMenuEntry[] =>
       buildTraceContextMenu(row, {
         filters: state.filters,
-        setFilters: applyFilters,
+        setFilters: state.setFilters,
         openTraceDetail: (trace) => onOpenTrace(trace),
       }),
-    [state.filters, applyFilters, onOpenTrace]
+    [state.filters, state.setFilters, onOpenTrace]
   );
 
   useExplorerKeyboard({

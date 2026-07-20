@@ -85,13 +85,11 @@ export default function LogsExplorerPage() {
   );
 
   const onInclude = useCallback(
-    (field: string, value: string) =>
-      state.setFilters([...state.filters, { field, op: "eq", value }]),
+    (field: string, value: string) => state.addFilter({ field, op: "eq", value }),
     [state]
   );
   const onExclude = useCallback(
-    (field: string, value: string) =>
-      state.setFilters([...state.filters, { field, op: "neq", value }]),
+    (field: string, value: string) => state.addFilter({ field, op: "neq", value }),
     [state]
   );
   const onClearFilters = useCallback(() => state.setFilters([]), [state]);

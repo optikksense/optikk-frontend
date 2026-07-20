@@ -3,6 +3,7 @@ import { z } from "zod";
 import { API_CONFIG } from "@config/apiConfig";
 import { api } from "@shared/api/http/client";
 import { validateResponse } from "@shared/api/utils/validate";
+import { pageInfoSchema } from "@shared/search/schemas/pageInfo";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
@@ -36,13 +37,6 @@ export const rawLogRowSchema = z.object({
   attributesBool: z.record(z.string(), z.boolean()).optional(),
   scopeName: z.string(),
   scopeVersion: z.string(),
-});
-
-/** Mirrors logs models.PageInfo; only nextCursor is `omitempty`. */
-const pageInfoSchema = z.object({
-  hasMore: z.boolean(),
-  nextCursor: z.string().optional(),
-  limit: z.number(),
 });
 
 function tsToNsString(ts: string): string {

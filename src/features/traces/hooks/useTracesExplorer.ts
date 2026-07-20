@@ -57,13 +57,26 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     return { total, errors };
   }, [trendQuery.data]);
 
+  const list = {
+    results: explorerQuery.data?.traces ?? [],
+    isPending: explorerQuery.isPending && !explorerQuery.data,
+    isError: explorerQuery.isError,
+    error: explorerQuery.error,
+    hasMore: !!explorerQuery.data?.nextCursor,
+    nextCursor: explorerQuery.data?.nextCursor ?? null,
+    pageSize: args.limit ?? 100,
+    pageIndex: 0,
+    refetch: () => explorerQuery.refetch(),
+  };
+
   return {
     state,
-    query: explorerQuery,
-    facetsQuery,
-    trendQuery,
-    traces: explorerQuery.data?.traces ?? [],
-    nextCursor: explorerQuery.data?.nextCursor ?? null,
+    list,
+    query: explorerQuery, // keep for compat temporarily
+    facetsQuery, // keep for compat
+    trendQuery, // keep for compat
+    traces: explorerQuery.data?.traces ?? [], // keep for compat
+    nextCursor: explorerQuery.data?.nextCursor ?? null, // keep for compat
     summary,
     facets: facetsQuery.data,
     trend: trendQuery.data,

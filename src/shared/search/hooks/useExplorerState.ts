@@ -5,7 +5,13 @@ import { useSearchParamsCompat } from "@shared/hooks/useSearchParamsCompat";
 import type { ExplorerFilter, ExplorerMode } from "../types/filters";
 import { decodeFilters, encodeFilters, parseMode } from "../utils/urlState";
 
-/** URL-synced snapshot shared by all explorers (both logs + traces). */
+/**
+ * URL-synced snapshot shared by all explorers (logs, traces).
+ * 
+ * Migration from `useURLFilters`: This synchronous hook replaces the legacy
+ * timer-debounced `useURLFilters` system. Migrate legacy pages to this hook
+ * when overhauling their search architectures.
+ */
 interface ExplorerStateSnapshot {
   readonly filters: readonly ExplorerFilter[];
   readonly mode: ExplorerMode;
@@ -15,6 +21,8 @@ interface ExplorerStateSnapshot {
 
 export interface ExplorerStateApi extends ExplorerStateSnapshot {
   readonly setFilters: (filters: readonly ExplorerFilter[]) => void;
+  readonly addFilter: (filter: ExplorerFilter) => void;
+  readonly removeFilter: (filter: ExplorerFilter) => void;
   readonly setMode: (mode: ExplorerMode) => void;
   readonly setCursor: (cursor: string | null) => void;
   readonly setDetail: (detail: string | null) => void;
@@ -47,6 +55,22 @@ export function useExplorerState(): ExplorerStateApi {
     },
     [setParams]
   );
+  const addFilter = useCallback(
+    (filter: ExplorerFilter) => {
+      setFilters([...filters, filter]);
+    },
+    [filters, setFilters]
+  );
+  const removeFilter = useCallback(
+    (filter: ExplorerFilter) => {
+      setFilters(
+        filters.filter(
+          (f) => f.field !== filter.field || f.op !== filter.op || f.value !== filter.value
+        )
+      );
+    },
+    [filters, setFilters]
+  );
   const setMode = useCallback(
     (next: ExplorerMode) =>
       setParams(
@@ -71,5 +95,5 @@ export function useExplorerState(): ExplorerStateApi {
     setParams(() => new URLSearchParams(), { replace: true });
   }, [setParams]);
 
-  return { filters, mode, cursor, detail, setFilters, setMode, setCursor, setDetail, clearAll };
+  return { filters, mode, cursor, detail, setFilters, addFilter, removeFilter, setMode, setCursor, setDetail, clearAll };
 }

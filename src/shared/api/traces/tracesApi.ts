@@ -3,7 +3,7 @@ import api from "@shared/api/http/client";
 import { validateResponse } from "@shared/api/utils/validate";
 import { z } from "zod";
 import { buildTracesFilters } from "./buildTracesFilters";
-
+import { pageInfoSchema } from "@shared/search/schemas/pageInfo";
 import { type ServiceTopologyResponse, topologyResponseSchema } from "@shared/api/topology";
 import {
   criticalPathSpanSchema,
@@ -31,12 +31,7 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 // Traces Query & Explorer Schemas & Helpers
 // ==========================================
 
-/** Mirrors explorer.PageInfo; only nextCursor is `omitempty`. */
-const pageInfoSchema = z.object({
-  hasMore: z.boolean(),
-  nextCursor: z.string().optional(),
-  limit: z.number(),
-});
+
 
 function extractNextCursor(pageInfo: unknown): string | undefined {
   const parsed = pageInfoSchema.safeParse(pageInfo);

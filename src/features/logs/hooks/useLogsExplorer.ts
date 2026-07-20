@@ -1,12 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 
-import { useRefreshKey, useTenantId, useTimeRange } from "@app/store/appStore";
-import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { useTenantId, useTimeRange } from "@app/store/appStore";
+import { useExplorerQuery, useExplorerSubQuery } from "@shared/search/hooks/useExplorerQuery";
 import { useExplorerState } from "@shared/search/hooks/useExplorerState";
-import { resolveTimeBounds } from "@shared/utils/timeBounds";
 
 import {
-  type LogsAnalyticsArgs,
   type LogsFacets,
   type LogsSummary,
   type LogsTrendBucket,
@@ -27,25 +25,10 @@ interface UseLogsExplorerArgs {
 
 /**
  * Logs explorer foundation — URL state + four parallel reads.
- *
- * ## Pagination strategy
- * Uses a single `useQuery` for the current page, with cursor state tracked
- * in the Zustand store. This avoids the `useInfiniteQuery` pitfalls:
- * - Auto-refresh only refetches the CURRENT page (one query)
- * - No opaque TanStack refetch-all-pages cascade
- * - Prev/Next uses TanStack cache for instant back-navigation
- *
- * ## Refresh strategy
- * Summary/trend/facets include `refreshKey` in their query key so they
- * refetch on every auto-refresh tick.
- * The list query does NOT include `refreshKey` — instead we invalidate
- * it explicitly so it refetches in-place without losing cursor state.
- * The `queryFn` resolves relative time bounds at call time.
  */
 export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const explorerState = useExplorerState();
   const tenantId = useTenantId();
-  const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
 
   const pageIndex = useLogsExplorerStore((s) => s.pageIndex);
@@ -57,41 +40,21 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const currentCursor = cursors[pageIndex];
 
   const filtersJson = useMemo(() => JSON.stringify(explorerState.filters), [explorerState.filters]);
-  const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
 
-  const listBaseKey = useMemo(
-    () => ["logs", tenantId ?? "none", timeRangeKey, filtersJson] as const,
-    [tenantId, timeRangeKey, filtersJson]
-  );
-
-  const analyticsBaseKey = useMemo(
-    () => ["logs-analytics", tenantId ?? "none", refreshKey, timeRangeKey, filtersJson] as const,
-    [tenantId, refreshKey, timeRangeKey, filtersJson]
-  );
-
-  const prevListBaseKeyRef = useRef(listBaseKey);
   useEffect(() => {
-    const prev = prevListBaseKeyRef.current;
-    if (prev[1] !== listBaseKey[1] || prev[2] !== listBaseKey[2] || prev[3] !== listBaseKey[3]) {
-      prevListBaseKeyRef.current = listBaseKey;
-      resetPagination();
-    }
-  }, [listBaseKey, resetPagination]);
-
-  const buildAnalyticsArgs = useCallback((): LogsAnalyticsArgs => {
-    const { startTime, endTime } = resolveTimeBounds(timeRange);
-    return { startTime, endTime, filters: explorerState.filters };
-  }, [timeRange, explorerState.filters]);
+    resetPagination();
+  }, [tenantId, timeRange, filtersJson, resetPagination]);
 
   const limit = args.limit ?? DEFAULT_PAGE_SIZE;
 
-  const listQuery = useStandardQuery({
-    queryKey: [...listBaseKey, "list", limit, currentCursor ?? "page0"],
-    queryFn: () => {
-      const analyticsArgs = buildAnalyticsArgs();
-      return queryLogs({ ...analyticsArgs, cursor: currentCursor, limit });
-    },
-    enabled: args.enabled ?? true,
+  const listQuery = useExplorerQuery({
+    scope: "logs",
+    filters: explorerState.filters,
+    cursor: currentCursor ?? null,
+    limit,
+    include: [],
+    enabled: args.enabled,
+    fetcher: queryLogs,
   });
 
   const listData = listQuery.data;
@@ -117,22 +80,28 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
     refetch: () => listQuery.refetch(),
   };
 
-  const summary = useStandardQuery<LogsSummary>({
-    queryKey: [...analyticsBaseKey, "summary"],
-    queryFn: () => getLogsSummary(buildAnalyticsArgs()),
+  const summary = useExplorerSubQuery<LogsSummary>({
+    scope: "logs",
+    subKey: "summary",
+    filters: explorerState.filters,
     enabled: args.enabled ?? true,
+    fetcher: (req) => getLogsSummary(req),
   });
 
-  const trend = useStandardQuery<readonly LogsTrendBucket[]>({
-    queryKey: [...analyticsBaseKey, "trend"],
-    queryFn: () => getLogsTrend(buildAnalyticsArgs()),
+  const trend = useExplorerSubQuery<readonly LogsTrendBucket[]>({
+    scope: "logs",
+    subKey: "trend",
+    filters: explorerState.filters,
     enabled: args.enabled ?? true,
+    fetcher: (req) => getLogsTrend(req),
   });
 
-  const facets = useStandardQuery<LogsFacets>({
-    queryKey: [...analyticsBaseKey, "facets"],
-    queryFn: () => getLogsFacets(buildAnalyticsArgs()),
+  const facets = useExplorerSubQuery<LogsFacets>({
+    scope: "logs",
+    subKey: "facets",
+    filters: explorerState.filters,
     enabled: args.enabled ?? true,
+    fetcher: (req) => getLogsFacets(req),
   });
 
   return { state: explorerState, list, summary, trend, facets };

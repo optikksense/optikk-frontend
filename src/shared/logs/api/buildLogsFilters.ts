@@ -1,4 +1,17 @@
 import type { ExplorerFilter, TranslationWarning } from "@shared/search/types/filters";
+import {
+  type BuildExtras,
+  type BuildResult,
+  appendArr,
+  dispatchCommonFilter,
+  finalizeSearch,
+  handleListField,
+  handleSingleValue,
+  initBody,
+  listValues,
+  pushUnsupportedOp,
+  pushUnknownField,
+} from "@shared/search/utils/buildFilters";
 
 /**
  * Single source of truth for translating `ExplorerFilter[]` (FE chip model)
@@ -37,204 +50,80 @@ interface LogsFiltersBody {
   spanId?: string;
   search?: string;
 
-  attributes?: ReadonlyArray<{
+  attributes?: Array<{
     readonly key: string;
     readonly op?: string;
     readonly value: string;
   }>;
 }
 
-export interface BuildResult {
-  readonly body: LogsFiltersBody;
-  readonly warnings: readonly TranslationWarning[];
-}
+export { type BuildResult };
 
-export interface BuildExtras {
-  readonly limit?: number;
-  readonly cursor?: string;
-}
+/** field -> include array, plus optional exclude array for neq/not_in. */
+const LIST_FIELDS: Record<
+  string,
+  { include: keyof LogsFiltersBody; exclude?: keyof LogsFiltersBody }
+> = {
+  serviceName: { include: "services", exclude: "excludeServices" },
+  host: { include: "hosts", exclude: "excludeHosts" },
+  pod: { include: "pods" },
+  container: { include: "containers" },
+  environment: { include: "environments" },
+};
 
 export function buildLogsFilters(
   filters: readonly ExplorerFilter[],
   startTime: number,
   endTime: number,
   extras: BuildExtras = {}
-): BuildResult {
-  const body: LogsFiltersBody = { startTime, endTime };
-  if (extras.limit !== undefined) body.limit = extras.limit;
-  if (extras.cursor) body.cursor = extras.cursor;
-
+): BuildResult<LogsFiltersBody> {
+  const body = initBody<LogsFiltersBody>(startTime, endTime, extras);
   const warnings: TranslationWarning[] = [];
   const searchTerms: string[] = [];
 
   for (const filter of filters) {
-    dispatchFilter(filter.field, filter.op, filter.value, { body, warnings, searchTerms });
+    // Try shared handlers first (attributes, search/body)
+    if (dispatchCommonFilter(filter, body, warnings, searchTerms)) continue;
+
+    const { field, op, value } = filter;
+
+    if (field in LIST_FIELDS) {
+      handleListField(field, op, value, body, warnings, LIST_FIELDS[field]);
+      continue;
+    }
+
+    switch (field) {
+      case "traceId":
+        handleSingleValue(body, "traceId", value, warnings);
+        break;
+      case "spanId":
+        handleSingleValue(body, "spanId", value, warnings);
+        break;
+      case "severityText":
+        handleSeverity(op, value, body, warnings);
+        break;
+      default:
+        pushUnknownField(warnings, field, "logs");
+    }
   }
 
-  if (searchTerms.length > 0) body.search = searchTerms.join(" ");
+  finalizeSearch(body, searchTerms);
   return { body, warnings };
 }
 
-const RESOURCE_DIMS = new Set(["serviceName", "host", "pod", "container", "environment"]);
-
-const RESOURCE_INCLUDE: Record<string, keyof LogsFiltersBody> = {
-  serviceName: "services",
-  host: "hosts",
-  pod: "pods",
-  container: "containers",
-  environment: "environments",
-};
-
-const RESOURCE_EXCLUDE: Record<string, keyof LogsFiltersBody> = {
-  serviceName: "excludeServices",
-  host: "excludeHosts",
-};
-
-/** Ops the backend implements on `attributes[]` (logs filter.go). */
-const ATTR_OPS = new Set([
-  "eq",
-  "neq",
-  "contains",
-  "regex",
-  "gt",
-  "gte",
-  "lt",
-  "lte",
-  "exists",
-  "not_exists",
-]);
-
-interface DispatchCtx {
-  readonly body: LogsFiltersBody;
-  readonly warnings: TranslationWarning[];
-  readonly searchTerms: string[];
-}
-
-function dispatchFilter(field: string, op: string, value: string, ctx: DispatchCtx): void {
-  if (field.startsWith("@")) {
-    handleAttribute(field.slice(1), op, value, ctx);
-    return;
-  }
-  if (field === "search" || field === "body") {
-    handleSearch(op, value, ctx);
-    return;
-  }
-  if (field === "traceId") {
-    handleSingle(ctx, "traceId", value);
-    return;
-  }
-  if (field === "spanId") {
-    handleSingle(ctx, "spanId", value);
-    return;
-  }
-  if (field === "severityText") {
-    handleSeverity(op, value, ctx);
-    return;
-  }
-  if (RESOURCE_DIMS.has(field)) {
-    handleResourceDim(field, op, value, ctx);
-    return;
-  }
-  ctx.warnings.push({
-    code: "unknown_field",
-    field,
-    message: `Field "${field}" is not a known logs facet — ignored. Use @${field} for custom attributes.`,
-  });
-}
-
-function handleResourceDim(field: string, op: string, value: string, ctx: DispatchCtx): void {
+function handleSeverity(
+  op: string,
+  value: string,
+  body: LogsFiltersBody,
+  warnings: TranslationWarning[]
+): void {
   if (op === "eq" || op === "in") {
-    appendArr(ctx.body, RESOURCE_INCLUDE[field], ...listValues(op, value));
+    appendArr(body, "severities", listValues(op, value));
     return;
   }
   if (op === "neq" || op === "not_in") {
-    const key = RESOURCE_EXCLUDE[field];
-    if (!key) {
-      ctx.warnings.push({
-        code: "unsupported_op",
-        field,
-        message: `Exclusion not supported on "${field}"`,
-      });
-      return;
-    }
-    appendArr(ctx.body, key, ...listValues(op, value));
+    appendArr(body, "excludeSeverities", listValues(op, value));
     return;
   }
-  ctx.warnings.push({
-    code: "unsupported_op",
-    field,
-    message: `Operator "${op}" not supported on resource dim "${field}" — only match / any-of.`,
-  });
-}
-
-function handleSeverity(op: string, value: string, ctx: DispatchCtx): void {
-  if (op === "eq" || op === "in") {
-    appendArr(ctx.body, "severities", ...listValues(op, value));
-    return;
-  }
-  if (op === "neq" || op === "not_in") {
-    appendArr(ctx.body, "excludeSeverities", ...listValues(op, value));
-    return;
-  }
-  ctx.warnings.push({
-    code: "unsupported_op",
-    field: "severityText",
-    message: `Operator "${op}" not supported on severity — only match / any-of.`,
-  });
-}
-
-/** in/not_in carry comma-joined values from the `(a OR b)` DSL form. */
-function listValues(op: string, value: string): string[] {
-  if (op !== "in" && op !== "not_in") return [value];
-  return value
-    .split(",")
-    .map((v) => v.trim())
-    .filter(Boolean);
-}
-
-function handleSingle(ctx: DispatchCtx, key: "traceId" | "spanId", value: string): void {
-  if (ctx.body[key]) {
-    ctx.warnings.push({
-      code: "duplicate_single_value",
-      field: key,
-      message: `Multiple ${key} filters — only the first applies.`,
-    });
-    return;
-  }
-  ctx.body[key] = value;
-}
-
-// Body search is always case-insensitive substring; `body:"x"` and a bare
-// `x` mean the same thing. Quoting only groups a phrase, it does not
-// switch to exact matching.
-function handleSearch(op: string, value: string, ctx: DispatchCtx): void {
-  if (op === "contains" || op === "eq") {
-    ctx.searchTerms.push(value);
-    return;
-  }
-  ctx.warnings.push({
-    code: "unsupported_op",
-    field: "search",
-    message: `Operator "${op}" not supported on body — only contains/eq.`,
-  });
-}
-
-function handleAttribute(key: string, op: string, value: string, ctx: DispatchCtx): void {
-  if (!ATTR_OPS.has(op)) {
-    ctx.warnings.push({
-      code: "unsupported_op",
-      field: `@${key}`,
-      message: `Operator "${op}" not supported on attribute "@${key}" — supported: eq/neq/contains/regex/comparisons/exists.`,
-    });
-    return;
-  }
-  const list = ctx.body.attributes ? [...ctx.body.attributes] : [];
-  list.push({ key, op, value });
-  ctx.body.attributes = list;
-}
-
-function appendArr(body: LogsFiltersBody, key: keyof LogsFiltersBody, ...values: string[]): void {
-  const val = body[key];
-  const current = Array.isArray(val) && val.every((v) => typeof v === "string") ? val : [];
-  Object.assign(body, { [key]: [...current, ...values] });
+  pushUnsupportedOp(warnings, "severityText", op, "only match / any-of");
 }

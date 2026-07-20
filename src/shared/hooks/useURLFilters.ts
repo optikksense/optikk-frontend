@@ -110,6 +110,10 @@ function decodeStructuredFiltersParam(raw: string | null): StructuredFilter[] {
   return filters;
 }
 
+/**
+ * @deprecated Use `useExplorerState` instead for modern explorer pages.
+ * This legacy timer-debounced filter system is currently only used by metrics.
+ */
 export function useURLFilters(config: URLFilterConfig): {
   values: URLFilterValues;
   setters: URLFilterSetters;
