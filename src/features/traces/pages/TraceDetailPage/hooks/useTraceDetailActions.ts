@@ -10,12 +10,14 @@ type State = {
   resolvedTraceId: string;
   setSelectedSpanId: ReturnType<typeof useTraceDetailData>["setSelectedSpanId"];
   selectedSpanId: string | null;
+  traceTimeBounds?: { startMs?: number; endMs?: number };
 };
 
 export function useTraceDetailActions({
   resolvedTraceId,
   setSelectedSpanId,
   selectedSpanId,
+  traceTimeBounds,
 }: State) {
   const navigate = useNavigate();
   const search = Route.useSearch();
@@ -47,12 +49,22 @@ export function useTraceDetailActions({
   }, [setSelectedSpanId, navigate]);
 
   const openInLogs = useCallback(() => {
+    const fromMs =
+      traceTimeBounds?.startMs && traceTimeBounds.startMs > 0
+        ? traceTimeBounds.startMs - 5 * 60 * 1000
+        : undefined;
+    const toMs =
+      traceTimeBounds?.endMs && traceTimeBounds.endMs > 0
+        ? traceTimeBounds.endMs + 5 * 60 * 1000
+        : undefined;
     navigate({
       to: buildLogsHubHref({
         filters: [traceIdEqualsFilter(resolvedTraceId)],
+        fromMs,
+        toMs,
       }) as never,
     });
-  }, [navigate, resolvedTraceId]);
+  }, [navigate, resolvedTraceId, traceTimeBounds]);
 
   const goBack = useCallback(() => navigate({ to: "/traces" }), [navigate]);
 

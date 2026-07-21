@@ -1,3 +1,4 @@
+import type { TraceLog } from "@shared/api/traces/schemas";
 import { useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
@@ -14,6 +15,64 @@ import {
 import { TraceDetailLayout } from "./components/TraceDetailLayout";
 import { TraceHeader } from "./components/TraceHeader";
 import { useTraceDetailPage } from "./hooks/useTraceDetailPage";
+
+function AssociatedTraceLogsSection({
+  logs,
+  onOpenInLogs,
+}: {
+  logs: readonly TraceLog[];
+  onOpenInLogs: () => void;
+}) {
+  return (
+    <div className="flex flex-col rounded-lg border border-[var(--line)] bg-[var(--bg-1)] p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h2 className="font-semibold text-foreground text-sm">Associated Logs</h2>
+          <span className="rounded-full bg-[var(--bg-2)] px-2 py-0.5 font-mono text-foreground-secondary text-xs">
+            {logs.length}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={onOpenInLogs}
+          className="flex cursor-pointer items-center gap-1 border-0 bg-transparent font-mono text-[var(--accent-2)] text-xs hover:underline"
+        >
+          Open all in Logs Explorer →
+        </button>
+      </div>
+      <div className="overflow-x-auto rounded-md border border-[var(--line)]">
+        <table className="w-full text-left font-mono text-xs">
+          <thead className="border-[var(--line)] border-b bg-[var(--bg-2)] text-foreground-caption">
+            <tr>
+              <th className="px-3 py-2 font-medium">Timestamp</th>
+              <th className="px-3 py-2 font-medium">Service</th>
+              <th className="px-3 py-2 font-medium">Level</th>
+              <th className="px-3 py-2 font-medium">Message</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--line)]">
+            {logs.map((log, i) => (
+              <tr key={log.id || `${log.timestamp}-${i}`} className="hover:bg-[var(--bg-row-h)]">
+                <td className="whitespace-nowrap px-3 py-2 text-foreground-secondary">
+                  {log.timestamp ? String(log.timestamp) : "—"}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-foreground">
+                  {log.serviceName || "—"}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2">
+                  <span className="inline-block rounded bg-[var(--bg-2)] px-1.5 py-0.5 font-semibold text-[10px] text-foreground uppercase tracking-wide">
+                    {log.severityText || "INFO"}
+                  </span>
+                </td>
+                <td className="px-3 py-2 text-foreground break-all">{log.body || "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 
 export default function TraceDetailPage() {
   const { data, stats, resolvedTraceId, traceTimeBounds, actions, layoutProps } =
@@ -39,9 +98,26 @@ export default function TraceDetailPage() {
       </PageShell>
     );
   if (data.spans.length === 0) {
+    if (data.traceLogs.length === 0) {
+      return (
+        <PageShell>
+          <TraceDetailEmptySpans hasLogs={false} />
+        </PageShell>
+      );
+    }
     return (
-      <PageShell>
-        <TraceDetailEmptySpans hasLogs={data.traceLogs.length > 0} />
+      <PageShell className="!gap-0 !pb-0 flex h-full min-h-0 min-h-[calc(100vh-var(--space-header-h,56px)-2rem)] flex-1 flex-col bg-background text-foreground-secondary [font-feature-settings:'tnum']">
+        <TraceHeader
+          traceId={resolvedTraceId}
+          stats={stats}
+          startMs={traceTimeBounds.startMs}
+          onOpenInLogs={actions.openInLogs}
+          onBack={actions.goBack}
+        />
+        <div className="flex flex-col gap-4 p-5">
+          <TraceDetailEmptySpans hasLogs={true} />
+          <AssociatedTraceLogsSection logs={data.traceLogs} onOpenInLogs={actions.openInLogs} />
+        </div>
       </PageShell>
     );
   }

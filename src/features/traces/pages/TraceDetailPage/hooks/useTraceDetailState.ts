@@ -33,7 +33,25 @@ export function useTraceDetailState() {
     [data.spans, traceIdParam]
   );
 
-  const traceTimeBounds = useMemo(() => computeTraceTimeBounds(data.spans), [data.spans]);
+  const traceTimeBounds = useMemo(() => {
+    const bounds = computeTraceTimeBounds(data.spans);
+    if (bounds.startMs !== undefined && bounds.endMs !== undefined) return bounds;
+    if (data.traceLogs.length > 0) {
+      let minStart = Number.POSITIVE_INFINITY;
+      let maxEnd = Number.NEGATIVE_INFINITY;
+      for (const log of data.traceLogs) {
+        const t = log.timestamp ? new Date(log.timestamp).getTime() : Number.NaN;
+        if (Number.isFinite(t)) {
+          if (t < minStart) minStart = t;
+          if (t > maxEnd) maxEnd = t;
+        }
+      }
+      if (Number.isFinite(minStart) && Number.isFinite(maxEnd)) {
+        return { startMs: minStart, endMs: maxEnd };
+      }
+    }
+    return bounds;
+  }, [data.spans, data.traceLogs]);
 
   const serviceMap = useTraceServiceMap(traceIdParam, traceTimeBounds, activeTab === "servicemap");
 

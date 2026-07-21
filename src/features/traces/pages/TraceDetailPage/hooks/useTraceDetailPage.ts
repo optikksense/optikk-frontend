@@ -14,6 +14,7 @@ export function useTraceDetailPage() {
     resolvedTraceId: state.resolvedTraceId,
     setSelectedSpanId: state.data.setSelectedSpanId,
     selectedSpanId: state.data.selectedSpanId,
+    traceTimeBounds: state.traceTimeBounds,
   });
 
   const setVisualizationTab = useTracesStore((s) => s.setVisualizationTab);

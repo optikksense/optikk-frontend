@@ -1,4 +1,5 @@
 import { useRefreshKey, useTenantId, useTimeRange } from "@app/store/appStore";
+import { useSearchParamsCompat } from "@shared/hooks/useSearchParamsCompat";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useMemo } from "react";
 
@@ -16,25 +17,33 @@ interface UseExplorerQueryArgs<TResponse> {
   readonly fetcher: (body: ExplorerQueryRequest) => Promise<TResponse>;
 }
 
-/**
- * Thin wrapper around `useStandardQuery` that encapsulates:
- *   - tenantId + refreshKey + time-range plumbing
- *   - stable query-key hashing
- *   - `include` flag passthrough (facets/trend/summary)
- *
- * Callers (useLogsExplorer, useTracesExplorer) stay under 200 LOC.
- *
- * Explorer reads are scoped by the session tenant on the server; `tenantId` is
- * kept in the query key for cache separation when the workspace picker
- * changes, but we do not gate `enabled` on it — a null primary tenant id should
- * not block fetches (see auth + persist merge in appStore).
- */
 export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse>) {
   const tenantId = useTenantId();
   const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
-  const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
-  const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
+  const [params] = useSearchParamsCompat();
+
+  const urlFrom = params.get("from") ? Number(params.get("from")) : undefined;
+  const urlTo = params.get("to") ? Number(params.get("to")) : undefined;
+  const hasUrlBounds =
+    urlFrom !== undefined &&
+    urlTo !== undefined &&
+    Number.isFinite(urlFrom) &&
+    Number.isFinite(urlTo) &&
+    urlFrom > 0 &&
+    urlTo > urlFrom;
+
+  const { startTime, endTime } = useMemo(() => {
+    if (hasUrlBounds) {
+      return { startTime: urlFrom!, endTime: urlTo! };
+    }
+    return resolveTimeBounds(timeRange);
+  }, [timeRange, refreshKey, hasUrlBounds, urlFrom, urlTo]);
+
+  const timeRangeKey = useMemo(
+    () => (hasUrlBounds ? `${urlFrom}-${urlTo}` : JSON.stringify(timeRange)),
+    [hasUrlBounds, urlFrom, urlTo, timeRange]
+  );
 
   const query = useStandardQuery<TResponse>({
     queryKey: [
@@ -77,16 +86,33 @@ export interface UseExplorerSubQueryArgs<TResponse> {
   }) => Promise<TResponse>;
 }
 
-/**
- * Standardized sub-query helper for explorer secondary reads (facets, trend,
- * summary) that shares tenantId, refreshKey, timeRangeKey, and live bounds.
- */
 export function useExplorerSubQuery<TResponse>(args: UseExplorerSubQueryArgs<TResponse>) {
   const tenantId = useTenantId();
   const refreshKey = useRefreshKey();
   const timeRange = useTimeRange();
-  const timeRangeKey = useMemo(() => JSON.stringify(timeRange), [timeRange]);
-  const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);
+  const [params] = useSearchParamsCompat();
+
+  const urlFrom = params.get("from") ? Number(params.get("from")) : undefined;
+  const urlTo = params.get("to") ? Number(params.get("to")) : undefined;
+  const hasUrlBounds =
+    urlFrom !== undefined &&
+    urlTo !== undefined &&
+    Number.isFinite(urlFrom) &&
+    Number.isFinite(urlTo) &&
+    urlFrom > 0 &&
+    urlTo > urlFrom;
+
+  const { startTime, endTime } = useMemo(() => {
+    if (hasUrlBounds) {
+      return { startTime: urlFrom!, endTime: urlTo! };
+    }
+    return resolveTimeBounds(timeRange);
+  }, [timeRange, refreshKey, hasUrlBounds, urlFrom, urlTo]);
+
+  const timeRangeKey = useMemo(
+    () => (hasUrlBounds ? `${urlFrom}-${urlTo}` : JSON.stringify(timeRange)),
+    [hasUrlBounds, urlFrom, urlTo, timeRange]
+  );
   const filtersKey = useMemo(() => JSON.stringify(args.filters), [args.filters]);
 
   return useStandardQuery<TResponse>({
