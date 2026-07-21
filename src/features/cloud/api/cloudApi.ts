@@ -21,11 +21,19 @@ export function getCloudInventory(s: RequestTime, e: RequestTime): Promise<Inven
   return api.get<InventoryRow[]>(`${V1}/cloud/inventory`, { params: range(s, e) });
 }
 
-export function getCloudCategories(s: RequestTime, e: RequestTime): Promise<Record<string, CategoryCount[]>> {
-  return api.get<Record<string, CategoryCount[]>>(`${V1}/cloud/categories`, { params: range(s, e) });
+export function getCloudCategories(
+  s: RequestTime,
+  e: RequestTime
+): Promise<Record<string, CategoryCount[]>> {
+  return api.get<Record<string, CategoryCount[]>>(`${V1}/cloud/categories`, {
+    params: range(s, e),
+  });
 }
 
-export function getCloudHealth(s: RequestTime, e: RequestTime): Promise<Record<string, HealthCounts>> {
+export function getCloudHealth(
+  s: RequestTime,
+  e: RequestTime
+): Promise<Record<string, HealthCounts>> {
   return api.get<Record<string, HealthCounts>>(`${V1}/cloud/health`, { params: range(s, e) });
 }
 
@@ -38,7 +46,9 @@ export function getProviderPlatforms(
   s: RequestTime,
   e: RequestTime
 ): Promise<PlatformService[]> {
-  return api.get<PlatformService[]>(`${V1}/cloud/provider/${provider}/platforms`, { params: range(s, e) });
+  return api.get<PlatformService[]>(`${V1}/cloud/provider/${provider}/platforms`, {
+    params: range(s, e),
+  });
 }
 
 export function getProviderAccounts(
@@ -46,7 +56,9 @@ export function getProviderAccounts(
   s: RequestTime,
   e: RequestTime
 ): Promise<AccountBreakdown[]> {
-  return api.get<AccountBreakdown[]>(`${V1}/cloud/provider/${provider}/accounts`, { params: range(s, e) });
+  return api.get<AccountBreakdown[]>(`${V1}/cloud/provider/${provider}/accounts`, {
+    params: range(s, e),
+  });
 }
 
 export function getProviderResources(
@@ -54,5 +66,7 @@ export function getProviderResources(
   s: RequestTime,
   e: RequestTime
 ): Promise<AttentionResource[]> {
-  return api.get<AttentionResource[]>(`${V1}/cloud/provider/${provider}/resources`, { params: range(s, e) });
+  return api.get<AttentionResource[]>(`${V1}/cloud/provider/${provider}/resources`, {
+    params: range(s, e),
+  });
 }

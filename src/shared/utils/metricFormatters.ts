@@ -32,4 +32,3 @@ export function relativeTimeFromIso(iso: string | undefined | null): string {
   if (!iso) return "—";
   return formatRelativeTime(iso);
 }
-

@@ -4,9 +4,9 @@ import { useExplorerQuery, useExplorerSubQuery } from "@shared/search/hooks/useE
 import { useExplorerState } from "@shared/search/hooks/useExplorerState";
 import type { ExplorerIncludeFlag } from "@shared/search/types";
 
-import { useQuery } from "@tanstack/react-query";
 import { enrichTraces, query, queryFacets, queryTrend } from "@shared/api/traces/tracesApi";
 import type { TracesQueryResponse } from "@shared/api/traces/types";
+import { useQuery } from "@tanstack/react-query";
 
 interface UseTracesExplorerArgs {
   readonly include?: readonly ExplorerIncludeFlag[];
