@@ -1,9 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
+
 import { useState } from "react";
 
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 
-import { approveDevice } from "../../api/deviceAuthApi";
+import { useApproveDevice } from "../../hooks/useDeviceAuthMutations";
 
 // Reads an optional ?userCode= to prefill the code shown by the CLI.
 function initialCode(): string {
@@ -14,9 +14,7 @@ function initialCode(): string {
 function DeviceApprovePage() {
   const [code, setCode] = useState(initialCode);
 
-  const mutation = useMutation<{ message: string }, Error, string>({
-    mutationFn: (userCode) => approveDevice(userCode),
-  });
+  const mutation = useApproveDevice();
 
   const approved = mutation.isSuccess;
 
