@@ -1,8 +1,12 @@
-import { formatNumber, formatRelativeTime } from "@shared/utils/formatters";
+import {
+  formatDuration,
+  formatNumber,
+  formatPercentage,
+  formatRelativeTime,
+} from "@shared/utils/formatters";
 
-// Shared formatters for the Service Detail page. Mirror the prototype's
-// `sdNum`, `sdMs`, `sdPct`, `sdDelta` helpers so number rendering matches
-// the design pixel-for-pixel.
+// Shared formatters for the Service Detail page. Wraps standard formatters
+// so number rendering matches design specifications consistently.
 
 export function fmtNum(n: number | null | undefined): string {
   if (n == null || !Number.isFinite(n)) return "—";
@@ -11,17 +15,12 @@ export function fmtNum(n: number | null | undefined): string {
 
 export function fmtMs(ms: number | null | undefined): string {
   if (ms == null || !Number.isFinite(ms)) return "—";
-  if (ms === 0) return "0ms";
-  const abs = Math.abs(ms);
-  if (abs >= 1000) return `${+(ms / 1000).toFixed(2)}s`;
-  if (abs >= 10) return `${+ms.toFixed(1)}ms`;
-  if (abs >= 1) return `${+ms.toFixed(2)}ms`;
-  return `${+ms.toFixed(3)}ms`;
+  return formatDuration(ms);
 }
 
 export function fmtPct(value: number | null | undefined, digits = 2): string {
   if (value == null || !Number.isFinite(value)) return "—";
-  return `${value.toFixed(digits)}%`;
+  return formatPercentage(value, digits, false);
 }
 
 export function ratioFromCounts(numerator: number, denominator: number): number {
@@ -30,6 +29,7 @@ export function ratioFromCounts(numerator: number, denominator: number): number 
 }
 
 export function relativeTimeFromIso(iso: string | undefined | null): string {
-  if (!iso) return "\u2014";
+  if (!iso) return "—";
   return formatRelativeTime(iso);
 }
+

@@ -2,27 +2,23 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 
 import { Route } from "@/routes/_app/traces/$traceId";
-import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { buildLogsHubHref, traceIdEqualsFilter } from "@shared/observability/deepLinks";
 
 import type { useTraceDetailData } from "../../../hooks/useTraceDetailData";
 
 type State = {
   resolvedTraceId: string;
-  traceTimeBounds: { startMs?: number; endMs?: number };
   setSelectedSpanId: ReturnType<typeof useTraceDetailData>["setSelectedSpanId"];
   selectedSpanId: string | null;
 };
 
 export function useTraceDetailActions({
   resolvedTraceId,
-  traceTimeBounds,
   setSelectedSpanId,
   selectedSpanId,
 }: State) {
   const navigate = useNavigate();
   const search = Route.useSearch();
-  const { getTimeRange } = useTimeRange();
 
   const waterfallSearch = search.q ?? "";
 
@@ -51,17 +47,12 @@ export function useTraceDetailActions({
   }, [setSelectedSpanId, navigate]);
 
   const openInLogs = useCallback(() => {
-    const { startTime, endTime } = getTimeRange();
-    const fromMs = traceTimeBounds.startMs ?? Number(startTime);
-    const toMs = traceTimeBounds.endMs ?? Number(endTime);
     navigate({
       to: buildLogsHubHref({
         filters: [traceIdEqualsFilter(resolvedTraceId)],
-        fromMs,
-        toMs,
       }) as never,
     });
-  }, [getTimeRange, navigate, resolvedTraceId, traceTimeBounds.endMs, traceTimeBounds.startMs]);
+  }, [navigate, resolvedTraceId]);
 
   const goBack = useCallback(() => navigate({ to: "/traces" }), [navigate]);
 

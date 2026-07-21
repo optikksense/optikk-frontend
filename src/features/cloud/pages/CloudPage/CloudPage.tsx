@@ -38,7 +38,7 @@ export default function CloudPage(): JSX.Element {
           className="rounded-lg border border-[color-mix(in_oklch,var(--color-error),transparent_65%)] bg-error-subtle px-3.5 py-2.5 text-[12.5px] text-error"
           role="alert"
         >
-          Could not load cloud inventory: {overviewQ.error.message}
+          Could not load cloud inventory: {overviewQ.error?.message}
         </div>
       ) : null}
 

@@ -1,18 +1,18 @@
 import { ROUTES } from "@/shared/constants/routes";
-import type { StructuredFilter } from "@/shared/hooks/useURLFilters";
-import { encodeStructuredFiltersParam } from "@/shared/hooks/useURLFilters";
+import type { ExplorerFilter } from "@/shared/search/types/filters";
+import { encodeFilters } from "@/shared/search/utils/urlState";
 
 /**
- * Builds an absolute path + query for the log explorer (`/logs`) using the same
- * `filters`, `from`, and `to` conventions as `useURLFilters` + `useTimeRangeURL`.
+ * Builds an absolute path + query for the log explorer (`/logs`) using the
+ * canonical `ExplorerFilter` model and `encodeFilters`.
  */
 export function buildLogsHubHref(opts: {
-  readonly filters: StructuredFilter[];
+  readonly filters: readonly ExplorerFilter[];
   readonly fromMs?: number;
   readonly toMs?: number;
 }): string {
   const params = new URLSearchParams();
-  const encoded = encodeStructuredFiltersParam(opts.filters);
+  const encoded = encodeFilters(opts.filters);
   if (encoded) {
     params.set("filters", encoded);
   }
@@ -26,8 +26,8 @@ export function buildLogsHubHref(opts: {
   return qs.length > 0 ? `${ROUTES.logs}?${qs}` : ROUTES.logs;
 }
 
-export function traceIdEqualsFilter(traceId: string): StructuredFilter {
-  return { field: "traceId", operator: "equals", value: traceId };
+export function traceIdEqualsFilter(traceId: string): ExplorerFilter {
+  return { field: "traceId", op: "eq", value: traceId };
 }
 
 /** A trace is addressed by id alone, so the link never goes stale. */
@@ -36,10 +36,10 @@ export function buildTraceDetailHref(traceId: string, spanId?: string): string {
   return spanId ? `${path}?span=${encodeURIComponent(spanId)}` : path;
 }
 
-export function hostEqualsFilter(host: string): StructuredFilter {
-  return { field: "host", operator: "equals", value: host };
+export function hostEqualsFilter(host: string): ExplorerFilter {
+  return { field: "host", op: "eq", value: host };
 }
 
-export function podEqualsFilter(podName: string): StructuredFilter {
-  return { field: "pod", operator: "equals", value: podName };
+export function podEqualsFilter(podName: string): ExplorerFilter {
+  return { field: "pod", op: "eq", value: podName };
 }

@@ -4,7 +4,8 @@ import { useExplorerQuery, useExplorerSubQuery } from "@shared/search/hooks/useE
 import { useExplorerState } from "@shared/search/hooks/useExplorerState";
 import type { ExplorerIncludeFlag } from "@shared/search/types";
 
-import { query, queryFacets, queryTrend } from "@shared/api/traces/tracesApi";
+import { useQuery } from "@tanstack/react-query";
+import { enrichTraces, query, queryFacets, queryTrend } from "@shared/api/traces/tracesApi";
 import type { TracesQueryResponse } from "@shared/api/traces/types";
 
 interface UseTracesExplorerArgs {
@@ -33,6 +34,36 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     fetcher: query,
   });
 
+  const traceIds = useMemo(
+    () => (explorerQuery.data?.traces ?? []).map((t) => t.traceId),
+    [explorerQuery.data]
+  );
+
+  const enrichQuery = useQuery({
+    queryKey: ["traces.enrich", traceIds],
+    queryFn: () => enrichTraces(traceIds),
+    enabled: traceIds.length > 0,
+  });
+
+  const enrichedTraces = useMemo(() => {
+    const traces = explorerQuery.data?.traces ?? [];
+    const enrichments = enrichQuery.data?.enrichments ?? {};
+    return traces.map((t) => {
+      const e = enrichments[t.traceId];
+      if (!e) return t;
+      return {
+        ...t,
+        spanCount: e.spanCount,
+        errorCount: e.errorCount,
+        hasError: e.hasError,
+        serviceSet: e.serviceSet,
+        startMs: e.startMs,
+        endMs: e.endMs,
+        durationMs: e.durationMs,
+      };
+    });
+  }, [explorerQuery.data, enrichQuery.data]);
+
   const facetsQuery = useExplorerSubQuery({
     scope: "traces",
     subKey: "facets",
@@ -58,7 +89,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
   }, [trendQuery.data]);
 
   const list = {
-    results: explorerQuery.data?.traces ?? [],
+    results: enrichedTraces,
     isPending: explorerQuery.isPending && !explorerQuery.data,
     isError: explorerQuery.isError,
     error: explorerQuery.error,
@@ -75,7 +106,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     query: explorerQuery, // keep for compat temporarily
     facetsQuery, // keep for compat
     trendQuery, // keep for compat
-    traces: explorerQuery.data?.traces ?? [], // keep for compat
+    traces: enrichedTraces, // keep for compat
     nextCursor: explorerQuery.data?.nextCursor ?? null, // keep for compat
     summary,
     facets: facetsQuery.data,

@@ -12,7 +12,6 @@ export function useTraceDetailPage() {
   const state = useTraceDetailState();
   const actions = useTraceDetailActions({
     resolvedTraceId: state.resolvedTraceId,
-    traceTimeBounds: state.traceTimeBounds,
     setSelectedSpanId: state.data.setSelectedSpanId,
     selectedSpanId: state.data.selectedSpanId,
   });

@@ -48,6 +48,15 @@ class AuthApiError extends Error {
   }
 }
 
+/**
+ * True only for a definitive auth rejection (HTTP 401). Transient failures
+ * (network, timeout, 5xx) carry a different status and must not be treated as
+ * an invalid session — the caller can safely retry.
+ */
+export function isAuthRejection(error: unknown): boolean {
+  return error instanceof AuthApiError && error.status === 401;
+}
+
 const http = axios.create({
   baseURL: resolveApiBaseURL(),
   timeout: API_CONFIG.TIMEOUT,
