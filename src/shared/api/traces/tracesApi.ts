@@ -1,9 +1,5 @@
 import { API_CONFIG } from "@config/apiConfig";
 import api from "@shared/api/http/client";
-import { validateResponse } from "@shared/api/utils/validate";
-import { z } from "zod";
-import { buildTracesFilters } from "./buildTracesFilters";
-import { pageInfoSchema } from "@shared/search/schemas/pageInfo";
 import { type ServiceTopologyResponse, topologyResponseSchema } from "@shared/api/topology";
 import {
   criticalPathSpanSchema,
@@ -23,6 +19,10 @@ import type {
   SpanRecord,
   TraceErrorGroup,
 } from "@shared/api/traces/schemas";
+import { validateResponse } from "@shared/api/utils/validate";
+import { pageInfoSchema } from "@shared/search/schemas/pageInfo";
+import { z } from "zod";
+import { buildTracesFilters } from "./buildTracesFilters";
 import type { TraceSummary, TracesFacets, TracesQueryRequest, TracesQueryResponse } from "./types";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
@@ -30,8 +30,6 @@ const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 // ==========================================
 // Traces Query & Explorer Schemas & Helpers
 // ==========================================
-
-
 
 function extractNextCursor(pageInfo: unknown): string | undefined {
   const parsed = pageInfoSchema.safeParse(pageInfo);

@@ -6,8 +6,8 @@ import {
   finalizeSearch,
   handleListField,
   handleSingleValue,
-  pushUnsupportedOp,
   pushUnknownField,
+  pushUnsupportedOp,
 } from "@shared/search/utils/buildFilters";
 
 /**

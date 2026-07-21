@@ -23,9 +23,9 @@ export function firstValue<T>(row: unknown, keys: string[], fallback: T): T {
 }
 
 export function extractTimeseries(
-  data: Array<Record<string, unknown>> = [],
-  serviceTimeseriesMap: Record<string, Array<Record<string, unknown>>> = {},
-  selectedEndpoints: string[] = [],
+  data: Array<Record<string, unknown>>,
+  serviceTimeseriesMap: Record<string, Array<Record<string, unknown>>>,
+  selectedEndpoints: string[],
   valueKeys: string[],
   datasetLabel: string,
   color: string,

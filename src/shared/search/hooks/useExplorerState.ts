@@ -7,7 +7,7 @@ import { decodeFilters, encodeFilters, parseMode } from "../utils/urlState";
 
 /**
  * URL-synced snapshot shared by all explorers (logs, traces).
- * 
+ *
  * Migration from `useURLFilters`: This synchronous hook replaces the legacy
  * timer-debounced `useURLFilters` system. Migrate legacy pages to this hook
  * when overhauling their search architectures.
@@ -95,5 +95,17 @@ export function useExplorerState(): ExplorerStateApi {
     setParams(() => new URLSearchParams(), { replace: true });
   }, [setParams]);
 
-  return { filters, mode, cursor, detail, setFilters, addFilter, removeFilter, setMode, setCursor, setDetail, clearAll };
+  return {
+    filters,
+    mode,
+    cursor,
+    detail,
+    setFilters,
+    addFilter,
+    removeFilter,
+    setMode,
+    setCursor,
+    setDetail,
+    clearAll,
+  };
 }

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";

@@ -122,7 +122,7 @@ function CredentialRow({
       <div className="mt-1 flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
         {icon}
         {value ? (
-          <code className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-foreground bg-transparent p-0">
+          <code className="min-w-0 flex-1 truncate bg-transparent p-0 font-mono text-[12.5px] text-foreground">
             {value}
           </code>
         ) : (

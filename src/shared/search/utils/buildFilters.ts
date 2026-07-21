@@ -39,11 +39,7 @@ export function listValues(op: string, value: string): string[] {
 }
 
 /** Appends values to a string[] field on the body, creating the array if needed. */
-export function appendArr<T extends object>(
-  body: T,
-  key: keyof T,
-  values: string[]
-): void {
+export function appendArr<T extends object>(body: T, key: keyof T, values: string[]): void {
   const current = body[key as keyof typeof body];
   const list = Array.isArray(current) ? (current as string[]) : [];
   Object.assign(body, { [key]: [...list, ...values] });
@@ -80,20 +76,11 @@ export function pushUnknownField(
  * Handles a `@key` attribute filter. Identical across logs and traces:
  * validates the op, then pushes to body.attributes[].
  */
-export function handleAttribute<T extends { attributes?: Array<{ key: string; op?: string; value: string }> }>(
-  field: string,
-  op: string,
-  value: string,
-  body: T,
-  warnings: TranslationWarning[]
-): void {
+export function handleAttribute<
+  T extends { attributes?: Array<{ key: string; op?: string; value: string }> },
+>(field: string, op: string, value: string, body: T, warnings: TranslationWarning[]): void {
   if (!ATTR_OPS.has(op as never)) {
-    pushUnsupportedOp(
-      warnings,
-      field,
-      op,
-      "supported: eq/neq/contains/regex/comparisons/exists"
-    );
+    pushUnsupportedOp(warnings, field, op, "supported: eq/neq/contains/regex/comparisons/exists");
     return;
   }
   body.attributes = body.attributes ?? [];
@@ -170,11 +157,9 @@ export interface BuildResult<TBody> {
 /**
  * Initializes the base body with startTime, endTime, and optional extras.
  */
-export function initBody<T extends { startTime: number; endTime: number; limit?: number; cursor?: string }>(
-  startTime: number,
-  endTime: number,
-  extras: BuildExtras = {}
-): T {
+export function initBody<
+  T extends { startTime: number; endTime: number; limit?: number; cursor?: string },
+>(startTime: number, endTime: number, extras: BuildExtras = {}): T {
   const body = { startTime, endTime } as T;
   if (extras.limit !== undefined) (body as Record<string, unknown>).limit = extras.limit;
   if (extras.cursor) (body as Record<string, unknown>).cursor = extras.cursor;
@@ -186,12 +171,9 @@ export function initBody<T extends { startTime: number; endTime: number; limit?:
  * and collects "body"/"search" fields as search terms.
  * Returns true if the filter was handled, false if caller should handle it.
  */
-export function dispatchCommonFilter<T extends { attributes?: Array<{ key: string; op?: string; value: string }> }>(
-  filter: ExplorerFilter,
-  body: T,
-  warnings: TranslationWarning[],
-  searchTerms: string[]
-): boolean {
+export function dispatchCommonFilter<
+  T extends { attributes?: Array<{ key: string; op?: string; value: string }> },
+>(filter: ExplorerFilter, body: T, warnings: TranslationWarning[], searchTerms: string[]): boolean {
   const { field, op, value } = filter;
 
   // Attribute filters: @key

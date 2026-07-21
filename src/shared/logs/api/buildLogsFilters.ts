@@ -9,8 +9,8 @@ import {
   handleSingleValue,
   initBody,
   listValues,
-  pushUnsupportedOp,
   pushUnknownField,
+  pushUnsupportedOp,
 } from "@shared/search/utils/buildFilters";
 
 /**
@@ -57,7 +57,7 @@ interface LogsFiltersBody {
   }>;
 }
 
-export { type BuildResult };
+export type { BuildResult };
 
 /** field -> include array, plus optional exclude array for neq/not_in. */
 const LIST_FIELDS: Record<
