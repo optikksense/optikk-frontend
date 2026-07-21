@@ -2,7 +2,13 @@ import { useCallback } from "react";
 
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 
-export const SETTINGS_TABS = ["profile", "tenant", "members", "ingestion"] as const;
+export const SETTINGS_TABS = [
+  "profile",
+  "tenant",
+  "instrumentation",
+  "members",
+  "ingestion",
+] as const;
 
 export type SettingsTab = (typeof SETTINGS_TABS)[number];
 

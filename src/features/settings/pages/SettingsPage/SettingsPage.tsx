@@ -1,10 +1,15 @@
 import { Tabs } from "@shared/components/primitives/ui";
-import { Settings, User, Users, UsersRound } from "lucide-react";
+import { Settings, Terminal, User, Users, UsersRound } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { PageHeader, PageShell } from "@shared/components/ui";
 
-import { SettingsMembersTab, SettingsProfileTab, SettingsTenantTab } from "../../components/tabs";
+import {
+  SettingsInstrumentationTab,
+  SettingsMembersTab,
+  SettingsProfileTab,
+  SettingsTenantTab,
+} from "../../components/tabs";
 import { type SettingsTab, useSettingsTab } from "./useSettingsTab";
 
 import { useAuthStore } from "@app/store/authStore";
@@ -42,6 +47,7 @@ export default function SettingsPage({ extraTabs = [] }: SettingsPageProps) {
   const tabItems = [
     { key: "profile", label: "Profile", icon: <User size={14} /> },
     { key: "tenant", label: "Tenant", icon: <Users size={14} /> },
+    { key: "instrumentation", label: "Instrumentation", icon: <Terminal size={14} /> },
     ...(isAdmin ? [{ key: "members", label: "Members", icon: <UsersRound size={14} /> }] : []),
     ...extraTabs.map(({ key, label, icon }) => ({ key, label, icon })),
   ];
@@ -65,6 +71,7 @@ export default function SettingsPage({ extraTabs = [] }: SettingsPageProps) {
       {active === "tenant" && (
         <SettingsTenantTab profileLoading={false} tenants={tenants} isAdmin={isAdmin} />
       )}
+      {active === "instrumentation" && <SettingsInstrumentationTab />}
       {active === "members" && isAdmin && <SettingsMembersTab />}
       {activeExtraTab?.render()}
     </PageShell>

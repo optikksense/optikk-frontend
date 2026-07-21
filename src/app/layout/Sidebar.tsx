@@ -52,6 +52,7 @@ export default function Sidebar() {
   };
 
   const selectedKey = getSelectedKey();
+  const isSettingsActive = selectedKey === ROUTES.settings;
 
   const handleLogout = async () => {
     await session.logout();
@@ -120,9 +121,7 @@ export default function Sidebar() {
         )}
         onClick={() => navigate({ to: ROUTES.overview })}
       >
-        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[calc(var(--card-radius)+1px)] shadow-[var(--shadow-sm)]">
-          <OptikkLogo size={32} className="block" />
-        </div>
+        <OptikkLogo size={32} className="block shrink-0" />
         {!sidebarCollapsed && (
           <span className="whitespace-nowrap font-semibold text-[14px] text-foreground">
             Optikk
@@ -144,11 +143,14 @@ export default function Sidebar() {
             <button
               type="button"
               className={cn(
-                "mb-[var(--space-xs)] flex w-full items-center gap-[var(--space-xs)] rounded-[var(--card-radius)] border px-[var(--space-sm)] py-2 text-left font-medium text-[12px] transition-[background-color,border-color,color,box-shadow]",
-                "border-[var(--color-primary-subtle-28)] bg-[var(--color-primary-subtle-12)] text-foreground shadow-[var(--shadow-sm)] hover:border-primary hover:bg-[var(--color-primary-subtle-18)]",
+                "mb-[var(--space-xs)] flex w-full items-center gap-[var(--space-xs)] rounded-[var(--card-radius)] border border-transparent bg-transparent px-[var(--space-sm)] py-2 text-left font-medium text-[12px] text-foreground-secondary transition-[background-color,border-color,color,box-shadow]",
+                "hover:bg-white/5 hover:text-foreground",
+                isSettingsActive &&
+                  "border-[var(--color-primary-subtle-20)] bg-[var(--color-primary-subtle-12)] text-foreground shadow-[var(--shadow-sm)] hover:bg-[var(--color-primary-subtle-14)]",
                 sidebarCollapsed && "justify-center px-1.5"
               )}
               onClick={() => navigate({ to: ROUTES.settings as string & {} })}
+              aria-current={isSettingsActive ? "page" : undefined}
             >
               <Settings size={14} />
               {!sidebarCollapsed && "Settings"}

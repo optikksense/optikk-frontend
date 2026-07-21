@@ -1,4 +1,5 @@
 export { Button } from "./button";
+export { CodeBlock, CopyButton, SnippetTabs } from "./code-block";
 export {
   Card,
   Card as Surface,

@@ -18,6 +18,42 @@ import { type SessionPayload, type SignupParams, authApi } from "./authApi";
 
 let accessToken: string | null = null;
 let refreshInflight: Promise<string | null> | null = null;
+let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+
+// Renew this long before the access token expires, so the refresh happens on a
+// healthy session rather than a burst of 401s at the expiry boundary.
+const PROACTIVE_REFRESH_LEAD_MS = 60_000;
+const MIN_REFRESH_DELAY_MS = 5_000;
+
+/** Reads the `exp` claim (ms) from a JWT without verifying it, or null. */
+function accessTokenExpiryMs(token: string): number | null {
+  const payload = token.split(".")[1];
+  if (payload == null) {
+    return null;
+  }
+  try {
+    const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    const exp = (JSON.parse(json) as { exp?: unknown }).exp;
+    return typeof exp === "number" ? exp * 1000 : null;
+  } catch {
+    return null;
+  }
+}
+
+function scheduleProactiveRefresh(token: string): void {
+  if (refreshTimer != null) {
+    clearTimeout(refreshTimer);
+    refreshTimer = null;
+  }
+  const expiryMs = accessTokenExpiryMs(token);
+  if (expiryMs == null) {
+    return;
+  }
+  const delay = Math.max(expiryMs - Date.now() - PROACTIVE_REFRESH_LEAD_MS, MIN_REFRESH_DELAY_MS);
+  refreshTimer = setTimeout(() => {
+    void session.refreshAccessToken();
+  }, delay);
+}
 
 function toTenant(payload: SessionPayload): Tenant {
   const { id, name, role, accountStatus, trialEndsAt } = payload.tenant;
@@ -37,6 +73,7 @@ function toUser(payload: SessionPayload): User {
 
 function beginSession(payload: SessionPayload): void {
   accessToken = payload.accessToken;
+  scheduleProactiveRefresh(payload.accessToken);
   const tenant = toTenant(payload);
   useAppStore.getState().setSelectedTenantId(tenant.id);
   useAuthStore.getState().setSession(toUser(payload), tenant);
@@ -44,6 +81,10 @@ function beginSession(payload: SessionPayload): void {
 
 function endSession(): void {
   accessToken = null;
+  if (refreshTimer != null) {
+    clearTimeout(refreshTimer);
+    refreshTimer = null;
+  }
   useAppStore.getState().setSelectedTenantId(null);
   queryClient.clear();
   useAuthStore.getState().clearSession();
