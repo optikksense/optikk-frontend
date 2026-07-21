@@ -157,6 +157,12 @@ code {
   margin-left: auto;
 }
 
-.chart-card__info-icon:hover {
-  opacity: 1;
+@layer utilities {
+  .text-muted {
+    color: var(--text-muted);
+  }
+  .text-secondary {
+    color: var(--text-secondary);
+  }
 }
+

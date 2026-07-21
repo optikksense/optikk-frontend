@@ -121,9 +121,15 @@ function CredentialRow({
       </span>
       <div className="mt-1 flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
         {icon}
-        <code className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-foreground">
-          {value ?? fallback ?? "—"}
-        </code>
+        {value ? (
+          <code className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-foreground bg-transparent p-0">
+            {value}
+          </code>
+        ) : (
+          <span className="min-w-0 flex-1 truncate text-[12px] text-muted italic">
+            {fallback ?? "—"}
+          </span>
+        )}
         {value != null && <CopyButton text={value} />}
       </div>
     </div>
