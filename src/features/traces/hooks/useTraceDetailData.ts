@@ -2,12 +2,14 @@ import { tracesService } from "@shared/api/traces/tracesApi";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { getTraceLogs } from "@shared/logs/api/traceLogsApi";
 import { useEffect, useMemo, useState } from "react";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
 export function useTraceDetailData(selectedTenantId: number | null, traceIdParam: string) {
   const [searchParams] = useSearchParams();
+  const { getTimeRange } = useTimeRange();
   const [selectedSpanId, setSelectedSpanId] = useState<string | null>(
     () => searchParams.get("span") || null
   );
@@ -18,8 +20,9 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     if (spanFromUrl) setSelectedSpanId(spanFromUrl);
   }, [searchParams]);
 
-  const fromFromUrl = Number(searchParams.get("from")) || undefined;
-  const toFromUrl = Number(searchParams.get("to")) || undefined;
+  const { startTime, endTime } = getTimeRange();
+  const startMs = Number(startTime);
+  const endMs = Number(endTime);
 
   const {
     data: spansData,
@@ -27,8 +30,8 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     isError: spansIsError,
     error: spansError,
   } = useStandardQuery({
-    queryKey: ["trace-spans", selectedTenantId, traceIdParam, fromFromUrl, toFromUrl],
-    queryFn: () => tracesService.getTraceSpans(selectedTenantId, traceIdParam, fromFromUrl, toFromUrl),
+    queryKey: ["trace-spans", selectedTenantId, traceIdParam, startMs, endMs],
+    queryFn: () => tracesService.getTraceSpans(selectedTenantId, traceIdParam, startMs, endMs),
     enabled: !!selectedTenantId && !!traceIdParam,
   });
 
