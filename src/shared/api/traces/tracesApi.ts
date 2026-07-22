@@ -180,25 +180,6 @@ export async function query(body: TracesQueryRequest): Promise<TracesQueryRespon
   }
 }
 
-export interface TraceEnrichment {
-  spanCount: number;
-  errorCount: number;
-  hasError: boolean;
-  serviceSet: string[];
-  startMs: number;
-  endMs: number;
-  durationMs: number;
-}
-
-export interface EnrichResponse {
-  enrichments: Record<string, TraceEnrichment>;
-}
-
-export async function enrichTraces(traceIds: string[]): Promise<EnrichResponse> {
-  if (traceIds.length === 0) return { enrichments: {} };
-  return api.post<EnrichResponse>(`${BASE}/traces/enrich`, { traceIds });
-}
-
 export async function queryFacets(body: TracesQueryRequest) {
   const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime);
   const raw = await api.post<unknown>(`${BASE}/traces/facets`, reqBody);

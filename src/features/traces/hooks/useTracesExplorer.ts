@@ -4,9 +4,8 @@ import { useExplorerQuery, useExplorerSubQuery } from "@shared/search/hooks/useE
 import { useExplorerState } from "@shared/search/hooks/useExplorerState";
 import type { ExplorerIncludeFlag } from "@shared/search/types";
 
-import { enrichTraces, query, queryFacets, queryTrend } from "@shared/api/traces/tracesApi";
+import { query, queryFacets, queryTrend } from "@shared/api/traces/tracesApi";
 import type { TracesQueryResponse } from "@shared/api/traces/types";
-import { useQuery } from "@tanstack/react-query";
 
 interface UseTracesExplorerArgs {
   readonly include?: readonly ExplorerIncludeFlag[];
@@ -34,35 +33,9 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     fetcher: query,
   });
 
-  const traceIds = useMemo(
-    () => (explorerQuery.data?.traces ?? []).map((t) => t.traceId),
-    [explorerQuery.data]
-  );
-
-  const enrichQuery = useQuery({
-    queryKey: ["traces.enrich", traceIds],
-    queryFn: () => enrichTraces(traceIds),
-    enabled: traceIds.length > 0,
-  });
-
-  const enrichedTraces = useMemo(() => {
-    const traces = explorerQuery.data?.traces ?? [];
-    const enrichments = enrichQuery.data?.enrichments ?? {};
-    return traces.map((t) => {
-      const e = enrichments[t.traceId];
-      if (!e) return t;
-      return {
-        ...t,
-        spanCount: e.spanCount,
-        errorCount: e.errorCount,
-        hasError: e.hasError,
-        serviceSet: e.serviceSet,
-        startMs: e.startMs,
-        endMs: e.endMs,
-        durationMs: e.durationMs,
-      };
-    });
-  }, [explorerQuery.data, enrichQuery.data]);
+  // The list response now carries trace-level aggregates directly; the query
+  // service folds enrichment into /traces/query in one round trip.
+  const enrichedTraces = useMemo(() => explorerQuery.data?.traces ?? [], [explorerQuery.data]);
 
   const facetsQuery = useExplorerSubQuery({
     scope: "traces",
