@@ -85,9 +85,13 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
     (e: React.MouseEvent) => {
       e.stopPropagation();
       if (!traceId) return;
-      navigate({ to: buildTraceDetailHref(traceId) as never });
+      const logMs = row.timestamp ? new Date(row.timestamp).getTime() : Date.now();
+      const validMs = Number.isFinite(logMs) ? logMs : Date.now();
+      const fromMs = validMs - 30 * 60 * 1000;
+      const toMs = validMs + 30 * 60 * 1000;
+      navigate({ to: buildTraceDetailHref(traceId, undefined, fromMs, toMs) as never });
     },
-    [navigate, traceId]
+    [navigate, traceId, row.timestamp]
   );
 
   const isError = sev.slug === "error";

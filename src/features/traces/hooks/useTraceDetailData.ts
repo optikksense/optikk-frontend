@@ -18,14 +18,17 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     if (spanFromUrl) setSelectedSpanId(spanFromUrl);
   }, [searchParams]);
 
+  const fromFromUrl = Number(searchParams.get("from")) || undefined;
+  const toFromUrl = Number(searchParams.get("to")) || undefined;
+
   const {
     data: spansData,
     isPending: spansLoading,
     isError: spansIsError,
     error: spansError,
   } = useStandardQuery({
-    queryKey: ["trace-spans", selectedTenantId, traceIdParam],
-    queryFn: () => tracesService.getTraceSpans(selectedTenantId, traceIdParam),
+    queryKey: ["trace-spans", selectedTenantId, traceIdParam, fromFromUrl, toFromUrl],
+    queryFn: () => tracesService.getTraceSpans(selectedTenantId, traceIdParam, fromFromUrl, toFromUrl),
     enabled: !!selectedTenantId && !!traceIdParam,
   });
 

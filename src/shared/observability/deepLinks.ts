@@ -30,10 +30,20 @@ export function traceIdEqualsFilter(traceId: string): ExplorerFilter {
   return { field: "traceId", op: "eq", value: traceId };
 }
 
-/** A trace is addressed by id alone, so the link never goes stale. */
-export function buildTraceDetailHref(traceId: string, spanId?: string): string {
+/** A trace is addressed by id and time bounds. */
+export function buildTraceDetailHref(
+  traceId: string,
+  spanId?: string,
+  fromMs?: number,
+  toMs?: number
+): string {
   const path = `/traces/${encodeURIComponent(traceId)}`;
-  return spanId ? `${path}?span=${encodeURIComponent(spanId)}` : path;
+  const params = new URLSearchParams();
+  if (spanId) params.set("span", spanId);
+  if (fromMs !== undefined) params.set("from", String(fromMs));
+  if (toMs !== undefined) params.set("to", String(toMs));
+  const qs = params.toString();
+  return qs ? `${path}?${qs}` : path;
 }
 
 export function hostEqualsFilter(host: string): ExplorerFilter {

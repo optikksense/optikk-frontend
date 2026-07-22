@@ -203,13 +203,26 @@ const traceSpansEnvelopeSchema = z.object({
   spans: z.array(spanRecordSchema),
 });
 
-async function getTraceSpans(_tenantId: number | null, traceId: string): Promise<SpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/spans`);
+async function getTraceSpans(
+  _tenantId: number | null,
+  traceId: string,
+  startMs?: number,
+  endMs?: number
+): Promise<SpanRecord[]> {
+  const params =
+    startMs !== undefined && endMs !== undefined ? { startTime: startMs, endTime: endMs } : undefined;
+  const data = await api.get(`${BASE}/traces/${traceId}/spans`, params ? { params } : undefined);
   return validateResponse(traceSpansEnvelopeSchema, data).spans;
 }
 
-async function getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/span-events`);
+async function getSpanEvents(
+  traceId: string,
+  startMs?: number,
+  endMs?: number
+): Promise<SpanEventRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/span-events`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
   return validateResponse(z.array(spanEventSchema), data);
 }
 

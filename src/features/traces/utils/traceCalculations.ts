@@ -92,10 +92,22 @@ export function normalizeSpan(
   };
 }
 
+function coerceLogTimestamp(ts: unknown): string {
+  if (ts == null) return "";
+  const s = String(ts);
+  if (s.includes("T")) return s;
+  try {
+    const bi = BigInt(s);
+    return new Date(Number(bi / 1_000_000n)).toISOString();
+  } catch {
+    return s;
+  }
+}
+
 export function normalizeTraceLog<T extends Record<string, unknown>>(log: T) {
   return {
     ...log,
-    timestamp: log.timestamp,
+    timestamp: coerceLogTimestamp(log.timestamp),
     serviceName: log.serviceName,
     traceId: log.traceId,
     spanId: log.spanId,
