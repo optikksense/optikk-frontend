@@ -2,6 +2,7 @@ import type { TraceLog } from "@shared/api/traces/schemas";
 import { useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
+import { formatTimestamp } from "@shared/utils/formatters";
 
 import { useTraceOperationBaseline } from "../../hooks/useTraceOperationBaseline";
 import { BottomBar } from "./components/BottomBar";
@@ -15,6 +16,17 @@ import {
 import { TraceDetailLayout } from "./components/TraceDetailLayout";
 import { TraceHeader } from "./components/TraceHeader";
 import { useTraceDetailPage } from "./hooks/useTraceDetailPage";
+
+function formatLogTimestamp(ts: string): string {
+  if (!ts) return "—";
+  if (ts.includes("T")) return formatTimestamp(ts);
+  try {
+    const bi = BigInt(ts);
+    return formatTimestamp(Number(bi / 1_000_000n));
+  } catch {
+    return ts;
+  }
+}
 
 function AssociatedTraceLogsSection({
   logs,
@@ -54,7 +66,7 @@ function AssociatedTraceLogsSection({
             {logs.map((log, i) => (
               <tr key={log.id || `${log.timestamp}-${i}`} className="hover:bg-[var(--bg-row-h)]">
                 <td className="whitespace-nowrap px-3 py-2 text-foreground-secondary">
-                  {log.timestamp ? String(log.timestamp) : "—"}
+                  {formatLogTimestamp(log.timestamp)}
                 </td>
                 <td className="whitespace-nowrap px-3 py-2 text-foreground">
                   {log.serviceName || "—"}
