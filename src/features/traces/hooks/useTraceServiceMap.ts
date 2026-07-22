@@ -27,8 +27,6 @@ export function useTraceServiceMap(
 
   // The latency baselines are a RED rollup lookup, so they keep a real range —
   // taken from the trace's own span bounds.
-  const startMs = bounds.startMs ?? 0;
-  const endMs = bounds.endMs ?? 0;
   const fromMs = Math.floor(startMs / MINUTE_MS) * MINUTE_MS;
   const toMs = Math.ceil(endMs / MINUTE_MS) * MINUTE_MS;
   const latencyQuery = useStandardQuery({
