@@ -1,4 +1,4 @@
-import axios, { type AxiosError } from "axios";
+import axios from "axios";
 import { z } from "zod";
 
 import { API_CONFIG } from "@config/apiConfig";
@@ -6,9 +6,9 @@ import { API_CONFIG } from "@config/apiConfig";
 import { resolveApiBaseURL } from "../http/baseUrl";
 
 /**
- * Pure HTTP layer for the auth endpoints. Uses a bare axios instance (not
- * the shared client) so these requests never enter the Bearer/tenant-header
- * interceptors and a 401 here can never trigger a recursive refresh.
+ * Pure HTTP layer for the auth endpoints. Uses a bare axios instance (not the
+ * shared client) so these requests never enter the Bearer/tenant interceptors
+ * and a 401 here can never trigger a recursive refresh.
  */
 
 const tenantSchema = z.object({
@@ -33,28 +33,24 @@ const sessionPayloadSchema = z.object({
 
 export type SessionPayload = z.infer<typeof sessionPayloadSchema>;
 
-const envelopeSchema = z.object({
-  success: z.literal(true),
-  data: z.unknown(),
-});
-
-class AuthApiError extends Error {
-  readonly status: number | null;
-
-  constructor(message: string, status: number | null) {
-    super(message);
-    this.name = "AuthApiError";
-    this.status = status;
-  }
-}
+const envelopeSchema = z.object({ success: z.literal(true), data: z.unknown() });
 
 /**
- * True only for a definitive auth rejection (HTTP 401). Transient failures
- * (network, timeout, 5xx) carry a different status and must not be treated as
- * an invalid session — the caller can safely retry.
+ * Every auth failure is exactly one of two kinds. Only a `rejected` failure —
+ * the server definitively said no (HTTP 401) — may tear a session down. An
+ * `unavailable` failure (network, timeout, 5xx, malformed response) is transient
+ * and must be retried, never treated as a logout.
  */
-export function isAuthRejection(error: unknown): boolean {
-  return error instanceof AuthApiError && error.status === 401;
+export type AuthErrorKind = "rejected" | "unavailable";
+
+export class AuthError extends Error {
+  readonly kind: AuthErrorKind;
+
+  constructor(message: string, kind: AuthErrorKind) {
+    super(message);
+    this.name = "AuthError";
+    this.kind = kind;
+  }
 }
 
 const http = axios.create({
@@ -63,7 +59,10 @@ const http = axios.create({
   withCredentials: true,
 });
 
-function serverErrorMessage(error: AxiosError): string | null {
+function serverMessage(error: unknown): string | null {
+  if (!axios.isAxiosError(error)) {
+    return null;
+  }
   const body = error.response?.data;
   if (typeof body !== "object" || body === null) {
     return null;
@@ -72,11 +71,24 @@ function serverErrorMessage(error: AxiosError): string | null {
   return typeof message === "string" && message.length > 0 ? message : null;
 }
 
-function toAuthApiError(error: unknown, fallback: string): AuthApiError {
-  if (axios.isAxiosError(error)) {
-    return new AuthApiError(serverErrorMessage(error) ?? fallback, error.response?.status ?? null);
+/** Maps any thrown value to an AuthError; a 401 is the only `rejected` case. */
+function toAuthError(error: unknown, fallback: string): AuthError {
+  if (error instanceof AuthError) {
+    return error;
   }
-  return new AuthApiError(fallback, null);
+  const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+  const kind: AuthErrorKind = status === 401 ? "rejected" : "unavailable";
+  return new AuthError(serverMessage(error) ?? fallback, kind);
+}
+
+/** Runs an auth request, normalizing every failure into an AuthError. */
+async function request(url: string, body: unknown, fallback: string): Promise<unknown> {
+  try {
+    const response = await http.post(url, body);
+    return response.data;
+  } catch (error: unknown) {
+    throw toAuthError(error, fallback);
+  }
 }
 
 function unwrapSession(responseBody: unknown): SessionPayload {
@@ -84,13 +96,21 @@ function unwrapSession(responseBody: unknown): SessionPayload {
   const candidate = envelope.success ? envelope.data.data : responseBody;
   const payload = sessionPayloadSchema.safeParse(candidate);
   if (!payload.success) {
-    console.error("[unwrapSession] envelope.success:", envelope.success);
-    console.error("[unwrapSession] raw responseBody:", responseBody);
-    console.error("[unwrapSession] candidate passed to schema:", candidate);
-    console.error("[unwrapSession] zod issues:", payload.error.issues);
-    throw new AuthApiError("Unexpected response from auth server", null);
+    // Treated as transient so a contract drift never logs an active user out.
+    console.warn("[authApi] unexpected session payload", payload.error.issues);
+    throw new AuthError("Unexpected response from auth server", "unavailable");
   }
   return payload.data;
+}
+
+// Signup's envelope carries the tenant's apiKey alongside the session.
+const signupKeySchema = z.object({ apiKey: z.string().min(1) });
+
+function extractApiKey(responseBody: unknown): string {
+  const envelope = envelopeSchema.safeParse(responseBody);
+  const candidate = envelope.success ? envelope.data.data : responseBody;
+  const parsed = signupKeySchema.safeParse(candidate);
+  return parsed.success ? parsed.data.apiKey : "";
 }
 
 export interface SignupParams {
@@ -110,68 +130,45 @@ type SignupResult =
   | { readonly kind: "verificationRequired" }
   | { readonly kind: "signedIn"; readonly session: SessionPayload; readonly apiKey: string };
 
-// Signup's envelope carries the tenant's apiKey alongside the session.
-const signupKeySchema = z.object({ apiKey: z.string().min(1) });
-
-function extractApiKey(responseBody: unknown): string {
-  const envelope = envelopeSchema.safeParse(responseBody);
-  const candidate = envelope.success ? envelope.data.data : responseBody;
-  const parsed = signupKeySchema.safeParse(candidate);
-  return parsed.success ? parsed.data.apiKey : "";
-}
-
 export const authApi = {
   async login(email: string, password: string): Promise<SessionPayload> {
-    try {
-      const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.LOGIN, { email, password });
-      return unwrapSession(response.data);
-    } catch (error: unknown) {
-      if (error instanceof AuthApiError) throw error;
-      throw toAuthApiError(error, "Login failed");
-    }
+    return unwrapSession(
+      await request(API_CONFIG.ENDPOINTS.AUTH.LOGIN, { email, password }, "Login failed")
+    );
   },
 
   async signup(params: SignupParams): Promise<SignupResult> {
-    try {
-      const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
+    const body = await request(
+      API_CONFIG.ENDPOINTS.AUTH.SIGNUP,
+      {
         email: params.email,
         password: params.password,
         name: params.name,
         tenantName: params.orgName,
         acceptedTerms: params.acceptedTerms,
-      });
-      const apiKey = extractApiKey(response.data);
-      if (apiKey === "") {
-        return { kind: "verificationRequired" };
-      }
-      return {
-        kind: "signedIn",
-        session: unwrapSession(response.data),
-        apiKey,
-      };
-    } catch (error: unknown) {
-      if (error instanceof AuthApiError) throw error;
-      throw toAuthApiError(error, "Sign up failed");
+      },
+      "Sign up failed"
+    );
+    const apiKey = extractApiKey(body);
+    if (apiKey === "") {
+      return { kind: "verificationRequired" };
     }
+    return { kind: "signedIn", session: unwrapSession(body), apiKey };
   },
 
   async verifyEmail(token: string): Promise<VerifyResult> {
-    try {
-      const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.VERIFY_EMAIL, { token });
-      return { session: unwrapSession(response.data), apiKey: extractApiKey(response.data) };
-    } catch (error: unknown) {
-      throw toAuthApiError(error, "Email verification failed");
-    }
+    const body = await request(
+      API_CONFIG.ENDPOINTS.AUTH.VERIFY_EMAIL,
+      { token },
+      "Email verification failed"
+    );
+    return { session: unwrapSession(body), apiKey: extractApiKey(body) };
   },
 
   async refresh(): Promise<SessionPayload> {
-    try {
-      const response = await http.post(API_CONFIG.ENDPOINTS.AUTH.REFRESH);
-      return unwrapSession(response.data);
-    } catch (error: unknown) {
-      if (error instanceof AuthApiError) throw error;
-      throw toAuthApiError(error, "Session expired");
-    }
+    return unwrapSession(
+      await request(API_CONFIG.ENDPOINTS.AUTH.REFRESH, undefined, "Session expired")
+    );
   },
 
   async logout(accessToken: string | null): Promise<void> {
@@ -181,29 +178,26 @@ export const authApi = {
   },
 
   async forgotPassword(email: string): Promise<void> {
-    try {
-      await http.post(API_CONFIG.ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
-    } catch (error: unknown) {
-      if (error instanceof AuthApiError) throw error;
-      throw toAuthApiError(error, "Failed to request password reset");
-    }
+    await request(
+      API_CONFIG.ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      { email },
+      "Failed to request password reset"
+    );
   },
 
   async resetPassword(token: string, password: string): Promise<void> {
-    try {
-      await http.post(API_CONFIG.ENDPOINTS.AUTH.RESET_PASSWORD, { token, password });
-    } catch (error: unknown) {
-      if (error instanceof AuthApiError) throw error;
-      throw toAuthApiError(error, "Failed to reset password");
-    }
+    await request(
+      API_CONFIG.ENDPOINTS.AUTH.RESET_PASSWORD,
+      { token, password },
+      "Failed to reset password"
+    );
   },
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
-    try {
-      await http.post(API_CONFIG.ENDPOINTS.AUTH.CHANGE_PASSWORD, { currentPassword, newPassword });
-    } catch (error: unknown) {
-      if (error instanceof AuthApiError) throw error;
-      throw toAuthApiError(error, "Failed to change password");
-    }
+    await request(
+      API_CONFIG.ENDPOINTS.AUTH.CHANGE_PASSWORD,
+      { currentPassword, newPassword },
+      "Failed to change password"
+    );
   },
 };

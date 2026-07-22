@@ -23,17 +23,20 @@ export function useTraceDetailEnhanced(
   activeDetailTab = "attributes"
 ) {
   const enabled = !!traceId;
+  const startMs = bounds.startMs ?? 0;
+  const endMs = bounds.endMs ?? 0;
+  const hasBounds = startMs > 0 && endMs >= startMs;
 
   const { data: criticalPathData } = useStandardQuery({
-    queryKey: ["trace-critical-path", traceId],
-    queryFn: () => tracesService.getCriticalPath(traceId),
-    enabled,
+    queryKey: ["trace-critical-path", traceId, startMs, endMs],
+    queryFn: () => tracesService.getCriticalPath(traceId, startMs, endMs),
+    enabled: enabled && hasBounds,
   });
 
   const { data: errorPathData } = useStandardQuery({
-    queryKey: ["trace-error-path", traceId],
-    queryFn: () => tracesService.getErrorPath(traceId),
-    enabled,
+    queryKey: ["trace-error-path", traceId, startMs, endMs],
+    queryFn: () => tracesService.getErrorPath(traceId, startMs, endMs),
+    enabled: enabled && hasBounds,
   });
 
   const { data: spanEventsData } = useStandardQuery({
@@ -41,11 +44,6 @@ export function useTraceDetailEnhanced(
     queryFn: () => tracesService.getSpanEvents(traceId),
     enabled: enabled && !!selectedSpanId,
   });
-
-  // Related traces stay range-scoped: "other recent traces like this one" is a
-  // range query, not a lookup by trace identity.
-  const startMs = bounds.startMs ?? 0;
-  const endMs = bounds.endMs ?? 0;
 
   const { data: relatedTracesData } = useStandardQuery({
     queryKey: [

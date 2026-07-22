@@ -2,15 +2,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useAuthStore } from "@app/store/authStore";
 
-import type { SessionPayload } from "./authApi";
+import { AuthError, type SessionPayload } from "./authApi";
 
-// Mock the pure HTTP layer so we drive refresh outcomes directly. `isAuthRejection`
-// is the contract boundary the session relies on to tell a real 401 apart from a
-// transient failure, so it is mocked alongside `authApi`.
-vi.mock("./authApi", () => ({
-  authApi: { login: vi.fn(), refresh: vi.fn() },
-  isAuthRejection: vi.fn(),
-}));
+// Mock the pure HTTP layer so we drive refresh outcomes directly. The session
+// tells a real 401 (`AuthError` of kind "rejected") apart from a transient
+// failure purely by the thrown error's kind — that is the contract under test.
+vi.mock("./authApi", async () => {
+  const actual = await vi.importActual<typeof import("./authApi")>("./authApi");
+  return { AuthError: actual.AuthError, authApi: { login: vi.fn(), refresh: vi.fn() } };
+});
 
 // Side-effect collaborators of session teardown — mocked so the test stays
 // focused on the refresh outcome and free of the persisted store's localStorage.
@@ -21,11 +21,13 @@ vi.mock("@shared/api/queryClient", () => ({
   queryClient: { clear: vi.fn() },
 }));
 
-import { authApi, isAuthRejection } from "./authApi";
+import { authApi } from "./authApi";
 import { session } from "./session";
 
 const authApiMock = vi.mocked(authApi);
-const isAuthRejectionMock = vi.mocked(isAuthRejection);
+
+const rejected = new AuthError("unauthorized", "rejected");
+const unavailable = new AuthError("network down", "unavailable");
 
 // An unparseable token skips proactive-refresh scheduling, keeping the test free
 // of background timers.
@@ -42,15 +44,15 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  isAuthRejectionMock.mockReturnValue(true);
-  authApiMock.refresh.mockRejectedValue(new Error("teardown"));
+  // Return the module to a signed-out state so store status can't leak between
+  // tests (session state is module-level).
+  authApiMock.refresh.mockRejectedValue(rejected);
   await session.refreshAccessToken();
 });
 
 describe("session refresh resilience", () => {
   it("keeps the session on a transient refresh failure", async () => {
-    isAuthRejectionMock.mockReturnValue(false);
-    authApiMock.refresh.mockRejectedValue(new Error("network down"));
+    authApiMock.refresh.mockRejectedValue(unavailable);
 
     const token = await session.refreshAccessToken();
 
@@ -60,8 +62,7 @@ describe("session refresh resilience", () => {
   });
 
   it("ends the session on a definitive 401", async () => {
-    isAuthRejectionMock.mockReturnValue(true);
-    authApiMock.refresh.mockRejectedValue(new Error("unauthorized"));
+    authApiMock.refresh.mockRejectedValue(rejected);
 
     const token = await session.refreshAccessToken();
 
@@ -77,5 +78,21 @@ describe("session refresh resilience", () => {
 
     expect(token).toBe("renewed-token");
     expect(useAuthStore.getState().status).toBe("authenticated");
+  });
+});
+
+describe("session restore (boot recovery)", () => {
+  it("reports authenticated from the in-memory token without a network call", async () => {
+    await expect(session.restore()).resolves.toBe("authenticated");
+    expect(authApiMock.refresh).not.toHaveBeenCalled();
+  });
+
+  it("reports unauthenticated after a definitive logout without re-hitting the backend", async () => {
+    authApiMock.refresh.mockRejectedValue(rejected);
+    await session.refreshAccessToken(); // definitive 401 tears the session down
+    authApiMock.refresh.mockClear();
+
+    await expect(session.restore()).resolves.toBe("unauthenticated");
+    expect(authApiMock.refresh).not.toHaveBeenCalled();
   });
 });

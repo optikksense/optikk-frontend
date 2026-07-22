@@ -232,13 +232,25 @@ async function getSpanEvents(traceId: string): Promise<SpanEventRecord[]> {
   return validateResponse(z.array(spanEventSchema), data);
 }
 
-async function getCriticalPath(traceId: string): Promise<CriticalPathSpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/critical-path`);
+async function getCriticalPath(
+  traceId: string,
+  startMs: number,
+  endMs: number
+): Promise<CriticalPathSpanRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/critical-path`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
   return validateResponse(z.array(criticalPathSpanSchema), data);
 }
 
-async function getErrorPath(traceId: string): Promise<ErrorPathSpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/error-path`);
+async function getErrorPath(
+  traceId: string,
+  startMs: number,
+  endMs: number
+): Promise<ErrorPathSpanRecord[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/error-path`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
   return validateResponse(z.array(errorPathSpanSchema), data);
 }
 
@@ -266,8 +278,14 @@ async function getRelatedTraces(
 }
 
 // Serves topology.BuildGraph output, identical to GET /services/topology.
-async function getServiceMap(traceId: string): Promise<ServiceTopologyResponse> {
-  const data = await api.get(`${BASE}/traces/${traceId}/service-map`);
+async function getServiceMap(
+  traceId: string,
+  startMs: number,
+  endMs: number
+): Promise<ServiceTopologyResponse> {
+  const data = await api.get(`${BASE}/traces/${traceId}/service-map`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
   return validateResponse(topologyResponseSchema, data ?? { nodes: [], edges: [] });
 }
 
@@ -307,8 +325,14 @@ async function getServiceLatencyBaselines(
   return out;
 }
 
-async function getTraceErrors(traceId: string): Promise<TraceErrorGroup[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/errors`);
+async function getTraceErrors(
+  traceId: string,
+  startMs: number,
+  endMs: number
+): Promise<TraceErrorGroup[]> {
+  const data = await api.get(`${BASE}/traces/${traceId}/errors`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
   return validateResponse(z.array(traceErrorGroupSchema), data);
 }
 

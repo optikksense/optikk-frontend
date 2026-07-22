@@ -19,9 +19,9 @@ export function useTraceDetailState() {
   // Coerce any stale persisted tab (e.g. the removed "flamegraph") to a valid one.
   const activeTab: VisualizationTab =
     rawActiveTab === "servicemap" ||
-    rawActiveTab === "timeline" ||
-    rawActiveTab === "errors" ||
-    rawActiveTab === "raw"
+      rawActiveTab === "timeline" ||
+      rawActiveTab === "errors" ||
+      rawActiveTab === "raw"
       ? rawActiveTab
       : "timeline";
   const setActiveTab = useTracesStore((s) => s.setVisualizationTab);
@@ -55,7 +55,7 @@ export function useTraceDetailState() {
 
   const serviceMap = useTraceServiceMap(traceIdParam, traceTimeBounds, activeTab === "servicemap");
 
-  const traceErrors = useTraceErrors(traceIdParam, activeTab === "errors");
+  const traceErrors = useTraceErrors(traceIdParam, traceTimeBounds, activeTab === "errors");
 
   const enhancedTab = data.selectedSpanId ? "related" : "attributes";
 

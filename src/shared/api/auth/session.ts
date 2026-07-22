@@ -6,25 +6,25 @@ import { useAppStore } from "@app/store/appStore";
 import { useAuthStore } from "@app/store/authStore";
 
 import { stashSignupApiKey } from "./apiKeyHandoff";
-import { type SessionPayload, type SignupParams, authApi, isAuthRejection } from "./authApi";
+import { AuthError, type SessionPayload, type SignupParams, authApi } from "./authApi";
 
 /**
- * Single owner of the session lifecycle. The access token lives only in
- * this module (never persisted); a page reload recovers it through the
- * httpOnly refresh cookie. All session teardown funnels through
- * `endSession`, so token, tenant selection, query cache, and auth state can
- * never go out of sync.
+ * Single owner of the session lifecycle. The access token lives only in this
+ * module (never persisted); a page reload recovers it through the httpOnly
+ * refresh cookie. All teardown funnels through `endSession`, so token, tenant
+ * selection, query cache, and auth state can never drift.
  */
 
 /**
- * Result of a refresh attempt. Only `unauthenticated` tears the session down;
- * `unavailable` (network/timeout/5xx) leaves a valid session intact so a
+ * The three outcomes of a session restore, passed unchanged to the router.
+ * Only `unauthenticated` (a definitive 401) may bounce the user to `/login`;
+ * `unavailable` (network/timeout/5xx) leaves any valid session intact so a
  * transient backend blip can never log an active user out.
  */
-type RefreshOutcome = "refreshed" | "unauthenticated" | "unavailable";
+export type RestoreOutcome = "authenticated" | "unauthenticated" | "unavailable";
 
 let accessToken: string | null = null;
-let refreshInflight: Promise<RefreshOutcome> | null = null;
+let refreshInflight: Promise<RestoreOutcome> | null = null;
 let refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Renew this long before the access token expires, so the refresh happens on a
@@ -72,7 +72,7 @@ function scheduleProactiveRefresh(token: string): void {
 // transient failure needs an explicit short-delay retry so the loop survives
 // backend blips instead of logging the user out.
 async function runProactiveRefresh(): Promise<void> {
-  if ((await refreshOnce()) === "unavailable") {
+  if ((await refresh()) === "unavailable") {
     clearRefreshTimer();
     refreshTimer = setTimeout(runProactiveRefresh, TRANSIENT_RETRY_DELAY_MS);
   }
@@ -110,14 +110,15 @@ function endSession(): void {
   useAuthStore.getState().clearSession();
 }
 
-async function doRefresh(): Promise<RefreshOutcome> {
+// Turns a refresh into the router's vocabulary. Only a definitive rejection
+// tears the session down; a transient failure returns `unavailable` and leaves
+// the still-valid session untouched.
+async function doRefresh(): Promise<RestoreOutcome> {
   try {
     beginSession(await authApi.refresh());
-    return "refreshed";
+    return "authenticated";
   } catch (error) {
-    // Only a definitive 401 means the refresh token is gone; tearing the
-    // session down on a transient failure is what caused spurious logouts.
-    if (isAuthRejection(error)) {
+    if (error instanceof AuthError && error.kind === "rejected") {
       endSession();
       return "unauthenticated";
     }
@@ -125,9 +126,10 @@ async function doRefresh(): Promise<RefreshOutcome> {
   }
 }
 
-// Single-flight refresh: concurrent 401s and the proactive timer share one
-// in-flight call so the backend is hit once per refresh window.
-function refreshOnce(): Promise<RefreshOutcome> {
+// Single-flight refresh: concurrent callers (boot, 401 retries, the proactive
+// timer) share one in-flight call so the backend is hit once per refresh window.
+// Short-circuits after a definitive logout to avoid hammering a dead session.
+function refresh(): Promise<RestoreOutcome> {
   if (useAuthStore.getState().status === "unauthenticated") {
     return Promise.resolve("unauthenticated");
   }
@@ -180,16 +182,18 @@ export const session = {
     await authApi.changePassword(currentPassword, newPassword);
   },
 
-  refreshAccessToken(): Promise<string | null> {
-    // Hand back a token only on a real refresh; a transient failure returns
-    // null without tearing down the still-valid session.
-    return refreshOnce().then((outcome) => (outcome === "refreshed" ? accessToken : null));
+  // For the 401-retry interceptor: hand back a token only on a real refresh; a
+  // transient failure returns null without tearing down the still-valid session.
+  async refreshAccessToken(): Promise<string | null> {
+    return (await refresh()) === "authenticated" ? accessToken : null;
   },
 
-  async ensureSession(): Promise<boolean> {
+  // Boot entry point for the route guards. Returns the real 3-way outcome so a
+  // transient failure can be retried instead of forcing a logout.
+  restore(): Promise<RestoreOutcome> {
     if (accessToken != null) {
-      return true;
+      return Promise.resolve("authenticated");
     }
-    return (await this.refreshAccessToken()) != null;
+    return refresh();
   },
 };

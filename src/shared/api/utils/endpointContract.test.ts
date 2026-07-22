@@ -120,4 +120,32 @@ describe("traces endpoints normalize the Go wire shape", () => {
       expect(typeof b.p99).toBe("number");
     }
   });
+
+  it("getServiceMap() passes required startTime and endTime params", async () => {
+    serve({ nodes: [], edges: [] });
+    await tracesService.getServiceMap("t1", 100, 200);
+
+    expect(lastRequest?.params).toEqual({ startTime: 100, endTime: 200 });
+  });
+
+  it("getTraceErrors() passes required startTime and endTime params", async () => {
+    serve([]);
+    await tracesService.getTraceErrors("t1", 100, 200);
+
+    expect(lastRequest?.params).toEqual({ startTime: 100, endTime: 200 });
+  });
+
+  it("getCriticalPath() passes required startTime and endTime params", async () => {
+    serve([]);
+    await tracesService.getCriticalPath("t1", 100, 200);
+
+    expect(lastRequest?.params).toEqual({ startTime: 100, endTime: 200 });
+  });
+
+  it("getErrorPath() passes required startTime and endTime params", async () => {
+    serve([]);
+    await tracesService.getErrorPath("t1", 100, 200);
+
+    expect(lastRequest?.params).toEqual({ startTime: 100, endTime: 200 });
+  });
 });

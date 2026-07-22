@@ -11,10 +11,10 @@ export function useMetricsExplorerQuery(queries: MetricQueryDefinition[], step: 
   const selectedTenantId = useTenantId();
   const timeRange = useTimeRange();
   const refreshKey = useRefreshKey();
-  const { startTime, endTime } = resolveTimeBounds(timeRange);
 
   const activeQueries = queries.filter((q) => q.metricName);
   const queriesHash = JSON.stringify(activeQueries);
+  const timeRangeKey = JSON.stringify(timeRange);
 
   return useStandardQuery({
     queryKey: [
@@ -22,16 +22,17 @@ export function useMetricsExplorerQuery(queries: MetricQueryDefinition[], step: 
       "explorer",
       selectedTenantId,
       queriesHash,
-      startTime,
-      endTime,
+      timeRangeKey,
       step,
       refreshKey,
     ],
-    queryFn: ({ signal }) =>
-      metricsExplorerApi.query(
+    queryFn: ({ signal }) => {
+      const { startTime, endTime } = resolveTimeBounds(timeRange);
+      return metricsExplorerApi.query(
         buildExplorerQueryRequest(queries, startTime, endTime, step),
         signal
-      ),
+      );
+    },
     enabled: Boolean(selectedTenantId) && activeQueries.length > 0,
     retry: false,
   });

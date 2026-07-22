@@ -15,10 +15,14 @@ export function useTraceServiceMap(
   bounds: { startMs?: number; endMs?: number },
   latencyEnabled: boolean
 ) {
+  const startMs = bounds.startMs ?? 0;
+  const endMs = bounds.endMs ?? 0;
+  const hasBounds = startMs > 0 && endMs >= startMs;
+
   const mapQuery = useImmutableQuery({
-    queryKey: ["trace-service-map", traceId],
-    queryFn: () => tracesService.getServiceMap(traceId),
-    enabled: !!traceId,
+    queryKey: ["trace-service-map", traceId, startMs, endMs],
+    queryFn: () => tracesService.getServiceMap(traceId, startMs, endMs),
+    enabled: !!traceId && hasBounds,
   });
 
   // The latency baselines are a RED rollup lookup, so they keep a real range —

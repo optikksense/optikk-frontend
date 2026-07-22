@@ -21,7 +21,7 @@ export function useLlmRange() {
   const timeRange = useTimeRange();
   const tenantId = useTenantId();
   const refreshKey = useRefreshKey();
-  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
+  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange, refreshKey]);
   return { tenantId, refreshKey, startTime, endTime };
 }
 
