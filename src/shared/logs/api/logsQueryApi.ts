@@ -71,7 +71,7 @@ function fallbackLogId(row: z.infer<typeof rawLogRowSchema>): string {
   return base64UrlEncodeUtf8(payload);
 }
 
-function coerceTimestampToIso(ts: string): string {
+export function coerceTimestampToIso(ts: string): string {
   if (ts.includes("T")) return ts;
   try {
     const bi = BigInt(ts);

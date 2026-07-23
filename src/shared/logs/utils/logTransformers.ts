@@ -61,17 +61,3 @@ export function buildAttrGroups(
 
   return [source, severity, infra, trace, attributes].filter((g) => g.rows.length > 0);
 }
-
-export type SeverityLevel = "info" | "warn" | "error";
-
-export function getSeverityTheme(text?: string | null): { level: SeverityLevel; color: string } {
-  if (!text) return { level: "info", color: "var(--accent)" };
-  const t = text.toUpperCase();
-  if (t.startsWith("ERROR") || t.startsWith("FATAL") || t === "ERR") {
-    return { level: "error", color: "var(--err)" };
-  }
-  if (t.startsWith("WARN")) {
-    return { level: "warn", color: "var(--warn)" };
-  }
-  return { level: "info", color: "var(--accent)" };
-}

@@ -1,8 +1,9 @@
 import type { TraceLog } from "@shared/api/traces/schemas";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
-import { formatTimestamp } from "@shared/utils/formatters";
+import { LogsTable } from "@shared/logs/components/table/LogsTable";
+import { traceLogToLogRecord } from "@shared/logs/utils/traceLogAdapter";
 
 import { useTraceOperationBaseline } from "../../hooks/useTraceOperationBaseline";
 import { BottomBar } from "./components/BottomBar";
@@ -24,6 +25,7 @@ function AssociatedTraceLogsSection({
   logs: readonly TraceLog[];
   onOpenInLogs: () => void;
 }) {
+  const rows = useMemo(() => logs.map(traceLogToLogRecord), [logs]);
   return (
     <div className="flex flex-col rounded-lg border border-[var(--line)] bg-[var(--bg-1)] p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
@@ -42,34 +44,7 @@ function AssociatedTraceLogsSection({
         </button>
       </div>
       <div className="overflow-x-auto rounded-md border border-[var(--line)]">
-        <table className="w-full text-left font-mono text-xs">
-          <thead className="border-[var(--line)] border-b bg-[var(--bg-2)] text-foreground-caption">
-            <tr>
-              <th className="px-3 py-2 font-medium">Timestamp</th>
-              <th className="px-3 py-2 font-medium">Service</th>
-              <th className="px-3 py-2 font-medium">Level</th>
-              <th className="px-3 py-2 font-medium">Message</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[var(--line)]">
-            {logs.map((log, i) => (
-              <tr key={log.id || `${log.timestamp}-${i}`} className="hover:bg-[var(--bg-row-h)]">
-                <td className="whitespace-nowrap px-3 py-2 text-foreground-secondary">
-                  {log.timestamp ? formatTimestamp(log.timestamp) : "—"}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-foreground">
-                  {log.serviceName || "—"}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2">
-                  <span className="inline-block rounded bg-[var(--bg-2)] px-1.5 py-0.5 font-semibold text-[10px] text-foreground uppercase tracking-wide">
-                    {log.severityText || "INFO"}
-                  </span>
-                </td>
-                <td className="px-3 py-2 text-foreground break-all">{log.body || "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <LogsTable rows={rows} emptyTitle="No associated logs" />
       </div>
     </div>
   );
