@@ -1,9 +1,7 @@
 import { OverviewDbQueries } from "../panels/overview/OverviewDbQueries";
 import { OverviewEndpointsAndResources } from "../panels/overview/OverviewEndpointsAndResources";
-import { OverviewErrors } from "../panels/overview/OverviewErrors";
 import { OverviewGoldenSignals } from "../panels/overview/OverviewGoldenSignals";
 import { OverviewPodFleet } from "../panels/overview/OverviewPodFleet";
-import { OverviewRecentTraces } from "../panels/overview/OverviewRecentTraces";
 
 export function OverviewTabPanel({ serviceName }: { serviceName: string }) {
   return (
@@ -12,8 +10,6 @@ export function OverviewTabPanel({ serviceName }: { serviceName: string }) {
       <OverviewEndpointsAndResources serviceName={serviceName} />
       <OverviewDbQueries serviceName={serviceName} />
       <OverviewPodFleet serviceName={serviceName} />
-      <OverviewErrors serviceName={serviceName} />
-      <OverviewRecentTraces serviceName={serviceName} />
     </div>
   );
 }

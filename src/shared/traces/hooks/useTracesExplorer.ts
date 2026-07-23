@@ -3,14 +3,19 @@ import { useMemo } from "react";
 import { useExplorerQuery, useExplorerSubQuery } from "@shared/search/hooks/useExplorerQuery";
 import { useExplorerState } from "@shared/search/hooks/useExplorerState";
 import type { ExplorerIncludeFlag } from "@shared/search/types";
+import type { ExplorerFilter } from "@shared/search/types/filters";
 
 import { query, queryFacets, queryTrend } from "@shared/api/traces/tracesApi";
 import type { TracesQueryResponse } from "@shared/api/traces/types";
+
+const EMPTY_FILTERS: readonly ExplorerFilter[] = [];
 
 interface UseTracesExplorerArgs {
   readonly include?: readonly ExplorerIncludeFlag[];
   readonly limit?: number;
   readonly enabled?: boolean;
+  /** Always-applied scope (e.g. service lock) merged ahead of URL filters. */
+  readonly baseFilters?: readonly ExplorerFilter[];
 }
 
 /**
@@ -23,9 +28,14 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     () => args.include ?? ["summary"],
     [args.include]
   );
+  const baseFilters = args.baseFilters ?? EMPTY_FILTERS;
+  const effectiveFilters = useMemo<readonly ExplorerFilter[]>(
+    () => (baseFilters.length > 0 ? [...baseFilters, ...state.filters] : state.filters),
+    [baseFilters, state.filters]
+  );
   const explorerQuery = useExplorerQuery<TracesQueryResponse>({
     scope: "traces",
-    filters: state.filters,
+    filters: effectiveFilters,
     cursor: state.cursor,
     limit: args.limit ?? 100,
     include,
@@ -40,7 +50,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
   const facetsQuery = useExplorerSubQuery({
     scope: "traces",
     subKey: "facets",
-    filters: state.filters,
+    filters: effectiveFilters,
     enabled: (args.enabled ?? true) && include.includes("facets"),
     fetcher: (req) => queryFacets({ ...req, limit: 0 }),
   });
@@ -48,7 +58,7 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
   const trendQuery = useExplorerSubQuery({
     scope: "traces",
     subKey: "trend",
-    filters: state.filters,
+    filters: effectiveFilters,
     enabled: (args.enabled ?? true) && (include.includes("trend") || include.includes("summary")),
     fetcher: (req) => queryTrend({ ...req, limit: 0 }),
   });

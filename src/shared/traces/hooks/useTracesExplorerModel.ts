@@ -1,0 +1,100 @@
+import { useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { useAppStore, useTimeRange } from "@app/store/appStore";
+import type { ExplorerFilter, ExplorerIncludeFlag } from "@shared/search/types";
+import { toTrendBuckets } from "@shared/search/utils/trend";
+import { resolveTimeRangeBounds } from "@shared/types";
+
+import type { TraceSummary } from "@shared/api/traces/types";
+import { sortTraces } from "../utils/sortTraces";
+import { useTracesExplorer } from "./useTracesExplorer";
+
+interface UseTracesExplorerModelArgs {
+  readonly baseFilters?: readonly ExplorerFilter[];
+  readonly includeFacets?: boolean;
+}
+
+/**
+ * Content-level orchestration shared by the standalone Traces explorer and the
+ * service-scoped Traces tab: bundled query + keyset cursor pagination + trend
+ * bucketing + row navigation. Page-only concerns (facet groups, context menu,
+ * search focus) live in `useTracesExplorerPage`, which wraps this.
+ */
+export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
+  const includeFacets = args.includeFacets ?? true;
+  const include = useMemo<readonly ExplorerIncludeFlag[]>(
+    () => (includeFacets ? ["summary", "facets", "trend"] : ["summary", "trend"]),
+    [includeFacets]
+  );
+
+  const explorer = useTracesExplorer({ include, baseFilters: args.baseFilters });
+  const { state, query, facetsQuery, trendQuery, traces, facets, summary, trend } = explorer;
+
+  const navigate = useNavigate();
+  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+
+  const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
+  const timeRange = useTimeRange();
+  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
+
+  const trendBuckets = useMemo(() => toTrendBuckets(trend), [trend]);
+  const sortedTraces = useMemo(() => sortTraces(traces, "recent"), [traces]);
+
+  const onTimeRangeChange = useCallback(
+    (fromMs: number, toMs: number) => setCustomTimeRange(fromMs, toMs, "Brush"),
+    [setCustomTimeRange]
+  );
+
+  // Changing the filter set invalidates the keyset cursor; reset pagination too.
+  const filtersJson = useMemo(() => JSON.stringify(state.filters), [state.filters]);
+  useEffect(() => {
+    setCursorHistory([]);
+    state.setCursor(null);
+  }, [filtersJson, state.setCursor]);
+
+  const onOpenTrace = useCallback(
+    (trace: TraceSummary) => {
+      navigate({ to: `/traces/${encodeURIComponent(trace.traceId)}` });
+    },
+    [navigate]
+  );
+
+  const onNextPage = useCallback(() => {
+    if (query.data?.nextCursor) {
+      setCursorHistory((prev) => [...prev, state.cursor || ""]);
+      state.setCursor(query.data.nextCursor);
+    }
+  }, [query.data?.nextCursor, state.cursor, state.setCursor]);
+
+  const onPrevPage = useCallback(() => {
+    setCursorHistory((prev) => {
+      const next = [...prev];
+      const prevCursor = next.pop();
+      if (prevCursor !== undefined) {
+        state.setCursor(prevCursor === "" ? null : prevCursor);
+      }
+      return next;
+    });
+  }, [state.setCursor]);
+
+  return {
+    state,
+    query,
+    facetsQuery,
+    trendQuery,
+    facets,
+    summary,
+    trendBuckets,
+    sortedTraces,
+    onOpenTrace,
+    onTimeRangeChange,
+    onNextPage,
+    onPrevPage,
+    hasPrevPage: cursorHistory.length > 0,
+    hasNextPage: Boolean(query.data?.nextCursor),
+    zoomed: timeRange.kind === "absolute",
+    startTime,
+    endTime,
+  };
+}

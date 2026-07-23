@@ -1,8 +1,8 @@
 import type { TraceSummary } from "@shared/api/traces/types";
 import { formatTimestamp } from "@shared/utils/formatters";
+import { getServiceColor } from "@shared/utils/serviceColor";
 import { ChevronRight } from "lucide-react";
 import { memo } from "react";
-import { getServiceColor } from "../../../utils/serviceColor";
 
 export const TraceRow = memo(function TraceRow({
   t,

@@ -1,5 +1,6 @@
 import type { TraceSummary } from "@shared/api/traces/types";
-import type { TraceSortMode } from "../components/TraceSortToggle";
+
+export type TraceSortMode = "recent" | "slowest" | "errors_first";
 
 /**
  * Client-side sort of the currently-loaded page of traces. The backend
