@@ -39,6 +39,9 @@ dist-ssr
 build
 .cache
 
+# TanStack Router generated cache
+.tanstack
+
 # Firebase
 .firebase/
 

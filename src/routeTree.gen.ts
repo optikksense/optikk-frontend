@@ -30,7 +30,6 @@ import { Route as AppSaturationDatabaseQueryQueryIdRouteImport } from './routes/
 const AppSettingsLazyRouteImport = createFileRoute('/_app/settings')()
 const AppOverviewLazyRouteImport = createFileRoute('/_app/overview')()
 const AppMetricsLazyRouteImport = createFileRoute('/_app/metrics')()
-const AppLlmLazyRouteImport = createFileRoute('/_app/llm')()
 const AppDeviceLazyRouteImport = createFileRoute('/_app/device')()
 const AppCloudLazyRouteImport = createFileRoute('/_app/cloud')()
 const AppTracesIndexLazyRouteImport = createFileRoute('/_app/traces/')()
@@ -38,6 +37,7 @@ const AppServicesIndexLazyRouteImport = createFileRoute('/_app/services/')()
 const AppSaturationIndexLazyRouteImport = createFileRoute('/_app/saturation/')()
 const AppMonitorsIndexLazyRouteImport = createFileRoute('/_app/monitors/')()
 const AppLogsIndexLazyRouteImport = createFileRoute('/_app/logs/')()
+const AppLlmIndexLazyRouteImport = createFileRoute('/_app/llm/')()
 const AppInfrastructureIndexLazyRouteImport = createFileRoute(
   '/_app/infrastructure/',
 )()
@@ -67,6 +67,18 @@ const AppSaturationDatabaseIndexLazyRouteImport = createFileRoute(
 )()
 const AppMonitorsMonitorIdEditLazyRouteImport = createFileRoute(
   '/_app/monitors/$monitorId/edit',
+)()
+const AppLlmTracesTraceIdLazyRouteImport = createFileRoute(
+  '/_app/llm/traces/$traceId',
+)()
+const AppLlmSessionsSessionIdLazyRouteImport = createFileRoute(
+  '/_app/llm/sessions/$sessionId',
+)()
+const AppLlmPromptsNameLazyRouteImport = createFileRoute(
+  '/_app/llm/prompts/$name',
+)()
+const AppLlmDatasetsDatasetIdLazyRouteImport = createFileRoute(
+  '/_app/llm/datasets/$datasetId',
 )()
 const AppInfrastructureHostsHostLazyRouteImport = createFileRoute(
   '/_app/infrastructure/hosts/$host',
@@ -136,11 +148,6 @@ const AppMetricsLazyRoute = AppMetricsLazyRouteImport.update({
   path: '/metrics',
   getParentRoute: () => AppRoute,
 } as any).lazy(() => import('./routes/_app/metrics.lazy').then((d) => d.Route))
-const AppLlmLazyRoute = AppLlmLazyRouteImport.update({
-  id: '/llm',
-  path: '/llm',
-  getParentRoute: () => AppRoute,
-} as any).lazy(() => import('./routes/_app/llm.lazy').then((d) => d.Route))
 const AppDeviceLazyRoute = AppDeviceLazyRouteImport.update({
   id: '/device',
   path: '/device',
@@ -190,6 +197,13 @@ const AppLogsIndexLazyRoute = AppLogsIndexLazyRouteImport.update({
   getParentRoute: () => AppRoute,
 } as any).lazy(() =>
   import('./routes/_app/logs/index.lazy').then((d) => d.Route),
+)
+const AppLlmIndexLazyRoute = AppLlmIndexLazyRouteImport.update({
+  id: '/llm/',
+  path: '/llm/',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/llm/index.lazy').then((d) => d.Route),
 )
 const AppInfrastructureIndexLazyRoute =
   AppInfrastructureIndexLazyRouteImport.update({
@@ -308,6 +322,36 @@ const AppMonitorsMonitorIdEditLazyRoute =
   } as any).lazy(() =>
     import('./routes/_app/monitors/$monitorId/edit.lazy').then((d) => d.Route),
   )
+const AppLlmTracesTraceIdLazyRoute = AppLlmTracesTraceIdLazyRouteImport.update({
+  id: '/llm/traces/$traceId',
+  path: '/llm/traces/$traceId',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/llm/traces/$traceId.lazy').then((d) => d.Route),
+)
+const AppLlmSessionsSessionIdLazyRoute =
+  AppLlmSessionsSessionIdLazyRouteImport.update({
+    id: '/llm/sessions/$sessionId',
+    path: '/llm/sessions/$sessionId',
+    getParentRoute: () => AppRoute,
+  } as any).lazy(() =>
+    import('./routes/_app/llm/sessions/$sessionId.lazy').then((d) => d.Route),
+  )
+const AppLlmPromptsNameLazyRoute = AppLlmPromptsNameLazyRouteImport.update({
+  id: '/llm/prompts/$name',
+  path: '/llm/prompts/$name',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/llm/prompts/$name.lazy').then((d) => d.Route),
+)
+const AppLlmDatasetsDatasetIdLazyRoute =
+  AppLlmDatasetsDatasetIdLazyRouteImport.update({
+    id: '/llm/datasets/$datasetId',
+    path: '/llm/datasets/$datasetId',
+    getParentRoute: () => AppRoute,
+  } as any).lazy(() =>
+    import('./routes/_app/llm/datasets/$datasetId.lazy').then((d) => d.Route),
+  )
 const AppInfrastructureHostsHostLazyRoute =
   AppInfrastructureHostsHostLazyRouteImport.update({
     id: '/infrastructure/hosts/$host',
@@ -360,7 +404,6 @@ export interface FileRoutesByFullPath {
   '/ingestion': typeof AppIngestionRoute
   '/cloud': typeof AppCloudLazyRoute
   '/device': typeof AppDeviceLazyRoute
-  '/llm': typeof AppLlmLazyRoute
   '/metrics': typeof AppMetricsLazyRoute
   '/overview': typeof AppOverviewLazyRoute
   '/settings': typeof AppSettingsLazyRoute
@@ -379,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/dashboards/': typeof AppDashboardsIndexLazyRoute
   '/errors/': typeof AppErrorsIndexLazyRoute
   '/infrastructure/': typeof AppInfrastructureIndexLazyRoute
+  '/llm/': typeof AppLlmIndexLazyRoute
   '/logs/': typeof AppLogsIndexLazyRoute
   '/monitors/': typeof AppMonitorsIndexLazyRoute
   '/saturation/': typeof AppSaturationIndexLazyRoute
@@ -386,6 +430,10 @@ export interface FileRoutesByFullPath {
   '/traces/': typeof AppTracesIndexLazyRoute
   '/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerLazyRoute
   '/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
+  '/llm/datasets/$datasetId': typeof AppLlmDatasetsDatasetIdLazyRoute
+  '/llm/prompts/$name': typeof AppLlmPromptsNameLazyRoute
+  '/llm/sessions/$sessionId': typeof AppLlmSessionsSessionIdLazyRoute
+  '/llm/traces/$traceId': typeof AppLlmTracesTraceIdLazyRoute
   '/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
   '/saturation/database/': typeof AppSaturationDatabaseIndexLazyRoute
   '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
@@ -402,7 +450,6 @@ export interface FileRoutesByTo {
   '/ingestion': typeof AppIngestionRoute
   '/cloud': typeof AppCloudLazyRoute
   '/device': typeof AppDeviceLazyRoute
-  '/llm': typeof AppLlmLazyRoute
   '/metrics': typeof AppMetricsLazyRoute
   '/overview': typeof AppOverviewLazyRoute
   '/settings': typeof AppSettingsLazyRoute
@@ -421,6 +468,7 @@ export interface FileRoutesByTo {
   '/dashboards': typeof AppDashboardsIndexLazyRoute
   '/errors': typeof AppErrorsIndexLazyRoute
   '/infrastructure': typeof AppInfrastructureIndexLazyRoute
+  '/llm': typeof AppLlmIndexLazyRoute
   '/logs': typeof AppLogsIndexLazyRoute
   '/monitors': typeof AppMonitorsIndexLazyRoute
   '/saturation': typeof AppSaturationIndexLazyRoute
@@ -428,6 +476,10 @@ export interface FileRoutesByTo {
   '/traces': typeof AppTracesIndexLazyRoute
   '/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerLazyRoute
   '/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
+  '/llm/datasets/$datasetId': typeof AppLlmDatasetsDatasetIdLazyRoute
+  '/llm/prompts/$name': typeof AppLlmPromptsNameLazyRoute
+  '/llm/sessions/$sessionId': typeof AppLlmSessionsSessionIdLazyRoute
+  '/llm/traces/$traceId': typeof AppLlmTracesTraceIdLazyRoute
   '/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
   '/saturation/database': typeof AppSaturationDatabaseIndexLazyRoute
   '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
@@ -446,7 +498,6 @@ export interface FileRoutesById {
   '/_app/ingestion': typeof AppIngestionRoute
   '/_app/cloud': typeof AppCloudLazyRoute
   '/_app/device': typeof AppDeviceLazyRoute
-  '/_app/llm': typeof AppLlmLazyRoute
   '/_app/metrics': typeof AppMetricsLazyRoute
   '/_app/overview': typeof AppOverviewLazyRoute
   '/_app/settings': typeof AppSettingsLazyRoute
@@ -465,6 +516,7 @@ export interface FileRoutesById {
   '/_app/dashboards/': typeof AppDashboardsIndexLazyRoute
   '/_app/errors/': typeof AppErrorsIndexLazyRoute
   '/_app/infrastructure/': typeof AppInfrastructureIndexLazyRoute
+  '/_app/llm/': typeof AppLlmIndexLazyRoute
   '/_app/logs/': typeof AppLogsIndexLazyRoute
   '/_app/monitors/': typeof AppMonitorsIndexLazyRoute
   '/_app/saturation/': typeof AppSaturationIndexLazyRoute
@@ -472,6 +524,10 @@ export interface FileRoutesById {
   '/_app/traces/': typeof AppTracesIndexLazyRoute
   '/_app/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerLazyRoute
   '/_app/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
+  '/_app/llm/datasets/$datasetId': typeof AppLlmDatasetsDatasetIdLazyRoute
+  '/_app/llm/prompts/$name': typeof AppLlmPromptsNameLazyRoute
+  '/_app/llm/sessions/$sessionId': typeof AppLlmSessionsSessionIdLazyRoute
+  '/_app/llm/traces/$traceId': typeof AppLlmTracesTraceIdLazyRoute
   '/_app/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
   '/_app/saturation/database/': typeof AppSaturationDatabaseIndexLazyRoute
   '/_app/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
@@ -490,7 +546,6 @@ export interface FileRouteTypes {
     | '/ingestion'
     | '/cloud'
     | '/device'
-    | '/llm'
     | '/metrics'
     | '/overview'
     | '/settings'
@@ -509,6 +564,7 @@ export interface FileRouteTypes {
     | '/dashboards/'
     | '/errors/'
     | '/infrastructure/'
+    | '/llm/'
     | '/logs/'
     | '/monitors/'
     | '/saturation/'
@@ -516,6 +572,10 @@ export interface FileRouteTypes {
     | '/traces/'
     | '/infrastructure/containers/$container'
     | '/infrastructure/hosts/$host'
+    | '/llm/datasets/$datasetId'
+    | '/llm/prompts/$name'
+    | '/llm/sessions/$sessionId'
+    | '/llm/traces/$traceId'
     | '/monitors/$monitorId/edit'
     | '/saturation/database/'
     | '/saturation/database/query/$queryId'
@@ -532,7 +592,6 @@ export interface FileRouteTypes {
     | '/ingestion'
     | '/cloud'
     | '/device'
-    | '/llm'
     | '/metrics'
     | '/overview'
     | '/settings'
@@ -551,6 +610,7 @@ export interface FileRouteTypes {
     | '/dashboards'
     | '/errors'
     | '/infrastructure'
+    | '/llm'
     | '/logs'
     | '/monitors'
     | '/saturation'
@@ -558,6 +618,10 @@ export interface FileRouteTypes {
     | '/traces'
     | '/infrastructure/containers/$container'
     | '/infrastructure/hosts/$host'
+    | '/llm/datasets/$datasetId'
+    | '/llm/prompts/$name'
+    | '/llm/sessions/$sessionId'
+    | '/llm/traces/$traceId'
     | '/monitors/$monitorId/edit'
     | '/saturation/database'
     | '/saturation/database/query/$queryId'
@@ -575,7 +639,6 @@ export interface FileRouteTypes {
     | '/_app/ingestion'
     | '/_app/cloud'
     | '/_app/device'
-    | '/_app/llm'
     | '/_app/metrics'
     | '/_app/overview'
     | '/_app/settings'
@@ -594,6 +657,7 @@ export interface FileRouteTypes {
     | '/_app/dashboards/'
     | '/_app/errors/'
     | '/_app/infrastructure/'
+    | '/_app/llm/'
     | '/_app/logs/'
     | '/_app/monitors/'
     | '/_app/saturation/'
@@ -601,6 +665,10 @@ export interface FileRouteTypes {
     | '/_app/traces/'
     | '/_app/infrastructure/containers/$container'
     | '/_app/infrastructure/hosts/$host'
+    | '/_app/llm/datasets/$datasetId'
+    | '/_app/llm/prompts/$name'
+    | '/_app/llm/sessions/$sessionId'
+    | '/_app/llm/traces/$traceId'
     | '/_app/monitors/$monitorId/edit'
     | '/_app/saturation/database/'
     | '/_app/saturation/database/query/$queryId'
@@ -697,13 +765,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMetricsLazyRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/llm': {
-      id: '/_app/llm'
-      path: '/llm'
-      fullPath: '/llm'
-      preLoaderRoute: typeof AppLlmLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/device': {
       id: '/_app/device'
       path: '/device'
@@ -758,6 +819,13 @@ declare module '@tanstack/react-router' {
       path: '/logs'
       fullPath: '/logs/'
       preLoaderRoute: typeof AppLogsIndexLazyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/llm/': {
+      id: '/_app/llm/'
+      path: '/llm'
+      fullPath: '/llm/'
+      preLoaderRoute: typeof AppLlmIndexLazyRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/infrastructure/': {
@@ -879,6 +947,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMonitorsMonitorIdEditLazyRouteImport
       parentRoute: typeof AppMonitorsMonitorIdLazyRoute
     }
+    '/_app/llm/traces/$traceId': {
+      id: '/_app/llm/traces/$traceId'
+      path: '/llm/traces/$traceId'
+      fullPath: '/llm/traces/$traceId'
+      preLoaderRoute: typeof AppLlmTracesTraceIdLazyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/llm/sessions/$sessionId': {
+      id: '/_app/llm/sessions/$sessionId'
+      path: '/llm/sessions/$sessionId'
+      fullPath: '/llm/sessions/$sessionId'
+      preLoaderRoute: typeof AppLlmSessionsSessionIdLazyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/llm/prompts/$name': {
+      id: '/_app/llm/prompts/$name'
+      path: '/llm/prompts/$name'
+      fullPath: '/llm/prompts/$name'
+      preLoaderRoute: typeof AppLlmPromptsNameLazyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/llm/datasets/$datasetId': {
+      id: '/_app/llm/datasets/$datasetId'
+      path: '/llm/datasets/$datasetId'
+      fullPath: '/llm/datasets/$datasetId'
+      preLoaderRoute: typeof AppLlmDatasetsDatasetIdLazyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/infrastructure/hosts/$host': {
       id: '/_app/infrastructure/hosts/$host'
       path: '/infrastructure/hosts/$host'
@@ -928,7 +1024,6 @@ interface AppRouteChildren {
   AppIngestionRoute: typeof AppIngestionRoute
   AppCloudLazyRoute: typeof AppCloudLazyRoute
   AppDeviceLazyRoute: typeof AppDeviceLazyRoute
-  AppLlmLazyRoute: typeof AppLlmLazyRoute
   AppMetricsLazyRoute: typeof AppMetricsLazyRoute
   AppOverviewLazyRoute: typeof AppOverviewLazyRoute
   AppSettingsLazyRoute: typeof AppSettingsLazyRoute
@@ -947,6 +1042,7 @@ interface AppRouteChildren {
   AppDashboardsIndexLazyRoute: typeof AppDashboardsIndexLazyRoute
   AppErrorsIndexLazyRoute: typeof AppErrorsIndexLazyRoute
   AppInfrastructureIndexLazyRoute: typeof AppInfrastructureIndexLazyRoute
+  AppLlmIndexLazyRoute: typeof AppLlmIndexLazyRoute
   AppLogsIndexLazyRoute: typeof AppLogsIndexLazyRoute
   AppMonitorsIndexLazyRoute: typeof AppMonitorsIndexLazyRoute
   AppSaturationIndexLazyRoute: typeof AppSaturationIndexLazyRoute
@@ -954,6 +1050,10 @@ interface AppRouteChildren {
   AppTracesIndexLazyRoute: typeof AppTracesIndexLazyRoute
   AppInfrastructureContainersContainerLazyRoute: typeof AppInfrastructureContainersContainerLazyRoute
   AppInfrastructureHostsHostLazyRoute: typeof AppInfrastructureHostsHostLazyRoute
+  AppLlmDatasetsDatasetIdLazyRoute: typeof AppLlmDatasetsDatasetIdLazyRoute
+  AppLlmPromptsNameLazyRoute: typeof AppLlmPromptsNameLazyRoute
+  AppLlmSessionsSessionIdLazyRoute: typeof AppLlmSessionsSessionIdLazyRoute
+  AppLlmTracesTraceIdLazyRoute: typeof AppLlmTracesTraceIdLazyRoute
   AppSaturationDatabaseIndexLazyRoute: typeof AppSaturationDatabaseIndexLazyRoute
   AppSaturationDatabaseQueryQueryIdRoute: typeof AppSaturationDatabaseQueryQueryIdRoute
   AppSaturationDatabaseInstanceSystemLazyRoute: typeof AppSaturationDatabaseInstanceSystemLazyRoute
@@ -963,7 +1063,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppIngestionRoute: AppIngestionRoute,
   AppCloudLazyRoute: AppCloudLazyRoute,
   AppDeviceLazyRoute: AppDeviceLazyRoute,
-  AppLlmLazyRoute: AppLlmLazyRoute,
   AppMetricsLazyRoute: AppMetricsLazyRoute,
   AppOverviewLazyRoute: AppOverviewLazyRoute,
   AppSettingsLazyRoute: AppSettingsLazyRoute,
@@ -982,6 +1081,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardsIndexLazyRoute: AppDashboardsIndexLazyRoute,
   AppErrorsIndexLazyRoute: AppErrorsIndexLazyRoute,
   AppInfrastructureIndexLazyRoute: AppInfrastructureIndexLazyRoute,
+  AppLlmIndexLazyRoute: AppLlmIndexLazyRoute,
   AppLogsIndexLazyRoute: AppLogsIndexLazyRoute,
   AppMonitorsIndexLazyRoute: AppMonitorsIndexLazyRoute,
   AppSaturationIndexLazyRoute: AppSaturationIndexLazyRoute,
@@ -990,6 +1090,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppInfrastructureContainersContainerLazyRoute:
     AppInfrastructureContainersContainerLazyRoute,
   AppInfrastructureHostsHostLazyRoute: AppInfrastructureHostsHostLazyRoute,
+  AppLlmDatasetsDatasetIdLazyRoute: AppLlmDatasetsDatasetIdLazyRoute,
+  AppLlmPromptsNameLazyRoute: AppLlmPromptsNameLazyRoute,
+  AppLlmSessionsSessionIdLazyRoute: AppLlmSessionsSessionIdLazyRoute,
+  AppLlmTracesTraceIdLazyRoute: AppLlmTracesTraceIdLazyRoute,
   AppSaturationDatabaseIndexLazyRoute: AppSaturationDatabaseIndexLazyRoute,
   AppSaturationDatabaseQueryQueryIdRoute:
     AppSaturationDatabaseQueryQueryIdRoute,

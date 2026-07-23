@@ -48,6 +48,16 @@ const costResponseSchema = z.object({
   rows: z.array(costRowSchema).nullish(),
 });
 
+export const traceScoreSchema = z.object({
+  name: z.string(),
+  dataType: z.string(),
+  value: z.number(),
+  stringValue: z.string().nullish(),
+  source: z.string(),
+  comment: z.string().nullish(),
+});
+export type LlmTraceScore = z.infer<typeof traceScoreSchema>;
+
 const llmTraceSchema = z.object({
   traceId: z.string(),
   startMs: z.number(),
@@ -56,13 +66,18 @@ const llmTraceSchema = z.object({
   operation: z.string(),
   status: z.string(),
   hasError: z.boolean(),
+  level: z.string().nullish(),
   vendor: z.string(),
   model: z.string(),
+  userId: z.string().nullish(),
+  sessionId: z.string().nullish(),
+  tags: z.array(z.string()).nullish(),
   llmCalls: z.number(),
   promptPreview: z.string().nullish(),
   inputTokens: z.number(),
   outputTokens: z.number(),
   cost: z.number(),
+  scores: z.array(traceScoreSchema).nullish(),
 });
 export type LlmTrace = z.infer<typeof llmTraceSchema>;
 
@@ -86,18 +101,29 @@ const llmSpanSchema = z.object({
   name: z.string(),
   service: z.string(),
   operation: z.string(),
+  kind: z.string().nullish(),
   vendor: z.string(),
   model: z.string(),
+  responseModel: z.string().nullish(),
   startMs: z.number(),
   durationMs: z.number(),
   hasError: z.boolean(),
   inputTokens: z.number(),
   outputTokens: z.number(),
   cost: z.number(),
+  prompt: z.string().nullish(),
+  completion: z.string().nullish(),
 });
+export type LlmSpan = z.infer<typeof llmSpanSchema>;
+
 const traceDetailSchema = z.object({
   traceId: z.string(),
+  name: z.string().nullish(),
   service: z.string(),
+  environment: z.string().nullish(),
+  userId: z.string().nullish(),
+  sessionId: z.string().nullish(),
+  release: z.string().nullish(),
   startMs: z.number(),
   durationMs: z.number(),
   hasError: z.boolean(),
@@ -107,6 +133,7 @@ const traceDetailSchema = z.object({
   outputTokens: z.number(),
   cost: z.number(),
   spans: z.array(llmSpanSchema),
+  scores: z.array(traceScoreSchema).nullish(),
 });
 export type LlmTraceDetail = z.infer<typeof traceDetailSchema>;
 
@@ -188,6 +215,8 @@ export interface LlmTracesRequest extends RangeParams {
   limit?: number;
   cursor?: string;
   services?: string[];
+  vendors?: string[];
+  models?: string[];
   status?: string;
   minDurationMs?: number;
 }
@@ -207,4 +236,23 @@ export async function getLlmTraceDetail(
     params: { startTime, endTime },
   });
   return validateResponse(traceDetailSchema, res);
+}
+
+const modelUsageSchema = z.object({
+  model: z.string(),
+  vendor: z.string(),
+  traces: z.number(),
+  inputTokens: z.number(),
+  outputTokens: z.number(),
+  p50Ms: z.number(),
+  p95Ms: z.number(),
+  cost: z.number(),
+});
+export type LlmModelUsage = z.infer<typeof modelUsageSchema>;
+const modelsResponseSchema = z.object({ models: z.array(modelUsageSchema).nullish() });
+
+export async function getLlmModels(range: RangeParams): Promise<LlmModelUsage[]> {
+  const res = await api.get<unknown>(`${BASE}/llm/models`, { params: range });
+  const data = validateResponse(modelsResponseSchema, res);
+  return data.models ?? [];
 }

@@ -101,6 +101,9 @@ const api = {
   put<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     return unwrapResponse(axiosClient.put<T>(url, data, config));
   },
+  patch<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    return unwrapResponse(axiosClient.patch<T>(url, data, config));
+  },
   delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return unwrapResponse(axiosClient.delete<T>(url, config));
   },

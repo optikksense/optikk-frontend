@@ -210,7 +210,9 @@ async function getTraceSpans(
   endMs?: number
 ): Promise<SpanRecord[]> {
   const params =
-    startMs !== undefined && endMs !== undefined ? { startTime: startMs, endTime: endMs } : undefined;
+    startMs !== undefined && endMs !== undefined
+      ? { startTime: startMs, endTime: endMs }
+      : undefined;
   const data = await api.get(`${BASE}/traces/${traceId}/spans`, params ? { params } : undefined);
   return validateResponse(traceSpansEnvelopeSchema, data).spans;
 }

@@ -10,6 +10,7 @@ import {
   type LlmTracesRequest,
   getLlmApps,
   getLlmCostBreakdown,
+  getLlmModels,
   getLlmOverview,
   getLlmTimeseries,
   getLlmTraceDetail,
@@ -21,7 +22,10 @@ export function useLlmRange() {
   const timeRange = useTimeRange();
   const tenantId = useTenantId();
   const refreshKey = useRefreshKey();
-  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange, refreshKey]);
+  const { startTime, endTime } = useMemo(
+    () => resolveTimeRangeBounds(timeRange),
+    [timeRange, refreshKey]
+  );
   return { tenantId, refreshKey, startTime, endTime };
 }
 
@@ -65,6 +69,14 @@ export function useLlmTraces(req: Omit<LlmTracesRequest, "startTime" | "endTime"
     queryKey: ["llm", "traces", tenantId, startTime, endTime, refreshKey, JSON.stringify(req)],
     queryFn: () => queryLlmTraces({ ...req, startTime, endTime }),
     enabled,
+  });
+}
+
+export function useLlmModels() {
+  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  return useStandardQuery({
+    queryKey: ["llm", "models", tenantId, startTime, endTime, refreshKey],
+    queryFn: () => getLlmModels({ startTime, endTime }),
   });
 }
 
