@@ -14,7 +14,6 @@ import {
   buildInitialSummary,
   buildLatencyTrendSeries,
   buildRequestTrendSeries,
-  normalizeServiceKey,
 } from "../utils";
 import { useServiceDrawerQueries } from "./useServiceDrawerQueries";
 
@@ -25,10 +24,9 @@ export function useServiceDetailDrawerModel(
 ) {
   const navigate = useNavigate();
   const location = useLocation();
-  const normalizedServiceName = normalizeServiceKey(serviceName);
 
   const {
-    metricsQuery,
+    summaryQuery,
     requestTrendQuery,
     errorTrendQuery,
     latencyTrendQuery,
@@ -38,32 +36,21 @@ export function useServiceDetailDrawerModel(
 
   const initialSummary = useMemo(() => buildInitialSummary(initialData), [initialData]);
 
-  const selectedServiceMetrics = useMemo(
-    () =>
-      metricsQuery.data?.find(
-        (entry) => normalizeServiceKey(entry.serviceName) === normalizedServiceName
-      ) ?? null,
-    [metricsQuery.data, normalizedServiceName]
-  );
-
   const summaryMetrics = useMemo<ServiceSummarySnapshot | null>(() => {
-    if (selectedServiceMetrics) {
+    const row = summaryQuery.summary;
+    if (row) {
       return {
-        requestCount: selectedServiceMetrics.requestCount ?? 0,
-        errorCount: selectedServiceMetrics.errorCount ?? 0,
-        errorRate:
-          Number(selectedServiceMetrics.requestCount ?? 0) > 0
-            ? (Number(selectedServiceMetrics.errorCount ?? 0) * 100) /
-              Number(selectedServiceMetrics.requestCount ?? 0)
-            : 0,
-        avgLatency: selectedServiceMetrics.avgLatency ?? 0,
-        p95Latency: selectedServiceMetrics.p95Latency ?? 0,
-        p99Latency: selectedServiceMetrics.p99Latency ?? 0,
+        requestCount: row.requestCount,
+        errorCount: row.errorCount,
+        errorRate: row.errorRate,
+        avgLatency: row.p50Ms,
+        p95Latency: row.p95Ms,
+        p99Latency: row.p99Ms,
       };
     }
 
     return initialSummary;
-  }, [initialSummary, selectedServiceMetrics]);
+  }, [initialSummary, summaryQuery.summary]);
 
   const requestTrendSeries = useMemo(
     () => buildRequestTrendSeries(requestTrendQuery.data ?? []),
@@ -136,7 +123,7 @@ export function useServiceDetailDrawerModel(
     dependenciesQuery.isLoading && upstreamRows.length === 0 && downstreamRows.length === 0;
 
   return {
-    metricsQuery,
+    summaryQuery,
     requestTrendQuery,
     errorTrendQuery,
     latencyTrendQuery,

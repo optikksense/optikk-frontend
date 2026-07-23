@@ -6,7 +6,7 @@ import {
 } from "@shared/api/red/redApi";
 import { getServiceTopology } from "@shared/api/topology";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { getServiceMetrics } from "../serviceMetricsApi";
+import { useServiceSummaryQuery } from "@shared/metrics/hooks/useServiceSummaryQuery";
 
 /**
  * Fans the six panel queries that drive the Service Detail drawer. Split
@@ -17,11 +17,7 @@ export function useServiceDrawerQueries(serviceName: string) {
   const enabled = Boolean(serviceName);
   const opts = { extraKeys: [serviceName], enabled };
 
-  const metricsQuery = useTimeRangeQuery(
-    "service-drawer-metrics",
-    async (_t, s, e) => getServiceMetrics(s, e),
-    opts
-  );
+  const summaryQuery = useServiceSummaryQuery(serviceName);
 
   const requestTrendQuery = useTimeRangeQuery(
     "service-drawer-request-trend",
@@ -54,7 +50,7 @@ export function useServiceDrawerQueries(serviceName: string) {
   );
 
   return {
-    metricsQuery,
+    summaryQuery,
     requestTrendQuery,
     errorTrendQuery,
     latencyTrendQuery,
