@@ -46,8 +46,8 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     isError: logsIsError,
     error: logsError,
   } = useStandardQuery({
-    queryKey: ["trace-logs", selectedTenantId, traceIdParam],
-    queryFn: () => getTraceLogs(traceIdParam),
+    queryKey: ["trace-logs", selectedTenantId, traceIdParam, startMs, endMs],
+    queryFn: () => getTraceLogs(traceIdParam, startMs, endMs),
     enabled: !!selectedTenantId && !!traceIdParam,
   });
 

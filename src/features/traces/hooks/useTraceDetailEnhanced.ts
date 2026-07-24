@@ -40,8 +40,8 @@ export function useTraceDetailEnhanced(
   });
 
   const { data: spanEventsData } = useStandardQuery({
-    queryKey: ["trace-span-events", traceId],
-    queryFn: () => tracesService.getSpanEvents(traceId),
+    queryKey: ["trace-span-events", traceId, startMs, endMs],
+    queryFn: () => tracesService.getSpanEvents(traceId, startMs, endMs),
     enabled: enabled && !!selectedSpanId,
   });
 
@@ -72,8 +72,8 @@ export function useTraceDetailEnhanced(
   });
 
   const { data: spanAttributesData, isPending: spanAttributesPending } = useStandardQuery({
-    queryKey: ["span-attributes", traceId, selectedSpanId],
-    queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!),
+    queryKey: ["span-attributes", traceId, selectedSpanId, startMs, endMs],
+    queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!, startMs, endMs),
     enabled: !!selectedSpanId,
   });
 

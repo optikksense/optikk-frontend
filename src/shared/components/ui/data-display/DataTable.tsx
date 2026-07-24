@@ -9,7 +9,7 @@ import {
 import { EmptyState } from "@shared/components/ui/feedback";
 import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 
 import { useColumnSizing } from "./useColumnSizing";
 
@@ -51,7 +51,7 @@ const DEFAULT_COLUMN_SIZE = 150;
 /**
  * Standard shadcn/ui DataTable wrapper with virtualization.
  */
-export default function DataTable<TData, TValue>({
+function DataTableInner<TData, TValue>({
   data,
   config = {},
   resize,
@@ -81,64 +81,68 @@ export default function DataTable<TData, TValue>({
     overscan: 10,
   });
 
+  const virtualItems = virtualizer.getVirtualItems();
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const paddingBottom =
+    virtualItems.length > 0
+      ? virtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end
+      : 0;
+
   if (loading) {
     return (
-      <div className="py-8 text-center" style={{ color: "var(--text-muted)" }}>
-        Loading...
+      <div className="flex h-64 w-full items-center justify-center rounded-md border border-neutral-800 bg-neutral-900/50">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+          <span className="text-sm text-neutral-400">Loading data...</span>
+        </div>
       </div>
     );
   }
 
   if (rows.length === 0) {
-    return <EmptyState icon={null} title="No Data" description={emptyText} action={null} />;
+    return <EmptyState title="No Data" description={emptyText} />;
   }
-
-  const virtualItems = virtualizer.getVirtualItems();
-  const paddingTop = virtualItems.length > 0 ? virtualItems[0]?.start || 0 : 0;
-  const paddingBottom =
-    virtualItems.length > 0
-      ? virtualizer.getTotalSize() - (virtualItems[virtualItems.length - 1]?.end || 0)
-      : 0;
 
   return (
     <div
       ref={scrollRef}
-      className={`relative rounded-md border ${resizable ? "overflow-auto" : "overflow-y-auto"}`}
-      style={{ maxHeight: config.scroll?.y ?? "calc(100vh - 200px)" }}
+      className="relative max-h-[600px] w-full overflow-auto rounded-md border border-neutral-800 bg-neutral-950"
     >
-      {/* Fixed layout makes the header widths authoritative while dragging. */}
-      <Table
-        style={
-          resizable ? { tableLayout: "fixed", width: table.getTotalSize(), minWidth: "100%" } : {}
-        }
-      >
-        <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
+      <Table className="relative w-full border-collapse text-left text-sm">
+        <TableHeader className="sticky top-0 z-15 bg-neutral-900 shadow-sm">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className="border-b border-neutral-800 hover:bg-transparent">
               {headerGroup.headers.map((header) => {
                 const align = (header.column.columnDef.meta as { align?: string })?.align || "left";
-                const width = resizable
-                  ? header.getSize()
-                  : header.column.columnDef.size !== DEFAULT_COLUMN_SIZE
-                    ? header.column.columnDef.size
-                    : undefined;
+                const isCustomWidth =
+                  resizable &&
+                  header.column.columnDef.size !== undefined &&
+                  header.column.columnDef.size !== DEFAULT_COLUMN_SIZE;
+                const widthStyle = resizable
+                  ? isCustomWidth
+                    ? { width: `${header.getSize()}px` }
+                    : { width: `${header.getSize()}px`, flex: "1 1 0%" }
+                  : undefined;
                 return (
                   <TableHead
                     key={header.id}
-                    style={{ width, textAlign: align as "left" | "center" | "right" }}
-                    className={resizable ? "relative bg-background" : "bg-background"}
+                    style={{ textAlign: align as "left" | "center" | "right", ...widthStyle }}
+                    className={
+                      resizable
+                        ? "group/col relative select-none overflow-hidden"
+                        : undefined
+                    }
                   >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
-                    {resizable && header.column.getCanResize() && (
-                      <button
-                        type="button"
-                        aria-label={`Resize ${header.column.id} column`}
+                    {resizable && (
+                      <div
                         onMouseDown={header.getResizeHandler()}
                         onTouchStart={header.getResizeHandler()}
-                        className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none bg-border opacity-0 hover:opacity-100"
-                        style={{ opacity: header.column.getIsResizing() ? 1 : undefined }}
+                        className={`absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none bg-neutral-700 opacity-0 transition-opacity group-hover/col:opacity-100 ${
+                          header.column.getIsResizing() ? "bg-emerald-500 opacity-100" : ""
+                        }`}
                       />
                     )}
                   </TableHead>
@@ -180,7 +184,8 @@ export default function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      {/* Pagination implementation placeholder if needed in the future */}
     </div>
   );
 }
+
+export default memo(DataTableInner) as typeof DataTableInner;

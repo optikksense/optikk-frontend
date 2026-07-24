@@ -18,11 +18,25 @@ type FlatNode = {
 
 function flattenTree(
   data: Record<string, unknown> | unknown[],
-  expandedIds: Set<string>
+  expandedIds: Set<string>,
+  maxDepth = 10
 ): FlatNode[] {
   const result: FlatNode[] = [];
 
   function traverse(obj: unknown, currentPath: string, depth: number, key: string) {
+    if (depth > maxDepth) {
+      result.push({
+        id: currentPath,
+        nodeKey: key,
+        value: "[Depth Limit Exceeded]",
+        depth,
+        isExpandable: false,
+        isArray: false,
+        count: 0,
+      });
+      return;
+    }
+
     const isObject = typeof obj === "object" && obj !== null;
     if (isObject) {
       const isArray = Array.isArray(obj);

@@ -9,7 +9,13 @@ import { normalizeLogRecord, rawLogRowSchema } from "./logsQueryApi";
 
 const getByIdSchema = rawLogRowSchema.transform((row) => ({ log: normalizeLogRecord(row) }));
 
-export async function getLogById(id: string): Promise<LogsGetByIdResponse> {
-  const raw = await api.get<unknown>(`${V1}/logs/${encodeURIComponent(id)}`);
+export async function getLogById(
+  id: string,
+  startMs?: number,
+  endMs?: number
+): Promise<LogsGetByIdResponse> {
+  const raw = await api.get<unknown>(`${V1}/logs/${encodeURIComponent(id)}`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
   return validateResponse(getByIdSchema, raw);
 }

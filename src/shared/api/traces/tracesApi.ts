@@ -206,21 +206,19 @@ const traceSpansEnvelopeSchema = z.object({
 async function getTraceSpans(
   _tenantId: number | null,
   traceId: string,
-  startMs?: number,
-  endMs?: number
+  startMs: number,
+  endMs: number
 ): Promise<SpanRecord[]> {
-  const params =
-    startMs !== undefined && endMs !== undefined
-      ? { startTime: startMs, endTime: endMs }
-      : undefined;
-  const data = await api.get(`${BASE}/traces/${traceId}/spans`, params ? { params } : undefined);
+  const data = await api.get(`${BASE}/traces/${traceId}/spans`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
   return validateResponse(traceSpansEnvelopeSchema, data).spans;
 }
 
 async function getSpanEvents(
   traceId: string,
-  startMs?: number,
-  endMs?: number
+  startMs: number,
+  endMs: number
 ): Promise<SpanEventRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/span-events`, {
     params: { startTime: startMs, endTime: endMs },
@@ -250,8 +248,15 @@ async function getErrorPath(
   return validateResponse(z.array(errorPathSpanSchema), data);
 }
 
-async function getSpanAttributes(traceId: string, spanId: string): Promise<SpanAttributesRecord> {
-  const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`);
+async function getSpanAttributes(
+  traceId: string,
+  spanId: string,
+  startMs: number,
+  endMs: number
+): Promise<SpanAttributesRecord> {
+  const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`, {
+    params: { startTime: startMs, endTime: endMs },
+  });
   return validateResponse(spanAttributesSchema, data);
 }
 
