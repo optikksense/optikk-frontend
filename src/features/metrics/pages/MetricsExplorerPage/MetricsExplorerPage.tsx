@@ -120,7 +120,7 @@ export default function MetricsExplorerPage() {
           )}
         </div>
 
-        <TopSeriesPanel result={primaryResult} unit={primaryUnit} />
+        {chartType !== "top" && <TopSeriesPanel result={primaryResult} unit={primaryUnit} />}
       </div>
 
       {}

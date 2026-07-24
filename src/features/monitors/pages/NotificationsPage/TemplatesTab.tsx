@@ -20,8 +20,11 @@ function formFromTemplate(t: Template): TemplateForm {
 }
 
 function errorMessage(err: unknown, fallback: string): string {
-  const e = err as { response?: { data?: { error?: { message?: string } } } };
-  return e?.response?.data?.error?.message ?? fallback;
+  if (typeof err === "object" && err !== null && "message" in err) {
+    const msg = (err as { message?: string }).message;
+    if (typeof msg === "string" && msg.length > 0) return msg;
+  }
+  return fallback;
 }
 
 export default function TemplatesTab() {

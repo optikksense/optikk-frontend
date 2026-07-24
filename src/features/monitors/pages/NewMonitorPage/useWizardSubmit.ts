@@ -12,8 +12,11 @@ export interface TestResult {
 }
 
 function errorMessage(err: unknown, fallback: string): string {
-  const e = err as { response?: { data?: { error?: { message?: string } } } };
-  return e?.response?.data?.error?.message ?? fallback;
+  if (typeof err === "object" && err !== null && "message" in err) {
+    const msg = (err as { message?: string }).message;
+    if (typeof msg === "string" && msg.length > 0) return msg;
+  }
+  return fallback;
 }
 
 // Drives the wizard footer: save (create or update) + test. `editId` switches
