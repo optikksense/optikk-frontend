@@ -256,6 +256,8 @@ const topEndpointSchema = z.object({
   serviceName: z.string(),
   spanKind: z.string(),
   httpRoute: z.string(),
+  httpMethod: z.string(),
+  rpcSystem: z.string(),
   rps: z.number(),
   errorRate: z.number(),
   errorCount: z.number(),

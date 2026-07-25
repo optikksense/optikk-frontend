@@ -1,3 +1,4 @@
+import { endpointMethod } from "@shared/utils/endpointMethod";
 import { useEffect, useMemo, useState } from "react";
 import { useServiceHosts } from "../../hooks/useServiceHosts";
 import { useTopEndpoints } from "../../hooks/useTopEndpoints";
@@ -68,10 +69,10 @@ export function OverviewEndpointsAndResources({ serviceName }: { serviceName: st
   }
 
   const endpointRows: TopOpRow[] = results.map((r, i) => {
-    const method = r.httpRoute ? (r.operationName.split(" ")[0] ?? "HTTP") : "RPC";
+    const method = endpointMethod(r);
     return {
       key: `${r.operationName}-${i}`,
-      badge: method,
+      badge: method ?? "—",
       badgeVariant: method === "POST" || method === "PUT" ? "brand" : "success",
       label: r.httpRoute || r.operationName,
       totalCount: r.totalCount,

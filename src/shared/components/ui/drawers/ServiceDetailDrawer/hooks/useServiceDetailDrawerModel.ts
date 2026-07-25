@@ -7,6 +7,7 @@ import {
   buildServiceLogsSearch,
   buildServiceTracesSearch,
 } from "@shared/components/ui/drawers/serviceDrawerState";
+import { endpointMethod } from "@shared/utils/endpointMethod";
 import type { ServiceSummarySnapshot } from "../types";
 import {
   buildDependencyRows,
@@ -73,13 +74,13 @@ export function useServiceDetailDrawerModel(
       .sort((left, right) => Number(right.totalCount ?? 0) - Number(left.totalCount ?? 0))
       .slice(0, 6)
       .map((row, index) => {
-        const method = row.httpRoute ? (row.operationName.split(" ")[0] ?? "HTTP") : "RPC";
+        const method = endpointMethod(row);
         return {
-          id: `${method}:${row.operationName}:${index}`,
+          id: `${method ?? ""}:${row.operationName}:${index}`,
           serviceName: row.serviceName,
           operationName: row.operationName,
           endpointName: row.httpRoute,
-          httpMethod: method,
+          httpMethod: method ?? "",
           requestCount: row.totalCount,
           errorCount: row.errorCount,
           avgLatency: row.p50Ms,
