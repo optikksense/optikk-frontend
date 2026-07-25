@@ -33,12 +33,12 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
     urlFrom > 0 &&
     urlTo > urlFrom;
 
-  const { startTime, endTime } = useMemo(() => {
+  const { startTime, endTime } = (() => {
     if (hasUrlBounds) {
       return { startTime: urlFrom!, endTime: urlTo! };
     }
     return resolveTimeBounds(timeRange);
-  }, [timeRange, refreshKey, hasUrlBounds, urlFrom, urlTo]);
+  })();
 
   const timeRangeKey = useMemo(
     () => (hasUrlBounds ? `${urlFrom}-${urlTo}` : JSON.stringify(timeRange)),
@@ -102,12 +102,12 @@ export function useExplorerSubQuery<TResponse>(args: UseExplorerSubQueryArgs<TRe
     urlFrom > 0 &&
     urlTo > urlFrom;
 
-  const { startTime, endTime } = useMemo(() => {
+  const { startTime, endTime } = (() => {
     if (hasUrlBounds) {
       return { startTime: urlFrom!, endTime: urlTo! };
     }
     return resolveTimeBounds(timeRange);
-  }, [timeRange, refreshKey, hasUrlBounds, urlFrom, urlTo]);
+  })();
 
   const timeRangeKey = useMemo(
     () => (hasUrlBounds ? `${urlFrom}-${urlTo}` : JSON.stringify(timeRange)),

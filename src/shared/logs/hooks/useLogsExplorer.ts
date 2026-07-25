@@ -54,10 +54,14 @@ export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   );
 
   const filtersJson = useMemo(() => JSON.stringify(effectiveFilters), [effectiveFilters]);
+  const paginationScope = useMemo(
+    () => JSON.stringify([tenantId, timeRange, filtersJson]),
+    [tenantId, timeRange, filtersJson]
+  );
 
   useEffect(() => {
-    resetPagination();
-  }, [tenantId, timeRange, filtersJson, resetPagination]);
+    if (paginationScope) resetPagination();
+  }, [paginationScope, resetPagination]);
 
   const limit = args.limit ?? DEFAULT_PAGE_SIZE;
 

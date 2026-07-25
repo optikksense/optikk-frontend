@@ -90,10 +90,10 @@ function DataTableInner<TData, TValue>({
 
   if (loading) {
     return (
-      <div className="flex h-64 w-full items-center justify-center rounded-md border border-neutral-800 bg-neutral-900/50">
+      <div className="flex h-64 w-full items-center justify-center rounded-md border border-border bg-surface/50">
         <div className="flex flex-col items-center gap-2">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-          <span className="text-sm text-neutral-400">Loading data...</span>
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <span className="text-foreground-muted text-sm">Loading data...</span>
         </div>
       </div>
     );
@@ -106,12 +106,12 @@ function DataTableInner<TData, TValue>({
   return (
     <div
       ref={scrollRef}
-      className="relative max-h-[600px] w-full overflow-auto rounded-md border border-neutral-800 bg-neutral-950"
+      className="relative max-h-[600px] w-full overflow-auto rounded-md border border-border bg-surface"
     >
       <Table className="relative w-full border-collapse text-left text-sm">
-        <TableHeader className="sticky top-0 z-15 bg-neutral-900 shadow-sm">
+        <TableHeader className="sticky top-0 z-15 bg-surface-elevated shadow-sm">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="border-b border-neutral-800 hover:bg-transparent">
+            <TableRow key={headerGroup.id} className="border-border border-b hover:bg-transparent">
               {headerGroup.headers.map((header) => {
                 const align = (header.column.columnDef.meta as { align?: string })?.align || "left";
                 const isCustomWidth =
@@ -128,9 +128,7 @@ function DataTableInner<TData, TValue>({
                     key={header.id}
                     style={{ textAlign: align as "left" | "center" | "right", ...widthStyle }}
                     className={
-                      resizable
-                        ? "group/col relative select-none overflow-hidden"
-                        : undefined
+                      resizable ? "group/col relative select-none overflow-hidden" : undefined
                     }
                   >
                     {header.isPlaceholder
@@ -140,8 +138,8 @@ function DataTableInner<TData, TValue>({
                       <div
                         onMouseDown={header.getResizeHandler()}
                         onTouchStart={header.getResizeHandler()}
-                        className={`absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none bg-neutral-700 opacity-0 transition-opacity group-hover/col:opacity-100 ${
-                          header.column.getIsResizing() ? "bg-emerald-500 opacity-100" : ""
+                        className={`absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none bg-border-light opacity-0 transition-opacity group-hover/col:opacity-100 ${
+                          header.column.getIsResizing() ? "bg-primary opacity-100" : ""
                         }`}
                       />
                     )}

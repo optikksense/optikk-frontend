@@ -25,6 +25,7 @@ RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
 
 # Change ownership of nginx directories to the non-root nginx user
 RUN mkdir -p /var/cache/nginx /var/run && \
+    sed -i 's|^pid .*|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf && \
     chown -R nginx:nginx /var/cache/nginx /var/run /etc/nginx /usr/share/nginx/html /docker-entrypoint.sh && \
     chmod -R 775 /etc/nginx/conf.d
 

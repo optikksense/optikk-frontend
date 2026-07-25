@@ -48,7 +48,9 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
-      sourcemap: true,
+      // Browser devtools use the source directly during `vite dev`. Emitting
+      // maps for a distributable bundle would expose the full source tree.
+      sourcemap: false,
       chunkSizeWarningLimit: 300,
       rollupOptions: {
         output: {

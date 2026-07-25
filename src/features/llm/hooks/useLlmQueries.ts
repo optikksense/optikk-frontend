@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { useRefreshKey, useTenantId, useTimeRange } from "@/app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { resolveTimeRangeBounds } from "@shared/types";
@@ -22,10 +20,8 @@ export function useLlmRange() {
   const timeRange = useTimeRange();
   const tenantId = useTenantId();
   const refreshKey = useRefreshKey();
-  const { startTime, endTime } = useMemo(
-    () => resolveTimeRangeBounds(timeRange),
-    [timeRange, refreshKey]
-  );
+  // Relative ranges must be resolved again when a manual refresh ticks.
+  const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
   return { tenantId, refreshKey, startTime, endTime };
 }
 

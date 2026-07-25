@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import { queryClient } from "@shared/api/queryClient";
 import type { AbsoluteTimeRange, RelativeTimeRange, TimeRange } from "@shared/types";
 
 import { STORAGE_KEYS } from "@config/constants";
@@ -37,6 +38,12 @@ interface AppState extends PersistedAppState {
 
 const defaultPersistedState = loadLegacyAppState();
 
+function sameTenantScope(current: number[], next: number[]): boolean {
+  return (
+    current.length === next.length && current.every((tenantId, index) => tenantId === next[index])
+  );
+}
+
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
@@ -44,14 +51,32 @@ export const useAppStore = create<AppState>()(
       refreshKey: 0,
 
       setSelectedTenantId: (tenantId: number | null): void => {
+        const current = useAppStore.getState();
+        const nextTenantIds = tenantId != null ? [tenantId] : [];
+        if (
+          current.selectedTenantId !== tenantId ||
+          !sameTenantScope(current.selectedTenantIds, nextTenantIds)
+        ) {
+          // Requests are authenticated using this scope header. Clear before
+          // publishing the new scope so no observer can render another
+          // tenant's cached response, even when a feature omits it from a key.
+          queryClient.clear();
+        }
         set({
           selectedTenantId: tenantId,
-          selectedTenantIds: tenantId != null ? [tenantId] : [],
+          selectedTenantIds: nextTenantIds,
         });
       },
 
       setSelectedTenantIds: (tenantIds: number[]): void => {
         const primary = tenantIds[0] ?? null;
+        const current = useAppStore.getState();
+        if (
+          current.selectedTenantId !== primary ||
+          !sameTenantScope(current.selectedTenantIds, tenantIds)
+        ) {
+          queryClient.clear();
+        }
         set({
           selectedTenantIds: tenantIds,
           selectedTenantId: primary,

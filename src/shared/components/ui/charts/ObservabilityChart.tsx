@@ -124,6 +124,7 @@ function ObservabilityChart({
         .join("|"),
     [series]
   );
+  const structuralSeries = useMemo(() => (seriesKey === "" ? [] : seriesRef.current), [seriesKey]);
 
   const options = useMemo<Omit<uPlot.Options, "width" | "height">>(() => {
     const axes = defaultAxes({ yAxisSize });
@@ -148,7 +149,7 @@ function ObservabilityChart({
     const labelColor = resolveThemeColor("--chart-axis", "#b9c0cf");
     const font = "11px Inter, sans-serif";
 
-    for (const item of series) {
+    for (const item of structuralSeries) {
       if (item.scale && item.scale !== "y" && item.scale !== "x" && !scales[item.scale]) {
         scales[item.scale] = { min: 0 };
         axes.push({
@@ -172,7 +173,7 @@ function ObservabilityChart({
       scales,
       series: [
         {},
-        ...series.map((item) => {
+        ...structuralSeries.map((item) => {
           const s =
             type === "bar"
               ? uBars(item.label, item.color)
@@ -189,7 +190,7 @@ function ObservabilityChart({
       ],
       ...(allPlugins.length > 0 ? { plugins: allPlugins } : {}),
     };
-  }, [legend, seriesKey, yAxisSize, xRange, yMin, yMax, type, allPlugins]);
+  }, [legend, structuralSeries, yAxisSize, xRange, yMin, yMax, type, allPlugins]);
 
   // Stable identity: reads live data/formatters via refs so it never changes
   // reference. uPlot invokes it on cursor move against the latest drawn data.

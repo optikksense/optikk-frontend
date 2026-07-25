@@ -49,8 +49,10 @@ export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
   // Changing the filter set invalidates the keyset cursor; reset pagination too.
   const filtersJson = useMemo(() => JSON.stringify(state.filters), [state.filters]);
   useEffect(() => {
-    setCursorHistory([]);
-    state.setCursor(null);
+    if (filtersJson) {
+      setCursorHistory([]);
+      state.setCursor(null);
+    }
   }, [filtersJson, state.setCursor]);
 
   const onOpenTrace = useCallback(

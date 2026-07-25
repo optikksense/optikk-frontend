@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "ci": "yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn check:charts && yarn test && yarn build",
+    "ci": "yarn type-check && yarn lint && yarn check:colors && yarn check:dupes && yarn check:boundaries && yarn check:charts && yarn test && yarn build && yarn check:build-output",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",
@@ -14,6 +14,7 @@
     "check:charts": "node scripts/check-charts.mjs",
     "check:colors": "node scripts/check-theme-colors.mjs",
     "check:dupes": "node scripts/check-duplication.mjs",
+    "check:build-output": "node scripts/check-build-output.mjs",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
@@ -79,7 +80,8 @@
   "resolutions": {
     "lucide-react/react": "^19.2.0",
     "lucide-react/react-dom": "^19.2.0",
-    "form-data": "^4.0.6"
+    "form-data": "^4.0.6",
+    "seroval": "^1.5.4"
   },
   "optionalDependencies": {}
 }

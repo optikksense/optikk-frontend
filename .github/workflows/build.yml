@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   checks:
@@ -35,3 +34,21 @@ jobs:
       # structs — see src/shared/api/utils/contract.test.ts.
       - name: Checks
         run: yarn ci
+
+      - name: Container smoke test
+        run: |
+          docker build --tag optikk-web:ci .
+          docker run --detach --rm --name optikk-web-smoke \
+            --env BACKEND_URL=http://127.0.0.1:9 \
+            --publish 18080:3000 \
+            optikk-web:ci
+          trap 'docker rm --force optikk-web-smoke >/dev/null 2>&1 || true' EXIT
+          for attempt in 1 2 3 4 5; do
+            if curl --fail --silent --show-error --head http://127.0.0.1:18080/index.html > headers.txt; then
+              break
+            fi
+            sleep 1
+          done
+          grep --ignore-case --quiet '^Content-Security-Policy:' headers.txt
+          grep --ignore-case --quiet '^X-Frame-Options: SAMEORIGIN' headers.txt
+          grep --quiet '^Cache-Control: no-cache' headers.txt

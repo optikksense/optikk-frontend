@@ -23,7 +23,7 @@ The application renders authenticated product routes inside the main app shell.
 
 - [src/main.tsx](src/main.tsx): bootstrap
 - [src/app/App.tsx](src/app/App.tsx): root app providers
-- [src/app/routes/router.tsx](src/app/routes/router.tsx): route table
+- [src/routeTree.gen.ts](src/routeTree.gen.ts): generated route table
 - [src/app/registry/domainRegistry.ts](src/app/registry/domainRegistry.ts): domain registration for product features
 - [vite.config.ts](vite.config.ts): aliases, dev proxy, build chunking
 
@@ -42,21 +42,23 @@ Current feature directories under `src/features`:
 - `overview`
 - `saturation`
 - `metrics`
-- `log`
+- `logs`
 - `traces`
 - `infrastructure`
 - `settings`
-- `explorer` (shared explorer infrastructure)
+- `llm`
+- `errors`
+- `monitors`
 
 ## Product routing
 
-The route table in [src/app/routes/router.tsx](src/app/routes/router.tsx) shows the current product direction:
+The generated route tree in [src/routeTree.gen.ts](src/routeTree.gen.ts) captures the current routes:
 
 - `/overview`: frontend-owned overview hub
 - `/infrastructure`: frontend-owned infrastructure hub
-- `/service`: service hub
-- `/service/:serviceName`: service detail page
-- explorer-style routes contributed by the domain registry for metrics, logs, traces, saturation, and settings
+- `/services`: service hub
+- `/services/:serviceName`: service detail page
+- explorer-style routes for metrics, logs, traces, saturation, dashboards, and settings
 
 The frontend now owns much more of the page composition than earlier versions of the project. Backend APIs provide data; page structure and interaction logic largely live here.
 
@@ -64,15 +66,14 @@ The frontend now owns much more of the page composition than earlier versions of
 
 - `src/shared/api/`: HTTP client, auth integration, decode boundary
 - `src/shared/components/`: reusable UI and dashboard building blocks
-- `src/shared/entities/`: shared domain models
+- `src/shared/types/`: shared domain models
 - `src/shared/observability/`: deep links and share/export helpers
-- `src/shared/telemetry/`: browser OpenTelemetry bootstrap
 
 ## Local development
 
 ### Prerequisites
 
-- Node 18+
+- Node 20+
 - Corepack enabled
 - running local Optikk backend on `http://localhost:19090` unless overridden
 
