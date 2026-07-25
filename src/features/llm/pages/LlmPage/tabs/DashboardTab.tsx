@@ -7,7 +7,7 @@ import { formatDuration, formatNumber } from "@shared/utils/formatters";
 import type { LlmModelUsage } from "../../../api/llmApi";
 import { useLlmModels, useLlmOverview } from "../../../hooks/useLlmQueries";
 import { useScoreSummary } from "../../../hooks/useScores";
-import { deltaPct, formatCost } from "../../../utils/llmFormat";
+import { formatCost } from "../../../utils/llmFormat";
 import { VendorChip } from "../components/LlmChips";
 
 const modelColumns: ColumnDef<LlmModelUsage>[] = [
@@ -65,7 +65,6 @@ export default function DashboardTab() {
   const scoresQ = useScoreSummary();
 
   const cur = overviewQ.data?.current;
-  const prev = overviewQ.data?.previous;
   const loading = overviewQ.isPending;
 
   return (
@@ -73,38 +72,26 @@ export default function DashboardTab() {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard
           metric={{ title: "Traces", value: formatNumber(cur?.traces ?? 0) }}
-          trend={{ value: deltaPct(cur?.traces ?? 0, prev?.traces ?? 0) ?? undefined }}
           visuals={{ loading }}
         />
         <StatCard
           metric={{ title: "Total cost", value: formatCost(cur?.cost ?? 0) }}
-          trend={{ value: deltaPct(cur?.cost ?? 0, prev?.cost ?? 0) ?? undefined }}
           visuals={{ loading }}
         />
         <StatCard
           metric={{ title: "Input tokens", value: formatNumber(cur?.inputTokens ?? 0) }}
-          trend={{ value: deltaPct(cur?.inputTokens ?? 0, prev?.inputTokens ?? 0) ?? undefined }}
           visuals={{ loading }}
         />
         <StatCard
           metric={{ title: "Output tokens", value: formatNumber(cur?.outputTokens ?? 0) }}
-          trend={{ value: deltaPct(cur?.outputTokens ?? 0, prev?.outputTokens ?? 0) ?? undefined }}
           visuals={{ loading }}
         />
         <StatCard
           metric={{ title: "p95 latency", value: formatDuration(cur?.p95Ms ?? 0) }}
-          trend={{
-            value: deltaPct(cur?.p95Ms ?? 0, prev?.p95Ms ?? 0) ?? undefined,
-            inverted: true,
-          }}
           visuals={{ loading }}
         />
         <StatCard
           metric={{ title: "Error rate", value: `${(cur?.errorRate ?? 0).toFixed(2)}%` }}
-          trend={{
-            value: deltaPct(cur?.errorRate ?? 0, prev?.errorRate ?? 0) ?? undefined,
-            inverted: true,
-          }}
           visuals={{ loading }}
         />
       </div>

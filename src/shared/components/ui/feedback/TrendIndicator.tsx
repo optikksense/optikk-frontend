@@ -33,7 +33,7 @@ export default function TrendIndicator({
       }}
     >
       <Icon size={14} />
-      {showValue && <span>{Math.abs(value)}%</span>}
+      {showValue && <span>{Math.abs(value).toFixed(1)}%</span>}
     </span>
   );
 }

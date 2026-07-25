@@ -38,12 +38,6 @@ export const KIND_META: Record<string, { label: string; color: string }> = {
   workflow: { label: "workflow", color: "var(--chart-6)" },
 };
 
-// Percent change vs the previous window; null when there is no baseline.
-export function deltaPct(current: number, previous: number): number | null {
-  if (previous === 0) return null;
-  return ((current - previous) / previous) * 100;
-}
-
 // Tokens/latency use shared formatNumber/formatDuration; only cost is local.
 export function formatCost(n: number): string {
   if (n >= 100) return `$${Math.round(n).toLocaleString()}`;

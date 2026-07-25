@@ -4,7 +4,6 @@ import { StatCard } from "@shared/components/ui";
 import { formatNumber } from "@shared/utils/formatters";
 
 import { useLlmOverview, useLlmRange } from "../../../hooks/useLlmQueries";
-import { deltaPct } from "../../../utils/llmFormat";
 import LiveTraceStream from "./LiveTraceStream";
 
 export default function TracesTab({
@@ -18,7 +17,6 @@ export default function TracesTab({
   const { startTime, endTime } = useLlmRange();
 
   const cur = overviewQ.data?.current;
-  const prev = overviewQ.data?.previous;
 
   const perMinute = useMemo(() => {
     if (!cur || endTime <= startTime) return null;
@@ -37,7 +35,6 @@ export default function TracesTab({
             value: formatNumber(cur?.traces ?? 0),
             description: perMinute !== null ? `≈${perMinute.toFixed(1)}/min` : undefined,
           }}
-          trend={{ value: deltaPct(cur?.traces ?? 0, prev?.traces ?? 0) ?? undefined }}
           visuals={{ loading: overviewQ.isPending }}
         />
         <StatCard
@@ -46,20 +43,14 @@ export default function TracesTab({
             value: avgSpans(cur).toFixed(1),
             description: "gen_ai spans per trace",
           }}
-          trend={{ value: deltaPct(avgSpans(cur), avgSpans(prev)) ?? undefined }}
           visuals={{ loading: overviewQ.isPending }}
         />
         <StatCard
           metric={{ title: "LLM error rate", value: `${(cur?.errorRate ?? 0).toFixed(2)}%` }}
-          trend={{
-            value: deltaPct(cur?.errorRate ?? 0, prev?.errorRate ?? 0) ?? undefined,
-            inverted: true,
-          }}
           visuals={{ loading: overviewQ.isPending }}
         />
         <StatCard
           metric={{ title: "LLM calls", value: formatNumber(cur?.llmSpans ?? 0) }}
-          trend={{ value: deltaPct(cur?.llmSpans ?? 0, prev?.llmSpans ?? 0) ?? undefined }}
           visuals={{ loading: overviewQ.isPending }}
         />
       </div>

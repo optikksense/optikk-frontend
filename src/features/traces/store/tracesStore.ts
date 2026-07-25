@@ -1,7 +1,8 @@
+import type { VisualizationTab } from "@shared/traces/types/detail";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type VisualizationTab = "servicemap" | "timeline" | "errors" | "raw";
+export type { VisualizationTab };
 
 interface TracesState {
   /** User's preferred visualization — persisted so it sticks across navigations. */
@@ -16,7 +17,7 @@ interface TracesState {
 export const useTracesStore = create<TracesState>()(
   persist(
     (set, get) => ({
-      visualizationTab: "timeline",
+      visualizationTab: "waterfall",
       setVisualizationTab: (tab) => set({ visualizationTab: tab }),
       collapsedSpanIds: new Set<string>(),
       toggleCollapsedSpan: (spanId) => {

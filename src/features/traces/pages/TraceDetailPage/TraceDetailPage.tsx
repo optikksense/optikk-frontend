@@ -5,17 +5,17 @@ import { PageShell } from "@shared/components/ui";
 import { LogsTable } from "@shared/logs/components/table/LogsTable";
 import { traceLogToLogRecord } from "@shared/logs/utils/traceLogAdapter";
 
-import { useTraceOperationBaseline } from "../../hooks/useTraceOperationBaseline";
-import { BottomBar } from "./components/BottomBar";
-import { KPIStrip } from "./components/KPIStrip";
-import { ServiceStrip } from "./components/ServiceStrip";
 import {
   TraceDetailEmptySpans,
   TraceDetailError,
   TraceDetailLoading,
-} from "./components/TraceDetailEmptyStates";
-import { TraceDetailLayout } from "./components/TraceDetailLayout";
-import { TraceHeader } from "./components/TraceHeader";
+} from "@shared/traces/components/detail/TraceDetailEmptyStates";
+import { TraceDetailLayout } from "@shared/traces/components/detail/TraceDetailLayout";
+import { TraceHeader } from "@shared/traces/components/header/TraceHeader";
+import { KPIStrip } from "@shared/traces/components/kpi/KPIStrip";
+import { BottomBar } from "@shared/traces/components/navigation/BottomBar";
+import { ServiceStrip } from "@shared/traces/components/services/ServiceStrip";
+import { useTraceOperationBaseline } from "../../hooks/useTraceOperationBaseline";
 import { useTraceDetailPage } from "./hooks/useTraceDetailPage";
 
 function AssociatedTraceLogsSection({
@@ -85,7 +85,6 @@ export default function TraceDetailPage() {
       <PageShell className="!gap-0 !pb-0 flex h-full min-h-0 min-h-[calc(100vh-var(--space-header-h,56px)-2rem)] flex-1 flex-col bg-background text-foreground-secondary [font-feature-settings:'tnum']">
         <TraceHeader
           traceId={resolvedTraceId}
-          stats={stats}
           startMs={traceTimeBounds.startMs}
           onOpenInLogs={actions.openInLogs}
           onBack={actions.goBack}
@@ -116,7 +115,6 @@ export default function TraceDetailPage() {
     <PageShell className="!gap-0 !pb-0 flex h-full min-h-0 min-h-[calc(100vh-var(--space-header-h,56px)-2rem)] flex-1 flex-col bg-background text-foreground-secondary [font-feature-settings:'tnum']">
       <TraceHeader
         traceId={resolvedTraceId}
-        stats={stats}
         startMs={traceTimeBounds.startMs}
         rootService={rootSpan?.serviceName}
         rootOperation={rootSpan?.operationName}

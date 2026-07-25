@@ -6,7 +6,7 @@ import { useTraceDetailActions } from "./useTraceDetailActions";
 import { useTraceDetailHotkeys } from "./useTraceDetailHotkeys";
 import { useTraceDetailState } from "./useTraceDetailState";
 
-import type { TraceDetailLayoutProps } from "../components/TraceDetailLayout";
+import type { TraceDetailLayoutProps } from "@shared/traces/components/detail/TraceDetailLayout";
 
 export function useTraceDetailPage() {
   const state = useTraceDetailState();

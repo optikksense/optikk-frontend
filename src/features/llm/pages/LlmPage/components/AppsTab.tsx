@@ -11,7 +11,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { LlmApp } from "../../../api/llmApi";
 import { useLlmApps, useLlmOverview, useLlmTimeseries } from "../../../hooks/useLlmQueries";
 import { alignSeries } from "../../../utils/alignSeries";
-import { deltaPct, formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
+import { formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
 import LiveTraceStream from "./LiveTraceStream";
 import { KindChip, VendorChip } from "./LlmChips";
 import SpanBreakdownRail from "./SpanBreakdownRail";
@@ -55,7 +55,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
 
   const apps = appsQ.data ?? [];
   const cur = overviewQ.data?.current;
-  const prev = overviewQ.data?.previous;
   const series = overviewQ.data?.series;
 
   const kindMix = useMemo(() => {
@@ -187,7 +186,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
         />
         <StatCard
           metric={{ title: "LLM spans", value: formatNumber(cur?.llmSpans ?? 0) }}
-          trend={{ value: deltaPct(cur?.llmSpans ?? 0, prev?.llmSpans ?? 0) ?? undefined }}
           visuals={{
             loading: overviewQ.isPending,
             sparklineData: spark(series?.llmSpans),
@@ -196,7 +194,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
         />
         <StatCard
           metric={{ title: "Tool spans", value: formatNumber(cur?.toolSpans ?? 0) }}
-          trend={{ value: deltaPct(cur?.toolSpans ?? 0, prev?.toolSpans ?? 0) ?? undefined }}
           visuals={{
             loading: overviewQ.isPending,
             sparklineData: spark(series?.toolSpans),
@@ -211,10 +208,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
               ? `p50 ${formatDuration(cur.p50Ms)} · p99 ${formatDuration(cur.p99Ms)}`
               : undefined,
           }}
-          trend={{
-            value: deltaPct(cur?.p95Ms ?? 0, prev?.p95Ms ?? 0) ?? undefined,
-            inverted: true,
-          }}
           visuals={{
             loading: overviewQ.isPending,
             sparklineData: spark(series?.p95Ms),
@@ -223,10 +216,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
         />
         <StatCard
           metric={{ title: "Error rate", value: `${(cur?.errorRate ?? 0).toFixed(2)}%` }}
-          trend={{
-            value: deltaPct(cur?.errorRate ?? 0, prev?.errorRate ?? 0) ?? undefined,
-            inverted: true,
-          }}
           visuals={{
             loading: overviewQ.isPending,
             sparklineData: spark(series?.errorRate),
@@ -238,7 +227,6 @@ export default function AppsTab({ onOpenTrace }: { readonly onOpenTrace: (app: s
             title: "Spend",
             value: formatCost(cur?.cost ?? 0),
           }}
-          trend={{ value: deltaPct(cur?.cost ?? 0, prev?.cost ?? 0) ?? undefined }}
           visuals={{
             loading: overviewQ.isPending,
             sparklineData: spark(series?.cost),

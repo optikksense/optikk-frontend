@@ -8,7 +8,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import type { LlmCostGroupBy, LlmCostRow } from "../../../api/llmApi";
 import { useLlmCostBreakdown, useLlmOverview } from "../../../hooks/useLlmQueries";
-import { deltaPct, formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
+import { formatCost, vendorColor, vendorLabel } from "../../../utils/llmFormat";
 import { VendorChip } from "./LlmChips";
 
 const GROUPS: Array<{ key: LlmCostGroupBy; label: string }> = [
@@ -27,7 +27,6 @@ export default function CostTab() {
   const rows = breakdownQ.data ?? [];
   const vendors = vendorsQ.data ?? [];
   const cur = overviewQ.data?.current;
-  const prev = overviewQ.data?.previous;
   const topApp = appsQ.data?.[0];
   const total = useMemo(() => rows.reduce((acc, r) => acc + r.cost, 0), [rows]);
   const vendorTotal = useMemo(() => vendors.reduce((acc, v) => acc + v.cost, 0), [vendors]);
@@ -125,7 +124,6 @@ export default function CostTab() {
             title: "Spend",
             value: formatCost(cur?.cost ?? 0),
           }}
-          trend={{ value: deltaPct(cur?.cost ?? 0, prev?.cost ?? 0) ?? undefined }}
           visuals={{ loading: overviewQ.isPending }}
         />
         <StatCard
@@ -135,13 +133,6 @@ export default function CostTab() {
             description: cur
               ? `${formatNumber(cur.inputTokens)} in · ${formatNumber(cur.outputTokens)} out`
               : undefined,
-          }}
-          trend={{
-            value:
-              deltaPct(
-                (cur?.inputTokens ?? 0) + (cur?.outputTokens ?? 0),
-                (prev?.inputTokens ?? 0) + (prev?.outputTokens ?? 0)
-              ) ?? undefined,
           }}
           visuals={{ loading: overviewQ.isPending }}
         />
