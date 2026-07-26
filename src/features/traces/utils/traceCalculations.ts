@@ -1,4 +1,4 @@
-import type { TraceRecord } from "../types";
+import type { TraceRecord } from "@shared/api/traces/schemas";
 
 export interface TraceStats {
   totalSpans: number;

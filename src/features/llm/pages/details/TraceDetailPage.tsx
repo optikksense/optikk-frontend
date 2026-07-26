@@ -5,8 +5,8 @@ import { PageShell } from "@shared/components/ui";
 import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import Loading from "@shared/components/ui/feedback/Loading";
 
-import { adaptLlmTraceToShared } from "@shared/traces/adapters/llmTraceAdapter";
 import { TraceDetailViewer } from "@shared/traces/components/TraceDetailViewer";
+import { adaptLlmTraceToShared } from "../../adapters/llmTraceAdapter";
 import { useLlmTraceDetail } from "../../hooks/useLlmQueries";
 
 export default function TraceDetailPage() {

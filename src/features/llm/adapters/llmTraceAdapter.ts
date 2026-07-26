@@ -1,9 +1,6 @@
 import type { TraceRecord } from "@shared/api/traces/schemas";
-import type { LlmSpan, LlmTraceDetail } from "../../../features/llm/api/llmApi";
-import type { SpanAttributes } from "../types/detail";
-import type { SharedLlmTraceData } from "../types/trace";
-
-export type { SharedLlmTraceData };
+import type { SpanAttributes } from "@shared/traces/types/detail";
+import type { LlmSpan, LlmTraceDetail } from "../api/llmApi";
 
 export function adaptLlmTraceToShared(detail: LlmTraceDetail): {
   traceId: string;

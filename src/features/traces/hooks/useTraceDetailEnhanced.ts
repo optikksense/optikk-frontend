@@ -1,13 +1,6 @@
 import { tracesService } from "@shared/api/traces/tracesApi";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useMemo } from "react";
-import type {
-  CriticalPathSpan,
-  ErrorPathSpan,
-  RelatedTrace,
-  SpanAttributes,
-  SpanEvent,
-} from "../types";
 
 /**
  * @param activeDetailTab - The currently active tab in SpanDetailDrawer.
@@ -78,83 +71,18 @@ export function useTraceDetailEnhanced(
   });
 
   const criticalPathSpanIds = useMemo<Set<string>>(() => {
-    const arr: CriticalPathSpan[] =
-      criticalPathData?.map((item) => ({
-        spanId: item.spanId,
-        operationName: item.operationName,
-        serviceName: item.serviceName,
-        durationMs: item.durationMs,
-      })) ?? [];
-    return new Set(arr.map((s) => s.spanId));
+    return new Set(criticalPathData?.map((item) => item.spanId) ?? []);
   }, [criticalPathData]);
 
   const errorPathSpanIds = useMemo<Set<string>>(() => {
-    const arr: ErrorPathSpan[] =
-      errorPathData?.map((item) => ({
-        spanId: item.spanId,
-        parentSpanId: item.parentSpanId,
-        operationName: item.operationName,
-        serviceName: item.serviceName,
-        status: item.status,
-        statusMessage: item.statusMessage,
-        startTime: item.startTime,
-        durationMs: item.durationMs,
-      })) ?? [];
-    return new Set(arr.map((s) => s.spanId));
+    return new Set(errorPathData?.map((item) => item.spanId) ?? []);
   }, [errorPathData]);
 
-  const spanEvents = useMemo<SpanEvent[]>(
-    () =>
-      spanEventsData?.map((item) => ({
-        spanId: item.spanId,
-        traceId: item.traceId,
-        eventName: item.eventName,
-        timestamp: item.timestamp,
-        attributes: item.attributes,
-      })) ?? [],
-    [spanEventsData]
-  );
-
-  const relatedTraces = useMemo<RelatedTrace[]>(
-    () =>
-      relatedTracesData?.map((item) => ({
-        traceId: item.traceId,
-        spanId: item.spanId,
-        operationName: item.operationName,
-        serviceName: item.serviceName,
-        durationMs: item.durationMs,
-        status: item.status,
-        startTime: item.startTime,
-      })) ?? [],
-    [relatedTracesData]
-  );
-
-  const spanAttributes = useMemo<SpanAttributes | null>(() => {
-    if (!spanAttributesData) return null;
-    return {
-      spanId: spanAttributesData.spanId,
-      traceId: spanAttributesData.traceId,
-      operationName: spanAttributesData.operationName,
-      serviceName: spanAttributesData.serviceName,
-      attributesString: spanAttributesData.attributesString,
-      resourceAttributes: spanAttributesData.resourceAttributes,
-      exceptionType: spanAttributesData.exceptionType,
-      exceptionMessage: spanAttributesData.exceptionMessage,
-      exceptionStacktrace: spanAttributesData.exceptionStacktrace,
-      dbSystem: spanAttributesData.dbSystem,
-      dbName: spanAttributesData.dbName,
-      dbStatement: spanAttributesData.dbStatement,
-      dbStatementNormalized: spanAttributesData.dbStatementNormalized,
-      // `attributes` is omitempty on the wire; the domain model always has one.
-      attributes: spanAttributesData.attributes ?? {},
-      links: spanAttributesData.links?.map((l) => ({
-        traceId: l.traceId,
-        spanId: l.spanId,
-        traceState: l.traceState,
-        attributes: l.attributes,
-      })),
-    };
-  }, [spanAttributesData]);
+  const spanEvents = spanEventsData ?? [];
+  const relatedTraces = relatedTracesData ?? [];
+  const spanAttributes = spanAttributesData
+    ? { ...spanAttributesData, attributes: spanAttributesData.attributes ?? {} }
+    : null;
 
   return {
     criticalPathSpanIds,
