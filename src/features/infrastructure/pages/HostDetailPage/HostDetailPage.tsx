@@ -8,8 +8,8 @@ import { formatNumber } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { getHostOverview } from "../../api/hostDetailApi";
-import { getNodeServices, getNodes } from "../../api/hostsApi";
-import type { InfrastructureNode, InfrastructureNodeService } from "../../api/hostsApi";
+import { getNodeServices, getNodes } from "../../api/nodesApi";
+import type { InfrastructureNode, InfrastructureNodeService } from "../../api/nodesApi";
 import { tierForNode } from "../../utils/nodeHealth";
 import { HostDetailAbout } from "./HostDetailAbout";
 import { HostDetailContainers } from "./HostDetailContainers";

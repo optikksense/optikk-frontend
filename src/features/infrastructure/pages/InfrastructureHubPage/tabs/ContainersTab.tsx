@@ -6,7 +6,7 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import { getFleetPods } from "../../../api/hostsApi";
+import { getFleetPods } from "../../../api/nodesApi";
 import InfraPodsTable from "../../../components/InfraPodsTable";
 import { getPodDetails } from "../../../components/InfraPodsTable";
 import type { FleetPod } from "../../../types";

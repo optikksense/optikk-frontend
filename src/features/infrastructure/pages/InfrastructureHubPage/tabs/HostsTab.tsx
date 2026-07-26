@@ -8,8 +8,8 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import { getNodes, getNodesSummary } from "../../../api/hostsApi";
 import { infraGet } from "../../../api/infrastructureApi";
+import { getNodes, getNodesSummary } from "../../../api/nodesApi";
 import { InfraHostsFilterBar } from "../../../components/InfraHostsFilterBar";
 import { InfraHostsTable } from "../../../components/InfraHostsTable";
 import type { InfrastructureNode, InfrastructureNodeSummary, MetricValue } from "../../../types";

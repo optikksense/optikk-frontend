@@ -4,7 +4,7 @@ import { PageShell } from "@shared/components/ui";
 import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { getNodesSummary } from "../../api/hostsApi";
+import { getNodesSummary } from "../../api/nodesApi";
 import { INFRA_TAB, type InfraTabId, URL_TAB } from "../../constants";
 import type { InfrastructureNodeSummary } from "../../types";
 import { InfrastructureHubHeader } from "./InfrastructureHubHeader";

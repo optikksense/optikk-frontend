@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { ROUTES } from "@/shared/constants/routes";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-import { getFleetPods } from "../../api/hostsApi";
+import { getFleetPods } from "../../api/nodesApi";
 import InfraPodsTable, { getPodDetails } from "../../components/InfraPodsTable";
 import type { FleetPod } from "../../types";
 
