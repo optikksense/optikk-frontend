@@ -449,7 +449,7 @@
         "serviceName": "s",
         "spanKind": "SERVER",
         "httpRoute": "/x",
-        "httpMethod": "GET",
+        "httpMethod": "",
         "rpcSystem": "",
         "rps": 1,
         "errorRate": 1,
