@@ -25,9 +25,10 @@ export default function CloudPage(): JSX.Element {
   const active = tab !== ALL_TAB && !providers.some((p) => p.provider === tab) ? ALL_TAB : tab;
   const activeSummary = providers.find((p) => p.provider === active);
 
-  const subtitle = overview
-    ? `${overview.totalResources.toLocaleString()} resources · ${overview.totalAccounts} accounts · ${overview.totalRegions} regions across ${providers.length} provider${providers.length === 1 ? "" : "s"}`
-    : "Cloud & Kubernetes inventory derived from telemetry";
+  const subtitle =
+    overview && providers.length > 0
+      ? `${overview.totalResources.toLocaleString()} resources · ${overview.totalAccounts} accounts · ${overview.totalRegions} regions across ${providers.length} provider${providers.length === 1 ? "" : "s"}`
+      : "Cloud & Kubernetes inventory derived from telemetry";
 
   return (
     <PageShell className="min-h-screen">

@@ -36,17 +36,27 @@ export function useCloudOverview() {
   const restarts = restartsQ.data;
 
   let data: CloudOverview | undefined;
-  if (inventory && categories && health && restarts) {
-    const providers: ProviderSummary[] = inventory.map((inv) => ({
+  if (
+    inventory !== undefined &&
+    categories !== undefined &&
+    health !== undefined &&
+    restarts !== undefined
+  ) {
+    const safeInventory = Array.isArray(inventory) ? inventory : [];
+    const safeCategories = categories ?? {};
+    const safeHealth = health ?? {};
+    const safeRestarts = restarts ?? {};
+
+    const providers: ProviderSummary[] = safeInventory.map((inv) => ({
       provider: inv.provider,
       accounts: Number(inv.accounts),
       regions: Number(inv.regions),
       nodes: Number(inv.nodes),
       pods: Number(inv.pods),
       resources: Number(inv.resources),
-      restarts: Number(restarts[inv.provider] ?? 0),
-      categories: categories[inv.provider] ?? [],
-      health: health[inv.provider] ?? { healthy: 0, degraded: 0, unhealthy: 0 },
+      restarts: Number(safeRestarts[inv.provider] ?? 0),
+      categories: safeCategories[inv.provider] ?? [],
+      health: safeHealth[inv.provider] ?? { healthy: 0, degraded: 0, unhealthy: 0 },
       lastSeen: inv.lastSeen,
     }));
 
@@ -102,16 +112,21 @@ export function useCloudProvider(provider: string | null) {
   );
 
   const isPending = platformsQ.isPending || accountsQ.isPending || resourcesQ.isPending;
-  const isError = platformsQ.isError || accountsQ.isError || resourcesQ.error;
+  const isError = platformsQ.isError || accountsQ.isError || resourcesQ.isError;
   const error = platformsQ.error || accountsQ.error || resourcesQ.error;
 
   let data: CloudProviderDetail | undefined;
-  if (provider && platformsQ.data && accountsQ.data && resourcesQ.data) {
+  if (
+    provider &&
+    platformsQ.data !== undefined &&
+    accountsQ.data !== undefined &&
+    resourcesQ.data !== undefined
+  ) {
     data = {
       provider,
-      services: platformsQ.data,
-      accounts: accountsQ.data,
-      resources: resourcesQ.data,
+      services: Array.isArray(platformsQ.data) ? platformsQ.data : [],
+      accounts: Array.isArray(accountsQ.data) ? accountsQ.data : [],
+      resources: Array.isArray(resourcesQ.data) ? resourcesQ.data : [],
     };
   }
 
