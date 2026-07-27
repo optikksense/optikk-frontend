@@ -1,4 +1,4 @@
-import { ROUTES } from "@/shared/constants/routes";
+import { safeAuthRedirect } from "@/shared/api/auth/redirect";
 import { session } from "@/shared/api/auth/session";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
@@ -11,8 +11,7 @@ export const Route = createFileRoute("/login")({
     }
     const outcome = await session.restore();
     if (outcome === "authenticated") {
-      throw redirect({ to: search.redirect || ROUTES.overview });
+      throw redirect({ to: safeAuthRedirect(search.redirect) });
     }
   },
 });
-

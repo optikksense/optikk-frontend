@@ -7,6 +7,7 @@ import { useAuthStore } from "@app/store/authStore";
 
 import { stashSignupApiKey } from "./apiKeyHandoff";
 import { AuthError, type SessionPayload, type SignupParams, authApi } from "./authApi";
+import { publishSessionEvent } from "./sessionEvents";
 
 /**
  * Single owner of the session lifecycle. The access token lives only in this
@@ -129,8 +130,8 @@ async function doRefresh(): Promise<RestoreOutcome> {
 // Single-flight refresh: concurrent callers (boot, 401 retries, the proactive
 // timer) share one in-flight call so the backend is hit once per refresh window.
 // Short-circuits after a definitive logout to avoid hammering a dead session.
-function refresh(): Promise<RestoreOutcome> {
-  if (useAuthStore.getState().status === "unauthenticated") {
+function refresh(force = false): Promise<RestoreOutcome> {
+  if (!force && useAuthStore.getState().status === "unauthenticated") {
     return Promise.resolve("unauthenticated");
   }
   refreshInflight ??= doRefresh().finally(() => {
@@ -146,6 +147,7 @@ export const session = {
 
   async login(email: string, password: string): Promise<void> {
     beginSession(await authApi.login(email, password));
+    publishSessionEvent("signed-in");
   },
 
   async signup(params: SignupParams): Promise<"verificationRequired" | "signedIn"> {
@@ -153,6 +155,7 @@ export const session = {
     if (result.kind === "signedIn") {
       beginSession(result.session);
       stashSignupApiKey(result.apiKey);
+      publishSessionEvent("signed-in");
     }
     return result.kind;
   },
@@ -161,6 +164,7 @@ export const session = {
     const { session: payload, apiKey } = await authApi.verifyEmail(token);
     beginSession(payload);
     stashSignupApiKey(apiKey);
+    publishSessionEvent("signed-in");
   },
 
   async logout(): Promise<void> {
@@ -168,6 +172,7 @@ export const session = {
       await authApi.logout(accessToken);
     } catch {}
     endSession();
+    publishSessionEvent("signed-out");
   },
 
   async forgotPassword(email: string): Promise<void> {
@@ -190,10 +195,15 @@ export const session = {
 
   // Boot entry point for the route guards. Returns the real 3-way outcome so a
   // transient failure can be retried instead of forcing a logout.
-  restore(): Promise<RestoreOutcome> {
+  restore(options?: { readonly force?: boolean }): Promise<RestoreOutcome> {
     if (accessToken != null) {
       return Promise.resolve("authenticated");
     }
-    return refresh();
+    return refresh(options?.force === true);
+  },
+
+  /** Applies an explicit logout received from another browser tab. */
+  acceptExternalLogout(): void {
+    endSession();
   },
 };

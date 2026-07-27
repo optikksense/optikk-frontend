@@ -1,5 +1,5 @@
-import { ROUTES } from "@/shared/constants/routes";
 import { session } from "@/shared/api/auth/session";
+import { ROUTES } from "@/shared/constants/routes";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
@@ -11,4 +11,3 @@ export const Route = createFileRoute("/")({
     throw redirect({ to: ROUTES.login });
   },
 });
-

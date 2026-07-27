@@ -95,4 +95,16 @@ describe("session restore (boot recovery)", () => {
     await expect(session.restore()).resolves.toBe("unauthenticated");
     expect(authApiMock.refresh).not.toHaveBeenCalled();
   });
+
+  it("can force a retry after another browser tab signs in", async () => {
+    authApiMock.refresh.mockRejectedValueOnce(rejected);
+    await session.refreshAccessToken();
+    authApiMock.refresh.mockClear();
+    authApiMock.refresh.mockResolvedValueOnce({ ...payload, accessToken: "cross-tab-token" });
+
+    await expect(session.restore({ force: true })).resolves.toBe("authenticated");
+
+    expect(authApiMock.refresh).toHaveBeenCalledOnce();
+    expect(session.getAccessToken()).toBe("cross-tab-token");
+  });
 });

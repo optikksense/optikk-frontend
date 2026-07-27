@@ -7,6 +7,7 @@ import { z } from "zod";
 import { ROUTES } from "@shared/constants/routes";
 import { cn } from "@shared/lib/utils";
 
+import { safeAuthRedirect } from "@shared/api/auth/redirect";
 import { session } from "@shared/api/auth/session";
 
 import { useAppStore } from "@app/store/appStore";
@@ -47,9 +48,7 @@ export function LoginForm() {
 
     setTimeRange({ kind: "relative", preset: "30m", label: "Last 30 minutes", minutes: 30 });
     toast.success("Login successful!");
-    // Only honor internal paths so a crafted ?redirect= can't leave the app.
-    const target = redirect?.startsWith("/") ? redirect : ROUTES.overview;
-    navigate({ to: target as string & {} });
+    navigate({ to: safeAuthRedirect(redirect) as string & {} });
   };
 
   return (

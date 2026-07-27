@@ -1,4 +1,5 @@
 import { CommandPalette } from "@/app/layout/CommandPalette";
+import CrossTabSessionSync from "@/app/providers/CrossTabSessionSync";
 import SessionExpiryRedirect from "@/app/providers/SessionExpiryRedirect";
 import { Button } from "@/shared/components/primitives/ui";
 import { Loading } from "@/shared/components/ui/feedback";
@@ -23,6 +24,7 @@ export const Route = createRootRoute({
   errorComponent: RootErrorComponent,
   component: () => (
     <>
+      <CrossTabSessionSync />
       <SessionExpiryRedirect />
       <CommandPalette />
       <Outlet />
