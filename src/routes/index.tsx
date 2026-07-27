@@ -1,9 +1,14 @@
+import { ROUTES } from "@/shared/constants/routes";
+import { session } from "@/shared/api/auth/session";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: () => {
-    throw redirect({
-      to: "/login",
-    });
+  beforeLoad: async () => {
+    const outcome = await session.restore();
+    if (outcome === "authenticated") {
+      throw redirect({ to: ROUTES.overview });
+    }
+    throw redirect({ to: ROUTES.login });
   },
 });
+
