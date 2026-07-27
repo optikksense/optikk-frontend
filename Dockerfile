@@ -13,7 +13,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 3000
 
 # Set default backend URL if not provided
-ENV BACKEND_URL="http://backend:8080"
+ENV BACKEND_URL="http://query:19090"
 
 # Create startup script to substitute env vars and start nginx
 RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \

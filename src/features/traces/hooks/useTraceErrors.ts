@@ -6,6 +6,7 @@ import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutabl
  * Backs the trace error-summary panel. Immutable per trace.
  */
 export function useTraceErrors(
+  tenantId: number | null,
   traceId: string,
   bounds: { startMs?: number; endMs?: number },
   enabled = true
@@ -15,8 +16,8 @@ export function useTraceErrors(
   const hasBounds = startMs > 0 && endMs >= startMs;
 
   return useStandardQuery({
-    queryKey: ["trace-errors", traceId, startMs, endMs],
-    queryFn: () => tracesService.getTraceErrors(traceId, startMs, endMs),
-    enabled: !!traceId && enabled && hasBounds,
+    queryKey: ["trace-errors", tenantId, traceId, startMs, endMs],
+    queryFn: ({ signal }) => tracesService.getTraceErrors(traceId, startMs, endMs, signal),
+    enabled: !!tenantId && !!traceId && enabled && hasBounds,
   });
 }

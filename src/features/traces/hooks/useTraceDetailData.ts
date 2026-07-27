@@ -31,7 +31,8 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     error: spansError,
   } = useStandardQuery({
     queryKey: ["trace-spans", selectedTenantId, traceIdParam, startMs, endMs],
-    queryFn: () => tracesService.getTraceSpans(selectedTenantId, traceIdParam, startMs, endMs),
+    queryFn: ({ signal }) =>
+      tracesService.getTraceSpans(selectedTenantId, traceIdParam, startMs, endMs, signal),
     enabled: !!selectedTenantId && !!traceIdParam,
   });
 
@@ -47,7 +48,7 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     error: logsError,
   } = useStandardQuery({
     queryKey: ["trace-logs", selectedTenantId, traceIdParam, startMs, endMs],
-    queryFn: () => getTraceLogs(traceIdParam, startMs, endMs),
+    queryFn: ({ signal }) => getTraceLogs(traceIdParam, startMs, endMs, undefined, signal),
     enabled: !!selectedTenantId && !!traceIdParam,
   });
 

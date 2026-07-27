@@ -16,10 +16,12 @@ export async function getTraceLogs(
   traceId: string,
   startMs?: number,
   endMs?: number,
-  limit?: number
+  limit?: number,
+  signal?: AbortSignal
 ): Promise<TraceLogsResponse> {
   const data = await api.get(`${BASE}/logs/trace/${traceId}`, {
     params: { limit, startTime: startMs, endTime: endMs },
+    signal,
   });
   const logs = validateResponse(traceLogArraySchema, data ?? []);
   return { logs, isSpeculative: false };

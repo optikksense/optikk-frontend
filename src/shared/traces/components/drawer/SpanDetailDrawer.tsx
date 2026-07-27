@@ -20,6 +20,9 @@ interface Props {
   readonly spanAttributesLoading: boolean;
   readonly spanEvents: readonly SpanEvent[];
   readonly relatedTraces: readonly RelatedTrace[];
+  readonly relatedTracesRequested: boolean;
+  readonly relatedTracesLoading: boolean;
+  readonly onLoadRelatedTraces?: () => void;
   readonly traceLogs: readonly TraceLog[];
   readonly traceStartMs?: number;
   readonly traceEndMs?: number;
@@ -117,6 +120,9 @@ function SpanDetailDrawerComponent(props: Props) {
             selectedSpanId={spanId}
             spanEvents={props.spanEvents}
             relatedTraces={props.relatedTraces}
+            relatedTracesRequested={props.relatedTracesRequested}
+            relatedTracesLoading={props.relatedTracesLoading}
+            onLoadRelatedTraces={props.onLoadRelatedTraces}
             traceStartMs={props.traceStartMs}
             traceEndMs={props.traceEndMs}
             onSpanClick={props.onSpanClick}

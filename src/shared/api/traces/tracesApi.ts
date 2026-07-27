@@ -207,10 +207,12 @@ async function getTraceSpans(
   _tenantId: number | null,
   traceId: string,
   startMs: number,
-  endMs: number
+  endMs: number,
+  signal?: AbortSignal
 ): Promise<SpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans`, {
     params: { startTime: startMs, endTime: endMs },
+    signal,
   });
   return validateResponse(traceSpansEnvelopeSchema, data).spans;
 }
@@ -218,10 +220,12 @@ async function getTraceSpans(
 async function getSpanEvents(
   traceId: string,
   startMs: number,
-  endMs: number
+  endMs: number,
+  signal?: AbortSignal
 ): Promise<SpanEventRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/span-events`, {
     params: { startTime: startMs, endTime: endMs },
+    signal,
   });
   return validateResponse(z.array(spanEventSchema), data);
 }
@@ -229,10 +233,12 @@ async function getSpanEvents(
 async function getCriticalPath(
   traceId: string,
   startMs: number,
-  endMs: number
+  endMs: number,
+  signal?: AbortSignal
 ): Promise<CriticalPathSpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/critical-path`, {
     params: { startTime: startMs, endTime: endMs },
+    signal,
   });
   return validateResponse(z.array(criticalPathSpanSchema), data);
 }
@@ -240,10 +246,12 @@ async function getCriticalPath(
 async function getErrorPath(
   traceId: string,
   startMs: number,
-  endMs: number
+  endMs: number,
+  signal?: AbortSignal
 ): Promise<ErrorPathSpanRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/error-path`, {
     params: { startTime: startMs, endTime: endMs },
+    signal,
   });
   return validateResponse(z.array(errorPathSpanSchema), data);
 }
@@ -252,10 +260,12 @@ async function getSpanAttributes(
   traceId: string,
   spanId: string,
   startMs: number,
-  endMs: number
+  endMs: number,
+  signal?: AbortSignal
 ): Promise<SpanAttributesRecord> {
   const data = await api.get(`${BASE}/traces/${traceId}/spans/${spanId}/attributes`, {
     params: { startTime: startMs, endTime: endMs },
+    signal,
   });
   return validateResponse(spanAttributesSchema, data);
 }
@@ -265,7 +275,8 @@ async function getRelatedTraces(
   serviceName?: string,
   operationName?: string,
   startMs?: number,
-  endMs?: number
+  endMs?: number,
+  signal?: AbortSignal
 ): Promise<RelatedTraceRecord[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/related`, {
     params: {
@@ -274,6 +285,7 @@ async function getRelatedTraces(
       startTime: startMs,
       endTime: endMs,
     },
+    signal,
   });
   return validateResponse(z.array(relatedTraceSchema), data);
 }
@@ -282,10 +294,12 @@ async function getRelatedTraces(
 async function getServiceMap(
   traceId: string,
   startMs: number,
-  endMs: number
+  endMs: number,
+  signal?: AbortSignal
 ): Promise<ServiceTopologyResponse> {
   const data = await api.get(`${BASE}/traces/${traceId}/service-map`, {
     params: { startTime: startMs, endTime: endMs },
+    signal,
   });
   return validateResponse(topologyResponseSchema, data ?? { nodes: [], edges: [] });
 }
@@ -313,10 +327,12 @@ const redServicesSchema = z.array(
 
 async function getServiceLatencyBaselines(
   startMs: number,
-  endMs: number
+  endMs: number,
+  signal?: AbortSignal
 ): Promise<Map<string, ServiceLatencyBaseline>> {
   const data = await api.get(`${BASE}/spans/red/services`, {
     params: { startTime: startMs, endTime: endMs },
+    signal,
   });
   const parsed = validateResponse(redServicesSchema, data ?? []);
   const out = new Map<string, ServiceLatencyBaseline>();
@@ -329,10 +345,12 @@ async function getServiceLatencyBaselines(
 async function getTraceErrors(
   traceId: string,
   startMs: number,
-  endMs: number
+  endMs: number,
+  signal?: AbortSignal
 ): Promise<TraceErrorGroup[]> {
   const data = await api.get(`${BASE}/traces/${traceId}/errors`, {
     params: { startTime: startMs, endTime: endMs },
+    signal,
   });
   return validateResponse(z.array(traceErrorGroupSchema), data);
 }

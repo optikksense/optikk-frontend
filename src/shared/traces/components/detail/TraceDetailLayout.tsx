@@ -38,6 +38,9 @@ export interface TraceDetailLayoutProps {
   readonly spanAttributesLoading: boolean;
   readonly spanEvents: readonly SpanEvent[];
   readonly relatedTraces: readonly RelatedTrace[];
+  readonly relatedTracesRequested: boolean;
+  readonly relatedTracesLoading: boolean;
+  readonly onLoadRelatedTraces?: () => void;
   readonly traceLogs: readonly TraceLog[];
   readonly traceStartMs?: number;
   readonly traceEndMs?: number;
@@ -90,6 +93,9 @@ function TraceDetailLayoutComponent(props: TraceDetailLayoutProps) {
         spanAttributesLoading={props.spanAttributesLoading}
         spanEvents={props.spanEvents}
         relatedTraces={props.relatedTraces}
+        relatedTracesRequested={props.relatedTracesRequested}
+        relatedTracesLoading={props.relatedTracesLoading}
+        onLoadRelatedTraces={props.onLoadRelatedTraces}
         traceLogs={props.traceLogs}
         traceStartMs={props.traceStartMs}
         traceEndMs={props.traceEndMs}

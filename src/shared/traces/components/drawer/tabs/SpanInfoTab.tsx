@@ -19,6 +19,9 @@ interface Props {
   readonly selectedSpanId: string | null;
   readonly spanEvents: readonly SpanEvent[];
   readonly relatedTraces: readonly RelatedTrace[];
+  readonly relatedTracesRequested: boolean;
+  readonly relatedTracesLoading: boolean;
+  readonly onLoadRelatedTraces?: () => void;
   readonly traceStartMs?: number;
   readonly traceEndMs?: number;
   readonly onSpanClick?: (span: { spanId: string }) => void;
@@ -32,6 +35,9 @@ function SpanInfoTabComponent({
   selectedSpanId,
   spanEvents,
   relatedTraces,
+  relatedTracesRequested,
+  relatedTracesLoading,
+  onLoadRelatedTraces,
   traceStartMs,
   traceEndMs,
   onSpanClick,
@@ -70,7 +76,12 @@ function SpanInfoTabComponent({
         <SpanAttributesSection spanAttributes={spanAttributes} onAddFilter={onAddFilter} />
       )}
 
-      <SpanRelatedSection relatedTraces={relatedTraces} />
+      <SpanRelatedSection
+        relatedTraces={relatedTraces}
+        requested={relatedTracesRequested}
+        loading={relatedTracesLoading}
+        onLoad={onLoadRelatedTraces}
+      />
     </div>
   );
 }

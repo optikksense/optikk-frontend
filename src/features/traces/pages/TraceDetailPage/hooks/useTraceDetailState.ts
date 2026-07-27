@@ -53,18 +53,27 @@ export function useTraceDetailState() {
     return bounds;
   }, [data.spans, data.traceLogs]);
 
-  const serviceMap = useTraceServiceMap(traceIdParam, traceTimeBounds, activeTab === "servicemap");
+  const serviceMap = useTraceServiceMap(
+    selectedTenantId,
+    traceIdParam,
+    traceTimeBounds,
+    activeTab === "servicemap"
+  );
 
-  const traceErrors = useTraceErrors(traceIdParam, traceTimeBounds, activeTab === "errors");
-
-  const enhancedTab = data.selectedSpanId ? "related" : "attributes";
+  const traceErrors = useTraceErrors(
+    selectedTenantId,
+    traceIdParam,
+    traceTimeBounds,
+    activeTab === "errors"
+  );
 
   const enhanced = useTraceDetailEnhanced(
+    selectedTenantId,
     traceIdParam,
+    data.spans,
     data.selectedSpanId,
     data.selectedSpan ?? data.spans[0] ?? null,
-    traceTimeBounds,
-    enhancedTab
+    traceTimeBounds
   );
 
   return {

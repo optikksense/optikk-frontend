@@ -1,63 +1,60 @@
+import type { TraceRecord } from "@shared/api/traces/schemas";
 import { tracesService } from "@shared/api/traces/tracesApi";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { deriveCriticalPathSpanIds, deriveErrorSpanIds } from "../utils/tracePaths";
 
 /**
- * @param activeDetailTab - The currently active tab in SpanDetailDrawer.
- *   Queries for events, self-time, and related traces are lazy-loaded —
- *   they only fire when the user opens the corresponding tab.
- *   Critical path and error path always load since they're used for waterfall highlighting.
+ * Path highlighting is derived from the already-loaded spans. Related traces
+ * remain opt-in because they require a separate cross-trace ClickHouse read.
  */
 export function useTraceDetailEnhanced(
+  tenantId: number | null,
   traceId: string,
+  spans: readonly TraceRecord[],
   selectedSpanId: string | null,
   relatedContext: { serviceName?: string; operationName?: string } | null,
-  bounds: { startMs?: number; endMs?: number },
-  activeDetailTab = "attributes"
+  bounds: { startMs?: number; endMs?: number }
 ) {
   const enabled = !!traceId;
   const startMs = bounds.startMs ?? 0;
   const endMs = bounds.endMs ?? 0;
   const hasBounds = startMs > 0 && endMs >= startMs;
 
-  const { data: criticalPathData } = useStandardQuery({
-    queryKey: ["trace-critical-path", traceId, startMs, endMs],
-    queryFn: () => tracesService.getCriticalPath(traceId, startMs, endMs),
-    enabled: enabled && hasBounds,
-  });
-
-  const { data: errorPathData } = useStandardQuery({
-    queryKey: ["trace-error-path", traceId, startMs, endMs],
-    queryFn: () => tracesService.getErrorPath(traceId, startMs, endMs),
-    enabled: enabled && hasBounds,
-  });
-
   const { data: spanEventsData } = useStandardQuery({
-    queryKey: ["trace-span-events", traceId, startMs, endMs],
-    queryFn: () => tracesService.getSpanEvents(traceId, startMs, endMs),
-    enabled: enabled && !!selectedSpanId,
+    queryKey: ["trace-span-events", tenantId, traceId, startMs, endMs],
+    queryFn: ({ signal }) => tracesService.getSpanEvents(traceId, startMs, endMs, signal),
+    enabled: !!tenantId && enabled && !!selectedSpanId && hasBounds,
   });
 
-  const { data: relatedTracesData } = useStandardQuery({
+  const relatedKey = `${selectedSpanId ?? ""}|${relatedContext?.serviceName ?? ""}|${relatedContext?.operationName ?? ""}`;
+  const [requestedRelatedKey, setRequestedRelatedKey] = useState<string | null>(null);
+  const relatedTracesRequested = requestedRelatedKey === relatedKey;
+  const loadRelatedTraces = useCallback(() => setRequestedRelatedKey(relatedKey), [relatedKey]);
+
+  const { data: relatedTracesData, isPending: relatedTracesLoading } = useStandardQuery({
     queryKey: [
       "trace-related",
+      tenantId,
       traceId,
       relatedContext?.serviceName,
       relatedContext?.operationName,
       startMs,
       endMs,
     ],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       tracesService.getRelatedTraces(
         traceId,
         relatedContext?.serviceName,
         relatedContext?.operationName,
         startMs,
-        endMs
+        endMs,
+        signal
       ),
     enabled:
       enabled &&
-      activeDetailTab === "related" &&
+      !!tenantId &&
+      relatedTracesRequested &&
       !!relatedContext?.serviceName &&
       !!relatedContext?.operationName &&
       startMs > 0 &&
@@ -65,18 +62,14 @@ export function useTraceDetailEnhanced(
   });
 
   const { data: spanAttributesData, isPending: spanAttributesPending } = useStandardQuery({
-    queryKey: ["span-attributes", traceId, selectedSpanId, startMs, endMs],
-    queryFn: () => tracesService.getSpanAttributes(traceId, selectedSpanId!, startMs, endMs),
-    enabled: !!selectedSpanId,
+    queryKey: ["span-attributes", tenantId, traceId, selectedSpanId, startMs, endMs],
+    queryFn: ({ signal }) =>
+      tracesService.getSpanAttributes(traceId, selectedSpanId!, startMs, endMs, signal),
+    enabled: !!tenantId && !!selectedSpanId && hasBounds,
   });
 
-  const criticalPathSpanIds = useMemo<Set<string>>(() => {
-    return new Set(criticalPathData?.map((item) => item.spanId) ?? []);
-  }, [criticalPathData]);
-
-  const errorPathSpanIds = useMemo<Set<string>>(() => {
-    return new Set(errorPathData?.map((item) => item.spanId) ?? []);
-  }, [errorPathData]);
+  const criticalPathSpanIds = useMemo(() => deriveCriticalPathSpanIds(spans), [spans]);
+  const errorPathSpanIds = useMemo(() => deriveErrorSpanIds(spans), [spans]);
 
   const spanEvents = spanEventsData ?? [];
   const relatedTraces = relatedTracesData ?? [];
@@ -89,6 +82,9 @@ export function useTraceDetailEnhanced(
     errorPathSpanIds,
     spanEvents,
     relatedTraces,
+    relatedTracesRequested,
+    relatedTracesLoading,
+    loadRelatedTraces,
     spanAttributes,
     spanAttributesLoading: spanAttributesPending,
   };

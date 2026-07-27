@@ -11,6 +11,7 @@ import { tracesService } from "@shared/api/traces/tracesApi";
 const MINUTE_MS = 60_000;
 
 export function useTraceServiceMap(
+  tenantId: number | null,
   traceId: string,
   bounds: { startMs?: number; endMs?: number },
   latencyEnabled: boolean
@@ -20,9 +21,9 @@ export function useTraceServiceMap(
   const hasBounds = startMs > 0 && endMs >= startMs;
 
   const mapQuery = useImmutableQuery({
-    queryKey: ["trace-service-map", traceId, startMs, endMs],
-    queryFn: () => tracesService.getServiceMap(traceId, startMs, endMs),
-    enabled: !!traceId && hasBounds,
+    queryKey: ["trace-service-map", tenantId, traceId, startMs, endMs],
+    queryFn: ({ signal }) => tracesService.getServiceMap(traceId, startMs, endMs, signal),
+    enabled: !!tenantId && !!traceId && hasBounds,
   });
 
   // The latency baselines are a RED rollup lookup, so they keep a real range —
@@ -30,9 +31,9 @@ export function useTraceServiceMap(
   const fromMs = Math.floor(startMs / MINUTE_MS) * MINUTE_MS;
   const toMs = Math.ceil(endMs / MINUTE_MS) * MINUTE_MS;
   const latencyQuery = useStandardQuery({
-    queryKey: ["trace-service-latency", fromMs, toMs],
-    queryFn: () => tracesService.getServiceLatencyBaselines(fromMs, toMs),
-    enabled: latencyEnabled && startMs > 0 && endMs >= startMs,
+    queryKey: ["trace-service-latency", tenantId, fromMs, toMs],
+    queryFn: ({ signal }) => tracesService.getServiceLatencyBaselines(fromMs, toMs, signal),
+    enabled: !!tenantId && latencyEnabled && startMs > 0 && endMs >= startMs,
     staleTime: 60_000,
   });
 

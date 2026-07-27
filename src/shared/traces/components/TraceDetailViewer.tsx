@@ -110,6 +110,8 @@ function TraceDetailViewerComponent({
           spanAttributesLoading={false}
           spanEvents={spanEvents}
           relatedTraces={relatedTraces}
+          relatedTracesRequested={relatedTraces.length > 0}
+          relatedTracesLoading={false}
           traceLogs={traceLogs}
           traceStartMs={traceTimeBounds.startMs}
           traceEndMs={traceTimeBounds.endMs}

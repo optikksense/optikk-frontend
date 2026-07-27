@@ -19,7 +19,7 @@ function formFromChannel(ch: Channel): ChannelForm {
   return {
     id: ch.id,
     name: ch.name,
-    webhookUrl: typeof ch.config.webhookUrl === "string" ? ch.config.webhookUrl : "",
+    webhookUrl: "",
   };
 }
 
@@ -41,10 +41,11 @@ export default function ChannelsTab() {
 
   const handleSubmit = async () => {
     setStatus(null);
+    const webhookUrl = form.webhookUrl.trim();
     const payload = {
       type: "slack" as const,
       name: form.name,
-      config: { webhookUrl: form.webhookUrl },
+      config: webhookUrl ? { webhookUrl } : {},
     };
     try {
       if (form.id !== null) {
@@ -96,7 +97,7 @@ export default function ChannelsTab() {
           <input
             value={form.webhookUrl}
             onChange={(e) => setForm((f) => ({ ...f, webhookUrl: e.target.value }))}
-            placeholder="Slack webhook URL"
+            placeholder={editing ? "Leave blank to keep existing webhook" : "Slack webhook URL"}
             className="rounded border border-border bg-card px-2 py-1.5 font-mono text-xs"
           />
           <div className="flex items-center gap-1.5">
