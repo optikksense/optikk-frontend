@@ -16,12 +16,11 @@ import {
   isHtmlLikePayload,
   normalizeApiPayload,
 } from "../utils/decode";
-import { resolveApiBaseURL } from "./baseUrl";
 import { attachAuthInterceptor } from "./interceptors/authInterceptor";
 import { attachErrorInterceptor } from "./interceptors/errorInterceptor";
 
 const axiosClient = axios.create({
-  baseURL: resolveApiBaseURL(),
+  baseURL: API_CONFIG.BASE_URL,
   timeout: API_CONFIG.TIMEOUT,
   headers: {
     "Content-Type": "application/json",
