@@ -10,7 +10,7 @@ import { KafkaPageHeader } from "./header/KafkaPageHeader";
 import { useKafkaClients } from "./hooks/useKafkaClients";
 import { useKafkaSummary } from "./hooks/useKafkaSummary";
 import { useKafkaTopology } from "./hooks/useKafkaTopology";
-import { resolveKafkaService } from "./kafkaPageModel";
+import { kafkaEmptyStateCopy, resolveKafkaService } from "./kafkaPageModel";
 
 function KafkaPageSkeleton() {
   return (
@@ -47,15 +47,13 @@ function KafkaErrorState({ message, onRetry }: { message: string; onRetry: () =>
   );
 }
 
-function KafkaEmptyState() {
+function KafkaEmptyState({ copy }: { copy: ReturnType<typeof kafkaEmptyStateCopy> }) {
   return (
     <div className="grid min-h-56 place-items-center rounded-lg border border-border bg-card px-6 text-center">
       <div>
         <Waves size={28} className="mx-auto text-foreground-muted" />
-        <h2 className="mt-3 font-semibold text-[14px] text-foreground">No Kafka services found</h2>
-        <p className="mt-1 text-[12px] text-foreground-muted">
-          No service reported Kafka producer or consumer spans in this time range.
-        </p>
+        <h2 className="mt-3 font-semibold text-[14px] text-foreground">{copy.title}</h2>
+        <p className="mt-1 text-[12px] text-foreground-muted">{copy.description}</p>
       </div>
     </div>
   );
@@ -68,6 +66,7 @@ export default function SaturationKafkaPage() {
   const services = clientsQ.data ?? [];
   const selectedService = resolveKafkaService(services, requestedService);
   const topologyQ = useKafkaTopology(selectedService);
+  const emptyStateCopy = kafkaEmptyStateCopy(summaryQ.data);
 
   return (
     <PageShell>
@@ -89,7 +88,7 @@ export default function SaturationKafkaPage() {
         ) : null}
 
         {!clientsQ.isPending && !clientsQ.isError && services.length === 0 ? (
-          <KafkaEmptyState />
+          <KafkaEmptyState copy={emptyStateCopy} />
         ) : null}
 
         {selectedService ? (

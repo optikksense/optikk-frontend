@@ -1,3 +1,4 @@
+import type { KafkaSummary } from "@/features/saturation/api/kafkaExplorerSchemas";
 import type { KafkaTopology } from "@/features/saturation/api/kafkaTopologySchemas";
 
 export type Health = "healthy" | "warning" | "critical";
@@ -39,6 +40,33 @@ export interface KafkaPageModel {
   production: ProductionRow[];
   consumption: ConsumptionRow[];
   consumerGroups: ConsumerGroupRow[];
+}
+
+export interface KafkaEmptyStateCopy {
+  title: string;
+  description: string;
+}
+
+export function kafkaEmptyStateCopy(summary: KafkaSummary | undefined): KafkaEmptyStateCopy {
+  const hasMetrics =
+    summary !== undefined &&
+    (summary.topicCount > 0 ||
+      summary.groupCount > 0 ||
+      summary.messagesPerSec > 0 ||
+      summary.assignedPartitions > 0);
+
+  if (hasMetrics) {
+    return {
+      title: "Kafka topology unavailable",
+      description:
+        "Kafka metrics are available, but no service reported producer or consumer spans in this time range. Instrument Kafka spans to view service topology.",
+    };
+  }
+
+  return {
+    title: "No Kafka services found",
+    description: "No service reported Kafka producer or consumer spans in this time range.",
+  };
 }
 
 export function resolveKafkaService(

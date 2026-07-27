@@ -7,6 +7,7 @@ import {
   formatMilliseconds,
   formatPercent,
   formatRate,
+  kafkaEmptyStateCopy,
   resolveKafkaService,
 } from "./kafkaPageModel";
 
@@ -135,6 +136,37 @@ describe("resolveKafkaService", () => {
 
   it("keeps an explicitly selected service while it remains available", () => {
     expect(resolveKafkaService(["first", "second"], "second")).toBe("second");
+  });
+});
+
+describe("kafkaEmptyStateCopy", () => {
+  it("explains that topology needs spans when Kafka metrics are available", () => {
+    expect(
+      kafkaEmptyStateCopy({
+        topicCount: 1,
+        groupCount: 2,
+        messagesPerSec: 0.1,
+        assignedPartitions: 4,
+      })
+    ).toEqual({
+      title: "Kafka topology unavailable",
+      description:
+        "Kafka metrics are available, but no service reported producer or consumer spans in this time range. Instrument Kafka spans to view service topology.",
+    });
+  });
+
+  it("uses the generic empty state when no Kafka telemetry is available", () => {
+    expect(
+      kafkaEmptyStateCopy({
+        topicCount: 0,
+        groupCount: 0,
+        messagesPerSec: 0,
+        assignedPartitions: 0,
+      })
+    ).toEqual({
+      title: "No Kafka services found",
+      description: "No service reported Kafka producer or consumer spans in this time range.",
+    });
   });
 });
 
