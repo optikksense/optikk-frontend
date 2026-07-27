@@ -43,12 +43,19 @@ jobs:
             --publish 18080:3000 \
             optikk-web:ci
           trap 'docker rm --force optikk-web-smoke >/dev/null 2>&1 || true' EXIT
-          for attempt in 1 2 3 4 5; do
-            if curl --fail --silent --show-error --head http://127.0.0.1:18080/index.html > headers.txt; then
-              break
-            fi
-            sleep 1
-          done
-          grep --ignore-case --quiet '^Content-Security-Policy:' headers.txt
-          grep --ignore-case --quiet '^X-Frame-Options: SAMEORIGIN' headers.txt
-          grep --quiet '^Cache-Control: no-cache' headers.txt
+          curl --retry 5 --retry-all-errors --retry-delay 1 \
+            --fail --silent --show-error --head \
+            http://127.0.0.1:18080/index.html > index-headers.txt
+          grep --ignore-case --quiet '^Content-Security-Policy:' index-headers.txt
+          grep --ignore-case --quiet '^X-Frame-Options: SAMEORIGIN' index-headers.txt
+          grep --ignore-case --quiet \
+            '^Cache-Control: no-store, no-cache, must-revalidate, max-age=0' \
+            index-headers.txt
+
+          asset_path="$(grep --only-matching --extended-regexp \
+            '/assets/index-[A-Za-z0-9_-]+\.js' dist/index.html | head --lines=1)"
+          curl --fail --silent --show-error --head \
+            "http://127.0.0.1:18080${asset_path}" > asset-headers.txt
+          grep --ignore-case --quiet \
+            '^Cache-Control: public, immutable' \
+            asset-headers.txt
