@@ -1,12 +1,10 @@
 import { cn } from "@shared/lib/utils";
 import { ChevronDown, Clock } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
 import type { TimeRange } from "@shared/types";
 
 import { useAppStore, useTimeRange } from "@app/store/appStore";
-import { useClickOutside } from "@shared/hooks/useClickOutside";
-import { useEscapeKey } from "@shared/hooks/useEscapeKey";
 
 import { AbsoluteTimeTab } from "./AbsoluteTimeTab";
 import { RelativeTimeTab } from "./RelativeTimeTab";
@@ -14,6 +12,36 @@ import { DISPLAY_MAP } from "./constants";
 import { fmtDatetime } from "./utils";
 
 type Tab = "relative" | "absolute";
+
+function useClickOutside<T extends HTMLElement>(ref: RefObject<T | null>, handler: () => void) {
+  useEffect(() => {
+    const listener = (event: MouseEvent) => {
+      if (!ref.current || ref.current.contains(event.target as Node)) {
+        return;
+      }
+      handler();
+    };
+    document.addEventListener("mousedown", listener);
+    return () => {
+      document.removeEventListener("mousedown", listener);
+    };
+  }, [ref, handler]);
+}
+
+function useEscapeKey(handler: () => void, enabled = true) {
+  useEffect(() => {
+    if (!enabled) return;
+    const listener = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handler();
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, [handler, enabled]);
+}
 
 export default function TimeRangePicker() {
   const timeRange = useTimeRange();

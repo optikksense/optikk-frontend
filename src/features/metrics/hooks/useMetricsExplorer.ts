@@ -1,5 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 import { QUERY_LABELS, createDefaultQuery } from "@shared/metrics/constants";
 import type {
@@ -55,16 +55,13 @@ export function useMetricsExplorer() {
   const search = useSearch({ from: "/_app/metrics" });
   const navigate = useNavigate();
 
-  const patchSearch = useCallback(
-    (patch: Partial<MetricsExplorerSearch>) => {
-      navigate({
-        to: "/metrics",
-        search: (prev: MetricsExplorerSearch) => ({ ...prev, ...patch }),
-        replace: true,
-      });
-    },
-    [navigate]
-  );
+  const patchSearch = (patch: Partial<MetricsExplorerSearch>) => {
+    navigate({
+      to: "/metrics",
+      search: (prev: MetricsExplorerSearch) => ({ ...prev, ...patch }),
+      replace: true,
+    });
+  };
 
   const queries = useMemo(() => decodeQueries(search.queries), [search.queries]);
   const formulas = useMemo(() => decodeFormulas(search.formulas), [search.formulas]);
@@ -72,92 +69,58 @@ export function useMetricsExplorer() {
   const step = (search.step as TimeStep) || "5m";
   const spaceAgg = (search.spaceAgg as MetricSpaceAggregation) || "avg";
 
-  const setQueries = useCallback(
-    (next: MetricQueryDefinition[]) => {
-      patchSearch({ queries: encodeQueries(next) });
-    },
-    [patchSearch]
-  );
+  const setQueries = (next: MetricQueryDefinition[]) => {
+    patchSearch({ queries: encodeQueries(next) });
+  };
 
-  const addQuery = useCallback(() => {
+  const addQuery = () => {
     const usedLabels = new Set(queries.map((q) => q.id));
     const nextLabel = QUERY_LABELS.find((l) => !usedLabels.has(l));
     if (!nextLabel) return;
     setQueries([...queries, createDefaultQuery(nextLabel)]);
-  }, [queries, setQueries]);
+  };
 
-  const removeQuery = useCallback(
-    (id: string) => {
-      if (queries.length <= 1) return;
-      setQueries(queries.filter((q) => q.id !== id));
-    },
-    [queries, setQueries]
-  );
+  const removeQuery = (id: string) => {
+    if (queries.length <= 1) return;
+    setQueries(queries.filter((q) => q.id !== id));
+  };
 
-  const updateQuery = useCallback(
-    (id: string, patch: Partial<MetricQueryDefinition>) => {
-      setQueries(queries.map((q) => (q.id === id ? { ...q, ...patch } : q)));
-    },
-    [queries, setQueries]
-  );
+  const updateQuery = (id: string, patch: Partial<MetricQueryDefinition>) => {
+    setQueries(queries.map((q) => (q.id === id ? { ...q, ...patch } : q)));
+  };
 
-  const updateQueryAggregation = useCallback(
-    (id: string, aggregation: MetricAggregation) => updateQuery(id, { aggregation }),
-    [updateQuery]
-  );
+  const updateQueryAggregation = (id: string, aggregation: MetricAggregation) =>
+    updateQuery(id, { aggregation });
 
-  const updateQueryMetric = useCallback(
-    (id: string, metricName: string) => updateQuery(id, { metricName, where: [], groupBy: [] }),
-    [updateQuery]
-  );
+  const updateQueryMetric = (id: string, metricName: string) =>
+    updateQuery(id, { metricName, where: [], groupBy: [] });
 
-  const updateQueryWhere = useCallback(
-    (id: string, where: MetricTagFilter[]) => updateQuery(id, { where }),
-    [updateQuery]
-  );
+  const updateQueryWhere = (id: string, where: MetricTagFilter[]) => updateQuery(id, { where });
 
-  const updateQueryGroupBy = useCallback(
-    (id: string, groupBy: string[]) => updateQuery(id, { groupBy }),
-    [updateQuery]
-  );
+  const updateQueryGroupBy = (id: string, groupBy: string[]) => updateQuery(id, { groupBy });
 
-  const setChartType = useCallback(
-    (ct: ChartType) => patchSearch({ chartType: ct }),
-    [patchSearch]
-  );
+  const setChartType = (ct: ChartType) => patchSearch({ chartType: ct });
 
-  const setStep = useCallback((s: TimeStep) => patchSearch({ step: s }), [patchSearch]);
+  const setStep = (s: TimeStep) => patchSearch({ step: s });
 
-  const setSpaceAgg = useCallback(
-    (sa: MetricSpaceAggregation) => patchSearch({ spaceAgg: sa }),
-    [patchSearch]
-  );
+  const setSpaceAgg = (sa: MetricSpaceAggregation) => patchSearch({ spaceAgg: sa });
 
-  const setFormulas = useCallback(
-    (next: FormulaDefinition[]) => {
-      patchSearch({ formulas: encodeFormulas(next) });
-    },
-    [patchSearch]
-  );
+  const setFormulas = (next: FormulaDefinition[]) => {
+    patchSearch({ formulas: encodeFormulas(next) });
+  };
 
-  const addFormula = useCallback(() => {
+  const addFormula = () => {
     formulaCounter++;
     setFormulas([...formulas, { id: `f${formulaCounter}`, expression: "" }]);
-  }, [formulas, setFormulas]);
+  };
 
-  const removeFormula = useCallback(
-    (id: string) => {
-      setFormulas(formulas.filter((f) => f.id !== id));
-    },
-    [formulas, setFormulas]
-  );
+  const removeFormula = (id: string) => {
+    setFormulas(formulas.filter((f) => f.id !== id));
+  };
 
-  const updateFormulaExpression = useCallback(
-    (id: string, expression: string) => {
-      setFormulas(formulas.map((f) => (f.id === id ? { ...f, expression } : f)));
-    },
-    [formulas, setFormulas]
-  );
+  const updateFormulaExpression = (id: string, expression: string) => {
+    setFormulas(formulas.map((f) => (f.id === id ? { ...f, expression } : f)));
+  };
 
   const canExecute = queries.some((q) => Boolean(q.metricName));
 

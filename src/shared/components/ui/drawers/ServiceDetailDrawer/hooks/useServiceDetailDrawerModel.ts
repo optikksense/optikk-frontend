@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -35,23 +35,17 @@ export function useServiceDetailDrawerModel(
     dependenciesQuery,
   } = useServiceDrawerQueries(serviceName);
 
-  const initialSummary = useMemo(() => buildInitialSummary(initialData), [initialData]);
-
-  const summaryMetrics = useMemo<ServiceSummarySnapshot | null>(() => {
-    const row = summaryQuery.summary;
-    if (row) {
-      return {
+  const row = summaryQuery.summary;
+  const summaryMetrics: ServiceSummarySnapshot | null = row
+    ? {
         requestCount: row.requestCount,
         errorCount: row.errorCount,
         errorRate: row.errorRate,
         avgLatency: row.p50Ms,
         p95Latency: row.p95Ms,
         p99Latency: row.p99Ms,
-      };
-    }
-
-    return initialSummary;
-  }, [initialSummary, summaryQuery.summary]);
+      }
+    : buildInitialSummary(initialData);
 
   const requestTrendSeries = useMemo(
     () => buildRequestTrendSeries(requestTrendQuery.data ?? []),
@@ -99,24 +93,24 @@ export function useServiceDetailDrawerModel(
     [dependenciesQuery.data?.edges, serviceName]
   );
 
-  const openTraces = useCallback((): void => {
+  const openTraces = (): void => {
     navigate({
       to: ROUTES.traces as never,
       search: buildServiceTracesSearch(location.search, serviceName) as never,
     });
-  }, [location.search, navigate, serviceName]);
+  };
 
-  const openLogs = useCallback((): void => {
+  const openLogs = (): void => {
     navigate({
       to: ROUTES.logs as never,
       search: buildServiceLogsSearch(location.search, serviceName) as never,
     });
-  }, [location.search, navigate, serviceName]);
+  };
 
-  const openFullView = useCallback((): void => {
+  const openFullView = (): void => {
     const path = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(serviceName));
     navigate({ to: path as string & {} });
-  }, [navigate, serviceName]);
+  };
 
   const serviceLabel = title?.trim() || serviceName;
   const endpointsLoading = endpointsQuery.isLoading && endpointRows.length === 0;

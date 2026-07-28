@@ -20,8 +20,8 @@ export function useTraceDetailPage() {
   const setVisualizationTab = useTracesStore((s) => s.setVisualizationTab);
 
   const errorSpanIds = useMemo(
-    () => Array.from(state.enhanced.errorPathSpanIds),
-    [state.enhanced.errorPathSpanIds]
+    () => Array.from(state.data.errorPathSpanIds),
+    [state.data.errorPathSpanIds]
   );
   const onSelectSpan = useCallback(
     (id: string) => actions.handleSpanClick({ spanId: id }),
@@ -47,18 +47,18 @@ export function useTraceDetailPage() {
       selectedSpan: state.data.selectedSpan ?? null,
       onSpanClick: actions.handleSpanClick,
       onCloseSpan: actions.closeSpan,
-      criticalPathSpanIds: state.enhanced.criticalPathSpanIds,
-      errorPathSpanIds: state.enhanced.errorPathSpanIds,
+      criticalPathSpanIds: state.data.criticalPathSpanIds,
+      errorPathSpanIds: state.data.errorPathSpanIds,
       serviceMap: state.serviceMap.data ?? null,
       errorGroups: state.data.errorGroups,
-      spanAttributes: state.enhanced.spanAttributes,
-      spanAttributesLoading: state.enhanced.spanAttributesLoading,
-      spanEvents: state.enhanced.spanEvents,
+      spanAttributes: state.data.spanAttributes,
+      spanAttributesLoading: state.data.spanAttributesLoading,
+      spanEvents: state.data.spanEvents,
       traceLogs: state.data.traceLogs,
-      relatedTraces: state.enhanced.relatedTraces,
-      relatedTracesRequested: state.enhanced.relatedTracesRequested,
-      relatedTracesLoading: state.enhanced.relatedTracesLoading,
-      onLoadRelatedTraces: state.enhanced.loadRelatedTraces,
+      relatedTraces: state.data.relatedTraces,
+      relatedTracesRequested: state.data.relatedTracesRequested,
+      relatedTracesLoading: state.data.relatedTracesLoading,
+      onLoadRelatedTraces: state.data.loadRelatedTraces,
       onAddFilter: actions.addFilter,
       onOpenSpanInLogs: actions.openInLogs,
     }),

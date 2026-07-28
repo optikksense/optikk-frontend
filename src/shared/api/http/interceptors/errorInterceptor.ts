@@ -87,9 +87,6 @@ function normalizeError(error: unknown): ApiErrorShape {
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
 
-/**
- *
- */
 export function attachErrorInterceptor(instance: AxiosInstance): number {
   return instance.interceptors.response.use(
     (response) => response,

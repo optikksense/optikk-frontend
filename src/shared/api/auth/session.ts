@@ -130,8 +130,8 @@ async function doRefresh(): Promise<RestoreOutcome> {
 // Single-flight refresh: concurrent callers (boot, 401 retries, the proactive
 // timer) share one in-flight call so the backend is hit once per refresh window.
 // Short-circuits after a definitive logout to avoid hammering a dead session.
-function refresh(force = false): Promise<RestoreOutcome> {
-  if (!force && useAuthStore.getState().status === "unauthenticated") {
+function refresh(): Promise<RestoreOutcome> {
+  if (useAuthStore.getState().status === "unauthenticated") {
     return Promise.resolve("unauthenticated");
   }
   refreshInflight ??= doRefresh().finally(() => {
@@ -191,10 +191,10 @@ export const session = {
 
   // Boot entry point for the route guards. Returns the real 3-way outcome so a
   // transient failure can be retried instead of forcing a logout.
-  restore(options?: { readonly force?: boolean }): Promise<RestoreOutcome> {
+  restore(): Promise<RestoreOutcome> {
     if (accessToken != null) {
       return Promise.resolve("authenticated");
     }
-    return refresh(options?.force === true);
+    return refresh();
   },
 };

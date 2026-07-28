@@ -1,7 +1,6 @@
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import api from "@/shared/api/http/client";
-import { useInView } from "@/shared/hooks/useInView";
 import { useTimeRange } from "@/shared/hooks/useTimeRangeQuery";
 import { API_CONFIG } from "@config/apiConfig";
 import { type ApiErrorShape, toApiErrorShape } from "@shared/api/utils/errorNormalization";
@@ -10,6 +9,7 @@ import {
   type DashboardPanelSpec,
   isMetricsQuerySpec,
 } from "@shared/types/dashboardConfig";
+import { useInView } from "./useInView";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 const STALE_MS = 30_000;

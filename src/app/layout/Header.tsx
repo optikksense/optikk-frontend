@@ -1,11 +1,11 @@
 import { IconButton, Tooltip } from "@shared/components/primitives/ui";
 import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
 import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
-import { useVisibilityInterval } from "@shared/hooks/useVisibilityInterval";
 import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@shared/types";
 import { formatRelativeTime } from "@shared/utils/formatters";
 import { ChevronDown, ChevronLeft, ChevronRight, Moon, RefreshCw, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useVisibilityInterval } from "./useVisibilityInterval";
 
 import { useAppStore, useLastRefreshAt, useTheme } from "@app/store/appStore";
 import { useAuthTenant } from "@app/store/authStore";

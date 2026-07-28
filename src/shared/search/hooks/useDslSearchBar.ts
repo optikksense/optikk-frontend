@@ -74,11 +74,11 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
   const isLoading =
     context.kind === "value" && localValueSuggestions.length === 0 && valueQuery.isFetching;
 
-  const onChange = useCallback((next: string, pos: number) => {
+  const onChange = (next: string, pos: number) => {
     setInput(next);
     setCaret(pos);
     setActiveIdx(-1);
-  }, []);
+  };
 
   const acceptSuggestion = useCallback(
     (opt: SuggestionOption) => {
