@@ -13,11 +13,11 @@ function buildAdjacency(edges: ServiceTopologyResponse["edges"]): Map<string, Se
   return adjacency;
 }
 
-/**
- * Reduce a full topology to the focus service plus everything within `hops`
- * (undirected: callers and dependencies). Layout is left→right callers · focus ·
- * dependencies once handed to `buildTopologyGraph`.
- */
+   
+                                                                            
+                                                                                 
+                                                    
+   
 export function focusSubgraph(
   data: ServiceTopologyResponse,
   focus: string,

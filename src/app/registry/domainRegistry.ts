@@ -19,8 +19,8 @@ export interface DomainNavigationItem {
   readonly group: string;
 }
 
-// Routing is file-based (src/routes/); this registry only feeds
-// sidebar navigation and dashboard panel registration.
+                                                                
+                                                       
 export interface DomainConfig {
   readonly key: string;
   readonly label: string;

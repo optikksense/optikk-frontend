@@ -6,8 +6,8 @@ import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import { tracesService } from "@shared/api/traces/tracesApi";
 
-// Pad the (often sub-minute) trace window out to whole minutes so the RED
-// 1-minute rollup returns the bucket(s) covering the trace.
+                                                                          
+                                                            
 const MINUTE_MS = 60_000;
 
 export function useTraceServiceMap(
@@ -26,8 +26,8 @@ export function useTraceServiceMap(
     enabled: !!tenantId && !!traceId && hasBounds,
   });
 
-  // The latency baselines are a RED rollup lookup, so they keep a real range —
-  // taken from the trace's own span bounds.
+                                                                               
+                                            
   const fromMs = Math.floor(startMs / MINUTE_MS) * MINUTE_MS;
   const toMs = Math.ceil(endMs / MINUTE_MS) * MINUTE_MS;
   const latencyQuery = useStandardQuery({

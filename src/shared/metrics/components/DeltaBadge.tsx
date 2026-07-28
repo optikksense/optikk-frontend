@@ -4,7 +4,7 @@ import { deltaDirection, formatDelta } from "@shared/metrics/utils/formatStat";
 
 interface DeltaBadgeProps {
   readonly delta: number | null;
-  /** Pre-formatted label override (e.g. "+22ms"); falls back to formatted delta. */
+                                                                                    
   readonly label?: string;
   readonly className?: string;
 }

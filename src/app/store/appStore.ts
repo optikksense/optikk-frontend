@@ -57,9 +57,9 @@ export const useAppStore = create<AppState>()(
           current.selectedTenantId !== tenantId ||
           !sameTenantScope(current.selectedTenantIds, nextTenantIds)
         ) {
-          // Requests are authenticated using this scope header. Clear before
-          // publishing the new scope so no observer can render another
-          // tenant's cached response, even when a feature omits it from a key.
+                                                                             
+                                                                       
+                                                                               
           queryClient.clear();
         }
         set({
@@ -224,8 +224,8 @@ export const useAppStore = create<AppState>()(
   )
 );
 
-// Computed selectors — use these instead of accessing store shape directly.
-// Reduces coupling so store internals can change without updating every consumer.
+                                                                            
+                                                                                  
 export const useTimeRange = () => useAppStore((s) => s.timeRange);
 export const useTenantId = () => useAppStore((s) => s.selectedTenantId);
 export const useRefreshKey = () => useAppStore((s) => s.refreshKey);

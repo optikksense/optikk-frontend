@@ -21,7 +21,7 @@ interface WidgetEditorModalProps {
   readonly editingWidget: Dashboard | null;
 }
 
-/** Full-window SigNoz-style widget editor with a live WYSIWYG preview. */
+                                                                          
 export function WidgetEditorModal({
   open,
   onOpenChange,
@@ -39,7 +39,7 @@ export function WidgetEditorModal({
       <Dialog.Portal>
         <Dialog.Overlay className="data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-surface-overlay backdrop-blur-sm data-[state=open]:animate-in" />
         <Dialog.Content className="-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 z-50 flex max-h-[92vh] w-[min(1240px,94vw)] flex-col overflow-hidden rounded-xl border border-border bg-background shadow-[var(--shadow-lg)] focus:outline-none">
-          {/* Keyed so switching widgets reseeds the local editor state. */}
+          {                                                                }
           <WidgetEditorBody
             key={editingWidget?.id ?? "new"}
             onClose={() => onOpenChange(false)}

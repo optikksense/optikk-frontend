@@ -27,9 +27,9 @@ import type { TraceSummary, TracesFacets, TracesQueryRequest, TracesQueryRespons
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-// ==========================================
-// Traces Query & Explorer Schemas & Helpers
-// ==========================================
+                                             
+                                            
+                                             
 
 function extractNextCursor(pageInfo: unknown): string | undefined {
   const parsed = pageInfoSchema.safeParse(pageInfo);
@@ -39,7 +39,7 @@ function extractNextCursor(pageInfo: unknown): string | undefined {
   return undefined;
 }
 
-/** Mirrors explorer.Trace — POST /traces/query results[]. */
+                                                             
 const rawTraceRowSchema = z.object({
   traceId: z.string(),
   startMs: z.number(),
@@ -85,7 +85,7 @@ function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSum
   };
 }
 
-/** Mirrors explorer.FacetBucket. */
+                                    
 const facetBucketSchema = z.object({
   value: z.string(),
   count: z.number(),
@@ -118,14 +118,14 @@ function normalizeFacets(raw: z.infer<typeof rawFacetsSchema>): TracesFacets | u
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
-/** Mirrors explorer.TrendBucket — POST /traces/trend. */
+                                                         
 const rawTrendRowSchema = z.object({
   timeBucket: z.string(),
   total: z.number(),
   errors: z.number(),
 });
 
-/** Mirrors explorer.QueryResponse — only results + pageInfo exist on the wire. */
+                                                                                  
 const tracesQueryResponseSchema = z
   .object({
     results: z.union([z.array(rawTraceRowSchema), z.null()]).transform((v) => v ?? []),
@@ -198,7 +198,7 @@ export async function queryTrend(body: TracesQueryRequest) {
   }));
 }
 
-/** GET /traces/{traceId}/spans always responds `{"spans": [...]}` (never null). */
+                                                                                   
 const traceSpansEnvelopeSchema = z.object({
   spans: z.array(spanRecordSchema),
 });
@@ -290,7 +290,7 @@ async function getRelatedTraces(
   return validateResponse(z.array(relatedTraceSchema), data);
 }
 
-// Serves topology.BuildGraph output, identical to GET /services/topology.
+                                                                          
 async function getServiceMap(
   traceId: string,
   startMs: number,
@@ -309,11 +309,11 @@ interface ServiceLatencyBaseline {
   readonly p99: number;
 }
 
-/**
- * Mirrors redfleet.ServiceREDMetric — GET /spans/red/services returns a bare
- * array. Fields this call does not read are still declared so the schema stays
- * an honest mirror of the contract and drift reporting stays meaningful.
- */
+   
+                                                                             
+                                                                               
+                                                                         
+   
 const redServicesSchema = z.array(
   z.object({
     serviceName: z.string(),

@@ -1,18 +1,18 @@
-/**
- * Static, per-language OpenTelemetry instrumentation guides rendered by the
- * Instrumentation settings tab. Content is data-driven so a new language is a
- * single entry here — the tab component stays presentational.
- *
- * The API key is never a live value on this page (keys are hashed and shown
- * once, at creation). Snippets use a placeholder and link users to
- * Settings -> Tenant to mint one.
- */
+   
+                                                                            
+                                                                              
+                                                              
+  
+                                                                            
+                                                                   
+                                  
+   
 
 export const API_KEY_PLACEHOLDER = "<YOUR_API_KEY>";
 
 export interface GuideStep {
   readonly title: string;
-  /** Optional prose shown above the code block. */
+                                                   
   readonly description?: string;
   readonly code: string;
 }
@@ -20,15 +20,15 @@ export interface GuideStep {
 export interface LanguageGuide {
   readonly id: "java" | "go" | "python";
   readonly label: string;
-  /** One-line framing of the recommended approach for this language. */
+                                                                        
   readonly summary: string;
   readonly steps: readonly GuideStep[];
 }
 
-/**
- * Builds the guides for the given ingest endpoint. Endpoint is injected so the
- * snippets show the user's real OTLP target rather than a placeholder.
- */
+   
+                                                                               
+                                                                       
+   
 export function buildLanguageGuides(endpoint: string): readonly LanguageGuide[] {
   const key = API_KEY_PLACEHOLDER;
 
@@ -145,13 +145,13 @@ export function buildLanguageGuides(endpoint: string): readonly LanguageGuide[] 
   ];
 }
 
-/**
- * Kubernetes path: run a shared OpenTelemetry Collector that fans your services'
- * telemetry out to Optikk. Services export to the in-cluster collector; the
- * collector holds the API key and exports to Optikk. Two Optikk-specific
- * gotchas are baked in: OTLP is served on :4317/:4318 (not 443), and the
- * OTLP/HTTP receiver rejects gzip — so the exporter disables compression.
- */
+   
+                                                                                 
+                                                                            
+                                                                         
+                                                                         
+                                                                          
+   
 export interface CollectorSnippet {
   readonly title: string;
   readonly description?: string;

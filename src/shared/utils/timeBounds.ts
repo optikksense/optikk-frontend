@@ -11,10 +11,10 @@ export interface ResolvedTimeBounds {
   readonly endTime: number;
 }
 
-/**
- * Resolves the app store time range (relative or absolute) into millisecond
- * start/end bounds used by API payloads.
- */
+   
+                                                                            
+                                         
+   
 export function resolveTimeBounds(timeRange: TimeRange): ResolvedTimeBounds {
   return resolveTimeRangeBounds(timeRange);
 }
@@ -46,7 +46,7 @@ export function zoomTimeRange(
   const mid = (startTime + endTime) / 2;
 
   if (direction === "in") {
-    const halfNewDur = Math.max(dur / 4, 60_000); // min 1 minute
+    const halfNewDur = Math.max(dur / 4, 60_000);                
     return { startMs: Math.round(mid - halfNewDur), endMs: Math.round(mid + halfNewDur) };
   }
 

@@ -1,4 +1,4 @@
-// Request & validation errors (4xx)
+                                    
 const BAD_REQUEST = "BAD_REQUEST" as const;
 const VALIDATION_ERROR = "VALIDATION_ERROR" as const;
 const UNAUTHORIZED = "UNAUTHORIZED" as const;

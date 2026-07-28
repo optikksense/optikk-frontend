@@ -21,7 +21,7 @@ function normalize(value: string | null | undefined): SettingsTab {
     : DEFAULT_TAB;
 }
 
-/** URL-synced settings tab (`?tab=`), mirroring the services-hub tab pattern. */
+                                                                                 
 export function useSettingsTab(): {
   tab: SettingsTab;
   setTab: (next: SettingsTab) => void;

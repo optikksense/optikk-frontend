@@ -1,7 +1,7 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 
 interface UseInViewOptions {
-  /** Root margin forwarded to IntersectionObserver. Default "100px" — fire just before element enters viewport. */
+                                                                                                                   
   rootMargin?: string;
 
   once?: boolean;

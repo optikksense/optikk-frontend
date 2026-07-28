@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 
-/**
- * A hook that runs an interval timer that respects page visibility.
- * Pauses interval executions when the document is hidden to conserve CPU.
- *
- * @param callback The callback function to invoke on each interval.
- * @param intervalMs The interval duration in milliseconds. Pass 0/null to disable.
- */
+   
+                                                                    
+                                                                          
+  
+                                                                    
+                                                                                   
+   
 export function useVisibilityInterval(callback: () => void, intervalMs: number | null): void {
   const callbackRef = useRef(callback);
   callbackRef.current = callback;

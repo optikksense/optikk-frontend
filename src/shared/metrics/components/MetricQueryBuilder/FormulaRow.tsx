@@ -44,7 +44,7 @@ export function FormulaRow({
           : "border-border bg-secondary hover:border-border"
       )}
     >
-      {/* Formula label */}
+      {                   }
       <div
         className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-semibold text-[11px] text-white"
         style={{ backgroundColor: FORMULA_COLOR }}

@@ -18,7 +18,7 @@ const STATUS_DOT: Record<string, string> = {
   error: "var(--err)",
 };
 
-/** Dot color for a facet value: status by name, service by hash, else none. */
+                                                                               
 function dotColor(field: string, value: string): string | null {
   if (field.includes("status")) return STATUS_DOT[value.toLowerCase()] ?? null;
   if (field.includes("service")) return getServiceColor(value);

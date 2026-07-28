@@ -2,13 +2,13 @@ import { create } from "zustand";
 
 import type { Tenant, User } from "@shared/types";
 
-/**
- * Auth state only. Session lifecycle (login/logout/refresh) is owned by
- * `@shared/api/auth/session`; nothing here touches the network or storage.
- * Identity is never persisted — a reload rebuilds it from the refresh cookie.
- */
+   
+                                                                        
+                                                                           
+                                                                              
+   
 
-/** "unknown" = cold boot, recovery not attempted yet. */
+                                                         
 type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
 
 interface AuthState {

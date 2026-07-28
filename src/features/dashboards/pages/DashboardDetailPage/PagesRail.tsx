@@ -22,7 +22,7 @@ interface PagesRailProps {
   readonly currentPageId: number;
 }
 
-/** 240px left nav to search and switch between dashboard pages. */
+                                                                   
 export function PagesRail({ currentPageId }: PagesRailProps) {
   const user = useAuthUser();
   const [tab, setTab] = useState<RailTab>("all");
@@ -100,7 +100,7 @@ export function PagesRail({ currentPageId }: PagesRailProps) {
   );
 }
 
-/** A labeled group of page rows; renders nothing when empty. */
+                                                                
 function RailSection({
   title,
   pages,
@@ -125,7 +125,7 @@ function RailSection({
   );
 }
 
-/** Single page row linking to its detail route, highlighted when active. */
+                                                                            
 function PageRow({ page, active }: { readonly page: DashboardPage; readonly active: boolean }) {
   const Icon = pageIcon(page.icon);
   return (

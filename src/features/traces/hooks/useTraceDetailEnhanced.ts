@@ -4,10 +4,10 @@ import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutabl
 import { useCallback, useMemo, useState } from "react";
 import { deriveCriticalPathSpanIds, deriveErrorSpanIds } from "../utils/tracePaths";
 
-/**
- * Path highlighting is derived from the already-loaded spans. Related traces
- * remain opt-in because they require a separate cross-trace ClickHouse read.
- */
+   
+                                                                             
+                                                                             
+   
 export function useTraceDetailEnhanced(
   tenantId: number | null,
   traceId: string,

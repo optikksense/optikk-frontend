@@ -45,7 +45,7 @@ export default function ContainersTab() {
     );
   }, [processedPods, q]);
 
-  // Compute KPI stats dynamically
+                                  
   const kpiStats = useMemo(() => {
     let running = 0;
     let pending = 0;

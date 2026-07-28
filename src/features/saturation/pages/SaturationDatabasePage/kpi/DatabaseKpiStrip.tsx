@@ -21,7 +21,7 @@ interface DatabaseKpiStripProps {
   readonly system?: string;
 }
 
-// Design's two headline tiles: queries/s and p99 latency.
+                                                          
 export function DatabaseKpiStrip({ summary, system }: DatabaseKpiStripProps) {
   const { series: qps } = useDatabaseQpsSeries(system);
   const { series: lat } = useDatabaseLatencyPercentiles(system);

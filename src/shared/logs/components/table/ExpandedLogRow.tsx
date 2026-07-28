@@ -9,7 +9,7 @@ interface Props {
   readonly row: LogRecord;
 }
 
-/** Inline expanded row content — shows full body text and JSON tree (if parseable). */
+                                                                                       
 function ExpandedLogRowComponent({ row }: Props) {
   const parsed = useMemo(() => tryParseJson(row.body), [row.body]);
 

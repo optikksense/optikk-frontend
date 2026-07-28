@@ -43,7 +43,7 @@ export function MetricQueryRow({
         "hover:border-border"
       )}
     >
-      {/* Query label */}
+      {                 }
       <div
         className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-semibold text-[11px] text-white"
         style={{ backgroundColor: labelColor }}

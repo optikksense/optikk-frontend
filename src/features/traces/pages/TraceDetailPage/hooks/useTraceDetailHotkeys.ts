@@ -16,18 +16,18 @@ interface Args {
   readonly onSetViz: (tab: VisualizationTab) => void;
 }
 
-/**
- * Keyboard shortcuts for the trace detail page:
- * - `/`             focus the waterfall search input
- * - `c`             copy the trace ID
- * - `e`             cycle through error spans (next)
- * - `1` / `2`       switch viz: Waterfall / Service map
- * - `↑` / `↓`       previous / next span (in span order)
- * - `j` / `k`       next / previous span (vim-style aliases)
- * - `Escape`        close span drawer (also handled inside the drawer for redundancy)
- *
- * All shortcuts are skipped when focus is inside an INPUT/TEXTAREA/contenteditable.
- */
+   
+                                                
+                                                     
+                                      
+                                                     
+                                                        
+                                                         
+                                                             
+                                                                                      
+  
+                                                                                    
+   
 export function useTraceDetailHotkeys({
   traceId,
   spans,

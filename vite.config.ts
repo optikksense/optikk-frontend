@@ -9,7 +9,7 @@ import { API_PROXY_BASE, DEV_BACKEND_URL, DEV_FRONTEND_PORT } from "./src/config
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// https://vitejs.dev/config/
+                             
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const devBackendUrl = env.VITE_DEV_BACKEND_URL || DEV_BACKEND_URL;
@@ -48,8 +48,8 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
-      // Browser devtools use the source directly during `vite dev`. Emitting
-      // maps for a distributable bundle would expose the full source tree.
+                                                                             
+                                                                           
       sourcemap: false,
       chunkSizeWarningLimit: 300,
       rollupOptions: {

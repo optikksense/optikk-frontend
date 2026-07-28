@@ -13,7 +13,7 @@ interface Props {
   readonly onChangeFilters: (next: readonly ExplorerFilter[]) => void;
   readonly onSubmitFreeText: (text: string) => void;
   readonly kpiStrip?: ReactNode;
-  /** Slot rendered beside the search bar. Used for scope-specific affordances (Saved Views, Share, etc). */
+                                                                                                            
   readonly actions?: ReactNode;
   readonly searchPlaceholder?: string;
 

@@ -18,8 +18,8 @@ function isRootParent(parentId: string | undefined): boolean {
   return !parentId || parentId.replaceAll("\0", "") === "0000000000000000";
 }
 
-// Derives the same longest descendant chain used for waterfall highlighting
-// from the span list that the page already fetched.
+                                                                            
+                                                    
 export function deriveCriticalPathSpanIds(spans: readonly TraceRecord[]): Set<string> {
   const nodes = new Map<string, PathNode>();
   for (const span of spans) {

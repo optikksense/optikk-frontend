@@ -16,7 +16,7 @@ export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
     [rows]
   );
 
-  // Worst current error rate across routes, for the legend.
+                                                            
   const peak = useMemo(() => {
     let max = 0;
     for (const s of series) {

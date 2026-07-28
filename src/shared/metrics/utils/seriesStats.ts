@@ -4,7 +4,7 @@ import type {
   MetricSpaceAggregation,
 } from "@shared/metrics/types";
 
-/** Per-series summary statistics computed over a single series' value array. */
+                                                                                
 export interface SeriesStats {
   readonly min: number;
   readonly avg: number;

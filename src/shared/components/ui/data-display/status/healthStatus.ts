@@ -1,7 +1,7 @@
 import type { PillVariant } from "@shared/components/primitives/ui/pill";
 
-// Canonical status vocabulary for health indicators. Feature-local vocabularies
-// (e.g. saturation's ok/warn/err) translate to this at the call site.
+                                                                                
+                                                                      
 export type HealthStatus = "healthy" | "warn" | "error" | "unknown";
 
 export const HEALTH_PILL_VARIANT: Record<HealthStatus, PillVariant> = {

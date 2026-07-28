@@ -14,21 +14,21 @@ import type { ErrorsKpis } from "../components/ErrorsKpiStrip";
 import type { ServiceFacet } from "../components/ServiceFacetRail";
 
 const PAGE_SIZE = 25;
-/** Capped fetch used only for cross-page KPIs + facet counts (not the paginated table). */
+                                                                                           
 const AGGREGATE_LIMIT = 200;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 interface UseErrorTrackingArgs {
-  /** When set, scopes every read to one service and suppresses the service facet. */
+                                                                                     
   readonly lockedService?: string;
 }
 
-/**
- * Orchestration shared by the standalone Error Tracking page and the
- * service-scoped Errors tab: paginated groups + capped aggregate for KPIs/facets
- * + volume series. `lockedService` fixes the service scope; otherwise the caller
- * drives `serviceFilter` via the returned setter.
- */
+   
+                                                                     
+                                                                                 
+                                                                                 
+                                                  
+   
 export function useErrorTracking(args: UseErrorTrackingArgs = {}) {
   const { lockedService } = args;
   const [page, setPage] = useState(0);
@@ -39,7 +39,7 @@ export function useErrorTracking(args: UseErrorTrackingArgs = {}) {
   const serviceFilter = lockedService ?? selectedService;
   const cursor = page > 0 ? cursors[page - 1] : undefined;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Reset pagination when scope changes
+                                                                                                 
   useEffect(() => {
     setPage(0);
     setCursors({});

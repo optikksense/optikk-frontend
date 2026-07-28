@@ -42,7 +42,7 @@ const BOOL_OPS: readonly ExplorerFilterOp[] = ["eq", "neq"];
 const TEXT_OPS: readonly ExplorerFilterOp[] = ["contains", "not_contains", "eq"];
 const ID_OPS: readonly ExplorerFilterOp[] = ["eq"];
 
-/** Mirrors the scalar fields understood by backend querycompiler/structured.go. */
+                                                                                   
 export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
   {
     key: "service",
@@ -399,7 +399,7 @@ const SUGGESTABLE_LOG_FIELDS = new Set([
   "environment",
 ]);
 
-/** Scalar fields with live value autocomplete (per-scope suggest endpoint). */
+                                                                               
 export function suggestableScalarFieldsForScope(
   scope: ExplorerScope | undefined
 ): ReadonlySet<string> {
@@ -499,7 +499,7 @@ const SYNTAX_EXAMPLES_TRACES: readonly QuickTemplate[] = [
   },
 ];
 
-/** Static example rows shown under "Syntax" in the empty-state popover. */
+                                                                           
 export function syntaxExamplesForScope(scope: ExplorerScope | undefined): readonly QuickTemplate[] {
   if (scope === "ai") return [];
   return scope === "logs" ? SYNTAX_EXAMPLES_LOGS : SYNTAX_EXAMPLES_TRACES;

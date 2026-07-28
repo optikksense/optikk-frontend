@@ -22,7 +22,7 @@ const CHANNELS_KEY = ["notifications", "channels"] as const;
 const POLICIES_KEY = ["notifications", "policies"] as const;
 const TEMPLATES_KEY = ["notifications", "templates"] as const;
 
-// Channels ------------------------------------------------------------------
+                                                                              
 
 export function useChannelMutations() {
   const queryClient = useQueryClient();

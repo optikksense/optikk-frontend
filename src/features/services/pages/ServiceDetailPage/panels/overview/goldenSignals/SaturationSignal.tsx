@@ -9,7 +9,7 @@ import { PanelCard } from "@shared/components/ui/PanelCard";
 import { useServiceSaturation } from "../../../hooks/useServiceSaturation";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
-// Backend already returns `value` as a percentage (e.g. 18.5 → 18.5%).
+                                                                       
 function fmtSat(v: number): string {
   return `${v.toFixed(1)}%`;
 }

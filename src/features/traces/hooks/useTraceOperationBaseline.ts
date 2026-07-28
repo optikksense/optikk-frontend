@@ -23,10 +23,10 @@ async function fetchOperationBaseline(
   });
 }
 
-/**
- * Windowed p50/p95/p99 for the trace's root service+operation — feeds the
- * Trace Detail Duration card's "N× slower than p50" baseline.
- */
+   
+                                                                          
+                                                              
+   
 export function useTraceOperationBaseline(
   service: string | undefined,
   operation: string | undefined

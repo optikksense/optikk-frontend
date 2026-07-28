@@ -15,7 +15,7 @@ import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 export interface UseCatalogListResult {
   readonly rows: CatalogRow[];
   readonly summary?: ServiceCatalogRedSummary;
-  /** Prior-window RED summary, when present — powers the KPI strip deltas. */
+                                                                              
   readonly comparison?: ServiceCatalogRedSummary;
   readonly windowSec: number;
   readonly isPending: boolean;

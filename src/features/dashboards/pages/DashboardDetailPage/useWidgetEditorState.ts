@@ -19,11 +19,11 @@ import {
 
 let formulaCounter = 0;
 
-/**
- * Local editor state for the widget editor: mirrors useMetricsExplorer's query
- * handlers but holds state in useState (no URL coupling) and adds the widget
- * dimensions (viz, step, display, size, title). Seed via specToEditorState.
- */
+   
+                                                                               
+                                                                             
+                                                                            
+   
 export function useWidgetEditorState(initial?: WidgetEditorState) {
   const [state, setState] = useState<WidgetEditorState>(
     () => initial ?? createDefaultEditorState()

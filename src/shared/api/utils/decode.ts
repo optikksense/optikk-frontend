@@ -21,7 +21,7 @@ interface ApiContractErrorShape {
 interface ApiEnvelope {
   readonly success: boolean;
   readonly data: unknown;
-  /** Same shape as data, for a previous period. Only when compareTo was sent. */
+                                                                                 
   readonly comparison?: unknown;
   readonly error?: unknown;
 }
@@ -215,7 +215,7 @@ export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
       });
     }
 
-    // Telemetry hook to capture prod drift silently
+                                                    
     const telemetry = window.telemetry ?? {
       track: (e: string, d: Record<string, unknown>) => console.log(`[Telemetry Mock] ${e}`, d),
     };

@@ -11,7 +11,7 @@ interface Props {
   readonly limit?: number;
 }
 
-// Soft-tinted tile background + matching foreground text (design palette).
+                                                                           
 const STATUS_TILE: Record<ServiceHealthStatus, string> = {
   ok: "bg-[var(--ok-soft)] text-[var(--ok-fg)]",
   warn: "bg-[var(--warn-soft)] text-[var(--warn-fg)]",

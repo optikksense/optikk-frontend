@@ -10,7 +10,7 @@ import type { MetricNameEntry, MetricQueryResult } from "@shared/metrics/types";
 import { useMetricsStore } from "../store/metricsStore";
 
 interface RecentMetricsPanelProps {
-  /** Metric name currently driving the primary query, if any. */
+                                                                 
   readonly primaryMetric: string | undefined;
 
   readonly primaryResult: MetricQueryResult | undefined;

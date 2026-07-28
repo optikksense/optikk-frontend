@@ -1,14 +1,14 @@
-/**
- * Shared filter-building infrastructure for translating `ExplorerFilter[]`
- * (FE chip model) into backend wire bodies. Used by both
- * `buildLogsFilters` and `buildTracesFilters` to eliminate ~120 lines of
- * redundant code.
- */
+   
+                                                                           
+                                                         
+                                                                         
+                  
+   
 import type { ExplorerFilter, TranslationWarning } from "../types/filters";
 
-// ---- Attribute operator whitelist (identical across logs/traces) ----
+                                                                        
 
-/** Ops the backend implements on `attributes[]` for both logs and traces. */
+                                                                             
 export const ATTR_OPS = new Set([
   "eq",
   "neq",
@@ -22,9 +22,9 @@ export const ATTR_OPS = new Set([
   "not_exists",
 ] as const);
 
-// ---- Shared helpers ----
+                           
 
-/** in/not_in carry comma-joined values from the `(a OR b)` DSL form. */
+                                                                        
 export function splitInList(value: string): string[] {
   return value
     .split(",")
@@ -32,20 +32,20 @@ export function splitInList(value: string): string[] {
     .filter(Boolean);
 }
 
-/** Splits for in/not_in, returns single-element array otherwise. */
+                                                                    
 export function listValues(op: string, value: string): string[] {
   if (op !== "in" && op !== "not_in") return [value];
   return splitInList(value);
 }
 
-/** Appends values to a string[] field on the body, creating the array if needed. */
+                                                                                    
 export function appendArr<T extends object>(body: T, key: keyof T, values: string[]): void {
   const current = body[key as keyof typeof body];
   const list = Array.isArray(current) ? (current as string[]) : [];
   Object.assign(body, { [key]: [...list, ...values] });
 }
 
-/** Pushes an "unsupported_op" warning. */
+                                          
 export function pushUnsupportedOp(
   warnings: TranslationWarning[],
   field: string,
@@ -59,7 +59,7 @@ export function pushUnsupportedOp(
   });
 }
 
-/** Pushes an "unknown_field" warning with the standard hint. */
+                                                                
 export function pushUnknownField(
   warnings: TranslationWarning[],
   field: string,
@@ -72,10 +72,10 @@ export function pushUnknownField(
   });
 }
 
-/**
- * Handles a `@key` attribute filter. Identical across logs and traces:
- * validates the op, then pushes to body.attributes[].
- */
+   
+                                                                       
+                                                      
+   
 export function handleAttribute<
   T extends { attributes?: Array<{ key: string; op?: string; value: string }> },
 >(field: string, op: string, value: string, body: T, warnings: TranslationWarning[]): void {
@@ -87,9 +87,9 @@ export function handleAttribute<
   body.attributes.push({ key: field.slice(1), op, value });
 }
 
-/**
- * Handles a list field (service/environment/etc) with include/exclude mapping.
- */
+   
+                                                                               
+   
 export function handleListField<T extends object>(
   field: string,
   op: string,
@@ -110,9 +110,9 @@ export function handleListField<T extends object>(
   pushUnsupportedOp(warnings, field, op, "only match / any-of supported");
 }
 
-/**
- * Handles a single-value field (e.g. traceId/spanId) — only first value wins.
- */
+   
+                                                                              
+   
 export function handleSingleValue<T extends object>(
   body: T,
   key: keyof T & string,
@@ -130,9 +130,9 @@ export function handleSingleValue<T extends object>(
   Object.assign(body, { [key]: value });
 }
 
-/**
- * Collects search terms and joins them into the `search` body field.
- */
+   
+                                                                     
+   
 export function finalizeSearch<T extends { search?: string }>(
   body: T,
   searchTerms: string[]
@@ -142,7 +142,7 @@ export function finalizeSearch<T extends { search?: string }>(
   }
 }
 
-// ---- Shared types ----
+                         
 
 export interface BuildExtras {
   readonly limit?: number;
@@ -154,9 +154,9 @@ export interface BuildResult<TBody> {
   readonly warnings: readonly TranslationWarning[];
 }
 
-/**
- * Initializes the base body with startTime, endTime, and optional extras.
- */
+   
+                                                                          
+   
 export function initBody<
   T extends { startTime: number; endTime: number; limit?: number; cursor?: string },
 >(startTime: number, endTime: number, extras: BuildExtras = {}): T {
@@ -166,23 +166,23 @@ export function initBody<
   return body;
 }
 
-/**
- * Dispatches `@key` filters through the shared attribute handler,
- * and collects "body"/"search" fields as search terms.
- * Returns true if the filter was handled, false if caller should handle it.
- */
+   
+                                                                  
+                                                       
+                                                                            
+   
 export function dispatchCommonFilter<
   T extends { attributes?: Array<{ key: string; op?: string; value: string }> },
 >(filter: ExplorerFilter, body: T, warnings: TranslationWarning[], searchTerms: string[]): boolean {
   const { field, op, value } = filter;
 
-  // Attribute filters: @key
+                            
   if (field.startsWith("@")) {
     handleAttribute(field, op, value, body, warnings);
     return true;
   }
 
-  // Search/body filters
+                        
   if (field === "search" || field === "body") {
     if (op === "contains" || op === "eq") {
       searchTerms.push(value);

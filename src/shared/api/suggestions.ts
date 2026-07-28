@@ -16,13 +16,13 @@ export interface SuggestionItem {
   readonly count: number;
 }
 
-/** Mirrors explorer.Suggestion. */
+                                   
 const suggestionSchema = z.object({
   value: z.string(),
   count: z.number(),
 });
 
-/** Mirrors explorer.SuggestResponse; a nil slice encodes as JSON null. */
+                                                                          
 const suggestResponseSchema = z.object({
   suggestions: z.union([z.array(suggestionSchema), z.null()]).transform((v) => v ?? []),
 });
@@ -31,7 +31,7 @@ export async function getSuggestions(req: SuggestRequest): Promise<SuggestionIte
   return fetchSuggestions("/traces/suggest", req);
 }
 
-/** Same contract as traces, served by POST /logs/suggest. */
+                                                             
 export async function getLogsSuggestions(req: SuggestRequest): Promise<SuggestionItem[]> {
   return fetchSuggestions("/logs/suggest", req);
 }

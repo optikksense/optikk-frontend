@@ -9,11 +9,11 @@ import { useMemo } from "react";
 import { TracesFacetRail } from "./components/TracesFacetRail";
 import { useTracesExplorerPage } from "./useTracesExplorerPage";
 
-/**
- * Traces list page: query header + a two-zone body (facets rail | content),
- * where content stacks summary stat pills, the trace-volume chart, and the
- * results table. Row click navigates to the trace detail page.
- */
+   
+                                                                            
+                                                                           
+                                                               
+   
 export default function TracesExplorerPage() {
   const p = useTracesExplorerPage();
 

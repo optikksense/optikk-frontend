@@ -41,6 +41,6 @@ export function pushRecent(scope: ExplorerScope, q: string): void {
   try {
     window.localStorage.setItem(key(scope), JSON.stringify(next));
   } catch {
-    // Quota exceeded or storage disabled — silent no-op.
+                                                         
   }
 }

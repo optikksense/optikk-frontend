@@ -1,5 +1,5 @@
-// Provider + category display metadata. Accent colors are data-driven (used in
-// inline styles) since they key off the provider value, not a fixed class.
+                                                                               
+                                                                           
 
 export interface ProviderMeta {
   readonly label: string;

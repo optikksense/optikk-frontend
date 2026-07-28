@@ -8,10 +8,10 @@ import {
 } from "@/features/saturation/api/databaseSlowQueriesApi";
 import { queryFingerprintId } from "@/features/saturation/utils/queryFingerprintId";
 
-// The backend has no per-query detail endpoint; resolve the fingerprint by
-// re-fetching the patterns list and matching the hash. The preview table
-// fetches the top rows by callCount, so a generous limit here always
-// contains any clicked row (see the resolution invariant in the plan).
+                                                                           
+                                                                         
+                                                                     
+                                                                       
 const DETAIL_LIMIT = 50;
 
 interface DatabaseQueryDetail {

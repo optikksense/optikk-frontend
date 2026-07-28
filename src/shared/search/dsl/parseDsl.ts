@@ -14,7 +14,7 @@ export interface ParseResult {
   readonly errors: ParseError[];
 }
 
-/** Parse a Datadog-style DSL string into explorer filters (best-effort). */
+                                                                            
 export function parseDsl(
   input: string,
   fields: readonly KnownField[] = TRACE_KNOWN_FIELDS
@@ -84,7 +84,7 @@ interface ParsedValue {
 }
 
 function parseValue(raw: string): ParsedValue | null {
-  // A quoted value is always a literal — never an operator or any-of list.
+                                                                           
   if (raw.length >= 2 && raw.startsWith('"') && raw.endsWith('"')) {
     const inner = raw.slice(1, -1);
     return inner === "" ? null : { op: "eq", value: inner };

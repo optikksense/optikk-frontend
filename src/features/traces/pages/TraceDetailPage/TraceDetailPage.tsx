@@ -53,7 +53,7 @@ function AssociatedTraceLogsSection({
 export default function TraceDetailPage() {
   const { data, stats, resolvedTraceId, traceTimeBounds, actions, layoutProps } =
     useTraceDetailPage();
-  // Page-local "active service" highlight; clicking a pill drills into that service's first span.
+                                                                                                  
   const [activeService, setActiveService] = useState<string | null>(null);
 
   const baseline = useTraceOperationBaseline(

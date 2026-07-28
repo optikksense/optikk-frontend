@@ -72,7 +72,7 @@ function flattenTree(
     }
   }
 
-  // Start traversing from root items
+                                     
   const entries = Array.isArray(data)
     ? data.map((v, i) => [String(i), v] as const)
     : Object.entries(data);
@@ -84,7 +84,7 @@ function flattenTree(
 }
 
 function JsonTreeViewComponent({ data }: Props) {
-  // Initially expand root level
+                                
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
     const initial = new Set<string>();
     const entries = Array.isArray(data)
@@ -115,7 +115,7 @@ function JsonTreeViewComponent({ data }: Props) {
   const rowVirtualizer = useVirtualizer({
     count: flatNodes.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 24, // 24px height per row
+    estimateSize: () => 24,                       
     overscan: 10,
   });
 

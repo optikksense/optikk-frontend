@@ -1,11 +1,11 @@
-/**
- * Saturation API barrel.
- *
- * Preserves the legacy `saturationApi.<method>(tenantId, ...args)` call surface
- * while delegating to the per-BE-module split files. The leading `tenantId`
- * argument is now unused — auth flows through the api client interceptor —
- * but keeping it lets us avoid touching every call site in this PR.
- */
+   
+                         
+  
+                                                                                
+                                                                            
+                                                                           
+                                                                    
+   
 import type { RequestTime } from "@/shared/api/service-types";
 
 import { getHosts } from "@shared/api/hosts";

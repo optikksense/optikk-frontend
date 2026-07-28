@@ -4,7 +4,7 @@ import { tsMs } from "@shared/utils/chartDataUtils";
 
 import { type EndpointRatePoint, getREDByEndpoint } from "@shared/api/red/redApi";
 
-// Palette for per-route lines, cycled by route order.
+                                                      
 const ROUTE_COLORS = [
   "var(--chart-1)",
   "var(--chart-2)",

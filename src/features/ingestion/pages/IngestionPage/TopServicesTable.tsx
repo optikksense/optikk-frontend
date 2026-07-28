@@ -40,7 +40,7 @@ function MixBar({ row }: { row: IngestionServiceRow }) {
   );
 }
 
-// Delta is record-based; up (more ingest, more spend) reads as caution.
+                                                                        
 function Delta({ pct }: { pct: number }) {
   if (Math.abs(pct) < 0.5) return <span className="text-foreground-muted">·</span>;
   const up = pct > 0;

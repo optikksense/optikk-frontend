@@ -14,16 +14,16 @@ interface SparklineChartProps {
   calm?: boolean;
 }
 
-/**
- *
- * @param root0
- * @param root0.data
- * @param root0.color
- * @param root0.fill
- * @param root0.width
- * @param root0.height
- * @param root0.calm
- */
+   
+  
+               
+                    
+                     
+                    
+                     
+                      
+                    
+   
 export default function SparklineChart({
   data = [],
   color = CHART_COLORS[0],

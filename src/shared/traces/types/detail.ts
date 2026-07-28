@@ -46,7 +46,7 @@ export interface SpanAttributes {
   readonly attributes: Record<string, string>;
   readonly links?: readonly SpanLink[];
 
-  // Extended LLM fields for LLM Observability span inspection
+                                                              
   readonly llmPrompt?: string | null;
   readonly llmCompletion?: string | null;
   readonly llmVendor?: string | null;

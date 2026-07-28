@@ -48,7 +48,7 @@ export interface Template {
   readonly createdAt: string;
 }
 
-// Channels ------------------------------------------------------------------
+                                                                              
 
 export async function listChannels(): Promise<Channel[]> {
   return api.get<Channel[]>(`${V1}/notifications/channels`);

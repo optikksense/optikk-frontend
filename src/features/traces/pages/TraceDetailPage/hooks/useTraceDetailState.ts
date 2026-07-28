@@ -16,7 +16,7 @@ export function useTraceDetailState() {
   const selectedTenantId = useAppStore((state) => state.selectedTenantId);
 
   const rawActiveTab = useTracesStore((s) => s.visualizationTab);
-  // Coerce any stale persisted tab (e.g. the removed "flamegraph") to a valid one.
+                                                                                   
   const activeTab: VisualizationTab =
     rawActiveTab === "servicemap" ||
     rawActiveTab === "timeline" ||

@@ -8,11 +8,11 @@ import { getServiceTopology } from "@shared/api/topology";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { useServiceSummaryQuery } from "@shared/metrics/hooks/useServiceSummaryQuery";
 
-/**
- * Fans the six panel queries that drive the Service Detail drawer. Split
- * out from `useServiceDetailDrawerModel` so the main hook stays under the
- * 200-line file budget.
- */
+   
+                                                                         
+                                                                          
+                        
+   
 export function useServiceDrawerQueries(serviceName: string) {
   const enabled = Boolean(serviceName);
   const opts = { extraKeys: [serviceName], enabled };

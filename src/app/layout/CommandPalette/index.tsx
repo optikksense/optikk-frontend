@@ -37,7 +37,7 @@ export function CommandPalette() {
     navigate: (path: string) => navigate({ to: path as string & {} }),
   };
 
-  // Toggle palette with Cmd+K or Ctrl+K
+                                        
   useHotkeys("meta+k, ctrl+k", (e) => {
     e.preventDefault();
     setOpen((o) => !o);

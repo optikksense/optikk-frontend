@@ -23,8 +23,8 @@ function bandValues(s: TimeseriesSeries, unit: IngestionUnit): readonly number[]
   return unit === "bytes" ? s.byteData : s.data;
 }
 
-// Cumulatively stack the bands and draw largest first so smaller bands paint on
-// top — uplot has no native stacking, so this fakes it with layered area fills.
+                                                                                
+                                                                                
 function stackSeries(
   series: readonly TimeseriesSeries[],
   unit: IngestionUnit

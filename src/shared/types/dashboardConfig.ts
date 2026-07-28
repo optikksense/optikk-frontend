@@ -84,14 +84,14 @@ export interface DashboardLayout {
   h: number;
 }
 
-/** Curated-endpoint widget query: points at an allowlisted GET endpoint. */
+                                                                            
 interface DashboardEndpointQuerySpec {
   method: string;
   endpoint: string;
   params?: Record<string, DashboardQueryParamValue>;
 }
 
-/** SigNoz-style builder query replayed through the metrics explorer engine. */
+                                                                               
 export interface DashboardMetricsQuerySpec {
   kind: "metrics";
   step: TimeStep;
@@ -102,7 +102,7 @@ export interface DashboardMetricsQuerySpec {
 
 export type DashboardQuerySpec = DashboardEndpointQuerySpec | DashboardMetricsQuerySpec;
 
-/** Narrows a widget query to the metrics builder variant. */
+                                                             
 export function isMetricsQuerySpec(
   query: DashboardQuerySpec | undefined
 ): query is DashboardMetricsQuerySpec {
@@ -153,7 +153,7 @@ interface ChartPanelSpecKeys {
   readonly stacked?: boolean;
   readonly color?: string;
   readonly datasetLabel?: string;
-  // Per-widget render hints for the metrics builder variant.
+                                                             
   readonly legend?: boolean;
   readonly smooth?: boolean;
 }

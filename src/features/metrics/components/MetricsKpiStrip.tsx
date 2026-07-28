@@ -23,10 +23,10 @@ interface KpiCell {
   readonly delta?: number | null;
 }
 
-/**
- * KPI strip above the chart. Every figure is derived FE-side from the primary
- * query's result series over the loaded window — no extra request.
- */
+   
+                                                                              
+                                                                   
+   
 export function MetricsKpiStrip({ primaryQuery, results, spaceAgg, unit }: MetricsKpiStripProps) {
   const cells = useMemo<KpiCell[]>(() => {
     const result = primaryQuery ? results[primaryQuery.id] : undefined;

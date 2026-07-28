@@ -6,7 +6,7 @@ import type { MetricQueryResult } from "@shared/metrics/types";
 import { buildFleetDistribution } from "../utils/fleetDistribution";
 
 interface FleetDistributionPanelProps {
-  /** A group-by-host query result; each series is treated as one host. */
+                                                                          
   readonly result: MetricQueryResult | undefined;
 }
 

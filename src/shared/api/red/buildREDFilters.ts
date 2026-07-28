@@ -8,13 +8,13 @@ export type REDFiltersParams = {
   readonly [key: string]: RequestTime | string | readonly string[] | number | boolean | undefined;
 };
 
-/**
- * Builds standard query parameters for RED endpoints, mirroring the traces
- * filter pattern.
- *
- * If single service or multiple services are selected, it formats them for
- * the backend as query filters.
- */
+   
+                                                                           
+                  
+  
+                                                                           
+                                
+   
 export function buildREDFilters(
   s: RequestTime,
   e: RequestTime,

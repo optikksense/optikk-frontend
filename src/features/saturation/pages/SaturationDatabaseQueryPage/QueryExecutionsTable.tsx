@@ -69,7 +69,7 @@ const COLUMNS: ColumnDef<QueryExecutionRow>[] = [
   },
 ];
 
-// Slowest/latest raw executions; row click opens the owning trace.
+                                                                   
 export function QueryExecutionsTable({
   rows,
   loading,

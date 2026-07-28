@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import type { ErrorGroup } from "@shared/api/errors";
 
-/** Recent (seconds-ago) last-seen values render in the error color to signal "still firing". */
+                                                                                                
 function isFreshlySeen(iso: string): boolean {
   if (!iso) return false;
   const t = new Date(iso).getTime();

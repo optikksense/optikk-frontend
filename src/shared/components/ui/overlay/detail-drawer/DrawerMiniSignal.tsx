@@ -7,7 +7,7 @@ interface DrawerMiniSignalProps {
   readonly legend?: string;
   readonly values: number[];
   readonly tone?: SparkTone;
-  /** [topTick, bottomTick] labels for the y-axis. */
+                                                     
   readonly yTicks?: readonly [string, string];
 }
 

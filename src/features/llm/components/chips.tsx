@@ -1,6 +1,6 @@
 import type { LlmTraceScore } from "../api/llmApi";
 
-// Observation-kind palette: distinct hues per span role (identity, not rank).
+                                                                              
 const OBS_META: Record<string, { label: string; color: string }> = {
   generation: { label: "GEN", color: "var(--chart-3)" },
   span: { label: "SPAN", color: "var(--chart-1)" },
@@ -23,7 +23,7 @@ export function ObsChip({ kind }: { readonly kind: string }) {
   );
 }
 
-// Trace log level → dot color. Errors and warnings stand out; default is muted.
+                                                                                
 const LEVEL_COLOR: Record<string, string> = {
   error: "var(--err)",
   warning: "var(--warn)",
@@ -41,7 +41,7 @@ export function LevelDot({ level }: { readonly level: string }) {
   );
 }
 
-// ScorePill renders numeric (mini-bar), boolean (pass/fail), or categorical.
+                                                                             
 export function ScorePill({ score }: { readonly score: LlmTraceScore }) {
   if (score.dataType === "boolean") {
     const pass = score.value >= 0.5;

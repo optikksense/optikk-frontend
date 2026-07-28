@@ -20,8 +20,8 @@ function statusForP99(p99: number): InstanceStatus {
   return "ok";
 }
 
-// Aggregate query fingerprints into per-collection rows (no backend
-// collections endpoint exists, so this is a pure client-side reduce).
+                                                                    
+                                                                      
 export function aggregateCollections(rows: SlowQueryPatternRow[]): CollectionRow[] {
   const byName = new Map<
     string,

@@ -5,7 +5,7 @@ interface DbEngineIconProps {
   readonly size?: number;
 }
 
-// Monogram tile colored by engine brand, mirroring the design's DB badge.
+                                                                          
 export function DbEngineIcon({ system, size = 30 }: DbEngineIconProps) {
   const color = engineColor(system);
   return (

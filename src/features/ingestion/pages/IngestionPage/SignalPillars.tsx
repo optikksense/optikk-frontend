@@ -20,9 +20,9 @@ function dailyAvg(value: number | undefined, days: number | undefined): number {
   return value / days;
 }
 
-// Per-signal summary cards. Logs and spans switch with the unit; the metrics
-// card keeps its cost drivers (active timeseries + datapoints), which have no
-// byte denomination — so its units stay labeled rather than blurred.
+                                                                             
+                                                                              
+                                                                     
 export function SignalPillars({ summary, unit }: Props) {
   const bytes = unit === "bytes";
   const days = summary?.daysElapsed;

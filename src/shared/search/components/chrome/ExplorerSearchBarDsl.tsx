@@ -23,17 +23,17 @@ interface Props {
   readonly disableBareFreeTextFallback?: boolean;
 }
 
-/**
- * Datadog-style single-line DSL query bar. Parses filters on every keystroke
- * for inline error feedback, pops a suggestions menu on context, applies on
- * Enter.
- *
- * Keyboard contract: typing opens the popover with nothing highlighted;
- * arrows/hover highlight; Tab accepts the highlighted (or top) suggestion;
- * Enter accepts only an explicitly highlighted suggestion, otherwise it runs
- * the search; Esc closes the popover first, then blurs the input.
- * See `parseDsl` for the accepted grammar.
- */
+   
+                                                                             
+                                                                            
+         
+  
+                                                                        
+                                                                           
+                                                                             
+                                                                  
+                                           
+   
 function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputElement>) {
   const seed = formatDsl(props.filters);
   const [showPopover, setShowPopover] = useState(false);
@@ -98,7 +98,7 @@ function DslBarLayout(p: LayoutProps) {
     <SearchField
       value={s.input}
       onChange={() => {
-        // SearchField onChange doesn't provide caret pos, so we rely on Input onChange
+                                                                                       
       }}
       aria-label="Search query"
       className="relative w-full"
@@ -172,8 +172,8 @@ function handleKeyDown(
   disableBareFreeTextFallback: boolean | undefined
 ) {
   if (e.key === "Escape") {
-    // First Esc closes the popover (and must not clear the input via
-    // SearchField's default); second Esc leaves the bar.
+                                                                     
+                                                         
     e.preventDefault();
     e.stopPropagation();
     if (showPopover) {
@@ -200,8 +200,8 @@ function handleKeyDown(
   }
   if (e.key === "Enter") {
     e.preventDefault();
-    // Enter only accepts a suggestion the user explicitly highlighted;
-    // otherwise it always runs the search.
+                                                                       
+                                           
     if (showPopover && activeOpt) {
       s.acceptSuggestion(activeOpt);
       return;
@@ -233,8 +233,8 @@ function useSyncSeedOnExternalChange(
   const [lastSeed, setLastSeed] = useState(seed);
   useEffect(() => {
     if (seed === lastSeed) return;
-    // Never clobber in-progress typing: if the input is focused and the user
-    // has edited past the previous seed, keep their text.
+                                                                             
+                                                          
     const el = inputRef.current;
     const typing = el !== null && document.activeElement === el && current !== lastSeed;
     setLastSeed(seed);

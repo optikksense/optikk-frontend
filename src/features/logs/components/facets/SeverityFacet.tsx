@@ -20,7 +20,7 @@ const SEV_TOKEN: Record<SeveritySlug, string> = {
   fatal: "var(--fatal-c)",
 };
 
-/** Severity facet — stacked distribution bar + per-level rows with toggle. */
+                                                                              
 function SeverityFacetComponent({ labels, onInclude }: Props) {
   const isActive = (label: string) => labels.includes(label.toUpperCase());
 

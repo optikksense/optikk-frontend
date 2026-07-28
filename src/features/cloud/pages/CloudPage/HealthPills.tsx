@@ -1,7 +1,7 @@
 import { HEALTH_COLOR } from "../../constants";
 import type { HealthCounts } from "../../types";
 
-// Compact healthy/degraded/unhealthy chips shared by the hero and detail views.
+                                                                                
 export function HealthPills({ health }: { health: HealthCounts }): JSX.Element {
   const pills: { key: keyof HealthCounts; label: string }[] = [
     { key: "unhealthy", label: "unhealthy" },

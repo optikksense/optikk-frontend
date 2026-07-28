@@ -6,9 +6,9 @@ import LatencyHeatmapChart, {
 import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
 import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 
-/**
- *
- */
+   
+  
+   
 export function LatencyHeatmapRenderer({
   chartConfig,
   dataSources,

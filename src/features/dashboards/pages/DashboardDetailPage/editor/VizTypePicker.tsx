@@ -20,7 +20,7 @@ interface VizTypePickerProps {
   readonly onChange: (viz: WidgetVizType) => void;
 }
 
-/** Four-way visualization selector backed by the basic metrics engine. */
+                                                                          
 export function VizTypePicker({ value, onChange }: VizTypePickerProps) {
   return (
     <div className="grid grid-cols-4 gap-2">

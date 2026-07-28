@@ -15,9 +15,9 @@ interface Props {
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
 }
 
-// Theme-aware chip tones. Strings stay fully static (no helper) so Tailwind's JIT
-// can detect the arbitrary color-mix utilities. Hues come from the theme-aware
-// semantic + OKLCH log-level tokens, so chips read correctly in light and dark.
+                                                                                  
+                                                                               
+                                                                                
 const CHIP_TONE: Record<string, string> = {
   Common:
     "border-[color-mix(in_oklch,var(--color-info),transparent_55%)] bg-[color-mix(in_oklch,var(--color-info),transparent_90%)] text-info",
@@ -48,7 +48,7 @@ function DslSearchBarWithChipsComponent(props: Props, ref: React.Ref<HTMLInputEl
   const fields = knownFieldsForScope(props.scope);
   const onRemoveAt = (idx: number) => {
     const next = props.filters.filter((_, i) => i !== idx);
-    // Keep the input in sync with the remaining chips instead of wiping it.
+                                                                            
     props.onApply(next, formatDsl(next));
   };
   return (
@@ -101,7 +101,7 @@ function Chip({ filter, tone, onRemove }: ChipProps) {
     <span
       className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[11px] ${tone}`}
     >
-      {/* Chip text is the retypeable DSL form, so what you see is what you can type. */}
+      {                                                                                 }
       <span className="max-w-[260px] truncate">{formatFilter(filter)}</span>
       <button
         type="button"

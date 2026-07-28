@@ -20,7 +20,7 @@ import { PagesRail } from "./PagesRail";
 import { WidgetCard } from "./WidgetCard";
 import { WidgetEditorModal } from "./WidgetEditorModal";
 
-// Enforced minimum auto-refresh interval for in-view widget data.
+                                                                  
 const MIN_REFRESH_MS = 30_000;
 
 function pagePayload(
@@ -51,7 +51,7 @@ export default function DashboardDetailPage() {
   const [editingWidget, setEditingWidget] = useState<Dashboard | null>(null);
   const [widgetToDelete, setWidgetToDelete] = useState<Dashboard | null>(null);
 
-  // Refresh in-view widgets on a bounded interval (one timer for the page).
+                                                                            
   useAutoRefresh({
     autoRefreshInterval: MIN_REFRESH_MS,
     onRefresh: () => void client.invalidateQueries({ queryKey: ["dashboard-widget"] }),
@@ -203,7 +203,7 @@ interface DetailHeaderProps {
   readonly onAddWidget: () => void;
 }
 
-/** Page header: favorite, inline-editable title/description, and actions. */
+                                                                             
 function DetailHeader({ page, editing, onToggleEditing, onAddWidget }: DetailHeaderProps) {
   const updatePage = useUpdateDashboardPage(page.id);
   const [name, setName] = useState(page.name);
@@ -309,7 +309,7 @@ function DetailHeader({ page, editing, onToggleEditing, onAddWidget }: DetailHea
   );
 }
 
-/** Dashed tile appended to the grid in edit mode to add another widget. */
+                                                                           
 function AddWidgetTile({ onClick }: { readonly onClick: () => void }) {
   return (
     <button

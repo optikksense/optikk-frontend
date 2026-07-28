@@ -181,7 +181,7 @@ function ConfigurableChartCardContent({
   return (
     <DashboardCardFrame titleContent={titleContent}>
       <div className="flex min-h-0 flex-1 flex-col">
-        {/* Prefer chart plot area: ~60%+ of card body; list capped so rows do not dominate */}
+        {                                                                                     }
         <div className="relative flex min-h-[58%] min-w-0 flex-1 flex-col">
           <ChartComponent {...chartProps} />
         </div>

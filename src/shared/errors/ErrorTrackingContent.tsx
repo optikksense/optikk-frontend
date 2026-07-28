@@ -9,15 +9,15 @@ import { ServiceFacetRail } from "./components/ServiceFacetRail";
 import { useErrorTracking } from "./hooks/useErrorTracking";
 
 interface ErrorTrackingContentProps {
-  /** When set, scopes to one service and hides the service facet rail + chip. */
+                                                                                 
   readonly lockedService?: string;
 }
 
-/**
- * Body shared by the standalone Error Tracking page and the service-scoped
- * Errors tab: KPI strip + search + issues table + pager. The service facet rail
- * shows only in the unscoped (page) variant.
- */
+   
+                                                                           
+                                                                                
+                                             
+   
 export function ErrorTrackingContent({ lockedService }: ErrorTrackingContentProps) {
   const navigate = useNavigate();
   const t = useErrorTracking({ lockedService });

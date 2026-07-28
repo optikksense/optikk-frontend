@@ -1,9 +1,9 @@
 import type { ExplorerFilter, ExplorerMode } from "../types/filters";
 
-/**
- * Base64-encodes a JSON-serializable value for URL transport.
- * Uses URL-safe encoding so query strings survive copy/paste.
- */
+   
+                                                              
+                                                              
+   
 function encodeBase64(value: unknown): string {
   const raw = JSON.stringify(value ?? []);
   return encodeURIComponent(btoa(unescape(encodeURIComponent(raw))));

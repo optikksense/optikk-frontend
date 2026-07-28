@@ -29,8 +29,8 @@ const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
   {
     header: "Query",
     accessorKey: "queryText",
-    // Sized so Calls/p50/p99/Total time all stay visible without scrolling;
-    // drag the handle for more room on long statements.
+                                                                            
+                                                        
     size: 320,
     minSize: 140,
     cell: ({ row: { original: row } }) => (

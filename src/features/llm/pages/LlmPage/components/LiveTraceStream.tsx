@@ -84,8 +84,8 @@ const COLUMNS: ColumnDef<LlmTrace>[] = [
   },
 ];
 
-// Trace list shared by the Applications and Traces tabs: filter segs,
-// cursor pagination and a click-to-open inline trace inspector.
+                                                                      
+                                                                
 export default function LiveTraceStream({
   service,
   onClearService,

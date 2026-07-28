@@ -4,7 +4,7 @@ import { cn } from "@shared/lib/utils";
 
 interface DrawerSectionProps {
   readonly title: ReactNode;
-  /** Optional trailing action rendered right-aligned in the section header. */
+                                                                               
   readonly action?: ReactNode;
   readonly children: ReactNode;
   readonly className?: string;

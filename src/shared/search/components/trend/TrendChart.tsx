@@ -16,7 +16,7 @@ export interface TrendChartBucket {
 
 interface TrendChartProps {
   title: string;
-  segments: readonly TrendChartSegment[]; // Ordered visually from bottom to top of the stack
+  segments: readonly TrendChartSegment[];                                                    
   data: readonly TrendChartBucket[] | undefined;
   minTimeMs?: number;
   maxTimeMs?: number;
@@ -40,8 +40,8 @@ function TrendChartComponent({
   const { timestamps, series } = useMemo(() => {
     if (!data || data.length === 0) return { timestamps: null, series: [] };
 
-    // Build cumulative series based on segment order (bottom to top).
-    // The series that encompasses all counts must be drawn first (in the background).
+                                                                      
+                                                                                      
     const tsArray: number[] = [];
     const seriesValues: number[][] = segments.map(() => []);
 

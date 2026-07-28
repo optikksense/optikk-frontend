@@ -18,14 +18,14 @@ function write(storageKey: string | undefined, sizing: ColumnSizingState): void 
   try {
     localStorage.setItem(STORAGE_PREFIX + storageKey, JSON.stringify(sizing));
   } catch {
-    // Quota or private-mode failures must not break the table.
+                                                               
   }
 }
 
-/**
- * Column widths for a resizable table, persisted per `storageKey`. Omitting the
- * key keeps widths in memory only, so callers opt into persistence explicitly.
- */
+   
+                                                                                
+                                                                               
+   
 export function useColumnSizing(storageKey?: string): {
   columnSizing: ColumnSizingState;
   onColumnSizingChange: OnChangeFn<ColumnSizingState>;

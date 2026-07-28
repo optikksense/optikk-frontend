@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { numericValue, stringValue } from "./saturationClient";
 
-// Mirrors query/internal/modules/saturation/kafka/topology models.
+                                                                   
 
 const producerNodeSchema = z.object({
   service: stringValue,
@@ -47,7 +47,7 @@ const pathwaySchema = z.object({
   errorRate: numericValue,
 });
 
-// Every slice is built with `make(..., 0, n)` server-side, so none are null.
+                                                                             
 export const kafkaTopologySchema = z.object({
   producers: z.array(producerNodeSchema),
   topics: z.array(topicNodeSchema),

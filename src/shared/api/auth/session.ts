@@ -7,36 +7,35 @@ import { useAuthStore } from "@app/store/authStore";
 
 import { stashSignupApiKey } from "./apiKeyHandoff";
 import { AuthError, type SessionPayload, type SignupParams, authApi } from "./authApi";
-import { publishSessionEvent } from "./sessionEvents";
 
-/**
- * Single owner of the session lifecycle. The access token lives only in this
- * module (never persisted); a page reload recovers it through the httpOnly
- * refresh cookie. All teardown funnels through `endSession`, so token, tenant
- * selection, query cache, and auth state can never drift.
- */
+   
+                                                                             
+                                                                           
+                                                                              
+                                                          
+   
 
-/**
- * The three outcomes of a session restore, passed unchanged to the router.
- * Only `unauthenticated` (a definitive 401) may bounce the user to `/login`;
- * `unavailable` (network/timeout/5xx) leaves any valid session intact so a
- * transient backend blip can never log an active user out.
- */
+   
+                                                                           
+                                                                             
+                                                                           
+                                                           
+   
 export type RestoreOutcome = "authenticated" | "unauthenticated" | "unavailable";
 
 let accessToken: string | null = null;
 let refreshInflight: Promise<RestoreOutcome> | null = null;
 let refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
-// Renew this long before the access token expires, so the refresh happens on a
-// healthy session rather than a burst of 401s at the expiry boundary.
+                                                                               
+                                                                      
 const PROACTIVE_REFRESH_LEAD_MS = 60_000;
 const MIN_REFRESH_DELAY_MS = 5_000;
-// After a transient refresh failure, retry soon rather than dropping the
-// session; the current token is still valid for the lead window.
+                                                                         
+                                                                 
 const TRANSIENT_RETRY_DELAY_MS = 10_000;
 
-/** Reads the `exp` claim (ms) from a JWT without verifying it, or null. */
+                                                                           
 function accessTokenExpiryMs(token: string): number | null {
   const payload = token.split(".")[1];
   if (payload == null) {
@@ -68,10 +67,10 @@ function scheduleProactiveRefresh(token: string): void {
   refreshTimer = setTimeout(runProactiveRefresh, delay);
 }
 
-// Drives the proactive refresh loop. A success reschedules itself through
-// `beginSession`; a definitive rejection has already ended the session; only a
-// transient failure needs an explicit short-delay retry so the loop survives
-// backend blips instead of logging the user out.
+                                                                          
+                                                                               
+                                                                             
+                                                 
 async function runProactiveRefresh(): Promise<void> {
   if ((await refresh()) === "unavailable") {
     clearRefreshTimer();
@@ -111,9 +110,9 @@ function endSession(): void {
   useAuthStore.getState().clearSession();
 }
 
-// Turns a refresh into the router's vocabulary. Only a definitive rejection
-// tears the session down; a transient failure returns `unavailable` and leaves
-// the still-valid session untouched.
+                                                                            
+                                                                               
+                                     
 async function doRefresh(): Promise<RestoreOutcome> {
   try {
     beginSession(await authApi.refresh());
@@ -127,9 +126,9 @@ async function doRefresh(): Promise<RestoreOutcome> {
   }
 }
 
-// Single-flight refresh: concurrent callers (boot, 401 retries, the proactive
-// timer) share one in-flight call so the backend is hit once per refresh window.
-// Short-circuits after a definitive logout to avoid hammering a dead session.
+                                                                              
+                                                                                 
+                                                                              
 function refresh(force = false): Promise<RestoreOutcome> {
   if (!force && useAuthStore.getState().status === "unauthenticated") {
     return Promise.resolve("unauthenticated");
@@ -147,7 +146,6 @@ export const session = {
 
   async login(email: string, password: string): Promise<void> {
     beginSession(await authApi.login(email, password));
-    publishSessionEvent("signed-in");
   },
 
   async signup(params: SignupParams): Promise<"verificationRequired" | "signedIn"> {
@@ -155,7 +153,6 @@ export const session = {
     if (result.kind === "signedIn") {
       beginSession(result.session);
       stashSignupApiKey(result.apiKey);
-      publishSessionEvent("signed-in");
     }
     return result.kind;
   },
@@ -164,7 +161,6 @@ export const session = {
     const { session: payload, apiKey } = await authApi.verifyEmail(token);
     beginSession(payload);
     stashSignupApiKey(apiKey);
-    publishSessionEvent("signed-in");
   },
 
   async logout(): Promise<void> {
@@ -172,7 +168,6 @@ export const session = {
       await authApi.logout(accessToken);
     } catch {}
     endSession();
-    publishSessionEvent("signed-out");
   },
 
   async forgotPassword(email: string): Promise<void> {
@@ -187,23 +182,18 @@ export const session = {
     await authApi.changePassword(currentPassword, newPassword);
   },
 
-  // For the 401-retry interceptor: hand back a token only on a real refresh; a
-  // transient failure returns null without tearing down the still-valid session.
+                                                                               
+                                                                                 
   async refreshAccessToken(): Promise<string | null> {
     return (await refresh()) === "authenticated" ? accessToken : null;
   },
 
-  // Boot entry point for the route guards. Returns the real 3-way outcome so a
-  // transient failure can be retried instead of forcing a logout.
+                                                                               
+                                                                  
   restore(options?: { readonly force?: boolean }): Promise<RestoreOutcome> {
     if (accessToken != null) {
       return Promise.resolve("authenticated");
     }
     return refresh(options?.force === true);
-  },
-
-  /** Applies an explicit logout received from another browser tab. */
-  acceptExternalLogout(): void {
-    endSession();
   },
 };

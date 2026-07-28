@@ -1,5 +1,5 @@
-// Vendor identity: fixed gen_ai.system -> label + chart token assignment.
-// Hues follow the entity, never its rank (dataviz rule).
+                                                                          
+                                                         
 const VENDOR_META: Record<string, { label: string; color: string }> = {
   openai: { label: "OpenAI", color: "var(--chart-3)" },
   anthropic: { label: "Anthropic", color: "var(--chart-2)" },
@@ -15,13 +15,13 @@ export function vendorLabel(vendor: string): string {
 
 export function vendorColor(vendor: string): string {
   if (VENDOR_META[vendor]) return VENDOR_META[vendor].color;
-  // Stable fallback: hash the name so the hue follows the vendor.
+                                                                  
   let h = 0;
   for (const c of vendor) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return VENDOR_FALLBACK_COLORS[h % VENDOR_FALLBACK_COLORS.length];
 }
 
-// Span-kind identity chips (LLM / tool / retrieval / embedding / agent).
+                                                                         
 export const OPERATION_META: Record<string, { label: string; color: string }> = {
   chat: { label: "LLM", color: "var(--chart-3)" },
   tool: { label: "Tool", color: "var(--chart-1)" },
@@ -31,14 +31,14 @@ export const OPERATION_META: Record<string, { label: string; color: string }> = 
   other: { label: "Other", color: "var(--chart-6)" },
 };
 
-// App-kind identity chips, derived server-side from the span mix.
+                                                                  
 export const KIND_META: Record<string, { label: string; color: string }> = {
   agent: { label: "agent", color: "var(--chart-5)" },
   rag: { label: "rag", color: "var(--chart-2)" },
   workflow: { label: "workflow", color: "var(--chart-6)" },
 };
 
-// Tokens/latency use shared formatNumber/formatDuration; only cost is local.
+                                                                             
 export function formatCost(n: number): string {
   if (n >= 100) return `$${Math.round(n).toLocaleString()}`;
   if (n >= 1) return `$${n.toFixed(2)}`;

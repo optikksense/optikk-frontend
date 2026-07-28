@@ -1,9 +1,9 @@
-/**
- * Structured filter — the v1 filter seam shared by logs and traces explorers.
- *
- * A future DSL will compile to the same shape (see backend `querycompiler`),
- * so FE chips / URL state / API payloads all round-trip through this type.
- */
+   
+                                                                              
+  
+                                                                             
+                                                                           
+   
 export interface ExplorerFilter {
   readonly field: string;
   readonly op: ExplorerFilterOp;
@@ -26,11 +26,11 @@ export type ExplorerFilterOp =
 
 export type ExplorerMode = "list" | "analytics";
 
-/**
- * Soft failure emitted when a filter can't be expressed on the wire.
- * Builders return these instead of dropping filters silently; the explorer
- * pages surface them under the search bar.
- */
+   
+                                                                     
+                                                                           
+                                           
+   
 export interface TranslationWarning {
   readonly code: "unsupported_op" | "unknown_field" | "duplicate_single_value";
   readonly field: string;

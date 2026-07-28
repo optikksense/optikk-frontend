@@ -5,8 +5,8 @@ import {
   getSlowQueryPatterns,
 } from "@/features/saturation/api/databaseSlowQueriesApi";
 
-// Top normalized query fingerprints for one datastore instance. Backs both
-// the Queries tab and the (client-aggregated) Collections tab.
+                                                                           
+                                                               
 const SYSTEM_QUERY_LIMIT = 100;
 
 interface SystemQueriesResult {

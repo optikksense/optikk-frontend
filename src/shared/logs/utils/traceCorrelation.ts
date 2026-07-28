@@ -1,10 +1,10 @@
 import type { LogRecord } from "../types/log";
 
-/**
- * Pulls a trace id off the LogRecord. The first-class `traceId` field wins;
- * we fall back to common OTel attribute keys because not every ingest path
- * promotes them to the top-level column.
- */
+   
+                                                                            
+                                                                           
+                                         
+   
 export function getTraceId(log: LogRecord): string | null {
   if (log.traceId) return log.traceId;
   const attrs = log.attributesString;

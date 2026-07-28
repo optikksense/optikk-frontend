@@ -54,10 +54,10 @@ function getDefaultTimeRange(): RelativeTimeRange {
   return findPreset("30m") ?? TIME_RANGES[2];
 }
 
-/**
- * Migrate old TimeRange shapes ({ value, minutes, startTime, endTime })
- * to the new discriminated union.
- */
+   
+                                                                        
+                                  
+   
 export function migrateTimeRange(value: unknown): TimeRange {
   if (!value || typeof value !== "object") {
     return getDefaultTimeRange();

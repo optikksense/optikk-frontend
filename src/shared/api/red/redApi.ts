@@ -9,13 +9,13 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export type { Comparable };
 
-// ─── Shared helpers ──────────────────────────────────────────────────
+                                                                        
 
-/**
- * Every RED response is validated. The generic on api.get is only a claim;
- * a schema is what actually catches the backend renaming or reshaping a field,
- * which is the failure mode that silently zeroes charts instead of erroring.
- */
+   
+                                                                           
+                                                                               
+                                                                             
+   
 async function getJson<S extends z.ZodTypeAny>(
   path: string,
   params: REDFiltersParams,
@@ -25,7 +25,7 @@ async function getJson<S extends z.ZodTypeAny>(
   return validateResponse(schema, await api.get<unknown>(`${V1}${path}`, { params, signal }));
 }
 
-/** Same, for the endpoints that may carry a previous-period sibling. */
+                                                                        
 async function getComparableJson<S extends z.ZodTypeAny>(
   path: string,
   params: REDFiltersParams,
@@ -41,7 +41,7 @@ async function getComparableJson<S extends z.ZodTypeAny>(
 
 const timestamped = { timestamp: z.string() };
 
-// ─── Topology (unchanged) ────────────────────────────────────────────
+                                                                        
 
 interface ServiceNode {
   readonly name: string;
@@ -79,7 +79,7 @@ export function getTopology(
   return api.get<TopologyResponse>(`${V1}/services/topology`, { params });
 }
 
-// ─── Fleet overview / catalog ────────────────────────────────────────
+                                                                        
 
 const redServiceRowSchema = z.object({
   serviceName: z.string(),
@@ -107,7 +107,7 @@ const fleetOverviewSchema = z.object({
 export type RedServiceRow = z.infer<typeof redServiceRowSchema>;
 type FleetOverview = z.infer<typeof fleetOverviewSchema>;
 
-/** The catalog wants totals and services on one flat object. */
+                                                                
 export type ServiceCatalogRedSummary = FleetOverview["totals"] & {
   readonly services: RedServiceRow[];
 };
@@ -190,7 +190,7 @@ export function getRequestAndErrorRateSeries(
   );
 }
 
-// ─── Shared RED timeseries (fleet-wide or per-service) ───────────────
+                                                                        
 
 const statusTimeseriesPointSchema = z.object({
   ...timestamped,
@@ -211,7 +211,7 @@ const endpointRatePointSchema = z.object({
   ...timestamped,
   httpRoute: z.string(),
   rps: z.number(),
-  // null for buckets with no traffic, so the chart breaks the line.
+                                                                    
   errorRate: z.number().nullable(),
   p99Ms: z.number().nullable(),
 });
@@ -267,7 +267,7 @@ const topEndpointSchema = z.object({
   p99Ms: z.number(),
 });
 
-/** Wraps a row schema in the standard cursor-paginated page shape. */
+                                                                      
 function pageOf<S extends z.ZodTypeAny>(row: S) {
   return z.object({
     results: z.array(row),
@@ -324,7 +324,7 @@ export function getTopDBQueries(
   return getComparableJson("/spans/red/top-db-queries", params, topDBQueriesPageSchema);
 }
 
-// ─── Service Detail (consolidated from serviceDetailApi.ts) ───────────
+                                                                         
 
 const serviceSummarySchema = z.object({
   serviceName: z.string(),
@@ -364,10 +364,10 @@ export function getServiceSaturationTimeseries(
   return getJson("/spans/red/saturation-timeseries", params, z.array(saturationPointSchema));
 }
 
-/**
- * Exposed so contract.test.ts can parse them against fixtures marshalled from
- * the Go response structs. Keys match the fixture names.
- */
+   
+                                                                              
+                                                         
+   
 export const redSchemas = {
   redServices: z.array(redServiceRowSchema),
   redFleetOverview: fleetOverviewSchema,

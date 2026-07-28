@@ -13,7 +13,7 @@ export function RequestRateSignal({ serviceName }: { serviceName: string }) {
 
   const { timestamps, series } = useMemo(() => pivotByRoute(rows, (r) => r.rps, false), [rows]);
 
-  // Window-average rps summed across all routes.
+                                                 
   const avg = useMemo(() => {
     if (timestamps.length === 0) return 0;
     let total = 0;

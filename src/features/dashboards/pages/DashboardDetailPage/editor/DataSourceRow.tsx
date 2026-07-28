@@ -23,7 +23,7 @@ const SOURCES: ReadonlyArray<{
   { label: "RUM", icon: MousePointerClick, enabled: false },
 ];
 
-/** Data-source row; only Metrics is wired to the query engine for now. */
+                                                                          
 export function DataSourceRow() {
   return (
     <div className="grid grid-cols-3 gap-2">

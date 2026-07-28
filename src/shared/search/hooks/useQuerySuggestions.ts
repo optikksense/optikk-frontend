@@ -19,12 +19,12 @@ interface Args {
 const FIVE_MIN_MS = 5 * 60 * 1000;
 const DEBOUNCE_MS = 150;
 
-/**
- * Fetches top-K values for a field given the current prefix. Prefix is
- * debounced 150ms so rapid typing doesn't fire a request per keystroke.
- * Cache is keyed on a 5-min time bucket so unrelated typing doesn't thrash
- * the query cache either.
- */
+   
+                                                                       
+                                                                        
+                                                                           
+                          
+   
 export function useQuerySuggestions({ scope, field, prefix, enabled }: Args) {
   const timeRange = useTimeRange();
   const { startTime, endTime } = useMemo(() => resolveTimeBounds(timeRange), [timeRange]);

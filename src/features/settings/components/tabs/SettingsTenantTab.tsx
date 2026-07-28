@@ -54,11 +54,11 @@ export default function SettingsTenantTab({
   );
 }
 
-/**
- * API keys are stored hashed server-side, so a key is visible exactly once:
- * in the response that minted it. This section is the only place a key can
- * be regenerated; there is no way to re-display an existing key.
- */
+   
+                                                                            
+                                                                           
+                                                                 
+   
 function ApiKeySection({ isAdmin }: { readonly isAdmin: boolean }): JSX.Element {
   const [newKey, setNewKey] = useState<string | null>(null);
   const [rotating, setRotating] = useState(false);

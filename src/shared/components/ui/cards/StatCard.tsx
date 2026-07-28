@@ -31,9 +31,9 @@ interface StatCardProps {
   visuals?: StatCardVisuals;
 }
 
-/**
- * Reusable metric card for displaying a single statistic with trend.
- */
+   
+                                                                     
+   
 const StatCard = React.memo(function StatCard({ metric, trend = {}, visuals = {} }: StatCardProps) {
   const { title, value, formatter, suffix, description } = metric;
   const { value: trendValue, inverted: trendInverted = false } = trend;

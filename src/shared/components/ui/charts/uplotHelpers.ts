@@ -1,7 +1,7 @@
 import { resolveThemeColor } from "@shared/utils/chartTheme";
 import uPlot from "uplot";
 
-/** Default axis styling matching the app's dark theme. */
+                                                          
 export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
   const gridColor = resolveThemeColor("--chart-grid", "rgba(255,255,255,0.10)");
   const labelColor = resolveThemeColor("--chart-axis", "#b9c0cf");
@@ -83,7 +83,7 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
   ];
 }
 
-/** Formats axis tick numbers and suppresses duplicate consecutive/identical formatted labels. */
+                                                                                                 
 export function formatUniqueAxisValues(
   vals: number[],
   formatter?: (val: number) => string
@@ -129,12 +129,12 @@ export function uBars(label: string, color: string): uPlot.Series {
 
 export interface ThresholdLine {
   value: number;
-  /** Theme token (e.g. "var(--color-warning)") or literal color. */
+                                                                    
   color: string;
   dash?: number[];
 }
 
-/** Draws horizontal reference lines (warn/alert thresholds) across the plot. */
+                                                                                
 export function thresholdLinesPlugin(thresholds: ThresholdLine[]): uPlot.Plugin {
   const lines = thresholds.map((t) => ({
     value: t.value,

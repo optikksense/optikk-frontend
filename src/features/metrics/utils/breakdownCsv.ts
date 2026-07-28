@@ -1,7 +1,7 @@
 import type { MetricQueryResult } from "@shared/metrics/types";
 import { computeSeriesStats } from "@shared/metrics/utils/seriesStats";
 
-/** Tag keys present across a query's series, in stable first-seen order. */
+                                                                            
 export function collectTagKeys(result: MetricQueryResult | undefined): string[] {
   if (!result) return [];
   const keys: string[] = [];
@@ -18,7 +18,7 @@ function escapeCsv(field: string): string {
   return field;
 }
 
-/** Serialize the group-by breakdown (one row per series) to CSV text. */
+                                                                         
 export function buildBreakdownCsv(result: MetricQueryResult | undefined): string {
   if (!result || result.series.length === 0) return "";
   const tagKeys = collectTagKeys(result);
@@ -42,7 +42,7 @@ export function buildBreakdownCsv(result: MetricQueryResult | undefined): string
   return lines.join("\n");
 }
 
-/** Trigger a client-side download of CSV text as a file. */
+                                                            
 export function downloadCsv(filename: string, csv: string): void {
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);

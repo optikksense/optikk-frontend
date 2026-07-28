@@ -24,7 +24,7 @@ const GROUP_BY_SEGMENTS: ReadonlyArray<SegmentOption<TopSeriesGroupBy>> = [
 
 const VISIBLE_ROWS = 8;
 
-/** Right-hand panel ranking the primary query's series by current value. */
+                                                                            
 export function TopSeriesPanel({ result, unit }: TopSeriesPanelProps) {
   const [groupBy, setGroupBy] = useState<TopSeriesGroupBy>("host");
   const [expanded, setExpanded] = useState(false);

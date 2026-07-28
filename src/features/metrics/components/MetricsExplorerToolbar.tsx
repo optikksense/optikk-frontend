@@ -56,7 +56,7 @@ export function MetricsExplorerToolbar({
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      {/* Left: view type + toggles */}
+      {                               }
       <div className="flex flex-wrap items-center gap-3">
         <MetricSegmentedControl
           options={CHART_TYPE_SEGMENTS}

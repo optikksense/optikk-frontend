@@ -1,6 +1,6 @@
 import { formatNumber } from "@shared/utils/formatters";
 
-/** Compact numeric formatting for KPI / table stat cells. */
+                                                             
 export function formatStatValue(value: number | null): string {
   if (value == null || Number.isNaN(value)) return "—";
   return formatNumber(value);

@@ -29,7 +29,7 @@ export default function Header() {
     onRefresh: triggerRefresh,
   });
 
-  // Bidirectional URL sync
+                           
   useTimeRangeURL();
 
   const handleRefresh = () => {

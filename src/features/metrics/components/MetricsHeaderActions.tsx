@@ -12,8 +12,8 @@ interface MetricsHeaderActionsProps {
   readonly primaryResult: MetricQueryResult | undefined;
 }
 
-/** Deep link to the monitors feature, pre-seeding the source + metric, mirroring
- * the traces CreateMonitorButton pattern (`/monitors/new?from=...`). */
+                                                                                 
+                                                                        
 function createMonitorHref(primaryQuery: MetricQueryDefinition | undefined): string {
   const params = new URLSearchParams({ from: "metrics" });
   if (primaryQuery?.metricName) params.set("metric", primaryQuery.metricName);

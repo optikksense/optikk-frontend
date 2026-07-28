@@ -14,14 +14,14 @@ interface UseTracesExplorerArgs {
   readonly include?: readonly ExplorerIncludeFlag[];
   readonly limit?: number;
   readonly enabled?: boolean;
-  /** Always-applied scope (e.g. service lock) merged ahead of URL filters. */
+                                                                              
   readonly baseFilters?: readonly ExplorerFilter[];
 }
 
-/**
- * Composes `useExplorerState` (URL snapshot) + `useExplorerQuery` for the
- * traces scope. Pages consume this to get rows, cursor, filters, mode.
- */
+   
+                                                                          
+                                                                       
+   
 export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
   const state = useExplorerState();
   const include = useMemo<readonly ExplorerIncludeFlag[]>(
@@ -43,8 +43,8 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
     fetcher: query,
   });
 
-  // The list response now carries trace-level aggregates directly; the query
-  // service folds enrichment into /traces/query in one round trip.
+                                                                             
+                                                                   
   const enrichedTraces = useMemo(() => explorerQuery.data?.traces ?? [], [explorerQuery.data]);
 
   const facetsQuery = useExplorerSubQuery({
@@ -86,11 +86,11 @@ export function useTracesExplorer(args: UseTracesExplorerArgs = {}) {
   return {
     state,
     list,
-    query: explorerQuery, // keep for compat temporarily
-    facetsQuery, // keep for compat
-    trendQuery, // keep for compat
-    traces: enrichedTraces, // keep for compat
-    nextCursor: explorerQuery.data?.nextCursor ?? null, // keep for compat
+    query: explorerQuery,                               
+    facetsQuery,                   
+    trendQuery,                   
+    traces: enrichedTraces,                   
+    nextCursor: explorerQuery.data?.nextCursor ?? null,                   
     summary,
     facets: facetsQuery.data,
     trend: trendQuery.data,

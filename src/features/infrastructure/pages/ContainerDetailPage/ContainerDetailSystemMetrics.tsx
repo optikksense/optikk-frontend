@@ -5,7 +5,7 @@ import { type ChartDef, SeriesChartCard, availableCharts } from "../../component
 
 interface ContainerDetailSystemMetricsProps {
   readonly pod: string;
-  /** Metric groups the pod reports; null while the overview is loading. */
+                                                                           
   readonly availableMetrics: readonly string[] | null;
 }
 

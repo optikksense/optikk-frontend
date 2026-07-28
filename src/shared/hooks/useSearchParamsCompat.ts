@@ -1,13 +1,13 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef } from "react";
 
-/**
- * A compatibility shim to support the legacy react-router-dom
- * [URLSearchParams, setSearchParams] tuple interface during migration to TanStack Router.
- *
- * Note: Since TanStack uses strict typed search params, we drop to { strict: false }
- * temporarily while we incrementally adopt full route-level search schemas.
- */
+   
+                                                              
+                                                                                          
+  
+                                                                                     
+                                                                            
+   
 export function useSearchParamsCompat(): [
   URLSearchParams,
   (

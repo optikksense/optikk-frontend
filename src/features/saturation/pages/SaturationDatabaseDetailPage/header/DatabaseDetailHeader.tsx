@@ -14,7 +14,7 @@ import {
   instanceStatus,
 } from "@/features/saturation/pages/SaturationDatabasePage/databaseInstanceModel";
 
-// Short, data-derived reason for a non-healthy badge (no backend issue string).
+                                                                                
 function statusDetail(row: DatastoreSystemRow): string | null {
   const status = instanceStatus(row);
   if (status === "ok") return null;

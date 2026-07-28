@@ -3,8 +3,8 @@ import { useState } from "react";
 
 import { useAuthTenant } from "@app/store/authStore";
 
-// Shows remaining trial days for tenants still in 'trialing'. Dismissible for
-// the current session; reappears on reload until the tenant converts.
+                                                                              
+                                                                      
 export function TrialBanner() {
   const tenant = useAuthTenant();
   const [dismissed, setDismissed] = useState(false);

@@ -76,11 +76,11 @@ function getRowDisplayConfig(
   };
 }
 
-/**
- * Reusable component for displaying top endpoints below charts
- * @param props Component props.
- * @returns Rendered endpoint table for the selected metric.
- */
+   
+                                                               
+                                
+                                                            
+   
 export default function TopEndpointsList({
   title,
   endpoints = [],

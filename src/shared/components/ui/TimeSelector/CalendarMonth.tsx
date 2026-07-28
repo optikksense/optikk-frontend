@@ -57,7 +57,7 @@ export function CalendarMonth({
 
   return (
     <div>
-      {/* Day headers */}
+      {                 }
       <div className="mb-1 grid grid-cols-7">
         {DAYS.map((d) => (
           <div key={d} className="text-center font-medium text-[11px] text-foreground-tertiary">

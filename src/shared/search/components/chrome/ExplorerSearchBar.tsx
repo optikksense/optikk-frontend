@@ -37,11 +37,11 @@ function FilterChip({
   );
 }
 
-/**
- * Sticky search: chips render existing structured filters; freetext input
- * submits a `body:contains` (logs) / `operationName:contains` (traces)
- * at the page-level handler. Cross-feature imports are not allowed here.
- */
+   
+                                                                          
+                                                                       
+                                                                         
+   
 export const ExplorerSearchBar = forwardRef<HTMLInputElement, Props>(function ExplorerSearchBar(
   { filters, onChangeFilters, onSubmitFreeText, placeholder = "Search..." },
   ref

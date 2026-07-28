@@ -1,8 +1,8 @@
-/**
- * Attempts to parse a string as JSON. Returns the parsed object if valid,
- * `null` otherwise. Used by LogBodyCell / ExpandedLogRow to decide whether
- * to render a JSON tree or plain text.
- */
+   
+                                                                          
+                                                                           
+                                       
+   
 export function tryParseJson(text: string): Record<string, unknown> | unknown[] | null {
   const trimmed = text.trim();
   if (

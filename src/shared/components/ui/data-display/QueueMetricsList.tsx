@@ -83,11 +83,11 @@ const getVal = (type: QueueMetricsListType, q: QueueMetricsItem) => {
   return q.avgQueueDepth ?? 0;
 };
 
-/**
- * Renders queue metric rows for queue depth and throughput charts.
- * @param props Component props.
- * @returns Rendered queue metrics table.
- */
+   
+                                                                   
+                                
+                                         
+   
 export default function QueueMetricsList({
   title,
   queues = [],

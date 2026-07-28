@@ -2,7 +2,7 @@ import type { LatencyHeatmapDataPoint } from "@shared/components/ui/charts/speci
 
 import type { MetricQueryResult } from "@shared/metrics/types";
 
-/** A latency band: hosts whose value falls in [min, max) land in this band. */
+                                                                               
 interface LatencyBand {
   readonly label: string;
   readonly min: number;

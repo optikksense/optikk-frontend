@@ -5,7 +5,7 @@ import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { getLatencyBySystem } from "@/features/saturation/api/databaseLatencyApi";
 import type { LatencySeriesPoint } from "@/features/saturation/api/databaseSeriesSchemas";
 
-// Per-system p95 trend, keyed by db.system, for the list-row sparklines.
+                                                                         
 function groupP95BySystem(rows: LatencySeriesPoint[]): Map<string, number[]> {
   const byKey = new Map<string, Array<{ ts: number; v: number }>>();
   for (const row of rows) {

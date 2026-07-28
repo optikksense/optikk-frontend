@@ -6,12 +6,12 @@ interface Props {
   readonly className?: string;
 }
 
-/**
- * Inline match-highlighting for free-text searches. Splits `text` around
- * case-insensitive occurrences of `match` and wraps each occurrence in a
- * `<mark>` tinted with `--color-primary-subtle-18`. Returns the text
- * unchanged if `match` is empty or absent.
- */
+   
+                                                                         
+                                                                         
+                                                                     
+                                           
+   
 export const HighlightedText = memo(function HighlightedText({ text, match, className }: Props) {
   const parts = useMemo(() => splitOnMatch(text, match), [text, match]);
   if (!match || parts.length === 1) {

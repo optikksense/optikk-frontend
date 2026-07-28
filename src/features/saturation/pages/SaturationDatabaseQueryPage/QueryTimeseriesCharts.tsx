@@ -34,7 +34,7 @@ function Empty() {
   );
 }
 
-// Latency (avg + p99 lines) and call-volume (bars) charts from one series.
+                                                                           
 export function QueryTimeseriesCharts({ timeseries }: { timeseries: QueryTimeseriesPoint[] }) {
   const series = useMemo(() => buildSeries(timeseries), [timeseries]);
   const empty = series.timestamps.length === 0;

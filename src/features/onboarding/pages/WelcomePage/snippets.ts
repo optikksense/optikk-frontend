@@ -6,8 +6,8 @@ export interface Snippet {
 
 const KEY_PLACEHOLDER = "<YOUR_API_KEY>";
 
-// Builds the collector-config snippets for each deployment target. When the
-// key is unavailable (page reload), a placeholder keeps the snippets valid.
+                                                                            
+                                                                            
 export function buildSnippets(endpoint: string, apiKey: string | null): Snippet[] {
   const key = apiKey ?? KEY_PLACEHOLDER;
   return [

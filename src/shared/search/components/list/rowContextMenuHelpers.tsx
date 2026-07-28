@@ -8,10 +8,10 @@ interface FilterPushArgs {
   readonly setFilters: (next: readonly ExplorerFilter[]) => void;
 }
 
-/** Append "Filter by …" + "Exclude …" entries for `field=value` to `items`,
- *  using `Filter`/`FilterX` icons and a truncated value preview so the menu
- *  doesn't overflow on long strings. Mutates `items` in place — call sites
- *  build the list left-to-right and don't share it. */
+                                                                            
+                                                                            
+                                                                           
+                                                       
 export function pushIncludeExcludeFilter(
   items: ContextMenuEntry[],
   args: FilterPushArgs,

@@ -66,7 +66,7 @@ export default function MetricsExplorerPage() {
         actions={<MetricsHeaderActions primaryQuery={primaryQuery} primaryResult={primaryResult} />}
       />
 
-      {/* Query builder */}
+      {                   }
       <PageSurface padding="lg" className="relative z-[40] overflow-visible">
         <MetricQueryBuilder
           queries={queries}

@@ -5,7 +5,7 @@ export interface PaletteActionContext {
 }
 
 export interface PaletteAction {
-  id: string; // unique, stable - used for hotkey binding
+  id: string;                                            
   label: string;
   keywords: string[];
   icon?: React.ReactNode;

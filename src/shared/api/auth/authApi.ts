@@ -3,11 +3,11 @@ import { z } from "zod";
 
 import { API_CONFIG } from "@config/apiConfig";
 
-/**
- * Pure HTTP layer for the auth endpoints. Uses a bare axios instance (not the
- * shared client) so these requests never enter the Bearer/tenant interceptors
- * and a 401 here can never trigger a recursive refresh.
- */
+   
+                                                                              
+                                                                              
+                                                        
+   
 
 const tenantSchema = z.object({
   id: z.number(),
@@ -33,12 +33,12 @@ export type SessionPayload = z.infer<typeof sessionPayloadSchema>;
 
 const envelopeSchema = z.object({ success: z.literal(true), data: z.unknown() });
 
-/**
- * Every auth failure is exactly one of two kinds. Only a `rejected` failure —
- * the server definitively said no (HTTP 401) — may tear a session down. An
- * `unavailable` failure (network, timeout, 5xx, malformed response) is transient
- * and must be retried, never treated as a logout.
- */
+   
+                                                                              
+                                                                           
+                                                                                 
+                                                  
+   
 export type AuthErrorKind = "rejected" | "unavailable";
 
 export class AuthError extends Error {
@@ -69,7 +69,7 @@ function serverMessage(error: unknown): string | null {
   return typeof message === "string" && message.length > 0 ? message : null;
 }
 
-/** Maps any thrown value to an AuthError; a 401 is the only `rejected` case. */
+                                                                                
 function toAuthError(error: unknown, fallback: string): AuthError {
   if (error instanceof AuthError) {
     return error;
@@ -79,7 +79,7 @@ function toAuthError(error: unknown, fallback: string): AuthError {
   return new AuthError(serverMessage(error) ?? fallback, kind);
 }
 
-/** Runs an auth request, normalizing every failure into an AuthError. */
+                                                                         
 async function request(url: string, body: unknown, fallback: string): Promise<unknown> {
   try {
     const response = await http.post(url, body);
@@ -94,14 +94,14 @@ function unwrapSession(responseBody: unknown): SessionPayload {
   const candidate = envelope.success ? envelope.data.data : responseBody;
   const payload = sessionPayloadSchema.safeParse(candidate);
   if (!payload.success) {
-    // Treated as transient so a contract drift never logs an active user out.
+                                                                              
     console.warn("[authApi] unexpected session payload", payload.error.issues);
     throw new AuthError("Unexpected response from auth server", "unavailable");
   }
   return payload.data;
 }
 
-// Signup's envelope carries the tenant's apiKey alongside the session.
+                                                                       
 const signupKeySchema = z.object({ apiKey: z.string().min(1) });
 
 function extractApiKey(responseBody: unknown): string {

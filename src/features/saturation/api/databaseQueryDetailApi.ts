@@ -26,7 +26,7 @@ const queryDetailSummarySchema = z.object({
   avgMs: numericValue,
   totalTimeMs: numericValue,
   avgRows: nullableNumber,
-  // Always initialised to []ServiceCalls{} server-side.
+                                                        
   services: z.array(serviceCallsSchema),
 });
 

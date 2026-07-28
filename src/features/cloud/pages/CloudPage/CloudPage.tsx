@@ -21,7 +21,7 @@ export default function CloudPage(): JSX.Element {
     ...providers.map((p) => ({ key: p.provider, label: providerMeta(p.provider).label })),
   ];
 
-  // Fall back to the all-clouds view if a provider tab is no longer present.
+                                                                             
   const active = tab !== ALL_TAB && !providers.some((p) => p.provider === tab) ? ALL_TAB : tab;
   const activeSummary = providers.find((p) => p.provider === active);
 

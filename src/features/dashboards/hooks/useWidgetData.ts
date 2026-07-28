@@ -15,25 +15,25 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 const STALE_MS = 30_000;
 
 interface WidgetDataResult {
-  /** Attach to the panel wrapper; data fetches only once this is in view. */
+                                                                             
   ref: ReturnType<typeof useInView<HTMLDivElement>>["ref"];
   dataSources: DashboardDataSources;
   isLoading: boolean;
   error: ApiErrorShape | null;
 }
 
-/** Stable cache key for the active time range (collapses identical refreshes). */
+                                                                                  
 function rangeKey(timeRange: ReturnType<typeof useTimeRange>["timeRange"]): string {
   return timeRange.kind === "relative"
     ? timeRange.preset
     : `${timeRange.startMs}-${timeRange.endMs}`;
 }
 
-/**
- * Governed widget executor: resolves the curated endpoint from spec.query,
- * fetches only when the panel scrolls into view, dedups identical queries via
- * react-query, and shares the page-global time range for maximal cache reuse.
- */
+   
+                                                                           
+                                                                              
+                                                                              
+   
 export function useWidgetData(spec: DashboardPanelSpec): WidgetDataResult {
   const { ref, inView } = useInView<HTMLDivElement>({ rootMargin: "100px", once: true });
   const { selectedTenantId, timeRange, getTimeRange } = useTimeRange();

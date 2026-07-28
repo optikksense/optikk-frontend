@@ -4,10 +4,10 @@ import dagre from "dagre";
 export const NODE_WIDTH = 200;
 export const NODE_HEIGHT = 104;
 
-/**
- * Compute deterministic left-to-right node positions using dagre.
- * Returns new Node objects with positions set.
- */
+   
+                                                                  
+                                               
+   
 export function layoutTopology(nodes: Node[], edges: Edge[]): Node[] {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));

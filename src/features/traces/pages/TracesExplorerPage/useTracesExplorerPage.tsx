@@ -6,12 +6,12 @@ import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
 import type { TracesFacetBucket } from "@shared/api/traces/types";
 import { useTracesExplorerModel } from "@shared/traces/hooks/useTracesExplorerModel";
 
-/**
- * Page-level orchestration for the traces explorer. Wraps the shared
- * `useTracesExplorerModel` (query + pagination + trend) with page-only concerns:
- * facet groups and `/`-focuses-search keyboard handling. The service-scoped
- * Traces tab consumes the model directly, without this chrome.
- */
+   
+                                                                     
+                                                                                 
+                                                                            
+                                                               
+   
 export function useTracesExplorerPage() {
   const model = useTracesExplorerModel({ includeFacets: true });
   const { state, facets } = model;

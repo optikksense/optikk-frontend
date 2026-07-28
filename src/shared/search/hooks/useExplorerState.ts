@@ -5,13 +5,13 @@ import { useSearchParamsCompat } from "@shared/hooks/useSearchParamsCompat";
 import type { ExplorerFilter, ExplorerMode } from "../types/filters";
 import { decodeFilters, encodeFilters, parseMode } from "../utils/urlState";
 
-/**
- * URL-synced snapshot shared by all explorers (logs, traces).
- *
- * Migration from `useURLFilters`: This synchronous hook replaces the legacy
- * timer-debounced `useURLFilters` system. Migrate legacy pages to this hook
- * when overhauling their search architectures.
- */
+   
+                                                              
+  
+                                                                            
+                                                                            
+                                               
+   
 interface ExplorerStateSnapshot {
   readonly filters: readonly ExplorerFilter[];
   readonly mode: ExplorerMode;

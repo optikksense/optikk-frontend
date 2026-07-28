@@ -7,7 +7,7 @@ export interface RotateApiKeyResponse {
   readonly id: number;
   readonly name: string;
   readonly active: boolean;
-  /** Raw key — present only in this response and never shown again. */
+                                                                       
   readonly apiKey: string;
   readonly apiKeyPrefix: string;
 }

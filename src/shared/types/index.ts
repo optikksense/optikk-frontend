@@ -3,7 +3,7 @@ export * from "./dashboardConfig";
 
 export interface RelativeTimeRange {
   kind: "relative";
-  preset: string; // e.g. '5m', '1h', '7d'
+  preset: string;                         
   label: string;
   minutes: number;
 }

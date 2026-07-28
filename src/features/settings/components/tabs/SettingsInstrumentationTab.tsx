@@ -9,12 +9,12 @@ import {
   buildLanguageGuides,
 } from "../../instrumentation/guides";
 
-/**
- * Instrumentation guide: how to send telemetry from a user's own services into
- * their Optikk tenant. Static, per-language content plus a Kubernetes Collector
- * path. The OTLP endpoint is resolved live; the API key is a placeholder (keys
- * are hashed and shown once, so we link users to the Tenant tab to mint one).
- */
+   
+                                                                               
+                                                                                
+                                                                               
+                                                                              
+   
 export default function SettingsInstrumentationTab(): JSX.Element {
   const endpoint = useMemo(resolveOtlpEndpoint, []);
   const guides = useMemo(() => buildLanguageGuides(endpoint), [endpoint]);
@@ -46,7 +46,7 @@ export default function SettingsInstrumentationTab(): JSX.Element {
         />
       </div>
 
-      {/* Language selector */}
+      {                       }
       <div className="flex flex-wrap gap-1 border-border border-b">
         {guides.map((g) => (
           <button
@@ -79,7 +79,7 @@ export default function SettingsInstrumentationTab(): JSX.Element {
         </div>
       )}
 
-      {/* Kubernetes Collector */}
+      {                          }
       <div className="mt-lg border-t pt-md">
         <div className="mb-xs flex items-center gap-xs">
           <Boxes size={16} className="text-muted" />

@@ -1,8 +1,8 @@
-/**
- * Deterministic service → color mapping. Same service name always returns the
- * same color so the service/trace list is visually stable across refreshes.
- * Palette mirrors the 12-hue set Datadog uses for service topology coloring.
- */
+   
+                                                                              
+                                                                            
+                                                                             
+   
 const SERVICE_PALETTE = [
   "#4285f4",
   "#9b59b6",

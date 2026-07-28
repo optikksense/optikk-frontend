@@ -7,7 +7,7 @@ interface DrawerShellProps {
   readonly onClose: () => void;
   readonly width?: number | string;
   readonly children: ReactNode;
-  /** Optional sticky footer (action bar) pinned below the scroll region. */
+                                                                            
   readonly footer?: ReactNode;
 }
 

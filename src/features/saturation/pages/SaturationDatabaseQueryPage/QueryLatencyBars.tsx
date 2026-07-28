@@ -8,7 +8,7 @@ interface Bar {
   readonly color: string;
 }
 
-// Horizontal percentile bars (design's latency distribution), scaled to p99.
+                                                                             
 export function QueryLatencyBars({ row }: { row: SlowQueryPatternRow }) {
   const bars: Bar[] = [
     { label: "p50", value: row.p50Ms ?? 0, color: "var(--color-info)" },

@@ -42,7 +42,7 @@ function getBounds(timeRange: TimeRange): TimeRangeBounds {
   return { startTime, endTime };
 }
 
-/** Stable key for cache invalidation */
+                                        
 function rangeKey(timeRange: TimeRange): string {
   if (timeRange.kind === "relative") return timeRange.preset;
   return `${timeRange.startMs}-${timeRange.endMs}`;

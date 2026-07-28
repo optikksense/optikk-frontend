@@ -3,9 +3,9 @@ export interface StackFrame {
   file: string;
 }
 
-/**
- * Parses raw stacktrace strings into structured frames, supporting both Ruby and general (Node/V8) formats.
- */
+   
+                                                                                                            
+   
 export function parseStackFrames(stacktrace?: string, limit = 4): StackFrame[] {
   if (!stacktrace) return [];
 

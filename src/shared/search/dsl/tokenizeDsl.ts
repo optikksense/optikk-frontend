@@ -5,7 +5,7 @@ export interface Token {
   readonly offset: number;
   readonly length: number;
   readonly raw: string;
-  /** For kv tokens: already-split sides (operator marker like `-` stays part of key). */
+                                                                                         
   readonly key?: string;
   readonly value?: string;
 }

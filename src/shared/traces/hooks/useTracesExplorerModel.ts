@@ -15,12 +15,12 @@ interface UseTracesExplorerModelArgs {
   readonly includeFacets?: boolean;
 }
 
-/**
- * Content-level orchestration shared by the standalone Traces explorer and the
- * service-scoped Traces tab: bundled query + keyset cursor pagination + trend
- * bucketing + row navigation. Page-only concerns (facet groups, context menu,
- * search focus) live in `useTracesExplorerPage`, which wraps this.
- */
+   
+                                                                               
+                                                                              
+                                                                              
+                                                                   
+   
 export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
   const includeFacets = args.includeFacets ?? true;
   const include = useMemo<readonly ExplorerIncludeFlag[]>(
@@ -46,7 +46,7 @@ export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
     [setCustomTimeRange]
   );
 
-  // Changing the filter set invalidates the keyset cursor; reset pagination too.
+                                                                                 
   const filtersJson = useMemo(() => JSON.stringify(state.filters), [state.filters]);
   useEffect(() => {
     if (filtersJson) {

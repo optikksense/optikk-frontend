@@ -17,7 +17,7 @@ export function StatCardsGridRenderer({
   const { data: services, rawData } = useDashboardData(chartConfig, dataSources);
 
   const summary = useMemo(() => {
-    // If backend returns a single summary object it's often in rawData (not data array)
+                                                                                        
     if (rawData && typeof rawData === "object" && !Array.isArray(rawData)) {
       const s = rawData as Record<string, unknown>;
       const totalRequests = Number(s.totalRequests ?? 0);

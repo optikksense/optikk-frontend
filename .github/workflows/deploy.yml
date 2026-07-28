@@ -12,8 +12,8 @@ jobs:
   publish:
     needs: checks
     runs-on: ubuntu-latest
-    # A healthy multi-arch build finishes in ~4 minutes; anything longer is a
-    # hung runner. Fail fast instead of holding :latest hostage for 6 hours.
+                                                                             
+                                                                            
     timeout-minutes: 30
     permissions:
       contents: write
@@ -22,11 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # required to count commits since VERSION last changed
+          fetch-depth: 0                                                       
 
-      # MAJOR.MINOR come from the repo-root VERSION file; PATCH auto-bumps by
-      # the number of commits since VERSION was last touched. Bump VERSION to
-      # start a new MINOR/MAJOR series.
+                                                                             
+                                                                             
+                                       
       - name: Resolve version
         id: v
         run: |
@@ -39,9 +39,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Idempotent so re-running a failed/cancelled job doesn't die on an
-          # already-pushed tag; -f only ever re-points a tag for this commit's
-          # own version number.
+                                                                             
+                                                                              
+                               
           git tag -f v${{ steps.v.outputs.tag }}
           git push -f origin v${{ steps.v.outputs.tag }}
 

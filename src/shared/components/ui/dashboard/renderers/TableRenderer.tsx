@@ -11,9 +11,9 @@ import { buildDashboardDrawerSearch } from "../utils/dashboardDrawerState";
 
 import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
-/**
- *
- */
+   
+  
+   
 export function TableRenderer({
   chartConfig,
   dataSources,

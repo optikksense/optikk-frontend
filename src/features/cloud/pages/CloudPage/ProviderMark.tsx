@@ -1,5 +1,5 @@
-// Abstract, non-trademarked provider marks (ported from the design). These are
-// deliberately not the official AWS/GCP/Azure logos.
+                                                                               
+                                                     
 
 interface ProviderMarkProps {
   provider: string;

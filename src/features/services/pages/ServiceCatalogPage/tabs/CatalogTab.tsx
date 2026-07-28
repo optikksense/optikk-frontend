@@ -32,7 +32,7 @@ function applyFilters(rows: CatalogRow[], search: string, status: StatusFilter):
   });
 }
 
-// Drawer seeds its summary from snake_case keys; map the camelCase row across.
+                                                                               
 function toDrawerInitialData(row: CatalogRow | null): Record<string, unknown> | null {
   if (!row) return null;
   return {

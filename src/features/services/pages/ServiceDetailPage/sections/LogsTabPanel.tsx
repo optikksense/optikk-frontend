@@ -5,10 +5,10 @@ import { LogDetailDrawer } from "@shared/logs/components/detail/LogDetailDrawer"
 import { useLogsExplorer } from "@shared/logs/hooks/useLogsExplorer";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 
-/**
- * Service-scoped Logs tab: the same explorer content (stat pills + trend chart +
- * table + detail drawer) as the standalone page, locked to this service.
- */
+   
+                                                                                 
+                                                                         
+   
 export function LogsTabPanel({ serviceName }: { serviceName: string }) {
   const baseFilters = useMemo<readonly ExplorerFilter[]>(
     () => [{ field: "serviceName", op: "eq", value: serviceName }],

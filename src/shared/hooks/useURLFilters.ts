@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Dispatch, SetStateAction } from "react";
 
-/** A structured filter chip from ObservabilityQueryBar. */
+                                                           
 export interface StructuredFilter {
   readonly field: string;
   readonly operator: string;
@@ -110,10 +110,10 @@ function decodeStructuredFiltersParam(raw: string | null): StructuredFilter[] {
   return filters;
 }
 
-/**
- * @deprecated Use `useExplorerState` instead for modern explorer pages.
- * This legacy timer-debounced filter system is currently only used by metrics.
- */
+   
+                                                                        
+                                                                               
+   
 export function useURLFilters(config: URLFilterConfig): {
   values: URLFilterValues;
   setters: URLFilterSetters;

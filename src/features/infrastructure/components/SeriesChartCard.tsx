@@ -2,7 +2,7 @@ import { Card } from "@shared/components/primitives/ui";
 
 import InfraMultiSeriesChart from "./InfraMultiSeriesChart";
 
-/** One chartable metric group served by a detail-page series endpoint. */
+                                                                          
 export interface ChartDef<G extends string = string> {
   readonly group: G;
   readonly title: string;
@@ -10,7 +10,7 @@ export interface ChartDef<G extends string = string> {
   readonly format: "percentage" | "bytes" | "number";
 }
 
-/** Filters chart defs to groups the entity reports; null = still loading. */
+                                                                             
 export function availableCharts<G extends string>(
   charts: readonly ChartDef<G>[],
   availableMetrics: readonly string[] | null
@@ -25,7 +25,7 @@ interface SeriesChartCardProps {
   readonly def: ChartDef;
 }
 
-/** Chart card over a `{timeBucket, series, value}` series endpoint. */
+                                                                       
 export function SeriesChartCard({ endpoint, queryKeyPrefix, def }: SeriesChartCardProps) {
   return (
     <Card padding="md" className="min-h-[280px] border-border">

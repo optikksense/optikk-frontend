@@ -28,7 +28,7 @@ interface DataTableConfig<TData> {
 }
 
 interface DataTableResize {
-  /** Persists widths under this key; omit to keep them for the session only. */
+                                                                                
   storageKey?: string;
 }
 
@@ -40,17 +40,17 @@ export interface DataTableProps<TData, TValue> {
   };
   pagination?: DataTablePagination;
   config?: DataTableConfig<TData>;
-  /** Presence enables drag-to-resize column headers. */
+                                                        
   resize?: DataTableResize;
 }
 
-// TanStack assigns this width to any column without an explicit `size`, so it
-// doubles as the "author set no width" sentinel in the non-resizable layout.
+                                                                              
+                                                                             
 const DEFAULT_COLUMN_SIZE = 150;
 
-/**
- * Standard shadcn/ui DataTable wrapper with virtualization.
- */
+   
+                                                            
+   
 function DataTableInner<TData, TValue>({
   data,
   config = {},

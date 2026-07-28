@@ -8,7 +8,7 @@ interface Props {
   readonly groups: ErrorFacetGroup[];
 }
 
-/** Human labels for the facet dimension keys returned by the backend. */
+                                                                         
 const FACET_LABELS: Record<string, string> = {
   serviceVersion: "service.version",
   environment: "env",

@@ -15,7 +15,7 @@ import { type SettingsTab, useSettingsTab } from "./useSettingsTab";
 import { useAuthStore } from "@app/store/authStore";
 import { useShallow } from "zustand/react/shallow";
 
-/** A tab whose content is supplied by the route layer (e.g. Ingestion). */
+                                                                           
 export interface SettingsExtraTab {
   key: string;
   label: string;
@@ -27,11 +27,11 @@ interface SettingsPageProps {
   extraTabs?: readonly SettingsExtraTab[];
 }
 
-/**
- * Settings page. The Members tab is admin-only (tenant-scoped role). `extraTabs`
- * lets the route layer inject cross-feature panels (e.g. Ingestion) without a
- * feature-to-feature import.
- */
+   
+                                                                                 
+                                                                              
+                             
+   
 export default function SettingsPage({ extraTabs = [] }: SettingsPageProps) {
   const { tab, setTab } = useSettingsTab();
 
@@ -52,7 +52,7 @@ export default function SettingsPage({ extraTabs = [] }: SettingsPageProps) {
     ...extraTabs.map(({ key, label, icon }) => ({ key, label, icon })),
   ];
 
-  // Guard against a stale selection if the user is not an admin.
+                                                                 
   const active = tab === "members" && !isAdmin ? "tenant" : tab;
   const activeExtraTab = extraTabs.find((t) => t.key === active);
 

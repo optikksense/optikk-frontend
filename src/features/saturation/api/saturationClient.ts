@@ -7,8 +7,8 @@ import { API_CONFIG } from "@config/apiConfig";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-// No saturation response field is `omitempty` on the Go side, so these are
-// required. Absence is contract drift and should surface, not default to zero.
+                                                                           
+                                                                               
 export const numericValue = z.number();
 export const integerValue = z.number().int();
 export const stringValue = z.string();

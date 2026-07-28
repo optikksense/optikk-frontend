@@ -19,8 +19,8 @@ function errorMessage(err: unknown, fallback: string): string {
   return fallback;
 }
 
-// Drives the wizard footer: save (create or update) + test. `editId` switches
-// the surface into edit mode; testing requires a saved monitor id.
+                                                                              
+                                                                   
 export function useWizardSubmit(editId: number | undefined) {
   const navigate = useNavigate();
   const updateMutation = useUpdateMonitor(editId ?? -1);

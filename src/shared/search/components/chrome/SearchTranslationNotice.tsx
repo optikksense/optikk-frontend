@@ -7,11 +7,11 @@ interface Props {
   readonly warnings: readonly TranslationWarning[];
 }
 
-/**
- * Dismissible notice listing filters that parsed but could not be applied to
- * the query. Dismissal is keyed on the warning set, so a changed filter set
- * resurfaces the notice.
- */
+   
+                                                                             
+                                                                            
+                         
+   
 function SearchTranslationNoticeComponent({ warnings }: Props) {
   const key = warnings.map((w) => `${w.code}:${w.field}:${w.message}`).join("|");
   const [dismissedKey, setDismissedKey] = useState<string | null>(null);

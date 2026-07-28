@@ -60,7 +60,7 @@ const BADGE_TONE: Record<TypeBadge, string> = {
   BOOL: "text-[var(--debug-c)] border-[color-mix(in_oklch,var(--debug-c),transparent_70%)]",
 };
 
-/** Datadog-class popover for the DSL search bar. Sectioned, badged, with footer. */
+                                                                                    
 function QuerySuggestionsComponent(p: Props) {
   if (!p.loading && p.options.length === 0) return null;
   return (

@@ -15,12 +15,12 @@ import {
   queryLlmTraces,
 } from "../api/llmApi";
 
-// Shared page context: selected tenant + resolved time window + refresh tick.
+                                                                              
 export function useLlmRange() {
   const timeRange = useTimeRange();
   const tenantId = useTenantId();
   const refreshKey = useRefreshKey();
-  // Relative ranges must be resolved again when a manual refresh ticks.
+                                                                        
   const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
   return { tenantId, refreshKey, startTime, endTime };
 }

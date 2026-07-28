@@ -46,14 +46,14 @@ function decodeSuggest(value: string): { prefix: string; value: string } | null 
   return null;
 }
 
-/**
- * State + derived suggestion data for the DSL search bar. Keeps the React
- * component lean — it only renders.
- */
+   
+                                                                          
+                                    
+   
 export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
   const [input, setInput] = useState(initial);
   const [caret, setCaret] = useState(initial.length);
-  // -1 = nothing highlighted, so Enter submits instead of accepting.
+                                                                     
   const [activeIdx, setActiveIdx] = useState(-1);
   const knownFields = useMemo(() => knownFieldsForScope(scope), [scope]);
 

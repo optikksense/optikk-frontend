@@ -1,10 +1,10 @@
-/**
- * Utility functions for formatting data
- */
+   
+                                        
+   
 
-/**
- * Numeric thresholds used across formatter helpers.
- */
+   
+                                                    
+   
 const ONE_THOUSAND = 1000;
 const ONE_MINUTE_MS = 60_000;
 const ONE_DAY_HOURS = 24;

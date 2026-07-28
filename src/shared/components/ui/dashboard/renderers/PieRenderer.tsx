@@ -7,9 +7,9 @@ import { useDashboardData } from "../hooks/useDashboardData";
 
 import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
-/**
- *
- */
+   
+  
+   
 export function PieRenderer({
   chartConfig,
   dataSources,

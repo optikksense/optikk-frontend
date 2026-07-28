@@ -7,9 +7,9 @@ import { ROUTES } from "@/shared/constants/routes";
 
 import type { QueryDetailView } from "./viewModel";
 
-// Same static threshold the Database hub uses for its "degraded" label
-// (P95_DEGRADED_MS in SaturationDatabasePage). Not a real SLO — the backend
-// has no /v1/slo source — so the badge is labelled as a plain p99 heuristic.
+                                                                       
+                                                                            
+                                                                             
 const P99_HIGH_MS = 1000;
 
 function Breadcrumb() {

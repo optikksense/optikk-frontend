@@ -14,7 +14,7 @@ interface WidgetPreviewPanelProps {
   readonly onStepChange: (step: TimeStep) => void;
 }
 
-/** Right column: title, step, query echo, and the live WYSIWYG preview. */
+                                                                           
 export function WidgetPreviewPanel({
   state,
   onTitleChange,
@@ -59,7 +59,7 @@ export function WidgetPreviewPanel({
   );
 }
 
-/** Compact summary of the first active query for the preview header. */
+                                                                        
 function queryEcho(state: WidgetEditorState): string {
   const active = state.queries.find((q) => q.metricName);
   if (!active) return "Select a metric to preview";

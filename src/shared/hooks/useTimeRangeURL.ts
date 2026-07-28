@@ -11,7 +11,7 @@ const PARAM_FROM = "from";
 const PARAM_TO = "to";
 const PARAM_TZ = "tz";
 
-/** Matches "now-Xm", "now-Xh", "now-Xd" */
+                                           
 const RELATIVE_RE = /^now-(\d+)(m|h|d)$/;
 
 function presetToUrlValue(preset: string): string {
@@ -74,25 +74,25 @@ export function timeRangeToUrlParams(r: TimeRange): { from: string; to: string }
   return { from: String(r.startMs), to: String(r.endMs) };
 }
 
-/** A snapshot of the time-range-relevant URL params. */
+                                                        
 export interface UrlTimeState {
   from: string | null;
   to: string | null;
   tz: string | null;
 }
 
-/** The URL params store->URL sync should write, or null if the URL already matches. */
+                                                                                       
 export interface UrlWrite {
   from: string;
   to: string;
   tz: string | null;
 }
 
-/**
- * Pure decision: what (if anything) store->URL sync must write.
- * Returns null when the URL already reflects the store — the guard that keeps
- * the effect idempotent.
- */
+   
+                                                                
+                                                                              
+                         
+   
 export function resolveUrlWrite(
   timeRange: TimeRange,
   timezone: string,
@@ -106,10 +106,10 @@ export function resolveUrlWrite(
   return { from: params.from, to: params.to, tz: expectedTz };
 }
 
-/**
- * Pure decision: what (if anything) URL->store sync must write.
- * Returns null when the URL is invalid or the store already matches it.
- */
+   
+                                                                
+                                                                        
+   
 export function resolveStoreWrite(timeRange: TimeRange, url: UrlTimeState): TimeRange | null {
   const parsed = parseUrlTimeRange(url.from, url.to);
   if (!parsed) return null;
@@ -149,15 +149,15 @@ function applyUrlWrite(
   );
 }
 
-/**
- * Keeps the time range in sync between the app store and the URL.
- *
- * The two directional effects deliberately depend only on their OWN source and
- * read the other via a ref / getState, never via a render-closure value. Cross-
- * depending on both sources makes the effects fire on each other's writes and
- * oscillate forever (store and URL are always one render apart), which freezes
- * the tab on every time-range change.
- */
+   
+                                                                  
+  
+                                                                               
+                                                                                
+                                                                              
+                                                                               
+                                      
+   
 export function useTimeRangeURL(): void {
   const [searchParams, setSearchParams] = useSearchParams();
   const timeRange = useTimeRange();
@@ -165,15 +165,15 @@ export function useTimeRangeURL(): void {
   const setTimeRange = useAppStore((s) => s.setTimeRange);
   const setTimezone = useAppStore((s) => s.setTimezone);
 
-  // Latest searchParams for comparison inside the store->URL effect without
-  // making that effect re-run when the URL changes.
+                                                                            
+                                                    
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
 
   const initialized = useRef(false);
 
-  // 1. Mount hydration: the URL wins over the persisted store on first load.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount only
+                                                                             
+                                                                                    
   useEffect(() => {
     const url = readUrl(searchParams);
     const parsed = parseUrlTimeRange(url.from, url.to);
@@ -185,18 +185,18 @@ export function useTimeRangeURL(): void {
       if (write) applyUrlWrite(setSearchParams, write);
     }
     initialized.current = true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+                                                           
   }, []);
 
-  // 2. Store -> URL: fires only on store changes (not on URL changes).
+                                                                       
   useEffect(() => {
     if (!initialized.current) return;
     const write = resolveUrlWrite(timeRange, timezone, readUrl(searchParamsRef.current));
     if (write) applyUrlWrite(setSearchParams, write);
   }, [timeRange, timezone, setSearchParams]);
 
-  // 3. URL -> Store: fires only on URL changes (browser back/forward, hydration).
-  //    Reads the store via getState so store changes never re-trigger this.
+                                                                                  
+                                                                            
   useEffect(() => {
     if (!initialized.current) return;
     const url = readUrl(searchParams);

@@ -4,7 +4,7 @@ import { formatNumber } from "@shared/utils/formatters";
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 
 export interface ErrorsKpis {
-  /** Sum of error counts over the volume series in the selected range. */
+                                                                          
   readonly totalErrors: number;
 
   readonly totalErrorsSeries: number[];

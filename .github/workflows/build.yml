@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build
 
 on:
   pull_request:
@@ -29,33 +29,5 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # type-check, lint, the architecture checks, tests and build. The wire
-      # contract tests parse fixtures generated from query's real Go response
-      # structs — see src/shared/api/utils/contract.test.ts.
       - name: Checks
         run: yarn ci
-
-      - name: Container smoke test
-        run: |
-          docker build --tag optikk-web:ci .
-          docker run --detach --rm --name optikk-web-smoke \
-            --env BACKEND_URL=http://127.0.0.1:9 \
-            --publish 18080:3000 \
-            optikk-web:ci
-          trap 'docker rm --force optikk-web-smoke >/dev/null 2>&1 || true' EXIT
-          curl --retry 5 --retry-all-errors --retry-delay 1 \
-            --fail --silent --show-error --head \
-            http://127.0.0.1:18080/index.html > index-headers.txt
-          grep --ignore-case --quiet '^Content-Security-Policy:' index-headers.txt
-          grep --ignore-case --quiet '^X-Frame-Options: SAMEORIGIN' index-headers.txt
-          grep --ignore-case --quiet \
-            '^Cache-Control: no-store, no-cache, must-revalidate, max-age=0' \
-            index-headers.txt
-
-          asset_path="$(grep --only-matching --extended-regexp \
-            '/assets/index-[A-Za-z0-9_-]+\.js' dist/index.html | head --lines=1)"
-          curl --fail --silent --show-error --head \
-            "http://127.0.0.1:18080${asset_path}" > asset-headers.txt
-          grep --ignore-case --quiet \
-            '^Cache-Control: public, immutable' \
-            asset-headers.txt

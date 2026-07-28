@@ -14,7 +14,7 @@ interface UPlotChartProps {
   height?: number;
   fillHeight?: boolean;
   className?: string;
-  /** Pass a shared uPlot.SyncPubSub instance to synchronize cursors across charts */
+                                                                                     
   syncKey?: uPlot.SyncPubSub;
 
   onTimeBrush?: (startMs: number, endMs: number) => void;

@@ -5,8 +5,8 @@ import {
   formatRelativeTime,
 } from "@shared/utils/formatters";
 
-// Shared formatters for the Service Detail page. Wraps standard formatters
-// so number rendering matches design specifications consistently.
+                                                                           
+                                                                  
 
 export function fmtNum(n: number | null | undefined): string {
   if (n == null || !Number.isFinite(n)) return "—";

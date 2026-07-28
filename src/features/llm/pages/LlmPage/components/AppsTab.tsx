@@ -42,7 +42,7 @@ const LATENCY_COLORS: Record<string, string> = {
   p99: "var(--chart-5)",
 };
 
-// Sparklines only render with two or more points.
+                                                  
 function spark(values?: number[] | null): number[] | undefined {
   return values && values.length > 1 ? values : undefined;
 }

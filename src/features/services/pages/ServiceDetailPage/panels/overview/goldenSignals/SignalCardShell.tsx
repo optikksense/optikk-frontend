@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** Shared chart height for the four Golden Signal cards. */
+                                                            
 export const SIGNAL_CHART_HEIGHT = 150;
 
 export function SignalLegend({ children }: { children: ReactNode }) {

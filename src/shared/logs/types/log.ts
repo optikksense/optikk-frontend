@@ -1,9 +1,9 @@
-/**
- * `LogRecord` is the canonical row returned by `POST /api/v1/logs/query`.
- * Backend source: `internal/modules/logs/shared/models/models.go`. Attributes
- * land as typed maps per the ClickHouse logs schema; the UI keeps them loose
- * so it can surface them without hot-coupling ceremony.
- */
+   
+                                                                          
+                                                                              
+                                                                             
+                                                        
+   
 export interface LogRecord {
   readonly id: string;
   readonly timestamp: string;

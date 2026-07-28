@@ -51,9 +51,9 @@ function LogRowComponent({ row, searchTerm, isSelected, onClick, onContextMenu }
   const tz = useTimezone();
   const traceId = getTraceId(row);
 
-  // Collapse newlines so load-generator separators / multi-line bodies stay
-  // on a single row, and surface a visible placeholder for empty bodies so
-  // the row keeps a stable visual presence.
+                                                                            
+                                                                           
+                                            
   const displayBody = useMemo(() => {
     let rawBody = row.body ?? "";
     if (rawBody.length > 500) {

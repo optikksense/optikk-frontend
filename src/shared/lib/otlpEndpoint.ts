@@ -1,8 +1,8 @@
-/**
- * Resolves the OTLP ingest endpoint shown to users. Prefers an explicit
- * build-time value, else derives it from the current origin (app./api.* ->
- * ingest.*), falling back to the local ingest port for dev.
- */
+   
+                                                                        
+                                                                           
+                                                            
+   
 export function resolveOtlpEndpoint(): string {
   const fromEnv = import.meta.env.VITE_OTLP_ENDPOINT;
   if (fromEnv != null && fromEnv.length > 0) {

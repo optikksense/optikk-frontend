@@ -5,7 +5,7 @@ import { resolveThemeColor } from "@shared/utils/chartTheme";
 type ChartMarkerKind = "deployment" | "incident" | "annotation";
 
 export interface ChartMarker {
-  /** Unix-seconds. Match uPlot's x-scale unit. */
+                                                  
   readonly atSeconds: number;
   readonly label?: string;
   readonly kind?: ChartMarkerKind;

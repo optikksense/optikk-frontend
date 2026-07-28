@@ -16,10 +16,10 @@ export interface ErrorGroup {
   readonly sampleTraceId: string;
 }
 
-/**
- * Group-level identity + aggregates. Per-occurrence details (stacktrace, message,
- * traceId, request context) come from {@link getErrorGroupLatestOccurrence}.
- */
+   
+                                                                                  
+                                                                             
+   
 export interface ErrorGroupDetail {
   readonly groupId: string;
   readonly serviceName: string;

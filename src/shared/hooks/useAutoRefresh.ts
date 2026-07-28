@@ -13,10 +13,10 @@ interface UseAutoRefreshResult {
   triggerRefresh: () => void;
 }
 
-/**
- * Encapsulates manual/interval refresh timers and "last refreshed" label state.
- * @param options Hook options.
- */
+   
+                                                                                
+                               
+   
 export function useAutoRefresh({
   autoRefreshInterval,
   onRefresh,

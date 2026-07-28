@@ -15,8 +15,8 @@ const KINDS = [
   { key: "agent", pick: (a: LlmApp) => a.agentSpans, billed: false },
 ] as const;
 
-// Right-rail bars: what the apps' requests actually do, summed client-side
-// from the already-loaded apps list.
+                                                                           
+                                     
 export default function SpanBreakdownRail({ apps }: { readonly apps: LlmApp[] }) {
   const rows = useMemo(() => {
     const sums = KINDS.map((k) => ({

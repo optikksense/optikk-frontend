@@ -21,7 +21,7 @@ function peakDate(date: string | undefined): string {
   }).format(new Date(`${date}T00:00:00Z`));
 }
 
-// Three data-backed tiles, denominated in the active unit (records or volume).
+                                                                               
 export function IngestionKpiStrip({ summary, unit }: Props) {
   const bytes = unit === "bytes";
   const total = bytes ? summary?.totals.bytes : summary?.totals.records;

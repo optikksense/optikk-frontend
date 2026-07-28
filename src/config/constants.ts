@@ -1,7 +1,7 @@
-/**
- * Application Configuration
- * Centralized configuration for the entire React application
- */
+   
+                            
+                                                             
+   
 
 export const TIME_RANGES: import("@shared/types").RelativeTimeRange[] = [
   { kind: "relative", label: "Last 5 minutes", preset: "5m", minutes: 5 },

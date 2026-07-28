@@ -25,7 +25,7 @@ function fmtDuration(ms: number): string {
   return ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${Math.round(ms)}ms`;
 }
 
-/** Recent error traces of the group — each row opens the full trace detail. */
+                                                                               
 export function TracesPanel({
   traces,
   loading,

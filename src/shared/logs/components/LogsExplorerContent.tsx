@@ -26,11 +26,11 @@ interface LogsExplorerContentProps {
   readonly explorer: ReturnType<typeof useLogsExplorer>;
 }
 
-/**
- * Presentational body shared by the standalone Logs explorer and the
- * service-scoped Logs tab: stat pills + trend chart + table. Detail drawer is
- * owned by the caller (it sits outside the explorer layout).
- */
+   
+                                                                     
+                                                                              
+                                                             
+   
 export function LogsExplorerContent({ explorer }: LogsExplorerContentProps) {
   const { state, list, summary, trend } = explorer;
   const timeRange = useTimeRange();

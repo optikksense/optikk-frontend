@@ -10,7 +10,7 @@ export interface CatalogAggregate {
   readonly healthy: number;
   readonly unhealthy: number;
   readonly weightedP99Ms: number;
-  /** Fractional change vs the comparison window (null when no prior data). */
+                                                                              
   readonly rpsDeltaPct: number | null;
   readonly p99DeltaPct: number | null;
 }

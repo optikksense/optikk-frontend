@@ -39,7 +39,7 @@ function MetaStat({ label, value, sub }: { label: string; value: string; sub?: s
   );
 }
 
-/** Error-volume bars, one per timeseries bucket, scaled to the window's peak. */
+                                                                                 
 function OccurrenceTimeline({ counts }: { counts: number[] }) {
   const max = Math.max(1, ...counts);
   return (

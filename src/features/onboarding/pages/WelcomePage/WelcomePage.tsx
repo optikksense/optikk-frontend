@@ -13,7 +13,7 @@ import { buildSnippets } from "./snippets";
 
 export function WelcomePage() {
   const navigate = useNavigate();
-  // Read the one-time signup key on mount; it is cleared after this.
+                                                                     
   const [apiKey] = useState<string | null>(() => takeSignupApiKey());
   const endpoint = useMemo(resolveOtlpEndpoint, []);
   const snippets = useMemo(() => buildSnippets(endpoint, apiKey), [endpoint, apiKey]);

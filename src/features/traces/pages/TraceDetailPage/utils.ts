@@ -8,10 +8,10 @@ export interface TraceTimeBounds {
   endMs?: number;
 }
 
-/**
- * Scans the span list once to find the min startTime and max endTime in
- * millis. Invalid/missing timestamps are skipped, not treated as zero.
- */
+   
+                                                                        
+                                                                       
+   
 export function computeTraceTimeBounds(spans: readonly SpanLike[]): TraceTimeBounds {
   if (spans.length === 0) return { startMs: undefined, endMs: undefined };
 

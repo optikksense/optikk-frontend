@@ -76,7 +76,7 @@ export default function HostsTab() {
     const needle = q.trim().toLowerCase();
     if (!needle) return nodes;
 
-    // Parse query search filters like role: or status: (both real signals).
+                                                                            
     if (needle.includes(":")) {
       const [key, val] = needle.split(":");
       const tagVal = val.trim();

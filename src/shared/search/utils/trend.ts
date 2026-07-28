@@ -1,12 +1,12 @@
 import type { TrendBucket } from "../components/trend/TrendHistogramStrip";
 import type { ExplorerTrendBucket } from "../types/queries";
 
-/**
- * Converts the backend ExplorerTrendBucket shape into the
- * TrendHistogramStrip's neutral {ts, counts} shape. Parses RFC-ish
- * timeBucket strings into epoch ms; falls back to sequential ordering
- * when the string is malformed so the chart still renders.
- */
+   
+                                                          
+                                                                   
+                                                                      
+                                                           
+   
 export function toTrendBuckets(
   backend: readonly ExplorerTrendBucket[] | undefined
 ): readonly TrendBucket[] {

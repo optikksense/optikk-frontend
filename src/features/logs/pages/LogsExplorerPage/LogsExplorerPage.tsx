@@ -48,10 +48,10 @@ function buildValueSuggestions(
   return suggestions;
 }
 
-/**
- * Main logs explorer page — composes all zones: toolbar, facets, trend chart,
- * table, and detail panel. Matches the DOM shape of TracesExplorerPage.
- */
+   
+                                                                              
+                                                                        
+   
 export default function LogsExplorerPage() {
   const explorer = useLogsExplorer();
   const { state, facets } = explorer;

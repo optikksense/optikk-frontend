@@ -10,7 +10,7 @@ interface MetricsState {
   syncTooltips: boolean;
   setSyncTooltips: (sync: boolean) => void;
 
-  // Chart view toggles (design: Markers / Legend / Smooth + Y-axis scale).
+                                                                           
   showMarkers: boolean;
   setShowMarkers: (show: boolean) => void;
   showLegend: boolean;

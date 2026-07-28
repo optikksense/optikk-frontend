@@ -1,12 +1,12 @@
 import type { LlmSeries } from "../api/llmApi";
 
 export interface AlignedSeries {
-  // uPlot x-axis is epoch-seconds.
+                                   
   timestamps: number[];
   values: Map<string, Array<number | null>>;
 }
 
-// Aligns keyed API series onto one shared time axis (nulls where absent).
+                                                                          
 export function alignSeries(series: LlmSeries[]): AlignedSeries {
   const bucketSet = new Set<number>();
   for (const s of series) {

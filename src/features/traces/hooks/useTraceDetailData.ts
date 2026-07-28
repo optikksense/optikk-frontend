@@ -14,7 +14,7 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     () => searchParams.get("span") || null
   );
 
-  // Sync span from URL on mount
+                                
   useEffect(() => {
     const spanFromUrl = searchParams.get("span");
     if (spanFromUrl) setSelectedSpanId(spanFromUrl);
