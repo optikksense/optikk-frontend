@@ -1,7 +1,8 @@
 import { BarChart3 } from "lucide-react";
 import { useMemo } from "react";
 
-import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell, PageSurface } from "@shared/components/ui/layout/PageShell";
 
 import { MetricQueryBuilder } from "@shared/metrics/components/MetricQueryBuilder/MetricQueryBuilder";
 import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";

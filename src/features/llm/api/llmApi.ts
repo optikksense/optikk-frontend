@@ -5,50 +5,7 @@ import { z } from "zod";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-const llmAppSchema = z.object({
-  service: z.string(),
-  kind: z.string().nullish(),
-  vendor: z.string(),
-  primaryModel: z.string(),
-  llmSpans: z.number(),
-  toolSpans: z.number(),
-  retrievalSpans: z.number(),
-  embeddingSpans: z.number(),
-  agentSpans: z.number(),
-  totalSpans: z.number(),
-  errorRate: z.number(),
-  p50Ms: z.number(),
-  p95Ms: z.number(),
-  p99Ms: z.number(),
-  inputTokens: z.number(),
-  outputTokens: z.number(),
-  cost: z.number(),
-  trend: z.array(z.number()).nullish(),
-});
-export type LlmApp = z.infer<typeof llmAppSchema>;
-
-const appsResponseSchema = z.object({ apps: z.array(llmAppSchema).nullish() });
-
-const pointSchema = z.object({ t: z.number(), value: z.number() });
-const seriesSchema = z.object({ key: z.string(), points: z.array(pointSchema).nullish() });
-const timeseriesResponseSchema = z.object({ series: z.array(seriesSchema).nullish() });
-export type LlmSeries = z.infer<typeof seriesSchema>;
-
-const costRowSchema = z.object({
-  key: z.string(),
-  vendor: z.string().optional(),
-  llmSpans: z.number(),
-  inputTokens: z.number(),
-  outputTokens: z.number(),
-  cost: z.number(),
-});
-export type LlmCostRow = z.infer<typeof costRowSchema>;
-const costResponseSchema = z.object({
-  groupBy: z.string(),
-  rows: z.array(costRowSchema).nullish(),
-});
-
-export const traceScoreSchema = z.object({
+const traceScoreSchema = z.object({
   name: z.string(),
   dataType: z.string(),
   value: z.number(),
@@ -152,7 +109,6 @@ const overviewWindowSchema = z.object({
   p99Ms: z.number(),
   cost: z.number(),
 });
-export type LlmOverviewWindow = z.infer<typeof overviewWindowSchema>;
 
 const overviewSeriesSchema = z.object({
   timestamps: z.array(z.number()).nullish(),
@@ -162,7 +118,6 @@ const overviewSeriesSchema = z.object({
   p95Ms: z.array(z.number()).nullish(),
   cost: z.array(z.number()).nullish(),
 });
-export type LlmOverviewSeries = z.infer<typeof overviewSeriesSchema>;
 
 const overviewResponseSchema = z.object({
   current: overviewWindowSchema,
@@ -179,38 +134,6 @@ interface RangeParams {
 export async function getLlmOverview(range: RangeParams): Promise<LlmOverview> {
   const res = await api.get<unknown>(`${BASE}/llm/overview`, { params: range });
   return validateResponse(overviewResponseSchema, res);
-}
-
-export async function getLlmApps(range: RangeParams): Promise<LlmApp[]> {
-  const res = await api.get<unknown>(`${BASE}/llm/apps`, { params: range });
-  const data = validateResponse(appsResponseSchema, res);
-  return data.apps ?? [];
-}
-
-export type LlmTimeseriesMetric = "tokens_by_vendor" | "latency" | "spend";
-
-export async function getLlmTimeseries(
-  metric: LlmTimeseriesMetric,
-  range: RangeParams
-): Promise<LlmSeries[]> {
-  const res = await api.get<unknown>(`${BASE}/llm/timeseries`, {
-    params: { metric, ...range },
-  });
-  const data = validateResponse(timeseriesResponseSchema, res);
-  return data.series ?? [];
-}
-
-export type LlmCostGroupBy = "service" | "vendor" | "model";
-
-export async function getLlmCostBreakdown(
-  groupBy: LlmCostGroupBy,
-  range: RangeParams
-): Promise<LlmCostRow[]> {
-  const res = await api.get<unknown>(`${BASE}/llm/cost/breakdown`, {
-    params: { groupBy, ...range },
-  });
-  const data = validateResponse(costResponseSchema, res);
-  return data.rows ?? [];
 }
 
 export interface LlmTracesRequest extends RangeParams {

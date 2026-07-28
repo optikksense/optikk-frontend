@@ -1,7 +1,8 @@
 import { Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
-import { Popover, Select } from "@shared/components/primitives/ui";
+import { Popover } from "@shared/components/primitives/ui/popover";
+import { Select } from "@shared/components/primitives/ui/select";
 import { cn } from "@shared/lib/utils";
 
 import { useMetricTags } from "@shared/metrics/hooks/useMetricTags";

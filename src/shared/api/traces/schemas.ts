@@ -177,21 +177,3 @@ export const traceErrorGroupSchema = z.object({
 export type TraceErrorGroup = z.infer<typeof traceErrorGroupSchema>;
 
 /** Domain models for the service-detail recent-traces list, built client-side. */
-const traceSummarySchema = z.object({
-  totalTraces: z.number().default(0),
-  errorTraces: z.number().default(0),
-  avgDuration: z.number().default(0),
-  p50Duration: z.number().default(0),
-  p95Duration: z.number().default(0),
-  p99Duration: z.number().default(0),
-});
-
-const tracesResponseSchema = z.object({
-  traces: z.array(traceRecordSchema),
-  hasMore: z.boolean().optional(),
-  nextCursor: z.string().optional(),
-  limit: z.number().optional(),
-  summary: traceSummarySchema.optional(),
-});
-
-export type TracesResponse = z.infer<typeof tracesResponseSchema>;

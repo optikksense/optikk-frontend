@@ -1,5 +1,5 @@
 import type { TraceRecord } from "@shared/api/traces/schemas";
-import { Skeleton } from "@shared/components/primitives/ui";
+import { Skeleton } from "@shared/components/primitives/ui/skeleton";
 import type { RelatedTrace, SpanAttributes, SpanEvent } from "@shared/traces/types/detail";
 import { computeSpanTiming } from "@shared/traces/utils/timing";
 import { memo, useMemo } from "react";

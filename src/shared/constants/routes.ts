@@ -50,5 +50,3 @@ export const ROUTES = {
 
   settings: "/settings",
 } as const;
-
-export type AppRoutePath = (typeof ROUTES)[keyof typeof ROUTES];

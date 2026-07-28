@@ -1,4 +1,4 @@
-import { Select } from "@shared/components/primitives/ui";
+import { Select } from "@shared/components/primitives/ui/select";
 
 import { AGGREGATION_OPTIONS } from "@shared/metrics/constants";
 import type { MetricAggregation } from "@shared/metrics/types";

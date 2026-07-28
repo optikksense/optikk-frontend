@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 
 import { APP_COLORS } from "@config/colorLiterals";
-import { HealthIndicator } from "@shared/components/ui";
+import HealthIndicator from "@shared/components/ui/cards/HealthIndicator";
 import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
 import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 import { buildServiceDrawerSearch } from "@shared/components/ui/drawers/serviceDrawerState";

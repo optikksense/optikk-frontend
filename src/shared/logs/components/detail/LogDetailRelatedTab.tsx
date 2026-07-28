@@ -1,4 +1,4 @@
-import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { cn } from "@shared/lib/utils";
 import { formatRelativeTime } from "@shared/utils/formatters";

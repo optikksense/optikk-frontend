@@ -3,7 +3,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 
-import { Button, Modal } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Modal } from "@shared/components/primitives/ui/dialog";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 
 import { formatRelativeTime } from "@shared/utils/formatters";

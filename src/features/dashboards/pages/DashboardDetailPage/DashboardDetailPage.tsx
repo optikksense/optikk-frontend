@@ -3,8 +3,9 @@ import { ArrowLeft, Check, Pencil, Plus, Star } from "lucide-react";
 import { useState } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { Modal } from "@shared/components/primitives/ui";
-import { EmptyState, Loading } from "@shared/components/ui";
+import { Modal } from "@shared/components/primitives/ui/dialog";
+import EmptyState from "@shared/components/ui/feedback/EmptyState";
+import Loading from "@shared/components/ui/feedback/Loading";
 
 import type {
   CreateDashboardPagePayload,

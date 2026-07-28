@@ -43,3 +43,6 @@ API; no business logic lives here.
 - One data path per page. Parallel hook variants for the same view
   (`useTraceDetailData` vs `useTraceDetailEnhanced`) must be collapsed into
   one, not accumulated.
+- Tables use the shared `DataTable`
+  (`src/shared/components/ui/data-display/DataTable.tsx`), not hand-rolled
+  `<table>` markup.

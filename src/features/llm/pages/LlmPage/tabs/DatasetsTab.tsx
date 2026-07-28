@@ -1,7 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Button, Card, Modal } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Card } from "@shared/components/primitives/ui/card";
+import { Modal } from "@shared/components/primitives/ui/dialog";
 import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import Loading from "@shared/components/ui/feedback/Loading";
 import { formatNumber } from "@shared/utils/formatters";

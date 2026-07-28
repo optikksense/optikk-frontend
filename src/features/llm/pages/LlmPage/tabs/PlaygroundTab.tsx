@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import { Button, Card } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Card } from "@shared/components/primitives/ui/card";
 import { formatDuration } from "@shared/utils/formatters";
 
 import { Field, SelectInput, TextArea, TextInput } from "../../../components/form";

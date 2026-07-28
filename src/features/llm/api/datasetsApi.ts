@@ -25,7 +25,6 @@ const itemSchema = z.object({
   metadata: z.unknown().nullish(),
   createdAt: z.string(),
 });
-export type LlmDatasetItem = z.infer<typeof itemSchema>;
 
 const runSummarySchema = z.object({
   id: z.number(),
@@ -41,7 +40,6 @@ const runSummarySchema = z.object({
   createdAt: z.string(),
   completedAt: z.string().nullish(),
 });
-export type LlmExperimentRun = z.infer<typeof runSummarySchema>;
 
 const datasetDetailSchema = datasetSummarySchema.extend({
   items: z.array(itemSchema).nullish(),
@@ -57,7 +55,6 @@ const runItemSchema = z.object({
   scores: scoreMap.nullish(),
   error: z.string().nullish(),
 });
-export type LlmRunItem = z.infer<typeof runItemSchema>;
 
 const runDetailSchema = runSummarySchema.extend({
   items: z.array(runItemSchema).nullish(),
@@ -105,10 +102,5 @@ export async function addDatasetItems(id: number, items: DatasetItemInput[]): Pr
 
 export async function runExperiment(id: number, req: RunExperimentRequest): Promise<LlmRunDetail> {
   const res = await api.post<unknown>(`${BASE}/llm/datasets/${id}/runs`, req);
-  return validateResponse(runDetailSchema, res);
-}
-
-export async function getRun(runId: number): Promise<LlmRunDetail> {
-  const res = await api.get<unknown>(`${BASE}/llm/runs/${runId}`);
   return validateResponse(runDetailSchema, res);
 }

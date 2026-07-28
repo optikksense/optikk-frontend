@@ -204,7 +204,7 @@ const traceDetailResponseSchema = z.object({
   errors: nullableArray(traceErrorGroupSchema),
 });
 
-export interface TraceDetailResponse {
+interface TraceDetailResponse {
   readonly summary: TraceSummary | null;
   readonly spans: SpanRecord[];
   readonly criticalPath: CriticalPathSpanRecord[];

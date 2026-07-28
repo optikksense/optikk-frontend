@@ -1,4 +1,5 @@
-import { Button, Surface } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
 import { Lock, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

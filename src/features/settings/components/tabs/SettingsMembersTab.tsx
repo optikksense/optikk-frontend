@@ -1,11 +1,9 @@
-import {
-  Button,
-  IconButton,
-  Modal,
-  Select,
-  Skeleton,
-  Surface,
-} from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
+import { Modal } from "@shared/components/primitives/ui/dialog";
+import { IconButton } from "@shared/components/primitives/ui/icon-button";
+import { Select } from "@shared/components/primitives/ui/select";
+import { Skeleton } from "@shared/components/primitives/ui/skeleton";
 import { Trash2, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

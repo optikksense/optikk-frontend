@@ -1,6 +1,6 @@
 import { Tag } from "lucide-react";
 
-import { PageSurface } from "@shared/components/ui";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 
 import type { ErrorFacetGroup } from "@shared/api/errors";
 

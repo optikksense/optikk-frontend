@@ -1,8 +1,10 @@
 import { LayoutGrid, List, Plus, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { EmptyState, PageHeader, PageShell } from "@shared/components/ui";
+import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import SearchInput from "@shared/components/ui/forms/SearchInput";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import type { DashboardPage, ListDashboardPagesParams } from "../../api/dashboardsApi";
 import { useDashboardPagesList } from "../../hooks/useDashboardPages";

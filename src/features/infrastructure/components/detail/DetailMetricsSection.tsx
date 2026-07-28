@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Card } from "@shared/components/primitives/ui";
+import { Card } from "@shared/components/primitives/ui/card";
 
 import { type ChartDef, SeriesChartCard, availableCharts } from "../SeriesChartCard";
 

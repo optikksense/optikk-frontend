@@ -1,6 +1,9 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
 
+import DataTable from "@shared/components/ui/data-display/DataTable";
+import type { ColumnDef } from "@tanstack/react-table";
+
 import { type Channel, testChannel } from "../../api/notificationsApi";
 import { useChannels } from "../../hooks/useChannels";
 import { useChannelMutations } from "../../hooks/useNotificationMutations";
@@ -82,6 +85,72 @@ export default function ChannelsTab() {
 
   const saving = create.isPending || update.isPending;
 
+  // Edit/Test/Delete cells close over the form state, so columns live in render.
+  const columns: ColumnDef<Channel>[] = [
+    {
+      header: "Channel",
+      accessorKey: "name",
+      cell: ({ row: { original: ch } }) => (
+        <div className="flex items-center gap-2">
+          <Send size={13} className="text-foreground-muted" />
+          <span className="font-mono text-xs">{ch.name}</span>
+        </div>
+      ),
+    },
+    {
+      header: "Type",
+      accessorKey: "type",
+      cell: ({ row: { original: ch } }) => (
+        <span className="font-bold font-mono text-[10px] uppercase">{ch.type}</span>
+      ),
+    },
+    {
+      header: "Used by",
+      accessorKey: "usedByCount",
+      meta: { align: "right" },
+      cell: ({ row: { original: ch } }) => <span className="font-mono">{ch.usedByCount}</span>,
+    },
+    {
+      header: "Last delivery",
+      accessorKey: "lastDeliveryAt",
+      cell: ({ row: { original: ch } }) => (
+        <span className="font-mono text-[11px] text-foreground-muted">
+          {ch.lastDeliveryAt ? new Date(ch.lastDeliveryAt).toLocaleString() : "—"}
+        </span>
+      ),
+    },
+    {
+      header: "Actions",
+      id: "actions",
+      meta: { align: "right" },
+      cell: ({ row: { original: ch } }) => (
+        <>
+          <button
+            type="button"
+            onClick={() => setForm(formFromChannel(ch))}
+            className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => handleTest(ch.id)}
+            className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
+          >
+            Test
+          </button>
+          <button
+            type="button"
+            onClick={() => handleDelete(ch.id)}
+            className="rounded border border-border px-2 py-0.5 text-[11px] text-error hover:bg-secondary"
+          >
+            Delete
+          </button>
+        </>
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-lg border border-border bg-card p-4">
@@ -123,73 +192,14 @@ export default function ChannelsTab() {
         {status && <div className="mt-2 text-warning text-xs">{status}</div>}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <table className="w-full text-sm">
-          <thead className="border-border border-b text-[11px] text-foreground-muted uppercase tracking-wider">
-            <tr>
-              <th className="py-2 pl-4 text-left font-medium">Channel</th>
-              <th className="py-2 text-left font-medium">Type</th>
-              <th className="py-2 text-right font-medium">Used by</th>
-              <th className="py-2 text-left font-medium">Last delivery</th>
-              <th className="py-2 pr-4 text-right font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {channelsQ.isPending && !channelsQ.data ? (
-              <tr>
-                <td colSpan={5} className="py-6 text-center text-foreground-muted text-xs">
-                  Loading…
-                </td>
-              </tr>
-            ) : (channelsQ.data ?? []).length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-6 text-center text-foreground-muted text-xs">
-                  No channels yet.
-                </td>
-              </tr>
-            ) : (
-              (channelsQ.data ?? []).map((ch) => (
-                <tr key={ch.id} className="border-border border-b last:border-0">
-                  <td className="py-2 pl-4">
-                    <div className="flex items-center gap-2">
-                      <Send size={13} className="text-foreground-muted" />
-                      <span className="font-mono text-xs">{ch.name}</span>
-                    </div>
-                  </td>
-                  <td className="py-2 font-bold font-mono text-[10px] uppercase">{ch.type}</td>
-                  <td className="py-2 text-right font-mono">{ch.usedByCount}</td>
-                  <td className="py-2 font-mono text-[11px] text-foreground-muted">
-                    {ch.lastDeliveryAt ? new Date(ch.lastDeliveryAt).toLocaleString() : "—"}
-                  </td>
-                  <td className="py-2 pr-4 text-right">
-                    <button
-                      type="button"
-                      onClick={() => setForm(formFromChannel(ch))}
-                      className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleTest(ch.id)}
-                      className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
-                    >
-                      Test
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(ch.id)}
-                      className="rounded border border-border px-2 py-0.5 text-[11px] text-error hover:bg-secondary"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        data={{
+          columns,
+          rows: channelsQ.data ?? [],
+          loading: channelsQ.isPending && !channelsQ.data,
+        }}
+        config={{ emptyText: "No channels yet." }}
+      />
     </div>
   );
 }

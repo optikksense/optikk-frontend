@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 
-import { Button } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
 import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { queryLogs } from "@shared/logs/api/logsQueryApi";
 import type { LogRecord } from "@shared/logs/types/log";

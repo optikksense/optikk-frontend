@@ -1,5 +1,5 @@
 import type { TraceLog, TraceRecord } from "@shared/api/traces/schemas";
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { memo } from "react";
 
 import { useTraceDetailViewerState } from "../hooks/useTraceDetailViewerState";

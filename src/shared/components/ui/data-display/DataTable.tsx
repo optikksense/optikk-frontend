@@ -6,12 +6,12 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/components/primitives/ui/table";
-import { EmptyState } from "@shared/components/ui/feedback";
+import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { memo, useMemo, useRef, useState } from "react";
 
-import { Button } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
 
 import { useColumnSizing } from "./useColumnSizing";
 
@@ -35,7 +35,7 @@ interface DataTableResize {
   storageKey?: string;
 }
 
-export interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData, TValue> {
   data: {
     columns: ColumnDef<TData, TValue>[];
     rows: TData[];

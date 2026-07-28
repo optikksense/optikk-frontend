@@ -1,7 +1,8 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
-import { PageTabs } from "@shared/components/primitives/ui";
-import { PageHeader, PageShell } from "@shared/components/ui";
+import { PageTabs } from "@shared/components/primitives/ui/page-tabs";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import { DEFAULT_LLM_TAB, type LlmTab, isLlmTab } from "./llmTabs";
 import DashboardTab from "./tabs/DashboardTab";

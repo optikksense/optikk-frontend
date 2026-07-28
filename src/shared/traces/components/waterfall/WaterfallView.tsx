@@ -1,5 +1,5 @@
 import type { TraceRecord } from "@shared/api/traces/schemas";
-import { ErrorBoundary } from "@shared/components/ui/feedback";
+import ErrorBoundary from "@shared/components/ui/feedback/ErrorBoundary";
 import { memo } from "react";
 import type { SpanEvent } from "../../types/detail";
 import { WaterfallTrace } from "./WaterfallTrace";

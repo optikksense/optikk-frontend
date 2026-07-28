@@ -1,7 +1,7 @@
 import { ChevronDown, Search } from "lucide-react";
 import { useCallback, useDeferredValue, useMemo, useRef, useState } from "react";
 
-import { Popover } from "@shared/components/primitives/ui";
+import { Popover } from "@shared/components/primitives/ui/popover";
 import { cn } from "@shared/lib/utils";
 
 import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";

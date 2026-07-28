@@ -2,14 +2,9 @@ import { useResolvedTimeBounds } from "@/app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import {
-  type LlmCostGroupBy,
-  type LlmTimeseriesMetric,
   type LlmTracesRequest,
-  getLlmApps,
-  getLlmCostBreakdown,
   getLlmModels,
   getLlmOverview,
-  getLlmTimeseries,
   getLlmTraceDetail,
   queryLlmTraces,
 } from "../api/llmApi";
@@ -25,32 +20,6 @@ export function useLlmOverview() {
   return useStandardQuery({
     queryKey: ["llm", "overview", startTime, endTime],
     queryFn: () => getLlmOverview({ startTime, endTime }),
-  });
-}
-
-export function useLlmApps() {
-  const { startTime, endTime } = useLlmRange();
-  return useStandardQuery({
-    queryKey: ["llm", "apps", startTime, endTime],
-    queryFn: () => getLlmApps({ startTime, endTime }),
-  });
-}
-
-export function useLlmTimeseries(metric: LlmTimeseriesMetric, enabled = true) {
-  const { startTime, endTime } = useLlmRange();
-  return useStandardQuery({
-    queryKey: ["llm", "timeseries", metric, startTime, endTime],
-    queryFn: () => getLlmTimeseries(metric, { startTime, endTime }),
-    enabled,
-  });
-}
-
-export function useLlmCostBreakdown(groupBy: LlmCostGroupBy, enabled = true) {
-  const { startTime, endTime } = useLlmRange();
-  return useStandardQuery({
-    queryKey: ["llm", "cost", groupBy, startTime, endTime],
-    queryFn: () => getLlmCostBreakdown(groupBy, { startTime, endTime }),
-    enabled,
   });
 }
 

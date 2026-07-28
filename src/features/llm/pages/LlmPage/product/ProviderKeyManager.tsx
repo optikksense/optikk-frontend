@@ -1,7 +1,8 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { Button, Modal } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Modal } from "@shared/components/primitives/ui/dialog";
 
 import { Field, SelectInput, TextInput } from "../../../components/form";
 import { useProviderKeyMutations, useProviderKeys } from "../../../hooks/useProviderKeys";

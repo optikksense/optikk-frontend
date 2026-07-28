@@ -1,5 +1,6 @@
-import { PageHeader, PageShell } from "@shared/components/ui";
 import DashboardEntityDrawer from "@shared/components/ui/dashboard/DashboardEntityDrawer";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import type { ServiceMetricPoint } from "@shared/metrics/types";
 import InfrastructureStrip from "./components/InfrastructureStrip";

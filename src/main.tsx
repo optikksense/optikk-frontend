@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import { queryClient } from "@shared/api/queryClient";
-import { ErrorBoundary } from "@shared/components/ui/feedback";
+import ErrorBoundary from "@shared/components/ui/feedback/ErrorBoundary";
 
 import App from "./app/App";
 import AppQueryClientProvider from "./app/providers/QueryClientProvider";

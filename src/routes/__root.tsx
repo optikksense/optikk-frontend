@@ -1,6 +1,6 @@
 import { CommandPalette } from "@/app/layout/CommandPalette";
-import { Button } from "@/shared/components/primitives/ui";
-import { Loading } from "@/shared/components/ui/feedback";
+import { Button } from "@/shared/components/primitives/ui/button";
+import Loading from "@/shared/components/ui/feedback/Loading";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { AlertCircle } from "lucide-react";
 

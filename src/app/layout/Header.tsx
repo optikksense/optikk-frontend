@@ -1,5 +1,6 @@
-import { IconButton, Tooltip } from "@shared/components/primitives/ui";
-import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
+import { IconButton } from "@shared/components/primitives/ui/icon-button";
+import { Tooltip } from "@shared/components/primitives/ui/tooltip";
+import TimeRangePicker from "@shared/components/ui/TimeSelector/TimeRangePicker";
 import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
 import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@shared/types";
 import { formatRelativeTime } from "@shared/utils/formatters";

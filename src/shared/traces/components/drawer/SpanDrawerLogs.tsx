@@ -1,5 +1,5 @@
 import type { TraceLog } from "@shared/api/traces/schemas";
-import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
 import { LogsTable } from "@shared/logs/components/table/LogsTable";
 import { traceLogToLogRecord } from "@shared/logs/utils/traceLogAdapter";
 import { ScrollText } from "lucide-react";

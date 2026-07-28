@@ -12,7 +12,7 @@ const kpiBase = "p-3.5 flex flex-col justify-between min-w-0";
 const kpiK = "text-[11px] font-medium text-foreground-caption uppercase tracking-[0.05em]";
 const kpiV = "font-mono text-[20px] font-semibold text-foreground tracking-[-0.02em]";
 
-export function BaselineBar({ dur, p50, p95 }: { dur: number; p50: number; p95: number }) {
+function BaselineBar({ dur, p50, p95 }: { dur: number; p50: number; p95: number }) {
   const max = Math.max(dur, p95 * 1.15);
   const p50Pct = Math.min(100, (p50 / max) * 100);
   const p95Pct = Math.min(100, (p95 / max) * 100);

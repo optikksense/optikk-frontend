@@ -1,8 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 
-import { Button } from "@shared/components/primitives/ui";
-import { StatCard } from "@shared/components/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import StatCard from "@shared/components/ui/cards/StatCard";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatNumber } from "@shared/utils/formatters";
 

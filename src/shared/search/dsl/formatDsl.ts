@@ -9,7 +9,7 @@ export function formatDsl(filters: readonly ExplorerFilter[]): string {
 }
 
 /** Renders one filter as retypeable DSL (also used for chip labels). */
-export function formatFilter(f: ExplorerFilter): string {
+function formatFilter(f: ExplorerFilter): string {
   if (f.field === "search") return formatSearch(f);
   const prefix = isNegation(f.op) ? "-" : "";
   const head = `${prefix}${f.field}`;

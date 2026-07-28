@@ -1,7 +1,9 @@
 import { memo, useEffect, useState } from "react";
 
 import { formatErrorForDisplay } from "@shared/api/utils/errorNormalization";
-import { DrawerJson, DrawerShell, DrawerTabs } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerJson } from "@shared/components/ui/overlay/detail-drawer/DrawerJson";
+import { DrawerShell } from "@shared/components/ui/overlay/detail-drawer/DrawerShell";
+import { DrawerTabs } from "@shared/components/ui/overlay/detail-drawer/DrawerTabs";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import { getLogById } from "../../api/logsExplorerApi";

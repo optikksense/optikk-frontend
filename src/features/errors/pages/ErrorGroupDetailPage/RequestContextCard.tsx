@@ -1,4 +1,4 @@
-import { PageSurface } from "@shared/components/ui";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 
 import type { ErrorLatestOccurrence } from "@shared/api/errors";
 

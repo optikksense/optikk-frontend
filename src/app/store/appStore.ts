@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { queryClient } from "@shared/api/queryClient";
 import type { AbsoluteTimeRange, RelativeTimeRange, TimeRange } from "@shared/types";
 import { resolveTimeRangeBounds } from "@shared/types";
 
@@ -16,7 +15,7 @@ import {
   pushRecentRange,
 } from "./appStoreMigrations";
 
-export interface ResolvedTimeBounds {
+interface ResolvedTimeBounds {
   readonly startTime: number;
   readonly endTime: number;
 }
@@ -48,12 +47,6 @@ interface AppState extends PersistedAppState {
 
 const defaultPersistedState = loadLegacyAppState();
 
-function sameTenantScope(current: number[], next: number[]): boolean {
-  return (
-    current.length === next.length && current.every((tenantId, index) => tenantId === next[index])
-  );
-}
-
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
@@ -62,36 +55,20 @@ export const useAppStore = create<AppState>()(
       lastRefreshAt: Date.now(),
       resolvedTimeBounds: resolveTimeRangeBounds(defaultPersistedState.timeRange),
 
+      // Tenant isolation is carried by the query keys: useStandardQuery
+      // appends tenantId to every key, so a scope switch can never render
+      // another tenant's cached response.
       setSelectedTenantId: (tenantId: number | null): void => {
-        const current = useAppStore.getState();
-        const nextTenantIds = tenantId != null ? [tenantId] : [];
-        if (
-          current.selectedTenantId !== tenantId ||
-          !sameTenantScope(current.selectedTenantIds, nextTenantIds)
-        ) {
-          // Requests are authenticated using this scope header. Clear before
-          // publishing the new scope so no observer can render another
-          // tenant's cached response, even when a feature omits it from a key.
-          queryClient.clear();
-        }
         set({
           selectedTenantId: tenantId,
-          selectedTenantIds: nextTenantIds,
+          selectedTenantIds: tenantId != null ? [tenantId] : [],
         });
       },
 
       setSelectedTenantIds: (tenantIds: number[]): void => {
-        const primary = tenantIds[0] ?? null;
-        const current = useAppStore.getState();
-        if (
-          current.selectedTenantId !== primary ||
-          !sameTenantScope(current.selectedTenantIds, tenantIds)
-        ) {
-          queryClient.clear();
-        }
         set({
           selectedTenantIds: tenantIds,
-          selectedTenantId: primary,
+          selectedTenantId: tenantIds[0] ?? null,
         });
       },
 

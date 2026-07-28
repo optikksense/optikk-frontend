@@ -35,4 +35,3 @@ export const useAuthStore = create<AuthState>()((set) => ({
 
 export const useAuthUser = () => useAuthStore((s) => s.user);
 export const useAuthTenant = () => useAuthStore((s) => s.tenant);
-export const useAuthStatus = () => useAuthStore((s) => s.status);

@@ -9,7 +9,7 @@ import type { ExplorerFilter, TranslationWarning } from "../types/filters";
 // ---- Attribute operator whitelist (identical across logs/traces) ----
 
 /** Ops the backend implements on `attributes[]` for both logs and traces. */
-export const ATTR_OPS = new Set([
+const ATTR_OPS = new Set([
   "eq",
   "neq",
   "contains",
@@ -25,7 +25,7 @@ export const ATTR_OPS = new Set([
 // ---- Shared helpers ----
 
 /** in/not_in carry comma-joined values from the `(a OR b)` DSL form. */
-export function splitInList(value: string): string[] {
+function splitInList(value: string): string[] {
   return value
     .split(",")
     .map((v) => v.trim())
@@ -76,7 +76,7 @@ export function pushUnknownField(
  * Handles a `@key` attribute filter. Identical across logs and traces:
  * validates the op, then pushes to body.attributes[].
  */
-export function handleAttribute<
+function handleAttribute<
   T extends { attributes?: Array<{ key: string; op?: string; value: string }> },
 >(field: string, op: string, value: string, body: T, warnings: TranslationWarning[]): void {
   if (!ATTR_OPS.has(op as never)) {

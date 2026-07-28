@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { rotateApiKey } from "@shared/api/tenantApiKey";
-import { CodeBlock, CopyButton, SnippetTabs } from "@shared/components/primitives/ui";
+import { CodeBlock, CopyButton, SnippetTabs } from "@shared/components/primitives/ui/code-block";
 import { ROUTES } from "@shared/constants/routes";
 import { buildQuickstartSnippets } from "@shared/instrumentation/snippets";
 import { useIngestionEndpoints } from "@shared/instrumentation/useIngestionEndpoints";

@@ -2,7 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink, GitFork } from "lucide-react";
 import { memo, useMemo } from "react";
 
-import { DrawerAttrTable, DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerAttrTable } from "@shared/components/ui/overlay/detail-drawer/DrawerAttrTable";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
 import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 import type { LogRecord } from "../../types/log";
 import { buildAttrGroups } from "../../utils/logTransformers";

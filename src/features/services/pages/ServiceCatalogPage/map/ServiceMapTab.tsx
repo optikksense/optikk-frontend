@@ -2,12 +2,12 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 
 import { type ServiceTopologyResponse, getServiceTopology } from "@shared/api/topology";
+import { ServiceTopologyGraph } from "@shared/components/ui/charts/ServiceTopologyGraph/ServiceTopologyGraph";
 import {
-  ServiceTopologyGraph,
   buildTopologyGraph,
   topologyEdgeTypes,
   topologyNodeTypes,
-} from "@shared/components/ui/charts/ServiceTopologyGraph";
+} from "@shared/components/ui/charts/ServiceTopologyGraph/buildGraph";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { ROUTES } from "@/shared/constants/routes";

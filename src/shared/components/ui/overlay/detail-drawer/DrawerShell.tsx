@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { SidePanel } from "@shared/components/ui/layout";
+import { SidePanel } from "@shared/components/ui/layout/SidePanel";
 
 interface DrawerShellProps {
   readonly open: boolean;

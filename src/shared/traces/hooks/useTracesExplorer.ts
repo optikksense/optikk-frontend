@@ -2,8 +2,8 @@ import { useMemo } from "react";
 
 import { useExplorerQuery, useExplorerSubQuery } from "@shared/search/hooks/useExplorerQuery";
 import { useExplorerState } from "@shared/search/hooks/useExplorerState";
-import type { ExplorerIncludeFlag } from "@shared/search/types";
 import type { ExplorerFilter } from "@shared/search/types/filters";
+import type { ExplorerIncludeFlag } from "@shared/search/types/queries";
 
 import { query, queryFacets, queryTrend } from "@shared/api/traces/tracesApi";
 import type { TracesQueryResponse } from "@shared/api/traces/types";

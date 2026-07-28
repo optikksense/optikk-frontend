@@ -1,9 +1,14 @@
 import { type ReactNode, useMemo } from "react";
 
 import type { KafkaTopology } from "@/features/saturation/api/kafkaTopologySchemas";
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { cn } from "@shared/lib/utils";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import {
+  type ConsumerGroupRow,
+  type ConsumptionRow,
+  type ProductionRow,
   buildKafkaPageModel,
   formatMilliseconds,
   formatPercent,
@@ -12,8 +17,7 @@ import {
 } from "../kafkaPageModel";
 import { KafkaTopologyGraph } from "./KafkaTopologyGraph";
 
-const TH = "px-3 py-2 text-left font-medium text-[11px] text-foreground-muted";
-const TD = "border-border border-t px-3 py-2.5 text-[12px] text-foreground";
+type TopicRow = KafkaTopology["topics"][number];
 
 function Panel({
   title,
@@ -30,14 +34,6 @@ function Panel({
       </header>
       {children}
     </section>
-  );
-}
-
-function EmptyRows({ children }: { children: ReactNode }) {
-  return (
-    <div className="grid min-h-24 place-items-center px-4 text-[12px] text-foreground-muted">
-      {children}
-    </div>
   );
 }
 
@@ -79,6 +75,165 @@ function SummaryValue({ label, children }: { label: string; children: ReactNode 
     </div>
   );
 }
+
+const PRODUCTION_COLUMNS: ColumnDef<ProductionRow>[] = [
+  {
+    header: "Topic",
+    accessorKey: "topic",
+    cell: ({ row: { original: row } }) => (
+      <span className="font-medium font-mono">{row.topic}</span>
+    ),
+  },
+  {
+    header: "Messages/sec",
+    accessorKey: "rate",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{formatRate(row.rate)}</span>
+    ),
+  },
+  {
+    header: "Producers",
+    accessorKey: "producerCount",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => <span className="tabular-nums">{row.producerCount}</span>,
+  },
+  {
+    header: "Groups",
+    accessorKey: "consumerGroupCount",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{row.consumerGroupCount}</span>
+    ),
+  },
+];
+
+const CONSUMPTION_COLUMNS: ColumnDef<ConsumptionRow>[] = [
+  {
+    header: "Consumer group",
+    accessorKey: "group",
+    cell: ({ row: { original: row } }) => (
+      <span className="font-medium font-mono">{row.group}</span>
+    ),
+  },
+  {
+    header: "Topics",
+    accessorKey: "topics",
+    cell: ({ row: { original: row } }) => (
+      <span className="block max-w-48 truncate text-foreground-muted" title={row.topics.join(", ")}>
+        {row.topics.join(", ") || "—"}
+      </span>
+    ),
+  },
+  {
+    header: "Messages/sec",
+    accessorKey: "rate",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{formatRate(row.rate)}</span>
+    ),
+  },
+  {
+    header: "P50",
+    accessorKey: "p50Ms",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{formatMilliseconds(row.p50Ms)}</span>
+    ),
+  },
+  {
+    header: "P95",
+    accessorKey: "p95Ms",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{formatMilliseconds(row.p95Ms)}</span>
+    ),
+  },
+  {
+    header: "P99",
+    accessorKey: "p99Ms",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{formatMilliseconds(row.p99Ms)}</span>
+    ),
+  },
+  {
+    header: "Errors",
+    accessorKey: "errorRate",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => <ErrorRate value={row.errorRate} />,
+  },
+];
+
+const TOPIC_COLUMNS: ColumnDef<TopicRow>[] = [
+  {
+    header: "Topic",
+    accessorKey: "topic",
+    cell: ({ row: { original: row } }) => (
+      <span className="font-medium font-mono">{row.topic}</span>
+    ),
+  },
+  {
+    header: "Messages/sec",
+    accessorKey: "ratePerSec",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{formatRate(row.ratePerSec)}</span>
+    ),
+  },
+  {
+    header: "Producers",
+    accessorKey: "producerCount",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => <span className="tabular-nums">{row.producerCount}</span>,
+  },
+  {
+    header: "Groups",
+    accessorKey: "consumerGroupCount",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{row.consumerGroupCount}</span>
+    ),
+  },
+];
+
+const GROUP_COLUMNS: ColumnDef<ConsumerGroupRow>[] = [
+  {
+    header: "Group",
+    accessorKey: "group",
+    cell: ({ row: { original: row } }) => (
+      <span className="font-medium font-mono">{row.group}</span>
+    ),
+  },
+  {
+    header: "Consumer",
+    accessorKey: "consumer",
+    cell: ({ row: { original: row } }) => (
+      <span className="font-mono text-foreground-muted">{row.consumer}</span>
+    ),
+  },
+  {
+    header: "Topic",
+    accessorKey: "topic",
+    cell: ({ row: { original: row } }) => (
+      <span className="font-mono text-foreground-muted">{row.topic}</span>
+    ),
+  },
+  {
+    header: "Messages/sec",
+    accessorKey: "rate",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="tabular-nums">{formatRate(row.rate)}</span>
+    ),
+  },
+  {
+    header: "Errors",
+    accessorKey: "errorRate",
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => <ErrorRate value={row.errorRate} />,
+  },
+];
 
 interface KafkaServiceOverviewProps {
   readonly service: string;
@@ -133,148 +288,37 @@ export function KafkaServiceOverview({
               </SummaryValue>
             </div>
           </div>
-          {model.production.length === 0 ? (
-            <EmptyRows>This service did not produce Kafka messages in this time range.</EmptyRows>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className={TH}>Topic</th>
-                    <th className={`${TH} text-right`}>Messages/sec</th>
-                    <th className={`${TH} text-right`}>Producers</th>
-                    <th className={`${TH} text-right`}>Groups</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {model.production.map((row) => (
-                    <tr key={row.topic}>
-                      <td className={`${TD} font-medium font-mono`}>{row.topic}</td>
-                      <td className={`${TD} text-right tabular-nums`}>{formatRate(row.rate)}</td>
-                      <td className={`${TD} text-right tabular-nums`}>{row.producerCount}</td>
-                      <td className={`${TD} text-right tabular-nums`}>{row.consumerGroupCount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <DataTable
+            data={{ columns: PRODUCTION_COLUMNS, rows: model.production }}
+            config={{
+              emptyText: "This service did not produce Kafka messages in this time range.",
+            }}
+          />
         </Panel>
 
         <Panel title="Consumption metrics" description={`Consumer groups running in ${service}`}>
-          {model.consumption.length === 0 ? (
-            <EmptyRows>This service did not consume Kafka messages in this time range.</EmptyRows>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className={TH}>Consumer group</th>
-                    <th className={TH}>Topics</th>
-                    <th className={`${TH} text-right`}>Messages/sec</th>
-                    <th className={`${TH} text-right`}>P50</th>
-                    <th className={`${TH} text-right`}>P95</th>
-                    <th className={`${TH} text-right`}>P99</th>
-                    <th className={`${TH} text-right`}>Errors</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {model.consumption.map((row) => (
-                    <tr key={row.group}>
-                      <td className={`${TD} font-medium font-mono`}>{row.group}</td>
-                      <td
-                        className={`${TD} max-w-48 truncate text-foreground-muted`}
-                        title={row.topics.join(", ")}
-                      >
-                        {row.topics.join(", ") || "—"}
-                      </td>
-                      <td className={`${TD} text-right tabular-nums`}>{formatRate(row.rate)}</td>
-                      <td className={`${TD} text-right tabular-nums`}>
-                        {formatMilliseconds(row.p50Ms)}
-                      </td>
-                      <td className={`${TD} text-right tabular-nums`}>
-                        {formatMilliseconds(row.p95Ms)}
-                      </td>
-                      <td className={`${TD} text-right tabular-nums`}>
-                        {formatMilliseconds(row.p99Ms)}
-                      </td>
-                      <td className={`${TD} text-right`}>
-                        <ErrorRate value={row.errorRate} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <DataTable
+            data={{ columns: CONSUMPTION_COLUMNS, rows: model.consumption }}
+            config={{
+              emptyText: "This service did not consume Kafka messages in this time range.",
+            }}
+          />
         </Panel>
       </div>
 
       <div className="grid min-w-0 gap-4 xl:grid-cols-2">
         <Panel title="Topics" description="Topics connected to the selected service">
-          {topology.topics.length === 0 ? (
-            <EmptyRows>No topics found.</EmptyRows>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className={TH}>Topic</th>
-                    <th className={`${TH} text-right`}>Messages/sec</th>
-                    <th className={`${TH} text-right`}>Producers</th>
-                    <th className={`${TH} text-right`}>Groups</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topology.topics.map((topic) => (
-                    <tr key={topic.topic}>
-                      <td className={`${TD} font-medium font-mono`}>{topic.topic}</td>
-                      <td className={`${TD} text-right tabular-nums`}>
-                        {formatRate(topic.ratePerSec)}
-                      </td>
-                      <td className={`${TD} text-right tabular-nums`}>{topic.producerCount}</td>
-                      <td className={`${TD} text-right tabular-nums`}>
-                        {topic.consumerGroupCount}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <DataTable
+            data={{ columns: TOPIC_COLUMNS, rows: [...topology.topics] }}
+            config={{ emptyText: "No topics found." }}
+          />
         </Panel>
 
         <Panel title="Consumer groups" description="Consumption pathways connected to these topics">
-          {model.consumerGroups.length === 0 ? (
-            <EmptyRows>No consumer groups found.</EmptyRows>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className={TH}>Group</th>
-                    <th className={TH}>Consumer</th>
-                    <th className={TH}>Topic</th>
-                    <th className={`${TH} text-right`}>Messages/sec</th>
-                    <th className={`${TH} text-right`}>Errors</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {model.consumerGroups.map((row) => (
-                    <tr key={`${row.group}-${row.consumer}-${row.topic}`}>
-                      <td className={`${TD} font-medium font-mono`}>{row.group}</td>
-                      <td className={`${TD} font-mono text-foreground-muted`}>{row.consumer}</td>
-                      <td className={`${TD} font-mono text-foreground-muted`}>{row.topic}</td>
-                      <td className={`${TD} text-right tabular-nums`}>{formatRate(row.rate)}</td>
-                      <td className={`${TD} text-right`}>
-                        <ErrorRate value={row.errorRate} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <DataTable
+            data={{ columns: GROUP_COLUMNS, rows: model.consumerGroups }}
+            config={{ emptyText: "No consumer groups found." }}
+          />
         </Panel>
       </div>
     </div>

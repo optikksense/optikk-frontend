@@ -356,16 +356,3 @@ export function getServiceSaturationTimeseries(
   const params = buildREDFilters(s, e, services);
   return getJson("/spans/red/saturation-timeseries", params, z.array(saturationPointSchema));
 }
-
-export const redSchemas = {
-  redFleetOverview: fleetOverviewSchema,
-  redRequestAndErrorRate: z.array(requestErrorRatePointSchema),
-  redRequestRate: requestRateSeriesSchema,
-  redStatusTimeseries: z.array(statusTimeseriesPointSchema),
-  redLatencyPercentiles: z.array(latencyPercentilesPointSchema),
-  redByEndpoint: endpointRateSeriesSchema,
-  redTopEndpoints: topEndpointsPageSchema,
-  redTopDBQueries: topDBQueriesPageSchema,
-  redServiceSummary: serviceSummarySchema,
-  redSaturation: z.array(saturationPointSchema),
-} as const;

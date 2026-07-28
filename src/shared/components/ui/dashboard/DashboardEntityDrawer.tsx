@@ -5,9 +5,9 @@ import ServiceDetailDrawer from "@shared/components/ui/drawers/ServiceDetailDraw
 import {
   type DrawerAttrGroup,
   DrawerAttrTable,
-  DrawerHeader,
-  DrawerShell,
-} from "@shared/components/ui/overlay/detail-drawer";
+} from "@shared/components/ui/overlay/detail-drawer/DrawerAttrTable";
+import { DrawerHeader } from "@shared/components/ui/overlay/detail-drawer/DrawerHeader";
+import { DrawerShell } from "@shared/components/ui/overlay/detail-drawer/DrawerShell";
 
 import {
   clearedDashboardDrawerSearch,

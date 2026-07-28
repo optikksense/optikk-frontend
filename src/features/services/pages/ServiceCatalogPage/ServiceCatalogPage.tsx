@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import type { CatalogRow } from "./catalog/buildCatalogRows";
 import { ServiceCatalogHeader } from "./header/ServiceCatalogHeader";

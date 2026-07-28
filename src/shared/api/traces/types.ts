@@ -3,7 +3,8 @@
  * and the list/detail/analytics surfaces. Trace rows come from the
  * backend `traces_index` table (one row per completed trace).
  */
-import type { ExplorerFilter, ExplorerIncludeFlag } from "@shared/search/types";
+import type { ExplorerFilter } from "@shared/search/types/filters";
+import type { ExplorerIncludeFlag } from "@shared/search/types/queries";
 
 export interface TraceSummary {
   readonly traceId: string;

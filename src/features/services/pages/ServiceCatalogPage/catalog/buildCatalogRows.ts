@@ -4,7 +4,7 @@ import type {
   ServiceCatalogRedSummary,
 } from "@shared/api/red/redApi";
 
-export type CatalogStatus = "healthy" | "warn" | "error" | "unknown";
+type CatalogStatus = "healthy" | "warn" | "error" | "unknown";
 
 export interface CatalogRow {
   readonly serviceName: string;

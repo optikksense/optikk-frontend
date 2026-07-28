@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { Button } from "@shared/components/primitives/ui";
-import { Modal } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Modal } from "@shared/components/primitives/ui/dialog";
 
 import { Field, SelectInput, TextArea, TextInput } from "../../../components/form";
 import { useEvaluatorMutations } from "../../../hooks/useEvaluators";

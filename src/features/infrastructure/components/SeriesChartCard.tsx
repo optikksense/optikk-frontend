@@ -1,4 +1,4 @@
-import { Card } from "@shared/components/primitives/ui";
+import { Card } from "@shared/components/primitives/ui/card";
 
 import InfraMultiSeriesChart from "./InfraMultiSeriesChart";
 

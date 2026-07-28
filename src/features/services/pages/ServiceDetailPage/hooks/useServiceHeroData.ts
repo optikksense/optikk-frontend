@@ -1,7 +1,7 @@
 import type { ServiceSummary } from "./useServiceSummary";
 import { useServiceSummary } from "./useServiceSummary";
 
-export type HeroStatus = "healthy" | "warn" | "error" | "unknown";
+type HeroStatus = "healthy" | "warn" | "error" | "unknown";
 
 export interface HeroData {
   readonly summary: ServiceSummary | null;

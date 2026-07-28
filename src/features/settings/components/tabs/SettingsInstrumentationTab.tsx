@@ -1,4 +1,5 @@
-import { CodeBlock, CopyButton, Surface } from "@shared/components/primitives/ui";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
+import { CodeBlock, CopyButton } from "@shared/components/primitives/ui/code-block";
 import {
   type LanguageGuide,
   buildCollectorSnippets,

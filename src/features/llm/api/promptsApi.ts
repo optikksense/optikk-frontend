@@ -26,7 +26,6 @@ const versionSchema = z.object({
   status: z.string(),
   createdAt: z.string(),
 });
-export type LlmPromptVersion = z.infer<typeof versionSchema>;
 
 const detailSchema = promptSummarySchema.extend({
   versions: z.array(versionSchema).nullish(),

@@ -1,6 +1,6 @@
 import { useParams } from "@tanstack/react-router";
 
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getPodOverview } from "../../api/podDetailApi";

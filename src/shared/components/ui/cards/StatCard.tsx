@@ -1,6 +1,7 @@
 import { APP_COLORS } from "@config/colorLiterals";
-import { Skeleton, Surface } from "@shared/components/primitives/ui";
-import { TrendIndicator } from "@shared/components/ui";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
+import { Skeleton } from "@shared/components/primitives/ui/skeleton";
+import TrendIndicator from "@shared/components/ui/feedback/TrendIndicator";
 import { cn } from "@shared/lib/utils";
 import React from "react";
 import SparklineChart from "../charts/micro/SparklineChart";
@@ -55,7 +56,7 @@ interface KpiVariantProps {
   readonly delta?: React.ReactNode;
 }
 
-export type StatCardProps = StatVariantProps | KpiVariantProps;
+type StatCardProps = StatVariantProps | KpiVariantProps;
 
 function StatBody({ metric, trend = {}, visuals = {} }: StatVariantProps) {
   const { title, value, formatter, suffix, description } = metric;

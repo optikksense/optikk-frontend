@@ -10,8 +10,3 @@ export function svcHue(name: string): number {
   }
   return PALETTE_HUES[Math.abs(h) % PALETTE_HUES.length];
 }
-
-export function serviceColorCss(name: string): string {
-  const hue = svcHue(name);
-  return `oklch(0.62 0.14 ${hue})`;
-}

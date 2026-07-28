@@ -1,6 +1,6 @@
 import { BUILT_IN_DASHBOARD_PANELS } from "@shared/components/ui/dashboard/builtInDashboardPanels";
 import { DashboardPanelRegistryProvider } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
-import { ErrorBoundary } from "@shared/components/ui/feedback";
+import ErrorBoundary from "@shared/components/ui/feedback/ErrorBoundary";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 
 // Import the generated route tree

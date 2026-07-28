@@ -1,4 +1,4 @@
-import { Select } from "@shared/components/primitives/ui";
+import { Select } from "@shared/components/primitives/ui/select";
 import { Switch } from "@shared/components/primitives/ui/switch";
 
 import {

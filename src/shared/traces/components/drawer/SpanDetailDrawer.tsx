@@ -2,7 +2,9 @@ import { ScrollText } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
 
 import type { TraceLog, TraceRecord } from "@shared/api/traces/schemas";
-import { DrawerJson, DrawerShell, DrawerTabs } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerJson } from "@shared/components/ui/overlay/detail-drawer/DrawerJson";
+import { DrawerShell } from "@shared/components/ui/overlay/detail-drawer/DrawerShell";
+import { DrawerTabs } from "@shared/components/ui/overlay/detail-drawer/DrawerTabs";
 
 import type { RelatedTrace, SpanAttributes, SpanEvent } from "../../types/detail";
 import { type SelectedSpan, SpanDrawerHeader } from "./SpanDrawerHeader";

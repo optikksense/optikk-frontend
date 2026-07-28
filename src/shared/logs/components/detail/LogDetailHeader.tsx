@@ -1,4 +1,4 @@
-import { DrawerHeader } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerHeader } from "@shared/components/ui/overlay/detail-drawer/DrawerHeader";
 import { formatTimestamp } from "@shared/utils/formatters";
 import { memo } from "react";
 

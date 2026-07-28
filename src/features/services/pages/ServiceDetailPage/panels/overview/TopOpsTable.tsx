@@ -1,5 +1,7 @@
+import DataTable from "@shared/components/ui/data-display/DataTable";
 import { ENDPOINT_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
 import { fmtNum } from "@shared/utils/formatters";
+import type { ColumnDef } from "@tanstack/react-table";
 
 export interface TopOpRow {
   readonly key: string;
@@ -37,6 +39,77 @@ function renderLatencyDelta(val: number | null) {
   );
 }
 
+function buildColumns(labelHeader: string): ColumnDef<TopOpRow>[] {
+  return [
+    {
+      header: labelHeader,
+      accessorKey: "label",
+      size: 240,
+      cell: ({ row: { original: r } }) => (
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded px-1.5 py-0.5 font-bold font-mono text-[9px] ${
+              r.badgeVariant === "brand"
+                ? "bg-[var(--brand-soft)] text-[var(--brand)]"
+                : "bg-[var(--color-success-bg)] text-[var(--color-success)]"
+            }`}
+          >
+            {r.badge}
+          </span>
+          <span className="max-w-[200px] truncate font-mono font-semibold text-[12px] text-foreground">
+            {r.label}
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: "Hits",
+      accessorKey: "totalCount",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => (
+        <span className="font-mono text-[12.5px] tabular-nums">{fmtNum(r.totalCount)}</span>
+      ),
+    },
+    {
+      header: "Errors",
+      accessorKey: "errorRate",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => {
+        const health = classifyHealth(r.errorRate, ENDPOINT_HEALTH_THRESHOLDS);
+        return (
+          <span
+            className={`font-mono font-semibold text-[12.5px] tabular-nums ${
+              health === "unhealthy"
+                ? "text-[var(--err)]"
+                : health === "degraded"
+                  ? "text-[var(--warn)]"
+                  : "text-foreground-muted"
+            }`}
+          >
+            {r.errorRate.toFixed(2)}%
+          </span>
+        );
+      },
+    },
+    {
+      header: "P99",
+      accessorKey: "p99Ms",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => (
+        <span className="font-mono font-semibold text-[12.5px] tabular-nums">
+          {Math.round(r.p99Ms)}ms
+        </span>
+      ),
+    },
+    {
+      header: "Latency vs 1h ago",
+      accessorKey: "p99DeltaPct",
+      meta: { align: "right" },
+      cell: ({ row: { original: r } }) => renderLatencyDelta(r.p99DeltaPct),
+    },
+  ];
+}
+
 export function TopOpsTable({
   rows,
   labelHeader,
@@ -51,65 +124,10 @@ export function TopOpsTable({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-left text-[13px]">
-        <thead>
-          <tr className="border-border/60 border-b font-semibold text-[10px] text-foreground-muted uppercase tracking-wider">
-            <th className="px-3 py-2 pl-0">{labelHeader}</th>
-            <th className="px-3 py-2 text-right">Hits</th>
-            <th className="px-3 py-2 text-right">Errors</th>
-            <th className="px-3 py-2 text-right">P99</th>
-            <th className="px-3 py-2 text-right">Latency vs 1h ago</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => {
-            const health = classifyHealth(r.errorRate, ENDPOINT_HEALTH_THRESHOLDS);
-            return (
-              <tr
-                key={r.key}
-                className="border-border/40 border-b last:border-b-0 hover:bg-muted/10"
-              >
-                <td className="px-3 py-3 pl-0">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`rounded px-1.5 py-0.5 font-bold font-mono text-[9px] ${
-                        r.badgeVariant === "brand"
-                          ? "bg-[var(--brand-soft)] text-[var(--brand)]"
-                          : "bg-[var(--color-success-bg)] text-[var(--color-success)]"
-                      }`}
-                    >
-                      {r.badge}
-                    </span>
-                    <span className="max-w-[200px] truncate font-mono font-semibold text-[12px] text-foreground">
-                      {r.label}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-3 py-3 text-right font-mono text-[12.5px] tabular-nums">
-                  {fmtNum(r.totalCount)}
-                </td>
-                <td
-                  className={`px-3 py-3 text-right font-mono font-semibold text-[12.5px] tabular-nums ${
-                    health === "unhealthy"
-                      ? "text-[var(--err)]"
-                      : health === "degraded"
-                        ? "text-[var(--warn)]"
-                        : "text-foreground-muted"
-                  }`}
-                >
-                  {r.errorRate.toFixed(2)}%
-                </td>
-                <td className="px-3 py-3 text-right font-mono font-semibold text-[12.5px] tabular-nums">
-                  {Math.round(r.p99Ms)}ms
-                </td>
-                <td className="px-3 py-3 text-right">{renderLatencyDelta(r.p99DeltaPct)}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div>
+      <DataTable data={{ columns: buildColumns(labelHeader), rows }} />
 
+      {/* Paging is server-driven (page/hasMore), so it stays outside DataTable. */}
       <div className="mt-4 flex items-center justify-between border-border/40 border-t pt-4">
         <div className="text-[11.5px] text-foreground-muted">Showing page {page + 1}</div>
         <div className="flex gap-2">

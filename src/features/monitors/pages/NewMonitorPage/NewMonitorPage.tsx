@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useMemo } from "react";
 
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import { useMonitorDetail } from "../../hooks/useMonitorDetail";
 

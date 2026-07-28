@@ -5,7 +5,7 @@ import { z } from "zod";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export interface PlaygroundMessage {
+interface PlaygroundMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
@@ -32,17 +32,4 @@ export async function playgroundComplete(
 ): Promise<PlaygroundCompleteResponse> {
   const res = await api.post<unknown>(`${BASE}/llm/playground/complete`, req);
   return validateResponse(completeResponseSchema, res);
-}
-
-const priceEntrySchema = z.object({
-  model: z.string(),
-  inPer1M: z.number(),
-  outPer1M: z.number(),
-});
-export type LlmPriceEntry = z.infer<typeof priceEntrySchema>;
-const pricingSchema = z.object({ models: z.array(priceEntrySchema).nullish() });
-
-export async function getPricing(): Promise<LlmPriceEntry[]> {
-  const res = await api.get<unknown>(`${BASE}/llm/pricing`);
-  return validateResponse(pricingSchema, res).models ?? [];
 }

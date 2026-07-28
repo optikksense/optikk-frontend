@@ -2,7 +2,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink, Info } from "lucide-react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { Skeleton, Surface, Tooltip } from "@shared/components/primitives/ui";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
+import { Skeleton } from "@shared/components/primitives/ui/skeleton";
+import { Tooltip } from "@shared/components/primitives/ui/tooltip";
 import { formatNumber } from "@shared/utils/formatters";
 
 import type { ErrorHotspotRow } from "../hooks/useOverviewModel";

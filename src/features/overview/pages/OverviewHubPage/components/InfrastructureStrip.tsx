@@ -3,7 +3,7 @@ import { Database, Layers3 } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { Surface } from "@shared/components/primitives/ui";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
 
 interface InfraTile {
   readonly key: string;

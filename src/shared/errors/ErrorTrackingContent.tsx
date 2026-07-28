@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Search, X } from "lucide-react";
 
-import { PageSurface } from "@shared/components/ui";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 
 import { ErrorsKpiStrip } from "./components/ErrorsKpiStrip";
 import { IssuesTable } from "./components/IssuesTable";

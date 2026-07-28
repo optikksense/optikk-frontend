@@ -22,13 +22,3 @@ export interface ExplorerTrendBucket {
   readonly total: number;
   readonly errors: number;
 }
-
-export interface ExplorerQueryWarnings {
-  readonly code: string;
-  readonly message: string;
-}
-
-export interface ExplorerSummary {
-  readonly total: number;
-  readonly errors: number;
-}

@@ -1,7 +1,7 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Suspense, lazy, useMemo } from "react";
 
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getNodesSummary } from "../../api/nodesApi";

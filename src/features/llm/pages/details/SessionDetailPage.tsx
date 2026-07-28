@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 
-import { Card } from "@shared/components/primitives/ui";
-import { PageShell } from "@shared/components/ui";
+import { Card } from "@shared/components/primitives/ui/card";
 import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import Loading from "@shared/components/ui/feedback/Loading";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { formatDuration } from "@shared/utils/formatters";
 
 import { LlmBackLink } from "../../components/LlmBackLink";

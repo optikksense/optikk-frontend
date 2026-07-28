@@ -3,7 +3,7 @@ import { API_CONFIG } from "@config/apiConfig";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-export type ChannelType = "slack";
+type ChannelType = "slack";
 
 export interface Channel {
   readonly id: number;

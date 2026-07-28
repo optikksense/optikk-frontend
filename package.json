@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "ci": "yarn type-check && yarn lint && yarn check-boundaries && yarn build",
+    "ci": "yarn type-check && yarn lint && yarn check-boundaries && yarn knip && yarn build",
     "check-boundaries": "node scripts/check-boundaries.mjs",
+    "knip": "knip",
     "preview": "vite preview",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -53,6 +54,7 @@
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.4.27",
+    "knip": "^6.29.0",
     "postcss": "^8.5.18",
     "rollup-plugin-visualizer": "^7.0.1",
     "tailwindcss": "^3.4.19",

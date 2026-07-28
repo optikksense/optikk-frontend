@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { PageSurface } from "@shared/components/ui";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 
 import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
 import {

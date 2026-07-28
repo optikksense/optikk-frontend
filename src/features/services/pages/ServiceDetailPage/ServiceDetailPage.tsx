@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { PageShell, PageSurface } from "@shared/components/ui";
+import { PageShell, PageSurface } from "@shared/components/ui/layout/PageShell";
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 
 import { ServiceHeroHeader } from "./hero/ServiceHeroHeader";

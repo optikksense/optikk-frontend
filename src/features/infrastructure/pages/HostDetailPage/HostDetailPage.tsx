@@ -1,8 +1,8 @@
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import { PageShell } from "@shared/components/ui";
 import DataTable from "@shared/components/ui/data-display/DataTable";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { fmtMs, formatNumber } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";

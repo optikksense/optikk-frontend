@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ChevronRight } from "lucide-react";
 
-import { StatCard } from "@shared/components/ui";
+import StatCard from "@shared/components/ui/cards/StatCard";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 import { formatDuration, formatNumber, formatRelativeTime } from "@shared/utils/formatters";
 

@@ -10,7 +10,6 @@ const Drawer = ({
 );
 Drawer.displayName = "Drawer";
 const DrawerPortal = DrawerPrimitive.Portal;
-const DrawerClose = DrawerPrimitive.Close;
 
 const DrawerOverlay = ({
   className,
@@ -38,19 +37,6 @@ const DrawerContent = ({
 );
 DrawerContent.displayName = "DrawerContent";
 
-const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("flex items-center justify-between border-border border-b px-6 py-4", className)}
-    {...props}
-  />
-);
-DrawerHeader.displayName = "DrawerHeader";
-
-const DrawerTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 className={cn("m-0", className)} {...props} />
-);
-DrawerTitle.displayName = "DrawerTitle";
-
 const DrawerDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
   <p className={cn("text-muted-foreground text-sm", className)} {...props} />
 );
@@ -67,4 +53,4 @@ const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 );
 DrawerFooter.displayName = "DrawerFooter";
 
-export { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle };
+export { Drawer, DrawerContent };

@@ -1,4 +1,6 @@
-import { IconButton, Skeleton, Surface } from "@shared/components/primitives/ui";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
+import { IconButton } from "@shared/components/primitives/ui/icon-button";
+import { Skeleton } from "@shared/components/primitives/ui/skeleton";
 import { Copy, Key, RefreshCw, TriangleAlert, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

@@ -1,4 +1,4 @@
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { AlertTriangle, Waves } from "lucide-react";
 import { useState } from "react";
 

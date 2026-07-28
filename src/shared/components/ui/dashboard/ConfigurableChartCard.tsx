@@ -1,4 +1,5 @@
-import { Surface, Tooltip } from "@shared/components/primitives/ui";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
+import { Tooltip } from "@shared/components/primitives/ui/tooltip";
 import { Info } from "lucide-react";
 
 import type { ComponentType, ReactNode } from "react";
@@ -24,7 +25,7 @@ import type {
   DashboardPanelSpec,
 } from "@shared/types/dashboardConfig";
 
-import { ErrorBoundary } from "@shared/components/ui/feedback";
+import ErrorBoundary from "@shared/components/ui/feedback/ErrorBoundary";
 import { cn } from "@shared/lib/utils";
 import {
   type BaseChartComponentProps,

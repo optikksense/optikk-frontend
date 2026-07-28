@@ -1,7 +1,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 
-import { Surface } from "@shared/components/primitives/ui";
-import { ConfigurableChartCard } from "@shared/components/ui/dashboard";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
+import ConfigurableChartCard from "@shared/components/ui/dashboard/ConfigurableChartCard";
 import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplorerQuery";
 import { isMetricsQuerySpec } from "@shared/types/dashboardConfig";
 import type { DashboardPanelSpec } from "@shared/types/dashboardConfig";

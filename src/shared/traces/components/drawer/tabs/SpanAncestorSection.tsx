@@ -1,5 +1,5 @@
 import type { TraceRecord } from "@shared/api/traces/schemas";
-import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
 import { svcHue } from "@shared/traces/utils/color";
 import { formatDuration } from "@shared/utils/formatters";
 import { ChevronRight } from "lucide-react";

@@ -2,7 +2,7 @@ import { formatPercentage } from "@shared/utils/formatters";
 import { BaseEdge, EdgeLabelRenderer, type EdgeProps, getSmoothStepPath } from "@xyflow/react";
 import { formatMs, formatNumber } from "./format";
 
-import { Tooltip } from "@shared/components/primitives/ui";
+import { Tooltip } from "@shared/components/primitives/ui/tooltip";
 
 export interface TopologyEdgeData {
   callCount: number;

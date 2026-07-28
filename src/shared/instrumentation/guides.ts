@@ -2,7 +2,7 @@ import type { IngestionEndpoints } from "@shared/api/ingestionEndpoints";
 
 import { API_KEY_PLACEHOLDER, collectorConfigLines } from "./collectorConfig";
 
-export interface GuideStep {
+interface GuideStep {
   readonly title: string;
   readonly description?: string;
   readonly code: string;

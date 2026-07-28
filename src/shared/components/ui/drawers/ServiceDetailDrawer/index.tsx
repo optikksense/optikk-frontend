@@ -4,11 +4,11 @@ import { useMemo } from "react";
 import {
   DrawerHeader,
   DrawerIconButton,
-  DrawerKpi,
-  DrawerMiniSignal,
-  DrawerSection,
-  DrawerShell,
-} from "@shared/components/ui/overlay/detail-drawer";
+} from "@shared/components/ui/overlay/detail-drawer/DrawerHeader";
+import { DrawerKpi } from "@shared/components/ui/overlay/detail-drawer/DrawerKpi";
+import { DrawerMiniSignal } from "@shared/components/ui/overlay/detail-drawer/DrawerMiniSignal";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
+import { DrawerShell } from "@shared/components/ui/overlay/detail-drawer/DrawerShell";
 import { formatDuration, formatNumber, formatPercentage } from "@shared/utils/formatters";
 
 import { ServiceDrawerDependenciesSection } from "./components/ServiceDrawerDependenciesSection";

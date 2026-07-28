@@ -1,4 +1,4 @@
-import { StatCard } from "@shared/components/ui";
+import StatCard from "@shared/components/ui/cards/StatCard";
 
 interface StatCardsGridProps {
   stats?: (React.ComponentProps<typeof StatCard> & { colProps?: unknown })[];

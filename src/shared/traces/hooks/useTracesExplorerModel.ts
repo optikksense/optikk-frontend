@@ -2,7 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useAppStore, useResolvedTimeBounds, useTimeRange } from "@app/store/appStore";
-import type { ExplorerFilter, ExplorerIncludeFlag } from "@shared/search/types";
+import type { ExplorerFilter } from "@shared/search/types/filters";
+import type { ExplorerIncludeFlag } from "@shared/search/types/queries";
 import { toTrendBuckets } from "@shared/search/utils/trend";
 
 import type { TraceSummary } from "@shared/api/traces/types";

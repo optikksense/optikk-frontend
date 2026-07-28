@@ -5,8 +5,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@shared/components/primitives/ui";
-import { EmptyState, Loading, PageSurface } from "@shared/components/ui";
+} from "@shared/components/primitives/ui/table";
+import EmptyState from "@shared/components/ui/feedback/EmptyState";
+import Loading from "@shared/components/ui/feedback/Loading";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 
 import { HEALTH_COLOR, categoryColor, categoryLabel, providerMeta } from "../../constants";
 import { useCloudProvider } from "../../hooks/useCloud";

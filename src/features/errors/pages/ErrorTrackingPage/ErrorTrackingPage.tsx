@@ -1,6 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 
-import { PageHeader, PageShell } from "@shared/components/ui";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { ErrorTrackingContent } from "@shared/errors/ErrorTrackingContent";
 
 export default function ErrorTrackingPage(): JSX.Element {

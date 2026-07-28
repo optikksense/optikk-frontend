@@ -5,7 +5,7 @@ import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/hea
 
 import type { DependencyRow, EndpointRow, ServiceSummarySnapshot } from "./types";
 
-export function normalizeServiceKey(value: string): string {
+function normalizeServiceKey(value: string): string {
   return value.trim().toLowerCase();
 }
 

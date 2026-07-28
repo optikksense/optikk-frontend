@@ -1,4 +1,5 @@
-import { Button, Surface } from "@shared/components/primitives/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
 import { UNKNOWN_ERROR } from "@shared/constants/errorCodes";
 import { AlertCircle, AlertTriangle } from "lucide-react";
 import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";

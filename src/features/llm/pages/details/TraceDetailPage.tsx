@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import { PageShell } from "@shared/components/ui";
 import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import Loading from "@shared/components/ui/feedback/Loading";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import { TraceDetailViewer } from "@shared/traces/components/TraceDetailViewer";
 import { adaptLlmTraceToShared } from "../../adapters/llmTraceAdapter";

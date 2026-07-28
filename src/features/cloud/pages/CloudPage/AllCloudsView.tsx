@@ -1,4 +1,5 @@
-import { PageSurface, StatCard } from "@shared/components/ui";
+import StatCard from "@shared/components/ui/cards/StatCard";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 import { ChevronRight } from "lucide-react";
 
 import { categoryLabel, providerMeta } from "../../constants";

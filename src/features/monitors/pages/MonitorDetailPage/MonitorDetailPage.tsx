@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import { ackMonitor, muteMonitor } from "../../api/monitorsApi";
 import {

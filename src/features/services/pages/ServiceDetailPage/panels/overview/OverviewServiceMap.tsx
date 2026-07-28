@@ -1,4 +1,4 @@
-import { ErrorBoundary } from "@shared/components/ui/feedback";
+import ErrorBoundary from "@shared/components/ui/feedback/ErrorBoundary";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServiceTopology } from "../../hooks/useServiceTopology";

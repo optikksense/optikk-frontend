@@ -1,4 +1,4 @@
-import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
 import type { TimingFacts } from "@shared/traces/utils/timing";
 import { formatDuration } from "@shared/utils/formatters";
 import { memo } from "react";

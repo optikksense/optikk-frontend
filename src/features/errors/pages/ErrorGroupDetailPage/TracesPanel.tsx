@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
-import { Skeleton } from "@shared/components/primitives/ui";
-import { PageSurface } from "@shared/components/ui";
+import { Skeleton } from "@shared/components/primitives/ui/skeleton";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 
 import type { ErrorGroupTrace } from "@shared/api/errors";

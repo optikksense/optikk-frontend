@@ -20,7 +20,7 @@ import {
  * so the UI can surface them — nothing is dropped silently.
  */
 
-export interface TracesFiltersBody {
+interface TracesFiltersBody {
   startTime: number;
   endTime: number;
   limit?: number;

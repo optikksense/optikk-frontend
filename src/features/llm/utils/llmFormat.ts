@@ -22,22 +22,7 @@ export function vendorColor(vendor: string): string {
 }
 
 // Span-kind identity chips (LLM / tool / retrieval / embedding / agent).
-export const OPERATION_META: Record<string, { label: string; color: string }> = {
-  chat: { label: "LLM", color: "var(--chart-3)" },
-  tool: { label: "Tool", color: "var(--chart-1)" },
-  retrieval: { label: "Retrieval", color: "var(--chart-2)" },
-  embedding: { label: "Embedding", color: "var(--chart-4)" },
-  agent: { label: "Agent", color: "var(--chart-5)" },
-  other: { label: "Other", color: "var(--chart-6)" },
-};
-
 // App-kind identity chips, derived server-side from the span mix.
-export const KIND_META: Record<string, { label: string; color: string }> = {
-  agent: { label: "agent", color: "var(--chart-5)" },
-  rag: { label: "rag", color: "var(--chart-2)" },
-  workflow: { label: "workflow", color: "var(--chart-6)" },
-};
-
 // Tokens/latency use shared formatNumber/formatDuration; only cost is local.
 export function formatCost(n: number): string {
   if (n >= 100) return `$${Math.round(n).toLocaleString()}`;

@@ -7,7 +7,7 @@ import { getSaturation, numericValue, rangeParams, stringValue } from "./saturat
 const nullableNumber = z.number().nullable();
 const scopedString = stringValue.optional().default("");
 
-export const slowQueryPatternSchema = z.object({
+const slowQueryPatternSchema = z.object({
   // Backend fingerprint; defaults to "" when the server is older.
   queryHash: scopedString,
   queryText: stringValue,

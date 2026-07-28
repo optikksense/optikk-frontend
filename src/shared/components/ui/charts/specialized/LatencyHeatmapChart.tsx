@@ -1,4 +1,4 @@
-import { Tooltip } from "@shared/components/primitives/ui";
+import { Tooltip } from "@shared/components/primitives/ui/tooltip";
 import { useMemo } from "react";
 
 import { APP_COLORS } from "@config/colorLiterals";

@@ -45,7 +45,7 @@ function urlValueToPreset(val: string): RelativeTimeRange | null {
   return { kind: "relative", preset: presetStr, label: `Last ${num}${unit}`, minutes };
 }
 
-export function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | null {
+function parseUrlTimeRange(from: string | null, to: string | null): TimeRange | null {
   if (!from) return null;
 
   if (from.startsWith("now-") && (!to || to === "now")) {
@@ -66,26 +66,26 @@ export function parseUrlTimeRange(from: string | null, to: string | null): TimeR
   return null;
 }
 
-export function timeRangeToUrlParams(r: TimeRange): { from: string; to: string } {
+function timeRangeToUrlParams(r: TimeRange): { from: string; to: string } {
   if (r.kind === "relative") {
     return { from: presetToUrlValue(r.preset), to: "now" };
   }
   return { from: String(r.startMs), to: String(r.endMs) };
 }
 
-export interface UrlTimeState {
+interface UrlTimeState {
   from: string | null;
   to: string | null;
   tz: string | null;
 }
 
-export interface UrlWrite {
+interface UrlWrite {
   from: string;
   to: string;
   tz: string | null;
 }
 
-export function resolveUrlWrite(
+function resolveUrlWrite(
   timeRange: TimeRange,
   timezone: string,
   url: UrlTimeState
@@ -98,7 +98,7 @@ export function resolveUrlWrite(
   return { from: params.from, to: params.to, tz: expectedTz };
 }
 
-export function resolveStoreWrite(timeRange: TimeRange, url: UrlTimeState): TimeRange | null {
+function resolveStoreWrite(timeRange: TimeRange, url: UrlTimeState): TimeRange | null {
   const parsed = parseUrlTimeRange(url.from, url.to);
   if (!parsed) return null;
   const currentParams = timeRangeToUrlParams(timeRange);

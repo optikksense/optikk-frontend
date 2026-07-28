@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
 import {
-  type CreatePromptRequest,
   type CreateVersionRequest,
   createPrompt,
   createPromptVersion,
@@ -44,5 +43,3 @@ export function usePromptMutations(name?: string) {
   });
   return { create, addVersion, setStatus };
 }
-
-export type { CreatePromptRequest };

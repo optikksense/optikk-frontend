@@ -2,7 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Bell, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { PageHeader, PageShell } from "@shared/components/ui";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import type { ListMonitorsParams, MonitorStatus } from "../../api/monitorsApi";
 import { useMonitorsActivity } from "../../hooks/useMonitorsActivity";

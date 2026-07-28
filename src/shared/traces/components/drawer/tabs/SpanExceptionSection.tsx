@@ -1,4 +1,4 @@
-import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
 import type { SpanAttributes } from "@shared/traces/types/detail";
 import { AlertCircle } from "lucide-react";
 import { memo } from "react";

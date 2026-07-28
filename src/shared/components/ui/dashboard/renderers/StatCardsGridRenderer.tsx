@@ -2,7 +2,7 @@ import { Activity, AlertCircle, Clock, Zap } from "lucide-react";
 import { useMemo } from "react";
 
 import { APP_COLORS } from "@config/colorLiterals";
-import { StatCardsGrid } from "@shared/components/ui";
+import StatCardsGrid from "@shared/components/ui/cards/StatCardsGrid";
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
 import { useDashboardData } from "../hooks/useDashboardData";

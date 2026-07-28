@@ -2,17 +2,17 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { Download } from "lucide-react";
 import { useMemo, useRef } from "react";
 
+import { Button } from "@shared/components/primitives/ui/button";
 import {
-  Button,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  TableSparkline,
-} from "@shared/components/primitives/ui";
-import { PageSurface } from "@shared/components/ui";
+} from "@shared/components/primitives/ui/table";
+import { TableSparkline } from "@shared/components/primitives/ui/table-sparkline";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 
 import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
 import type { MetricQueryDefinition, MetricQueryResult } from "@shared/metrics/types";

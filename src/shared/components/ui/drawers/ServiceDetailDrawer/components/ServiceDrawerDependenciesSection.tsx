@@ -2,7 +2,7 @@ import { memo } from "react";
 
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
-import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
 
 import { CompactTable } from "../CompactTable";
 import type { Column, DependencyRow } from "../types";

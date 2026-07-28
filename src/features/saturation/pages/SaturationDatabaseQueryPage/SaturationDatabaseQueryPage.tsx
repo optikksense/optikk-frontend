@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import type { DatabaseFilters } from "@/features/saturation/api/databaseSlowQueriesApi";
 import { Route } from "@/routes/_app/saturation/database/query/$queryId";
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import { QueryDetailHeader } from "./QueryDetailHeader";
 import { QueryDetailKpiStrip } from "./QueryDetailKpiStrip";

@@ -41,7 +41,6 @@ const turnSchema = z.object({
   outputText: z.string().nullish(),
   cost: z.number(),
 });
-export type LlmSessionTurn = z.infer<typeof turnSchema>;
 
 const sessionDetailSchema = z.object({
   sessionId: z.string(),

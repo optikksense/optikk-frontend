@@ -1,4 +1,4 @@
-import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer";
+import { DrawerSection } from "@shared/components/ui/overlay/detail-drawer/DrawerSection";
 import type { RelatedTrace } from "@shared/traces/types/detail";
 import { formatDuration } from "@shared/utils/formatters";
 import { ArrowUpRight } from "lucide-react";

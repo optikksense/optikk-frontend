@@ -2,7 +2,7 @@ import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { PageTabs } from "@shared/components/primitives/ui/page-tabs";
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import { DatabaseDetailHeader } from "./header/DatabaseDetailHeader";
 import { useDatabaseInstance } from "./hooks/useDatabaseInstance";

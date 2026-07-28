@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { ROUTES } from "@/shared/constants/routes";
-import { Tooltip } from "@shared/components/primitives/ui";
+import { Tooltip } from "@shared/components/primitives/ui/tooltip";
 import { cn } from "@shared/lib/utils";
 
 import { session } from "@shared/api/auth/session";

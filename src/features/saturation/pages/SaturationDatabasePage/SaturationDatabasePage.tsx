@@ -1,8 +1,8 @@
 import { Database } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { PageShell } from "@shared/components/ui";
 import { KpiCard } from "@shared/components/ui/cards/StatCard";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { SaturationSubnav } from "@/features/saturation/components/SaturationSubnav";

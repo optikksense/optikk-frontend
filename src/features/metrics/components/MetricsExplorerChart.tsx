@@ -2,8 +2,8 @@ import { AlertCircle, BarChart3, RefreshCw } from "lucide-react";
 import { useMemo } from "react";
 
 import { Button } from "@shared/components/primitives/ui/button";
-import { PageSurface } from "@shared/components/ui";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
+import { PageSurface } from "@shared/components/ui/layout/PageShell";
 import { cn } from "@shared/lib/utils";
 
 import type {

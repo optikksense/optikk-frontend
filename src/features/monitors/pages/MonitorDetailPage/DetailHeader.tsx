@@ -2,7 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Check, MoreHorizontal, Pause, Pencil, Trash2 } from "lucide-react";
 import { memo, useState } from "react";
 
-import { DropdownMenu, DropdownMenuItem, Modal } from "@shared/components/primitives/ui";
+import { Modal } from "@shared/components/primitives/ui/dialog";
+import { DropdownMenu, DropdownMenuItem } from "@shared/components/primitives/ui/dropdown-menu";
 
 import type { Monitor } from "../../api/monitorsApi";
 import MonitorStatusBadge from "../../components/MonitorStatusBadge";

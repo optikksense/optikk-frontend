@@ -1,4 +1,4 @@
-import { Surface } from "@shared/components/primitives/ui";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
 
 import StatCard from "@shared/components/ui/cards/StatCard";
 

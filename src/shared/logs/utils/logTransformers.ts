@@ -1,4 +1,4 @@
-import type { DrawerAttrGroup } from "@shared/components/ui/overlay/detail-drawer";
+import type { DrawerAttrGroup } from "@shared/components/ui/overlay/detail-drawer/DrawerAttrTable";
 import type { LogRecord } from "../types/log";
 import { getSpanId, getTraceId } from "./traceCorrelation";
 

@@ -15,14 +15,14 @@ export interface SpanEvent {
   readonly attributes: string;
 }
 
-export interface SpanLink {
+interface SpanLink {
   readonly traceId: string;
   readonly spanId: string;
   readonly traceState?: string;
   readonly attributes?: Record<string, string>;
 }
 
-export interface LlmScoreFact {
+interface LlmScoreFact {
   readonly name: string;
   readonly value: number;
   readonly stringValue?: string | null;
@@ -65,22 +65,4 @@ export interface RelatedTrace {
   readonly durationMs: number;
   readonly status: string;
   readonly startTime: string;
-}
-
-export interface CriticalPathSpan {
-  readonly spanId: string;
-  readonly operationName: string;
-  readonly serviceName: string;
-  readonly durationMs: number;
-}
-
-export interface ErrorPathSpan {
-  readonly spanId: string;
-  readonly parentSpanId: string;
-  readonly operationName: string;
-  readonly serviceName: string;
-  readonly status: string;
-  readonly statusMessage: string;
-  readonly startTime: string;
-  readonly durationMs: number;
 }

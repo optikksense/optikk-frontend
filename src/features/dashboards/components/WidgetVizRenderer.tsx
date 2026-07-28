@@ -169,6 +169,7 @@ function ToplistViz({ queries, results }: SingleQueryVizProps) {
   );
 }
 
+// Not DataTable: a cell-sized WYSIWYG fragment; the widget owns chrome/states.
 function TableViz({ queries, results }: SingleQueryVizProps) {
   const primary = queries[0];
   const rows = useMemo(() => {

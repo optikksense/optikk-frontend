@@ -1,10 +1,11 @@
 import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Button, Card } from "@shared/components/primitives/ui";
-import { PageShell } from "@shared/components/ui";
+import { Button } from "@shared/components/primitives/ui/button";
+import { Card } from "@shared/components/primitives/ui/card";
 import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import Loading from "@shared/components/ui/feedback/Loading";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import { formatRelativeTime } from "@shared/utils/formatters";
 import { LlmBackLink } from "../../components/LlmBackLink";

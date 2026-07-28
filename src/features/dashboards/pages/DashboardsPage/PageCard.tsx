@@ -3,7 +3,8 @@ import { MoreHorizontal, Plus, Star, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { DropdownMenu, DropdownMenuItem, Modal } from "@shared/components/primitives/ui";
+import { Modal } from "@shared/components/primitives/ui/dialog";
+import { DropdownMenu, DropdownMenuItem } from "@shared/components/primitives/ui/dropdown-menu";
 import { cn } from "@shared/lib/utils";
 
 import type { DashboardPage } from "../../api/dashboardsApi";

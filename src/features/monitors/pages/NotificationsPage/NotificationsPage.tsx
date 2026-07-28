@@ -2,7 +2,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Bell } from "lucide-react";
 import { useState } from "react";
 
-import { PageHeader, PageShell } from "@shared/components/ui";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import ChannelsTab from "./ChannelsTab";
 import IntegrationsTab from "./IntegrationsTab";

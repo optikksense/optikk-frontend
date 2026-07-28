@@ -2,8 +2,9 @@ import { useParams } from "@tanstack/react-router";
 import { AlertOctagon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Surface } from "@shared/components/primitives/ui";
-import { PageHeader, PageShell, PageSurface } from "@shared/components/ui";
+import { Card as Surface } from "@shared/components/primitives/ui/card";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell, PageSurface } from "@shared/components/ui/layout/PageShell";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { formatNumber } from "@shared/utils/formatters";
 

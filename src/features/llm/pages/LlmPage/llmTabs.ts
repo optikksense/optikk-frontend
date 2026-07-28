@@ -1,4 +1,4 @@
-export const LLM_TABS = [
+const LLM_TABS = [
   "dashboard",
   "traces",
   "sessions",

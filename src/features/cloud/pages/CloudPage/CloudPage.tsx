@@ -1,5 +1,8 @@
-import { Tabs } from "@shared/components/primitives/ui";
-import { EmptyState, Loading, PageHeader, PageShell } from "@shared/components/ui";
+import { Tabs } from "@shared/components/primitives/ui/tabs";
+import EmptyState from "@shared/components/ui/feedback/EmptyState";
+import Loading from "@shared/components/ui/feedback/Loading";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { Cloud } from "lucide-react";
 import { useState } from "react";
 

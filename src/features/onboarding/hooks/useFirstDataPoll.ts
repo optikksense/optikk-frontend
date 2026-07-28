@@ -10,7 +10,7 @@ const HINT_AFTER_MS = 2 * 60_000;
 const GIVE_UP_AFTER_MS = 15 * 60_000;
 const LOOKBACK_MS = 60 * 60_000;
 
-export interface FirstData {
+interface FirstData {
   readonly records: number;
   readonly spans: number;
   readonly service: string | null;

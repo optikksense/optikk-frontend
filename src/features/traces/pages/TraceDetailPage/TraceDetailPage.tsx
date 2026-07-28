@@ -1,7 +1,7 @@
 import type { TraceLog } from "@shared/api/traces/schemas";
 import { useMemo, useState } from "react";
 
-import { PageShell } from "@shared/components/ui";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { LogsTable } from "@shared/logs/components/table/LogsTable";
 import { traceLogToLogRecord } from "@shared/logs/utils/traceLogAdapter";
 

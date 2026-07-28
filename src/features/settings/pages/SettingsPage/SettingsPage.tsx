@@ -1,14 +1,13 @@
-import { Tabs } from "@shared/components/primitives/ui";
+import { Tabs } from "@shared/components/primitives/ui/tabs";
 import { Settings, Terminal, User, Users, UsersRound } from "lucide-react";
 
-import { PageHeader, PageShell } from "@shared/components/ui";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
+import { PageShell } from "@shared/components/ui/layout/PageShell";
 
-import {
-  SettingsInstrumentationTab,
-  SettingsMembersTab,
-  SettingsProfileTab,
-  SettingsTenantTab,
-} from "../../components/tabs";
+import SettingsInstrumentationTab from "../../components/tabs/SettingsInstrumentationTab";
+import SettingsMembersTab from "../../components/tabs/SettingsMembersTab";
+import SettingsProfileTab from "../../components/tabs/SettingsProfileTab";
+import SettingsTenantTab from "../../components/tabs/SettingsTenantTab";
 import { type SettingsTab, useSettingsTab } from "./useSettingsTab";
 
 import { useAuthStore } from "@app/store/authStore";

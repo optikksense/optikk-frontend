@@ -1,6 +1,42 @@
 import { memo } from "react";
 
+import DataTable from "@shared/components/ui/data-display/DataTable";
+import type { ColumnDef } from "@tanstack/react-table";
+
 import type { MonitorEvent } from "../../api/monitorsApi";
+
+const COLUMNS: ColumnDef<MonitorEvent>[] = [
+  {
+    header: "When",
+    accessorKey: "startedAt",
+    cell: ({ row: { original: e } }) => (
+      <span className="font-mono text-xs">{new Date(e.startedAt).toLocaleString()}</span>
+    ),
+  },
+  {
+    header: "Kind",
+    accessorKey: "kind",
+    cell: ({ row: { original: e } }) => <span className="text-xs">{e.kind}</span>,
+  },
+  {
+    header: "Peak value",
+    accessorKey: "value",
+    meta: { align: "right" },
+    cell: ({ row: { original: e } }) => (
+      <span className="font-mono text-xs">{e.value !== undefined ? e.value.toFixed(2) : "—"}</span>
+    ),
+  },
+  {
+    header: "Threshold",
+    accessorKey: "threshold",
+    meta: { align: "right" },
+    cell: ({ row: { original: e } }) => (
+      <span className="font-mono text-xs">
+        {e.threshold !== undefined ? e.threshold.toFixed(2) : "—"}
+      </span>
+    ),
+  },
+];
 
 interface Props {
   readonly events: readonly MonitorEvent[];
@@ -12,44 +48,16 @@ function RecentTriggersCard({ events, loading }: Props) {
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="font-medium text-foreground text-sm">Recent triggers</div>
       <div className="text-[11px] text-foreground-muted">last events</div>
-      <table className="mt-3 w-full text-xs">
-        <thead className="text-[10px] text-foreground-muted uppercase tracking-wider">
-          <tr>
-            <th className="py-1 text-left font-medium">When</th>
-            <th className="py-1 text-left font-medium">Kind</th>
-            <th className="py-1 text-right font-medium">Peak value</th>
-            <th className="py-1 text-right font-medium">Threshold</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading && events.length === 0 ? (
-            <tr>
-              <td colSpan={4} className="py-4 text-center text-foreground-muted">
-                Loading…
-              </td>
-            </tr>
-          ) : events.length === 0 ? (
-            <tr>
-              <td colSpan={4} className="py-4 text-center text-foreground-muted">
-                No triggers yet.
-              </td>
-            </tr>
-          ) : (
-            events.map((e) => (
-              <tr key={e.id} className="border-border border-t">
-                <td className="py-1.5 font-mono">{new Date(e.startedAt).toLocaleString()}</td>
-                <td className="py-1.5">{e.kind}</td>
-                <td className="py-1.5 text-right font-mono">
-                  {e.value !== undefined ? e.value.toFixed(2) : "—"}
-                </td>
-                <td className="py-1.5 text-right font-mono">
-                  {e.threshold !== undefined ? e.threshold.toFixed(2) : "—"}
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      <div className="mt-3">
+        <DataTable
+          data={{
+            columns: COLUMNS,
+            rows: [...events],
+            loading: loading && events.length === 0,
+          }}
+          config={{ emptyText: "No triggers yet." }}
+        />
+      </div>
     </div>
   );
 }

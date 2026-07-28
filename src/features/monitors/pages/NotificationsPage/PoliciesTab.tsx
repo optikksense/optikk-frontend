@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+import DataTable from "@shared/components/ui/data-display/DataTable";
+import type { ColumnDef } from "@tanstack/react-table";
+
 import type { Policy } from "../../api/notificationsApi";
 import { usePolicyMutations } from "../../hooks/useNotificationMutations";
 import { usePolicies } from "../../hooks/useNotifications";
@@ -89,6 +92,71 @@ export default function PoliciesTab() {
     }
   };
 
+  // Edit/Delete cells close over the form state, so columns live in render.
+  const columns: ColumnDef<Policy>[] = [
+    {
+      header: "Policy",
+      accessorKey: "name",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[11px] text-foreground-muted">
+            {String(row.index + 1).padStart(2, "0")}
+          </span>
+          <span className="font-medium text-xs">{row.original.name}</span>
+        </div>
+      ),
+    },
+    {
+      header: "Match",
+      accessorKey: "matchDsl",
+      cell: ({ row: { original: p } }) => (
+        <span className="font-mono text-[11px] text-foreground-secondary">{p.matchDsl}</span>
+      ),
+    },
+    {
+      header: "Hits 30d",
+      accessorKey: "hits30d",
+      meta: { align: "right" },
+      cell: ({ row: { original: p } }) => <span className="font-mono">{p.hits30d}</span>,
+    },
+    {
+      header: "Enabled",
+      accessorKey: "enabled",
+      cell: ({ row: { original: p } }) => (
+        <span
+          className={`rounded px-1.5 py-0.5 text-[10px] ${
+            p.enabled ? "bg-success-subtle text-success" : "bg-muted text-foreground-secondary"
+          }`}
+        >
+          {p.enabled ? "on" : "off"}
+        </span>
+      ),
+    },
+    {
+      header: "Actions",
+      id: "actions",
+      meta: { align: "right" },
+      cell: ({ row: { original: p } }) => (
+        <>
+          <button
+            type="button"
+            onClick={() => setForm(formFromPolicy(p))}
+            className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => handleDelete(p.id)}
+            className="rounded border border-border px-2 py-0.5 text-[11px] text-error hover:bg-secondary"
+          >
+            Delete
+          </button>
+        </>
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-lg border border-border bg-card p-4">
@@ -146,85 +214,17 @@ export default function PoliciesTab() {
         {status && <div className="mt-2 text-warning text-xs">{status}</div>}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="flex items-center justify-between border-border border-b px-4 py-3">
-          <div>
-            <div className="font-medium text-sm">Routing policies</div>
-            <div className="text-[11px] text-foreground-muted">
-              Rules evaluated top-down · first match wins.
-            </div>
+      <div>
+        <div className="px-1 pb-2">
+          <div className="font-medium text-sm">Routing policies</div>
+          <div className="text-[11px] text-foreground-muted">
+            Rules evaluated top-down · first match wins.
           </div>
         </div>
-        <table className="w-full text-sm">
-          <thead className="border-border border-b text-[11px] text-foreground-muted uppercase tracking-wider">
-            <tr>
-              <th className="py-2 pl-4 text-left font-medium">Policy</th>
-              <th className="py-2 text-left font-medium">Match</th>
-              <th className="py-2 text-right font-medium">Hits 30d</th>
-              <th className="py-2 text-left font-medium">Enabled</th>
-              <th className="py-2 pr-4 text-right font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {q.isPending && !q.data ? (
-              <tr>
-                <td colSpan={5} className="py-6 text-center text-foreground-muted text-xs">
-                  Loading…
-                </td>
-              </tr>
-            ) : policies.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-6 text-center text-foreground-muted text-xs">
-                  No policies yet.
-                </td>
-              </tr>
-            ) : (
-              policies.map((p, i) => (
-                <tr key={p.id} className="border-border border-b last:border-0">
-                  <td className="py-2 pl-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-[11px] text-foreground-muted">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="font-medium text-xs">{p.name}</span>
-                    </div>
-                  </td>
-                  <td className="py-2 font-mono text-[11px] text-foreground-secondary">
-                    {p.matchDsl}
-                  </td>
-                  <td className="py-2 text-right font-mono">{p.hits30d}</td>
-                  <td className="py-2">
-                    <span
-                      className={`rounded px-1.5 py-0.5 text-[10px] ${
-                        p.enabled
-                          ? "bg-success-subtle text-success"
-                          : "bg-muted text-foreground-secondary"
-                      }`}
-                    >
-                      {p.enabled ? "on" : "off"}
-                    </span>
-                  </td>
-                  <td className="py-2 pr-4 text-right">
-                    <button
-                      type="button"
-                      onClick={() => setForm(formFromPolicy(p))}
-                      className="mr-1 rounded border border-border px-2 py-0.5 text-[11px] hover:bg-secondary"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(p.id)}
-                      className="rounded border border-border px-2 py-0.5 text-[11px] text-error hover:bg-secondary"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <DataTable
+          data={{ columns, rows: policies, loading: q.isPending && !q.data }}
+          config={{ emptyText: "No policies yet." }}
+        />
       </div>
     </div>
   );

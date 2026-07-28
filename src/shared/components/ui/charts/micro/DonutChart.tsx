@@ -1,4 +1,4 @@
-import { Tooltip } from "@shared/components/primitives/ui";
+import { Tooltip } from "@shared/components/primitives/ui/tooltip";
 import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
 
 interface DonutChartSegment {
