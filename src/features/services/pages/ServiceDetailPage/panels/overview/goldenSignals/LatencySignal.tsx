@@ -4,14 +4,17 @@ import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart"
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { fmtMs } from "@shared/utils/formatters";
-import { pivotByRoute, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
+import { pivotByEndpoint, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 export function LatencySignal({ serviceName }: { serviceName: string }) {
   const query = useREDByEndpoint(serviceName);
   const data = query.data;
 
-  const { timestamps, series } = useMemo(() => pivotByRoute(data, (r) => r.p99Ms, false), [data]);
+  const { timestamps, series } = useMemo(
+    () => pivotByEndpoint(data, (r) => r.p99Ms, false),
+    [data]
+  );
 
   const latestP99 = useMemo(() => {
     let val = 0;

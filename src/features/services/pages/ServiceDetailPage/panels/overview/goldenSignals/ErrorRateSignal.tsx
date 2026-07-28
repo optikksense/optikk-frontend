@@ -4,7 +4,7 @@ import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart"
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { fmtPct } from "@shared/utils/formatters";
-import { pivotByRoute, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
+import { pivotByEndpoint, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
@@ -12,7 +12,7 @@ export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
   const data = query.data;
 
   const { timestamps, series } = useMemo(
-    () => pivotByRoute(data, (r) => r.errorRate, false),
+    () => pivotByEndpoint(data, (r) => r.errorRate, false),
     [data]
   );
 

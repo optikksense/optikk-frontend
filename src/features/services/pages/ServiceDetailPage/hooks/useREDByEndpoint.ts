@@ -7,7 +7,7 @@ import {
   getREDByEndpoint,
 } from "@shared/api/red/redApi";
 
-const ROUTE_COLORS = [
+const ENDPOINT_COLORS = [
   "var(--chart-1)",
   "var(--chart-2)",
   "var(--chart-3)",
@@ -23,7 +23,7 @@ export interface PivotedSeries {
   readonly series: ObservabilityChartSeries[];
 }
 
-export function pivotByRoute(
+export function pivotByEndpoint(
   data: EndpointRateSeries | undefined,
   pick: (entry: EndpointRateEntry) => ReadonlyArray<number | null>,
   fill: boolean
@@ -34,9 +34,9 @@ export function pivotByRoute(
   const timestamps = data.timestamps.map((t) => t / 1000);
 
   const series: ObservabilityChartSeries[] = data.series.map((entry, i) => ({
-    label: entry.httpRoute || "unknown",
+    label: entry.operationName,
     values: [...pick(entry)],
-    color: ROUTE_COLORS[i % ROUTE_COLORS.length] ?? "var(--chart-1)",
+    color: ENDPOINT_COLORS[i % ENDPOINT_COLORS.length] ?? "var(--chart-1)",
     fill,
   }));
 

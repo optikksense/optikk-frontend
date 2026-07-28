@@ -21,7 +21,7 @@ const RED_BY_ENDPOINT_PATH = "/spans/red/red-by-endpoint";
 interface EndpointRateSeriesShape {
   readonly timestamps: number[];
   readonly series: ReadonlyArray<{
-    readonly httpRoute: string;
+    readonly operationName: string;
     readonly rps: ReadonlyArray<number>;
     readonly errorRate: ReadonlyArray<number | null>;
     readonly p99Ms: ReadonlyArray<number | null>;
@@ -41,7 +41,7 @@ function flattenEndpointRateSeries(data: unknown): unknown {
     for (const entry of data.series) {
       rows.push({
         timestamp: new Date(ts).toISOString(),
-        httpRoute: entry.httpRoute,
+        operationName: entry.operationName,
         rps: entry.rps[i] ?? 0,
         errorRate: entry.errorRate[i] ?? null,
         p99Ms: entry.p99Ms[i] ?? null,

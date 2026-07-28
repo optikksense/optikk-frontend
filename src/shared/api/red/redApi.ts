@@ -197,13 +197,13 @@ const latencyPercentilesPointSchema = z.object({
   p99Ms: z.number(),
 });
 
-// Columnar shape: unix-ms timestamps shared by every route entry.
-// Null errorRate/p99Ms cells mean the route had no traffic in that bucket.
+// Columnar shape: unix-ms timestamps shared by every endpoint entry.
+// Null errorRate/p99Ms cells mean the endpoint had no traffic in that bucket.
 const endpointRateSeriesSchema = z.object({
   timestamps: z.array(z.number()),
   series: z.array(
     z.object({
-      httpRoute: z.string(),
+      operationName: z.string(),
       rps: z.array(z.number()),
       errorRate: z.array(z.number().nullable()),
       p99Ms: z.array(z.number().nullable()),
