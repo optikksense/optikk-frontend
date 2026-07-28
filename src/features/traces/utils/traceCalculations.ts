@@ -7,9 +7,9 @@ export interface TraceStats {
   errors: number;
 }
 
-   
-                                                           
-   
+/**
+ * Calculate summary statistics for a trace from its spans.
+ */
 export const calculateTraceStats = (spans: TraceRecord[]): TraceStats => {
   const stats: TraceStats = {
     totalSpans: spans.length,

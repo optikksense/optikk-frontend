@@ -1,7 +1,7 @@
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Suspense, lazy, useMemo } from "react";
 
 import { PageShell } from "@shared/components/ui";
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getNodesSummary } from "../../api/nodesApi";
@@ -81,16 +81,18 @@ function TabsRow({
 }
 
 export default function InfrastructureHubPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const search = useSearch({ from: "/_app/infrastructure/" });
+  const navigate = useNavigate();
   const summaryQ = useNodesSummary();
   const summary = summaryQ.data;
-  const activeTab = useMemo(() => parseTab(searchParams.get(URL_TAB)), [searchParams]);
+  const activeTab = useMemo(() => parseTab(search[URL_TAB] ?? null), [search]);
 
   const setTab = (id: InfraTabId) => {
-    const next = new URLSearchParams(searchParams);
-    if (id === INFRA_TAB.hosts) next.delete(URL_TAB);
-    else next.set(URL_TAB, id);
-    setSearchParams(next, { replace: true });
+    navigate({
+      to: "/infrastructure",
+      search: (prev) => ({ ...prev, [URL_TAB]: id === INFRA_TAB.hosts ? undefined : id }),
+      replace: true,
+    });
   };
 
   const hostCount =

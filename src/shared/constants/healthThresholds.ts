@@ -18,9 +18,9 @@ export const ENDPOINT_HEALTH_THRESHOLDS: HealthThresholds = {
   degraded: 0.5,
 };
 
-   
-                                                                                     
-   
+/**
+ * Classifies health status based on an error rate and standard threshold boundaries.
+ */
 export function classifyHealth(
   errorRate: number,
   thresholds: HealthThresholds

@@ -1,8 +1,17 @@
+import { z } from "zod";
+
 import api from "@/shared/api/http/client";
-import type { RequestTime } from "@/shared/api/service-types";
+import type { PaginatedResponse, RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
+import { validateResponse } from "@shared/api/utils/validate";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
+
+// Backend may serialize absent strings as null; the public contract is `?: string`.
+const optionalString = z
+  .string()
+  .nullish()
+  .transform((value) => value ?? undefined);
 
 export interface ErrorGroup {
   readonly groupId: string;
@@ -16,10 +25,18 @@ export interface ErrorGroup {
   readonly sampleTraceId: string;
 }
 
-   
-                                                                                  
-                                                                             
-   
+const errorGroupSchema = z.object({
+  groupId: z.string(),
+  serviceName: z.string(),
+  operationName: z.string(),
+  statusMessage: z.string(),
+  httpStatusCode: z.number(),
+  errorCount: z.number(),
+  lastOccurrence: z.string(),
+  firstOccurrence: z.string(),
+  sampleTraceId: z.string(),
+});
+
 export interface ErrorGroupDetail {
   readonly groupId: string;
   readonly serviceName: string;
@@ -30,6 +47,17 @@ export interface ErrorGroupDetail {
   readonly firstOccurrence: string;
   readonly exceptionType?: string;
 }
+
+const errorGroupDetailSchema = z.object({
+  groupId: z.string(),
+  serviceName: z.string(),
+  operationName: z.string(),
+  httpStatusCode: z.number(),
+  errorCount: z.number(),
+  lastOccurrence: z.string(),
+  firstOccurrence: z.string(),
+  exceptionType: optionalString,
+});
 
 export interface ErrorLatestOccurrence {
   readonly traceId: string;
@@ -47,6 +75,22 @@ export interface ErrorLatestOccurrence {
   readonly host: string;
 }
 
+const errorLatestOccurrenceSchema = z.object({
+  traceId: z.string(),
+  spanId: z.string(),
+  timestamp: z.string(),
+  durationMs: z.number(),
+  message: z.string(),
+  stacktrace: optionalString,
+  httpMethod: z.string(),
+  httpRoute: z.string(),
+  httpStatusCode: z.string(),
+  serviceVersion: z.string(),
+  environment: z.string(),
+  pod: z.string(),
+  host: z.string(),
+});
+
 interface ErrorFacet {
   readonly name: string;
   readonly count: number;
@@ -58,6 +102,17 @@ export interface ErrorFacetGroup {
   readonly facets: ErrorFacet[];
 }
 
+const errorFacetGroupSchema = z.object({
+  key: z.string(),
+  facets: z.array(
+    z.object({
+      name: z.string(),
+      count: z.number(),
+      pct: z.number(),
+    })
+  ),
+});
+
 export interface ErrorGroupTrace {
   readonly traceId: string;
   readonly spanId: string;
@@ -66,6 +121,14 @@ export interface ErrorGroupTrace {
   readonly statusCode: string;
 }
 
+const errorGroupTraceSchema = z.object({
+  traceId: z.string(),
+  spanId: z.string(),
+  timestamp: z.string(),
+  durationMs: z.number(),
+  statusCode: z.string(),
+});
+
 export interface ErrorTimeSeriesPoint {
   readonly serviceName: string;
   readonly timestamp: string;
@@ -73,7 +136,26 @@ export interface ErrorTimeSeriesPoint {
   readonly errorCount: number;
 }
 
-import type { PaginatedResponse } from "@/shared/api/service-types";
+// errorRate/avgLatency are serialized by the backend (TimeSeriesPoint) but not
+// part of the web contract yet; declared so they don't register as drift.
+const errorTimeSeriesPointSchema = z.object({
+  serviceName: z.string(),
+  timestamp: z.string(),
+  requestCount: z.number(),
+  errorCount: z.number(),
+  errorRate: z.number().nullish(),
+  avgLatency: z.number().nullish(),
+});
+
+const pageInfoSchema = z.object({
+  hasMore: z.boolean(),
+  nextCursor: optionalString,
+  limit: z.number(),
+});
+
+function paginatedSchema<TSchema extends z.ZodTypeAny>(results: TSchema) {
+  return z.object({ results, pageInfo: pageInfoSchema });
+}
 
 interface ErrorListParams {
   serviceName?: string;
@@ -86,78 +168,87 @@ function range(s: RequestTime, e: RequestTime, extra?: Record<string, unknown>) 
   return { startTime: s, endTime: e, ...extra };
 }
 
-export function listErrorGroups(
+export async function listErrorGroups(
   s: RequestTime,
   e: RequestTime,
   p?: ErrorListParams
 ): Promise<PaginatedResponse<ErrorGroup[]>> {
-  return api.get<PaginatedResponse<ErrorGroup[]>>(`${V1}/errors/groups`, {
-    params: range(s, e, p),
-  });
+  const res = await api.get<unknown>(`${V1}/errors/groups`, { params: range(s, e, p) });
+  return validateResponse(paginatedSchema(z.array(errorGroupSchema)), res);
 }
 
-export function getErrorGroupDetail(
+export async function getErrorGroupDetail(
   groupId: string,
   s: RequestTime,
   e: RequestTime
 ): Promise<ErrorGroupDetail> {
-  return api.get<ErrorGroupDetail>(`${V1}/errors/groups/${encodeURIComponent(groupId)}`, {
+  const res = await api.get<unknown>(`${V1}/errors/groups/${encodeURIComponent(groupId)}`, {
     params: range(s, e),
   });
+  return validateResponse(errorGroupDetailSchema, res);
 }
 
-export function getErrorGroupLatestOccurrence(
+export async function getErrorGroupLatestOccurrence(
   groupId: string,
   s: RequestTime,
   e: RequestTime
 ): Promise<ErrorLatestOccurrence | null> {
-  return api.get<ErrorLatestOccurrence | null>(
+  const res = await api.get<unknown>(
     `${V1}/errors/groups/${encodeURIComponent(groupId)}/latest-occurrence`,
     { params: range(s, e) }
   );
+  return validateResponse(errorLatestOccurrenceSchema.nullable(), res ?? null);
 }
 
-export function getErrorGroupFacets(
+export async function getErrorGroupFacets(
   groupId: string,
   s: RequestTime,
   e: RequestTime
 ): Promise<ErrorFacetGroup[]> {
-  return api.get<ErrorFacetGroup[]>(`${V1}/errors/groups/${encodeURIComponent(groupId)}/facets`, {
+  const res = await api.get<unknown>(`${V1}/errors/groups/${encodeURIComponent(groupId)}/facets`, {
     params: range(s, e),
   });
+  return validateResponse(z.array(errorFacetGroupSchema), res ?? []);
 }
 
-export function getErrorGroupTraces(
+export async function getErrorGroupTraces(
   groupId: string,
   s: RequestTime,
   e: RequestTime,
   p?: { limit?: number; cursor?: string }
 ): Promise<PaginatedResponse<ErrorGroupTrace[]>> {
-  return api.get<PaginatedResponse<ErrorGroupTrace[]>>(
-    `${V1}/errors/groups/${encodeURIComponent(groupId)}/traces`,
-    { params: range(s, e, { limit: 20, ...p }) }
-  );
+  const res = await api.get<unknown>(`${V1}/errors/groups/${encodeURIComponent(groupId)}/traces`, {
+    params: range(s, e, { limit: 20, ...p }),
+  });
+  return validateResponse(paginatedSchema(z.array(errorGroupTraceSchema)), res);
 }
 
-export function getErrorGroupTimeseries(
+export async function getErrorGroupTimeseries(
   groupId: string,
   s: RequestTime,
   e: RequestTime
 ): Promise<ErrorTimeSeriesPoint[]> {
-  return api.get<ErrorTimeSeriesPoint[]>(
+  const res = await api.get<unknown>(
     `${V1}/errors/groups/${encodeURIComponent(groupId)}/timeseries`,
     { params: range(s, e) }
   );
+  return validateResponse(z.array(errorTimeSeriesPointSchema), res ?? []);
 }
 
-export function getErrorVolume(s: RequestTime, e: RequestTime, p?: ErrorListParams) {
-  return api.get<ErrorTimeSeriesPoint[]>(`${V1}/errors/error-volume`, {
-    params: range(s, e, p),
-  });
+export async function getErrorVolume(
+  s: RequestTime,
+  e: RequestTime,
+  p?: ErrorListParams
+): Promise<ErrorTimeSeriesPoint[]> {
+  const res = await api.get<unknown>(`${V1}/errors/error-volume`, { params: range(s, e, p) });
+  return validateResponse(z.array(errorTimeSeriesPointSchema), res ?? []);
 }
 
-export function getServiceErrorRate(s: RequestTime, e: RequestTime, p?: ErrorListParams) {
-  return api.get<ErrorTimeSeriesPoint[]>(`${V1}/errors/service-error-rate`, {
-    params: range(s, e, p),
-  });
+export async function getServiceErrorRate(
+  s: RequestTime,
+  e: RequestTime,
+  p?: ErrorListParams
+): Promise<ErrorTimeSeriesPoint[]> {
+  const res = await api.get<unknown>(`${V1}/errors/service-error-rate`, { params: range(s, e, p) });
+  return validateResponse(z.array(errorTimeSeriesPointSchema), res ?? []);
 }

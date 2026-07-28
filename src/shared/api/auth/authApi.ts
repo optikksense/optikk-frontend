@@ -1,13 +1,15 @@
-import axios from "axios";
 import { z } from "zod";
 
 import { API_CONFIG } from "@config/apiConfig";
 
-   
-                                                                              
-                                                                              
-                                                        
-   
+import { api } from "../http/client";
+
+/**
+ * Pure HTTP layer for the auth endpoints. Rides the shared client, but every
+ * request is marked `authExempt`: no Bearer/tenant headers are attached and a
+ * 401 never enters the refresh-and-retry loop, so the refresh call can never
+ * recurse into itself.
+ */
 
 const tenantSchema = z.object({
   id: z.number(),
@@ -33,12 +35,12 @@ export type SessionPayload = z.infer<typeof sessionPayloadSchema>;
 
 const envelopeSchema = z.object({ success: z.literal(true), data: z.unknown() });
 
-   
-                                                                              
-                                                                           
-                                                                                 
-                                                  
-   
+/**
+ * Every auth failure is exactly one of two kinds. Only a `rejected` failure —
+ * the server definitively said no (HTTP 401) — may tear a session down. An
+ * `unavailable` failure (network, timeout, 5xx, malformed response) is transient
+ * and must be retried, never treated as a logout.
+ */
 export type AuthErrorKind = "rejected" | "unavailable";
 
 export class AuthError extends Error {
@@ -51,17 +53,20 @@ export class AuthError extends Error {
   }
 }
 
-const http = axios.create({
-  baseURL: API_CONFIG.BASE_URL,
-  timeout: API_CONFIG.TIMEOUT,
-  withCredentials: true,
-});
+// The shared client rejects with a normalized ApiErrorShape, not an AxiosError.
+function errorStatus(error: unknown): number | undefined {
+  if (typeof error !== "object" || error === null) {
+    return undefined;
+  }
+  const status = (error as { status?: unknown }).status;
+  return typeof status === "number" ? status : undefined;
+}
 
 function serverMessage(error: unknown): string | null {
-  if (!axios.isAxiosError(error)) {
+  if (typeof error !== "object" || error === null) {
     return null;
   }
-  const body = error.response?.data;
+  const body = (error as { data?: unknown }).data;
   if (typeof body !== "object" || body === null) {
     return null;
   }
@@ -69,21 +74,19 @@ function serverMessage(error: unknown): string | null {
   return typeof message === "string" && message.length > 0 ? message : null;
 }
 
-                                                                                
+/** Maps any thrown value to an AuthError; a 401 is the only `rejected` case. */
 function toAuthError(error: unknown, fallback: string): AuthError {
   if (error instanceof AuthError) {
     return error;
   }
-  const status = axios.isAxiosError(error) ? error.response?.status : undefined;
-  const kind: AuthErrorKind = status === 401 ? "rejected" : "unavailable";
+  const kind: AuthErrorKind = errorStatus(error) === 401 ? "rejected" : "unavailable";
   return new AuthError(serverMessage(error) ?? fallback, kind);
 }
 
-                                                                         
+/** Runs an auth request, normalizing every failure into an AuthError. */
 async function request(url: string, body: unknown, fallback: string): Promise<unknown> {
   try {
-    const response = await http.post(url, body);
-    return response.data;
+    return await api.post<unknown>(url, body, { authExempt: true });
   } catch (error: unknown) {
     throw toAuthError(error, fallback);
   }
@@ -94,14 +97,14 @@ function unwrapSession(responseBody: unknown): SessionPayload {
   const candidate = envelope.success ? envelope.data.data : responseBody;
   const payload = sessionPayloadSchema.safeParse(candidate);
   if (!payload.success) {
-                                                                              
+    // Treated as transient so a contract drift never logs an active user out.
     console.warn("[authApi] unexpected session payload", payload.error.issues);
     throw new AuthError("Unexpected response from auth server", "unavailable");
   }
   return payload.data;
 }
 
-                                                                       
+// Signup's envelope carries the tenant's apiKey alongside the session.
 const signupKeySchema = z.object({ apiKey: z.string().min(1) });
 
 function extractApiKey(responseBody: unknown): string {
@@ -170,7 +173,8 @@ export const authApi = {
   },
 
   async logout(accessToken: string | null): Promise<void> {
-    await http.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT, undefined, {
+    await api.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT, undefined, {
+      authExempt: true,
       headers: accessToken != null ? { Authorization: `Bearer ${accessToken}` } : undefined,
     });
   },

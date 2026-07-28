@@ -27,10 +27,6 @@ import type { TraceSummary, TracesFacets, TracesQueryRequest, TracesQueryRespons
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-                                             
-                                            
-                                             
-
 function extractNextCursor(pageInfo: unknown): string | undefined {
   const parsed = pageInfoSchema.safeParse(pageInfo);
   if (parsed.success && parsed.data.nextCursor && parsed.data.nextCursor !== "") {
@@ -39,7 +35,6 @@ function extractNextCursor(pageInfo: unknown): string | undefined {
   return undefined;
 }
 
-                                                             
 const rawTraceRowSchema = z.object({
   traceId: z.string(),
   startMs: z.number(),
@@ -85,7 +80,6 @@ function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSum
   };
 }
 
-                                    
 const facetBucketSchema = z.object({
   value: z.string(),
   count: z.number(),
@@ -118,14 +112,12 @@ function normalizeFacets(raw: z.infer<typeof rawFacetsSchema>): TracesFacets | u
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
-                                                         
 const rawTrendRowSchema = z.object({
   timeBucket: z.string(),
   total: z.number(),
   errors: z.number(),
 });
 
-                                                                                  
 const tracesQueryResponseSchema = z
   .object({
     results: z.union([z.array(rawTraceRowSchema), z.null()]).transform((v) => v ?? []),
@@ -198,23 +190,48 @@ export async function queryTrend(body: TracesQueryRequest) {
   }));
 }
 
-                                                                                   
-const traceSpansEnvelopeSchema = z.object({
-  spans: z.array(spanRecordSchema),
+const nullableArray = <T extends z.ZodTypeAny>(item: T) =>
+  z.union([z.array(item), z.null(), z.undefined()]).transform((v) => v ?? ([] as z.infer<T>[]));
+
+// Consolidated trace detail: summary + span list + server-derived views.
+// summary is null when the trace has no spans in the requested range.
+const traceDetailResponseSchema = z.object({
+  summary: rawTraceRowSchema.nullable(),
+  spans: nullableArray(spanRecordSchema),
+  criticalPath: nullableArray(criticalPathSpanSchema),
+  errorPath: nullableArray(errorPathSpanSchema),
+  serviceMap: topologyResponseSchema,
+  errors: nullableArray(traceErrorGroupSchema),
 });
 
-async function getTraceSpans(
-  _tenantId: number | null,
+export interface TraceDetailResponse {
+  readonly summary: TraceSummary | null;
+  readonly spans: SpanRecord[];
+  readonly criticalPath: CriticalPathSpanRecord[];
+  readonly errorPath: ErrorPathSpanRecord[];
+  readonly serviceMap: ServiceTopologyResponse;
+  readonly errors: TraceErrorGroup[];
+}
+
+async function getTraceDetail(
   traceId: string,
   startMs: number,
   endMs: number,
   signal?: AbortSignal
-): Promise<SpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/spans`, {
+): Promise<TraceDetailResponse> {
+  const data = await api.get(`${BASE}/traces/${traceId}`, {
     params: { startTime: startMs, endTime: endMs },
     signal,
   });
-  return validateResponse(traceSpansEnvelopeSchema, data).spans;
+  const parsed = validateResponse(traceDetailResponseSchema, data);
+  return {
+    summary: parsed.summary ? normalizeTraceSummary(parsed.summary) : null,
+    spans: parsed.spans,
+    criticalPath: parsed.criticalPath,
+    errorPath: parsed.errorPath,
+    serviceMap: parsed.serviceMap,
+    errors: parsed.errors,
+  };
 }
 
 async function getSpanEvents(
@@ -228,32 +245,6 @@ async function getSpanEvents(
     signal,
   });
   return validateResponse(z.array(spanEventSchema), data);
-}
-
-async function getCriticalPath(
-  traceId: string,
-  startMs: number,
-  endMs: number,
-  signal?: AbortSignal
-): Promise<CriticalPathSpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/critical-path`, {
-    params: { startTime: startMs, endTime: endMs },
-    signal,
-  });
-  return validateResponse(z.array(criticalPathSpanSchema), data);
-}
-
-async function getErrorPath(
-  traceId: string,
-  startMs: number,
-  endMs: number,
-  signal?: AbortSignal
-): Promise<ErrorPathSpanRecord[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/error-path`, {
-    params: { startTime: startMs, endTime: endMs },
-    signal,
-  });
-  return validateResponse(z.array(errorPathSpanSchema), data);
 }
 
 async function getSpanAttributes(
@@ -290,79 +281,42 @@ async function getRelatedTraces(
   return validateResponse(z.array(relatedTraceSchema), data);
 }
 
-                                                                          
-async function getServiceMap(
-  traceId: string,
-  startMs: number,
-  endMs: number,
-  signal?: AbortSignal
-): Promise<ServiceTopologyResponse> {
-  const data = await api.get(`${BASE}/traces/${traceId}/service-map`, {
-    params: { startTime: startMs, endTime: endMs },
-    signal,
-  });
-  return validateResponse(topologyResponseSchema, data ?? { nodes: [], edges: [] });
-}
-
 interface ServiceLatencyBaseline {
   readonly p95: number;
   readonly p99: number;
 }
 
-   
-                                                                             
-                                                                               
-                                                                         
-   
-const redServicesSchema = z.array(
-  z.object({
-    serviceName: z.string(),
-    requestCount: z.number(),
-    errorCount: z.number(),
-    avgLatency: z.number(),
-    p95Latency: z.number(),
-    p99Latency: z.number(),
-  })
-);
+const fleetOverviewServicesSchema = z.object({
+  services: z.array(
+    z.object({
+      serviceName: z.string(),
+      p95Latency: z.number(),
+      p99Latency: z.number(),
+    })
+  ),
+});
 
 async function getServiceLatencyBaselines(
   startMs: number,
   endMs: number,
   signal?: AbortSignal
 ): Promise<Map<string, ServiceLatencyBaseline>> {
-  const data = await api.get(`${BASE}/spans/red/services`, {
+  const data = await api.get(`${BASE}/spans/red/fleet-overview`, {
     params: { startTime: startMs, endTime: endMs },
     signal,
   });
-  const parsed = validateResponse(redServicesSchema, data ?? []);
+  const parsed = validateResponse(fleetOverviewServicesSchema, data ?? { services: [] });
   const out = new Map<string, ServiceLatencyBaseline>();
-  for (const s of parsed) {
+  for (const s of parsed.services) {
     out.set(s.serviceName, { p95: s.p95Latency, p99: s.p99Latency });
   }
   return out;
 }
 
-async function getTraceErrors(
-  traceId: string,
-  startMs: number,
-  endMs: number,
-  signal?: AbortSignal
-): Promise<TraceErrorGroup[]> {
-  const data = await api.get(`${BASE}/traces/${traceId}/errors`, {
-    params: { startTime: startMs, endTime: endMs },
-    signal,
-  });
-  return validateResponse(z.array(traceErrorGroupSchema), data);
-}
-
 export const tracesService = {
-  getTraceSpans,
+  getTraceDetail,
   getSpanEvents,
-  getCriticalPath,
-  getErrorPath,
   getSpanAttributes,
   getRelatedTraces,
-  getServiceMap,
   getServiceLatencyBaselines,
-  getTraceErrors,
 };

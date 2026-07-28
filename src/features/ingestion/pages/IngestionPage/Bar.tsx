@@ -1,4 +1,4 @@
-                                                                        
+// Shared progress bar for the by-type breakdown and per-signal pillars.
 export function Bar({ pct, color, label }: { pct: number; color: string; label?: string }) {
   return (
     <div

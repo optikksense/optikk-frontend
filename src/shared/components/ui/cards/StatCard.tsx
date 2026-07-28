@@ -1,8 +1,20 @@
 import { APP_COLORS } from "@config/colorLiterals";
 import { Skeleton, Surface } from "@shared/components/primitives/ui";
 import { TrendIndicator } from "@shared/components/ui";
+import { cn } from "@shared/lib/utils";
 import React from "react";
 import SparklineChart from "../charts/micro/SparklineChart";
+
+export type KpiTone = "ok" | "success" | "warn" | "err" | "neutral" | "muted";
+
+const VALUE_TONE: Record<KpiTone, string> = {
+  ok: "text-foreground",
+  success: "text-success",
+  warn: "text-warning",
+  err: "text-error",
+  neutral: "text-foreground",
+  muted: "text-foreground-muted",
+};
 
 interface StatCardMetric {
   title: React.ReactNode;
@@ -25,16 +37,27 @@ interface StatCardVisuals {
   loading?: boolean;
 }
 
-interface StatCardProps {
+// Icon-and-trend stat variant, used by dashboards and hub pages.
+interface StatVariantProps {
   metric: StatCardMetric;
   trend?: StatCardTrend;
   visuals?: StatCardVisuals;
 }
 
-   
-                                                                     
-   
-const StatCard = React.memo(function StatCard({ metric, trend = {}, visuals = {} }: StatCardProps) {
+// Compact KPI-strip variant with tone-colored value, used by detail pages.
+interface KpiVariantProps {
+  readonly label: string;
+  readonly value: string;
+  readonly secondary?: string;
+  readonly subtext?: string;
+  readonly tone?: KpiTone;
+  readonly sparkline?: React.ReactNode;
+  readonly delta?: React.ReactNode;
+}
+
+export type StatCardProps = StatVariantProps | KpiVariantProps;
+
+function StatBody({ metric, trend = {}, visuals = {} }: StatVariantProps) {
   const { title, value, formatter, suffix, description } = metric;
   const { value: trendValue, inverted: trendInverted = false } = trend;
   const { icon, iconColor, sparklineData, sparklineColor, loading = false } = visuals;
@@ -97,6 +120,52 @@ const StatCard = React.memo(function StatCard({ metric, trend = {}, visuals = {}
       )}
     </Surface>
   );
+}
+
+function KpiBody({
+  label,
+  value,
+  secondary,
+  subtext,
+  tone = "ok",
+  sparkline,
+  delta,
+}: KpiVariantProps) {
+  return (
+    <div className="flex flex-col gap-1.5 rounded-md border border-border bg-card px-3.5 py-3">
+      <div className="text-[10.5px] text-foreground-muted uppercase tracking-[0.08em]">{label}</div>
+      <div className="flex items-end justify-between gap-2">
+        <div
+          className={cn(
+            "flex items-baseline gap-1.5 font-semibold text-[28px] leading-none",
+            VALUE_TONE[tone]
+          )}
+        >
+          <span>{value}</span>
+          {secondary && (
+            <span className="font-normal text-[13px] text-foreground-muted">{secondary}</span>
+          )}
+        </div>
+        {sparkline && <div className="h-[24px] w-[80px] flex-shrink-0">{sparkline}</div>}
+      </div>
+      <div className="flex items-baseline gap-2 text-[11px] text-foreground-muted">
+        {subtext && <span>{subtext}</span>}
+        {delta}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The single shared stat/KPI card. Two prop shapes select the two layouts:
+ * `{ metric, trend?, visuals? }` renders the dashboard stat card, while
+ * `{ label, value, ... }` renders the compact tone-colored KPI card.
+ */
+const StatCard = React.memo(function StatCard(props: StatCardProps) {
+  return "metric" in props ? <StatBody {...props} /> : <KpiBody {...props} />;
 });
 
 export default StatCard;
+
+// Named alias for KPI-strip call sites.
+export const KpiCard = StatCard;

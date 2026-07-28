@@ -18,7 +18,7 @@ const DELTA_COLOR: Record<NonNullable<DrawerKpiProps["deltaTone"]>, string> = {
   warn: "var(--warn-fg)",
 };
 
-                                                          
+/** Compact KPI tile with a sparkline (design `DdKpi`). */
 export function DrawerKpi({
   label,
   value,

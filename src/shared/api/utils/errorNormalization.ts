@@ -9,10 +9,10 @@ export interface ApiErrorShape {
 }
 import { ZodError } from "zod";
 
-   
-                                                                     
-                                                                            
-   
+/**
+ * Normalizes an unknown error value into a consistent ApiErrorShape.
+ * Used by data fetcher hooks to present uniform error objects to consumers.
+ */
 export function toApiErrorShape(error: unknown): ApiErrorShape {
   if (typeof error === "object" && error !== null) {
     const record = error as Record<string, unknown>;

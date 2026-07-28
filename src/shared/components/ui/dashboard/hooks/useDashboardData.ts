@@ -5,9 +5,9 @@ import type { DashboardDataSources, DashboardPanelSpec } from "@shared/types/das
 import { resolveDataSourceId } from "../utils/dashboardUtils";
 import { asDashboardRecordArray, getDashboardRecordArrayField } from "../utils/runtimeValue";
 
-   
-  
-   
+/**
+ *
+ */
 export function useDashboardData(
   chartConfig: DashboardPanelSpec,
   dataSources: DashboardDataSources

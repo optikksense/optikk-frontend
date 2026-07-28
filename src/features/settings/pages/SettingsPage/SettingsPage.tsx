@@ -1,6 +1,5 @@
 import { Tabs } from "@shared/components/primitives/ui";
 import { Settings, Terminal, User, Users, UsersRound } from "lucide-react";
-import type { ReactNode } from "react";
 
 import { PageHeader, PageShell } from "@shared/components/ui";
 
@@ -15,24 +14,7 @@ import { type SettingsTab, useSettingsTab } from "./useSettingsTab";
 import { useAuthStore } from "@app/store/authStore";
 import { useShallow } from "zustand/react/shallow";
 
-                                                                           
-export interface SettingsExtraTab {
-  key: string;
-  label: string;
-  icon: ReactNode;
-  render: () => ReactNode;
-}
-
-interface SettingsPageProps {
-  extraTabs?: readonly SettingsExtraTab[];
-}
-
-   
-                                                                                 
-                                                                              
-                             
-   
-export default function SettingsPage({ extraTabs = [] }: SettingsPageProps) {
+export default function SettingsPage() {
   const { tab, setTab } = useSettingsTab();
 
   const { tenant } = useAuthStore(
@@ -49,12 +31,9 @@ export default function SettingsPage({ extraTabs = [] }: SettingsPageProps) {
     { key: "tenant", label: "Tenant", icon: <Users size={14} /> },
     { key: "instrumentation", label: "Instrumentation", icon: <Terminal size={14} /> },
     ...(isAdmin ? [{ key: "members", label: "Members", icon: <UsersRound size={14} /> }] : []),
-    ...extraTabs.map(({ key, label, icon }) => ({ key, label, icon })),
   ];
 
-                                                                 
   const active = tab === "members" && !isAdmin ? "tenant" : tab;
-  const activeExtraTab = extraTabs.find((t) => t.key === active);
 
   return (
     <PageShell className="min-h-screen">
@@ -73,7 +52,6 @@ export default function SettingsPage({ extraTabs = [] }: SettingsPageProps) {
       )}
       {active === "instrumentation" && <SettingsInstrumentationTab />}
       {active === "members" && isAdmin && <SettingsMembersTab />}
-      {activeExtraTab?.render()}
     </PageShell>
   );
 }

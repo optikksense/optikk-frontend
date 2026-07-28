@@ -1,17 +1,14 @@
-import type { TraceRecord } from "@shared/api/traces/schemas";
+import type { CriticalPathSpanRecord, TraceRecord } from "@shared/api/traces/schemas";
 import { tracesService } from "@shared/api/traces/tracesApi";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
 import { useCallback, useMemo, useState } from "react";
-import { deriveCriticalPathSpanIds, deriveErrorSpanIds } from "../utils/tracePaths";
+import { deriveErrorSpanIds } from "../utils/tracePaths";
 
-   
-                                                                             
-                                                                             
-   
 export function useTraceDetailEnhanced(
   tenantId: number | null,
   traceId: string,
   spans: readonly TraceRecord[],
+  criticalPath: readonly CriticalPathSpanRecord[],
   selectedSpanId: string | null,
   relatedContext: { serviceName?: string; operationName?: string } | null,
   bounds: { startMs?: number; endMs?: number }
@@ -68,7 +65,10 @@ export function useTraceDetailEnhanced(
     enabled: !!tenantId && !!selectedSpanId && hasBounds,
   });
 
-  const criticalPathSpanIds = useMemo(() => deriveCriticalPathSpanIds(spans), [spans]);
+  const criticalPathSpanIds = useMemo(
+    () => new Set(criticalPath.map((s) => s.spanId)),
+    [criticalPath]
+  );
   const errorPathSpanIds = useMemo(() => deriveErrorSpanIds(spans), [spans]);
 
   const spanEvents = spanEventsData ?? [];

@@ -1,8 +1,8 @@
 import type { CreateMonitorPayload, Monitor } from "../../api/monitorsApi";
 
-                                                                               
-                                                                                
-                                                                                 
+// Projects a saved Monitor onto the wizard's CreateMonitorPayload draft so the
+// wizard can edit it. Monitor is a superset of the create payload, so this is a
+// field selection — runtime/state fields (id, status, currentValue, …) drop off.
 export function monitorToDraft(monitor: Monitor): CreateMonitorPayload {
   return {
     name: monitor.name,

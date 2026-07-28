@@ -1,8 +1,8 @@
+import { KpiCard, type KpiTone } from "@shared/components/ui/cards/StatCard";
 import SparklineChart from "@shared/components/ui/charts/micro/SparklineChart";
-import { KpiCard, type KpiTone } from "@shared/components/ui/dashboard/KpiCard";
 
 import type { QueryTimeseriesPoint } from "@/features/saturation/api/databaseQueryDetailApi";
-import { fmtMs, fmtNum, fmtPct, ratioFromCounts } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtNum, fmtPct, ratioFromCounts } from "@shared/utils/formatters";
 
 import type { QueryDetailView } from "./viewModel";
 

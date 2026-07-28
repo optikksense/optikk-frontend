@@ -1,4 +1,4 @@
-import { VisualizationErrorBoundary } from "@shared/components/ui/error-boundary/VisualizationErrorBoundary";
+import { ErrorBoundary } from "@shared/components/ui/feedback";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServiceTopology } from "../../hooks/useServiceTopology";
@@ -60,7 +60,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
       <div className="mt-4 grid grid-cols-1 gap-5 lg:grid-cols-3">
         {}
         <div className="relative rounded-lg border border-border bg-muted/10 p-2 lg:col-span-2">
-          <VisualizationErrorBoundary>
+          <ErrorBoundary variant="visualization">
             <TopologySVG
               nodes={nodes}
               edges={edges}
@@ -68,7 +68,7 @@ export function OverviewServiceMap({ serviceName }: { serviceName: string }) {
               onNodeClick={setSelectedFocus}
               onNavigate={handleNavigate}
             />
-          </VisualizationErrorBoundary>
+          </ErrorBoundary>
         </div>
 
         {}

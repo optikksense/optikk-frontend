@@ -15,11 +15,11 @@ interface Chip {
   readonly color?: string;
 }
 
-   
-                                                                        
-                                                                             
-                                           
-   
+/**
+ * Severity count chips for the logs trend strip — TOTAL / ERROR / WARN.
+ * Colors mirror the trend chart's stacked severities (see utils/severity.ts)
+ * so the strip and chart read as one unit.
+ */
 function LogsSummaryChipsComponent({ summary }: Props) {
   if (!summary) return null;
   const chips: readonly Chip[] = [

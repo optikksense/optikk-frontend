@@ -29,10 +29,10 @@ export function buildExplorerQueryRequest(
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-   
-                                                                         
-                                                                        
-   
+/**
+ * Mirrors metrics/explorer FE* models. Only `unit` and `description` are
+ * `omitempty`; `normalizeMetricType` narrows type to these four values.
+ */
 const metricNameEntrySchema = z.object({
   name: z.string(),
   type: z.enum(["gauge", "counter", "histogram", "summary"]),
@@ -55,7 +55,7 @@ const metricTagsResponseSchema = z.object({
 
 const metricSeriesSchema = z.object({
   tags: z.record(z.string(), z.string()),
-                                                     
+  // []*float64 on the Go side — gaps encode as null.
   values: z.array(z.number().nullable()),
 });
 
@@ -68,7 +68,7 @@ const metricsExplorerResponseSchema = z.object({
   results: z.record(z.string(), metricQueryResultSchema),
 });
 
-                
+// Request types
 
 export interface MetricNamesRequest {
   readonly startTime: number;
@@ -104,7 +104,7 @@ export type MetricNamesResponse = z.infer<typeof metricNamesResponseSchema>;
 export type MetricTagsResponse = z.infer<typeof metricTagsResponseSchema>;
 export type MetricsExplorerResponse = z.infer<typeof metricsExplorerResponseSchema>;
 
-                                                                            
+// Backend emits epoch-ms timestamps; the chart stack assumes epoch-seconds.
 function toSecondsTimestamps(response: MetricsExplorerResponse): MetricsExplorerResponse {
   for (const result of Object.values(response.results)) {
     result.timestamps = result.timestamps.map((ts) => Math.floor(ts / 1000));

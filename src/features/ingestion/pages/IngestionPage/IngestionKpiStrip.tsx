@@ -1,4 +1,4 @@
-import { KpiCard } from "@shared/components/ui/dashboard/KpiCard";
+import { KpiCard } from "@shared/components/ui/cards/StatCard";
 
 import type { IngestionSummary } from "../../api/ingestionApi";
 import { type IngestionUnit, fmtValue } from "../../utils/format";
@@ -21,7 +21,6 @@ function peakDate(date: string | undefined): string {
   }).format(new Date(`${date}T00:00:00Z`));
 }
 
-                                                                               
 export function IngestionKpiStrip({ summary, unit }: Props) {
   const bytes = unit === "bytes";
   const total = bytes ? summary?.totals.bytes : summary?.totals.records;

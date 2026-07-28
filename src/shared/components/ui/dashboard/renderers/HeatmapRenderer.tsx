@@ -3,10 +3,10 @@ import { useDashboardData } from "../hooks/useDashboardData";
 
 import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
-   
-                                                                                  
-                                                                            
-   
+/**
+ * Renders a latency heatmap table with intelligent date formatting on the X-axis.
+ * All hooks must be called before any conditional returns (Rules of Hooks).
+ */
 export function HeatmapRenderer({
   chartConfig,
   dataSources,

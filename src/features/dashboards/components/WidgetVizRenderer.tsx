@@ -29,7 +29,7 @@ interface WidgetVizRendererProps {
   readonly height?: number;
 }
 
-                                                                                
+/** Cell-sized WYSIWYG renderer shared by the editor preview and saved cards. */
 export function WidgetVizRenderer({
   viz,
   queries,
@@ -82,7 +82,7 @@ function TimeseriesViz({ queries, formulas, results, display, height }: Timeseri
     () => buildSeries(queries, formulas, results, "line"),
     [queries, formulas, results]
   );
-                                                                 
+  // Mirror the explorer's smoothing behavior for WYSIWYG parity.
   const adjusted = display.smooth ? series : series.map((s) => ({ ...s, width: 1 }));
   const rendered = adjusted.slice(0, MAX_SERIES);
 
@@ -222,7 +222,7 @@ interface RankedRow {
   readonly delta: number | null;
 }
 
-                                                                   
+/** Ranks a query's series by their latest value, highest first. */
 function buildRankedRows(result: MetricQueryResult | undefined, metricName: string): RankedRow[] {
   if (!result) return [];
   return result.series

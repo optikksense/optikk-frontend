@@ -9,13 +9,6 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 export type { Comparable };
 
-                                                                        
-
-   
-                                                                           
-                                                                               
-                                                                             
-   
 async function getJson<S extends z.ZodTypeAny>(
   path: string,
   params: REDFiltersParams,
@@ -25,7 +18,6 @@ async function getJson<S extends z.ZodTypeAny>(
   return validateResponse(schema, await api.get<unknown>(`${V1}${path}`, { params, signal }));
 }
 
-                                                                        
 async function getComparableJson<S extends z.ZodTypeAny>(
   path: string,
   params: REDFiltersParams,
@@ -40,8 +32,6 @@ async function getComparableJson<S extends z.ZodTypeAny>(
 }
 
 const timestamped = { timestamp: z.string() };
-
-                                                                        
 
 interface ServiceNode {
   readonly name: string;
@@ -79,8 +69,6 @@ export function getTopology(
   return api.get<TopologyResponse>(`${V1}/services/topology`, { params });
 }
 
-                                                                        
-
 const redServiceRowSchema = z.object({
   serviceName: z.string(),
   requestCount: z.number(),
@@ -107,7 +95,6 @@ const fleetOverviewSchema = z.object({
 export type RedServiceRow = z.infer<typeof redServiceRowSchema>;
 type FleetOverview = z.infer<typeof fleetOverviewSchema>;
 
-                                                                
 export type ServiceCatalogRedSummary = FleetOverview["totals"] & {
   readonly services: RedServiceRow[];
 };
@@ -147,22 +134,27 @@ export async function getRedSummaryWithComparison(
   };
 }
 
-const requestRatePointSchema = z.object({
-  ...timestamped,
-  serviceName: z.string(),
-  rps: z.number(),
+// Columnar shape: unix-ms timestamps shared by every series entry.
+const requestRateSeriesSchema = z.object({
+  timestamps: z.array(z.number()),
+  series: z.array(
+    z.object({
+      serviceName: z.string(),
+      rps: z.array(z.number()),
+    })
+  ),
 });
 
-export type RequestRatePoint = z.infer<typeof requestRatePointSchema>;
+export type RequestRateSeries = z.infer<typeof requestRateSeriesSchema>;
 
 export function getRequestRateSeries(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[],
   signal?: AbortSignal
-): Promise<RequestRatePoint[]> {
+): Promise<RequestRateSeries> {
   const params = buildREDFilters(s, e, services);
-  return getJson("/spans/red/request-rate", params, z.array(requestRatePointSchema), signal);
+  return getJson("/spans/red/request-rate", params, requestRateSeriesSchema, signal);
 }
 
 const requestErrorRatePointSchema = z.object({
@@ -190,8 +182,6 @@ export function getRequestAndErrorRateSeries(
   );
 }
 
-                                                                        
-
 const statusTimeseriesPointSchema = z.object({
   ...timestamped,
   status2xx: z.number(),
@@ -207,18 +197,24 @@ const latencyPercentilesPointSchema = z.object({
   p99Ms: z.number(),
 });
 
-const endpointRatePointSchema = z.object({
-  ...timestamped,
-  httpRoute: z.string(),
-  rps: z.number(),
-                                                                    
-  errorRate: z.number().nullable(),
-  p99Ms: z.number().nullable(),
+// Columnar shape: unix-ms timestamps shared by every route entry.
+// Null errorRate/p99Ms cells mean the route had no traffic in that bucket.
+const endpointRateSeriesSchema = z.object({
+  timestamps: z.array(z.number()),
+  series: z.array(
+    z.object({
+      httpRoute: z.string(),
+      rps: z.array(z.number()),
+      errorRate: z.array(z.number().nullable()),
+      p99Ms: z.array(z.number().nullable()),
+    })
+  ),
 });
 
 export type StatusTimeseriesPoint = z.infer<typeof statusTimeseriesPointSchema>;
 export type LatencyPercentilesPoint = z.infer<typeof latencyPercentilesPointSchema>;
-export type EndpointRatePoint = z.infer<typeof endpointRatePointSchema>;
+export type EndpointRateSeries = z.infer<typeof endpointRateSeriesSchema>;
+export type EndpointRateEntry = EndpointRateSeries["series"][number];
 
 export function getStatusTimeseries(
   s: RequestTime,
@@ -233,9 +229,9 @@ export function getREDByEndpoint(
   s: RequestTime,
   e: RequestTime,
   services?: string | readonly string[]
-): Promise<EndpointRatePoint[]> {
+): Promise<EndpointRateSeries> {
   const params = buildREDFilters(s, e, services);
-  return getJson("/spans/red/red-by-endpoint", params, z.array(endpointRatePointSchema));
+  return getJson("/spans/red/red-by-endpoint", params, endpointRateSeriesSchema);
 }
 
 export function getLatencyPercentilesTimeseries(
@@ -267,7 +263,6 @@ const topEndpointSchema = z.object({
   p99Ms: z.number(),
 });
 
-                                                                      
 function pageOf<S extends z.ZodTypeAny>(row: S) {
   return z.object({
     results: z.array(row),
@@ -324,8 +319,6 @@ export function getTopDBQueries(
   return getComparableJson("/spans/red/top-db-queries", params, topDBQueriesPageSchema);
 }
 
-                                                                         
-
 const serviceSummarySchema = z.object({
   serviceName: z.string(),
   requestCount: z.number(),
@@ -364,18 +357,13 @@ export function getServiceSaturationTimeseries(
   return getJson("/spans/red/saturation-timeseries", params, z.array(saturationPointSchema));
 }
 
-   
-                                                                              
-                                                         
-   
 export const redSchemas = {
-  redServices: z.array(redServiceRowSchema),
   redFleetOverview: fleetOverviewSchema,
   redRequestAndErrorRate: z.array(requestErrorRatePointSchema),
-  redRequestRate: z.array(requestRatePointSchema),
+  redRequestRate: requestRateSeriesSchema,
   redStatusTimeseries: z.array(statusTimeseriesPointSchema),
   redLatencyPercentiles: z.array(latencyPercentilesPointSchema),
-  redByEndpoint: z.array(endpointRatePointSchema),
+  redByEndpoint: endpointRateSeriesSchema,
   redTopEndpoints: topEndpointsPageSchema,
   redTopDBQueries: topDBQueriesPageSchema,
   redServiceSummary: serviceSummarySchema,

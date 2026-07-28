@@ -1,12 +1,10 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
-import { ArrowLeft, Check, Pencil, Plus, Share2, Star, Upload } from "lucide-react";
+import { ArrowLeft, Check, Pencil, Plus, Star } from "lucide-react";
 import { useState } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
 import { Modal } from "@shared/components/primitives/ui";
 import { EmptyState, Loading } from "@shared/components/ui";
-import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
 
 import type {
   CreateDashboardPagePayload,
@@ -19,9 +17,6 @@ import { pageIcon } from "../DashboardsPage/pageVisuals";
 import { PagesRail } from "./PagesRail";
 import { WidgetCard } from "./WidgetCard";
 import { WidgetEditorModal } from "./WidgetEditorModal";
-
-                                                                  
-const MIN_REFRESH_MS = 30_000;
 
 function pagePayload(
   page: DashboardPageDetail,
@@ -42,7 +37,6 @@ export default function DashboardDetailPage() {
   const params = useParams({ strict: false }) as { pageId?: string };
   const pageId = params.pageId ? Number(params.pageId) : 0;
 
-  const client = useQueryClient();
   const detailQ = useDashboardPageDetail(pageId);
   const removeWidget = useDeleteWidget(pageId);
 
@@ -51,11 +45,8 @@ export default function DashboardDetailPage() {
   const [editingWidget, setEditingWidget] = useState<Dashboard | null>(null);
   const [widgetToDelete, setWidgetToDelete] = useState<Dashboard | null>(null);
 
-                                                                            
-  useAutoRefresh({
-    autoRefreshInterval: MIN_REFRESH_MS,
-    onRefresh: () => void client.invalidateQueries({ queryKey: ["dashboard-widget"] }),
-  });
+  // Widget refresh follows the global auto-refresh (user's interval)
+  // via the app-level refresh subscriber; no page-local timer.
 
   const page = detailQ.data;
 
@@ -203,7 +194,6 @@ interface DetailHeaderProps {
   readonly onAddWidget: () => void;
 }
 
-                                                                             
 function DetailHeader({ page, editing, onToggleEditing, onAddWidget }: DetailHeaderProps) {
   const updatePage = useUpdateDashboardPage(page.id);
   const [name, setName] = useState(page.name);
@@ -276,20 +266,6 @@ function DetailHeader({ page, editing, onToggleEditing, onAddWidget }: DetailHea
       <div className="flex shrink-0 items-center gap-2">
         <button
           type="button"
-          title="Share"
-          className="flex h-8 w-8 items-center justify-center rounded border border-border bg-card text-foreground-muted hover:bg-secondary hover:text-foreground"
-        >
-          <Share2 size={14} />
-        </button>
-        <button
-          type="button"
-          title="Export"
-          className="flex h-8 w-8 items-center justify-center rounded border border-border bg-card text-foreground-muted hover:bg-secondary hover:text-foreground"
-        >
-          <Upload size={14} />
-        </button>
-        <button
-          type="button"
           onClick={onToggleEditing}
           className="flex items-center gap-1.5 rounded border border-border bg-card px-3 py-1.5 text-foreground text-sm hover:bg-secondary"
         >
@@ -309,7 +285,6 @@ function DetailHeader({ page, editing, onToggleEditing, onAddWidget }: DetailHea
   );
 }
 
-                                                                           
 function AddWidgetTile({ onClick }: { readonly onClick: () => void }) {
   return (
     <button

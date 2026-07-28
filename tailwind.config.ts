@@ -4,7 +4,7 @@ import tailwindcssAnimate from "tailwindcss-animate";
 const config: Config = {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
-                                                    
+  // Preflight enabled — antd has been fully removed
   theme: {
     extend: {
       colors: {

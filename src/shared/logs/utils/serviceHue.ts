@@ -1,11 +1,11 @@
-   
-                                                                       
-                                                                       
-                                                            
-  
-                                                                        
-                                              
-   
+/**
+ * Service → OKLCH hue map. Used by the swatch dot in the log table and
+ * detail panel so each service has a stable, recognizable color across
+ * the Logs Explorer and (eventually) the Trace Detail page.
+ *
+ * Curated hues come from the design handoff; unknown services fall back
+ * to a deterministic FNV-1a hash of the name.
+ */
 
 const CURATED: Readonly<Record<string, number>> = {
   "web-bff": 212,

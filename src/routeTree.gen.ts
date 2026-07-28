@@ -19,33 +19,29 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppSettingsRouteImport } from './routes/_app/settings'
+import { Route as AppMetricsRouteImport } from './routes/_app/metrics'
 import { Route as AppIngestionRouteImport } from './routes/_app/ingestion'
+import { Route as AppTracesIndexRouteImport } from './routes/_app/traces/index'
+import { Route as AppServicesIndexRouteImport } from './routes/_app/services/index'
+import { Route as AppLogsIndexRouteImport } from './routes/_app/logs/index'
+import { Route as AppLlmIndexRouteImport } from './routes/_app/llm/index'
+import { Route as AppInfrastructureIndexRouteImport } from './routes/_app/infrastructure/index'
 import { Route as AppTracesTraceIdRouteImport } from './routes/_app/traces/$traceId'
 import { Route as AppServicesMapRouteImport } from './routes/_app/services/map'
+import { Route as AppServicesServiceNameRouteImport } from './routes/_app/services/$serviceName'
 import { Route as AppLogsTransactionsRouteImport } from './routes/_app/logs/transactions'
 import { Route as AppLogsPatternsRouteImport } from './routes/_app/logs/patterns'
 import { Route as AppAlertsNewRouteImport } from './routes/_app/alerts.new'
 import { Route as AppSaturationDatabaseQueryQueryIdRouteImport } from './routes/_app/saturation/database/query/$queryId'
 
-const AppSettingsLazyRouteImport = createFileRoute('/_app/settings')()
 const AppOverviewLazyRouteImport = createFileRoute('/_app/overview')()
-const AppMetricsLazyRouteImport = createFileRoute('/_app/metrics')()
 const AppDeviceLazyRouteImport = createFileRoute('/_app/device')()
 const AppCloudLazyRouteImport = createFileRoute('/_app/cloud')()
-const AppTracesIndexLazyRouteImport = createFileRoute('/_app/traces/')()
-const AppServicesIndexLazyRouteImport = createFileRoute('/_app/services/')()
 const AppSaturationIndexLazyRouteImport = createFileRoute('/_app/saturation/')()
 const AppMonitorsIndexLazyRouteImport = createFileRoute('/_app/monitors/')()
-const AppLogsIndexLazyRouteImport = createFileRoute('/_app/logs/')()
-const AppLlmIndexLazyRouteImport = createFileRoute('/_app/llm/')()
-const AppInfrastructureIndexLazyRouteImport = createFileRoute(
-  '/_app/infrastructure/',
-)()
 const AppErrorsIndexLazyRouteImport = createFileRoute('/_app/errors/')()
 const AppDashboardsIndexLazyRouteImport = createFileRoute('/_app/dashboards/')()
-const AppServicesServiceNameLazyRouteImport = createFileRoute(
-  '/_app/services/$serviceName',
-)()
 const AppSaturationKafkaLazyRouteImport = createFileRoute(
   '/_app/saturation/kafka',
 )()
@@ -133,21 +129,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppSettingsLazyRoute = AppSettingsLazyRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
-} as any).lazy(() => import('./routes/_app/settings.lazy').then((d) => d.Route))
 const AppOverviewLazyRoute = AppOverviewLazyRouteImport.update({
   id: '/overview',
   path: '/overview',
   getParentRoute: () => AppRoute,
 } as any).lazy(() => import('./routes/_app/overview.lazy').then((d) => d.Route))
-const AppMetricsLazyRoute = AppMetricsLazyRouteImport.update({
-  id: '/metrics',
-  path: '/metrics',
-  getParentRoute: () => AppRoute,
-} as any).lazy(() => import('./routes/_app/metrics.lazy').then((d) => d.Route))
 const AppDeviceLazyRoute = AppDeviceLazyRouteImport.update({
   id: '/device',
   path: '/device',
@@ -158,24 +144,22 @@ const AppCloudLazyRoute = AppCloudLazyRouteImport.update({
   path: '/cloud',
   getParentRoute: () => AppRoute,
 } as any).lazy(() => import('./routes/_app/cloud.lazy').then((d) => d.Route))
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() => import('./routes/_app/settings.lazy').then((d) => d.Route))
+const AppMetricsRoute = AppMetricsRouteImport.update({
+  id: '/metrics',
+  path: '/metrics',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() => import('./routes/_app/metrics.lazy').then((d) => d.Route))
 const AppIngestionRoute = AppIngestionRouteImport.update({
   id: '/ingestion',
   path: '/ingestion',
   getParentRoute: () => AppRoute,
-} as any)
-const AppTracesIndexLazyRoute = AppTracesIndexLazyRouteImport.update({
-  id: '/traces/',
-  path: '/traces/',
-  getParentRoute: () => AppRoute,
 } as any).lazy(() =>
-  import('./routes/_app/traces/index.lazy').then((d) => d.Route),
-)
-const AppServicesIndexLazyRoute = AppServicesIndexLazyRouteImport.update({
-  id: '/services/',
-  path: '/services/',
-  getParentRoute: () => AppRoute,
-} as any).lazy(() =>
-  import('./routes/_app/services/index.lazy').then((d) => d.Route),
+  import('./routes/_app/ingestion.lazy').then((d) => d.Route),
 )
 const AppSaturationIndexLazyRoute = AppSaturationIndexLazyRouteImport.update({
   id: '/saturation/',
@@ -191,28 +175,6 @@ const AppMonitorsIndexLazyRoute = AppMonitorsIndexLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_app/monitors/index.lazy').then((d) => d.Route),
 )
-const AppLogsIndexLazyRoute = AppLogsIndexLazyRouteImport.update({
-  id: '/logs/',
-  path: '/logs/',
-  getParentRoute: () => AppRoute,
-} as any).lazy(() =>
-  import('./routes/_app/logs/index.lazy').then((d) => d.Route),
-)
-const AppLlmIndexLazyRoute = AppLlmIndexLazyRouteImport.update({
-  id: '/llm/',
-  path: '/llm/',
-  getParentRoute: () => AppRoute,
-} as any).lazy(() =>
-  import('./routes/_app/llm/index.lazy').then((d) => d.Route),
-)
-const AppInfrastructureIndexLazyRoute =
-  AppInfrastructureIndexLazyRouteImport.update({
-    id: '/infrastructure/',
-    path: '/infrastructure/',
-    getParentRoute: () => AppRoute,
-  } as any).lazy(() =>
-    import('./routes/_app/infrastructure/index.lazy').then((d) => d.Route),
-  )
 const AppErrorsIndexLazyRoute = AppErrorsIndexLazyRouteImport.update({
   id: '/errors/',
   path: '/errors/',
@@ -227,14 +189,41 @@ const AppDashboardsIndexLazyRoute = AppDashboardsIndexLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_app/dashboards/index.lazy').then((d) => d.Route),
 )
-const AppServicesServiceNameLazyRoute =
-  AppServicesServiceNameLazyRouteImport.update({
-    id: '/services/$serviceName',
-    path: '/services/$serviceName',
-    getParentRoute: () => AppRoute,
-  } as any).lazy(() =>
-    import('./routes/_app/services/$serviceName.lazy').then((d) => d.Route),
-  )
+const AppTracesIndexRoute = AppTracesIndexRouteImport.update({
+  id: '/traces/',
+  path: '/traces/',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/traces/index.lazy').then((d) => d.Route),
+)
+const AppServicesIndexRoute = AppServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/services/index.lazy').then((d) => d.Route),
+)
+const AppLogsIndexRoute = AppLogsIndexRouteImport.update({
+  id: '/logs/',
+  path: '/logs/',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/logs/index.lazy').then((d) => d.Route),
+)
+const AppLlmIndexRoute = AppLlmIndexRouteImport.update({
+  id: '/llm/',
+  path: '/llm/',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/llm/index.lazy').then((d) => d.Route),
+)
+const AppInfrastructureIndexRoute = AppInfrastructureIndexRouteImport.update({
+  id: '/infrastructure/',
+  path: '/infrastructure/',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/infrastructure/index.lazy').then((d) => d.Route),
+)
 const AppSaturationKafkaLazyRoute = AppSaturationKafkaLazyRouteImport.update({
   id: '/saturation/kafka',
   path: '/saturation/kafka',
@@ -291,6 +280,13 @@ const AppServicesMapRoute = AppServicesMapRouteImport.update({
   path: '/services/map',
   getParentRoute: () => AppRoute,
 } as any)
+const AppServicesServiceNameRoute = AppServicesServiceNameRouteImport.update({
+  id: '/services/$serviceName',
+  path: '/services/$serviceName',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/services/$serviceName.lazy').then((d) => d.Route),
+)
 const AppLogsTransactionsRoute = AppLogsTransactionsRouteImport.update({
   id: '/logs/transactions',
   path: '/logs/transactions',
@@ -402,14 +398,15 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/welcome': typeof WelcomeRoute
   '/ingestion': typeof AppIngestionRoute
+  '/metrics': typeof AppMetricsRoute
+  '/settings': typeof AppSettingsRoute
   '/cloud': typeof AppCloudLazyRoute
   '/device': typeof AppDeviceLazyRoute
-  '/metrics': typeof AppMetricsLazyRoute
   '/overview': typeof AppOverviewLazyRoute
-  '/settings': typeof AppSettingsLazyRoute
   '/alerts/new': typeof AppAlertsNewRoute
   '/logs/patterns': typeof AppLogsPatternsRoute
   '/logs/transactions': typeof AppLogsTransactionsRoute
+  '/services/$serviceName': typeof AppServicesServiceNameRoute
   '/services/map': typeof AppServicesMapRoute
   '/traces/$traceId': typeof AppTracesTraceIdRoute
   '/dashboards/$pageId': typeof AppDashboardsPageIdLazyRoute
@@ -418,16 +415,15 @@ export interface FileRoutesByFullPath {
   '/monitors/new': typeof AppMonitorsNewLazyRoute
   '/monitors/notifications': typeof AppMonitorsNotificationsLazyRoute
   '/saturation/kafka': typeof AppSaturationKafkaLazyRoute
-  '/services/$serviceName': typeof AppServicesServiceNameLazyRoute
+  '/infrastructure/': typeof AppInfrastructureIndexRoute
+  '/llm/': typeof AppLlmIndexRoute
+  '/logs/': typeof AppLogsIndexRoute
+  '/services/': typeof AppServicesIndexRoute
+  '/traces/': typeof AppTracesIndexRoute
   '/dashboards/': typeof AppDashboardsIndexLazyRoute
   '/errors/': typeof AppErrorsIndexLazyRoute
-  '/infrastructure/': typeof AppInfrastructureIndexLazyRoute
-  '/llm/': typeof AppLlmIndexLazyRoute
-  '/logs/': typeof AppLogsIndexLazyRoute
   '/monitors/': typeof AppMonitorsIndexLazyRoute
   '/saturation/': typeof AppSaturationIndexLazyRoute
-  '/services/': typeof AppServicesIndexLazyRoute
-  '/traces/': typeof AppTracesIndexLazyRoute
   '/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerLazyRoute
   '/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
   '/llm/datasets/$datasetId': typeof AppLlmDatasetsDatasetIdLazyRoute
@@ -448,14 +444,15 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/welcome': typeof WelcomeRoute
   '/ingestion': typeof AppIngestionRoute
+  '/metrics': typeof AppMetricsRoute
+  '/settings': typeof AppSettingsRoute
   '/cloud': typeof AppCloudLazyRoute
   '/device': typeof AppDeviceLazyRoute
-  '/metrics': typeof AppMetricsLazyRoute
   '/overview': typeof AppOverviewLazyRoute
-  '/settings': typeof AppSettingsLazyRoute
   '/alerts/new': typeof AppAlertsNewRoute
   '/logs/patterns': typeof AppLogsPatternsRoute
   '/logs/transactions': typeof AppLogsTransactionsRoute
+  '/services/$serviceName': typeof AppServicesServiceNameRoute
   '/services/map': typeof AppServicesMapRoute
   '/traces/$traceId': typeof AppTracesTraceIdRoute
   '/dashboards/$pageId': typeof AppDashboardsPageIdLazyRoute
@@ -464,16 +461,15 @@ export interface FileRoutesByTo {
   '/monitors/new': typeof AppMonitorsNewLazyRoute
   '/monitors/notifications': typeof AppMonitorsNotificationsLazyRoute
   '/saturation/kafka': typeof AppSaturationKafkaLazyRoute
-  '/services/$serviceName': typeof AppServicesServiceNameLazyRoute
+  '/infrastructure': typeof AppInfrastructureIndexRoute
+  '/llm': typeof AppLlmIndexRoute
+  '/logs': typeof AppLogsIndexRoute
+  '/services': typeof AppServicesIndexRoute
+  '/traces': typeof AppTracesIndexRoute
   '/dashboards': typeof AppDashboardsIndexLazyRoute
   '/errors': typeof AppErrorsIndexLazyRoute
-  '/infrastructure': typeof AppInfrastructureIndexLazyRoute
-  '/llm': typeof AppLlmIndexLazyRoute
-  '/logs': typeof AppLogsIndexLazyRoute
   '/monitors': typeof AppMonitorsIndexLazyRoute
   '/saturation': typeof AppSaturationIndexLazyRoute
-  '/services': typeof AppServicesIndexLazyRoute
-  '/traces': typeof AppTracesIndexLazyRoute
   '/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerLazyRoute
   '/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
   '/llm/datasets/$datasetId': typeof AppLlmDatasetsDatasetIdLazyRoute
@@ -496,14 +492,15 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/welcome': typeof WelcomeRoute
   '/_app/ingestion': typeof AppIngestionRoute
+  '/_app/metrics': typeof AppMetricsRoute
+  '/_app/settings': typeof AppSettingsRoute
   '/_app/cloud': typeof AppCloudLazyRoute
   '/_app/device': typeof AppDeviceLazyRoute
-  '/_app/metrics': typeof AppMetricsLazyRoute
   '/_app/overview': typeof AppOverviewLazyRoute
-  '/_app/settings': typeof AppSettingsLazyRoute
   '/_app/alerts/new': typeof AppAlertsNewRoute
   '/_app/logs/patterns': typeof AppLogsPatternsRoute
   '/_app/logs/transactions': typeof AppLogsTransactionsRoute
+  '/_app/services/$serviceName': typeof AppServicesServiceNameRoute
   '/_app/services/map': typeof AppServicesMapRoute
   '/_app/traces/$traceId': typeof AppTracesTraceIdRoute
   '/_app/dashboards/$pageId': typeof AppDashboardsPageIdLazyRoute
@@ -512,16 +509,15 @@ export interface FileRoutesById {
   '/_app/monitors/new': typeof AppMonitorsNewLazyRoute
   '/_app/monitors/notifications': typeof AppMonitorsNotificationsLazyRoute
   '/_app/saturation/kafka': typeof AppSaturationKafkaLazyRoute
-  '/_app/services/$serviceName': typeof AppServicesServiceNameLazyRoute
+  '/_app/infrastructure/': typeof AppInfrastructureIndexRoute
+  '/_app/llm/': typeof AppLlmIndexRoute
+  '/_app/logs/': typeof AppLogsIndexRoute
+  '/_app/services/': typeof AppServicesIndexRoute
+  '/_app/traces/': typeof AppTracesIndexRoute
   '/_app/dashboards/': typeof AppDashboardsIndexLazyRoute
   '/_app/errors/': typeof AppErrorsIndexLazyRoute
-  '/_app/infrastructure/': typeof AppInfrastructureIndexLazyRoute
-  '/_app/llm/': typeof AppLlmIndexLazyRoute
-  '/_app/logs/': typeof AppLogsIndexLazyRoute
   '/_app/monitors/': typeof AppMonitorsIndexLazyRoute
   '/_app/saturation/': typeof AppSaturationIndexLazyRoute
-  '/_app/services/': typeof AppServicesIndexLazyRoute
-  '/_app/traces/': typeof AppTracesIndexLazyRoute
   '/_app/infrastructure/containers/$container': typeof AppInfrastructureContainersContainerLazyRoute
   '/_app/infrastructure/hosts/$host': typeof AppInfrastructureHostsHostLazyRoute
   '/_app/llm/datasets/$datasetId': typeof AppLlmDatasetsDatasetIdLazyRoute
@@ -544,14 +540,15 @@ export interface FileRouteTypes {
     | '/signup'
     | '/welcome'
     | '/ingestion'
+    | '/metrics'
+    | '/settings'
     | '/cloud'
     | '/device'
-    | '/metrics'
     | '/overview'
-    | '/settings'
     | '/alerts/new'
     | '/logs/patterns'
     | '/logs/transactions'
+    | '/services/$serviceName'
     | '/services/map'
     | '/traces/$traceId'
     | '/dashboards/$pageId'
@@ -560,16 +557,15 @@ export interface FileRouteTypes {
     | '/monitors/new'
     | '/monitors/notifications'
     | '/saturation/kafka'
-    | '/services/$serviceName'
-    | '/dashboards/'
-    | '/errors/'
     | '/infrastructure/'
     | '/llm/'
     | '/logs/'
-    | '/monitors/'
-    | '/saturation/'
     | '/services/'
     | '/traces/'
+    | '/dashboards/'
+    | '/errors/'
+    | '/monitors/'
+    | '/saturation/'
     | '/infrastructure/containers/$container'
     | '/infrastructure/hosts/$host'
     | '/llm/datasets/$datasetId'
@@ -590,14 +586,15 @@ export interface FileRouteTypes {
     | '/signup'
     | '/welcome'
     | '/ingestion'
+    | '/metrics'
+    | '/settings'
     | '/cloud'
     | '/device'
-    | '/metrics'
     | '/overview'
-    | '/settings'
     | '/alerts/new'
     | '/logs/patterns'
     | '/logs/transactions'
+    | '/services/$serviceName'
     | '/services/map'
     | '/traces/$traceId'
     | '/dashboards/$pageId'
@@ -606,16 +603,15 @@ export interface FileRouteTypes {
     | '/monitors/new'
     | '/monitors/notifications'
     | '/saturation/kafka'
-    | '/services/$serviceName'
-    | '/dashboards'
-    | '/errors'
     | '/infrastructure'
     | '/llm'
     | '/logs'
-    | '/monitors'
-    | '/saturation'
     | '/services'
     | '/traces'
+    | '/dashboards'
+    | '/errors'
+    | '/monitors'
+    | '/saturation'
     | '/infrastructure/containers/$container'
     | '/infrastructure/hosts/$host'
     | '/llm/datasets/$datasetId'
@@ -637,14 +633,15 @@ export interface FileRouteTypes {
     | '/signup'
     | '/welcome'
     | '/_app/ingestion'
+    | '/_app/metrics'
+    | '/_app/settings'
     | '/_app/cloud'
     | '/_app/device'
-    | '/_app/metrics'
     | '/_app/overview'
-    | '/_app/settings'
     | '/_app/alerts/new'
     | '/_app/logs/patterns'
     | '/_app/logs/transactions'
+    | '/_app/services/$serviceName'
     | '/_app/services/map'
     | '/_app/traces/$traceId'
     | '/_app/dashboards/$pageId'
@@ -653,16 +650,15 @@ export interface FileRouteTypes {
     | '/_app/monitors/new'
     | '/_app/monitors/notifications'
     | '/_app/saturation/kafka'
-    | '/_app/services/$serviceName'
-    | '/_app/dashboards/'
-    | '/_app/errors/'
     | '/_app/infrastructure/'
     | '/_app/llm/'
     | '/_app/logs/'
-    | '/_app/monitors/'
-    | '/_app/saturation/'
     | '/_app/services/'
     | '/_app/traces/'
+    | '/_app/dashboards/'
+    | '/_app/errors/'
+    | '/_app/monitors/'
+    | '/_app/saturation/'
     | '/_app/infrastructure/containers/$container'
     | '/_app/infrastructure/hosts/$host'
     | '/_app/llm/datasets/$datasetId'
@@ -744,25 +740,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/settings': {
-      id: '/_app/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AppSettingsLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/overview': {
       id: '/_app/overview'
       path: '/overview'
       fullPath: '/overview'
       preLoaderRoute: typeof AppOverviewLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/metrics': {
-      id: '/_app/metrics'
-      path: '/metrics'
-      fullPath: '/metrics'
-      preLoaderRoute: typeof AppMetricsLazyRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/device': {
@@ -779,25 +761,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCloudLazyRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/metrics': {
+      id: '/_app/metrics'
+      path: '/metrics'
+      fullPath: '/metrics'
+      preLoaderRoute: typeof AppMetricsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/ingestion': {
       id: '/_app/ingestion'
       path: '/ingestion'
       fullPath: '/ingestion'
       preLoaderRoute: typeof AppIngestionRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/traces/': {
-      id: '/_app/traces/'
-      path: '/traces'
-      fullPath: '/traces/'
-      preLoaderRoute: typeof AppTracesIndexLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/services/': {
-      id: '/_app/services/'
-      path: '/services'
-      fullPath: '/services/'
-      preLoaderRoute: typeof AppServicesIndexLazyRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/saturation/': {
@@ -814,27 +796,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMonitorsIndexLazyRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/logs/': {
-      id: '/_app/logs/'
-      path: '/logs'
-      fullPath: '/logs/'
-      preLoaderRoute: typeof AppLogsIndexLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/llm/': {
-      id: '/_app/llm/'
-      path: '/llm'
-      fullPath: '/llm/'
-      preLoaderRoute: typeof AppLlmIndexLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/infrastructure/': {
-      id: '/_app/infrastructure/'
-      path: '/infrastructure'
-      fullPath: '/infrastructure/'
-      preLoaderRoute: typeof AppInfrastructureIndexLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/errors/': {
       id: '/_app/errors/'
       path: '/errors'
@@ -849,11 +810,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardsIndexLazyRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/services/$serviceName': {
-      id: '/_app/services/$serviceName'
-      path: '/services/$serviceName'
-      fullPath: '/services/$serviceName'
-      preLoaderRoute: typeof AppServicesServiceNameLazyRouteImport
+    '/_app/traces/': {
+      id: '/_app/traces/'
+      path: '/traces'
+      fullPath: '/traces/'
+      preLoaderRoute: typeof AppTracesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/services/': {
+      id: '/_app/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof AppServicesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/logs/': {
+      id: '/_app/logs/'
+      path: '/logs'
+      fullPath: '/logs/'
+      preLoaderRoute: typeof AppLogsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/llm/': {
+      id: '/_app/llm/'
+      path: '/llm'
+      fullPath: '/llm/'
+      preLoaderRoute: typeof AppLlmIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/infrastructure/': {
+      id: '/_app/infrastructure/'
+      path: '/infrastructure'
+      fullPath: '/infrastructure/'
+      preLoaderRoute: typeof AppInfrastructureIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/saturation/kafka': {
@@ -910,6 +899,13 @@ declare module '@tanstack/react-router' {
       path: '/services/map'
       fullPath: '/services/map'
       preLoaderRoute: typeof AppServicesMapRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/services/$serviceName': {
+      id: '/_app/services/$serviceName'
+      path: '/services/$serviceName'
+      fullPath: '/services/$serviceName'
+      preLoaderRoute: typeof AppServicesServiceNameRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/logs/transactions': {
@@ -1022,14 +1018,15 @@ const AppMonitorsMonitorIdLazyRouteWithChildren =
 
 interface AppRouteChildren {
   AppIngestionRoute: typeof AppIngestionRoute
+  AppMetricsRoute: typeof AppMetricsRoute
+  AppSettingsRoute: typeof AppSettingsRoute
   AppCloudLazyRoute: typeof AppCloudLazyRoute
   AppDeviceLazyRoute: typeof AppDeviceLazyRoute
-  AppMetricsLazyRoute: typeof AppMetricsLazyRoute
   AppOverviewLazyRoute: typeof AppOverviewLazyRoute
-  AppSettingsLazyRoute: typeof AppSettingsLazyRoute
   AppAlertsNewRoute: typeof AppAlertsNewRoute
   AppLogsPatternsRoute: typeof AppLogsPatternsRoute
   AppLogsTransactionsRoute: typeof AppLogsTransactionsRoute
+  AppServicesServiceNameRoute: typeof AppServicesServiceNameRoute
   AppServicesMapRoute: typeof AppServicesMapRoute
   AppTracesTraceIdRoute: typeof AppTracesTraceIdRoute
   AppDashboardsPageIdLazyRoute: typeof AppDashboardsPageIdLazyRoute
@@ -1038,16 +1035,15 @@ interface AppRouteChildren {
   AppMonitorsNewLazyRoute: typeof AppMonitorsNewLazyRoute
   AppMonitorsNotificationsLazyRoute: typeof AppMonitorsNotificationsLazyRoute
   AppSaturationKafkaLazyRoute: typeof AppSaturationKafkaLazyRoute
-  AppServicesServiceNameLazyRoute: typeof AppServicesServiceNameLazyRoute
+  AppInfrastructureIndexRoute: typeof AppInfrastructureIndexRoute
+  AppLlmIndexRoute: typeof AppLlmIndexRoute
+  AppLogsIndexRoute: typeof AppLogsIndexRoute
+  AppServicesIndexRoute: typeof AppServicesIndexRoute
+  AppTracesIndexRoute: typeof AppTracesIndexRoute
   AppDashboardsIndexLazyRoute: typeof AppDashboardsIndexLazyRoute
   AppErrorsIndexLazyRoute: typeof AppErrorsIndexLazyRoute
-  AppInfrastructureIndexLazyRoute: typeof AppInfrastructureIndexLazyRoute
-  AppLlmIndexLazyRoute: typeof AppLlmIndexLazyRoute
-  AppLogsIndexLazyRoute: typeof AppLogsIndexLazyRoute
   AppMonitorsIndexLazyRoute: typeof AppMonitorsIndexLazyRoute
   AppSaturationIndexLazyRoute: typeof AppSaturationIndexLazyRoute
-  AppServicesIndexLazyRoute: typeof AppServicesIndexLazyRoute
-  AppTracesIndexLazyRoute: typeof AppTracesIndexLazyRoute
   AppInfrastructureContainersContainerLazyRoute: typeof AppInfrastructureContainersContainerLazyRoute
   AppInfrastructureHostsHostLazyRoute: typeof AppInfrastructureHostsHostLazyRoute
   AppLlmDatasetsDatasetIdLazyRoute: typeof AppLlmDatasetsDatasetIdLazyRoute
@@ -1061,14 +1057,15 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppIngestionRoute: AppIngestionRoute,
+  AppMetricsRoute: AppMetricsRoute,
+  AppSettingsRoute: AppSettingsRoute,
   AppCloudLazyRoute: AppCloudLazyRoute,
   AppDeviceLazyRoute: AppDeviceLazyRoute,
-  AppMetricsLazyRoute: AppMetricsLazyRoute,
   AppOverviewLazyRoute: AppOverviewLazyRoute,
-  AppSettingsLazyRoute: AppSettingsLazyRoute,
   AppAlertsNewRoute: AppAlertsNewRoute,
   AppLogsPatternsRoute: AppLogsPatternsRoute,
   AppLogsTransactionsRoute: AppLogsTransactionsRoute,
+  AppServicesServiceNameRoute: AppServicesServiceNameRoute,
   AppServicesMapRoute: AppServicesMapRoute,
   AppTracesTraceIdRoute: AppTracesTraceIdRoute,
   AppDashboardsPageIdLazyRoute: AppDashboardsPageIdLazyRoute,
@@ -1077,16 +1074,15 @@ const AppRouteChildren: AppRouteChildren = {
   AppMonitorsNewLazyRoute: AppMonitorsNewLazyRoute,
   AppMonitorsNotificationsLazyRoute: AppMonitorsNotificationsLazyRoute,
   AppSaturationKafkaLazyRoute: AppSaturationKafkaLazyRoute,
-  AppServicesServiceNameLazyRoute: AppServicesServiceNameLazyRoute,
+  AppInfrastructureIndexRoute: AppInfrastructureIndexRoute,
+  AppLlmIndexRoute: AppLlmIndexRoute,
+  AppLogsIndexRoute: AppLogsIndexRoute,
+  AppServicesIndexRoute: AppServicesIndexRoute,
+  AppTracesIndexRoute: AppTracesIndexRoute,
   AppDashboardsIndexLazyRoute: AppDashboardsIndexLazyRoute,
   AppErrorsIndexLazyRoute: AppErrorsIndexLazyRoute,
-  AppInfrastructureIndexLazyRoute: AppInfrastructureIndexLazyRoute,
-  AppLlmIndexLazyRoute: AppLlmIndexLazyRoute,
-  AppLogsIndexLazyRoute: AppLogsIndexLazyRoute,
   AppMonitorsIndexLazyRoute: AppMonitorsIndexLazyRoute,
   AppSaturationIndexLazyRoute: AppSaturationIndexLazyRoute,
-  AppServicesIndexLazyRoute: AppServicesIndexLazyRoute,
-  AppTracesIndexLazyRoute: AppTracesIndexLazyRoute,
   AppInfrastructureContainersContainerLazyRoute:
     AppInfrastructureContainersContainerLazyRoute,
   AppInfrastructureHostsHostLazyRoute: AppInfrastructureHostsHostLazyRoute,

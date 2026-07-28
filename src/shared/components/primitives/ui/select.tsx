@@ -37,8 +37,8 @@ function Select({
   style,
   ...props
 }: SelectProps) {
-                                                                                 
-                                            
+  // For multiple select, fall back to a custom implementation since Radix Select
+  // does not natively support multi-select.
   if (multiple) {
     return (
       <MultiSelect

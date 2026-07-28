@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import { KpiCard } from "@shared/components/ui/cards/StatCard";
 import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
 import type {
   MetricExplorerResults,
@@ -23,10 +24,6 @@ interface KpiCell {
   readonly delta?: number | null;
 }
 
-   
-                                                                              
-                                                                   
-   
 export function MetricsKpiStrip({ primaryQuery, results, spaceAgg, unit }: MetricsKpiStripProps) {
   const cells = useMemo<KpiCell[]>(() => {
     const result = primaryQuery ? results[primaryQuery.id] : undefined;
@@ -48,22 +45,15 @@ export function MetricsKpiStrip({ primaryQuery, results, spaceAgg, unit }: Metri
   }, [primaryQuery, results, spaceAgg, unit]);
 
   return (
-    <div className="mb-3 flex flex-wrap gap-x-8 gap-y-3">
+    <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
       {cells.map((cell) => (
-        <div key={cell.label}>
-          <div className="font-medium text-[10.5px] text-foreground-muted uppercase tracking-[0.06em]">
-            {cell.label}
-          </div>
-          <div className="mt-0.5 flex items-baseline gap-1.5">
-            <span className="font-bold text-[20px] text-foreground tabular-nums tracking-[-0.01em]">
-              {cell.value}
-            </span>
-            {cell.unit ? (
-              <span className="text-[11px] text-foreground-muted">{cell.unit}</span>
-            ) : null}
-            {cell.delta !== undefined ? <DeltaBadge delta={cell.delta} className="ml-1" /> : null}
-          </div>
-        </div>
+        <KpiCard
+          key={cell.label}
+          label={cell.label}
+          value={cell.value}
+          secondary={cell.unit || undefined}
+          delta={cell.delta !== undefined ? <DeltaBadge delta={cell.delta} /> : undefined}
+        />
       ))}
     </div>
   );

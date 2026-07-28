@@ -1,6 +1,8 @@
 import { cloudConfig } from "@/features/cloud";
 import { dashboardsConfig } from "@/features/dashboards";
+import { errorsConfig } from "@/features/errors";
 import { infrastructureConfig } from "@/features/infrastructure";
+import { ingestionConfig } from "@/features/ingestion";
 import { llmConfig } from "@/features/llm";
 import { logsConfig } from "@/features/logs";
 import { metricsConfig } from "@/features/metrics";
@@ -19,8 +21,6 @@ export interface DomainNavigationItem {
   readonly group: string;
 }
 
-                                                                
-                                                       
 export interface DomainConfig {
   readonly key: string;
   readonly label: string;
@@ -34,10 +34,12 @@ const domainRegistry: readonly DomainConfig[] = [
   metricsConfig,
   logsConfig,
   tracesConfig,
+  errorsConfig,
   llmConfig,
   infrastructureConfig,
   cloudConfig,
   monitorsConfig,
+  ingestionConfig,
   dashboardsConfig,
 ] as const;
 

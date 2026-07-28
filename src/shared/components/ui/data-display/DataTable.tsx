@@ -9,17 +9,21 @@ import {
 import { EmptyState } from "@shared/components/ui/feedback";
 import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { memo, useRef } from "react";
+import { memo, useMemo, useRef, useState } from "react";
+
+import { Button } from "@shared/components/primitives/ui";
 
 import { useColumnSizing } from "./useColumnSizing";
 
 interface DataTablePagination {
-  page?: number;
+  /** Rows per page. Providing this (with showPagination !== false) enables client-side paging. */
   pageSize?: number;
-  total?: number;
+  /** Notified when the user changes page. Page state is owned by the table. */
   onPageChange?: (page: number, pageSize?: number) => void;
   showPagination?: boolean;
 }
+
+const DEFAULT_PAGE_SIZE = 25;
 
 interface DataTableConfig<TData> {
   emptyText?: string;
@@ -28,7 +32,6 @@ interface DataTableConfig<TData> {
 }
 
 interface DataTableResize {
-                                                                                
   storageKey?: string;
 }
 
@@ -40,19 +43,23 @@ export interface DataTableProps<TData, TValue> {
   };
   pagination?: DataTablePagination;
   config?: DataTableConfig<TData>;
-                                                        
+
   resize?: DataTableResize;
 }
 
-                                                                              
-                                                                             
 const DEFAULT_COLUMN_SIZE = 150;
 
-   
-                                                            
-   
+/**
+ * DataTable is the default table for all list/tabular UI in this codebase.
+ * New tables should use it instead of hand-rolled <table> markup: it provides
+ * virtualized rendering, loading/empty states, column alignment via meta,
+ * per-row props (click navigation, hover styling) via config.onRow, optional
+ * column resizing, and optional client-side pagination via the pagination
+ * prop. Extend this component rather than forking table markup in a feature.
+ */
 function DataTableInner<TData, TValue>({
   data,
+  pagination,
   config = {},
   resize,
 }: DataTableProps<TData, TValue>): JSX.Element {
@@ -61,8 +68,23 @@ function DataTableInner<TData, TValue>({
   const resizable = resize !== undefined;
   const { columnSizing, onColumnSizingChange } = useColumnSizing(resize?.storageKey);
 
+  const paginated = pagination !== undefined && pagination.showPagination !== false;
+  const pageSize = pagination?.pageSize ?? DEFAULT_PAGE_SIZE;
+  const [page, setPage] = useState(0);
+  const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+  const safePage = Math.min(page, pageCount - 1);
+  const visibleRows = useMemo(
+    () => (paginated ? rows.slice(safePage * pageSize, (safePage + 1) * pageSize) : rows),
+    [paginated, rows, safePage, pageSize]
+  );
+
+  const goToPage = (next: number): void => {
+    setPage(next);
+    pagination?.onPageChange?.(next, pageSize);
+  };
+
   const table = useReactTable({
-    data: rows,
+    data: visibleRows,
     columns,
     getCoreRowModel: getCoreRowModel(),
     enableColumnResizing: resizable,
@@ -104,85 +126,120 @@ function DataTableInner<TData, TValue>({
   }
 
   return (
-    <div
-      ref={scrollRef}
-      className="relative max-h-[600px] w-full overflow-auto rounded-md border border-border bg-surface"
-    >
-      <Table className="relative w-full border-collapse text-left text-sm">
-        <TableHeader className="sticky top-0 z-15 bg-surface-elevated shadow-sm">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="border-border border-b hover:bg-transparent">
-              {headerGroup.headers.map((header) => {
-                const align = (header.column.columnDef.meta as { align?: string })?.align || "left";
-                const isCustomWidth =
-                  resizable &&
-                  header.column.columnDef.size !== undefined &&
-                  header.column.columnDef.size !== DEFAULT_COLUMN_SIZE;
-                const widthStyle = resizable
-                  ? isCustomWidth
-                    ? { width: `${header.getSize()}px` }
-                    : { width: `${header.getSize()}px`, flex: "1 1 0%" }
-                  : undefined;
-                return (
-                  <TableHead
-                    key={header.id}
-                    style={{ textAlign: align as "left" | "center" | "right", ...widthStyle }}
-                    className={
-                      resizable ? "group/col relative select-none overflow-hidden" : undefined
-                    }
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                    {resizable && (
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className={`absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none bg-border-light opacity-0 transition-opacity group-hover/col:opacity-100 ${
-                          header.column.getIsResizing() ? "bg-primary opacity-100" : ""
-                        }`}
-                      />
-                    )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {paddingTop > 0 && (
-            <tr>
-              <td style={{ height: `${paddingTop}px` }} />
-            </tr>
-          )}
-          {virtualItems.map((virtualRow) => {
-            const row = tableRows[virtualRow.index];
-            const rowProps = onRow ? onRow(row.original, virtualRow.index) : {};
-            return (
-              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} {...rowProps}>
-                {row.getVisibleCells().map((cell) => {
-                  const align = (cell.column.columnDef.meta as { align?: string })?.align || "left";
+    <>
+      <div
+        ref={scrollRef}
+        className={`relative max-h-[600px] w-full overflow-auto border border-border bg-surface ${
+          paginated ? "rounded-t-md" : "rounded-md"
+        }`}
+      >
+        <Table className="relative w-full border-collapse text-left text-sm">
+          <TableHeader className="sticky top-0 z-15 bg-surface-elevated shadow-sm">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                className="border-border border-b hover:bg-transparent"
+              >
+                {headerGroup.headers.map((header) => {
+                  const align =
+                    (header.column.columnDef.meta as { align?: string })?.align || "left";
+                  const isCustomWidth =
+                    resizable &&
+                    header.column.columnDef.size !== undefined &&
+                    header.column.columnDef.size !== DEFAULT_COLUMN_SIZE;
+                  const widthStyle = resizable
+                    ? isCustomWidth
+                      ? { width: `${header.getSize()}px` }
+                      : { width: `${header.getSize()}px`, flex: "1 1 0%" }
+                    : undefined;
                   return (
-                    <TableCell
-                      key={cell.id}
-                      style={{ textAlign: align as "left" | "center" | "right" }}
-                      className={resizable ? "overflow-hidden" : undefined}
+                    <TableHead
+                      key={header.id}
+                      style={{ textAlign: align as "left" | "center" | "right", ...widthStyle }}
+                      className={
+                        resizable ? "group/col relative select-none overflow-hidden" : undefined
+                      }
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                      {resizable && (
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={`absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none bg-border-light opacity-0 transition-opacity group-hover/col:opacity-100 ${
+                            header.column.getIsResizing() ? "bg-primary opacity-100" : ""
+                          }`}
+                        />
+                      )}
+                    </TableHead>
                   );
                 })}
               </TableRow>
-            );
-          })}
-          {paddingBottom > 0 && (
-            <tr>
-              <td style={{ height: `${paddingBottom}px` }} />
-            </tr>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {paddingTop > 0 && (
+              <tr>
+                <td style={{ height: `${paddingTop}px` }} />
+              </tr>
+            )}
+            {virtualItems.map((virtualRow) => {
+              const row = tableRows[virtualRow.index];
+              const rowProps = onRow ? onRow(row.original, virtualRow.index) : {};
+              return (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} {...rowProps}>
+                  {row.getVisibleCells().map((cell) => {
+                    const align =
+                      (cell.column.columnDef.meta as { align?: string })?.align || "left";
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        style={{ textAlign: align as "left" | "center" | "right" }}
+                        className={resizable ? "overflow-hidden" : undefined}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+            {paddingBottom > 0 && (
+              <tr>
+                <td style={{ height: `${paddingBottom}px` }} />
+              </tr>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      {paginated && (
+        <div className="flex items-center justify-between rounded-b-md border border-border border-t-0 bg-card px-4 py-2">
+          <span className="text-[12.5px] text-foreground-muted">
+            {safePage * pageSize + 1}–{Math.min((safePage + 1) * pageSize, rows.length)} of{" "}
+            {rows.length}
+          </span>
+          <div className="flex gap-1.5">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => goToPage(safePage - 1)}
+              disabled={safePage === 0}
+            >
+              Prev
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => goToPage(safePage + 1)}
+              disabled={(safePage + 1) * pageSize >= rows.length}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

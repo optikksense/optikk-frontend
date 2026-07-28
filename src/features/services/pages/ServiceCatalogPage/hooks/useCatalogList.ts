@@ -4,7 +4,7 @@ import { useTimeRange, useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery
 
 import {
   type Comparable,
-  type RequestRatePoint,
+  type RequestRateSeries,
   type ServiceCatalogRedSummary,
   getRedSummaryWithComparison,
   getRequestRateSeries,
@@ -15,7 +15,7 @@ import { type CatalogRow, buildCatalogRows } from "../catalog/buildCatalogRows";
 export interface UseCatalogListResult {
   readonly rows: CatalogRow[];
   readonly summary?: ServiceCatalogRedSummary;
-                                                                              
+
   readonly comparison?: ServiceCatalogRedSummary;
   readonly windowSec: number;
   readonly isPending: boolean;
@@ -30,9 +30,8 @@ function useRedSummary() {
 }
 
 function useRateSeries() {
-  return useTimeRangeQuery<RequestRatePoint[]>(
-    "service-hub.request-rate",
-    (_tenant, s, e, signal) => getRequestRateSeries(s, e, undefined, signal)
+  return useTimeRangeQuery<RequestRateSeries>("service-hub.request-rate", (_tenant, s, e, signal) =>
+    getRequestRateSeries(s, e, undefined, signal)
   );
 }
 
@@ -51,7 +50,7 @@ export function useCatalogList(): UseCatalogListResult {
     return buildCatalogRows({
       primary: summary.data.data,
       comparison: summary.data.comparison,
-      rateSeries: series.data ?? [],
+      rateSeries: series.data,
       windowSec,
     });
   }, [summary.data, series.data, windowSec]);

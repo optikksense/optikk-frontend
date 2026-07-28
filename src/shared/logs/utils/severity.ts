@@ -1,10 +1,10 @@
-   
-                                           
-  
-                                                                        
-                                                                           
-                                                            
-   
+/**
+ * Severity bucket ↔ label ↔ color mapping.
+ *
+ * Buckets mirror the backend's `severityBucket UInt8` column (0..5) per
+ * the observability.logs schema (`ingest/db/03_logs.sql`). Keep the tuples
+ * ordered so callers can iterate legends deterministically.
+ */
 
 type SeverityBucket = 0 | 1 | 2 | 3 | 4 | 5;
 

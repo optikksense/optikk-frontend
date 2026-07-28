@@ -63,7 +63,7 @@ export function WidgetCard({ widget, editing, onEdit, onRemove }: WidgetCardProp
   );
 }
 
-                                                                        
+/** Renders a metrics-builder widget via the shared WYSIWYG renderer. */
 function MetricsWidgetBody({
   spec,
   bodyHeight,
@@ -71,7 +71,7 @@ function MetricsWidgetBody({
   readonly spec: DashboardPanelSpec;
   readonly bodyHeight: number;
 }) {
-                                                                       
+  // Narrow before the hook; parent only mounts this for metrics specs.
   const query = isMetricsQuerySpec(spec.query) ? spec.query : null;
   const result = useMetricsExplorerQuery(query?.queries ?? [], query?.step ?? "5m");
   if (!query) return null;
@@ -101,7 +101,7 @@ function MetricsWidgetBody({
   );
 }
 
-                                                                               
+/** Renders a legacy endpoint-backed widget via the configurable chart card. */
 function EndpointWidgetBody({ spec }: { readonly spec: DashboardPanelSpec }) {
   const { ref, dataSources, isLoading, error } = useWidgetData(spec);
 

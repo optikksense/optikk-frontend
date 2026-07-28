@@ -45,7 +45,7 @@ function FacetRow({
   );
 }
 
-                                                                 
+/** Sticky left rail that filters the issues table by service. */
 export function ServiceFacetRail({
   facets,
   totalCount,

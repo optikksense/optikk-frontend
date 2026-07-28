@@ -7,13 +7,13 @@ interface Props {
   readonly cost: IngestionCost | undefined;
 }
 
-                                                                           
+// Quantity reads in its own unit: GB to two decimals, DPM as a whole rate.
 function fmtQuantity(line: CostLine): string {
   if (line.unit === "GB") return `${line.quantity.toFixed(2)} GB`;
   return `${Math.round(line.quantity).toLocaleString()} DPM`;
 }
 
-                                                           
+// Usage-based cost estimate for the current billing month.
 export function CostBreakdown({ cost }: Props) {
   const currency = cost?.currency ?? "USD";
   return (

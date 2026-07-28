@@ -10,7 +10,7 @@ function CurrentValueCard({ monitor }: Props) {
   const value = monitor.currentValue;
   const alert = monitor.conditions.alertThreshold;
   const warn = monitor.conditions.warnThreshold;
-                                                                              
+  // Ratio is only meaningful with a non-zero threshold; avoid divide-by-zero.
   const ratio =
     value !== undefined && alert !== undefined && alert !== 0 ? value / alert : undefined;
   const color =
@@ -21,7 +21,7 @@ function CurrentValueCard({ monitor }: Props) {
         : monitor.status === "ok"
           ? "text-success"
           : "text-foreground-secondary";
-                                                                                  
+  // Fall back to status-driven fill so a firing monitor never shows an empty bar.
   const barWidth =
     ratio !== undefined
       ? Math.min(100, Math.max(0, (ratio / 2) * 100))

@@ -1,24 +1,20 @@
 import { CodeBlock, CopyButton, Surface } from "@shared/components/primitives/ui";
-import { resolveOtlpEndpoint } from "@shared/lib/otlpEndpoint";
-import { Boxes, KeyRound, Terminal } from "lucide-react";
-import { useMemo, useState } from "react";
-
 import {
   type LanguageGuide,
   buildCollectorSnippets,
   buildLanguageGuides,
-} from "../../instrumentation/guides";
+} from "@shared/instrumentation/guides";
+import { useIngestionEndpoints } from "@shared/instrumentation/useIngestionEndpoints";
+import { Boxes, KeyRound, Terminal } from "lucide-react";
+import { useMemo, useState } from "react";
 
-   
-                                                                               
-                                                                                
-                                                                               
-                                                                              
-   
 export default function SettingsInstrumentationTab(): JSX.Element {
-  const endpoint = useMemo(resolveOtlpEndpoint, []);
-  const guides = useMemo(() => buildLanguageGuides(endpoint), [endpoint]);
-  const collector = useMemo(() => buildCollectorSnippets(endpoint), [endpoint]);
+  const endpoints = useIngestionEndpoints();
+  const guides = useMemo(() => (endpoints ? buildLanguageGuides(endpoints) : []), [endpoints]);
+  const collector = useMemo(
+    () => (endpoints ? buildCollectorSnippets(endpoints) : []),
+    [endpoints]
+  );
 
   const [activeLang, setActiveLang] = useState<LanguageGuide["id"]>(guides[0]?.id ?? "java");
   const active = guides.find((g) => g.id === activeLang) ?? guides[0];
@@ -37,7 +33,8 @@ export default function SettingsInstrumentationTab(): JSX.Element {
       <div className="border-t" />
 
       <div className="grid gap-md py-md sm:grid-cols-2">
-        <CredentialRow label="OTLP endpoint" value={endpoint} icon={null} />
+        <CredentialRow label="OTLP endpoint (gRPC)" value={endpoints?.grpc ?? null} icon={null} />
+        <CredentialRow label="OTLP endpoint (HTTP)" value={endpoints?.http ?? null} icon={null} />
         <CredentialRow
           label="API key"
           value={null}
@@ -46,7 +43,7 @@ export default function SettingsInstrumentationTab(): JSX.Element {
         />
       </div>
 
-      {                       }
+      {}
       <div className="flex flex-wrap gap-1 border-border border-b">
         {guides.map((g) => (
           <button
@@ -79,7 +76,7 @@ export default function SettingsInstrumentationTab(): JSX.Element {
         </div>
       )}
 
-      {                          }
+      {}
       <div className="mt-lg border-t pt-md">
         <div className="mb-xs flex items-center gap-xs">
           <Boxes size={16} className="text-muted" />

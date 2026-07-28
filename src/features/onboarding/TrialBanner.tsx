@@ -3,8 +3,6 @@ import { useState } from "react";
 
 import { useAuthTenant } from "@app/store/authStore";
 
-                                                                              
-                                                                      
 export function TrialBanner() {
   const tenant = useAuthTenant();
   const [dismissed, setDismissed] = useState(false);

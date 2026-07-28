@@ -9,7 +9,7 @@ interface Props {
   readonly unit: IngestionUnit;
 }
 
-                                                                            
+// Share of total ingest per telemetry type, denominated in the active unit.
 export function TelemetryTypeBreakdown({ summary, unit }: Props) {
   const bytes = unit === "bytes";
   return (

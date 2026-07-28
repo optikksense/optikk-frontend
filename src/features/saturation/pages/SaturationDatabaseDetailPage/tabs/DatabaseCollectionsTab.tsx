@@ -4,7 +4,7 @@ import DataTable from "@shared/components/ui/data-display/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtNum } from "@shared/utils/formatters";
 
 import { StatusPill } from "@shared/components/ui/data-display/status/StatusPill";
 

@@ -1,5 +1,5 @@
-import { KpiCard, type KpiTone } from "@shared/components/ui/dashboard/KpiCard";
-import { fmtMs, fmtNum, fmtPct } from "@shared/utils/metricFormatters";
+import { KpiCard, type KpiTone } from "@shared/components/ui/cards/StatCard";
+import { fmtMs, fmtNum, fmtPct } from "@shared/utils/formatters";
 import type { ServiceSummary } from "../hooks/useServiceSummary";
 
 interface ServiceKpiStripProps {

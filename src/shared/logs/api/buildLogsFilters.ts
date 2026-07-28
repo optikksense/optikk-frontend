@@ -13,22 +13,22 @@ import {
   pushUnsupportedOp,
 } from "@shared/search/utils/buildFilters";
 
-   
-                                                                            
-                                                                         
-                                                                        
-                                                                                    
-  
-                                                                       
-                                                                            
-                                                                                
-                                                                           
-                                                                                                                    
-                                                                                    
-                                                                       
-   
+/**
+ * Single source of truth for translating `ExplorerFilter[]` (FE chip model)
+ * into the BE wire body for the four logs read endpoints (`/logs/query`,
+ * `/logs/summary`, `/logs/trend`, `/logs/facets`). Mirrors the embedded
+ * `filter.Filters` shape on the backend (`internal/modules/logs/filter/filter.go`).
+ *
+ *   Resource dims (service/host/pod/…)  → typed include/exclude arrays
+ *   `severityText` (eq/neq)            → `severities` / `excludeSeverities`
+ *   `traceId` / `spanId` (eq)         → single-value fields (later wins logged)
+ *   `body` / `search` (contains|eq)     → joined into `search` (substring)
+ *   `@<key>`                            → `attributes[]` with eq/neq/contains/regex/gt/gte/lt/lte/exists/not_exists
+ *   anything else                       → `warnings[]` so the UI can surface a soft
+ *                                          notice under the search bar
+ */
 
-                                     
+// ---------- public types ----------
 
 interface LogsFiltersBody {
   startTime: number;
@@ -59,7 +59,7 @@ interface LogsFiltersBody {
 
 export type { BuildResult };
 
-                                                                          
+/** field -> include array, plus optional exclude array for neq/not_in. */
 const LIST_FIELDS: Record<
   string,
   { include: keyof LogsFiltersBody; exclude?: keyof LogsFiltersBody }
@@ -82,7 +82,7 @@ export function buildLogsFilters(
   const searchTerms: string[] = [];
 
   for (const filter of filters) {
-                                                          
+    // Try shared handlers first (attributes, search/body)
     if (dispatchCommonFilter(filter, body, warnings, searchTerms)) continue;
 
     const { field, op, value } = filter;

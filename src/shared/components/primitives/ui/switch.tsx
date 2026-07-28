@@ -38,7 +38,7 @@ function Switch({
         aria-labelledby={label ? labelId : undefined}
         checked={checked}
         onCheckedChange={(val) => {
-                                                                                              
+          // Synthesize a change event shape for compatibility with existing onChange handlers
           onChange?.({ target: { checked: val } } as React.ChangeEvent<HTMLInputElement>);
         }}
         disabled={disabled}

@@ -1,10 +1,3 @@
-   
-                                        
-   
-
-   
-                                                    
-   
 const ONE_THOUSAND = 1000;
 const ONE_MINUTE_MS = 60_000;
 const ONE_DAY_HOURS = 24;
@@ -134,4 +127,28 @@ export function formatRelativeTime(timestamp: number | string | Date): string {
   if (days < THIRTY_DAYS) return `${days}d ago`;
 
   return formatTimestamp(timestamp);
+}
+
+// Null-tolerant metric formatters. Unlike the format* functions above, these
+// render "—" for missing/non-finite values instead of a zero value, which is
+// the right default for metric KPIs where "no data" differs from "zero".
+
+export function fmtNum(n: number | null | undefined): string {
+  if (n == null || !Number.isFinite(n)) return "—";
+  return formatNumber(n);
+}
+
+export function fmtMs(ms: number | null | undefined): string {
+  if (ms == null || !Number.isFinite(ms)) return "—";
+  return formatDuration(ms);
+}
+
+export function fmtPct(value: number | null | undefined, digits = 2): string {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return formatPercentage(value, digits, false);
+}
+
+export function ratioFromCounts(numerator: number, denominator: number): number {
+  if (!denominator) return 0;
+  return (numerator * 100) / denominator;
 }

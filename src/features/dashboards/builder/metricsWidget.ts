@@ -16,10 +16,10 @@ import {
 
 import type { CreateWidgetPayload } from "../api/dashboardsApi";
 
-                                                                        
+/** The four visualizations renderable from the basic metrics engine. */
 export type WidgetVizType = "timeseries" | "value" | "toplist" | "table";
 
-                                                                    
+/** Grid footprint presets exposed in the editor's size selector. */
 export type WidgetSize = "sm" | "md" | "lg" | "full";
 
 export interface WidgetDisplayOptions {
@@ -27,7 +27,7 @@ export interface WidgetDisplayOptions {
   readonly smooth: boolean;
 }
 
-                                                                              
+/** Local editor state for the full-window widget editor (no URL coupling). */
 export interface WidgetEditorState {
   readonly title: string;
   readonly viz: WidgetVizType;
@@ -64,7 +64,7 @@ function vizToPanelType(viz: WidgetVizType): DashboardPanelType {
   return VIZ_TO_PANEL[viz];
 }
 
-                                                                            
+/** Inverse of vizToPanelType; falls back to timeseries for legacy specs. */
 export function panelTypeToViz(panelType: DashboardPanelType): WidgetVizType {
   const match = (Object.keys(VIZ_TO_PANEL) as WidgetVizType[]).find(
     (viz) => VIZ_TO_PANEL[viz] === panelType
@@ -76,7 +76,7 @@ function sizeToSpan(size: WidgetSize): { readonly w: number; readonly h: number 
   return SIZE_TO_SPAN[size];
 }
 
-                                                                             
+/** Resolves a saved layout's column span back to the nearest size preset. */
 function spanToSize(layout: DashboardLayout): WidgetSize {
   const match = (Object.keys(SIZE_TO_SPAN) as WidgetSize[]).find(
     (size) => SIZE_TO_SPAN[size].w === layout.w
@@ -103,7 +103,7 @@ function makeWidgetId(): string {
   return `w_${Date.now().toString(36)}_${widgetSeq}`;
 }
 
-                                                                                  
+/** Serialize editor state into a create/update payload for the dashboards API. */
 export function editorStateToPayload(
   state: WidgetEditorState,
   position: number,
@@ -141,7 +141,7 @@ export function editorStateToPayload(
   return { title, panelType: panelType, layoutVariant: layoutVariant, spec, layout, position };
 }
 
-                                                                              
+/** Rehydrate editor state from a saved metrics widget spec for re-editing. */
 export function specToEditorState(spec: DashboardPanelSpec): WidgetEditorState {
   const query = spec.query;
   if (!isMetricsQuerySpec(query)) return createDefaultEditorState();

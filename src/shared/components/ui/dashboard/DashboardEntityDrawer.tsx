@@ -1,11 +1,18 @@
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useMemo } from "react";
 
 import ServiceDetailDrawer from "@shared/components/ui/drawers/ServiceDetailDrawer";
-import { DetailDrawer } from "@shared/components/ui/layout";
+import {
+  type DrawerAttrGroup,
+  DrawerAttrTable,
+  DrawerHeader,
+  DrawerShell,
+} from "@shared/components/ui/overlay/detail-drawer";
 
-import { clearDashboardDrawerSearch, readDashboardDrawerState } from "./utils/dashboardDrawerState";
+import {
+  clearedDashboardDrawerSearch,
+  readDashboardDrawerState,
+} from "./utils/dashboardDrawerState";
 
 const ENTITY_LABELS: Record<string, string> = {
   databaseSystem: "Database System",
@@ -31,12 +38,20 @@ function toFieldLabel(key: string): string {
     .replace(/\bVms\b/g, "VMS");
 }
 
+function toFieldValue(value: unknown): string {
+  if (value == null) return "—";
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
 export default function DashboardEntityDrawer(): JSX.Element | null {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [searchParams] = useSearchParams();
+  // Rendered by shared dashboard hosts on multiple routes, so the drawer
+  // params are read route-agnostically.
+  const search = useSearch({ strict: false }) as Record<string, unknown>;
 
-  const drawer = useMemo(() => readDashboardDrawerState(searchParams), [searchParams]);
+  const drawer = useMemo(() => readDashboardDrawerState(search), [search]);
   const isOpen = Boolean(drawer.entity && drawer.id);
 
   const drawerData = useMemo<Record<string, unknown>>(() => {
@@ -51,29 +66,36 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
     };
   }, [drawer.data, drawer.entity, drawer.id]);
 
-  const sections = useMemo(() => {
-    const primaryFields = [
-      { label: "Entity", key: "entity" },
-      { label: "Identifier", key: "identifier" },
-    ];
-
-    const extraFields = Object.keys(drawerData)
+  const groups = useMemo<DrawerAttrGroup[]>(() => {
+    const contextRows = Object.keys(drawerData)
       .filter((key) => key !== "entity" && key !== "identifier")
       .sort((left, right) => left.localeCompare(right))
-      .map((key) => ({
-        label: toFieldLabel(key),
-        key,
-      }));
+      .map((key) => [toFieldLabel(key), toFieldValue(drawerData[key])] as const);
 
     return [
-      { title: "Selection", fields: primaryFields },
-      ...(extraFields.length > 0 ? [{ title: "Context", fields: extraFields }] : []),
+      {
+        label: "Selection",
+        rows: [
+          ["Entity", toFieldValue(drawerData.entity)],
+          ["Identifier", toFieldValue(drawerData.identifier)],
+        ],
+      },
+      ...(contextRows.length > 0 ? [{ label: "Context", rows: contextRows }] : []),
     ];
   }, [drawerData]);
 
   if (!isOpen) {
     return null;
   }
+
+  const onClose = () =>
+    navigate({
+      search: ((prev: Record<string, unknown>) => ({
+        ...prev,
+        ...clearedDashboardDrawerSearch(),
+      })) as never,
+      replace: true,
+    });
 
   if (drawer.entity === "service") {
     return (
@@ -82,38 +104,28 @@ export default function DashboardEntityDrawer(): JSX.Element | null {
         serviceName={drawer.id ?? ""}
         title={drawer.title}
         initialData={drawer.data}
-        onClose={() =>
-          navigate({
-            to: location.pathname + clearDashboardDrawerSearch(location.search as string & {}),
-            replace: true,
-          })
-        }
+        onClose={onClose}
       />
     );
   }
 
+  const title =
+    drawer.title || (drawer.entity ? (ENTITY_LABELS[drawer.entity] ?? "Details") : "Details");
+
   return (
-    <DetailDrawer
-      open
-      onClose={() =>
-        navigate({
-          to: location.pathname + clearDashboardDrawerSearch(location.search as string & {}),
-          replace: true,
-        })
-      }
-      title={
-        drawer.title || (drawer.entity ? (ENTITY_LABELS[drawer.entity] ?? "Details") : "Details")
-      }
-      data={drawerData}
-      sections={sections}
-      extra={
-        !drawer.data ? (
+    <DrawerShell open onClose={onClose} width={640}>
+      <DrawerHeader onClose={onClose}>
+        <div className="truncate font-semibold text-[15px] text-foreground">{title}</div>
+      </DrawerHeader>
+      <div className="min-h-0 flex-1 overflow-y-auto px-[18px] py-4">
+        <DrawerAttrTable groups={groups} searchable={false} />
+        {!drawer.data && (
           <p className="text-foreground-secondary text-sm">
             This detail view was opened from a legacy link, so only the identifier is available
             until the parent dashboard is opened from a live row selection.
           </p>
-        ) : null
-      }
-    />
+        )}
+      </div>
+    </DrawerShell>
   );
 }

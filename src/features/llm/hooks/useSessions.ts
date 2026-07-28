@@ -4,25 +4,25 @@ import { getSessionDetail, getSessionsOverview, querySessions } from "../api/ses
 import { useLlmRange } from "./useLlmQueries";
 
 export function useSessionsOverview() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "sessions", "overview", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "sessions", "overview", startTime, endTime],
     queryFn: () => getSessionsOverview({ startTime, endTime }),
   });
 }
 
 export function useSessions() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "sessions", "list", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "sessions", "list", startTime, endTime],
     queryFn: () => querySessions({ startTime, endTime }),
   });
 }
 
 export function useSessionDetail(sessionId: string | null) {
-  const { tenantId, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "sessions", "detail", tenantId, sessionId, startTime, endTime],
+    queryKey: ["llm", "sessions", "detail", sessionId, startTime, endTime],
     queryFn: () => getSessionDetail(sessionId ?? "", { startTime, endTime }),
     enabled: Boolean(sessionId),
   });

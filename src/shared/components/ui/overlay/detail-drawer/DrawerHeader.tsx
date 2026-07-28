@@ -8,7 +8,7 @@ interface DrawerIconButtonProps {
   readonly accent?: boolean;
 }
 
-                                                                 
+/** Small square icon button used in drawer headers / footers. */
 export function DrawerIconButton({ icon, title, onClick, accent }: DrawerIconButtonProps) {
   return (
     <button

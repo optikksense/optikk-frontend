@@ -1,7 +1,7 @@
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { fmtMs } from "@shared/utils/metricFormatters";
+import { fmtMs } from "@shared/utils/formatters";
 
 import { useDatabaseLatencyPercentiles } from "../hooks/useDatabaseLatencyPercentiles";
 

@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { Group, Input, Popover, SearchField } from "react-aria-components";
 
 import { formatDsl } from "../../dsl/formatDsl";
 import { useDslSearchBar } from "../../hooks/useDslSearchBar";
@@ -23,17 +22,6 @@ interface Props {
   readonly disableBareFreeTextFallback?: boolean;
 }
 
-   
-                                                                             
-                                                                            
-         
-  
-                                                                        
-                                                                           
-                                                                             
-                                                                  
-                                           
-   
 function ExplorerSearchBarDslComponent(props: Props, ref: React.Ref<HTMLInputElement>) {
   const seed = formatDsl(props.filters);
   const [showPopover, setShowPopover] = useState(false);
@@ -93,22 +81,17 @@ interface LayoutProps {
 
 function DslBarLayout(p: LayoutProps) {
   const { state: s } = p;
-  const triggerRef = useRef<HTMLDivElement>(null);
   return (
-    <SearchField
-      value={s.input}
-      onChange={() => {
-                                                                                       
-      }}
-      aria-label="Search query"
-      className="relative w-full"
-    >
-      <Group ref={triggerRef} className={inputClass(s.parsed.errors.length > 0)}>
-        <Input
+    <div className="relative w-full">
+      <div className={inputClass(s.parsed.errors.length > 0)}>
+        <input
           ref={p.inputRef}
+          type="text"
+          aria-label="Search query"
           placeholder={
             p.placeholder ?? 'service:checkout durationMs:>=500 @http.statusCode:500 "timeout"'
           }
+          value={s.input}
           onChange={(e) => {
             s.onChange(e.target.value, e.target.selectionStart ?? e.target.value.length);
             p.setShowPopover(true);
@@ -121,29 +104,24 @@ function DslBarLayout(p: LayoutProps) {
           spellCheck={false}
           autoComplete="off"
         />
-      </Group>
-      <Popover
-        triggerRef={triggerRef}
-        isOpen={p.showPopover}
-        onOpenChange={p.setShowPopover}
-        isNonModal
-        placement="bottom start"
-        className="w-[var(--trigger-width)]"
-      >
-        <QuerySuggestions
-          options={s.suggestions}
-          activeIndex={s.activeIdx}
-          onSelect={p.onSelect}
-          onHover={s.setActiveIdx}
-          loading={s.isLoading}
-          title={popoverTitle(s.context)}
-          highlight={s.context.tokenPrefix}
-        />
-      </Popover>
+      </div>
+      {p.showPopover ? (
+        <div className="absolute top-full left-0 z-50 mt-1">
+          <QuerySuggestions
+            options={s.suggestions}
+            activeIndex={s.activeIdx}
+            onSelect={p.onSelect}
+            onHover={s.setActiveIdx}
+            loading={s.isLoading}
+            title={popoverTitle(s.context)}
+            highlight={s.context.tokenPrefix}
+          />
+        </div>
+      ) : null}
       {s.parsed.errors.length > 0 ? (
         <div className="mt-1 text-[10px] text-error">{s.parsed.errors[0].message}</div>
       ) : null}
-    </SearchField>
+    </div>
   );
 }
 
@@ -172,8 +150,6 @@ function handleKeyDown(
   disableBareFreeTextFallback: boolean | undefined
 ) {
   if (e.key === "Escape") {
-                                                                     
-                                                         
     e.preventDefault();
     e.stopPropagation();
     if (showPopover) {
@@ -200,8 +176,7 @@ function handleKeyDown(
   }
   if (e.key === "Enter") {
     e.preventDefault();
-                                                                       
-                                           
+
     if (showPopover && activeOpt) {
       s.acceptSuggestion(activeOpt);
       return;
@@ -233,8 +208,7 @@ function useSyncSeedOnExternalChange(
   const [lastSeed, setLastSeed] = useState(seed);
   useEffect(() => {
     if (seed === lastSeed) return;
-                                                                             
-                                                          
+
     const el = inputRef.current;
     const typing = el !== null && document.activeElement === el && current !== lastSeed;
     setLastSeed(seed);

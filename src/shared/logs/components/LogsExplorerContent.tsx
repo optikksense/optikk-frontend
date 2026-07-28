@@ -1,9 +1,8 @@
 import { useCallback, useMemo } from "react";
 
-import { useAppStore, useTimeRange } from "@app/store/appStore";
+import { useAppStore, useResolvedTimeBounds, useTimeRange } from "@app/store/appStore";
 import { StatPill } from "@shared/search/components/chrome/StatPill";
 import type { ExplorerFilter } from "@shared/search/types/filters";
-import { resolveTimeRangeBounds } from "@shared/types";
 import { formatNumber } from "@shared/utils/formatters";
 
 import { LogsTable } from "@shared/logs/components/table/LogsTable";
@@ -26,15 +25,10 @@ interface LogsExplorerContentProps {
   readonly explorer: ReturnType<typeof useLogsExplorer>;
 }
 
-   
-                                                                     
-                                                                              
-                                                             
-   
 export function LogsExplorerContent({ explorer }: LogsExplorerContentProps) {
   const { state, list, summary, trend } = explorer;
   const timeRange = useTimeRange();
-  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
+  const { startTime, endTime } = useResolvedTimeBounds();
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
 
   const goNextPage = useLogsExplorerStore((s) => s.goNextPage);

@@ -21,7 +21,7 @@ export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-                                       
+  // Toggle the menu when ⌘K is pressed
   useHotkeys(
     "meta+k, ctrl+k",
     (e) => {

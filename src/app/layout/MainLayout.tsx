@@ -6,6 +6,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { DensityProvider } from "@shared/components/primitives/ui/providers/DensityProvider";
 import CommandPalette from "@shared/components/ui/overlay/CommandPalette/CommandPalette";
 import ShortcutHelpOverlay from "@shared/components/ui/overlay/ShortcutHelpOverlay";
+import { useAppRefreshSubscriber } from "@shared/hooks/useAppRefreshSubscriber";
 import { useKeyboardShortcuts } from "@shared/hooks/useKeyboardShortcuts";
 
 import { useAppStore } from "@app/store/appStore";
@@ -45,6 +46,7 @@ export default function MainLayout() {
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
   const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
   const { shortcuts } = useKeyboardShortcuts();
+  useAppRefreshSubscriber();
 
   useHotkeys(
     "shift+/",

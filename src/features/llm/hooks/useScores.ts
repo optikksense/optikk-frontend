@@ -12,26 +12,26 @@ import {
 import { useLlmRange } from "./useLlmQueries";
 
 export function useScoreSummary() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "scores", "summary", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "scores", "summary", startTime, endTime],
     queryFn: () => getScoreSummary({ startTime, endTime }),
   });
 }
 
 export function useScoreTimeseries(name: string | null) {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "scores", "ts", tenantId, name, startTime, endTime, refreshKey],
+    queryKey: ["llm", "scores", "ts", name, startTime, endTime],
     queryFn: () => getScoreTimeseries(name ?? "", { startTime, endTime }),
     enabled: Boolean(name),
   });
 }
 
 export function useScoreDistribution(name: string | null) {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "scores", "dist", tenantId, name, startTime, endTime, refreshKey],
+    queryKey: ["llm", "scores", "dist", name, startTime, endTime],
     queryFn: () => getScoreDistribution(name ?? "", { startTime, endTime }),
     enabled: Boolean(name),
   });

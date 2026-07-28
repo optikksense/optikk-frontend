@@ -1,6 +1,5 @@
-import { useRefreshKey, useTenantId, useTimeRange } from "@/app/store/appStore";
+import { useResolvedTimeBounds } from "@/app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
-import { resolveTimeRangeBounds } from "@shared/types";
 
 import {
   type LlmCostGroupBy,
@@ -15,71 +14,67 @@ import {
   queryLlmTraces,
 } from "../api/llmApi";
 
-                                                                              
 export function useLlmRange() {
-  const timeRange = useTimeRange();
-  const tenantId = useTenantId();
-  const refreshKey = useRefreshKey();
-                                                                        
-  const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
-  return { tenantId, refreshKey, startTime, endTime };
+  // Store-resolved bounds: stable across renders, advance on refresh.
+  const { startTime, endTime } = useResolvedTimeBounds();
+  return { startTime, endTime };
 }
 
 export function useLlmOverview() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "overview", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "overview", startTime, endTime],
     queryFn: () => getLlmOverview({ startTime, endTime }),
   });
 }
 
 export function useLlmApps() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "apps", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "apps", startTime, endTime],
     queryFn: () => getLlmApps({ startTime, endTime }),
   });
 }
 
 export function useLlmTimeseries(metric: LlmTimeseriesMetric, enabled = true) {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "timeseries", metric, tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "timeseries", metric, startTime, endTime],
     queryFn: () => getLlmTimeseries(metric, { startTime, endTime }),
     enabled,
   });
 }
 
 export function useLlmCostBreakdown(groupBy: LlmCostGroupBy, enabled = true) {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "cost", groupBy, tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "cost", groupBy, startTime, endTime],
     queryFn: () => getLlmCostBreakdown(groupBy, { startTime, endTime }),
     enabled,
   });
 }
 
 export function useLlmTraces(req: Omit<LlmTracesRequest, "startTime" | "endTime">, enabled = true) {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "traces", tenantId, startTime, endTime, refreshKey, JSON.stringify(req)],
+    queryKey: ["llm", "traces", startTime, endTime, JSON.stringify(req)],
     queryFn: () => queryLlmTraces({ ...req, startTime, endTime }),
     enabled,
   });
 }
 
 export function useLlmModels() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "models", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "models", startTime, endTime],
     queryFn: () => getLlmModels({ startTime, endTime }),
   });
 }
 
 export function useLlmTraceDetail(traceId: string | null) {
-  const { tenantId, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "traceDetail", tenantId, traceId, startTime, endTime],
+    queryKey: ["llm", "traceDetail", traceId, startTime, endTime],
     queryFn: () => getLlmTraceDetail(traceId ?? "", startTime, endTime),
     enabled: Boolean(traceId),
   });

@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { ROUTES } from "@/shared/constants/routes";
-import { fmtMs, fmtPct } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtPct } from "@shared/utils/formatters";
 
 import { StatusPill } from "@shared/components/ui/data-display/status/StatusPill";
 
@@ -14,7 +14,6 @@ import {
   instanceStatus,
 } from "@/features/saturation/pages/SaturationDatabasePage/databaseInstanceModel";
 
-                                                                                
 function statusDetail(row: DatastoreSystemRow): string | null {
   const status = instanceStatus(row);
   if (status === "ok") return null;

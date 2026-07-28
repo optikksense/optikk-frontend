@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import { queryClient } from "@shared/api/queryClient";
 import type { AbsoluteTimeRange, RelativeTimeRange, TimeRange } from "@shared/types";
+import { resolveTimeRangeBounds } from "@shared/types";
 
 import { STORAGE_KEYS } from "@config/constants";
 import type { ComparisonMode } from "@shared/components/ui/TimeSelector/constants";
@@ -15,8 +16,17 @@ import {
   pushRecentRange,
 } from "./appStoreMigrations";
 
+export interface ResolvedTimeBounds {
+  readonly startTime: number;
+  readonly endTime: number;
+}
+
 interface AppState extends PersistedAppState {
   readonly refreshKey: number;
+  readonly lastRefreshAt: number;
+  // Time bounds resolved once per user action (range change / refresh),
+  // never during render. Query hooks key on these values.
+  readonly resolvedTimeBounds: ResolvedTimeBounds;
   readonly setSelectedTenantId: (tenantId: number | null) => void;
   readonly setSelectedTenantIds: (tenantIds: number[]) => void;
   readonly setTimeRange: (range: TimeRange) => void;
@@ -49,6 +59,8 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       ...defaultPersistedState,
       refreshKey: 0,
+      lastRefreshAt: Date.now(),
+      resolvedTimeBounds: resolveTimeRangeBounds(defaultPersistedState.timeRange),
 
       setSelectedTenantId: (tenantId: number | null): void => {
         const current = useAppStore.getState();
@@ -57,9 +69,9 @@ export const useAppStore = create<AppState>()(
           current.selectedTenantId !== tenantId ||
           !sameTenantScope(current.selectedTenantIds, nextTenantIds)
         ) {
-                                                                             
-                                                                       
-                                                                               
+          // Requests are authenticated using this scope header. Clear before
+          // publishing the new scope so no observer can render another
+          // tenant's cached response, even when a feature omits it from a key.
           queryClient.clear();
         }
         set({
@@ -96,6 +108,7 @@ export const useAppStore = create<AppState>()(
 
           return {
             timeRange: range,
+            resolvedTimeBounds: resolveTimeRangeBounds(range),
             recentTimeRanges: pushRecentRange(state.recentTimeRanges, range),
           };
         });
@@ -118,6 +131,7 @@ export const useAppStore = create<AppState>()(
           };
           return {
             timeRange: range,
+            resolvedTimeBounds: { startTime: startMs, endTime: endMs },
             recentTimeRanges: pushRecentRange(state.recentTimeRanges, range),
           };
         });
@@ -128,7 +142,18 @@ export const useAppStore = create<AppState>()(
       },
 
       triggerRefresh: (): void => {
-        set((state) => ({ refreshKey: state.refreshKey + 1 }));
+        set((state) => {
+          // Advance relative bounds so query keys pick up the new window.
+          const next = resolveTimeRangeBounds(state.timeRange);
+          const unchanged =
+            next.startTime === state.resolvedTimeBounds.startTime &&
+            next.endTime === state.resolvedTimeBounds.endTime;
+          return {
+            refreshKey: state.refreshKey + 1,
+            lastRefreshAt: Date.now(),
+            resolvedTimeBounds: unchanged ? state.resolvedTimeBounds : next,
+          };
+        });
       },
 
       setAutoRefreshInterval: (ms: number): void => {
@@ -207,10 +232,12 @@ export const useAppStore = create<AppState>()(
           selectedTenantId = selectedTenantIds[0] ?? null;
         }
 
+        const timeRange = migrateTimeRange(snapshot.timeRange);
         return {
           ...current,
           ...snapshot,
-          timeRange: migrateTimeRange(snapshot.timeRange),
+          timeRange,
+          resolvedTimeBounds: resolveTimeRangeBounds(timeRange),
           selectedTenantIds,
           selectedTenantId,
           viewPreferences: snapshot.viewPreferences ?? current.viewPreferences,
@@ -224,11 +251,13 @@ export const useAppStore = create<AppState>()(
   )
 );
 
-                                                                            
-                                                                                  
+// Computed selectors — use these instead of accessing store shape directly.
+// Reduces coupling so store internals can change without updating every consumer.
 export const useTimeRange = () => useAppStore((s) => s.timeRange);
+export const useResolvedTimeBounds = () => useAppStore((s) => s.resolvedTimeBounds);
 export const useTenantId = () => useAppStore((s) => s.selectedTenantId);
 export const useRefreshKey = () => useAppStore((s) => s.refreshKey);
+export const useLastRefreshAt = () => useAppStore((s) => s.lastRefreshAt);
 export const useSidebarCollapsed = () => useAppStore((s) => s.sidebarCollapsed);
 export const useTheme = () => useAppStore((s) => s.theme);
 export const useTimezone = () => useAppStore((s) => s.timezone);

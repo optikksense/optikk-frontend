@@ -4,9 +4,9 @@ import LatencyHistogram from "@shared/components/ui/charts/distributions/Latency
 import type { DashboardPanelRendererProps } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
 import { useDashboardData } from "@shared/components/ui/dashboard/hooks/useDashboardData";
 
-   
-  
-   
+/**
+ *
+ */
 export function LatencyHistogramRenderer({
   chartConfig,
   dataSources,

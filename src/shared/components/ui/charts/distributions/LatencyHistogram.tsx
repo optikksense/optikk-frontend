@@ -39,11 +39,11 @@ function bucketize(traces: LatencyHistogramTrace[]): number[] {
   return counts;
 }
 
-   
-  
-                                
-                                                      
-   
+/**
+ *
+ * @param props Component props.
+ * @returns Histogram chart for trace latency buckets.
+ */
 export default function LatencyHistogram({
   traces = [],
   height = 180,

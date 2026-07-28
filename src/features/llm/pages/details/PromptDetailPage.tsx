@@ -1,5 +1,4 @@
-import { useNavigate, useParams } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { Button, Card } from "@shared/components/primitives/ui";
@@ -8,6 +7,7 @@ import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import Loading from "@shared/components/ui/feedback/Loading";
 
 import { formatRelativeTime } from "@shared/utils/formatters";
+import { LlmBackLink } from "../../components/LlmBackLink";
 import { usePrompt, usePromptMutations } from "../../hooks/usePrompts";
 
 function templateText(template: unknown): string {
@@ -20,7 +20,6 @@ function templateText(template: unknown): string {
 }
 
 export default function PromptDetailPage() {
-  const navigate = useNavigate();
   const { name } = useParams({ strict: false });
   const promptQ = usePrompt(name ?? null);
   const { setStatus, addVersion } = usePromptMutations(name);
@@ -32,13 +31,7 @@ export default function PromptDetailPage() {
 
   return (
     <PageShell>
-      <button
-        type="button"
-        onClick={() => navigate({ to: "/llm" as string & {} })}
-        className="mb-3 inline-flex items-center gap-1 text-[12px] text-foreground-muted hover:text-foreground"
-      >
-        <ArrowLeft size={14} /> Back to LLM
-      </button>
+      <LlmBackLink tab="prompts" />
 
       {promptQ.isPending ? (
         <Loading />

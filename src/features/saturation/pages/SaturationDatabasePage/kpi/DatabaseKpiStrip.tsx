@@ -1,7 +1,7 @@
-import { KpiCard, type KpiTone } from "@shared/components/ui/dashboard/KpiCard";
+import { KpiCard, type KpiTone } from "@shared/components/ui/cards/StatCard";
 
 import type { DatastoreSummary } from "@/features/saturation/api/datastoresExplorerSchemas";
-import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtNum } from "@shared/utils/formatters";
 
 import { useDatabaseLatencyPercentiles } from "../hooks/useDatabaseLatencyPercentiles";
 import { useDatabaseQpsSeries } from "../hooks/useDatabaseQpsSeries";
@@ -21,7 +21,6 @@ interface DatabaseKpiStripProps {
   readonly system?: string;
 }
 
-                                                          
 export function DatabaseKpiStrip({ summary, system }: DatabaseKpiStripProps) {
   const { series: qps } = useDatabaseQpsSeries(system);
   const { series: lat } = useDatabaseLatencyPercentiles(system);

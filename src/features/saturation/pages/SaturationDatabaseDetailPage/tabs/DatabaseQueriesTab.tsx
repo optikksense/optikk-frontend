@@ -9,7 +9,7 @@ import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlow
 import { queryFingerprintId } from "@/features/saturation/utils/queryFingerprintId";
 import { ROUTES } from "@/shared/constants/routes";
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtNum } from "@shared/utils/formatters";
 
 import { StatusDot } from "@shared/components/ui/data-display/status/StatusDot";
 
@@ -29,8 +29,7 @@ const COLUMNS: ColumnDef<SlowQueryPatternRow>[] = [
   {
     header: "Query",
     accessorKey: "queryText",
-                                                                            
-                                                        
+
     size: 320,
     minSize: 140,
     cell: ({ row: { original: row } }) => (

@@ -33,7 +33,7 @@ interface ObservabilityChartProps {
   type?: "line" | "area" | "bar";
   height?: number;
   fillHeight?: boolean;
-                                                                                            
+  /** Pins the x-axis to the selected window (epoch-seconds), independent of data extent. */
   xMin?: number;
   xMax?: number;
   yMin?: number;
@@ -44,7 +44,7 @@ interface ObservabilityChartProps {
   legend?: boolean;
   className?: string;
   plugins?: uPlot.Plugin[];
-                                                                         
+  /** Horizontal reference lines (e.g. monitor warn/alert thresholds). */
   thresholds?: ThresholdLine[];
   onTimeBrush?: (startMs: number, endMs: number) => void;
   isLoading?: boolean;
@@ -70,12 +70,12 @@ function ObservabilityChart({
   onTimeBrush,
   isLoading = false,
 }: ObservabilityChartProps) {
-                                                                            
-                                                                          
-                                                                              
-                                                                          
-                                                                              
-                                                
+  // Display-only inputs are read through refs so the option/tooltip objects
+  // handed to UPlotChart stay referentially stable across renders. Inline
+  // `yFormatter={(v) => ...}` props (used at most call sites) would otherwise
+  // change identity every render and force a full uPlot destroy+recreate.
+  // Structural inputs (colors, scales, thresholds, type) stay real deps below
+  // so genuine changes still rebuild the chart.
   const yFormatterRef = useRef(yFormatter);
   yFormatterRef.current = yFormatter;
   const xFormatterRef = useRef(xFormatter);
@@ -192,8 +192,8 @@ function ObservabilityChart({
     };
   }, [legend, structuralSeries, yAxisSize, xRange, yMin, yMax, type, allPlugins]);
 
-                                                                             
-                                                                              
+  // Stable identity: reads live data/formatters via refs so it never changes
+  // reference. uPlot invokes it on cursor move against the latest drawn data.
   const tooltipContent = useMemo(() => {
     const defaultXFormatter = (timestampSeconds: number) =>
       new Intl.DateTimeFormat(undefined, {

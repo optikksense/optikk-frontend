@@ -21,7 +21,6 @@ function buildRows(about: HostAbout): Array<{ label: string; value: string }> {
   return rows.filter((r): r is { label: string; value: string } => Boolean(r.value));
 }
 
-                                                                                
 export function HostDetailAbout({ about }: HostDetailAboutProps) {
   if (!about) return null;
   const rows = buildRows(about);

@@ -1,6 +1,5 @@
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 
 import ServiceDetailDrawer from "@shared/components/ui/drawers/ServiceDetailDrawer";
 
@@ -32,7 +31,6 @@ function applyFilters(rows: CatalogRow[], search: string, status: StatusFilter):
   });
 }
 
-                                                                               
 function toDrawerInitialData(row: CatalogRow | null): Record<string, unknown> | null {
   if (!row) return null;
   return {
@@ -58,13 +56,14 @@ function EmptyState({ isPending }: { isPending: boolean }) {
 
 export function CatalogTab() {
   const { rows, isPending } = useCatalogList();
-  const [params, setParams] = useSearchParams();
-  const status = normalizeStatusFilter(params.get("status"));
+  const { status: statusParam } = useSearch({ from: "/_app/services/" });
+  const navigate = useNavigate();
+  const status = normalizeStatusFilter(statusParam ?? null);
   const setStatus = (next: StatusFilter) => {
-    const updated = new URLSearchParams(params);
-    if (next === "any") updated.delete("status");
-    else updated.set("status", next);
-    setParams(updated);
+    navigate({
+      to: "/services",
+      search: (prev) => ({ ...prev, status: next === "any" ? undefined : next }),
+    });
   };
   const [search, setSearch] = useState("");
   const [selectedName, setSelectedName] = useState<string | null>(null);

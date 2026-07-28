@@ -80,7 +80,7 @@ const InfraSeriesList = memo(function InfraSeriesList({
                 >
                   <td className="flex flex-col gap-1 px-2 py-1.5">
                     <span className="font-medium text-foreground">{item.label}</span>
-                    {                      }
+                    {}
                     <div className="mt-0.5 h-[3px] w-full overflow-hidden rounded-full bg-muted/50">
                       <div
                         style={{

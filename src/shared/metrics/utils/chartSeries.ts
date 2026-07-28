@@ -12,16 +12,16 @@ import { evaluateFormula } from "./formulaEvaluator";
 
 const FORMULA_COLOR = "#f59e0b";
 
-                                                                               
-                                                                                
+/** Underlying renderable type for the uPlot-backed chart. "stack" renders as a
+ * filled area; "heat"/"top" are handled by sibling panels, never this chart. */
 export function toRenderType(chartType: ChartType): "line" | "area" | "bar" {
   if (chartType === "bar") return "bar";
   if (chartType === "area" || chartType === "stack") return "area";
   return "line";
 }
 
-                                                                                
-                                                                                  
+/** Maps query + formula results into uPlot-ready timestamps + series. Shared by
+ * the metrics explorer chart and dashboard widget renderer for WYSIWYG parity. */
 export function buildSeries(
   queries: MetricQueryDefinition[],
   formulas: FormulaDefinition[],
@@ -31,8 +31,8 @@ export function buildSeries(
   const allSeries: ObservabilityChartSeries[] = [];
   let colorIdx = 0;
 
-                                                                            
-                                                                          
+  // Build one shared x-axis (union of all result timestamps) so series from
+  // queries with differing/ragged timestamp grids stay correctly aligned.
   const timestampSet = new Set<number>();
   for (const query of queries) {
     const result = results[query.id];
@@ -49,7 +49,7 @@ export function buildSeries(
     const baseColor = QUERY_LABEL_COLORS[query.id] ?? getChartColor(colorIdx);
 
     for (const series of result.series) {
-                                                                     
+      // Remap this series' values onto the shared axis by timestamp.
       const values: Array<number | null> = timestamps.map(() => null);
       for (let i = 0; i < result.timestamps.length; i++) {
         const idx = indexOfTs.get(result.timestamps[i]);

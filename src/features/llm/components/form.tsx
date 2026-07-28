@@ -8,7 +8,7 @@ export function Field({
   children,
 }: { readonly label: string; readonly children: ReactNode }) {
   return (
-                                                                                                                       
+    // biome-ignore lint/a11y/noLabelWithoutControl: callers render an input, textarea, or select as the label's child.
     <label className="flex flex-col gap-1">
       <span className="font-medium text-[11px] text-foreground-muted uppercase tracking-wide">
         {label}

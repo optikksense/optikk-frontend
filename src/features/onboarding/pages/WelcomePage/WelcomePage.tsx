@@ -1,25 +1,39 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowRight, KeyRound } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
+import { rotateApiKey } from "@shared/api/tenantApiKey";
 import { CodeBlock, CopyButton, SnippetTabs } from "@shared/components/primitives/ui";
 import { ROUTES } from "@shared/constants/routes";
-import { resolveOtlpEndpoint } from "@shared/lib/otlpEndpoint";
+import { buildQuickstartSnippets } from "@shared/instrumentation/snippets";
+import { useIngestionEndpoints } from "@shared/instrumentation/useIngestionEndpoints";
 
-import { takeSignupApiKey } from "@shared/api/auth/apiKeyHandoff";
+import {
+  clearSignupApiKey,
+  stashSignupApiKey,
+  takeSignupApiKey,
+} from "@shared/api/auth/apiKeyHandoff";
 
 import { LoginBrandPanel } from "@/app/auth/pages/LoginPage/LoginBrandPanel";
-import { buildSnippets } from "./snippets";
+import { FirstDataStatus } from "./FirstDataStatus";
 
 export function WelcomePage() {
   const navigate = useNavigate();
-                                                                     
-  const [apiKey] = useState<string | null>(() => takeSignupApiKey());
-  const endpoint = useMemo(resolveOtlpEndpoint, []);
-  const snippets = useMemo(() => buildSnippets(endpoint, apiKey), [endpoint, apiKey]);
-  const [activeTab, setActiveTab] = useState(snippets[0]?.id ?? "env");
+  const [apiKey, setApiKey] = useState<string | null>(() => takeSignupApiKey());
+  const endpoints = useIngestionEndpoints();
+  const snippets = useMemo(
+    () => (endpoints ? buildQuickstartSnippets(endpoints, apiKey) : []),
+    [endpoints, apiKey]
+  );
+  const [activeTab, setActiveTab] = useState("env");
 
   const active = snippets.find((s) => s.id === activeTab) ?? snippets[0];
+
+  const finishOnboarding = () => {
+    clearSignupApiKey();
+    navigate({ to: ROUTES.overview });
+  };
 
   return (
     <div className="grid min-h-screen grid-cols-1 bg-surface-canvas text-foreground lg:grid-cols-[1.05fr_1fr]">
@@ -31,16 +45,17 @@ export function WelcomePage() {
               You&apos;re in. Send your first trace.
             </h2>
             <p className="m-0 text-[13.5px] text-foreground-muted">
-              Point your OpenTelemetry collector at Optikk with the credentials below.
+              Point your OpenTelemetry SDK or collector at Optikk with the credentials below.
             </p>
           </header>
 
-          <CredentialRow label="OTLP endpoint" value={endpoint} icon={null} />
+          <CredentialRow label="OTLP endpoint (gRPC)" value={endpoints?.grpc ?? null} icon={null} />
+          <CredentialRow label="OTLP endpoint (HTTP)" value={endpoints?.http ?? null} icon={null} />
           <CredentialRow
             label="API key"
             value={apiKey}
             icon={<KeyRound size={14} strokeWidth={2} />}
-            fallback="Regenerate in Settings → Tenant (keys are not recoverable)"
+            action={<GenerateKeyButton onGenerated={setApiKey} />}
           />
           {apiKey && (
             <p className="m-0 mb-3 text-[11.5px] text-foreground-muted">
@@ -55,9 +70,11 @@ export function WelcomePage() {
           />
           <CodeBlock code={active?.code ?? ""} />
 
+          <FirstDataStatus endpoints={endpoints} />
+
           <button
             type="button"
-            onClick={() => navigate({ to: ROUTES.overview })}
+            onClick={finishOnboarding}
             className="mt-5 flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-primary bg-primary font-semibold text-[var(--login-submit-fg)] text-sm transition-colors hover:border-[var(--login-link)] hover:bg-[var(--login-link)]"
           >
             Go to dashboard
@@ -72,16 +89,48 @@ export function WelcomePage() {
   );
 }
 
+function GenerateKeyButton({
+  onGenerated,
+}: {
+  readonly onGenerated: (key: string) => void;
+}) {
+  const [generating, setGenerating] = useState(false);
+
+  const generate = async () => {
+    setGenerating(true);
+    try {
+      const resp = await rotateApiKey();
+      stashSignupApiKey(resp.apiKey);
+      onGenerated(resp.apiKey);
+    } catch {
+      toast.error("Unable to generate an API key");
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={generate}
+      disabled={generating}
+      className="shrink-0 cursor-pointer rounded border border-border bg-surface-inset px-2 py-1 font-semibold text-[11px] text-foreground-secondary uppercase tracking-[0.04em] transition-colors hover:border-foreground-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {generating ? "Generating…" : "Generate API key"}
+    </button>
+  );
+}
+
 function CredentialRow({
   label,
   value,
   icon,
-  fallback,
+  action,
 }: {
   readonly label: string;
   readonly value: string | null;
   readonly icon: React.ReactNode;
-  readonly fallback?: string;
+  readonly action?: React.ReactNode;
 }) {
   return (
     <div className="mb-3">
@@ -91,9 +140,9 @@ function CredentialRow({
       <div className="mt-1 flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
         {icon}
         <code className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-foreground">
-          {value ?? fallback ?? "—"}
+          {value ?? "—"}
         </code>
-        {value != null && <CopyButton text={value} />}
+        {value != null ? <CopyButton text={value} /> : action}
       </div>
     </div>
   );

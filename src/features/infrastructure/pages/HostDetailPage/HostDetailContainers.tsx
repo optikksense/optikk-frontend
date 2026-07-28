@@ -1,11 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useMemo } from "react";
 
 import { ROUTES } from "@/shared/constants/routes";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getFleetPods } from "../../api/nodesApi";
-import InfraPodsTable, { getPodDetails } from "../../components/InfraPodsTable";
+import InfraPodsTable from "../../components/InfraPodsTable";
 import type { FleetPod } from "../../types";
 
 interface HostDetailContainersProps {
@@ -18,16 +17,6 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
     getFleetPods(s, e, host)
   );
   const pods = podsQ.data ?? [];
-
-  const processedPods = useMemo(() => {
-    return pods.map((p) => {
-      const details = getPodDetails(p.podName, p.errorRate);
-      return {
-        ...p,
-        ...details,
-      };
-    });
-  }, [pods]);
 
   const onOpenHost = (h: string) => {
     navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(h as string & {})) });
@@ -52,11 +41,7 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
             : "No containers reported on this host in the current time range."}
         </div>
       ) : (
-        <InfraPodsTable
-          pods={processedPods}
-          onOpenContainer={onOpenContainer}
-          onOpenHost={onOpenHost}
-        />
+        <InfraPodsTable pods={pods} onOpenContainer={onOpenContainer} onOpenHost={onOpenHost} />
       )}
     </section>
   );

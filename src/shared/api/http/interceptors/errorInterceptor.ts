@@ -87,20 +87,18 @@ function normalizeError(error: unknown): ApiErrorShape {
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
 
-function isAuthEndpoint(url: string | undefined): boolean {
-  return Boolean(url?.includes("/v1/auth/login") || url?.includes("/v1/auth/refresh"));
-}
-
-   
-  
-   
+/**
+ *
+ */
 export function attachErrorInterceptor(instance: AxiosInstance): number {
   return instance.interceptors.response.use(
     (response) => response,
     async (error: unknown) => {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         const config = error.config as RetriableConfig | undefined;
-        if (config && !config._retried && !isAuthEndpoint(config.url)) {
+        // authExempt requests are the auth flow itself (login/refresh/...);
+        // retrying them through refresh would recurse.
+        if (config && !config._retried && !config.authExempt) {
           const token = await session.refreshAccessToken();
           if (token != null) {
             config._retried = true;

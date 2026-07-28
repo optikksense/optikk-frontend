@@ -24,8 +24,8 @@ import type {
   DashboardPanelSpec,
 } from "@shared/types/dashboardConfig";
 
+import { ErrorBoundary } from "@shared/components/ui/feedback";
 import { cn } from "@shared/lib/utils";
-import DashboardCardErrorBoundary from "./DashboardCardErrorBoundary";
 import {
   type BaseChartComponentProps,
   type SpecializedDashboardRenderer,
@@ -181,7 +181,7 @@ function ConfigurableChartCardContent({
   return (
     <DashboardCardFrame titleContent={titleContent}>
       <div className="flex min-h-0 flex-1 flex-col">
-        {                                                                                     }
+        {}
         <div className="relative flex min-h-[58%] min-w-0 flex-1 flex-col">
           <ChartComponent {...chartProps} />
         </div>
@@ -251,9 +251,9 @@ function ConfigurableChartCard(props: ConfigurableChartCardProps) {
   }, [description, title, id, titleIcon]);
 
   return (
-    <DashboardCardErrorBoundary
-      componentId={props.componentConfig.id}
-      componentKey={resolveComponentKey(props.componentConfig)}
+    <ErrorBoundary
+      variant="panel"
+      boundaryName={`${props.componentConfig.id}/${resolveComponentKey(props.componentConfig)}`}
       title={titleContent}
       showDetails={import.meta.env.DEV}
     >
@@ -268,7 +268,7 @@ function ConfigurableChartCard(props: ConfigurableChartCardProps) {
       >
         <ConfigurableChartCardContent {...props} titleContent={titleContent} />
       </Suspense>
-    </DashboardCardErrorBoundary>
+    </ErrorBoundary>
   );
 }
 

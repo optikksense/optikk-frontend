@@ -5,8 +5,8 @@ interface LogsExplorerState {
   facetCollapsed: boolean;
   columnWidths: Record<string, number>;
 
-                                  
-                                                                              
+  // Cursor-based pagination state
+  /** Cursor strings keyed by page index. Page 0 has no cursor (undefined). */
   cursors: (string | undefined)[];
 
   pageIndex: number;

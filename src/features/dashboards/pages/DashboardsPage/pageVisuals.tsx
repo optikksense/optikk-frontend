@@ -9,7 +9,7 @@ import {
   Tag,
 } from "lucide-react";
 
-                                                                         
+// Maps a stored page icon name to a lucide icon; defaults to LayoutGrid.
 const ICONS: Record<string, LucideIcon> = {
   "layout-grid": LayoutGrid,
   tag: Tag,

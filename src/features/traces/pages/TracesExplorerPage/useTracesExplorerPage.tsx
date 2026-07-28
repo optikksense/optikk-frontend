@@ -6,12 +6,6 @@ import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
 import type { TracesFacetBucket } from "@shared/api/traces/types";
 import { useTracesExplorerModel } from "@shared/traces/hooks/useTracesExplorerModel";
 
-   
-                                                                     
-                                                                                 
-                                                                            
-                                                               
-   
 export function useTracesExplorerPage() {
   const model = useTracesExplorerModel({ includeFacets: true });
   const { state, facets } = model;
@@ -27,13 +21,6 @@ export function useTracesExplorerPage() {
     (field: string, value: string) => state.addFilter({ field, op: "neq", value }),
     [state]
   );
-  const onFreeText = useCallback(
-    (text: string) => {
-      if (!text) return;
-      state.addFilter({ field: "search", op: "contains", value: text });
-    },
-    [state]
-  );
   const onClearFilters = useCallback(() => state.clearAll(), [state]);
 
   useExplorerKeyboard({
@@ -47,7 +34,6 @@ export function useTracesExplorerPage() {
     searchInputRef,
     onInclude,
     onExclude,
-    onFreeText,
     onClearFilters,
     startTime: model.startTime,
     endTime: model.endTime,

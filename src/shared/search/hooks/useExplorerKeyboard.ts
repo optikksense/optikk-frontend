@@ -15,14 +15,14 @@ function shouldSkip(target: EventTarget | null): boolean {
   return tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable;
 }
 
-   
-                           
-                                                        
-                                               
-  
-                                                                     
-                                  
-   
+/**
+ * Classic explorer keymap:
+ *   `/` focus search, `j`/`k` nav rows, `e` expand row,
+ *   `f` open facet-search, `Esc` close drawer.
+ *
+ * Inputs and contentEditable elements are skipped so typing `/` in a
+ * filter box doesn't steal focus.
+ */
 export function useExplorerKeyboard(handlers: ExplorerKeyHandlers): void {
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent): void {

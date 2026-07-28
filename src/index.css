@@ -1,3 +1,4 @@
+@import "./fonts.css";
 @import "./config/themeColors.css";
 @import "./shared/components/ui/charts/uplot.css";
 
@@ -5,7 +6,6 @@
 @tailwind components;
 @tailwind utilities;
 
-                   
 * {
   margin: 0;
   padding: 0;

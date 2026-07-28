@@ -1,14 +1,7 @@
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
 
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
-
-export const SETTINGS_TABS = [
-  "profile",
-  "tenant",
-  "instrumentation",
-  "members",
-  "ingestion",
-] as const;
+export const SETTINGS_TABS = ["profile", "tenant", "instrumentation", "members"] as const;
 
 export type SettingsTab = (typeof SETTINGS_TABS)[number];
 
@@ -21,21 +14,21 @@ function normalize(value: string | null | undefined): SettingsTab {
     : DEFAULT_TAB;
 }
 
-                                                                                 
 export function useSettingsTab(): {
   tab: SettingsTab;
   setTab: (next: SettingsTab) => void;
 } {
-  const [params, setParams] = useSearchParams();
-  const tab = normalize(params.get("tab"));
+  const search = useSearch({ from: "/_app/settings" });
+  const navigate = useNavigate();
+  const tab = normalize(search.tab);
   const setTab = useCallback(
     (next: SettingsTab) => {
-      const updated = new URLSearchParams(params);
-      if (next === DEFAULT_TAB) updated.delete("tab");
-      else updated.set("tab", next);
-      setParams(updated);
+      navigate({
+        to: "/settings",
+        search: (prev) => ({ ...prev, tab: next === DEFAULT_TAB ? undefined : next }),
+      });
     },
-    [params, setParams]
+    [navigate]
   );
   return { tab, setTab };
 }

@@ -4,8 +4,8 @@ import { useTenantId } from "@app/store/appStore";
 
 import { getIngestionOverview } from "../api/ingestionApi";
 
-                                                                             
-                                                               
+// Ingestion is a billing-period view, so it ignores the global time selector
+// and always reports the current calendar month to date (UTC).
 function monthToDateRange(): { startTime: number; endTime: number; monthKey: string } {
   const now = new Date();
   const startTime = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1);

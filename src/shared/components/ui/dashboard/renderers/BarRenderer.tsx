@@ -10,9 +10,9 @@ import { useDashboardData } from "../hooks/useDashboardData";
 
 import type { DashboardPanelRendererProps } from "../dashboardPanelRegistry";
 
-   
-  
-   
+/**
+ *
+ */
 export function BarRenderer({
   chartConfig,
   dataSources,

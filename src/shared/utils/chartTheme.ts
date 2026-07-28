@@ -36,9 +36,9 @@ function readCssVariable(variableName: string, fallback: string): string {
   );
 }
 
-   
-                                                                     
-   
+/**
+ * Resolve a CSS custom property or return a literal color unchanged.
+ */
 export function resolveThemeColor(token: string, fallback: string): string {
   const trimmed = token.trim();
   if (!trimmed) {

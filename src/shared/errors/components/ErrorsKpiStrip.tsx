@@ -1,10 +1,9 @@
-import { KpiCard } from "@shared/components/ui/dashboard/KpiCard";
+import { KpiCard } from "@shared/components/ui/cards/StatCard";
 import { formatNumber } from "@shared/utils/formatters";
 
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 
 export interface ErrorsKpis {
-                                                                          
   readonly totalErrors: number;
 
   readonly totalErrorsSeries: number[];

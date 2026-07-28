@@ -16,7 +16,7 @@ function fmtDuration(ms: number): string {
   return ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${Math.round(ms)}ms`;
 }
 
-                                                                       
+/** Key/value request context of the group's most recent error span. */
 export function RequestContextCard({ occurrence }: Props): JSX.Element | null {
   if (!occurrence) return null;
 

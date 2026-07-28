@@ -79,7 +79,7 @@ function getDbMeta(system: string) {
   return (
     DB_SYSTEM_META[key] || {
       label: system || "Unknown",
-      color: "#8e8e8e",                                                         
+      color: "#8e8e8e", // agnostic fallback icon hue (alpha-concatenated below)
       gradient: `linear-gradient(135deg, ${APP_COLORS.hex_5e60ce} 0%, ${APP_COLORS.hex_48cae4} 100%)`,
     }
   );

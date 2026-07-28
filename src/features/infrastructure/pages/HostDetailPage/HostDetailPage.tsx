@@ -4,25 +4,20 @@ import { useMemo } from "react";
 import { PageShell } from "@shared/components/ui";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { formatNumber } from "@shared/utils/formatters";
+import { fmtMs, formatNumber } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { getHostOverview } from "../../api/hostDetailApi";
 import { getNodeServices, getNodes } from "../../api/nodesApi";
 import type { InfrastructureNode, InfrastructureNodeService } from "../../api/nodesApi";
+import { DetailLogsSection } from "../../components/detail/DetailLogsSection";
 import { tierForNode } from "../../utils/nodeHealth";
 import { HostDetailAbout } from "./HostDetailAbout";
 import { HostDetailContainers } from "./HostDetailContainers";
 import { HostDetailHero, type HostStatus } from "./HostDetailHero";
 import { HostDetailKpiCards } from "./HostDetailKpiCards";
-import { HostDetailLogs } from "./HostDetailLogs";
 import { HostDetailNetwork } from "./HostDetailNetwork";
 import { HostDetailSystemMetrics } from "./HostDetailSystemMetrics";
-
-function fmtMs(v: number): string {
-  if (v >= 1000) return `${(v / 1000).toFixed(2)}s`;
-  return `${Math.round(v)}ms`;
-}
 
 const SERVICE_COLUMNS: ColumnDef<InfrastructureNodeService>[] = [
   { header: "Service", accessorKey: "serviceName", size: 220 },
@@ -140,7 +135,7 @@ export default function HostDetailPage(): JSX.Element {
       <HostDetailNetwork host={host} availableMetrics={availableMetrics} />
       <HostServices services={services} isPending={servicesQ.isPending} />
       <HostDetailContainers host={host} />
-      <HostDetailLogs host={host} />
+      <DetailLogsSection kind="host" entity={host} />
     </PageShell>
   );
 }

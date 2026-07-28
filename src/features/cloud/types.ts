@@ -1,5 +1,5 @@
-                                                                        
-                                                                              
+// API contract for the cloud inventory endpoints (query `/v1/cloud/*`).
+// All values are derived from telemetry resource attributes (cloud.*, k8s.*).
 
 export interface InventoryRow {
   readonly provider: string;

@@ -15,13 +15,13 @@ interface LatencyHeatmapChartProps {
   data?: LatencyHeatmapDataPoint[];
 }
 
-   
-                                                                                              
-         
-                                                          
-                                
-                                                             
-   
+/**
+ * 2D latency heatmap: time on X axis, latency bucket on Y axis, color intensity = span count.
+ * Props:
+ *   data: Array<{ timeBucket, latencyBucket, spanCount }>
+ * @param props Component props.
+ * @returns Heatmap chart for latency bucket density by time.
+ */
 export default function LatencyHeatmapChart({ data = [] }: LatencyHeatmapChartProps): JSX.Element {
   const timeBuckets = useMemo(() => [...new Set(data.map((d) => d.timeBucket))].sort(), [data]);
 

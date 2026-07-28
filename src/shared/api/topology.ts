@@ -4,10 +4,10 @@ import { API_V1_BASE } from "@config/apiConfig";
 import api from "@shared/api/http/client";
 import { validateResponse } from "@shared/api/utils/validate";
 
-   
-                                                                          
-                                                                   
-   
+/**
+ * Mirrors services/topology models. No field is `omitempty`, and `nodes`/
+ * `edges` are built with `make(..., 0, n)` so they are never null.
+ */
 const serviceNodeSchema = z.object({
   name: z.string(),
   requestCount: z.number(),
@@ -16,7 +16,7 @@ const serviceNodeSchema = z.object({
   p50LatencyMs: z.number(),
   p95LatencyMs: z.number(),
   p99LatencyMs: z.number(),
-                                                            
+  // classifyHealth only ever returns these three constants.
   health: z.enum(["healthy", "degraded", "unhealthy"]),
 });
 

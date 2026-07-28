@@ -44,7 +44,6 @@ export default function Sidebar() {
 
   const getSelectedKey = () => {
     const pathname = location.pathname;
-    if (pathname.startsWith("/errors")) return ROUTES.overview;
     const matchedEntry = navEntries.find(
       (entry) => pathname === entry.path || pathname.startsWith(`${entry.path}/`)
     );
@@ -134,7 +133,7 @@ export default function Sidebar() {
           className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-[var(--space-xs)]"
           aria-label="Main navigation"
         >
-          {renderNavGroup("Explore", observeItems)}
+          {renderNavGroup("Observe", observeItems)}
           {renderNavGroup("Operate", operateItems)}
         </nav>
 

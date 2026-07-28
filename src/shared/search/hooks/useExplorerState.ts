@@ -1,17 +1,9 @@
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
-import { useSearchParamsCompat } from "@shared/hooks/useSearchParamsCompat";
-
 import type { ExplorerFilter, ExplorerMode } from "../types/filters";
-import { decodeFilters, encodeFilters, parseMode } from "../utils/urlState";
+import { asUrlParamString, decodeFilters, encodeFilters, parseMode } from "../utils/urlState";
 
-   
-                                                              
-  
-                                                                            
-                                                                            
-                                               
-   
 interface ExplorerStateSnapshot {
   readonly filters: readonly ExplorerFilter[];
   readonly mode: ExplorerMode;
@@ -29,31 +21,37 @@ export interface ExplorerStateApi extends ExplorerStateSnapshot {
   readonly clearAll: () => void;
 }
 
-function setOrDelete(params: URLSearchParams, key: string, value: string | null): URLSearchParams {
-  const next = new URLSearchParams(params);
-  if (value === null || value === "") {
-    next.delete(key);
-  } else {
-    next.set(key, value);
-  }
-  return next;
-}
+/** Patch of the explorer params; `undefined` removes a param from the URL. */
+type ExplorerSearchPatch = Partial<Record<"filters" | "mode" | "cursor" | "detail", string>>;
 
 export function useExplorerState(): ExplorerStateApi {
-  const [params, setParams] = useSearchParamsCompat();
-  const filters = useMemo(() => decodeFilters(params.get("filters")), [params]);
-  const mode = useMemo(() => parseMode(params.get("mode")), [params]);
-  const cursor = params.get("cursor");
-  const detail = params.get("detail");
+  // Shared by /logs, /traces and the service-detail logs/traces tabs, so it
+  // reads search route-agnostically; each hosting route validates these
+  // params (see pickExplorerSearch).
+  const search = useSearch({ strict: false }) as Record<string, unknown>;
+  const navigate = useNavigate();
+
+  const rawFilters = asUrlParamString(search.filters);
+  const filters = useMemo(() => decodeFilters(rawFilters), [rawFilters]);
+  const mode = parseMode(asUrlParamString(search.mode));
+  const cursor = asUrlParamString(search.cursor) ?? null;
+  const detail = asUrlParamString(search.detail) ?? null;
+
+  const patchSearch = useCallback(
+    (patch: ExplorerSearchPatch) => {
+      navigate({
+        search: ((prev: Record<string, unknown>) => ({ ...prev, ...patch })) as never,
+        replace: true,
+      });
+    },
+    [navigate]
+  );
 
   const setFilters = useCallback(
     (next: readonly ExplorerFilter[]) => {
-      setParams(
-        (prev) => setOrDelete(prev, "filters", next.length > 0 ? encodeFilters(next) : null),
-        { replace: true }
-      );
+      patchSearch({ filters: next.length > 0 ? encodeFilters(next) : undefined });
     },
-    [setParams]
+    [patchSearch]
   );
   const addFilter = useCallback(
     (filter: ExplorerFilter) => {
@@ -73,27 +71,20 @@ export function useExplorerState(): ExplorerStateApi {
   );
   const setMode = useCallback(
     (next: ExplorerMode) =>
-      setParams(
-        (prev) => setOrDelete(prev, "mode", (next as string) === "analytics" ? "analytics" : null),
-        {
-          replace: true,
-        }
-      ),
-    [setParams]
+      patchSearch({ mode: (next as string) === "analytics" ? "analytics" : undefined }),
+    [patchSearch]
   );
   const setCursor = useCallback(
-    (next: string | null) =>
-      setParams((prev) => setOrDelete(prev, "cursor", next), { replace: true }),
-    [setParams]
+    (next: string | null) => patchSearch({ cursor: next ?? undefined }),
+    [patchSearch]
   );
   const setDetail = useCallback(
-    (next: string | null) =>
-      setParams((prev) => setOrDelete(prev, "detail", next), { replace: true }),
-    [setParams]
+    (next: string | null) => patchSearch({ detail: next ?? undefined }),
+    [patchSearch]
   );
   const clearAll = useCallback(() => {
-    setParams(() => new URLSearchParams(), { replace: true });
-  }, [setParams]);
+    navigate({ search: {} as never, replace: true });
+  }, [navigate]);
 
   return {
     filters,

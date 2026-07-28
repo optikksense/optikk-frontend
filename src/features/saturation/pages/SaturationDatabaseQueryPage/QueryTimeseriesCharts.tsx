@@ -4,7 +4,7 @@ import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart"
 
 import type { QueryTimeseriesPoint } from "@/features/saturation/api/databaseQueryDetailApi";
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtNum } from "@shared/utils/formatters";
 
 interface ChartSeries {
   readonly timestamps: number[];
@@ -34,7 +34,6 @@ function Empty() {
   );
 }
 
-                                                                           
 export function QueryTimeseriesCharts({ timeseries }: { timeseries: QueryTimeseriesPoint[] }) {
   const series = useMemo(() => buildSeries(timeseries), [timeseries]);
   const empty = series.timestamps.length === 0;

@@ -1,13 +1,5 @@
 import { cn } from "@shared/lib/utils";
-import {
-  eachDayOfInterval,
-  endOfMonth,
-  format,
-  getDay,
-  isSameDay,
-  isToday,
-  startOfMonth,
-} from "date-fns";
+import { daysOfMonth, isSameDay, isToday } from "./utils";
 
 const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
@@ -30,11 +22,9 @@ export function CalendarMonth({
   hoverDate,
   selectingMode,
 }: CalendarMonthProps) {
-  const start = startOfMonth(currentMonth);
-  const end = endOfMonth(currentMonth);
-  const daysInMonth = eachDayOfInterval({ start, end });
+  const daysInMonth = daysOfMonth(currentMonth);
 
-  let startDow = getDay(start);
+  let startDow = daysInMonth[0].getDay();
   startDow = startDow === 0 ? 6 : startDow - 1;
 
   const padStart = Array(startDow).fill(null);
@@ -57,7 +47,7 @@ export function CalendarMonth({
 
   return (
     <div>
-      {                 }
+      {}
       <div className="mb-1 grid grid-cols-7">
         {DAYS.map((d) => (
           <div key={d} className="text-center font-medium text-[11px] text-foreground-tertiary">
@@ -97,7 +87,7 @@ export function CalendarMonth({
                 !inRange && !selected && "rounded-md"
               )}
             >
-              <span className="z-[1]">{format(day, "d")}</span>
+              <span className="z-[1]">{day.getDate()}</span>
               {today && (
                 <span
                   className={cn(

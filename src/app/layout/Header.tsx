@@ -1,12 +1,13 @@
 import { IconButton, Tooltip } from "@shared/components/primitives/ui";
 import { TimeRangePicker } from "@shared/components/ui/TimeSelector";
-import { useAutoRefresh } from "@shared/hooks/useAutoRefresh";
 import { useTimeRangeURL } from "@shared/hooks/useTimeRangeURL";
+import { useVisibilityInterval } from "@shared/hooks/useVisibilityInterval";
 import { isRelativeRange, resolveTimeRangeBounds, timeRangeDurationMs } from "@shared/types";
+import { formatRelativeTime } from "@shared/utils/formatters";
 import { ChevronDown, ChevronLeft, ChevronRight, Moon, RefreshCw, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useAppStore, useTheme } from "@app/store/appStore";
+import { useAppStore, useLastRefreshAt, useTheme } from "@app/store/appStore";
 import { useAuthTenant } from "@app/store/authStore";
 
 import { AUTO_REFRESH_INTERVALS } from "@config/constants";
@@ -24,16 +25,14 @@ export default function Header() {
   const setTheme = useAppStore((s) => s.setTheme);
   const [intervalPickerOpen, setIntervalPickerOpen] = useState(false);
   const pickerRef = useRef<HTMLDivElement | null>(null);
-  const { refreshLabel, triggerRefresh: triggerHeaderRefresh } = useAutoRefresh({
-    autoRefreshInterval,
-    onRefresh: triggerRefresh,
-  });
 
-                           
+  // Auto-refresh tick at the user's interval; pauses while tab is hidden.
+  useVisibilityInterval(triggerRefresh, autoRefreshInterval);
+
   useTimeRangeURL();
 
   const handleRefresh = () => {
-    triggerHeaderRefresh();
+    triggerRefresh();
   };
 
   const toggleTheme = useCallback(() => {
@@ -138,7 +137,7 @@ export default function Header() {
 
         {}
         <div className="relative flex items-center" ref={pickerRef}>
-          <Tooltip content={`Refresh now${refreshLabel ? ` · ${refreshLabel}` : ""}`}>
+          <Tooltip content={<RefreshTooltipContent />}>
             <button
               type="button"
               className={cn(
@@ -200,4 +199,18 @@ export default function Header() {
       </div>
     </header>
   );
+}
+
+/**
+ * "Refreshed Xs ago" label. Reads the store's refresh timestamp and ticks
+ * every 5s in isolation, so the header never re-renders for this display.
+ */
+function RefreshTooltipContent() {
+  const lastRefreshAt = useLastRefreshAt();
+  const [, setTick] = useState(0);
+
+  useVisibilityInterval(() => setTick((t) => t + 1), 5_000);
+
+  const refreshLabel = formatRelativeTime(lastRefreshAt);
+  return <>{refreshLabel ? `Refresh now · ${refreshLabel}` : "Refresh now"}</>;
 }

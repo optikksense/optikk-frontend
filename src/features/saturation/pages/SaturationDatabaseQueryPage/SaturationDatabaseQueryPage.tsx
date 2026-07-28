@@ -37,7 +37,7 @@ function downloadJson(name: string, payload: unknown) {
   URL.revokeObjectURL(url);
 }
 
-                                                                    
+// Backend-hash mode: full drill-in from the query-detail endpoints.
 function BackendQueryDetail({ hash, filters }: { hash: string; filters: DatabaseFilters }) {
   const summary = useQueryDetailSummary(hash, filters, true);
   const timeseries = useQueryDetailTimeseries(hash, filters, true);
@@ -74,7 +74,7 @@ function BackendQueryDetail({ hash, filters }: { hash: string; filters: Database
   );
 }
 
-                                                                     
+// Legacy mode: old djb2 URLs resolved by matching the patterns list.
 function LegacyQueryDetail({ queryId }: { queryId: string }) {
   const { row, isPending } = useDatabaseQueryDetail(queryId);
   if (!row) {

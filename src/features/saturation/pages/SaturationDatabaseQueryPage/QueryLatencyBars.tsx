@@ -1,6 +1,6 @@
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { fmtMs } from "@shared/utils/metricFormatters";
+import { fmtMs } from "@shared/utils/formatters";
 
 interface Bar {
   readonly label: string;
@@ -8,7 +8,6 @@ interface Bar {
   readonly color: string;
 }
 
-                                                                             
 export function QueryLatencyBars({ row }: { row: SlowQueryPatternRow }) {
   const bars: Bar[] = [
     { label: "p50", value: row.p50Ms ?? 0, color: "var(--color-info)" },

@@ -7,14 +7,13 @@ import {
 } from "@tanstack/react-query";
 
 import type { TimeRange } from "@shared/types";
-import { resolveTimeRangeBounds } from "@shared/types";
 
 import {
   useTimeRange as useAppStoreTimeRange,
-  useRefreshKey,
+  useResolvedTimeBounds,
   useTenantId,
 } from "@app/store/appStore";
-import { useInvalidateQueriesOnAppRefresh } from "./useInvalidateQueriesOnAppRefresh";
+import { retryUnlessClientError } from "./useStandardQuery";
 
 type QueryTime = string | number;
 
@@ -37,38 +36,28 @@ type TimeRangeQueryOptions<TData> = Omit<
   extraKeys?: QueryKey;
 };
 
-function getBounds(timeRange: TimeRange): TimeRangeBounds {
-  const { startTime, endTime } = resolveTimeRangeBounds(timeRange);
-  return { startTime, endTime };
-}
-
-                                        
-function rangeKey(timeRange: TimeRange): string {
-  if (timeRange.kind === "relative") return timeRange.preset;
-  return `${timeRange.startMs}-${timeRange.endMs}`;
-}
-
+/**
+ * Time-scoped variant of the standard query wrapper. Follows the same key
+ * convention (see useStandardQuery): tenantId last, bounds from the store,
+ * refresh handled by the app-level subscriber via invalidation.
+ */
 export function useTimeRangeQuery<TData = unknown>(
   key: string,
   queryFn: TimeRangeQueryFunction<TData>,
   options: TimeRangeQueryOptions<TData> = {}
 ): UseQueryResult<TData, Error> {
   const selectedTenantId = useTenantId();
-  const timeRange = useAppStoreTimeRange();
-  const refreshKey = useRefreshKey();
+  const { startTime, endTime } = useResolvedTimeBounds();
   const { extraKeys = [], enabled, ...queryOptions } = options;
 
-  useInvalidateQueriesOnAppRefresh(refreshKey, "component-query", selectedTenantId);
-
   return useQuery<TData, Error>({
-    queryKey: ["component-query", selectedTenantId, key, rangeKey(timeRange), ...extraKeys],
-    queryFn: async ({ signal }): Promise<TData> => {
-      const { startTime, endTime } = getBounds(timeRange);
-      return queryFn(selectedTenantId, startTime, endTime, signal);
-    },
+    queryKey: ["component-query", key, startTime, endTime, ...extraKeys, selectedTenantId],
+    queryFn: async ({ signal }): Promise<TData> =>
+      queryFn(selectedTenantId, startTime, endTime, signal),
     enabled: Boolean(selectedTenantId) && enabled !== false,
     staleTime: 30_000,
     placeholderData: keepPreviousData,
+    retry: retryUnlessClientError,
     ...queryOptions,
   });
 }
@@ -76,17 +65,15 @@ export function useTimeRangeQuery<TData = unknown>(
 export function useTimeRange(): {
   selectedTenantId: number | null;
   timeRange: TimeRange;
-  refreshKey: number;
   getTimeRange: () => TimeRangeBounds;
 } {
   const selectedTenantId = useTenantId();
   const timeRange = useAppStoreTimeRange();
-  const refreshKey = useRefreshKey();
+  const bounds = useResolvedTimeBounds();
 
   return {
     selectedTenantId,
     timeRange,
-    refreshKey,
-    getTimeRange: (): TimeRangeBounds => getBounds(timeRange),
+    getTimeRange: (): TimeRangeBounds => bounds,
   };
 }

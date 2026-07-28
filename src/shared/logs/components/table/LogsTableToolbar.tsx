@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-                                        
+/** Header strip above the log table. */
 function LogsTableToolbarComponent() {
   return (
     <div className="flex shrink-0 items-center justify-between border-[var(--line)] border-b px-[18px] py-3">

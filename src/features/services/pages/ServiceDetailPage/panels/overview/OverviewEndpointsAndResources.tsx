@@ -36,7 +36,7 @@ export function OverviewEndpointsAndResources({ serviceName }: { serviceName: st
     }
   };
 
-                                                                        
+  // Compute maximum resource utilization across the fleet of hosts/pods
   const resourceMetrics = useMemo(() => {
     const list = hostsQ.data ?? [];
     if (list.length === 0) {

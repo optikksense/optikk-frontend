@@ -79,9 +79,9 @@ const ICONS: Record<string, LucideIcon> = {
   TrendingUp,
 };
 
-   
-  
-   
+/**
+ *
+ */
 export function getDashboardIcon(name: string, size = 16) {
   const IconComponent = ICONS[name];
   if (!IconComponent) return null;

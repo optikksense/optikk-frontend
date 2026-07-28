@@ -2,10 +2,10 @@ import { ROUTES } from "@/shared/constants/routes";
 import type { ExplorerFilter } from "@/shared/search/types/filters";
 import { encodeFilters } from "@/shared/search/utils/urlState";
 
-   
-                                                                           
-                                                        
-   
+/**
+ * Builds an absolute path + query for the log explorer (`/logs`) using the
+ * canonical `ExplorerFilter` model and `encodeFilters`.
+ */
 export function buildLogsHubHref(opts: {
   readonly filters: readonly ExplorerFilter[];
   readonly fromMs?: number;
@@ -30,7 +30,7 @@ export function traceIdEqualsFilter(traceId: string): ExplorerFilter {
   return { field: "traceId", op: "eq", value: traceId };
 }
 
-                                                  
+/** A trace is addressed by id and time bounds. */
 export function buildTraceDetailHref(
   traceId: string,
   spanId?: string,

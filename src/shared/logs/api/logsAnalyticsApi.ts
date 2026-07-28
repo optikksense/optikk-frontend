@@ -15,11 +15,11 @@ export interface LogsSummary {
   readonly warns: number;
 }
 
-   
-                                                                       
-                                                                            
-                                                                      
-   
+/**
+ * Wide-format trend bucket from `POST /api/v1/logs/trend`. One row per
+ * `timeBucket` (UTC, display grain) with per-severity counts pre-aggregated
+ * by the backend. Invariant: `total === error + warn + info + debug`.
+ */
 export interface LogsTrendBucket {
   readonly timeBucket: string;
   readonly total: number;
@@ -42,7 +42,7 @@ export interface LogsFacets {
   readonly environment?: readonly LogsFacetValue[];
 }
 
-                                                             
+/** Mirrors logs models.Summary — no field is `omitempty`. */
 const summarySchema = z
   .object({
     summary: z.object({
@@ -53,7 +53,7 @@ const summarySchema = z
   })
   .transform((r): LogsSummary => r.summary);
 
-                                       
+/** Mirrors logs models.TrendBucket. */
 const trendSchema = z
   .object({
     trend: z
@@ -72,10 +72,10 @@ const trendSchema = z
   })
   .transform((r): readonly LogsTrendBucket[] => r.trend);
 
-                                      
+/** Mirrors logs models.FacetValue. */
 const facetValueSchema = z.object({ value: z.string(), count: z.number() });
 
-                                                                        
+/** Mirrors logs models.Facets; host/pod/environment are `omitempty`. */
 const facetsSchema = z
   .object({
     facets: z.object({

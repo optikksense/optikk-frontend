@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Info } from "lucide-react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { Skeleton, Surface } from "@shared/components/primitives/ui";
+import { Skeleton, Surface, Tooltip } from "@shared/components/primitives/ui";
 import { formatNumber } from "@shared/utils/formatters";
 
 import type { ErrorHotspotRow } from "../hooks/useOverviewModel";
@@ -49,7 +49,14 @@ export default function TopErrorsCard({ rows, loading }: Props) {
     <Surface elevation={1} padding="md" className="flex flex-col gap-3">
       <div className="flex items-end justify-between">
         <div>
-          <div className="font-semibold text-[13px] text-foreground">Top errors</div>
+          <div className="flex items-center gap-1 font-semibold text-[13px] text-foreground">
+            Top errors
+            <Tooltip content="Errors are counted across all spans; request rates count service entry points only.">
+              <span className="text-foreground-muted">
+                <Info size={12} />
+              </span>
+            </Tooltip>
+          </div>
           <div className="text-[11px] text-foreground-muted">
             Highest error counts across services
           </div>

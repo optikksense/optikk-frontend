@@ -4,7 +4,7 @@ import { API_CONFIG } from "@config/apiConfig";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-                                                                            
+/** Mirrors containerdetail.PodOverview; requestCount 0 means no traffic. */
 export interface PodOverview {
   readonly pod: string;
   readonly host?: string;
@@ -40,7 +40,7 @@ export function getPodOverview(
   });
 }
 
-                                                                          
+/** Series endpoint for SeriesChartCard; pass `metric` via extraParams. */
 export function podSeriesEndpoint(pod: string): string {
   return `${V1}/infrastructure/pods/${encodeURIComponent(pod)}/series`;
 }

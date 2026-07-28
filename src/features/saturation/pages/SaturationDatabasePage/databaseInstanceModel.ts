@@ -3,8 +3,8 @@ import type { HealthStatus } from "@shared/components/ui/data-display/status/hea
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 
-                                                                             
-                                                                           
+// Health thresholds shared across list + detail. Mirrors the old single-page
+// degraded heuristic (error rate 1% / p95 1s) with a critical tier on top.
 const ERROR_RATE_DEGRADED = 1;
 const ERROR_RATE_CRITICAL = 5;
 const P95_DEGRADED_MS = 1000;
@@ -18,7 +18,7 @@ export const STATUS_LABEL: Record<InstanceStatus, string> = {
   err: "critical",
 };
 
-                                                                            
+// Translate the local vocabulary to the shared health-indicator vocabulary.
 export const INSTANCE_HEALTH: Record<InstanceStatus, HealthStatus> = {
   ok: "healthy",
   warn: "warn",

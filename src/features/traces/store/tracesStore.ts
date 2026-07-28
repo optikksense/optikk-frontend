@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 export type { VisualizationTab };
 
 interface TracesState {
-                                                                                    
+  /** User's preferred visualization — persisted so it sticks across navigations. */
   visualizationTab: VisualizationTab;
   setVisualizationTab: (tab: VisualizationTab) => void;
 

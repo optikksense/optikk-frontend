@@ -7,12 +7,12 @@ import {
 } from "@shared/api/red/redApi";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
-   
-                                                                            
-                                                                          
-                                                                     
-                                                               
-   
+/**
+ * Canonical per-service RED summary, sourced from `GET /spans/red/summary`.
+ * Both the service-detail page and the service drawer consume this single
+ * hook so they share one query key (warm cache across views) and one
+ * error-rate definition — the backend's — instead of drifting.
+ */
 export interface ServiceSummary {
   readonly serviceName: string;
   readonly requestCount: number;

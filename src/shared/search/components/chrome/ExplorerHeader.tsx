@@ -2,22 +2,16 @@ import { type ReactNode, forwardRef, memo } from "react";
 
 import type { ExplorerFilter } from "../../types/filters";
 import type { ExplorerScope } from "../../types/filters";
-import { ExplorerSearchBar } from "./ExplorerSearchBar";
 import { ExplorerSearchBarDsl } from "./ExplorerSearchBarDsl";
 import type { SuggestionOption } from "./QuerySuggestions";
-
-type SearchBarVariant = "classic" | "dsl";
 
 interface Props {
   readonly filters: readonly ExplorerFilter[];
   readonly onChangeFilters: (next: readonly ExplorerFilter[]) => void;
-  readonly onSubmitFreeText: (text: string) => void;
   readonly kpiStrip?: ReactNode;
-                                                                                                            
   readonly actions?: ReactNode;
   readonly searchPlaceholder?: string;
 
-  readonly variant?: SearchBarVariant;
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
   readonly disableBareFreeTextFallback?: boolean;
@@ -29,7 +23,15 @@ export const ExplorerHeader = memo(
       <header className="sticky top-0 z-20 flex flex-col gap-2 border-border border-b bg-background px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
-            <SearchBar props={props} inputRef={ref} />
+            <ExplorerSearchBarDsl
+              ref={ref}
+              filters={props.filters}
+              onApply={(filters) => props.onChangeFilters(filters)}
+              placeholder={props.searchPlaceholder}
+              scope={props.scope}
+              valueSuggestions={props.valueSuggestions}
+              disableBareFreeTextFallback={props.disableBareFreeTextFallback}
+            />
           </div>
           {props.actions ? <div className="flex items-center gap-2">{props.actions}</div> : null}
         </div>
@@ -38,28 +40,3 @@ export const ExplorerHeader = memo(
     );
   })
 );
-
-function SearchBar({ props, inputRef }: { props: Props; inputRef: React.Ref<HTMLInputElement> }) {
-  if (props.variant === "dsl") {
-    return (
-      <ExplorerSearchBarDsl
-        ref={inputRef}
-        filters={props.filters}
-        onApply={(filters) => props.onChangeFilters(filters)}
-        placeholder={props.searchPlaceholder}
-        scope={props.scope}
-        valueSuggestions={props.valueSuggestions}
-        disableBareFreeTextFallback={props.disableBareFreeTextFallback}
-      />
-    );
-  }
-  return (
-    <ExplorerSearchBar
-      ref={inputRef}
-      filters={props.filters}
-      onChangeFilters={props.onChangeFilters}
-      onSubmitFreeText={props.onSubmitFreeText}
-      placeholder={props.searchPlaceholder}
-    />
-  );
-}

@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
 
-   
-  
-   
 export interface ErrorBoundaryProps {
   children: ReactNode;
+  /** Fallback UI flavor: full page (default), visualization card, or dashboard panel. */
+  variant?: "page" | "visualization" | "panel";
   showDetails?: boolean;
   fallback?: ReactNode;
   resetOnError?: boolean;
   boundaryName?: string;
+  /** Panel title kept visible in the "panel" variant fallback. */
+  title?: ReactNode;
 }
 
 export interface EmptyStateProps {
@@ -28,9 +29,4 @@ export interface LoadingProps {
   label?: string;
   size?: "small" | "default" | "large";
   fullscreen?: boolean;
-}
-
-export interface FeedbackSkeletonProps {
-  rows?: number;
-  active?: boolean;
 }

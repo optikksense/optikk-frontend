@@ -1,9 +1,8 @@
-import { useRefreshKey, useTenantId, useTimeRange } from "@app/store/appStore";
-import { useSearchParamsCompat } from "@shared/hooks/useSearchParamsCompat";
+import { useResolvedTimeBounds, useTenantId } from "@app/store/appStore";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
+import { useSearch } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import { resolveTimeBounds } from "@shared/utils/timeBounds";
 import type { ExplorerFilter } from "../types/filters";
 import type { ExplorerIncludeFlag, ExplorerQueryRequest } from "../types/queries";
 
@@ -17,14 +16,21 @@ interface UseExplorerQueryArgs<TResponse> {
   readonly fetcher: (body: ExplorerQueryRequest) => Promise<TResponse>;
 }
 
-export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse>) {
-  const tenantId = useTenantId();
-  const refreshKey = useRefreshKey();
-  const timeRange = useTimeRange();
-  const [params] = useSearchParamsCompat();
+/** The router parses numeric params to numbers; relative values stay strings. */
+function toEpochMs(value: unknown): number | undefined {
+  if (typeof value === "number") return value;
+  if (typeof value === "string" && value !== "") return Number(value);
+  return undefined;
+}
 
-  const urlFrom = params.get("from") ? Number(params.get("from")) : undefined;
-  const urlTo = params.get("to") ? Number(params.get("to")) : undefined;
+/** URL bounds (from/to) override the store-resolved bounds when present. */
+function useExplorerBounds(): { startTime: number; endTime: number } {
+  const bounds = useResolvedTimeBounds();
+  // Runs on /logs, /traces and the service-detail tabs: route-agnostic read.
+  const search = useSearch({ strict: false }) as { from?: unknown; to?: unknown };
+
+  const urlFrom = toEpochMs(search.from);
+  const urlTo = toEpochMs(search.to);
   const hasUrlBounds =
     urlFrom !== undefined &&
     urlTo !== undefined &&
@@ -33,26 +39,22 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
     urlFrom > 0 &&
     urlTo > urlFrom;
 
-  const { startTime, endTime } = (() => {
-    if (hasUrlBounds) {
-      return { startTime: urlFrom!, endTime: urlTo! };
-    }
-    return resolveTimeBounds(timeRange);
-  })();
+  if (hasUrlBounds) {
+    return { startTime: urlFrom, endTime: urlTo };
+  }
+  return bounds;
+}
 
-  const timeRangeKey = useMemo(
-    () => (hasUrlBounds ? `${urlFrom}-${urlTo}` : JSON.stringify(timeRange)),
-    [hasUrlBounds, urlFrom, urlTo, timeRange]
-  );
+export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse>) {
+  const tenantId = useTenantId();
+  const { startTime, endTime } = useExplorerBounds();
 
   const query = useStandardQuery<TResponse>({
     queryKey: [
       args.scope,
       "explorer",
       "query",
-      tenantId ?? "none",
-      refreshKey,
-      timeRangeKey,
+      `${startTime}-${endTime}`,
       JSON.stringify(args.filters),
       args.cursor,
       args.limit,
@@ -71,7 +73,7 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
     enabled: args.enabled ?? true,
   });
 
-  return { ...query, startTime, endTime, tenantId, refreshKey };
+  return { ...query, startTime, endTime, tenantId };
 }
 
 export interface UseExplorerSubQueryArgs<TResponse> {
@@ -87,44 +89,11 @@ export interface UseExplorerSubQueryArgs<TResponse> {
 }
 
 export function useExplorerSubQuery<TResponse>(args: UseExplorerSubQueryArgs<TResponse>) {
-  const tenantId = useTenantId();
-  const refreshKey = useRefreshKey();
-  const timeRange = useTimeRange();
-  const [params] = useSearchParamsCompat();
-
-  const urlFrom = params.get("from") ? Number(params.get("from")) : undefined;
-  const urlTo = params.get("to") ? Number(params.get("to")) : undefined;
-  const hasUrlBounds =
-    urlFrom !== undefined &&
-    urlTo !== undefined &&
-    Number.isFinite(urlFrom) &&
-    Number.isFinite(urlTo) &&
-    urlFrom > 0 &&
-    urlTo > urlFrom;
-
-  const { startTime, endTime } = (() => {
-    if (hasUrlBounds) {
-      return { startTime: urlFrom!, endTime: urlTo! };
-    }
-    return resolveTimeBounds(timeRange);
-  })();
-
-  const timeRangeKey = useMemo(
-    () => (hasUrlBounds ? `${urlFrom}-${urlTo}` : JSON.stringify(timeRange)),
-    [hasUrlBounds, urlFrom, urlTo, timeRange]
-  );
+  const { startTime, endTime } = useExplorerBounds();
   const filtersKey = useMemo(() => JSON.stringify(args.filters), [args.filters]);
 
   return useStandardQuery<TResponse>({
-    queryKey: [
-      args.scope,
-      "explorer",
-      args.subKey,
-      tenantId ?? "none",
-      refreshKey,
-      timeRangeKey,
-      filtersKey,
-    ],
+    queryKey: [args.scope, "explorer", args.subKey, `${startTime}-${endTime}`, filtersKey],
     queryFn: () => {
       return args.fetcher({
         startTime,

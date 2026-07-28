@@ -1,12 +1,10 @@
 import { useCallback, useMemo, useRef } from "react";
 
-import { useTimeRange } from "@/app/store/appStore";
+import { useResolvedTimeBounds } from "@/app/store/appStore";
 import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
 import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
 import type { SuggestionOption } from "@shared/search/components/chrome/QuerySuggestions";
 import { SearchTranslationNotice } from "@shared/search/components/chrome/SearchTranslationNotice";
-
-import { resolveTimeRangeBounds } from "@shared/types";
 
 import { buildLogsFilters } from "@shared/logs/api/buildLogsFilters";
 import type { LogsFacets } from "@shared/logs/api/logsAnalyticsApi";
@@ -24,6 +22,7 @@ function buildValueSuggestions(
 ): Readonly<Record<string, readonly SuggestionOption[]>> {
   const suggestions: Record<string, readonly SuggestionOption[]> = {
     severityText: SEVERITY_STYLES.map((s) => ({
+      kind: "value",
       value: s.label.toUpperCase(),
       label: s.label.toUpperCase(),
       hint: s.shortLabel,
@@ -31,32 +30,32 @@ function buildValueSuggestions(
   };
   if (facets?.service.length) {
     suggestions.serviceName = facets.service.map((i) => ({
+      kind: "value",
       value: i.value,
       label: i.value,
       hint: i.count.toLocaleString(),
     }));
   }
   if (facets?.host?.length) {
-    suggestions.host = facets.host.map((i) => ({ value: i.value, label: i.value }));
+    suggestions.host = facets.host.map((i) => ({ kind: "value", value: i.value, label: i.value }));
   }
   if (facets?.pod?.length) {
-    suggestions.pod = facets.pod.map((i) => ({ value: i.value, label: i.value }));
+    suggestions.pod = facets.pod.map((i) => ({ kind: "value", value: i.value, label: i.value }));
   }
   if (facets?.environment?.length) {
-    suggestions.environment = facets.environment.map((i) => ({ value: i.value, label: i.value }));
+    suggestions.environment = facets.environment.map((i) => ({
+      kind: "value",
+      value: i.value,
+      label: i.value,
+    }));
   }
   return suggestions;
 }
 
-   
-                                                                              
-                                                                        
-   
 export default function LogsExplorerPage() {
   const explorer = useLogsExplorer();
   const { state, facets } = explorer;
-  const timeRange = useTimeRange();
-  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
+  const { startTime, endTime } = useResolvedTimeBounds();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const valueSuggestions = useMemo(() => buildValueSuggestions(facets.data), [facets.data]);
@@ -92,10 +91,8 @@ export default function LogsExplorerPage() {
           <>
             <ExplorerHeader
               ref={searchInputRef}
-              variant="dsl"
               filters={state.filters}
               onChangeFilters={(f) => state.setFilters(f)}
-              onSubmitFreeText={() => {}}
               actions={<LogsActions />}
               valueSuggestions={valueSuggestions}
               searchPlaceholder='Search logs: serviceName:checkout severityText:ERROR "timeout"'

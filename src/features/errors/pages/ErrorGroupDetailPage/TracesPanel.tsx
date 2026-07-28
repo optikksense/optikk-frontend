@@ -1,7 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
-import { PageSurface, Skeleton } from "@shared/components/ui";
+import { Skeleton } from "@shared/components/primitives/ui";
+import { PageSurface } from "@shared/components/ui";
 import { buildTraceDetailHref } from "@shared/observability/deepLinks";
 
 import type { ErrorGroupTrace } from "@shared/api/errors";
@@ -25,7 +26,6 @@ function fmtDuration(ms: number): string {
   return ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${Math.round(ms)}ms`;
 }
 
-                                                                               
 export function TracesPanel({
   traces,
   loading,
@@ -44,7 +44,7 @@ export function TracesPanel({
       </div>
 
       {loading && traces.length === 0 ? (
-        <Skeleton rows={5} />
+        <Skeleton count={5} />
       ) : traces.length === 0 ? (
         <div className="py-6 text-center text-[12px] text-foreground-muted">
           No traces in the selected range.

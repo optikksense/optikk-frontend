@@ -10,15 +10,15 @@ import {
   pushUnsupportedOp,
 } from "@shared/search/utils/buildFilters";
 
-   
-                                                                            
-                                                                        
-                                                                            
-                                                                     
-  
-                                                                           
-                                                            
-   
+/**
+ * Single source of truth for translating `ExplorerFilter[]` (FE chip model)
+ * into the BE wire body for the traces read endpoints (`/traces/query`,
+ * `/traces/facets`, `/traces/trend`). Mirrors the embedded `filter.Filters`
+ * shape on the backend (`internal/modules/traces/filter/filter.go`).
+ *
+ * Filters that cannot be expressed on the wire are reported via `warnings`
+ * so the UI can surface them — nothing is dropped silently.
+ */
 
 export interface TracesFiltersBody {
   startTime: number;
@@ -46,7 +46,7 @@ export interface TracesFiltersBody {
 
 export type TracesBuildResult = BuildResult<TracesFiltersBody>;
 
-                                                                          
+/** field -> include array, plus optional exclude array for neq/not_in. */
 const LIST_FIELDS: Record<
   string,
   { include: keyof TracesFiltersBody; exclude?: keyof TracesFiltersBody }
@@ -76,7 +76,7 @@ export function buildTracesFilters(
   const searchTerms: string[] = [];
 
   for (const filter of filters) {
-                                                          
+    // Try shared handlers first (attributes, search/body)
     if (dispatchCommonFilter(filter, body, warnings, searchTerms)) continue;
 
     const { field, op, value } = filter;

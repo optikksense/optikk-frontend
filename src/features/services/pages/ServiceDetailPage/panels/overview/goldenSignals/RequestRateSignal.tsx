@@ -3,17 +3,16 @@ import { useMemo } from "react";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { fmtNum } from "@shared/utils/metricFormatters";
+import { fmtNum } from "@shared/utils/formatters";
 import { pivotByRoute, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 export function RequestRateSignal({ serviceName }: { serviceName: string }) {
   const query = useREDByEndpoint(serviceName);
-  const rows = query.data ?? [];
+  const data = query.data;
 
-  const { timestamps, series } = useMemo(() => pivotByRoute(rows, (r) => r.rps, false), [rows]);
+  const { timestamps, series } = useMemo(() => pivotByRoute(data, (r) => r.rps, false), [data]);
 
-                                                 
   const avg = useMemo(() => {
     if (timestamps.length === 0) return 0;
     let total = 0;

@@ -4,7 +4,7 @@ type DslCompletionKind = "field" | "value" | "attribute" | "operator" | "empty";
 
 export interface DslCompletionContext {
   readonly kind: DslCompletionKind;
-                                                                      
+  /** Characters before the caret that belong to the current token. */
   readonly tokenPrefix: string;
 
   readonly field: string | null;

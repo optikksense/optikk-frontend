@@ -12,9 +12,9 @@ import {
 import { useLlmRange } from "./useLlmQueries";
 
 export function useEvaluators() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "evaluators", "list", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "evaluators", "list", startTime, endTime],
     queryFn: () => listEvaluators({ startTime, endTime }),
   });
 }

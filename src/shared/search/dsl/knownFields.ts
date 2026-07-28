@@ -42,7 +42,6 @@ const BOOL_OPS: readonly ExplorerFilterOp[] = ["eq", "neq"];
 const TEXT_OPS: readonly ExplorerFilterOp[] = ["contains", "not_contains", "eq"];
 const ID_OPS: readonly ExplorerFilterOp[] = ["eq"];
 
-                                                                                   
 export const TRACE_KNOWN_FIELDS: readonly KnownField[] = [
   {
     key: "service",
@@ -249,119 +248,6 @@ const LOG_KNOWN_FIELDS: readonly KnownField[] = [
   },
 ];
 
-const AI_KNOWN_FIELDS: readonly KnownField[] = [
-  {
-    key: "provider",
-    label: "Provider",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "GenAI provider name",
-    typeBadge: "STR",
-    icon: "field",
-  },
-  {
-    key: "model",
-    label: "Model",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "Request or response model",
-    typeBadge: "STR",
-    icon: "field",
-  },
-  {
-    key: "operation",
-    label: "Operation",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "GenAI operation name",
-    typeBadge: "ENUM",
-    icon: "field",
-  },
-  {
-    key: "spanType",
-    label: "Span type",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "MLflow-style AI span type",
-    typeBadge: "ENUM",
-    icon: "field",
-  },
-  {
-    key: "service",
-    label: "Service",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Resource",
-    description: "OTel service.name resource attribute",
-    typeBadge: "STR",
-    icon: "resource",
-  },
-  {
-    key: "environment",
-    label: "Environment",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Resource",
-    description: "deployment.environment resource attribute",
-    typeBadge: "STR",
-    icon: "resource",
-  },
-  {
-    key: "promptName",
-    label: "Prompt",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "Prompt tracking name",
-    typeBadge: "STR",
-    icon: "field",
-  },
-  {
-    key: "promptVersion",
-    label: "Prompt version",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "Prompt tracking version",
-    typeBadge: "STR",
-    icon: "field",
-  },
-  {
-    key: "agentName",
-    label: "Agent",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "Agent or workflow name",
-    typeBadge: "STR",
-    icon: "field",
-  },
-  {
-    key: "toolName",
-    label: "Tool",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "Tool call name",
-    typeBadge: "STR",
-    icon: "field",
-  },
-  {
-    key: "dataSource",
-    label: "Data source",
-    type: "string",
-    ops: STRING_OPS,
-    category: "Common",
-    description: "Retrieval store or data source",
-    typeBadge: "STR",
-    icon: "field",
-  },
-];
-
 export const CATEGORY_ORDER: readonly FieldCategory[] = [
   "Common",
   "Identifiers",
@@ -370,7 +256,6 @@ export const CATEGORY_ORDER: readonly FieldCategory[] = [
 ];
 
 export function knownFieldsForScope(scope: ExplorerScope | undefined): readonly KnownField[] {
-  if (scope === "ai") return AI_KNOWN_FIELDS;
   return scope === "logs" ? LOG_KNOWN_FIELDS : TRACE_KNOWN_FIELDS;
 }
 
@@ -399,7 +284,6 @@ const SUGGESTABLE_LOG_FIELDS = new Set([
   "environment",
 ]);
 
-                                                                               
 export function suggestableScalarFieldsForScope(
   scope: ExplorerScope | undefined
 ): ReadonlySet<string> {
@@ -457,15 +341,7 @@ const QUICK_TEMPLATES_TRACES: readonly QuickTemplate[] = [
   { label: "By service", query: "service:", description: "Filter by service — type a name" },
 ];
 
-const QUICK_TEMPLATES_AI: readonly QuickTemplate[] = [
-  { label: "Chat models", query: "spanType:CHAT_MODEL", description: "LLM chat/completion calls" },
-  { label: "Tools", query: "spanType:TOOL", description: "Agent tool executions" },
-  { label: "Retrieval", query: "spanType:RETRIEVER", description: "RAG retrieval spans" },
-  { label: "By model", query: "model:", description: "Filter by model name" },
-];
-
 export function quickTemplatesForScope(scope: ExplorerScope | undefined): readonly QuickTemplate[] {
-  if (scope === "ai") return QUICK_TEMPLATES_AI;
   return scope === "logs" ? QUICK_TEMPLATES_LOGS : QUICK_TEMPLATES_TRACES;
 }
 
@@ -499,9 +375,7 @@ const SYNTAX_EXAMPLES_TRACES: readonly QuickTemplate[] = [
   },
 ];
 
-                                                                           
 export function syntaxExamplesForScope(scope: ExplorerScope | undefined): readonly QuickTemplate[] {
-  if (scope === "ai") return [];
   return scope === "logs" ? SYNTAX_EXAMPLES_LOGS : SYNTAX_EXAMPLES_TRACES;
 }
 

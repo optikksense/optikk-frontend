@@ -77,7 +77,6 @@ export default memo(function InfraMultiSeriesChart({
     return Object.entries(serviceTimeseriesMap)
       .slice(0, 10)
       .map(([name, rows], idx) => {
-                                                                                      
         let latestValue = 0;
         for (let i = rows.length - 1; i >= 0; i--) {
           const raw = firstValue(rows[i], [valueField, "value", "requestCount"], null);

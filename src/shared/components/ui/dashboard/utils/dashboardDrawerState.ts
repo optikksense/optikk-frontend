@@ -77,30 +77,27 @@ export function buildLegacyDashboardDrawerSearch(
   return search ? `?${search}` : "";
 }
 
-export function clearDashboardDrawerSearch(
-  currentSearch: string | Record<string, unknown>
-): string {
-  const searchInput =
-    typeof currentSearch === "string" ? currentSearch : (currentSearch as Record<string, string>);
-  const nextSearchParams = new URLSearchParams(searchInput);
-  nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.entity);
-  nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.id);
-  nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.title);
-  nextSearchParams.delete(DASHBOARD_DRAWER_PARAMS.data);
-  const search = nextSearchParams.toString();
-  return search ? `?${search}` : "";
+/** Search patch that removes every drawer param from the URL. */
+export function clearedDashboardDrawerSearch(): Record<string, undefined> {
+  return {
+    [DASHBOARD_DRAWER_PARAMS.entity]: undefined,
+    [DASHBOARD_DRAWER_PARAMS.id]: undefined,
+    [DASHBOARD_DRAWER_PARAMS.title]: undefined,
+    [DASHBOARD_DRAWER_PARAMS.data]: undefined,
+  };
 }
 
-export function readDashboardDrawerState(searchParams: URLSearchParams): {
+export function readDashboardDrawerState(search: Record<string, unknown>): {
   entity: DashboardDrawerEntity | null;
   id: string | null;
   title: string | null;
   data: Record<string, unknown> | null;
 } {
-  const entity = searchParams.get(DASHBOARD_DRAWER_PARAMS.entity) as DashboardDrawerEntity | null;
-  const id = searchParams.get(DASHBOARD_DRAWER_PARAMS.id);
-  const title = searchParams.get(DASHBOARD_DRAWER_PARAMS.title);
-  const data = deserializeDashboardDrawerData(searchParams.get(DASHBOARD_DRAWER_PARAMS.data));
+  const rawEntity = search[DASHBOARD_DRAWER_PARAMS.entity];
+  const entity = typeof rawEntity === "string" ? (rawEntity as DashboardDrawerEntity) : null;
+  const id = asStringValue(search[DASHBOARD_DRAWER_PARAMS.id]);
+  const title = asStringValue(search[DASHBOARD_DRAWER_PARAMS.title]);
+  const data = deserializeDashboardDrawerData(search[DASHBOARD_DRAWER_PARAMS.data]);
 
   return { entity, id, title, data };
 }
@@ -113,8 +110,13 @@ function serializeDashboardDrawerData(data: Record<string, unknown>): string | n
   }
 }
 
-function deserializeDashboardDrawerData(value: string | null): Record<string, unknown> | null {
-  if (!value) {
+function deserializeDashboardDrawerData(value: unknown): Record<string, unknown> | null {
+  // The router auto-parses JSON-looking params, so the payload may already
+  // be an object; legacy links deliver it as a JSON string.
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (typeof value !== "string" || value === "") {
     return null;
   }
   try {

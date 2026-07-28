@@ -18,7 +18,7 @@ export interface InfrastructureNodeSummary {
   readonly totalPods: number;
 }
 
-                                                                                            
+/** Root-span aggregates per Kubernetes pod name (see GET /v1/infrastructure/fleet/pods). */
 export interface FleetPod {
   readonly podName: string;
   readonly host: string;

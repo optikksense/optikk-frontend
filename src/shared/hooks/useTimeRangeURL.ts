@@ -1,4 +1,4 @@
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
 import type { RelativeTimeRange, TimeRange } from "@shared/types";
@@ -11,7 +11,6 @@ const PARAM_FROM = "from";
 const PARAM_TO = "to";
 const PARAM_TZ = "tz";
 
-                                           
 const RELATIVE_RE = /^now-(\d+)(m|h|d)$/;
 
 function presetToUrlValue(preset: string): string {
@@ -74,25 +73,18 @@ export function timeRangeToUrlParams(r: TimeRange): { from: string; to: string }
   return { from: String(r.startMs), to: String(r.endMs) };
 }
 
-                                                        
 export interface UrlTimeState {
   from: string | null;
   to: string | null;
   tz: string | null;
 }
 
-                                                                                       
 export interface UrlWrite {
   from: string;
   to: string;
   tz: string | null;
 }
 
-   
-                                                                
-                                                                              
-                         
-   
 export function resolveUrlWrite(
   timeRange: TimeRange,
   timezone: string,
@@ -106,10 +98,6 @@ export function resolveUrlWrite(
   return { from: params.from, to: params.to, tz: expectedTz };
 }
 
-   
-                                                                
-                                                                        
-   
 export function resolveStoreWrite(timeRange: TimeRange, url: UrlTimeState): TimeRange | null {
   const parsed = parseUrlTimeRange(url.from, url.to);
   if (!parsed) return null;
@@ -121,87 +109,77 @@ export function resolveStoreWrite(timeRange: TimeRange, url: UrlTimeState): Time
   return parsed;
 }
 
-function readUrl(searchParams: URLSearchParams): UrlTimeState {
+type SearchRecord = Record<string, unknown>;
+
+/** The router parses numeric params to numbers; normalize back to strings. */
+function paramToString(value: unknown): string | null {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  return null;
+}
+
+function readUrl(search: SearchRecord): UrlTimeState {
   return {
-    from: searchParams.get(PARAM_FROM),
-    to: searchParams.get(PARAM_TO),
-    tz: searchParams.get(PARAM_TZ),
+    from: paramToString(search[PARAM_FROM]),
+    to: paramToString(search[PARAM_TO]),
+    tz: paramToString(search[PARAM_TZ]),
   };
 }
 
-function applyUrlWrite(
-  setSearchParams: ReturnType<typeof useSearchParams>[1],
-  write: UrlWrite
-): void {
-  setSearchParams(
-    (prev) => {
-      const next = new URLSearchParams(prev);
-      next.set(PARAM_FROM, write.from);
-      next.set(PARAM_TO, write.to);
-      if (write.tz) {
-        next.set(PARAM_TZ, write.tz);
-      } else {
-        next.delete(PARAM_TZ);
-      }
-      return next;
-    },
-    { replace: true }
-  );
+function applyUrlWrite(navigate: ReturnType<typeof useNavigate>, write: UrlWrite): void {
+  navigate({
+    search: ((prev: SearchRecord) => ({
+      ...prev,
+      [PARAM_FROM]: write.from,
+      [PARAM_TO]: write.to,
+      [PARAM_TZ]: write.tz ?? undefined,
+    })) as never,
+    replace: true,
+  });
 }
 
-   
-                                                                  
-  
-                                                                               
-                                                                                
-                                                                              
-                                                                               
-                                      
-   
 export function useTimeRangeURL(): void {
-  const [searchParams, setSearchParams] = useSearchParams();
+  // Mounted once in the global Header and active on every route, so this is
+  // the one legitimately route-agnostic search consumer: it reads via
+  // useSearch({ strict: false }) and navigates relative to the current
+  // route. Routes that define validateSearch must pass from/to/tz through.
+  const search = useSearch({ strict: false }) as SearchRecord;
+  const navigate = useNavigate();
   const timeRange = useTimeRange();
   const timezone = useAppStore((s) => s.timezone);
   const setTimeRange = useAppStore((s) => s.setTimeRange);
   const setTimezone = useAppStore((s) => s.setTimezone);
 
-                                                                            
-                                                    
-  const searchParamsRef = useRef(searchParams);
-  searchParamsRef.current = searchParams;
+  const searchRef = useRef(search);
+  searchRef.current = search;
 
   const initialized = useRef(false);
 
-                                                                             
-                                                                                    
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only sync
   useEffect(() => {
-    const url = readUrl(searchParams);
+    const url = readUrl(search);
     const parsed = parseUrlTimeRange(url.from, url.to);
     if (parsed) {
       setTimeRange(parsed);
       if (url.tz && url.tz !== timezone) setTimezone(url.tz);
     } else {
       const write = resolveUrlWrite(timeRange, timezone, url);
-      if (write) applyUrlWrite(setSearchParams, write);
+      if (write) applyUrlWrite(navigate, write);
     }
     initialized.current = true;
-                                                           
   }, []);
 
-                                                                       
   useEffect(() => {
     if (!initialized.current) return;
-    const write = resolveUrlWrite(timeRange, timezone, readUrl(searchParamsRef.current));
-    if (write) applyUrlWrite(setSearchParams, write);
-  }, [timeRange, timezone, setSearchParams]);
+    const write = resolveUrlWrite(timeRange, timezone, readUrl(searchRef.current));
+    if (write) applyUrlWrite(navigate, write);
+  }, [timeRange, timezone, navigate]);
 
-                                                                                  
-                                                                            
   useEffect(() => {
     if (!initialized.current) return;
-    const url = readUrl(searchParams);
+    const url = readUrl(search);
     const next = resolveStoreWrite(useAppStore.getState().timeRange, url);
     if (next) setTimeRange(next);
     if (url.tz && url.tz !== useAppStore.getState().timezone) setTimezone(url.tz);
-  }, [searchParams, setTimeRange, setTimezone]);
+  }, [search, setTimeRange, setTimezone]);
 }

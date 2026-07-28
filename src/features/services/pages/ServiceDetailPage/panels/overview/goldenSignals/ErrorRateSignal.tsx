@@ -3,20 +3,19 @@ import { useMemo } from "react";
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { fmtPct } from "@shared/utils/metricFormatters";
+import { fmtPct } from "@shared/utils/formatters";
 import { pivotByRoute, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
 export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
   const query = useREDByEndpoint(serviceName);
-  const rows = query.data ?? [];
+  const data = query.data;
 
   const { timestamps, series } = useMemo(
-    () => pivotByRoute(rows, (r) => r.errorRate, false),
-    [rows]
+    () => pivotByRoute(data, (r) => r.errorRate, false),
+    [data]
   );
 
-                                                            
   const peak = useMemo(() => {
     let max = 0;
     for (const s of series) {

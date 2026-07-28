@@ -1,6 +1,6 @@
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
-import { type URLFilterConfig, useURLFilters } from "@/shared/hooks/useURLFilters";
 import { QUERY_LABELS, createDefaultQuery } from "@shared/metrics/constants";
 import type {
   ChartType,
@@ -13,19 +13,21 @@ import type {
 } from "@shared/metrics/types";
 import { deserializeStateSnapshot, serializeStateSnapshot } from "@shared/search/utils/urlState";
 
-const URL_CONFIG: URLFilterConfig = {
-  params: [
-    { key: "queries", type: "string", defaultValue: "" },
-    { key: "formulas", type: "string", defaultValue: "" },
-    { key: "chartType", type: "string", defaultValue: "line" },
-    { key: "step", type: "string", defaultValue: "5m" },
-    { key: "spaceAgg", type: "string", defaultValue: "avg" },
-  ],
+/** Mirrors the /metrics route's validated search params (same param names). */
+type MetricsExplorerSearch = {
+  queries?: string;
+  formulas?: string;
+  chartType?: string;
+  step?: string;
+  spaceAgg?: string;
+  from?: string | number;
+  to?: string | number;
+  tz?: string;
 };
 
 const DEFAULT_QUERIES: MetricQueryDefinition[] = [createDefaultQuery(QUERY_LABELS[0])];
 
-function decodeQueries(raw: string): MetricQueryDefinition[] {
+function decodeQueries(raw: string | undefined): MetricQueryDefinition[] {
   if (!raw) return DEFAULT_QUERIES;
   const parsed = deserializeStateSnapshot<MetricQueryDefinition[]>(raw, DEFAULT_QUERIES);
   return parsed.length > 0 ? parsed : DEFAULT_QUERIES;
@@ -37,32 +39,44 @@ function encodeQueries(queries: MetricQueryDefinition[]): string {
 
 const DEFAULT_FORMULAS: FormulaDefinition[] = [];
 
-function decodeFormulas(raw: string): FormulaDefinition[] {
+function decodeFormulas(raw: string | undefined): FormulaDefinition[] {
   if (!raw) return DEFAULT_FORMULAS;
   return deserializeStateSnapshot<FormulaDefinition[]>(raw, DEFAULT_FORMULAS);
 }
 
-function encodeFormulas(formulas: FormulaDefinition[]): string {
-  if (formulas.length === 0) return "";
+function encodeFormulas(formulas: FormulaDefinition[]): string | undefined {
+  if (formulas.length === 0) return undefined;
   return serializeStateSnapshot(formulas);
 }
 
 let formulaCounter = 0;
 
 export function useMetricsExplorer() {
-  const { values, setters } = useURLFilters(URL_CONFIG);
+  const search = useSearch({ from: "/_app/metrics" });
+  const navigate = useNavigate();
 
-  const queries = useMemo(() => decodeQueries(values.queries as string), [values.queries]);
-  const formulas = useMemo(() => decodeFormulas(values.formulas as string), [values.formulas]);
-  const chartType = (values.chartType as ChartType) || "line";
-  const step = (values.step as TimeStep) || "5m";
-  const spaceAgg = (values.spaceAgg as MetricSpaceAggregation) || "avg";
+  const patchSearch = useCallback(
+    (patch: Partial<MetricsExplorerSearch>) => {
+      navigate({
+        to: "/metrics",
+        search: (prev: MetricsExplorerSearch) => ({ ...prev, ...patch }),
+        replace: true,
+      });
+    },
+    [navigate]
+  );
+
+  const queries = useMemo(() => decodeQueries(search.queries), [search.queries]);
+  const formulas = useMemo(() => decodeFormulas(search.formulas), [search.formulas]);
+  const chartType = (search.chartType as ChartType) || "line";
+  const step = (search.step as TimeStep) || "5m";
+  const spaceAgg = (search.spaceAgg as MetricSpaceAggregation) || "avg";
 
   const setQueries = useCallback(
     (next: MetricQueryDefinition[]) => {
-      setters.queries(encodeQueries(next));
+      patchSearch({ queries: encodeQueries(next) });
     },
-    [setters]
+    [patchSearch]
   );
 
   const addQuery = useCallback(() => {
@@ -107,17 +121,23 @@ export function useMetricsExplorer() {
     [updateQuery]
   );
 
-  const setChartType = useCallback((ct: ChartType) => setters.chartType(ct), [setters]);
+  const setChartType = useCallback(
+    (ct: ChartType) => patchSearch({ chartType: ct }),
+    [patchSearch]
+  );
 
-  const setStep = useCallback((s: TimeStep) => setters.step(s), [setters]);
+  const setStep = useCallback((s: TimeStep) => patchSearch({ step: s }), [patchSearch]);
 
-  const setSpaceAgg = useCallback((sa: MetricSpaceAggregation) => setters.spaceAgg(sa), [setters]);
+  const setSpaceAgg = useCallback(
+    (sa: MetricSpaceAggregation) => patchSearch({ spaceAgg: sa }),
+    [patchSearch]
+  );
 
   const setFormulas = useCallback(
     (next: FormulaDefinition[]) => {
-      setters.formulas(encodeFormulas(next));
+      patchSearch({ formulas: encodeFormulas(next) });
     },
-    [setters]
+    [patchSearch]
   );
 
   const addFormula = useCallback(() => {

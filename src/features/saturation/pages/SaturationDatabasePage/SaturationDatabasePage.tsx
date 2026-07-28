@@ -2,11 +2,11 @@ import { Database } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { PageShell } from "@shared/components/ui";
-import { KpiCard } from "@shared/components/ui/dashboard/KpiCard";
+import { KpiCard } from "@shared/components/ui/cards/StatCard";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { SaturationSubnav } from "@/features/saturation/components/SaturationSubnav";
-import { fmtNum } from "@shared/utils/metricFormatters";
+import { fmtNum } from "@shared/utils/formatters";
 
 import { instanceStatus } from "./databaseInstanceModel";
 import { useDatabaseSummary } from "./hooks/useDatabaseSummary";

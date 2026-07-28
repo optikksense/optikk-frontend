@@ -1,11 +1,9 @@
-import { Card } from "@shared/components/primitives/ui";
-
 import { type HostMetricGroup, hostSeriesEndpoint } from "../../api/hostDetailApi";
-import { type ChartDef, SeriesChartCard, availableCharts } from "../../components/SeriesChartCard";
+import type { ChartDef } from "../../components/SeriesChartCard";
+import { DetailMetricsSection } from "../../components/detail/DetailMetricsSection";
 
 interface HostDetailSystemMetricsProps {
   readonly host: string;
-                                                                            
   readonly availableMetrics: readonly string[] | null;
 }
 
@@ -18,38 +16,22 @@ const SYSTEM_CHARTS: readonly ChartDef<HostMetricGroup>[] = [
 ];
 
 export function HostDetailSystemMetrics({ host, availableMetrics }: HostDetailSystemMetricsProps) {
-  const charts = availableCharts(SYSTEM_CHARTS, availableMetrics);
   return (
-    <section className="flex flex-col gap-3">
-      <header>
-        <div className="font-semibold text-[13px] text-foreground">System metrics</div>
-        <div className="text-[11px] text-foreground-muted">
-          {charts.map((c) => c.title.toLowerCase()).join(" · ") || "no system metrics reported"}
-        </div>
-      </header>
-      {charts.length === 0 ? (
-        <Card padding="md" className="border-border">
-          <div className="grid h-[120px] place-items-center text-center text-[12px] text-foreground-muted">
-            <div>
-              This host is not reporting system metrics in the selected range.
-              <br />
-              Enable the OpenTelemetry <code className="rounded bg-muted px-1">hostmetrics</code>{" "}
-              receiver on its collector to populate CPU, memory, disk and network charts.
-            </div>
-          </div>
-        </Card>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {charts.map((def) => (
-            <SeriesChartCard
-              key={def.group}
-              endpoint={hostSeriesEndpoint(host)}
-              queryKeyPrefix={`host-detail.series.${host}`}
-              def={def}
-            />
-          ))}
-        </div>
-      )}
-    </section>
+    <DetailMetricsSection
+      title="System metrics"
+      charts={SYSTEM_CHARTS}
+      availableMetrics={availableMetrics}
+      endpoint={hostSeriesEndpoint(host)}
+      queryKeyPrefix={`host-detail.series.${host}`}
+      emptyLabel="no system metrics reported"
+      emptyState={
+        <>
+          This host is not reporting system metrics in the selected range.
+          <br />
+          Enable the OpenTelemetry <code className="rounded bg-muted px-1">hostmetrics</code>{" "}
+          receiver on its collector to populate CPU, memory, disk and network charts.
+        </>
+      }
+    />
   );
 }

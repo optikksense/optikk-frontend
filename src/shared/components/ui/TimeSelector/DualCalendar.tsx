@@ -1,7 +1,7 @@
-import { addMonths, format, subMonths } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type React from "react";
 import { CalendarMonth } from "./CalendarMonth";
+import { addMonths, formatMonthYear, subMonths } from "./utils";
 
 interface DualCalendarProps {
   leftMonth: Date;
@@ -30,7 +30,7 @@ export function DualCalendar({
 
   return (
     <div className="flex gap-4 px-3 pt-3 pb-2">
-      {                }
+      {}
       <div className="flex flex-1 flex-col">
         <div className="mb-2 flex items-center justify-between">
           <button
@@ -41,7 +41,7 @@ export function DualCalendar({
             <ChevronLeft size={14} />
           </button>
           <span className="font-semibold text-[13px] text-foreground">
-            {format(leftMonth, "MMMM yyyy")}
+            {formatMonthYear(leftMonth)}
           </span>
           <div className="w-6" />
         </div>
@@ -64,7 +64,7 @@ export function DualCalendar({
         <div className="mb-2 flex items-center justify-between">
           <div className="w-6" />
           <span className="font-semibold text-[13px] text-foreground">
-            {format(rightMonth, "MMMM yyyy")}
+            {formatMonthYear(rightMonth)}
           </span>
           <button
             type="button"

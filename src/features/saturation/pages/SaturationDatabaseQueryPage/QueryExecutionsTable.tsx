@@ -7,7 +7,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { QueryExecutionRow } from "@/features/saturation/api/databaseQueryDetailApi";
 import { ROUTES } from "@/shared/constants/routes";
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtNum } from "@shared/utils/formatters";
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);
@@ -69,7 +69,6 @@ const COLUMNS: ColumnDef<QueryExecutionRow>[] = [
   },
 ];
 
-                                                                   
 export function QueryExecutionsTable({
   rows,
   loading,

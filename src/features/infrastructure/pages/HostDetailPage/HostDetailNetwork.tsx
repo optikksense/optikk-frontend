@@ -3,7 +3,7 @@ import { type ChartDef, SeriesChartCard, availableCharts } from "../../component
 
 interface HostDetailNetworkProps {
   readonly host: string;
-                                                                            
+
   readonly availableMetrics: readonly string[] | null;
 }
 

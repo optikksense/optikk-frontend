@@ -14,15 +14,27 @@ import { Fragment, memo } from "react";
 
 import type { SuggestionIcon, TypeBadge } from "../../dsl/knownFields";
 
-export interface SuggestionOption {
-  readonly value: string;
-  readonly label?: string;
+interface SuggestionBase {
+  readonly label: string;
   readonly hint?: string;
   readonly description?: string;
   readonly category?: string;
   readonly typeBadge?: TypeBadge;
   readonly icon?: SuggestionIcon;
 }
+
+/**
+ * Discriminated union over what accepting a suggestion means. The payload
+ * carries the exact text the accept handler needs, so kinds are never
+ * inferred from in-band string prefixes.
+ */
+export type SuggestionOption =
+  | (SuggestionBase & { readonly kind: "field"; readonly insert: string })
+  | (SuggestionBase & { readonly kind: "operator"; readonly insert: string })
+  | (SuggestionBase & { readonly kind: "value"; readonly value: string })
+  | (SuggestionBase & { readonly kind: "recent"; readonly query: string })
+  | (SuggestionBase & { readonly kind: "template"; readonly query: string })
+  | (SuggestionBase & { readonly kind: "bodyHint"; readonly token: string });
 
 interface Props {
   readonly options: readonly SuggestionOption[];
@@ -60,7 +72,6 @@ const BADGE_TONE: Record<TypeBadge, string> = {
   BOOL: "text-[var(--debug-c)] border-[color-mix(in_oklch,var(--debug-c),transparent_70%)]",
 };
 
-                                                                                    
 function QuerySuggestionsComponent(p: Props) {
   if (!p.loading && p.options.length === 0) return null;
   return (
@@ -76,7 +87,7 @@ function QuerySuggestionsComponent(p: Props) {
         ) : (
           <ul className="flex flex-col">
             {p.options.map((opt, i) => (
-              <Fragment key={`${opt.value}-${i}`}>
+              <Fragment key={`${opt.kind}-${opt.label}-${i}`}>
                 {sectionHeader(opt, i, p.options)}
                 <li>
                   <Row
@@ -132,7 +143,7 @@ interface RowProps {
 
 function Row({ opt, active, highlight, onHover, onSelect }: RowProps) {
   const Icon = opt.icon ? ICON_MAP[opt.icon] : null;
-  const label = opt.label ?? opt.value;
+  const label = opt.label;
   return (
     <button
       type="button"

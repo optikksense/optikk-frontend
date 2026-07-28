@@ -16,7 +16,7 @@ interface WidgetEditorControlsProps {
   readonly onSizeChange: (size: WidgetSize) => void;
 }
 
-                                                         
+/** Per-widget display toggles and grid-size selector. */
 export function WidgetEditorControls({
   display,
   onDisplayChange,

@@ -23,15 +23,15 @@ const EMPTY_FILTERS: readonly ExplorerFilter[] = [];
 interface UseLogsExplorerArgs {
   readonly limit?: number;
   readonly enabled?: boolean;
-                                                                              
+  /** Always-applied scope (e.g. service lock) merged ahead of URL filters. */
   readonly baseFilters?: readonly ExplorerFilter[];
-                                                                  
+  /** Skip the facets read when there is no facet rail to feed. */
   readonly includeFacets?: boolean;
 }
 
-   
-                                                              
-   
+/**
+ * Logs explorer foundation — URL state + four parallel reads.
+ */
 export function useLogsExplorer(args: UseLogsExplorerArgs = {}) {
   const explorerState = useExplorerState();
   const tenantId = useTenantId();

@@ -15,7 +15,7 @@ interface PageHeaderProps {
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
   breadcrumbs?: PageHeaderBreadcrumb[];
-                                                                                    
+  /** Auto-generate breadcrumbs from current route (overrides manual breadcrumbs) */
   autoBreadcrumbs?: boolean;
   className?: string;
 }

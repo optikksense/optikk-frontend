@@ -11,13 +11,13 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 import type { LogRecord, LogsQueryResponse } from "../types/log";
 import { buildLogsFilters } from "./buildLogsFilters";
 
-   
-                                                                               
-                                                            
-   
+/**
+ * Mirrors logs models.Log. Only the `attributes_*` maps are `omitempty` on the
+ * Go side; every other field is always present on the wire.
+ */
 export const rawLogRowSchema = z.object({
   id: z.string(),
-                                                                   
+  // uint64 `json:",string"` on the Go side — always a JSON string.
   timestamp: z.string(),
   observedTimestamp: z.string(),
   severityText: z.string(),
@@ -63,7 +63,7 @@ function fnv1a(s: string): string {
   return (h >>> 0).toString(36);
 }
 
-                                                                             
+/** `id` is always present but may be empty when ClickHouse has no log_id. */
 function fallbackLogId(row: z.infer<typeof rawLogRowSchema>): string {
   const payload = `${row.traceId}:${row.spanId}:${tsToNsString(row.timestamp)}:${
     row.serviceName

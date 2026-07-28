@@ -4,7 +4,7 @@ import { API_CONFIG } from "@config/apiConfig";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
-                                                               
+/** Host machine metadata from retained resource attributes. */
 export interface HostAbout {
   readonly osType?: string;
   readonly osDescription?: string;
@@ -17,7 +17,7 @@ export interface HostAbout {
   readonly k8sNodeName?: string;
 }
 
-                                                                                 
+/** Mirrors hostdetail.HostOverview; nil KPIs mean the metric is not reported. */
 export interface HostOverview {
   readonly host: string;
   readonly lastSeen?: string;
@@ -53,7 +53,7 @@ export function getHostOverview(
   });
 }
 
-                                                                                
+/** Series endpoint for InfraMultiSeriesChart; pass `metric` via extraParams. */
 export function hostSeriesEndpoint(host: string): string {
   return `${V1}/infrastructure/hosts/${encodeURIComponent(host)}/series`;
 }

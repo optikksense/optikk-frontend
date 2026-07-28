@@ -11,9 +11,9 @@ function highlight(data: unknown): string {
   return esc.replace(
     /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
     (m) => {
-      let color = "var(--warn-fg)";          
+      let color = "var(--warn-fg)"; // number
       if (/^"/.test(m)) {
-        color = /:$/.test(m) ? "var(--accent-2)" : "var(--ok)";                
+        color = /:$/.test(m) ? "var(--accent-2)" : "var(--ok)"; // key : string
       } else if (/true|false/.test(m)) {
         color = "var(--accent-violet)";
       } else if (/null/.test(m)) {
@@ -42,7 +42,7 @@ export function DrawerJson({ data }: DrawerJsonProps) {
       </div>
       <pre
         className="m-0 overflow-x-auto whitespace-pre p-[12px_14px] font-mono text-[12px] text-[var(--fg-1)] leading-[1.55]"
-                                                                                                                                 
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: highlight() HTML-escapes input before adding fixed-palette spans
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

@@ -1,5 +1,5 @@
 import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
-import { fmtNum } from "@shared/utils/metricFormatters";
+import { fmtNum } from "@shared/utils/formatters";
 import type { ServiceMapListItem } from "./useTopologyData";
 
 interface Props {

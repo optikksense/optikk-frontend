@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { API_CONFIG } from "@config/apiConfig";
+import { KpiCard } from "@shared/components/ui/cards/StatCard";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
@@ -13,31 +14,6 @@ import { getNodes, getNodesSummary } from "../../../api/nodesApi";
 import { InfraHostsFilterBar } from "../../../components/InfraHostsFilterBar";
 import { InfraHostsTable } from "../../../components/InfraHostsTable";
 import type { InfrastructureNode, InfrastructureNodeSummary, MetricValue } from "../../../types";
-
-function KpiCard({
-  label,
-  value,
-  subtext,
-  color,
-}: {
-  label: string;
-  value: string;
-  subtext: string;
-  color?: string;
-}) {
-  return (
-    <div className="rounded-md border border-border bg-card p-3.5 shadow-sm">
-      <div className="text-[12.5px] text-foreground-muted leading-none">{label}</div>
-      <div
-        className="mt-1 font-bold text-[22px] leading-tight"
-        style={{ color: color || "var(--fg-0)" }}
-      >
-        {value}
-      </div>
-      <div className="mt-1 text-[11.5px] text-foreground-muted">{subtext}</div>
-    </div>
-  );
-}
 
 export default function HostsTab() {
   const navigate = useNavigate();
@@ -76,7 +52,6 @@ export default function HostsTab() {
     const needle = q.trim().toLowerCase();
     if (!needle) return nodes;
 
-                                                                            
     if (needle.includes(":")) {
       const [key, val] = needle.split(":");
       const tagVal = val.trim();

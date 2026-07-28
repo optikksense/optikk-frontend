@@ -23,7 +23,7 @@ export interface BaseChartComponentProps {
   targetThreshold?: number;
 }
 
-                                                                          
+/** Props for specialized and self-contained dashboard panel renderers. */
 export interface DashboardPanelRendererProps {
   chartConfig: DashboardPanelSpec;
   dataSources: DashboardDataSources;

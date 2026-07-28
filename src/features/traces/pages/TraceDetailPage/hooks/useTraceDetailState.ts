@@ -5,7 +5,6 @@ import { useAppStore } from "@app/store/appStore";
 
 import { useTraceDetailData } from "../../../hooks/useTraceDetailData";
 import { useTraceDetailEnhanced } from "../../../hooks/useTraceDetailEnhanced";
-import { useTraceErrors } from "../../../hooks/useTraceErrors";
 import { useTraceServiceMap } from "../../../hooks/useTraceServiceMap";
 import { type VisualizationTab, useTracesStore } from "../../../store/tracesStore";
 import { computeTraceTimeBounds } from "../utils";
@@ -16,7 +15,7 @@ export function useTraceDetailState() {
   const selectedTenantId = useAppStore((state) => state.selectedTenantId);
 
   const rawActiveTab = useTracesStore((s) => s.visualizationTab);
-                                                                                   
+
   const activeTab: VisualizationTab =
     rawActiveTab === "servicemap" ||
     rawActiveTab === "timeline" ||
@@ -55,22 +54,16 @@ export function useTraceDetailState() {
 
   const serviceMap = useTraceServiceMap(
     selectedTenantId,
-    traceIdParam,
+    data.serviceMap,
     traceTimeBounds,
     activeTab === "servicemap"
-  );
-
-  const traceErrors = useTraceErrors(
-    selectedTenantId,
-    traceIdParam,
-    traceTimeBounds,
-    activeTab === "errors"
   );
 
   const enhanced = useTraceDetailEnhanced(
     selectedTenantId,
     traceIdParam,
     data.spans,
+    data.criticalPath,
     data.selectedSpanId,
     data.selectedSpan ?? data.spans[0] ?? null,
     traceTimeBounds
@@ -85,6 +78,5 @@ export function useTraceDetailState() {
     data,
     enhanced,
     serviceMap,
-    traceErrors,
   };
 }

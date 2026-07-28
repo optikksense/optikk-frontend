@@ -3,8 +3,8 @@ import { DatabaseKpiStrip } from "@/features/saturation/pages/SaturationDatabase
 
 import { QpsChart } from "../charts/QpsChart";
 
-                                                                             
-                                                    
+// Per-instance overview: headline KPIs plus latency + throughput trends, all
+// scoped to this datastore via the dbSystem filter.
 export function DatabaseOverviewTab({ system }: { system: string }) {
   return (
     <div className="flex flex-col gap-4">

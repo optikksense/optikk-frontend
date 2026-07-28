@@ -1,11 +1,4 @@
-import { logsPaletteActions } from "@/features/logs/palette";
 import { metricsPaletteActions } from "@/features/metrics/palette";
-import { tracePaletteActions } from "@/features/traces/palette";
 import { navigationPaletteActions } from "./navigationPalette";
 
-export const allActions = [
-  ...navigationPaletteActions,
-  ...tracePaletteActions,
-  ...metricsPaletteActions,
-  ...logsPaletteActions,
-];
+export const allActions = [...navigationPaletteActions, ...metricsPaletteActions];

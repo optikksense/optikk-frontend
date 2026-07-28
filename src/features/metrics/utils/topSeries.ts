@@ -1,7 +1,7 @@
 import type { MetricQueryResult, TopSeriesGroupBy } from "@shared/metrics/types";
 import { computeSeriesStats } from "@shared/metrics/utils/seriesStats";
 
-                                              
+/** One ranked row in the Top series panel. */
 export interface TopSeriesRow {
   readonly label: string;
 

@@ -1,6 +1,5 @@
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
-
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 
 export const SERVICE_TAB_IDS = ["overview", "errors", "traces", "logs", "dependencies"] as const;
 
@@ -19,16 +18,19 @@ export function useActiveServiceTab(): {
   tab: ServiceTabId;
   setTab: (next: ServiceTabId) => void;
 } {
-  const [params, setParams] = useSearchParams();
-  const tab = normalizeTab(params.get("tab"));
+  const search = useSearch({ from: "/_app/services/$serviceName" });
+  const navigate = useNavigate();
+  const tab = normalizeTab(search.tab);
   const setTab = useCallback(
     (next: ServiceTabId) => {
-      const updated = new URLSearchParams(params);
-      if (next === DEFAULT_TAB) updated.delete("tab");
-      else updated.set("tab", next);
-      setParams(updated);
+      navigate({
+        search: ((prev: Record<string, unknown>) => ({
+          ...prev,
+          tab: next === DEFAULT_TAB ? undefined : next,
+        })) as never,
+      });
     },
-    [params, setParams]
+    [navigate]
   );
   return { tab, setTab };
 }

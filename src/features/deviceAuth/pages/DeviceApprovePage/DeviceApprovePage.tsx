@@ -4,7 +4,7 @@ import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 
 import { useApproveDevice } from "../../hooks/useDeviceAuthMutations";
 
-                                                                     
+// Reads an optional ?userCode= to prefill the code shown by the CLI.
 function initialCode(): string {
   const params = new URLSearchParams(window.location.search);
   return (params.get("userCode") ?? "").toUpperCase();

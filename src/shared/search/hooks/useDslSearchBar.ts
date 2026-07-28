@@ -23,37 +23,10 @@ interface Args {
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
 }
 
-const SUGGEST_PREFIX = "__suggest__:";
-const RECENT_PREFIX = "__recent__:";
-const TEMPLATE_PREFIX = "__template__:";
-const BODY_HINT_PREFIX = "__bodyhint__:";
-const OPERATOR_PREFIX = "__op__:";
-
-function encodeSuggest(prefix: string, value: string): string {
-  return `${prefix}${value}`;
-}
-
-function decodeSuggest(value: string): { prefix: string; value: string } | null {
-  for (const p of [
-    SUGGEST_PREFIX,
-    RECENT_PREFIX,
-    TEMPLATE_PREFIX,
-    BODY_HINT_PREFIX,
-    OPERATOR_PREFIX,
-  ]) {
-    if (value.startsWith(p)) return { prefix: p, value: value.slice(p.length) };
-  }
-  return null;
-}
-
-   
-                                                                          
-                                    
-   
 export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
   const [input, setInput] = useState(initial);
   const [caret, setCaret] = useState(initial.length);
-                                                                     
+
   const [activeIdx, setActiveIdx] = useState(-1);
   const knownFields = useMemo(() => knownFieldsForScope(scope), [scope]);
 
@@ -109,40 +82,43 @@ export function useDslSearchBar({ initial, scope, valueSuggestions }: Args) {
 
   const acceptSuggestion = useCallback(
     (opt: SuggestionOption) => {
-      const decoded = decodeSuggest(opt.value);
-      if (decoded?.prefix === RECENT_PREFIX || decoded?.prefix === TEMPLATE_PREFIX) {
-        const next = decoded.value;
-        setInput(next);
-        setCaret(next.length);
-        setActiveIdx(-1);
-        return;
+      switch (opt.kind) {
+        case "recent":
+        case "template": {
+          setInput(opt.query);
+          setCaret(opt.query.length);
+          setActiveIdx(-1);
+          return;
+        }
+        case "bodyHint": {
+          const { head, tail } = splitAroundToken(input, context.tokenStart, caret);
+          const insert = `body:"${opt.token}" `;
+          const nextInput = `${head}${insert}${tail}`;
+          const nextCaret = head.length + insert.length;
+          setInput(nextInput);
+          setCaret(nextCaret);
+          setActiveIdx(-1);
+          return;
+        }
+        case "operator": {
+          const nextInput = applyOperator(input, context.field ?? "", opt.insert);
+          setInput(nextInput);
+          setCaret(nextInput.length);
+          setActiveIdx(-1);
+          return;
+        }
+        case "field":
+        case "value": {
+          const { head, tail } = splitAroundToken(input, context.tokenStart, caret);
+          const insert = renderInsert(context, opt.kind === "field" ? opt.insert : opt.value);
+          const nextInput = `${head}${insert}${tail}`;
+          const nextCaret = head.length + insert.length;
+          setInput(nextInput);
+          setCaret(nextCaret);
+          setActiveIdx(-1);
+          return;
+        }
       }
-      if (decoded?.prefix === BODY_HINT_PREFIX) {
-        const token = decoded.value;
-        const { head, tail } = splitAroundToken(input, context.tokenStart, caret);
-        const insert = `body:"${token}" `;
-        const nextInput = `${head}${insert}${tail}`;
-        const nextCaret = head.length + insert.length;
-        setInput(nextInput);
-        setCaret(nextCaret);
-        setActiveIdx(-1);
-        return;
-      }
-      if (decoded?.prefix === OPERATOR_PREFIX) {
-        const op = decoded.value;
-        const nextInput = applyOperator(input, context.field ?? "", op);
-        setInput(nextInput);
-        setCaret(nextInput.length);
-        setActiveIdx(-1);
-        return;
-      }
-      const { head, tail } = splitAroundToken(input, context.tokenStart, caret);
-      const insert = renderInsert(context, opt.value);
-      const nextInput = `${head}${insert}${tail}`;
-      const nextCaret = head.length + insert.length;
-      setInput(nextInput);
-      setCaret(nextCaret);
-      setActiveIdx(-1);
     },
     [input, caret, context]
   );
@@ -194,8 +170,9 @@ function buildSuggestions(a: BuildArgs): readonly SuggestionOption[] {
     return buildEmptyState(a);
   }
   if (a.context.kind === "operator") {
-    return OPERATOR_OPTIONS.map((op) => ({
-      value: encodeSuggest(OPERATOR_PREFIX, op.insert),
+    return OPERATOR_OPTIONS.map<SuggestionOption>((op) => ({
+      kind: "operator",
+      insert: op.insert,
       label: op.label,
       description: op.description,
       typeBadge: op.typeBadge,
@@ -206,8 +183,9 @@ function buildSuggestions(a: BuildArgs): readonly SuggestionOption[] {
   if (a.context.kind === "attribute") {
     return POPULAR_ATTRIBUTE_KEYS.filter((k) =>
       k.key.toLowerCase().slice(1).includes(a.context.tokenPrefix.toLowerCase())
-    ).map((k) => ({
-      value: `${k.key}:`,
+    ).map<SuggestionOption>((k) => ({
+      kind: "field",
+      insert: `${k.key}:`,
       label: k.key,
       description: k.description,
       typeBadge: "STR",
@@ -220,7 +198,8 @@ function buildSuggestions(a: BuildArgs): readonly SuggestionOption[] {
       .slice()
       .sort(byCategoryThenKey)
       .map<SuggestionOption>((f) => ({
-        value: `${f.key}:`,
+        kind: "field",
+        insert: `${f.key}:`,
         label: f.key,
         description: f.description,
         typeBadge: f.typeBadge,
@@ -231,7 +210,8 @@ function buildSuggestions(a: BuildArgs): readonly SuggestionOption[] {
       const t = a.context.bodyHintToken;
       return [
         {
-          value: encodeSuggest(BODY_HINT_PREFIX, t),
+          kind: "bodyHint",
+          token: t,
           label: `Search body for: "${t}"`,
           description: "Free-text search across log message body",
           typeBadge: "TXT",
@@ -245,7 +225,8 @@ function buildSuggestions(a: BuildArgs): readonly SuggestionOption[] {
   }
 
   if (a.localValues.length > 0) return a.localValues;
-  return a.values.map((v) => ({
+  return a.values.map<SuggestionOption>((v) => ({
+    kind: "value",
     value: v.value,
     label: v.value,
     hint: v.count.toLocaleString(),
@@ -256,7 +237,8 @@ function buildEmptyState(a: BuildArgs): readonly SuggestionOption[] {
   const out: SuggestionOption[] = [];
   for (const r of a.recents) {
     out.push({
-      value: encodeSuggest(RECENT_PREFIX, r.q),
+      kind: "recent",
+      query: r.q,
       label: r.q,
       icon: "recent",
       category: "Recent",
@@ -265,7 +247,8 @@ function buildEmptyState(a: BuildArgs): readonly SuggestionOption[] {
 
   for (const t of a.templates) {
     out.push({
-      value: encodeSuggest(TEMPLATE_PREFIX, t.query),
+      kind: "template",
+      query: t.query,
       label: t.label,
       description: t.description,
       hint: t.query,
@@ -275,7 +258,8 @@ function buildEmptyState(a: BuildArgs): readonly SuggestionOption[] {
   }
   for (const s of a.syntax) {
     out.push({
-      value: encodeSuggest(TEMPLATE_PREFIX, s.query),
+      kind: "template",
+      query: s.query,
       label: s.label,
       description: s.description,
       hint: s.query,
@@ -300,7 +284,7 @@ function filterLocalSuggestions(
   if (!options) return [];
   const q = prefix.trim().toLowerCase();
   if (!q) return options;
-  return options.filter((option) => (option.label ?? option.value).toLowerCase().includes(q));
+  return options.filter((option) => option.label.toLowerCase().includes(q));
 }
 
 function splitAroundToken(input: string, tokenStart: number, caret: number) {

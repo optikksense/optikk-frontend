@@ -1,6 +1,5 @@
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
-
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 
 export const SERVICE_HUB_TABS = ["catalog", "map"] as const;
 
@@ -19,16 +18,17 @@ export function useServiceHubTab(): {
   tab: ServiceHubTab;
   setTab: (next: ServiceHubTab) => void;
 } {
-  const [params, setParams] = useSearchParams();
-  const tab = normalize(params.get("tab"));
+  const search = useSearch({ from: "/_app/services/" });
+  const navigate = useNavigate();
+  const tab = normalize(search.tab);
   const setTab = useCallback(
     (next: ServiceHubTab) => {
-      const updated = new URLSearchParams(params);
-      if (next === DEFAULT_TAB) updated.delete("tab");
-      else updated.set("tab", next);
-      setParams(updated);
+      navigate({
+        to: "/services",
+        search: (prev) => ({ ...prev, tab: next === DEFAULT_TAB ? undefined : next }),
+      });
     },
-    [params, setParams]
+    [navigate]
   );
   return { tab, setTab };
 }

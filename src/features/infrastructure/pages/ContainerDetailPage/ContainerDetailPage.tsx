@@ -4,9 +4,9 @@ import { PageShell } from "@shared/components/ui";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getPodOverview } from "../../api/podDetailApi";
+import { DetailLogsSection } from "../../components/detail/DetailLogsSection";
 import { ContainerDetailHero } from "./ContainerDetailHero";
 import { ContainerDetailKpiCards } from "./ContainerDetailKpiCards";
-import { ContainerDetailLogs } from "./ContainerDetailLogs";
 import { ContainerDetailSystemMetrics } from "./ContainerDetailSystemMetrics";
 
 export default function ContainerDetailPage(): JSX.Element {
@@ -24,7 +24,7 @@ export default function ContainerDetailPage(): JSX.Element {
       <ContainerDetailHero pod={pod} overview={overview} />
       <ContainerDetailKpiCards overview={overview} />
       <ContainerDetailSystemMetrics pod={pod} availableMetrics={availableMetrics} />
-      <ContainerDetailLogs pod={pod} />
+      <DetailLogsSection kind="pod" entity={pod} />
     </PageShell>
   );
 }

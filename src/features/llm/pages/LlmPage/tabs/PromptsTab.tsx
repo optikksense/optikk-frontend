@@ -74,7 +74,7 @@ export default function PromptsTab() {
     try {
       parsed = JSON.parse(template);
     } catch {
-                                               
+      /* keep as raw string for text prompts */
     }
     create.mutate(
       { name, template: parsed },

@@ -3,7 +3,8 @@ import { Copy, Key, RefreshCw, TriangleAlert, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { rotateApiKey } from "../../api/tenantApi";
+import { rotateApiKey } from "@shared/api/tenantApiKey";
+
 import type { SettingsTenantViewModel } from "../../types";
 
 interface SettingsTenantTabProps {
@@ -54,11 +55,6 @@ export default function SettingsTenantTab({
   );
 }
 
-   
-                                                                            
-                                                                           
-                                                                 
-   
 function ApiKeySection({ isAdmin }: { readonly isAdmin: boolean }): JSX.Element {
   const [newKey, setNewKey] = useState<string | null>(null);
   const [rotating, setRotating] = useState(false);

@@ -12,7 +12,7 @@ interface Props {
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
 }
 
-                                                                                  
+/** Top toolbar — DSL search bar with chip filters, plus Views / Share actions. */
 export const LogsToolbar = memo(
   forwardRef<HTMLInputElement, Props>(function LogsToolbar(props, ref) {
     return (

@@ -1,10 +1,17 @@
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 
 declare module "axios" {
-                                                                             
-                                               
+  // The response interceptor lifts the envelope's comparison sibling here so
+  // `data` stays the payload for every caller.
   interface AxiosResponse {
     comparison?: unknown;
+  }
+
+  // Marks a request as part of the auth flow itself: no Bearer/tenant headers
+  // are attached and a 401 never triggers the refresh-and-retry loop (the
+  // refresh call must not recurse into itself).
+  interface AxiosRequestConfig {
+    authExempt?: boolean;
   }
 }
 
@@ -71,7 +78,7 @@ async function unwrapResponse<T>(request: Promise<AxiosResponse<T>>): Promise<T>
   return response.data;
 }
 
-                                                                             
+/** A payload plus the same shape for the previous period, when requested. */
 export interface Comparable<T> {
   readonly data: T;
   readonly comparison?: T;
@@ -90,7 +97,7 @@ const api = {
   get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return unwrapResponse(axiosClient.get<T>(url, config));
   },
-                                                                    
+  /** Use for endpoints called with compareTo; otherwise use get. */
   getComparable<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<Comparable<T>> {
     return unwrapComparable(axiosClient.get<T>(url, config));
   },

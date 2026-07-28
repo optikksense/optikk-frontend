@@ -1,52 +1,34 @@
-import { Activity, Columns2, RefreshCw, Server, Settings, Sun } from "lucide-react";
+import { Columns2, RefreshCw, Settings, Sun } from "lucide-react";
 import { createElement } from "react";
 
 import type { PaletteAction } from "@/app/layout/CommandPalette/types";
+import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
 import { useAppStore } from "@app/store/appStore";
 
-export const navigationPaletteActions: PaletteAction[] = [
-  {
-    id: "nav.home",
-    label: "Go to Overview",
-    keywords: ["home", "overview", "dashboard"],
-    group: "navigation",
-    hotkey: "g h",
-    icon: createElement(Activity, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/overview");
-    },
-  },
-  {
-    id: "nav.errors",
-    label: "Go to Errors",
-    keywords: ["errors", "overview", "failures"],
-    group: "navigation",
-    icon: createElement(Activity, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/overview?tab=errors");
-    },
-  },
-  {
-    id: "nav.latency-analysis",
-    label: "Go to Latency Analysis",
-    keywords: ["latency", "analysis", "metrics"],
-    group: "navigation",
-    icon: createElement(Activity, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/metrics?tab=latency-analysis");
-    },
-  },
-  {
-    id: "nav.infrastructure",
-    label: "Go to Infrastructure",
-    keywords: ["infrastructure", "nodes", "kubernetes"],
-    group: "navigation",
-    icon: createElement(Server, { size: 16 }),
-    perform: ({ navigate }) => {
-      navigate("/infrastructure");
-    },
-  },
+// Hotkeys are a palette concern, keyed by destination path.
+const NAV_HOTKEYS: Readonly<Record<string, string>> = {
+  "/overview": "g h",
+  "/metrics": "g m",
+  "/logs": "g l",
+  "/traces": "g t",
+};
 
+// Navigation entries are derived from the domain registry, so the palette
+// always matches the sidebar without a parallel hand-maintained list.
+const derivedNavigationActions: PaletteAction[] = getDomainNavigationItems().map((item) => ({
+  id: `nav.${item.path.replace(/^\//, "").replace(/\//g, ".")}`,
+  label: `Go to ${item.label}`,
+  keywords: [item.label.toLowerCase(), item.group],
+  group: "navigation",
+  hotkey: NAV_HOTKEYS[item.path],
+  icon: createElement(item.icon, { size: 16 }),
+  perform: ({ navigate }) => {
+    navigate(item.path);
+  },
+}));
+
+export const navigationPaletteActions: PaletteAction[] = [
+  ...derivedNavigationActions,
   {
     id: "nav.settings",
     label: "Go to Settings",

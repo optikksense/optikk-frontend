@@ -1,6 +1,6 @@
 import type {
   RedServiceRow,
-  RequestRatePoint,
+  RequestRateSeries,
   ServiceCatalogRedSummary,
 } from "@shared/api/red/redApi";
 
@@ -37,23 +37,9 @@ function deltaPct(now: number, prev: number | undefined): number | null {
   return (now - prev) / prev;
 }
 
-function bySparkline(points: RequestRatePoint[]): Map<string, number[]> {
-  const grouped = new Map<string, Array<{ t: number; v: number }>>();
-  for (const p of points) {
-    const ts = new Date(p.timestamp).getTime();
-    if (!Number.isFinite(ts)) continue;
-    const list = grouped.get(p.serviceName) ?? [];
-    list.push({ t: ts, v: p.rps });
-    grouped.set(p.serviceName, list);
-  }
+function bySparkline(data: RequestRateSeries | undefined): Map<string, number[]> {
   const out = new Map<string, number[]>();
-  for (const [name, list] of grouped) {
-    list.sort((a, b) => a.t - b.t);
-    out.set(
-      name,
-      list.map((x) => x.v)
-    );
-  }
+  for (const s of data?.series ?? []) out.set(s.serviceName, [...s.rps]);
   return out;
 }
 
@@ -67,7 +53,7 @@ function byPrevP99(prev: ServiceCatalogRedSummary | undefined): Map<string, numb
 export interface BuildCatalogInputs {
   readonly primary: ServiceCatalogRedSummary;
   readonly comparison?: ServiceCatalogRedSummary;
-  readonly rateSeries: RequestRatePoint[];
+  readonly rateSeries: RequestRateSeries | undefined;
   readonly windowSec: number;
 }
 

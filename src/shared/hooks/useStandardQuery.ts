@@ -5,24 +5,39 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 
-   
-                                                     
-  
-           
-                                                                            
-                                                             
-  
-                                                                     
-   
+import { useTenantId } from "@app/store/appStore";
+import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
+
+/**
+ * Query key convention (all data queries):
+ *   [domain..., params...] + [tenantId]  (tenantId appended here)
+ *
+ * - tenantId is appended as the LAST element by the wrapper, so feature
+ *   code keeps invalidating by domain prefix (e.g. ["llm", "prompts"]).
+ * - Refresh is invalidation (useAppRefreshSubscriber), never a key part.
+ * - Time bounds in keys come from the store (useResolvedTimeBounds),
+ *   resolved once per user action — never Date.now() during render.
+ */
+
+/** Shared retry policy: never retry 4xx (client/budget errors). */
+export function retryUnlessClientError(failureCount: number, error: unknown): boolean {
+  const { status } = toApiErrorShape(error);
+  if (status >= 400 && status < 500) return false;
+  return failureCount < 2;
+}
+
 export function useStandardQuery<T>(
   options: Omit<UseQueryOptions<T, Error, T>, "queryKey" | "queryFn"> & {
     queryKey: readonly unknown[];
     queryFn: QueryFunction<T, readonly unknown[]>;
   }
 ) {
+  const tenantId = useTenantId();
   return useQuery<T, Error, T>({
     placeholderData: keepPreviousData,
     staleTime: 5_000,
+    retry: retryUnlessClientError,
     ...options,
+    queryKey: [...options.queryKey, tenantId],
   } as UseQueryOptions<T, Error, T>);
 }

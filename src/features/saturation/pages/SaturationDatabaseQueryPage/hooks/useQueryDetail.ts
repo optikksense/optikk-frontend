@@ -10,8 +10,8 @@ import {
 } from "@/features/saturation/api/databaseQueryDetailApi";
 import type { DatabaseFilters } from "@/features/saturation/api/databaseSlowQueriesApi";
 
-                                                                    
-                                                                              
+// Backend queryHash is hex(UInt64): exactly 16 lowercase hex chars.
+// Legacy client-side djb2 ids are base36 and shorter, so this is unambiguous.
 export function isBackendQueryHash(queryId: string): boolean {
   return /^[0-9a-f]{16}$/.test(queryId);
 }

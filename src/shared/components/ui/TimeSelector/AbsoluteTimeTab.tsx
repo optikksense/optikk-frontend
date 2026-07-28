@@ -1,9 +1,8 @@
 import { useAppStore } from "@app/store/appStore";
 import type { TimeRange } from "@shared/types";
-import { subMonths } from "date-fns";
 import { useEffect, useState } from "react";
 import { DualCalendar } from "./DualCalendar";
-import { fmtDatetime, parseDatetime } from "./utils";
+import { fmtDatetime, parseDatetime, subMonths } from "./utils";
 
 interface Props {
   timeRange: TimeRange;

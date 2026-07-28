@@ -113,6 +113,8 @@ const llmSpanSchema = z.object({
   cost: z.number(),
   prompt: z.string().nullish(),
   completion: z.string().nullish(),
+  promptTruncated: z.boolean().nullish(),
+  completionTruncated: z.boolean().nullish(),
 });
 export type LlmSpan = z.infer<typeof llmSpanSchema>;
 
@@ -236,6 +238,27 @@ export async function getLlmTraceDetail(
     params: { startTime, endTime },
   });
   return validateResponse(traceDetailSchema, res);
+}
+
+const spanIOSchema = z.object({
+  traceId: z.string(),
+  spanId: z.string(),
+  prompt: z.string(),
+  completion: z.string(),
+});
+export type LlmSpanIO = z.infer<typeof spanIOSchema>;
+
+export async function getLlmSpanIO(
+  traceId: string,
+  spanId: string,
+  startTime: number,
+  endTime: number
+): Promise<LlmSpanIO> {
+  const res = await api.get<unknown>(
+    `${BASE}/llm/traces/${encodeURIComponent(traceId)}/spans/${encodeURIComponent(spanId)}/io`,
+    { params: { startTime, endTime } }
+  );
+  return validateResponse(spanIOSchema, res);
 }
 
 const modelUsageSchema = z.object({

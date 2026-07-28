@@ -6,9 +6,9 @@ const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
 type HostStatus = "healthy" | "warn" | "error";
 
-                                                                                
-                                                                                 
-                          
+// Host is the unified row from GET /infrastructure/hosts. The saturation fields
+// are always present; the RED traffic fields are populated only when the request
+// is scoped to a service.
 export interface Host {
   readonly host: string;
   readonly subsystem: string;

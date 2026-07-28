@@ -1,45 +1,37 @@
 import { tracesService } from "@shared/api/traces/tracesApi";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useImmutableQuery as useStandardQuery } from "@shared/hooks/useImmutableQuery";
-import { useSearchParamsCompat as useSearchParams } from "@shared/hooks/useSearchParamsCompat";
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { getTraceLogs } from "@shared/logs/api/traceLogsApi";
+import { useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 
 export function useTraceDetailData(selectedTenantId: number | null, traceIdParam: string) {
-  const [searchParams] = useSearchParams();
+  const { span } = useSearch({ from: "/_app/traces/$traceId" });
   const { getTimeRange } = useTimeRange();
-  const [selectedSpanId, setSelectedSpanId] = useState<string | null>(
-    () => searchParams.get("span") || null
-  );
+  const [selectedSpanId, setSelectedSpanId] = useState<string | null>(() => span || null);
 
-                                
   useEffect(() => {
-    const spanFromUrl = searchParams.get("span");
-    if (spanFromUrl) setSelectedSpanId(spanFromUrl);
-  }, [searchParams]);
+    if (span) setSelectedSpanId(span);
+  }, [span]);
 
   const { startTime, endTime } = getTimeRange();
   const startMs = Number(startTime);
   const endMs = Number(endTime);
 
   const {
-    data: spansData,
+    data: detailData,
     isPending: spansLoading,
     isError: spansIsError,
     error: spansError,
   } = useStandardQuery({
-    queryKey: ["trace-spans", selectedTenantId, traceIdParam, startMs, endMs],
-    queryFn: ({ signal }) =>
-      tracesService.getTraceSpans(selectedTenantId, traceIdParam, startMs, endMs, signal),
+    queryKey: ["trace-detail", selectedTenantId, traceIdParam, startMs, endMs],
+    queryFn: ({ signal }) => tracesService.getTraceDetail(traceIdParam, startMs, endMs, signal),
     enabled: !!selectedTenantId && !!traceIdParam,
   });
 
-  const spans = useMemo(
-    () => (Array.isArray(spansData) ? spansData : []).map(normalizeSpan),
-    [spansData]
-  );
+  const spans = useMemo(() => (detailData?.spans ?? []).map(normalizeSpan), [detailData]);
 
   const {
     data: logsData,
@@ -62,6 +54,10 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
 
   return {
     spans,
+    summary: detailData?.summary ?? null,
+    criticalPath: detailData?.criticalPath ?? [],
+    serviceMap: detailData?.serviceMap,
+    errorGroups: detailData?.errors ?? [],
     traceLogs,
     traceLogsIsSpeculative: logsData?.isSpeculative ?? false,
     stats,

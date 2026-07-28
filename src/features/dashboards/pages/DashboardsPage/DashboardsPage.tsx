@@ -20,7 +20,7 @@ function sortPages(pages: DashboardPage[], sort: SortKey): DashboardPage[] {
   return pages;
 }
 
-                                                                              
+// Tags + counts derived from the current result set for the left-rail filter.
 function deriveTags(pages: DashboardPage[]): Array<[string, number]> {
   const counts = new Map<string, number>();
   for (const page of pages) {

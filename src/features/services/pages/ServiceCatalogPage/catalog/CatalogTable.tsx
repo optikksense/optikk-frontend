@@ -5,7 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 import { StatusDot } from "@shared/components/ui/data-display/status/StatusDot";
-import { fmtMs, fmtNum, fmtPct } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtNum, fmtPct } from "@shared/utils/formatters";
 import { ServiceAvatar } from "../../../components/ServiceAvatar";
 import type { CatalogRow } from "./buildCatalogRows";
 

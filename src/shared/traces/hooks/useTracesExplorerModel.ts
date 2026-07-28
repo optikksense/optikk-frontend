@@ -1,10 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useAppStore, useTimeRange } from "@app/store/appStore";
+import { useAppStore, useResolvedTimeBounds, useTimeRange } from "@app/store/appStore";
 import type { ExplorerFilter, ExplorerIncludeFlag } from "@shared/search/types";
 import { toTrendBuckets } from "@shared/search/utils/trend";
-import { resolveTimeRangeBounds } from "@shared/types";
 
 import type { TraceSummary } from "@shared/api/traces/types";
 import { sortTraces } from "../utils/sortTraces";
@@ -15,12 +14,6 @@ interface UseTracesExplorerModelArgs {
   readonly includeFacets?: boolean;
 }
 
-   
-                                                                               
-                                                                              
-                                                                              
-                                                                   
-   
 export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
   const includeFacets = args.includeFacets ?? true;
   const include = useMemo<readonly ExplorerIncludeFlag[]>(
@@ -36,7 +29,7 @@ export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
 
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
   const timeRange = useTimeRange();
-  const { startTime, endTime } = useMemo(() => resolveTimeRangeBounds(timeRange), [timeRange]);
+  const { startTime, endTime } = useResolvedTimeBounds();
 
   const trendBuckets = useMemo(() => toTrendBuckets(trend), [trend]);
   const sortedTraces = useMemo(() => sortTraces(traces, "recent"), [traces]);
@@ -46,7 +39,6 @@ export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
     [setCustomTimeRange]
   );
 
-                                                                                 
   const filtersJson = useMemo(() => JSON.stringify(state.filters), [state.filters]);
   useEffect(() => {
     if (filtersJson) {

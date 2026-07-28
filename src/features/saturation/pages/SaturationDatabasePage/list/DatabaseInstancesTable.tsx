@@ -7,7 +7,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { ROUTES } from "@/shared/constants/routes";
-import { fmtMs, fmtNum } from "@shared/utils/metricFormatters";
+import { fmtMs, fmtNum } from "@shared/utils/formatters";
 
 import { StatusPill } from "@shared/components/ui/data-display/status/StatusPill";
 

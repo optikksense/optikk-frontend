@@ -9,7 +9,6 @@ import { API_PROXY_BASE, DEV_BACKEND_URL, DEV_FRONTEND_PORT } from "./src/config
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-                             
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const devBackendUrl = env.VITE_DEV_BACKEND_URL || DEV_BACKEND_URL;
@@ -48,42 +47,45 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
-                                                                             
-                                                                           
+
       sourcemap: false,
       chunkSizeWarningLimit: 300,
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            if (
-              id.includes("node_modules/react/") ||
-              id.includes("node_modules/react-dom/") ||
-              id.includes("node_modules/scheduler/")
-            ) {
-              return "vendor-react";
-            }
-            if (id.includes("node_modules/@tanstack/")) return "vendor-tanstack";
-            if (
-              id.includes("node_modules/react-aria") ||
-              id.includes("node_modules/react-stately") ||
-              id.includes("node_modules/@react-aria/") ||
-              id.includes("node_modules/@react-stately/") ||
-              id.includes("node_modules/@internationalized/")
-            ) {
-              return "vendor-react-aria";
-            }
-            if (
-              id.includes("node_modules/@radix-ui/") ||
-              id.includes("node_modules/@floating-ui/")
-            ) {
-              return "vendor-radix";
-            }
-            if (id.includes("node_modules/date-fns/")) return "vendor-date";
-            if (id.includes("node_modules/zod/")) return "vendor-zod";
-            if (id.includes("node_modules/axios/")) return "vendor-http";
-            if (id.includes("node_modules/lucide-react/")) return "vendor-icons";
-            if (id.includes("node_modules/uplot/")) return "vendor-charts";
-            return undefined;
+          // Rolldown-native chunking. The legacy `manualChunks` emulation
+          // captures each group's full dependency closure (it pulled React
+          // itself into feature chunks); `advancedChunks` with
+          // `includeDependenciesRecursively: false` assigns exactly the
+          // matched modules. Earlier groups win for overlapping matches.
+          advancedChunks: {
+            includeDependenciesRecursively: false,
+            groups: [
+              {
+                name: "vendor-react",
+                test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              },
+              // Table/virtualizer are used only by lazy feature chunks; keep
+              // them out of the eager router+query chunk.
+              {
+                name: "vendor-table",
+                test: /node_modules[\\/]@tanstack[\\/](react-table|table-core|react-virtual|virtual-core)[\\/]/,
+              },
+              { name: "vendor-tanstack", test: /node_modules[\\/]@tanstack[\\/]/ },
+              // Service-map graph stack (lazy-only): xyflow + dagre and their
+              // exclusive deps (graphlib/lodash/d3-*/classcat).
+              {
+                name: "vendor-graph",
+                test: /node_modules[\\/](@xyflow|dagre|graphlib|lodash|d3-[a-z-]+|classcat)[\\/]/,
+              },
+              {
+                name: "vendor-radix",
+                test: /node_modules[\\/](@radix-ui|@floating-ui)[\\/]/,
+              },
+              { name: "vendor-zod", test: /node_modules[\\/]zod[\\/]/ },
+              { name: "vendor-http", test: /node_modules[\\/]axios[\\/]/ },
+              { name: "vendor-icons", test: /node_modules[\\/]lucide-react[\\/]/ },
+              { name: "vendor-charts", test: /node_modules[\\/]uplot[\\/]/ },
+            ],
           },
         },
       },

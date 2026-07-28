@@ -1,9 +1,3 @@
-   
-                                                                              
-  
-                                                                             
-                                                                           
-   
 export interface ExplorerFilter {
   readonly field: string;
   readonly op: ExplorerFilterOp;
@@ -26,15 +20,10 @@ export type ExplorerFilterOp =
 
 export type ExplorerMode = "list" | "analytics";
 
-   
-                                                                     
-                                                                           
-                                           
-   
 export interface TranslationWarning {
   readonly code: "unsupported_op" | "unknown_field" | "duplicate_single_value";
   readonly field: string;
   readonly message: string;
 }
 
-export type ExplorerScope = "ai" | "logs" | "traces";
+export type ExplorerScope = "logs" | "traces";

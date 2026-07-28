@@ -1,6 +1,6 @@
 import type { TopologyResponse } from "@shared/api/red/redApi";
 import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
-import { fmtNum } from "@shared/utils/metricFormatters";
+import { fmtNum } from "@shared/utils/formatters";
 import { useMemo } from "react";
 import type { ServiceMapEdge, ServiceMapNode } from "./TopologySVG";
 

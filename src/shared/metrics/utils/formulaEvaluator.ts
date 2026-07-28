@@ -20,9 +20,9 @@ function invalidFormula(error: string): ParsedFormula {
   return { tokens: [], symbols: [], error };
 }
 
-                                                                               
-                                                                                
-                                                                          
+// Converts the deliberately small formula language to reverse Polish notation.
+// Supporting only numbers, query labels, parentheses, and four binary operators
+// keeps evaluation deterministic without shipping a general math runtime.
 function parseFormula(expression: string, activeQueryIds: readonly string[]): ParsedFormula {
   const activeIds = new Set(activeQueryIds);
   const symbols = new Set<string>();
@@ -149,7 +149,7 @@ function evaluateTokens(tokens: readonly FormulaToken[], scope: Readonly<Record<
   return stack.length === 1 && Number.isFinite(stack[0]) ? stack[0] : null;
 }
 
-                                                                         
+/** Evaluates a formula against the first series of each metric query. */
 export function evaluateFormula(
   expression: string,
   results: MetricExplorerResults,

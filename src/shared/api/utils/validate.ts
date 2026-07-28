@@ -2,17 +2,17 @@ import type { z } from "zod";
 
 import { decodeApiResponse } from "./decode";
 
-   
-                                                 
-  
-                                                                             
-                                                                             
-                                                                             
-                                                  
-  
-                                                                            
-                                                                        
-   
+/**
+ * Validate an API response against a Zod schema.
+ *
+ * Response schemas are tolerant readers: they strip unknown keys rather than
+ * rejecting them, so a backend adding a field is a non-breaking change. What
+ * a schema still rejects is a *missing* or wrong-typed required field, which
+ * is the direction that corrupts the UI silently.
+ *
+ * Unknown keys are not free, though — they mean the wire has moved ahead of
+ * the schema. We report them (dev console + telemetry) without failing.
+ */
 export function validateResponse<TSchema extends z.ZodTypeAny>(
   schema: TSchema,
   value: unknown
@@ -37,7 +37,7 @@ function reportUnknownKeys(schema: z.ZodTypeAny, value: unknown): void {
   }
 }
 
-                                                                                  
+/** Unwrap optional/nullable/default/catch/transform wrappers to the core type. */
 function unwrap(schema: z.ZodTypeAny): z.ZodTypeAny {
   let current = schema;
   for (let depth = 0; depth < 10; depth += 1) {
@@ -53,11 +53,11 @@ function join(path: string, key: string): string {
   return path === "" ? key : `${path}.${key}`;
 }
 
-   
-                                                                             
-                                                                             
-                                                    
-   
+/**
+ * Walk schema and value together, collecting dotted paths of keys present on
+ * the wire but absent from the schema. Union members are skipped: a key that
+ * is unknown to one member may be known to another.
+ */
 function collectUnknownKeys(schema: z.ZodTypeAny, value: unknown, path: string): string[] {
   const core = unwrap(schema);
   const def = core.def as

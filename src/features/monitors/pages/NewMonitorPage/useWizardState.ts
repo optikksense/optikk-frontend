@@ -23,8 +23,8 @@ const DEFAULT: CreateMonitorPayload = {
   tags: [],
 };
 
-                                                                                
-                                                          
+// Parse the inbound CreateMonitorButton querystring (`?from=traces&filters=…`).
+// Returns prefill scope tags + a default type per source.
 function parsePrefill(): Partial<CreateMonitorPayload> {
   if (typeof window === "undefined") return {};
   const params = new URLSearchParams(window.location.search);

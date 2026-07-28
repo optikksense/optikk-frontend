@@ -4,13 +4,12 @@ import { useAppStore } from "@app/store/appStore";
 
 import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
-   
-                                                                             
-                                                                           
-                                        
-   
 export function attachAuthInterceptor(instance: AxiosInstance): number {
   return instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    if (config.authExempt) {
+      return config;
+    }
+
     const token = session.getAccessToken();
     if (token != null) {
       config.headers.Authorization = `Bearer ${token}`;

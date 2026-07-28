@@ -50,7 +50,7 @@ export function useTraceDetailPage() {
       criticalPathSpanIds: state.enhanced.criticalPathSpanIds,
       errorPathSpanIds: state.enhanced.errorPathSpanIds,
       serviceMap: state.serviceMap.data ?? null,
-      errorGroups: state.traceErrors.data ?? [],
+      errorGroups: state.data.errorGroups,
       spanAttributes: state.enhanced.spanAttributes,
       spanAttributesLoading: state.enhanced.spanAttributesLoading,
       spanEvents: state.enhanced.spanEvents,

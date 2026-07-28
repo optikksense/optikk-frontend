@@ -1,8 +1,8 @@
 import type { QueryDetailSummary } from "@/features/saturation/api/databaseQueryDetailApi";
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
 
-                                                                       
-                                                                               
+// Common shape the header and KPI strip render, filled either from the
+// query-detail summary endpoint or (legacy fallback) a slow-query pattern row.
 export interface QueryDetailView {
   readonly queryText: string;
   readonly collectionName: string;

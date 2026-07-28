@@ -6,19 +6,6 @@ export interface CustomTimeRangeBounds {
   readonly endMs: number;
 }
 
-export interface ResolvedTimeBounds {
-  readonly startTime: number;
-  readonly endTime: number;
-}
-
-   
-                                                                            
-                                         
-   
-export function resolveTimeBounds(timeRange: TimeRange): ResolvedTimeBounds {
-  return resolveTimeRangeBounds(timeRange);
-}
-
 export function shiftTimeRange(
   timeRange: TimeRange,
   direction: "backward" | "forward"
@@ -46,7 +33,7 @@ export function zoomTimeRange(
   const mid = (startTime + endTime) / 2;
 
   if (direction === "in") {
-    const halfNewDur = Math.max(dur / 4, 60_000);                
+    const halfNewDur = Math.max(dur / 4, 60_000);
     return { startMs: Math.round(mid - halfNewDur), endMs: Math.round(mid + halfNewDur) };
   }
 

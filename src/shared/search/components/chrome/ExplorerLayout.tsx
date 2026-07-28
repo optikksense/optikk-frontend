@@ -6,10 +6,10 @@ export interface ExplorerLayoutProps {
   readonly content: ReactNode;
 }
 
-   
-                                                             
-                                                                                                
-   
+/**
+ * Shared layout component for Explorer pages (Logs, Traces).
+ * Enforces a strict grid layout: full-width header on top, left facet rail, right content area.
+ */
 function ExplorerLayoutComponent({ header, facets, content }: ExplorerLayoutProps) {
   return (
     <div className="flex min-h-full flex-col bg-background">

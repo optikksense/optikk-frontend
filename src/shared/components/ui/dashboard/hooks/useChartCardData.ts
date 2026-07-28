@@ -26,9 +26,9 @@ import {
 } from "../utils/dashboardListBuilders";
 import { getDashboardRecordArrayField } from "../utils/runtimeValue";
 
-   
-                                                                                     
-   
+/**
+ * Pure function: maps flat timeseries rows to chart data points based on panel type.
+ */
 function buildFlatChartData(
   timeseriesData: DashboardRecord[],
   chartConfig: DashboardPanelSpec,

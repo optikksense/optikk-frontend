@@ -29,7 +29,7 @@ export interface DashboardPage {
   readonly updatedAt?: string;
 }
 
-                                                                                
+/** A persisted Dashboard (widget): its full definition round-trips via spec. */
 export interface Dashboard {
   readonly id: number;
   readonly pageId: number;

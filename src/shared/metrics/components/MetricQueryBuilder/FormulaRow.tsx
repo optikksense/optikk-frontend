@@ -22,13 +22,19 @@ export function FormulaRow({
   onRemove,
 }: FormulaRowProps) {
   const [focused, setFocused] = useState(false);
+  // While editing, the input is driven by a local draft so typing stays
+  // responsive even when the parent persists the expression asynchronously
+  // (e.g. into router search params).
+  const [draft, setDraft] = useState<string | null>(null);
+  const value = draft ?? expression;
   const error = useMemo(
-    () => validateFormulaExpression(expression, activeQueryIds),
-    [expression, activeQueryIds]
+    () => validateFormulaExpression(value, activeQueryIds),
+    [value, activeQueryIds]
   );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      setDraft(e.target.value);
       onExpressionChange(e.target.value);
     },
     [onExpressionChange]
@@ -44,7 +50,7 @@ export function FormulaRow({
           : "border-border bg-secondary hover:border-border"
       )}
     >
-      {                   }
+      {}
       <div
         className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-semibold text-[11px] text-white"
         style={{ backgroundColor: FORMULA_COLOR }}
@@ -60,10 +66,13 @@ export function FormulaRow({
           </span>
           <input
             type="text"
-            value={expression}
+            value={value}
             onChange={handleChange}
             onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
+            onBlur={() => {
+              setFocused(false);
+              setDraft(null);
+            }}
             placeholder="e.g. a / b * 100"
             className={cn(
               "h-7 flex-1 rounded-md border bg-muted px-2",

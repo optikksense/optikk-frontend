@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
 
 import { Card } from "@shared/components/primitives/ui";
 import { PageShell } from "@shared/components/ui";
@@ -7,6 +6,7 @@ import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import Loading from "@shared/components/ui/feedback/Loading";
 import { formatDuration } from "@shared/utils/formatters";
 
+import { LlmBackLink } from "../../components/LlmBackLink";
 import { useSessionDetail } from "../../hooks/useSessions";
 import { formatCost } from "../../utils/llmFormat";
 
@@ -18,13 +18,7 @@ export default function SessionDetailPage() {
 
   return (
     <PageShell>
-      <button
-        type="button"
-        onClick={() => navigate({ to: "/llm" as string & {} })}
-        className="mb-3 inline-flex items-center gap-1 text-[12px] text-foreground-muted hover:text-foreground"
-      >
-        <ArrowLeft size={14} /> Back to LLM
-      </button>
+      <LlmBackLink tab="sessions" />
 
       {detailQ.isPending ? (
         <Loading />

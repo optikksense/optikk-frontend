@@ -1,6 +1,6 @@
 type DomainRecord = Record<string, unknown>;
 
-                         
+// Metrics Explorer Types
 
 type MetricType = "gauge" | "counter" | "histogram" | "summary";
 

@@ -1,7 +1,7 @@
-   
-                                  
-                                                                        
-   
+/**
+ * Central color literal registry.
+ * Keep raw colors in config only; reference APP_COLORS everywhere else.
+ */
 export const APP_COLORS = {
   hex_00758f: "#00758F",
   hex_00bfb3: "#00BFB3",

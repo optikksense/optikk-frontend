@@ -1,5 +1,5 @@
 import type { TraceRecord } from "@shared/api/traces/schemas";
-import { VisualizationErrorBoundary } from "@shared/components/ui/error-boundary/VisualizationErrorBoundary";
+import { ErrorBoundary } from "@shared/components/ui/feedback";
 import { memo } from "react";
 import type { SpanEvent } from "../../types/detail";
 import { WaterfallTrace } from "./WaterfallTrace";
@@ -17,7 +17,7 @@ interface Props {
 function WaterfallViewComponent(props: Props) {
   return (
     <div className="flex h-full min-h-0 flex-col overflow-auto">
-      <VisualizationErrorBoundary>
+      <ErrorBoundary variant="visualization">
         <WaterfallTrace
           spans={props.spans}
           selectedSpanId={props.selectedSpanId}
@@ -27,7 +27,7 @@ function WaterfallViewComponent(props: Props) {
           search={props.search ?? ""}
           spanEvents={props.spanEvents}
         />
-      </VisualizationErrorBoundary>
+      </ErrorBoundary>
     </div>
   );
 }

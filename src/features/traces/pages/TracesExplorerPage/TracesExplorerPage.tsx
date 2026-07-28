@@ -9,11 +9,6 @@ import { useMemo } from "react";
 import { TracesFacetRail } from "./components/TracesFacetRail";
 import { useTracesExplorerPage } from "./useTracesExplorerPage";
 
-   
-                                                                            
-                                                                           
-                                                               
-   
 export default function TracesExplorerPage() {
   const p = useTracesExplorerPage();
 
@@ -28,11 +23,9 @@ export default function TracesExplorerPage() {
         <>
           <ExplorerHeader
             ref={p.searchInputRef}
-            variant="dsl"
             scope="traces"
             filters={p.state.filters}
             onChangeFilters={(f: readonly ExplorerFilter[]) => p.state.setFilters(f)}
-            onSubmitFreeText={p.onFreeText}
           />
           <SearchTranslationNotice warnings={translationWarnings} />
         </>

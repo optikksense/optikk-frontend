@@ -16,7 +16,7 @@ interface MetricSegmentedControlProps<T extends string> {
   readonly className?: string;
 }
 
-                                                                                  
+/** Inline segmented control matching the metrics explorer view-option styling. */
 export function MetricSegmentedControl<T extends string>({
   options,
   value,

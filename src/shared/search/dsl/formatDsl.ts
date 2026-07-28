@@ -1,6 +1,6 @@
 import type { ExplorerFilter, ExplorerFilterOp } from "../types/filters";
 
-                                                                    
+/** Inverse of parseDsl — renders filters back into a DSL string. */
 export function formatDsl(filters: readonly ExplorerFilter[]): string {
   return filters
     .map(formatFilter)
@@ -8,7 +8,7 @@ export function formatDsl(filters: readonly ExplorerFilter[]): string {
     .join(" ");
 }
 
-                                                                        
+/** Renders one filter as retypeable DSL (also used for chip labels). */
 export function formatFilter(f: ExplorerFilter): string {
   if (f.field === "search") return formatSearch(f);
   const prefix = isNegation(f.op) ? "-" : "";

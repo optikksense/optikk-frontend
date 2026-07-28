@@ -2,7 +2,7 @@ import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-                                                                            
+/** Copies `text` to the clipboard, showing a transient check on success. */
 export function CopyButton({ text }: { readonly text: string }) {
   const [copied, setCopied] = useState(false);
   const onCopy = async (): Promise<void> => {
@@ -26,7 +26,7 @@ export function CopyButton({ text }: { readonly text: string }) {
   );
 }
 
-                                                                            
+/** Read-only, horizontally scrollable code panel with a copy affordance. */
 export function CodeBlock({ code }: { readonly code: string }) {
   return (
     <div className="relative mt-2">
@@ -40,7 +40,7 @@ export function CodeBlock({ code }: { readonly code: string }) {
   );
 }
 
-                                                                         
+/** Underline-style tab strip used to switch between related snippets. */
 export function SnippetTabs({
   tabs,
   activeTab,

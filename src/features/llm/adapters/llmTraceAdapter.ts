@@ -1,8 +1,20 @@
 import type { TraceRecord } from "@shared/api/traces/schemas";
 import type { SpanAttributes } from "@shared/traces/types/detail";
-import type { LlmSpan, LlmTraceDetail } from "../api/llmApi";
+import type { LlmSpan, LlmSpanIO, LlmTraceDetail } from "../api/llmApi";
 
-export function adaptLlmTraceToShared(detail: LlmTraceDetail): {
+const TRUNCATION_MARKER = "\n\n… [truncated — loading full content]";
+
+export interface LlmTraceAdapterOptions {
+  /** Full prompt/completion fetched on demand, keyed by spanId. */
+  spanIO?: Record<string, LlmSpanIO>;
+  /** Invoked when a truncated span is viewed without full content yet. */
+  onSpanIONeeded?: (spanId: string) => void;
+}
+
+export function adaptLlmTraceToShared(
+  detail: LlmTraceDetail,
+  options?: LlmTraceAdapterOptions
+): {
   traceId: string;
   spans: TraceRecord[];
   stats: {
@@ -74,6 +86,15 @@ export function adaptLlmTraceToShared(detail: LlmTraceDetail): {
     const s = spanMap.get(spanId) ?? spansSrc[0];
     if (!s) return null;
 
+    const fullIO = options?.spanIO?.[s.spanId];
+    const isTruncated = Boolean(s.promptTruncated || s.completionTruncated);
+    if (isTruncated && !fullIO) options?.onSpanIONeeded?.(s.spanId);
+
+    let prompt = fullIO?.prompt || s.prompt || detail.prompt;
+    let completion = fullIO?.completion || s.completion || detail.output;
+    if (!fullIO && prompt && s.promptTruncated) prompt += TRUNCATION_MARKER;
+    if (!fullIO && completion && s.completionTruncated) completion += TRUNCATION_MARKER;
+
     const attrStrings: Record<string, string> = {
       "gen_ai.system": s.vendor || "—",
       "gen_ai.request.model": s.model || "—",
@@ -101,8 +122,8 @@ export function adaptLlmTraceToShared(detail: LlmTraceDetail): {
       resourceAttributes: resAttrs,
       attributes: attrStrings,
       exceptionMessage: s.hasError ? "LLM execution returned an error." : undefined,
-      llmPrompt: s.prompt || detail.prompt,
-      llmCompletion: s.completion || detail.output,
+      llmPrompt: prompt,
+      llmCompletion: completion,
       llmVendor: s.vendor,
       llmModel: s.responseModel || s.model,
       llmInputTokens: s.inputTokens,

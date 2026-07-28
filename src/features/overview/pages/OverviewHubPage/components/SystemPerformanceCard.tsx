@@ -6,7 +6,7 @@ import ObservabilityChart, {
 } from "@shared/components/ui/charts/ObservabilityChart";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
 import { tsMs } from "@shared/utils/chartDataUtils";
-import { fmtNum } from "@shared/utils/metricFormatters";
+import { fmtNum } from "@shared/utils/formatters";
 
 import { useSystemPerformanceQuery } from "../hooks/useOverviewModel";
 

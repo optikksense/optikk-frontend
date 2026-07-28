@@ -8,7 +8,7 @@ interface GaugeChartProps {
 }
 
 function getGaugeColor(value: number): string {
-                                                              
+  // For Apdex: higher is better (green), lower is worse (red)
   if (value >= 90) return APP_COLORS.hex_73c991;
   if (value >= 70) return APP_COLORS.hex_f79009;
   return APP_COLORS.hex_f04438;

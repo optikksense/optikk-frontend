@@ -1,5 +1,4 @@
-import { useNavigate, useParams } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { Button, Card, Modal } from "@shared/components/primitives/ui";
@@ -8,6 +7,7 @@ import EmptyState from "@shared/components/ui/feedback/EmptyState";
 import Loading from "@shared/components/ui/feedback/Loading";
 import { formatDuration, formatNumber } from "@shared/utils/formatters";
 
+import { LlmBackLink } from "../../components/LlmBackLink";
 import { Field, SelectInput, TextInput } from "../../components/form";
 import { useDataset, useDatasetMutations } from "../../hooks/useDatasets";
 import { formatCost } from "../../utils/llmFormat";
@@ -23,7 +23,6 @@ function preview(value: unknown): string {
 }
 
 export default function DatasetDetailPage() {
-  const navigate = useNavigate();
   const { datasetId } = useParams({ strict: false });
   const id = Number(datasetId);
   const datasetQ = useDataset(Number.isFinite(id) ? id : null);
@@ -40,13 +39,7 @@ export default function DatasetDetailPage() {
 
   return (
     <PageShell>
-      <button
-        type="button"
-        onClick={() => navigate({ to: "/llm" as string & {} })}
-        className="mb-3 inline-flex items-center gap-1 text-[12px] text-foreground-muted hover:text-foreground"
-      >
-        <ArrowLeft size={14} /> Back to LLM
-      </button>
+      <LlmBackLink tab="datasets" />
 
       {datasetQ.isPending ? (
         <Loading />

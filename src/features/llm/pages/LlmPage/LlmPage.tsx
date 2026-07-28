@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { PageTabs } from "@shared/components/primitives/ui";
 import { PageHeader, PageShell } from "@shared/components/ui";
 
+import { DEFAULT_LLM_TAB, type LlmTab, isLlmTab } from "./llmTabs";
 import DashboardTab from "./tabs/DashboardTab";
 import DatasetsTab from "./tabs/DatasetsTab";
 import EvaluatorsTab from "./tabs/EvaluatorsTab";
@@ -12,17 +13,7 @@ import SessionsTab from "./tabs/SessionsTab";
 import TracesTab from "./tabs/TracesTab";
 import UsersTab from "./tabs/UsersTab";
 
-type TabKey =
-  | "dashboard"
-  | "traces"
-  | "sessions"
-  | "users"
-  | "prompts"
-  | "datasets"
-  | "evaluators"
-  | "playground";
-
-const TABS: Array<{ key: TabKey; label: string }> = [
+const TABS: Array<{ key: LlmTab; label: string }> = [
   { key: "dashboard", label: "Dashboard" },
   { key: "traces", label: "Traces" },
   { key: "sessions", label: "Sessions" },
@@ -34,7 +25,18 @@ const TABS: Array<{ key: TabKey; label: string }> = [
 ];
 
 export default function LlmPage() {
-  const [tab, setTab] = useState<TabKey>("dashboard");
+  const search = useSearch({ from: "/_app/llm/" });
+  const navigate = useNavigate();
+  const tab = search.tab ?? DEFAULT_LLM_TAB;
+
+  const setTab = (key: string) => {
+    const next = isLlmTab(key) ? key : DEFAULT_LLM_TAB;
+    navigate({
+      to: "/llm",
+      search: (prev) => ({ ...prev, tab: next === DEFAULT_LLM_TAB ? undefined : next }),
+      replace: true,
+    });
+  };
 
   return (
     <PageShell>
@@ -42,12 +44,7 @@ export default function LlmPage() {
         title="LLM Observability"
         subtitle="Traces, sessions, users, prompts, datasets, evaluators and a live playground"
       />
-      <PageTabs
-        items={TABS}
-        activeKey={tab}
-        onChange={(key) => setTab(key as TabKey)}
-        className="mb-3"
-      />
+      <PageTabs items={TABS} activeKey={tab} onChange={setTab} className="mb-3" />
       {tab === "dashboard" && <DashboardTab />}
       {tab === "traces" && <TracesTab />}
       {tab === "sessions" && <SessionsTab />}

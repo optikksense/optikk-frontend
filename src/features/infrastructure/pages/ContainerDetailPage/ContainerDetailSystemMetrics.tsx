@@ -1,11 +1,9 @@
-import { Card } from "@shared/components/primitives/ui";
-
 import { type PodMetricGroup, podSeriesEndpoint } from "../../api/podDetailApi";
-import { type ChartDef, SeriesChartCard, availableCharts } from "../../components/SeriesChartCard";
+import type { ChartDef } from "../../components/SeriesChartCard";
+import { DetailMetricsSection } from "../../components/detail/DetailMetricsSection";
 
 interface ContainerDetailSystemMetricsProps {
   readonly pod: string;
-                                                                           
   readonly availableMetrics: readonly string[] | null;
 }
 
@@ -23,39 +21,22 @@ export function ContainerDetailSystemMetrics({
   pod,
   availableMetrics,
 }: ContainerDetailSystemMetricsProps) {
-  const charts = availableCharts(POD_CHARTS, availableMetrics);
   return (
-    <section className="flex flex-col gap-3">
-      <header>
-        <div className="font-semibold text-[13px] text-foreground">Container metrics</div>
-        <div className="text-[11px] text-foreground-muted">
-          {charts.map((c) => c.title.toLowerCase()).join(" · ") || "no container metrics reported"}
-        </div>
-      </header>
-      {charts.length === 0 ? (
-        <Card padding="md" className="border-border">
-          <div className="grid h-[120px] place-items-center text-center text-[12px] text-foreground-muted">
-            <div>
-              This pod is not reporting container metrics in the selected range.
-              <br />
-              Enable the OpenTelemetry <code className="rounded bg-muted px-1">kubeletstats</code>{" "}
-              receiver on the cluster collector to populate CPU, memory, filesystem and network
-              charts.
-            </div>
-          </div>
-        </Card>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {charts.map((def) => (
-            <SeriesChartCard
-              key={def.group}
-              endpoint={podSeriesEndpoint(pod)}
-              queryKeyPrefix={`container-detail.series.${pod}`}
-              def={def}
-            />
-          ))}
-        </div>
-      )}
-    </section>
+    <DetailMetricsSection
+      title="Container metrics"
+      charts={POD_CHARTS}
+      availableMetrics={availableMetrics}
+      endpoint={podSeriesEndpoint(pod)}
+      queryKeyPrefix={`container-detail.series.${pod}`}
+      emptyLabel="no container metrics reported"
+      emptyState={
+        <>
+          This pod is not reporting container metrics in the selected range.
+          <br />
+          Enable the OpenTelemetry <code className="rounded bg-muted px-1">kubeletstats</code>{" "}
+          receiver on the cluster collector to populate CPU, memory, filesystem and network charts.
+        </>
+      }
+    />
   );
 }

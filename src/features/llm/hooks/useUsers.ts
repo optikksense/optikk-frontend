@@ -4,17 +4,17 @@ import { getUsersOverview, queryUsers } from "../api/usersApi";
 import { useLlmRange } from "./useLlmQueries";
 
 export function useUsersOverview() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "users", "overview", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "users", "overview", startTime, endTime],
     queryFn: () => getUsersOverview({ startTime, endTime }),
   });
 }
 
 export function useUsers() {
-  const { tenantId, refreshKey, startTime, endTime } = useLlmRange();
+  const { startTime, endTime } = useLlmRange();
   return useStandardQuery({
-    queryKey: ["llm", "users", "list", tenantId, startTime, endTime, refreshKey],
+    queryKey: ["llm", "users", "list", startTime, endTime],
     queryFn: () => queryUsers({ startTime, endTime }),
   });
 }
