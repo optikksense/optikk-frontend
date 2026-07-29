@@ -128,15 +128,15 @@ export interface TimeRangeSearch {
   readonly tz?: string;
 }
 
-function passthrough(value: unknown): string | number | undefined {
+function sanitizeTimeRangeParam(value: unknown): string | number | undefined {
   return typeof value === "string" || typeof value === "number" ? value : undefined;
 }
 
 /** validateSearch fragment for the global time range. */
 export function pickTimeRangeSearch(search: SearchRecord): TimeRangeSearch {
   return {
-    from: passthrough(search[PARAM_FROM]),
-    to: passthrough(search[PARAM_TO]),
+    from: sanitizeTimeRangeParam(search[PARAM_FROM]),
+    to: sanitizeTimeRangeParam(search[PARAM_TO]),
     tz: typeof search[PARAM_TZ] === "string" ? (search[PARAM_TZ] as string) : undefined,
   };
 }

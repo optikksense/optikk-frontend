@@ -14,6 +14,14 @@ import { getNodes, getNodesSummary } from "../../../api/nodesApi";
 import { InfraHostsFilterBar } from "../../../components/InfraHostsFilterBar";
 import { InfraHostsTable } from "../../../components/InfraHostsTable";
 import type { InfrastructureNode, InfrastructureNodeSummary, MetricValue } from "../../../types";
+import { type NodeHealthTier, tierForErrorRate } from "../../../utils/nodeHealth";
+
+/** `status:` filter tokens offered by the filter bar, mapped to health tiers. */
+const STATUS_TOKEN: Record<string, NodeHealthTier> = {
+  ok: "healthy",
+  warn: "degraded",
+  err: "unhealthy",
+};
 
 export default function HostsTab() {
   const navigate = useNavigate();
@@ -59,11 +67,8 @@ export default function HostsTab() {
         return nodes.filter((n) => n.services.some((s) => s.toLowerCase().includes(tagVal)));
       }
       if (key === "status") {
-        return nodes.filter((n) => {
-          const rate = n.errorRate;
-          const status = rate >= 10 ? "err" : rate >= 2 ? "warn" : "ok";
-          return status === tagVal;
-        });
+        const tier = STATUS_TOKEN[tagVal];
+        return tier ? nodes.filter((n) => tierForErrorRate(n.errorRate) === tier) : nodes;
       }
     }
 
@@ -112,13 +117,12 @@ export default function HostsTab() {
 
       {}
       <div className="min-w-0">
-        {filtered.length === 0 ? (
-          <div className="grid h-[200px] place-items-center rounded-md border border-border bg-card text-[12px] text-foreground-muted">
-            {query.isPending ? "Loading hosts…" : "No hosts match the current filter."}
-          </div>
-        ) : (
-          <InfraHostsTable nodes={filtered} onOpenNode={onOpenNode} />
-        )}
+        <InfraHostsTable
+          nodes={filtered}
+          onOpenNode={onOpenNode}
+          isPending={query.isPending}
+          emptyText="No hosts match the current filter."
+        />
       </div>
     </div>
   );

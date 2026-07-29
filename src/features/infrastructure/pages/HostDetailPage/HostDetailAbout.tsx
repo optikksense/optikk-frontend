@@ -1,3 +1,5 @@
+import { SectionCard } from "@shared/components/ui/layout/SectionCard";
+
 import type { HostAbout } from "../../api/hostDetailApi";
 
 interface HostDetailAboutProps {
@@ -26,8 +28,7 @@ export function HostDetailAbout({ about }: HostDetailAboutProps) {
   const rows = buildRows(about);
   if (rows.length === 0) return null;
   return (
-    <section className="rounded-md border border-border bg-card p-4">
-      <div className="mb-3 font-semibold text-[13px] text-foreground">About this host</div>
+    <SectionCard title="About this host">
       <dl className="grid grid-cols-1 gap-x-8 gap-y-2 text-[12px] sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((row) => (
           <div key={row.label} className="flex items-baseline justify-between gap-3">
@@ -38,6 +39,6 @@ export function HostDetailAbout({ about }: HostDetailAboutProps) {
           </div>
         ))}
       </dl>
-    </section>
+    </SectionCard>
   );
 }

@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 
 import { ROUTES } from "@/shared/constants/routes";
+import { SectionCard } from "@shared/components/ui/layout/SectionCard";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getFleetPods } from "../../api/nodesApi";
@@ -32,17 +33,14 @@ export function HostDetailContainers({ host }: HostDetailContainersProps) {
   };
 
   return (
-    <section className="rounded-md border border-border bg-card p-4">
-      <div className="mb-3 font-semibold text-[13px] text-foreground">Containers on this host</div>
-      {pods.length === 0 ? (
-        <div className="grid h-[120px] place-items-center text-[12px] text-foreground-muted">
-          {podsQ.isPending
-            ? "Loading containers…"
-            : "No containers reported on this host in the current time range."}
-        </div>
-      ) : (
-        <InfraPodsTable pods={pods} onOpenContainer={onOpenContainer} onOpenHost={onOpenHost} />
-      )}
-    </section>
+    <SectionCard title="Containers on this host">
+      <InfraPodsTable
+        pods={pods}
+        onOpenContainer={onOpenContainer}
+        onOpenHost={onOpenHost}
+        isPending={podsQ.isPending}
+        emptyText="No containers reported on this host in the current time range."
+      />
+    </SectionCard>
   );
 }

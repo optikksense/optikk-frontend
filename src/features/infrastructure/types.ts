@@ -11,6 +11,17 @@ export interface InfrastructureNode {
   readonly lastSeen: string;
 }
 
+/** Root-span aggregates per service seen on one host. */
+export interface InfrastructureNodeService {
+  readonly serviceName: string;
+  readonly requestCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly avgLatencyMs: number;
+  readonly p95LatencyMs: number;
+  readonly podCount: number;
+}
+
 export interface InfrastructureNodeSummary {
   readonly healthyNodes: number;
   readonly degradedNodes: number;

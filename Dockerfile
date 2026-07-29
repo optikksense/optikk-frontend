@@ -1,35 +1,33 @@
-# Stage: Serve with NGINX
-FROM nginx:alpine
+# Stage 1: Build static assets
+FROM node:22-alpine AS builder
+WORKDIR /app
 
+# Enable Corepack for Yarn
+RUN corepack enable
 
-# Copy built files
-COPY dist /usr/share/nginx/html
+# Install dependencies deterministically (cached layer)
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
+# Copy source code and build production assets
+COPY . .
+RUN yarn build
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Stage 2: Serve static assets with unprivileged NGINX
+FROM nginxinc/nginx-unprivileged:alpine
 
-# Expose non-privileged ports
+# Copy built static assets from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy NGINX configuration template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+
+# Environment variables for template expansion
+ENV BACKEND_URL="http://query:19090"
+# Filter envsubst to ONLY substitute BACKEND_URL (preserves NGINX variables like $host, $remote_addr)
+ENV NGINX_ENVSUBST_FILTER="BACKEND_URL"
+
 EXPOSE 3000
 
-# Set default backend URL if not provided
-ENV BACKEND_URL="http://query:19090"
-
-# Create startup script to substitute env vars and start nginx
-RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
-    echo 'set -e' >> /docker-entrypoint.sh && \
-    echo 'envsubst '"'"'$BACKEND_URL'"'"' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp' >> /docker-entrypoint.sh && \
-    echo 'mv /etc/nginx/conf.d/default.conf.tmp /etc/nginx/conf.d/default.conf' >> /docker-entrypoint.sh && \
-    echo 'exec nginx -g "daemon off;"' >> /docker-entrypoint.sh && \
-    chmod +x /docker-entrypoint.sh
-
-# Change ownership of nginx directories to the non-root nginx user
-RUN mkdir -p /var/cache/nginx /var/run && \
-    sed -i 's|^pid .*|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf && \
-    chown -R nginx:nginx /var/cache/nginx /var/run /etc/nginx /usr/share/nginx/html /docker-entrypoint.sh && \
-    chmod -R 775 /etc/nginx/conf.d
-
-USER nginx
-
-# Use the startup script as entrypoint
-CMD ["/docker-entrypoint.sh"]
+# Explicit non-root user declaration for static container scanners
+USER 101

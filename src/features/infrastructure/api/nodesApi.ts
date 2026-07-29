@@ -2,39 +2,14 @@ import api from "@/shared/api/http/client";
 import type { RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
 
-import type { FleetPod } from "../types";
+import type {
+  FleetPod,
+  InfrastructureNode,
+  InfrastructureNodeService,
+  InfrastructureNodeSummary,
+} from "../types";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
-
-export interface InfrastructureNode {
-  readonly host: string;
-  readonly podCount: number;
-  readonly containerCount: number;
-  readonly services: readonly string[];
-  readonly requestCount: number;
-  readonly errorCount: number;
-  readonly errorRate: number;
-  readonly avgLatencyMs: number;
-  readonly p95LatencyMs: number;
-  readonly lastSeen: string;
-}
-
-export interface InfrastructureNodeService {
-  readonly serviceName: string;
-  readonly requestCount: number;
-  readonly errorCount: number;
-  readonly errorRate: number;
-  readonly avgLatencyMs: number;
-  readonly p95LatencyMs: number;
-  readonly podCount: number;
-}
-
-export interface InfrastructureNodeSummary {
-  readonly healthyNodes: number;
-  readonly degradedNodes: number;
-  readonly unhealthyNodes: number;
-  readonly totalPods: number;
-}
 
 function range(s: RequestTime, e: RequestTime) {
   return { startTime: s, endTime: e };

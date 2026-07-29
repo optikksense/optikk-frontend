@@ -9,6 +9,8 @@ interface ScopedLogsPanelProps {
   /** Filter field the panel is locked to — `serviceName`, `host`, `pod`, … */
   readonly field: string;
   readonly value: string;
+  /** Rows per page; defaults to the explorer's own page size (100). */
+  readonly pageSize?: number;
 }
 
 /**
@@ -17,14 +19,14 @@ interface ScopedLogsPanelProps {
  * Logs tab and the host/container detail Logs sections; URL filter chips still
  * apply on top of the lock, exactly as on /logs.
  */
-export function ScopedLogsPanel({ field, value }: ScopedLogsPanelProps) {
+export function ScopedLogsPanel({ field, value, pageSize }: ScopedLogsPanelProps) {
   // Identity matters: it feeds the explorer's filter memo and query keys.
   const baseFilters = useMemo<readonly ExplorerFilter[]>(
     () => [{ field, op: "eq", value }],
     [field, value]
   );
 
-  const explorer = useLogsExplorer({ baseFilters, includeFacets: false });
+  const explorer = useLogsExplorer({ baseFilters, includeFacets: false, limit: pageSize });
 
   return (
     <div className="flex min-w-0 flex-col">

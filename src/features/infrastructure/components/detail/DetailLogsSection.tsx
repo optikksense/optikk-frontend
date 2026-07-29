@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 
 import { Button } from "@shared/components/primitives/ui/button";
+import { SectionCard } from "@shared/components/ui/layout/SectionCard";
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 import { ScopedLogsPanel } from "@shared/logs/components/ScopedLogsPanel";
 import {
@@ -13,6 +14,9 @@ const KIND = {
   host: { field: "host", noun: "host", hubFilter: hostEqualsFilter },
   pod: { field: "pod", noun: "pod", hubFilter: podEqualsFilter },
 } as const;
+
+/** A detail page is a narrow, scoped view — smaller pages than the /logs hub. */
+const PAGE_SIZE = 25;
 
 interface DetailLogsSectionProps {
   readonly kind: keyof typeof KIND;
@@ -38,20 +42,16 @@ export function DetailLogsSection({ kind, entity }: DetailLogsSectionProps) {
   };
 
   return (
-    <section className="rounded-md border border-border bg-card p-4">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <div className="font-semibold text-[13px] text-foreground">Logs</div>
-          <div className="text-[11px] text-foreground-muted">
-            Logs from this {noun} in the current time range
-          </div>
-        </div>
+    <SectionCard
+      title="Logs"
+      description={`Logs from this ${noun} in the current time range`}
+      action={
         <Button variant="secondary" size="sm" onClick={openLogs}>
           Open in Logs
         </Button>
-      </div>
-
-      <ScopedLogsPanel field={field} value={entity} />
-    </section>
+      }
+    >
+      <ScopedLogsPanel field={field} value={entity} pageSize={PAGE_SIZE} />
+    </SectionCard>
   );
 }
