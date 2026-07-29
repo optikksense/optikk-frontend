@@ -1,26 +1,46 @@
 import { useMemo } from "react";
 
-import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
+import ObservabilityChart, {
+  type ObservabilityChartSeries,
+} from "@shared/components/ui/charts/ObservabilityChart";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
+import { type StatusTimeseriesPoint, getStatusTimeseries } from "@shared/api/red/redApi";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+import { tsMs } from "@shared/utils/chartDataUtils";
 import { fmtNum } from "@shared/utils/formatters";
-import { pivotByEndpoint, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
+/**
+ * Request rate golden signal — uses `getStatusTimeseries` (same endpoint
+ * as the service drawer) for 100% data consistency across views.
+ */
 export function RequestRateSignal({ serviceName }: { serviceName: string }) {
-  const query = useREDByEndpoint(serviceName);
-  const data = query.data;
+  const query = useTimeRangeQuery<StatusTimeseriesPoint[]>(
+    `service-detail.request-rate:${serviceName}`,
+    (_tenant, start, end) => getStatusTimeseries(start, end, serviceName),
+    { enabled: Boolean(serviceName) }
+  );
 
-  const { timestamps, series } = useMemo(() => pivotByEndpoint(data, (r) => r.rps, false), [data]);
+  const points = query.data ?? [];
 
-  const avg = useMemo(() => {
-    if (timestamps.length === 0) return 0;
-    let total = 0;
-    for (const s of series) {
-      for (const v of s.values) total += v ?? 0;
-    }
-    return total / timestamps.length;
-  }, [series, timestamps]);
+  const { timestamps, series, avg } = useMemo(() => {
+    if (points.length === 0) return { timestamps: [], series: [], avg: 0 };
+
+    const ts = points.map((p) => tsMs(p.timestamp) / 1000);
+    const values = points.map(
+      (p) => (p.status2xx ?? 0) + (p.status4xx ?? 0) + (p.status5xx ?? 0) + (p.statusOther ?? 0)
+    );
+
+    const total = values.reduce((sum, v) => sum + v, 0);
+    const avgVal = values.length > 0 ? total / values.length : 0;
+
+    const chartSeries: ObservabilityChartSeries[] = [
+      { label: "requests", values, color: "var(--chart-1)", fill: false },
+    ];
+
+    return { timestamps: ts, series: chartSeries, avg: avgVal };
+  }, [points]);
 
   return (
     <PanelCard

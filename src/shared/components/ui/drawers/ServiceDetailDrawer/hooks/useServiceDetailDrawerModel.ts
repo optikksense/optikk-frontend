@@ -109,7 +109,7 @@ export function useServiceDetailDrawerModel(
 
   const openFullView = (): void => {
     const path = ROUTES.serviceDetail.replace("$serviceName", encodeURIComponent(serviceName));
-    navigate({ to: path as string & {} });
+    navigate({ to: path as string & {}, search: location.search as never });
   };
 
   const serviceLabel = title?.trim() || serviceName;

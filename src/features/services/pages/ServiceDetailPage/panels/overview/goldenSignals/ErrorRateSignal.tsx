@@ -1,30 +1,50 @@
 import { useMemo } from "react";
 
-import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
+import ObservabilityChart, {
+  type ObservabilityChartSeries,
+} from "@shared/components/ui/charts/ObservabilityChart";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
+import { type ErrorTimeSeriesPoint, getServiceErrorRate } from "@shared/api/errors";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+import { tsMs } from "@shared/utils/chartDataUtils";
 import { fmtPct } from "@shared/utils/formatters";
-import { pivotByEndpoint, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
+/**
+ * Error rate golden signal — uses `getServiceErrorRate` (same endpoint
+ * as the service drawer) for 100% data consistency across views.
+ */
 export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
-  const query = useREDByEndpoint(serviceName);
-  const data = query.data;
-
-  const { timestamps, series } = useMemo(
-    () => pivotByEndpoint(data, (r) => r.errorRate, false),
-    [data]
+  const query = useTimeRangeQuery<ErrorTimeSeriesPoint[]>(
+    `service-detail.error-rate:${serviceName}`,
+    (_tenant, start, end) => getServiceErrorRate(start, end, { serviceName }),
+    { enabled: Boolean(serviceName) }
   );
 
-  const peak = useMemo(() => {
+  const points = query.data ?? [];
+
+  const { timestamps, series, peak } = useMemo(() => {
+    if (points.length === 0) return { timestamps: [], series: [], peak: 0 };
+
+    const ts = points.map((p) => tsMs(p.timestamp) / 1000);
+    const values = points.map((p) => {
+      const requests = p.requestCount ?? 0;
+      const errors = p.errorCount ?? 0;
+      return requests > 0 ? (errors / requests) * 100 : 0;
+    });
+
     let max = 0;
-    for (const s of series) {
-      for (const v of s.values) {
-        if (v != null && v > max) max = v;
-      }
+    for (const v of values) {
+      if (v > max) max = v;
     }
-    return max;
-  }, [series]);
+
+    const chartSeries: ObservabilityChartSeries[] = [
+      { label: "error rate", values, color: "var(--chart-2)", fill: false },
+    ];
+
+    return { timestamps: ts, series: chartSeries, peak: max };
+  }, [points]);
 
   return (
     <PanelCard

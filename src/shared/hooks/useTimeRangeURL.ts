@@ -113,7 +113,7 @@ type SearchRecord = Record<string, unknown>;
 
 /** The router parses numeric params to numbers; normalize back to strings. */
 function paramToString(value: unknown): string | null {
-  if (typeof value === "string") return value;
+  if (typeof value === "string") return value.replace(/^["']+|["']+$/g, "");
   if (typeof value === "number") return String(value);
   return null;
 }

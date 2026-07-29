@@ -1,34 +1,53 @@
 import { useMemo } from "react";
 
-import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
+import ObservabilityChart, {
+  type ObservabilityChartSeries,
+} from "@shared/components/ui/charts/ObservabilityChart";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
+import {
+  type LatencyPercentilesPoint,
+  getLatencyPercentilesTimeseries,
+} from "@shared/api/red/redApi";
+import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
+import { tsMs } from "@shared/utils/chartDataUtils";
 import { fmtMs } from "@shared/utils/formatters";
-import { pivotByEndpoint, useREDByEndpoint } from "../../../hooks/useREDByEndpoint";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
+/**
+ * Latency golden signal — uses `getLatencyPercentilesTimeseries` (same
+ * endpoint as the service drawer) for 100% data consistency across views.
+ */
 export function LatencySignal({ serviceName }: { serviceName: string }) {
-  const query = useREDByEndpoint(serviceName);
-  const data = query.data;
-
-  const { timestamps, series } = useMemo(
-    () => pivotByEndpoint(data, (r) => r.p99Ms, false),
-    [data]
+  const query = useTimeRangeQuery<LatencyPercentilesPoint[]>(
+    `service-detail.latency:${serviceName}`,
+    (_tenant, start, end) => getLatencyPercentilesTimeseries(start, end, serviceName),
+    { enabled: Boolean(serviceName) }
   );
 
-  const latestP99 = useMemo(() => {
+  const points = query.data ?? [];
+
+  const { timestamps, series, latestP99 } = useMemo(() => {
+    if (points.length === 0) return { timestamps: [], series: [], latestP99: 0 };
+
+    const ts = points.map((p) => tsMs(p.timestamp) / 1000);
+    const values = points.map((p) => p.p99Ms);
+
+    // Find the latest non-null p99 value
     let val = 0;
-    for (const s of series) {
-      for (let i = s.values.length - 1; i >= 0; i--) {
-        const v = s.values[i];
-        if (v != null) {
-          if (v > val) val = v;
-          break;
-        }
+    for (let i = values.length - 1; i >= 0; i--) {
+      if (values[i] != null) {
+        val = values[i];
+        break;
       }
     }
-    return val;
-  }, [series]);
+
+    const chartSeries: ObservabilityChartSeries[] = [
+      { label: "p99", values, color: "var(--chart-3)", fill: false },
+    ];
+
+    return { timestamps: ts, series: chartSeries, latestP99: val };
+  }, [points]);
 
   return (
     <PanelCard
