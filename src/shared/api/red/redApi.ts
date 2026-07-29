@@ -222,6 +222,33 @@ export function getLatencyPercentilesTimeseries(
   );
 }
 
+const endpointRateEntrySchema = z.object({
+  operationName: z.string(),
+  rps: z.array(z.number()),
+  // Null marks a bucket where the endpoint served no traffic, which is not the
+  // same as 0% errors or 0ms — charts must render these as gaps.
+  errorRate: z.array(z.number().nullable()),
+  p99Ms: z.array(z.number().nullable()),
+});
+
+const endpointRateSeriesSchema = z.object({
+  timestamps: z.array(z.number()),
+  series: z.array(endpointRateEntrySchema),
+});
+
+export type EndpointRateSeries = z.infer<typeof endpointRateSeriesSchema>;
+
+/** Per-endpoint RED series (rps, error rate, p99) for the golden signal cards. */
+export function getREDByEndpoint(
+  s: RequestTime,
+  e: RequestTime,
+  services?: string | readonly string[],
+  limit?: number
+): Promise<EndpointRateSeries> {
+  const params = buildREDFilters(s, e, services, limit == null ? undefined : { limit });
+  return getJson("/spans/red/red-by-endpoint", params, endpointRateSeriesSchema);
+}
+
 const topEndpointSchema = z.object({
   operationName: z.string(),
   serviceName: z.string(),

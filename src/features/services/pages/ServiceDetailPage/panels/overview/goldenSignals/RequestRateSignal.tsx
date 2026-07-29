@@ -1,46 +1,37 @@
-import { useMemo } from "react";
-
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
 
-import { type StatusTimeseriesPoint, getStatusTimeseries } from "@shared/api/red/redApi";
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { tsMs } from "@shared/utils/chartDataUtils";
+import { getChartColor } from "@shared/utils/charting";
 import { fmtNum } from "@shared/utils/formatters";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
+import { useEndpointRED } from "./useEndpointRED";
 
 /**
- * Request rate golden signal — uses `getStatusTimeseries` (same endpoint
- * as the service drawer) for 100% data consistency across views.
+ * Request rate golden signal — one line per endpoint, from
+ * `red-by-endpoint`. The headline stays the service total so it still
+ * reconciles with the service drawer's aggregate sparkline.
  */
 export function RequestRateSignal({ serviceName }: { serviceName: string }) {
-  const query = useTimeRangeQuery<StatusTimeseriesPoint[]>(
-    `service-detail.request-rate:${serviceName}`,
-    (_tenant, start, end) => getStatusTimeseries(start, end, serviceName),
-    { enabled: Boolean(serviceName) }
-  );
+  const query = useEndpointRED(serviceName);
 
-  const points = query.data ?? [];
+  const timestamps = (query.data?.timestamps ?? []).map((ms) => ms / 1000);
+  const endpoints = query.data?.series ?? [];
 
-  const { timestamps, series, avg } = useMemo(() => {
-    if (points.length === 0) return { timestamps: [], series: [], avg: 0 };
+  const series: ObservabilityChartSeries[] = endpoints.map((endpoint, index) => ({
+    label: endpoint.operationName,
+    values: endpoint.rps,
+    color: getChartColor(index),
+    fill: false,
+  }));
 
-    const ts = points.map((p) => tsMs(p.timestamp) / 1000);
-    const values = points.map(
-      (p) => (p.status2xx ?? 0) + (p.status4xx ?? 0) + (p.status5xx ?? 0) + (p.statusOther ?? 0)
-    );
-
-    const total = values.reduce((sum, v) => sum + v, 0);
-    const avgVal = values.length > 0 ? total / values.length : 0;
-
-    const chartSeries: ObservabilityChartSeries[] = [
-      { label: "requests", values, color: "var(--chart-1)", fill: false },
-    ];
-
-    return { timestamps: ts, series: chartSeries, avg: avgVal };
-  }, [points]);
+  // Service total per bucket, averaged over the window.
+  let total = 0;
+  for (const endpoint of endpoints) {
+    for (const rps of endpoint.rps) total += rps;
+  }
+  const avg = timestamps.length > 0 ? total / timestamps.length : 0;
 
   return (
     <PanelCard

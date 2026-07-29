@@ -1,50 +1,41 @@
-import { useMemo } from "react";
-
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
 
-import { type ErrorTimeSeriesPoint, getServiceErrorRate } from "@shared/api/errors";
 import { PanelCard } from "@shared/components/ui/PanelCard";
-import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { tsMs } from "@shared/utils/chartDataUtils";
+import { getChartColor } from "@shared/utils/charting";
 import { fmtPct } from "@shared/utils/formatters";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
+import { useEndpointRED } from "./useEndpointRED";
 
 /**
- * Error rate golden signal — uses `getServiceErrorRate` (same endpoint
- * as the service drawer) for 100% data consistency across views.
+ * Error rate golden signal — one line per endpoint, from `red-by-endpoint`.
+ * Shares its query with the request rate card, and so shares its inbound-only
+ * span filter: the previous `/errors/service-error-rate` source counted client
+ * and internal spans in the denominator, which made the two cards disagree.
+ *
+ * Null buckets (endpoint served no traffic) stay null so the line breaks
+ * rather than dropping to a misleading 0%.
  */
 export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
-  const query = useTimeRangeQuery<ErrorTimeSeriesPoint[]>(
-    `service-detail.error-rate:${serviceName}`,
-    (_tenant, start, end) => getServiceErrorRate(start, end, { serviceName }),
-    { enabled: Boolean(serviceName) }
-  );
+  const query = useEndpointRED(serviceName);
 
-  const points = query.data ?? [];
+  const timestamps = (query.data?.timestamps ?? []).map((ms) => ms / 1000);
+  const endpoints = query.data?.series ?? [];
 
-  const { timestamps, series, peak } = useMemo(() => {
-    if (points.length === 0) return { timestamps: [], series: [], peak: 0 };
+  const series: ObservabilityChartSeries[] = endpoints.map((endpoint, index) => ({
+    label: endpoint.operationName,
+    values: endpoint.errorRate,
+    color: getChartColor(index),
+    fill: false,
+  }));
 
-    const ts = points.map((p) => tsMs(p.timestamp) / 1000);
-    const values = points.map((p) => {
-      const requests = p.requestCount ?? 0;
-      const errors = p.errorCount ?? 0;
-      return requests > 0 ? (errors / requests) * 100 : 0;
-    });
-
-    let max = 0;
-    for (const v of values) {
-      if (v > max) max = v;
+  let peak = 0;
+  for (const endpoint of endpoints) {
+    for (const rate of endpoint.errorRate) {
+      if (rate != null && rate > peak) peak = rate;
     }
-
-    const chartSeries: ObservabilityChartSeries[] = [
-      { label: "error rate", values, color: "var(--chart-2)", fill: false },
-    ];
-
-    return { timestamps: ts, series: chartSeries, peak: max };
-  }, [points]);
+  }
 
   return (
     <PanelCard

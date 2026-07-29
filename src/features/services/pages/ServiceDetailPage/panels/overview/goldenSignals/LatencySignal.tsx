@@ -52,7 +52,7 @@ export function LatencySignal({ serviceName }: { serviceName: string }) {
   return (
     <PanelCard
       title="Latency"
-      subtitle="p99 · ms · per endpoint"
+      subtitle="p99 · ms · service"
       action={<SignalLegend>p99 {fmtMs(latestP99)}</SignalLegend>}
     >
       <ObservabilityChart
