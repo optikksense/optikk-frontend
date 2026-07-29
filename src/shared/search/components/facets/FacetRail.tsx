@@ -1,15 +1,15 @@
-import type { FacetGroupModel } from "@shared/search/components/facets/FacetGroup";
-import { FacetRailContainer } from "@shared/search/components/facets/FacetRailContainer";
 import { formatNumber } from "@shared/utils/formatters";
 import { getServiceColor } from "@shared/utils/serviceColor";
 import { ExternalLink, Search } from "lucide-react";
 import { useState } from "react";
+import type { FacetGroupModel } from "./FacetGroup";
+import { FacetRailContainer } from "./FacetRailContainer";
 
 interface Props {
-  groups: readonly FacetGroupModel[];
-  onInclude: (field: string, value: string) => void;
-  onClearAll: () => void;
-  activeFilterCount: number;
+  readonly groups: readonly FacetGroupModel[];
+  readonly onInclude: (field: string, value: string) => void;
+  readonly onClearAll: () => void;
+  readonly activeFilterCount: number;
 }
 
 const STATUS_DOT: Record<string, string> = {
@@ -25,7 +25,8 @@ function dotColor(field: string, value: string): string | null {
   return null;
 }
 
-export function TracesFacetRail({ groups, onInclude, onClearAll, activeFilterCount }: Props) {
+/** Facet rail shared by the explorer pages (traces, errors). */
+export function FacetRail({ groups, onInclude, onClearAll, activeFilterCount }: Props) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   return (

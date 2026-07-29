@@ -4,6 +4,7 @@ import api from "@/shared/api/http/client";
 import type { PaginatedResponse, RequestTime } from "@/shared/api/service-types";
 import { API_CONFIG } from "@config/apiConfig";
 import { validateResponse } from "@shared/api/utils/validate";
+import { pageInfoSchema } from "@shared/search/schemas/pageInfo";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -25,7 +26,7 @@ export interface ErrorGroup {
   readonly sampleTraceId: string;
 }
 
-const errorGroupSchema = z.object({
+export const errorGroupSchema = z.object({
   groupId: z.string(),
   serviceName: z.string(),
   operationName: z.string(),
@@ -147,34 +148,12 @@ const errorTimeSeriesPointSchema = z.object({
   avgLatency: z.number().nullish(),
 });
 
-const pageInfoSchema = z.object({
-  hasMore: z.boolean(),
-  nextCursor: optionalString,
-  limit: z.number(),
-});
-
 function paginatedSchema<TSchema extends z.ZodTypeAny>(results: TSchema) {
   return z.object({ results, pageInfo: pageInfoSchema });
 }
 
-interface ErrorListParams {
-  serviceName?: string;
-  limit?: number;
-  cursor?: string;
-  [key: string]: unknown;
-}
-
 function range(s: RequestTime, e: RequestTime, extra?: Record<string, unknown>) {
   return { startTime: s, endTime: e, ...extra };
-}
-
-export async function listErrorGroups(
-  s: RequestTime,
-  e: RequestTime,
-  p?: ErrorListParams
-): Promise<PaginatedResponse<ErrorGroup[]>> {
-  const res = await api.get<unknown>(`${V1}/errors/groups`, { params: range(s, e, p) });
-  return validateResponse(paginatedSchema(z.array(errorGroupSchema)), res);
 }
 
 export async function getErrorGroupDetail(
@@ -235,19 +214,10 @@ export async function getErrorGroupTimeseries(
   return validateResponse(z.array(errorTimeSeriesPointSchema), res ?? []);
 }
 
-export async function getErrorVolume(
-  s: RequestTime,
-  e: RequestTime,
-  p?: ErrorListParams
-): Promise<ErrorTimeSeriesPoint[]> {
-  const res = await api.get<unknown>(`${V1}/errors/error-volume`, { params: range(s, e, p) });
-  return validateResponse(z.array(errorTimeSeriesPointSchema), res ?? []);
-}
-
 export async function getServiceErrorRate(
   s: RequestTime,
   e: RequestTime,
-  p?: ErrorListParams
+  p?: { serviceName?: string }
 ): Promise<ErrorTimeSeriesPoint[]> {
   const res = await api.get<unknown>(`${V1}/errors/service-error-rate`, { params: range(s, e, p) });
   return validateResponse(z.array(errorTimeSeriesPointSchema), res ?? []);

@@ -3,11 +3,11 @@ import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 import { useSearch } from "@tanstack/react-router";
 import { useMemo } from "react";
 
-import type { ExplorerFilter } from "../types/filters";
+import type { ExplorerFilter, ExplorerScope } from "../types/filters";
 import type { ExplorerIncludeFlag, ExplorerQueryRequest } from "../types/queries";
 
 interface UseExplorerQueryArgs<TResponse> {
-  readonly scope: "logs" | "traces";
+  readonly scope: ExplorerScope;
   readonly filters: readonly ExplorerFilter[];
   readonly cursor: string | null;
   readonly limit: number;
@@ -77,7 +77,7 @@ export function useExplorerQuery<TResponse>(args: UseExplorerQueryArgs<TResponse
 }
 
 export interface UseExplorerSubQueryArgs<TResponse> {
-  readonly scope: "logs" | "traces";
+  readonly scope: ExplorerScope;
   readonly subKey: string;
   readonly filters: readonly ExplorerFilter[];
   readonly enabled?: boolean;

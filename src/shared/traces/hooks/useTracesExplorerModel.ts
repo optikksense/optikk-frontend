@@ -1,7 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 import { useAppStore, useResolvedTimeBounds, useTimeRange } from "@app/store/appStore";
+import { useCursorPager } from "@shared/search/hooks/useCursorPager";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 import type { ExplorerIncludeFlag } from "@shared/search/types/queries";
 import { toTrendBuckets } from "@shared/search/utils/trend";
@@ -26,7 +27,6 @@ export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
   const { state, query, facetsQuery, trendQuery, traces, facets, summary, trend } = explorer;
 
   const navigate = useNavigate();
-  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
 
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
   const timeRange = useTimeRange();
@@ -40,14 +40,6 @@ export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
     [setCustomTimeRange]
   );
 
-  const filtersJson = useMemo(() => JSON.stringify(state.filters), [state.filters]);
-  useEffect(() => {
-    if (filtersJson) {
-      setCursorHistory([]);
-      state.setCursor(null);
-    }
-  }, [filtersJson, state.setCursor]);
-
   const onOpenTrace = useCallback(
     (trace: TraceSummary) => {
       navigate({ to: `/traces/${encodeURIComponent(trace.traceId)}` });
@@ -55,23 +47,7 @@ export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
     [navigate]
   );
 
-  const onNextPage = useCallback(() => {
-    if (query.data?.nextCursor) {
-      setCursorHistory((prev) => [...prev, state.cursor || ""]);
-      state.setCursor(query.data.nextCursor);
-    }
-  }, [query.data?.nextCursor, state.cursor, state.setCursor]);
-
-  const onPrevPage = useCallback(() => {
-    setCursorHistory((prev) => {
-      const next = [...prev];
-      const prevCursor = next.pop();
-      if (prevCursor !== undefined) {
-        state.setCursor(prevCursor === "" ? null : prevCursor);
-      }
-      return next;
-    });
-  }, [state.setCursor]);
+  const pager = useCursorPager(state, query.data?.nextCursor);
 
   return {
     state,
@@ -84,10 +60,7 @@ export function useTracesExplorerModel(args: UseTracesExplorerModelArgs = {}) {
     sortedTraces,
     onOpenTrace,
     onTimeRangeChange,
-    onNextPage,
-    onPrevPage,
-    hasPrevPage: cursorHistory.length > 0,
-    hasNextPage: Boolean(query.data?.nextCursor),
+    ...pager,
     zoomed: timeRange.kind === "absolute",
     startTime,
     endTime,

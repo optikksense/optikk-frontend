@@ -4,7 +4,7 @@
  * backend `traces_index` table (one row per completed trace).
  */
 import type { ExplorerFilter } from "@shared/search/types/filters";
-import type { ExplorerIncludeFlag } from "@shared/search/types/queries";
+import type { ExplorerFacetBucket, ExplorerIncludeFlag } from "@shared/search/types/queries";
 
 export interface TraceSummary {
   readonly traceId: string;
@@ -35,13 +35,8 @@ export interface TracesQueryRequest {
   readonly include?: readonly ExplorerIncludeFlag[];
 }
 
-export interface TracesFacetBucket {
-  readonly value: string;
-  readonly count: number;
-}
-
 /** POST /traces/facets, keyed by facet dimension. */
-export type TracesFacets = Readonly<Record<string, readonly TracesFacetBucket[]>>;
+export type TracesFacets = Readonly<Record<string, readonly ExplorerFacetBucket[]>>;
 
 /**
  * POST /traces/query. Mirrors Go explorer.QueryResponse, which carries only

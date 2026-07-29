@@ -2,11 +2,11 @@ import { buildTracesFilters } from "@shared/api/traces/buildTracesFilters";
 import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
 import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
 import { SearchTranslationNotice } from "@shared/search/components/chrome/SearchTranslationNotice";
+import { FacetRail } from "@shared/search/components/facets/FacetRail";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 import { TracesExplorerContent } from "@shared/traces/components/TracesExplorerContent";
 import { useMemo } from "react";
 
-import { TracesFacetRail } from "./components/TracesFacetRail";
 import { useTracesExplorerPage } from "./useTracesExplorerPage";
 
 export default function TracesExplorerPage() {
@@ -31,7 +31,7 @@ export default function TracesExplorerPage() {
         </>
       }
       facets={
-        <TracesFacetRail
+        <FacetRail
           groups={p.facetGroups}
           onInclude={p.onInclude}
           activeFilterCount={p.state.filters.length}

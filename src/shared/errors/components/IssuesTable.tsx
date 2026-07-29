@@ -91,17 +91,14 @@ const columns: ColumnDef<ErrorGroup>[] = [
 ];
 
 interface IssuesTableProps {
-  readonly rows: ErrorGroup[];
+  readonly rows: readonly ErrorGroup[];
   readonly onOpen: (groupId: string) => void;
 }
 
 export function IssuesTable({ rows, onOpen }: IssuesTableProps): JSX.Element {
   return (
     <DataTable
-      data={{
-        columns,
-        rows,
-      }}
+      data={{ columns, rows: [...rows] }}
       config={{
         onRow: (record) => ({
           onClick: () => onOpen(record.groupId),

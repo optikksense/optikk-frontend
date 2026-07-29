@@ -1,21 +1,25 @@
 import { KpiCard } from "@shared/components/ui/cards/StatCard";
+import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
 import { formatNumber } from "@shared/utils/formatters";
 
-import { SparklineCell } from "@shared/components/ui/charts/micro/SparklineCell";
+import type { ErrorsOverview } from "../api/types";
 
-export interface ErrorsKpis {
-  readonly totalErrors: number;
-
-  readonly totalErrorsSeries: number[];
-
-  readonly activeIssues: number;
-
-  readonly newIssues: number;
-
-  readonly servicesAffected: number;
+interface ErrorsKpiStripProps {
+  readonly summary: ErrorsOverview["summary"] | undefined;
+  readonly trend: ErrorsOverview["trend"] | undefined;
 }
 
-export function ErrorsKpiStrip({ kpis }: { kpis: ErrorsKpis }): JSX.Element {
+const EMPTY_SUMMARY: ErrorsOverview["summary"] = {
+  totalErrors: 0,
+  activeIssues: 0,
+  newIssues: 0,
+  servicesAffected: 0,
+};
+
+export function ErrorsKpiStrip({ summary, trend }: ErrorsKpiStripProps): JSX.Element {
+  const kpis = summary ?? EMPTY_SUMMARY;
+  const series = trend?.map((b) => b.errors) ?? [];
+
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <KpiCard
@@ -24,9 +28,9 @@ export function ErrorsKpiStrip({ kpis }: { kpis: ErrorsKpis }): JSX.Element {
         subtext="selected range"
         tone="err"
         sparkline={
-          kpis.totalErrorsSeries.length >= 2 ? (
+          series.length >= 2 ? (
             <SparklineCell
-              values={kpis.totalErrorsSeries}
+              values={series}
               tone="err"
               width={80}
               height={24}

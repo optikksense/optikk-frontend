@@ -4,7 +4,7 @@ import { PageShell, PageSurface } from "@shared/components/ui/layout/PageShell";
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
 
 import { ServiceHeroHeader } from "./hero/ServiceHeroHeader";
-import { useServiceErrors } from "./hooks/useServiceErrors";
+import { useServiceErrorCount } from "./hooks/useServiceErrorCount";
 import { useServiceHeroData } from "./hooks/useServiceHeroData";
 import { useServiceHosts } from "./hooks/useServiceHosts";
 import { ServiceKpiStrip } from "./kpi/ServiceKpiStrip";
@@ -30,12 +30,12 @@ function useTabCounts(serviceName: string): {
   instanceCount: number | null;
 } {
   const hostsQ = useServiceHosts(serviceName);
-  const errorsQ = useServiceErrors(serviceName);
+  const errorCount = useServiceErrorCount(serviceName);
   return useMemo(() => {
     const counts: Partial<Record<ServiceTabId, number>> = {};
-    if (errorsQ.data?.results) counts.errors = errorsQ.data.results.length;
+    if (errorCount !== null) counts.errors = errorCount;
     return { counts, instanceCount: hostsQ.data?.length ?? null };
-  }, [hostsQ.data, errorsQ.data]);
+  }, [hostsQ.data, errorCount]);
 }
 
 function ServiceDetailBody({ serviceName }: { serviceName: string }) {

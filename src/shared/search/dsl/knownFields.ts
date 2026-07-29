@@ -248,6 +248,45 @@ const LOG_KNOWN_FIELDS: readonly KnownField[] = [
   },
 ];
 
+/**
+ * Errors are spans with `is_error = 1`, so the scope reuses the span fields
+ * that still discriminate between error groups, plus the two that only exist
+ * on an error: its status message and its exception class.
+ */
+const ERROR_SPAN_FIELD_KEYS = new Set([
+  "service",
+  "operation",
+  "httpStatus",
+  "environment",
+  "peerService",
+  "traceId",
+  "durationMs",
+]);
+
+const ERROR_KNOWN_FIELDS: readonly KnownField[] = [
+  ...TRACE_KNOWN_FIELDS.filter((f) => ERROR_SPAN_FIELD_KEYS.has(f.key)),
+  {
+    key: "message",
+    label: "Message",
+    type: "string",
+    ops: TEXT_OPS,
+    category: "Common",
+    description: "Free-text search across the error status message",
+    typeBadge: "TXT",
+    icon: "body",
+  },
+  {
+    key: "exceptionType",
+    label: "Exception type",
+    type: "string",
+    ops: STRING_OPS,
+    category: "Common",
+    description: "Exception / error class name",
+    typeBadge: "STR",
+    icon: "field",
+  },
+];
+
 export const CATEGORY_ORDER: readonly FieldCategory[] = [
   "Common",
   "Identifiers",
@@ -255,39 +294,11 @@ export const CATEGORY_ORDER: readonly FieldCategory[] = [
   "Attributes",
 ];
 
-export function knownFieldsForScope(scope: ExplorerScope | undefined): readonly KnownField[] {
-  return scope === "logs" ? LOG_KNOWN_FIELDS : TRACE_KNOWN_FIELDS;
-}
-
 export function findKnownField(
   key: string,
   fields: readonly KnownField[] = TRACE_KNOWN_FIELDS
 ): KnownField | undefined {
   return fields.find((f) => f.key === key);
-}
-
-const SUGGESTABLE_TRACE_FIELDS = new Set([
-  "service",
-  "operation",
-  "httpMethod",
-  "httpStatus",
-  "status",
-  "environment",
-]);
-
-const SUGGESTABLE_LOG_FIELDS = new Set([
-  "serviceName",
-  "severityText",
-  "host",
-  "pod",
-  "container",
-  "environment",
-]);
-
-export function suggestableScalarFieldsForScope(
-  scope: ExplorerScope | undefined
-): ReadonlySet<string> {
-  return scope === "logs" ? SUGGESTABLE_LOG_FIELDS : SUGGESTABLE_TRACE_FIELDS;
 }
 
 export interface OperatorOption {
@@ -341,9 +352,16 @@ const QUICK_TEMPLATES_TRACES: readonly QuickTemplate[] = [
   { label: "By service", query: "service:", description: "Filter by service — type a name" },
 ];
 
-export function quickTemplatesForScope(scope: ExplorerScope | undefined): readonly QuickTemplate[] {
-  return scope === "logs" ? QUICK_TEMPLATES_LOGS : QUICK_TEMPLATES_TRACES;
-}
+const QUICK_TEMPLATES_ERRORS: readonly QuickTemplate[] = [
+  {
+    label: "5xx responses",
+    query: "httpStatus:(500 OR 502 OR 503 OR 504)",
+    description: "Server-error responses",
+  },
+  { label: "By service", query: "service:", description: "Filter by service — type a name" },
+  { label: "By exception", query: "exceptionType:", description: "Filter by exception class" },
+  { label: "Message contains", query: '"timeout"', description: "Free-text message search" },
+];
 
 const SYNTAX_EXAMPLES_LOGS: readonly QuickTemplate[] = [
   { label: "Exclude", query: "-severityText:INFO", description: "Leading - negates a filter" },
@@ -375,8 +393,86 @@ const SYNTAX_EXAMPLES_TRACES: readonly QuickTemplate[] = [
   },
 ];
 
+const SYNTAX_EXAMPLES_ERRORS: readonly QuickTemplate[] = [
+  { label: "Exclude", query: "-service:noisy-svc", description: "Leading - negates a filter" },
+  { label: "Any of", query: "httpStatus:(500 OR 503)", description: "Match any listed value" },
+  { label: "Message", query: 'message:"deadline"', description: "Substring of the error message" },
+  {
+    label: "Has attribute",
+    query: "@user.id:*",
+    description: ":* matches when the attribute exists",
+  },
+];
+
+/**
+ * Everything the search bar needs to know about one scope. Adding a scope is
+ * one entry here — the bar, the parser and the suggestions read from it.
+ */
+interface ScopeDsl {
+  readonly fields: readonly KnownField[];
+  /** Fields the backend can suggest values for; the rest stay free-text. */
+  readonly suggestable: ReadonlySet<string>;
+  readonly templates: readonly QuickTemplate[];
+  readonly syntax: readonly QuickTemplate[];
+}
+
+const SCOPE_DSL: Readonly<Record<ExplorerScope, ScopeDsl>> = {
+  logs: {
+    fields: LOG_KNOWN_FIELDS,
+    suggestable: new Set([
+      "serviceName",
+      "severityText",
+      "host",
+      "pod",
+      "container",
+      "environment",
+    ]),
+    templates: QUICK_TEMPLATES_LOGS,
+    syntax: SYNTAX_EXAMPLES_LOGS,
+  },
+  traces: {
+    fields: TRACE_KNOWN_FIELDS,
+    suggestable: new Set([
+      "service",
+      "operation",
+      "httpMethod",
+      "httpStatus",
+      "status",
+      "environment",
+    ]),
+    templates: QUICK_TEMPLATES_TRACES,
+    syntax: SYNTAX_EXAMPLES_TRACES,
+  },
+  errors: {
+    fields: ERROR_KNOWN_FIELDS,
+    // Errors resolve values through the traces suggest endpoint, which knows
+    // only these scalar span columns.
+    suggestable: new Set(["service", "operation", "httpStatus", "environment"]),
+    templates: QUICK_TEMPLATES_ERRORS,
+    syntax: SYNTAX_EXAMPLES_ERRORS,
+  },
+};
+
+function scopeDsl(scope: ExplorerScope | undefined): ScopeDsl {
+  return SCOPE_DSL[scope ?? "traces"];
+}
+
+export function knownFieldsForScope(scope: ExplorerScope | undefined): readonly KnownField[] {
+  return scopeDsl(scope).fields;
+}
+
+export function suggestableScalarFieldsForScope(
+  scope: ExplorerScope | undefined
+): ReadonlySet<string> {
+  return scopeDsl(scope).suggestable;
+}
+
+export function quickTemplatesForScope(scope: ExplorerScope | undefined): readonly QuickTemplate[] {
+  return scopeDsl(scope).templates;
+}
+
 export function syntaxExamplesForScope(scope: ExplorerScope | undefined): readonly QuickTemplate[] {
-  return scope === "logs" ? SYNTAX_EXAMPLES_LOGS : SYNTAX_EXAMPLES_TRACES;
+  return scopeDsl(scope).syntax;
 }
 
 export const POPULAR_ATTRIBUTE_KEYS: readonly { key: string; description: string }[] = [

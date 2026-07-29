@@ -1,8 +1,8 @@
 import type { TraceSummary } from "@shared/api/traces/types";
 import { useMemo } from "react";
 
+import { ExplorerTableFooter } from "@shared/search/components/chrome/ExplorerTableFooter";
 import { TraceRow } from "./TraceRow";
-import { TracesTableFooter } from "./TracesTableFooter";
 
 interface Props {
   traces: readonly TraceSummary[];
@@ -96,7 +96,7 @@ export function TracesTable({
         </tbody>
       </table>
 
-      <TracesTableFooter
+      <ExplorerTableFooter
         rowCount={traces.length}
         onNextPage={onNextPage}
         onPrevPage={onPrevPage}

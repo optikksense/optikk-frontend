@@ -1,0 +1,48 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import type { ExplorerStateApi } from "./useExplorerState";
+
+/**
+ * Forward/back paging over an opaque backend cursor kept in the URL.
+ *
+ * The API only hands out the *next* cursor, so stepping back means
+ * remembering the cursors already visited. Changing the filters invalidates
+ * that trail and returns to page one.
+ */
+export function useCursorPager(state: ExplorerStateApi, nextCursor: string | null | undefined) {
+  const [history, setHistory] = useState<string[]>([]);
+  const { cursor, setCursor, filters } = state;
+
+  const filtersKey = JSON.stringify(filters);
+  // A cursor arriving in the URL belongs to the filters it shipped with, so
+  // only a *change* of filters resets paging — never the first render.
+  const lastFiltersKey = useRef(filtersKey);
+  useEffect(() => {
+    if (lastFiltersKey.current === filtersKey) return;
+    lastFiltersKey.current = filtersKey;
+    setHistory([]);
+    setCursor(null);
+  }, [filtersKey, setCursor]);
+
+  const onNextPage = useCallback(() => {
+    if (!nextCursor) return;
+    setHistory((prev) => [...prev, cursor ?? ""]);
+    setCursor(nextCursor);
+  }, [nextCursor, cursor, setCursor]);
+
+  const onPrevPage = useCallback(() => {
+    setHistory((prev) => {
+      const next = [...prev];
+      const previous = next.pop();
+      if (previous !== undefined) setCursor(previous === "" ? null : previous);
+      return next;
+    });
+  }, [setCursor]);
+
+  return {
+    onNextPage,
+    onPrevPage,
+    hasNextPage: Boolean(nextCursor),
+    hasPrevPage: history.length > 0,
+  };
+}
