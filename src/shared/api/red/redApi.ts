@@ -197,24 +197,8 @@ const latencyPercentilesPointSchema = z.object({
   p99Ms: z.number(),
 });
 
-// Columnar shape: unix-ms timestamps shared by every endpoint entry.
-// Null errorRate/p99Ms cells mean the endpoint had no traffic in that bucket.
-const endpointRateSeriesSchema = z.object({
-  timestamps: z.array(z.number()),
-  series: z.array(
-    z.object({
-      operationName: z.string(),
-      rps: z.array(z.number()),
-      errorRate: z.array(z.number().nullable()),
-      p99Ms: z.array(z.number().nullable()),
-    })
-  ),
-});
-
 export type StatusTimeseriesPoint = z.infer<typeof statusTimeseriesPointSchema>;
 export type LatencyPercentilesPoint = z.infer<typeof latencyPercentilesPointSchema>;
-export type EndpointRateSeries = z.infer<typeof endpointRateSeriesSchema>;
-export type EndpointRateEntry = EndpointRateSeries["series"][number];
 
 export function getStatusTimeseries(
   s: RequestTime,
@@ -223,15 +207,6 @@ export function getStatusTimeseries(
 ): Promise<StatusTimeseriesPoint[]> {
   const params = buildREDFilters(s, e, services);
   return getJson("/spans/red/status-timeseries", params, z.array(statusTimeseriesPointSchema));
-}
-
-export function getREDByEndpoint(
-  s: RequestTime,
-  e: RequestTime,
-  services?: string | readonly string[]
-): Promise<EndpointRateSeries> {
-  const params = buildREDFilters(s, e, services);
-  return getJson("/spans/red/red-by-endpoint", params, endpointRateSeriesSchema);
 }
 
 export function getLatencyPercentilesTimeseries(

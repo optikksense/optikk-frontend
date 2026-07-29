@@ -4,8 +4,8 @@ import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
 
-import { PanelCard } from "@shared/components/ui/PanelCard";
 import { type StatusTimeseriesPoint, getStatusTimeseries } from "@shared/api/red/redApi";
+import { PanelCard } from "@shared/components/ui/PanelCard";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { tsMs } from "@shared/utils/chartDataUtils";
 import { fmtNum } from "@shared/utils/formatters";

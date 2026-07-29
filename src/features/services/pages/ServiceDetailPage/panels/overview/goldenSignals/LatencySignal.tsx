@@ -4,11 +4,11 @@ import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
 
-import { PanelCard } from "@shared/components/ui/PanelCard";
 import {
   type LatencyPercentilesPoint,
   getLatencyPercentilesTimeseries,
 } from "@shared/api/red/redApi";
+import { PanelCard } from "@shared/components/ui/PanelCard";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 import { tsMs } from "@shared/utils/chartDataUtils";
 import { fmtMs } from "@shared/utils/formatters";
