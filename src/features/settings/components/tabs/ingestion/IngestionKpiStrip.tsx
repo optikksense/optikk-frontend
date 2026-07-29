@@ -1,7 +1,7 @@
 import { KpiCard } from "@shared/components/ui/cards/StatCard";
 
-import type { IngestionSummary } from "../../api/ingestionApi";
-import { type IngestionUnit, fmtValue } from "../../utils/format";
+import type { IngestionSummary } from "../../../api/ingestionApi";
+import { type IngestionUnit, fmtValue } from "./format";
 
 interface Props {
   readonly summary: IngestionSummary | undefined;

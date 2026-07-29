@@ -118,6 +118,29 @@ function paramToString(value: unknown): string | null {
   return null;
 }
 
+/**
+ * The global time-range params. Every route that defines `validateSearch`
+ * must spread `pickTimeRangeSearch` so in-route navigations preserve them.
+ */
+export interface TimeRangeSearch {
+  readonly from?: string | number;
+  readonly to?: string | number;
+  readonly tz?: string;
+}
+
+function passthrough(value: unknown): string | number | undefined {
+  return typeof value === "string" || typeof value === "number" ? value : undefined;
+}
+
+/** validateSearch fragment for the global time range. */
+export function pickTimeRangeSearch(search: SearchRecord): TimeRangeSearch {
+  return {
+    from: passthrough(search[PARAM_FROM]),
+    to: passthrough(search[PARAM_TO]),
+    tz: typeof search[PARAM_TZ] === "string" ? (search[PARAM_TZ] as string) : undefined,
+  };
+}
+
 function readUrl(search: SearchRecord): UrlTimeState {
   return {
     from: paramToString(search[PARAM_FROM]),

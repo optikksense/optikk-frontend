@@ -5,9 +5,10 @@ import ObservabilityChart, {
 } from "@shared/components/ui/charts/ObservabilityChart";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
+import { MetricSegmentedControl } from "@shared/metrics/components/MetricSegmentedControl";
 
-import type { IngestionTimeseries, TimeseriesSeries } from "../../api/ingestionApi";
-import { type IngestionUnit, SERVICE_PALETTE, SIGNAL_COLORS, fmtValue } from "../../utils/format";
+import type { IngestionTimeseries, TimeseriesSeries } from "../../../api/ingestionApi";
+import { type IngestionUnit, SERVICE_PALETTE, SIGNAL_COLORS, fmtValue } from "./format";
 
 type GroupBy = "type" | "service";
 
@@ -48,10 +49,10 @@ function stackSeries(
     .reverse();
 }
 
-const TOGGLE: { id: GroupBy; label: string }[] = [
-  { id: "type", label: "By type" },
-  { id: "service", label: "By service" },
-];
+const GROUP_BY_OPTIONS = [
+  { value: "type", label: "By type" },
+  { value: "service", label: "By service" },
+] as const satisfies ReadonlyArray<{ value: GroupBy; label: string }>;
 
 interface IngestedVolumeChartProps {
   readonly unit: IngestionUnit;
@@ -74,30 +75,18 @@ export function IngestedVolumeChart({
   const timestamps = useMemo(() => (data?.dates ?? []).map(dateToSeconds), [data?.dates]);
   const series = useMemo(() => stackSeries(data?.series ?? [], unit), [data?.series, unit]);
 
-  const toggle = (
-    <div className="inline-flex gap-0.5 rounded-md bg-secondary p-0.5">
-      {TOGGLE.map((opt) => (
-        <button
-          key={opt.id}
-          type="button"
-          onClick={() => setGroupBy(opt.id)}
-          className={`rounded px-2.5 py-1 font-semibold text-[12px] transition-colors ${
-            groupBy === opt.id
-              ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
-              : "text-foreground-muted hover:text-foreground"
-          }`}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  );
-
   return (
     <PanelCard
       title="Ingested volume"
       subtitle={`${unit === "bytes" ? "bytes" : "records"} per day · stacked · current month to date`}
-      action={toggle}
+      action={
+        <MetricSegmentedControl
+          options={GROUP_BY_OPTIONS}
+          value={groupBy}
+          onChange={setGroupBy}
+          size="sm"
+        />
+      }
     >
       {isError ? (
         <div className="grid h-[320px] place-items-center text-[12px] text-foreground-muted">

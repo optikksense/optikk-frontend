@@ -55,26 +55,6 @@ export function formatTimestamp(timestamp: number | string | Date, tz = "local")
   }
 }
 
-export function formatTime(timestamp: number | string | Date, tz = "local"): string {
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return "—";
-
-  const opts: Intl.DateTimeFormatOptions = {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-    fractionalSecondDigits: 3,
-  };
-  if (tz !== "local") opts.timeZone = tz;
-
-  try {
-    return new Intl.DateTimeFormat("sv-SE", opts).format(date);
-  } catch {
-    return date.toLocaleTimeString();
-  }
-}
-
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return "0B";
   const k = 1024;

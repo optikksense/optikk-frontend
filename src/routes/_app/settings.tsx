@@ -1,29 +1,14 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
-type SettingsSearch = {
-  tab?: string;
-  // Global time-range params (owned by useTimeRangeURL) pass through so
-  // in-route navigations preserve them.
-  from?: string | number;
-  to?: string | number;
-  tz?: string;
-};
+import { type TimeRangeSearch, pickTimeRangeSearch } from "@shared/hooks/useTimeRangeURL";
+import { asSearchString } from "@shared/search/utils/urlState";
 
-function passthrough(value: unknown): string | number | undefined {
-  return typeof value === "string" || typeof value === "number" ? value : undefined;
-}
+/** Settings state: `tab` selects profile/tenant/instrumentation/ingestion/members. */
+export type SettingsSearch = TimeRangeSearch & { tab?: string };
 
 export const Route = createFileRoute("/_app/settings")({
   validateSearch: (search: Record<string, unknown>): SettingsSearch => ({
-    tab: typeof search.tab === "string" ? search.tab : undefined,
-    from: passthrough(search.from),
-    to: passthrough(search.to),
-    tz: typeof search.tz === "string" ? search.tz : undefined,
+    ...pickTimeRangeSearch(search),
+    tab: asSearchString(search.tab),
   }),
-  beforeLoad: ({ search }) => {
-    // Ingestion was promoted from a settings tab to its own page.
-    if (search.tab === "ingestion") {
-      throw redirect({ to: "/ingestion", replace: true });
-    }
-  },
 });

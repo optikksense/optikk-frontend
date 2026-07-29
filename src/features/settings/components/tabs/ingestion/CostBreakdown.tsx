@@ -1,7 +1,7 @@
 import { PanelCard } from "@shared/components/ui/PanelCard";
 
-import type { CostLine, IngestionCost } from "../../api/ingestionApi";
-import { fmtMoney } from "../../utils/format";
+import type { CostLine, IngestionCost } from "../../../api/ingestionApi";
+import { fmtMoney } from "./format";
 
 interface Props {
   readonly cost: IngestionCost | undefined;

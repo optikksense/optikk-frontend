@@ -12,6 +12,7 @@ import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
 import type { LogRecord } from "@shared/logs/types/log";
 
 import type { useLogsExplorer } from "../hooks/useLogsExplorer";
+import { LogDetailDrawer } from "./detail/LogDetailDrawer";
 import { LogsTrendChart } from "./trend/LogsTrendChart";
 
 function extractSearchTerm(filters: readonly ExplorerFilter[]): string | undefined {
@@ -42,6 +43,9 @@ export function LogsExplorerContent({ explorer }: LogsExplorerContentProps) {
   );
 
   const results = list.results;
+  // Drives the drawer's prev/next arrows within the loaded page.
+  const detailIndex = state.detail ? results.findIndex((r) => r.id === state.detail) : -1;
+  const closeDetail = useCallback(() => state.setDetail(null), [state]);
 
   return (
     <>
@@ -93,6 +97,18 @@ export function LogsExplorerContent({ explorer }: LogsExplorerContentProps) {
           ) : null}
         </div>
       </div>
+
+      <LogDetailDrawer
+        logId={state.detail ?? ""}
+        open={Boolean(state.detail)}
+        onClose={closeDetail}
+        onPrev={detailIndex > 0 ? () => state.setDetail(results[detailIndex - 1].id) : undefined}
+        onNext={
+          detailIndex >= 0 && detailIndex < results.length - 1
+            ? () => state.setDetail(results[detailIndex + 1].id)
+            : undefined
+        }
+      />
     </>
   );
 }

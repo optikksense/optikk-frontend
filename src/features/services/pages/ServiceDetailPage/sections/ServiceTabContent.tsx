@@ -1,7 +1,8 @@
+import { ScopedLogsPanel } from "@shared/logs/components/ScopedLogsPanel";
+
 import type { ServiceTabId } from "../tabs/useActiveServiceTab";
 import { DependenciesTabPanel } from "./DependenciesTabPanel";
 import { ErrorsTabPanel } from "./ErrorsTabPanel";
-import { LogsTabPanel } from "./LogsTabPanel";
 import { OverviewTabPanel } from "./OverviewTabPanel";
 import { TracesTabPanel } from "./TracesTabPanel";
 
@@ -19,7 +20,7 @@ export function ServiceTabContent({ tab, serviceName }: ServiceTabContentProps) 
     case "traces":
       return <TracesTabPanel serviceName={serviceName} />;
     case "logs":
-      return <LogsTabPanel serviceName={serviceName} />;
+      return <ScopedLogsPanel field="serviceName" value={serviceName} />;
     case "dependencies":
       return <DependenciesTabPanel serviceName={serviceName} />;
     default:

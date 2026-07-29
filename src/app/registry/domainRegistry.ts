@@ -2,7 +2,6 @@ import { cloudConfig } from "@/features/cloud";
 import { dashboardsConfig } from "@/features/dashboards";
 import { errorsConfig } from "@/features/errors";
 import { infrastructureConfig } from "@/features/infrastructure";
-import { ingestionConfig } from "@/features/ingestion";
 import { llmConfig } from "@/features/llm";
 import { logsConfig } from "@/features/logs";
 import { metricsConfig } from "@/features/metrics";
@@ -39,7 +38,6 @@ const domainRegistry: readonly DomainConfig[] = [
   infrastructureConfig,
   cloudConfig,
   monitorsConfig,
-  ingestionConfig,
   dashboardsConfig,
 ] as const;
 

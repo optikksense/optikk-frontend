@@ -4,14 +4,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
 
-import type { IngestionServiceRow, IngestionServices } from "../../api/ingestionApi";
-import {
-  type IngestionUnit,
-  SERVICE_PALETTE,
-  SIGNAL_COLORS,
-  fmtCount,
-  fmtValue,
-} from "../../utils/format";
+import type { IngestionServiceRow, IngestionServices } from "../../../api/ingestionApi";
+import { type IngestionUnit, SERVICE_PALETTE, SIGNAL_COLORS, fmtCount, fmtValue } from "./format";
 
 interface Props {
   readonly data: IngestionServices | undefined;

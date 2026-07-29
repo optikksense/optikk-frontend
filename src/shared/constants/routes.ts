@@ -34,8 +34,6 @@ export const ROUTES = {
   saturationDatabaseQuery: "/saturation/database/query/$queryId",
   saturationKafkaOverview: "/saturation/kafka",
 
-  ingestion: "/ingestion",
-
   cloud: "/cloud",
 
   monitors: "/monitors",

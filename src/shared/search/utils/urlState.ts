@@ -54,6 +54,11 @@ export function asUrlParamString(value: unknown): string | undefined {
   return undefined;
 }
 
+/** Non-empty string search params (`tab`, `status`, …), for validateSearch. */
+export function asSearchString(value: unknown): string | undefined {
+  return typeof value === "string" && value !== "" ? value : undefined;
+}
+
 /** validateSearch fragment for routes that host the explorer. */
 export function pickExplorerSearch(search: Record<string, unknown>): ExplorerUrlSearch {
   return {

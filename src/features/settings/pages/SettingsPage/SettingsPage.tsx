@@ -1,9 +1,10 @@
 import { Tabs } from "@shared/components/primitives/ui/tabs";
-import { Settings, Terminal, User, Users, UsersRound } from "lucide-react";
+import { DatabaseZap, Settings, Terminal, User, Users, UsersRound } from "lucide-react";
 
 import PageHeader from "@shared/components/ui/layout/PageHeader";
 import { PageShell } from "@shared/components/ui/layout/PageShell";
 
+import SettingsIngestionTab from "../../components/tabs/SettingsIngestionTab";
 import SettingsInstrumentationTab from "../../components/tabs/SettingsInstrumentationTab";
 import SettingsMembersTab from "../../components/tabs/SettingsMembersTab";
 import SettingsProfileTab from "../../components/tabs/SettingsProfileTab";
@@ -29,6 +30,7 @@ export default function SettingsPage() {
     { key: "profile", label: "Profile", icon: <User size={14} /> },
     { key: "tenant", label: "Tenant", icon: <Users size={14} /> },
     { key: "instrumentation", label: "Instrumentation", icon: <Terminal size={14} /> },
+    { key: "ingestion", label: "Ingestion", icon: <DatabaseZap size={14} /> },
     ...(isAdmin ? [{ key: "members", label: "Members", icon: <UsersRound size={14} /> }] : []),
   ];
 
@@ -50,6 +52,7 @@ export default function SettingsPage() {
         <SettingsTenantTab profileLoading={false} tenants={tenants} isAdmin={isAdmin} />
       )}
       {active === "instrumentation" && <SettingsInstrumentationTab />}
+      {active === "ingestion" && <SettingsIngestionTab />}
       {active === "members" && isAdmin && <SettingsMembersTab />}
     </PageShell>
   );

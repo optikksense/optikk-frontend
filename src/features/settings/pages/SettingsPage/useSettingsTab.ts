@@ -1,7 +1,7 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
 
-const SETTINGS_TABS = ["profile", "tenant", "instrumentation", "members"] as const;
+const SETTINGS_TABS = ["profile", "tenant", "instrumentation", "ingestion", "members"] as const;
 
 export type SettingsTab = (typeof SETTINGS_TABS)[number];
 

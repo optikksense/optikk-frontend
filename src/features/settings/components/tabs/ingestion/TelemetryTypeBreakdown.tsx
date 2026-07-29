@@ -1,8 +1,8 @@
 import { PanelCard } from "@shared/components/ui/PanelCard";
 
-import type { IngestionSummary } from "../../api/ingestionApi";
-import { type IngestionUnit, SIGNAL_COLORS, fmtCount, fmtValue } from "../../utils/format";
+import type { IngestionSummary } from "../../../api/ingestionApi";
 import { Bar } from "./Bar";
+import { type IngestionUnit, SIGNAL_COLORS, fmtCount, fmtValue } from "./format";
 
 interface Props {
   readonly summary: IngestionSummary | undefined;

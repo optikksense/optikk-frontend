@@ -12,7 +12,6 @@ import { useLogsExplorer } from "@shared/logs/hooks/useLogsExplorer";
 import { SEVERITY_STYLES } from "@shared/logs/utils/severity";
 
 import { LogsExplorerContent } from "@shared/logs/components/LogsExplorerContent";
-import { LogDetailDrawer } from "@shared/logs/components/detail/LogDetailDrawer";
 import { LogsFacetPanel } from "../../components/facets/LogsFacetPanel";
 
 import { LogsActions } from "../../components/toolbar/LogsActions";
@@ -74,52 +73,32 @@ export default function LogsExplorerPage() {
   );
   const onClearFilters = useCallback(() => state.setFilters([]), [state]);
 
-  const results = explorer.list.results;
-  const detailIdx = state.detail ? results.findIndex((r) => r.id === state.detail) : -1;
-  const onDetailPrev = detailIdx > 0 ? () => state.setDetail(results[detailIdx - 1].id) : undefined;
-  const onDetailNext =
-    detailIdx >= 0 && detailIdx < results.length - 1
-      ? () => state.setDetail(results[detailIdx + 1].id)
-      : undefined;
-
-  const detailOpen = Boolean(state.detail);
-
   return (
-    <>
-      <ExplorerLayout
-        header={
-          <>
-            <ExplorerHeader
-              ref={searchInputRef}
-              filters={state.filters}
-              onChangeFilters={(f) => state.setFilters(f)}
-              actions={<LogsActions />}
-              valueSuggestions={valueSuggestions}
-              searchPlaceholder='Search logs: serviceName:checkout severityText:ERROR "timeout"'
-              scope="logs"
-            />
-            <SearchTranslationNotice warnings={translationWarnings} />
-          </>
-        }
-        facets={
-          <LogsFacetPanel
-            facets={facets.data}
-            onInclude={onInclude}
-            onExclude={onExclude}
-            activeFilterCount={state.filters.length}
-            onClearAll={onClearFilters}
+    <ExplorerLayout
+      header={
+        <>
+          <ExplorerHeader
+            ref={searchInputRef}
+            filters={state.filters}
+            onChangeFilters={(f) => state.setFilters(f)}
+            actions={<LogsActions />}
+            valueSuggestions={valueSuggestions}
+            searchPlaceholder='Search logs: serviceName:checkout severityText:ERROR "timeout"'
+            scope="logs"
           />
-        }
-        content={<LogsExplorerContent explorer={explorer} />}
-      />
-
-      <LogDetailDrawer
-        logId={state.detail ?? ""}
-        open={detailOpen}
-        onClose={() => state.setDetail(null)}
-        onPrev={onDetailPrev}
-        onNext={onDetailNext}
-      />
-    </>
+          <SearchTranslationNotice warnings={translationWarnings} />
+        </>
+      }
+      facets={
+        <LogsFacetPanel
+          facets={facets.data}
+          onInclude={onInclude}
+          onExclude={onExclude}
+          activeFilterCount={state.filters.length}
+          onClearAll={onClearFilters}
+        />
+      }
+      content={<LogsExplorerContent explorer={explorer} />}
+    />
   );
 }
