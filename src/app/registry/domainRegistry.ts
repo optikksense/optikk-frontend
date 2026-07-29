@@ -10,7 +10,6 @@ import { overviewConfig } from "@/features/overview";
 import { saturationConfig } from "@/features/saturation";
 import { tracesConfig } from "@/features/traces";
 
-import type { DashboardPanelRegistration } from "@shared/components/ui/dashboard/dashboardPanelRegistry";
 import type { LucideIcon } from "lucide-react";
 
 export interface DomainNavigationItem {
@@ -24,7 +23,6 @@ export interface DomainConfig {
   readonly key: string;
   readonly label: string;
   readonly navigation: readonly DomainNavigationItem[];
-  readonly dashboardPanels?: readonly DashboardPanelRegistration[];
 }
 
 const domainRegistry: readonly DomainConfig[] = [
@@ -43,8 +41,4 @@ const domainRegistry: readonly DomainConfig[] = [
 
 export function getDomainNavigationItems(): readonly DomainNavigationItem[] {
   return domainRegistry.flatMap((domain) => domain.navigation);
-}
-
-export function getDashboardPanelRegistrations(): readonly DashboardPanelRegistration[] {
-  return domainRegistry.flatMap((domain) => domain.dashboardPanels ?? []);
 }

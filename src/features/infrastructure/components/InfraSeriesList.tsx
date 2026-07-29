@@ -1,49 +1,39 @@
 import DataTable from "@shared/components/ui/data-display/DataTable";
-import {
-  formatBytes,
-  formatDuration,
-  formatNumber,
-  formatPercentage,
-} from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 import { memo } from "react";
 
+import { type SeriesFormat, formatSeriesValue } from "./seriesFormat";
+
 export interface InfraSeriesListItem {
-  key: string;
-  label: string;
-  value: number;
-  color: string;
+  readonly key: string;
+  readonly label: string;
+  readonly value: number;
+  readonly color: string;
 }
 
+/** Label line (20) + gap (4) + bar (3 + 2 offset) + cell padding (16) + border (1). */
+const ROW_HEIGHT = 46;
+/** Rows visible before the list scrolls, keeping every chart card the same height. */
+const DEFAULT_MAX_ROWS = 4;
+
 interface InfraSeriesListProps {
-  series: InfraSeriesListItem[];
-  selectedKeys?: string[];
-  onToggle?: (key: string) => void;
-  formatType?: "bytes" | "percentage" | "duration" | "number";
-  title?: string;
+  readonly series: readonly InfraSeriesListItem[];
+  readonly selectedKeys?: readonly string[];
+  readonly onToggle?: (key: string) => void;
+  readonly format?: SeriesFormat;
+  readonly title?: string;
+  readonly maxRows?: number;
 }
 
 const InfraSeriesList = memo(function InfraSeriesList({
   series,
   selectedKeys = [],
   onToggle,
-  formatType = "number",
+  format = "number",
   title = "Value",
+  maxRows = DEFAULT_MAX_ROWS,
 }: InfraSeriesListProps) {
   const maxVal = Math.max(...series.map((s) => Math.abs(s.value)), 1);
-
-  const formatValue = (val: number) => {
-    switch (formatType) {
-      case "bytes":
-        return formatBytes(val);
-      case "percentage":
-        return formatPercentage(val, 2, false);
-      case "duration":
-        return formatDuration(val);
-      default:
-        return formatNumber(val);
-    }
-  };
 
   const columns: ColumnDef<InfraSeriesListItem>[] = [
     {
@@ -70,7 +60,7 @@ const InfraSeriesList = memo(function InfraSeriesList({
       accessorKey: "value",
       meta: { align: "right" },
       cell: ({ row: { original: item } }) => (
-        <span className="font-mono text-foreground">{formatValue(item.value)}</span>
+        <span className="font-mono text-foreground">{formatSeriesValue(item.value, format)}</span>
       ),
     },
   ];
@@ -80,8 +70,10 @@ const InfraSeriesList = memo(function InfraSeriesList({
   return (
     <div className="mt-2 border-border border-t pt-2">
       <DataTable
-        data={{ columns, rows: series }}
+        data={{ columns, rows: [...series] }}
         config={{
+          maxRows,
+          rowHeight: ROW_HEIGHT,
           onRow: (item) => {
             const isSelected = selectedKeys.length === 0 || selectedKeys.includes(item.key);
             const isFaded = selectedKeys.length > 0 && !isSelected;

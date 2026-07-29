@@ -27,7 +27,15 @@ const DEFAULT_PAGE_SIZE = 25;
 
 interface DataTableConfig<TData> {
   emptyText?: string;
-  scroll?: { x?: number; y?: number | string };
+  /**
+   * Rows visible before the body scrolls. Required for tables embedded in a
+   * fixed-height surface (a chart card, a panel) so the table scrolls inside
+   * itself instead of growing the surface. Omit for full-page tables, which
+   * fall back to DEFAULT_MAX_HEIGHT.
+   */
+  maxRows?: number;
+  /** Row height in px, used for both the maxRows viewport and virtualization. */
+  rowHeight?: number;
   onRow?: (record: TData, index?: number) => React.HTMLAttributes<HTMLTableRowElement>;
 }
 
@@ -48,14 +56,19 @@ interface DataTableProps<TData, TValue> {
 }
 
 const DEFAULT_COLUMN_SIZE = 150;
+const DEFAULT_ROW_HEIGHT = 48;
+/** Height of the sticky header row (`h-9` on TableHead). */
+const HEADER_HEIGHT = 36;
+const DEFAULT_MAX_HEIGHT = 600;
 
 /**
  * DataTable is the default table for all list/tabular UI in this codebase.
  * New tables should use it instead of hand-rolled <table> markup: it provides
  * virtualized rendering, loading/empty states, column alignment via meta,
  * per-row props (click navigation, hover styling) via config.onRow, optional
- * column resizing, and optional client-side pagination via the pagination
- * prop. Extend this component rather than forking table markup in a feature.
+ * column resizing, a bounded scroll viewport via config.maxRows, and optional
+ * client-side pagination via the pagination prop. Extend this component rather
+ * than forking table markup in a feature.
  */
 function DataTableInner<TData, TValue>({
   data,
@@ -64,7 +77,9 @@ function DataTableInner<TData, TValue>({
   resize,
 }: DataTableProps<TData, TValue>): JSX.Element {
   const { columns, rows, loading = false } = data;
-  const { emptyText = "No data found", onRow } = config;
+  const { emptyText = "No data found", maxRows, rowHeight = DEFAULT_ROW_HEIGHT, onRow } = config;
+  const maxHeight =
+    maxRows === undefined ? DEFAULT_MAX_HEIGHT : HEADER_HEIGHT + maxRows * rowHeight;
   const resizable = resize !== undefined;
   const { columnSizing, onColumnSizingChange } = useColumnSizing(resize?.storageKey);
 
@@ -99,7 +114,7 @@ function DataTableInner<TData, TValue>({
   const virtualizer = useVirtualizer({
     count: tableRows.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => 48,
+    estimateSize: () => rowHeight,
     overscan: 10,
   });
 
@@ -129,7 +144,8 @@ function DataTableInner<TData, TValue>({
     <>
       <div
         ref={scrollRef}
-        className={`relative max-h-[600px] w-full overflow-auto border border-border bg-surface ${
+        style={{ maxHeight }}
+        className={`relative w-full overflow-auto border border-border bg-surface ${
           paginated ? "rounded-t-md" : "rounded-md"
         }`}
       >

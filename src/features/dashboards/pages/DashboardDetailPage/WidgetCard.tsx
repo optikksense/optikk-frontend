@@ -1,7 +1,6 @@
 import { Pencil, Trash2 } from "lucide-react";
 
 import { Card as Surface } from "@shared/components/primitives/ui/card";
-import ConfigurableChartCard from "@shared/components/ui/dashboard/ConfigurableChartCard";
 import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplorerQuery";
 import { isMetricsQuerySpec } from "@shared/types/dashboardConfig";
 import type { DashboardPanelSpec } from "@shared/types/dashboardConfig";
@@ -9,7 +8,6 @@ import type { DashboardPanelSpec } from "@shared/types/dashboardConfig";
 import type { Dashboard } from "../../api/dashboardsApi";
 import { panelTypeToViz } from "../../builder/metricsWidget";
 import { WidgetVizRenderer } from "../../components/WidgetVizRenderer";
-import { useWidgetData } from "../../hooks/useWidgetData";
 
 const ROW_PX = 88;
 const GAP_PX = 12;
@@ -30,7 +28,6 @@ export function WidgetCard({ widget, editing, onEdit, onRemove }: WidgetCardProp
   const span = clampSpan(widget.layout.w);
   const rows = Math.max(1, Math.round(widget.layout.h || 4));
   const height = rows * ROW_PX + (rows - 1) * GAP_PX;
-  const isMetrics = isMetricsQuerySpec(widget.spec.query);
 
   return (
     <div className="group relative min-w-0" style={{ gridColumn: `span ${span}`, height }}>
@@ -54,11 +51,7 @@ export function WidgetCard({ widget, editing, onEdit, onRemove }: WidgetCardProp
           </button>
         </div>
       )}
-      {isMetrics ? (
-        <MetricsWidgetBody spec={widget.spec} bodyHeight={height} />
-      ) : (
-        <EndpointWidgetBody spec={widget.spec} />
-      )}
+      <MetricsWidgetBody spec={widget.spec} bodyHeight={height} />
     </div>
   );
 }
@@ -98,22 +91,5 @@ function MetricsWidgetBody({
         />
       </div>
     </Surface>
-  );
-}
-
-/** Renders a legacy endpoint-backed widget via the configurable chart card. */
-function EndpointWidgetBody({ spec }: { readonly spec: DashboardPanelSpec }) {
-  const { ref, dataSources, isLoading, error } = useWidgetData(spec);
-
-  return (
-    <div ref={ref} className="h-full">
-      <ConfigurableChartCard
-        componentConfig={spec}
-        dataSources={dataSources}
-        isLoading={isLoading}
-        error={error}
-        extraContext={{}}
-      />
-    </div>
   );
 }

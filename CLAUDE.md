@@ -45,4 +45,10 @@ API; no business logic lives here.
   one, not accumulated.
 - Tables use the shared `DataTable`
   (`src/shared/components/ui/data-display/DataTable.tsx`), not hand-rolled
-  `<table>` markup.
+  `<table>` markup. A table embedded in a card or panel must set
+  `config.maxRows` (plus `rowHeight` when its rows are not ~48px) so it
+  scrolls inside its own viewport instead of stretching the surface.
+- Charts render through `ObservabilityChart`, with `Loading` while pending and
+  `ChartNoDataOverlay` when empty — no per-feature loading/empty markup, and
+  no per-feature chart heights. Chart colors come from `getChartColor`, never
+  `CHART_COLORS` directly, so legends and lines cannot drift apart.

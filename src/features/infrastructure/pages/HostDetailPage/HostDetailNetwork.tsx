@@ -1,5 +1,6 @@
 import { type HostMetricGroup, hostSeriesEndpoint } from "../../api/hostDetailApi";
-import { type ChartDef, SeriesChartCard, availableCharts } from "../../components/SeriesChartCard";
+import type { ChartDef } from "../../components/SeriesChartCard";
+import { DetailMetricsSection } from "../../components/detail/DetailMetricsSection";
 
 interface HostDetailNetworkProps {
   readonly host: string;
@@ -18,26 +19,14 @@ const NETWORK_CHARTS: readonly ChartDef<HostMetricGroup>[] = [
 ];
 
 export function HostDetailNetwork({ host, availableMetrics }: HostDetailNetworkProps) {
-  const charts = availableCharts(NETWORK_CHARTS, availableMetrics);
-  if (charts.length === 0) return null;
   return (
-    <section className="flex flex-col gap-3">
-      <header>
-        <div className="font-semibold text-[13px] text-foreground">Network</div>
-        <div className="text-[11px] text-foreground-muted">
-          throughput, errors and drops per interface and direction
-        </div>
-      </header>
-      <div className="grid gap-4 lg:grid-cols-2">
-        {charts.map((def) => (
-          <SeriesChartCard
-            key={def.group}
-            endpoint={hostSeriesEndpoint(host)}
-            queryKeyPrefix={`host-detail.series.${host}`}
-            def={def}
-          />
-        ))}
-      </div>
-    </section>
+    <DetailMetricsSection
+      title="Network"
+      charts={NETWORK_CHARTS}
+      availableMetrics={availableMetrics}
+      endpoint={hostSeriesEndpoint(host)}
+      queryKeyPrefix={`host-detail.series.${host}`}
+      subtitle="throughput, errors and drops per interface and direction"
+    />
   );
 }

@@ -67,10 +67,7 @@ export function formatBytes(bytes: number): string {
   return `${formattedVal}${sizes[i] ?? "B"}`;
 }
 
-export function normalizePercentage(
-  value: number | string | null | undefined,
-  clamp = true
-): number {
+function normalizePercentage(value: number | string | null | undefined, clamp = true): number {
   let raw = Number(value);
   raw = raw === 0 ? 0 : raw;
   if (!Number.isFinite(raw)) return 0;

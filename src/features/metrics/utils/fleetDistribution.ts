@@ -1,4 +1,9 @@
-import type { LatencyHeatmapDataPoint } from "@shared/components/ui/charts/specialized/LatencyHeatmapChart";
+/** One cell of the fleet latency distribution: a time bucket × latency band. */
+export interface LatencyHeatmapDataPoint {
+  timeBucket: string | number;
+  latencyBucket: string;
+  spanCount?: number;
+}
 
 import type { MetricQueryResult } from "@shared/metrics/types";
 

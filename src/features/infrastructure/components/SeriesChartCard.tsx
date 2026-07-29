@@ -1,12 +1,13 @@
 import { Card } from "@shared/components/primitives/ui/card";
 
 import InfraMultiSeriesChart from "./InfraMultiSeriesChart";
+import type { SeriesFormat } from "./seriesFormat";
 
 export interface ChartDef<G extends string = string> {
   readonly group: G;
   readonly title: string;
   readonly label: string;
-  readonly format: "percentage" | "bytes" | "number";
+  readonly format: SeriesFormat;
 }
 
 export function availableCharts<G extends string>(
@@ -25,14 +26,12 @@ interface SeriesChartCardProps {
 
 export function SeriesChartCard({ endpoint, queryKeyPrefix, def }: SeriesChartCardProps) {
   return (
-    <Card padding="md" className="min-h-[280px] border-border">
+    <Card padding="md" className="border-border">
       <InfraMultiSeriesChart
         queryKey={`${queryKeyPrefix}.${def.group}`}
         endpoint={endpoint}
         title={def.title}
-        groupByField="series"
-        valueField="value"
-        formatType={def.format}
+        format={def.format}
         datasetLabel={def.label}
         extraParams={{ metric: def.group }}
       />
