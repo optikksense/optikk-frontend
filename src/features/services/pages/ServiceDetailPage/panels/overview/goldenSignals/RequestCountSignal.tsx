@@ -9,7 +9,7 @@ import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 import { useEndpointRED } from "./useEndpointRED";
 
 // Raw request counts per bucket, the un-normalised twin of the rate card.
-// Bucket width varies with the selected window, so bars are only comparable
+// Bucket width varies with the selected window, so values are only comparable
 // within one view — the subtitle names the grain to make that explicit.
 export function RequestCountSignal({ serviceName }: { serviceName: string }) {
   const query = useEndpointRED(serviceName);
@@ -21,7 +21,7 @@ export function RequestCountSignal({ serviceName }: { serviceName: string }) {
     label: endpoint.operationName,
     values: endpoint.requestCount,
     color: getChartColor(index),
-    fill: true,
+    fill: false,
   }));
 
   // Whole-service count, not a sum of the charted lines.
@@ -35,7 +35,7 @@ export function RequestCountSignal({ serviceName }: { serviceName: string }) {
       action={<SignalLegend>{fmtNum(total)} total</SignalLegend>}
     >
       <ObservabilityChart
-        type="bar"
+        type="line"
         timestamps={timestamps}
         series={series}
         height={SIGNAL_CHART_HEIGHT}
