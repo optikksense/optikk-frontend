@@ -8,15 +8,8 @@ import { fmtPct } from "@shared/utils/formatters";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 import { useEndpointRED } from "./useEndpointRED";
 
-/**
- * Error rate golden signal — one line per endpoint, from `red-by-endpoint`.
- * Shares its query with the request rate card, and so shares its inbound-only
- * span filter: the previous `/errors/service-error-rate` source counted client
- * and internal spans in the denominator, which made the two cards disagree.
- *
- * Null buckets (endpoint served no traffic) stay null so the line breaks
- * rather than dropping to a misleading 0%.
- */
+// One line per endpoint. Null buckets stay null so the line breaks instead of
+// reading a misleading 0%.
 export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
   const query = useEndpointRED(serviceName);
 
@@ -30,11 +23,10 @@ export function ErrorRateSignal({ serviceName }: { serviceName: string }) {
     fill: false,
   }));
 
+  // Whole-service peak, not the max of the charted lines.
   let peak = 0;
-  for (const endpoint of endpoints) {
-    for (const rate of endpoint.errorRate) {
-      if (rate != null && rate > peak) peak = rate;
-    }
+  for (const rate of query.data?.totals.errorRate ?? []) {
+    if (rate != null && rate > peak) peak = rate;
   }
 
   return (

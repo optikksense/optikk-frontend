@@ -234,6 +234,11 @@ const endpointRateEntrySchema = z.object({
 const endpointRateSeriesSchema = z.object({
   timestamps: z.array(z.number()),
   series: z.array(endpointRateEntrySchema),
+  // Whole-service, including endpoints outside the top N.
+  totals: z.object({
+    rps: z.array(z.number()),
+    errorRate: z.array(z.number().nullable()),
+  }),
 });
 
 export type EndpointRateSeries = z.infer<typeof endpointRateSeriesSchema>;

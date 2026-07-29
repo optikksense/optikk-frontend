@@ -26,12 +26,11 @@ export function RequestRateSignal({ serviceName }: { serviceName: string }) {
     fill: false,
   }));
 
-  // Service total per bucket, averaged over the window.
+  // Whole-service average, not a sum of the charted lines.
+  const totals = query.data?.totals.rps ?? [];
   let total = 0;
-  for (const endpoint of endpoints) {
-    for (const rps of endpoint.rps) total += rps;
-  }
-  const avg = timestamps.length > 0 ? total / timestamps.length : 0;
+  for (const rps of totals) total += rps;
+  const avg = totals.length > 0 ? total / totals.length : 0;
 
   return (
     <PanelCard
