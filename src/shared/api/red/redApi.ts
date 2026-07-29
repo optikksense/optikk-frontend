@@ -225,6 +225,7 @@ export function getLatencyPercentilesTimeseries(
 const endpointRateEntrySchema = z.object({
   operationName: z.string(),
   rps: z.array(z.number()),
+  requestCount: z.array(z.number()),
   // Null marks a bucket where the endpoint served no traffic, which is not the
   // same as 0% errors or 0ms — charts must render these as gaps.
   errorRate: z.array(z.number().nullable()),
@@ -237,6 +238,7 @@ const endpointRateSeriesSchema = z.object({
   // Whole-service, including endpoints outside the top N.
   totals: z.object({
     rps: z.array(z.number()),
+    requestCount: z.array(z.number()),
     errorRate: z.array(z.number().nullable()),
   }),
 });

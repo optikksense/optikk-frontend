@@ -1,13 +1,10 @@
 import { ErrorRateSignal } from "./goldenSignals/ErrorRateSignal";
 import { LatencySignal } from "./goldenSignals/LatencySignal";
+import { RequestCountSignal } from "./goldenSignals/RequestCountSignal";
 import { RequestRateSignal } from "./goldenSignals/RequestRateSignal";
 import { SaturationSignal } from "./goldenSignals/SaturationSignal";
 
-/**
- * Golden signals overview: a thin layout wrapper over four self-contained
- * signal cards. Each card owns its own query, bucket alignment and rendering
- * (via the shared ObservabilityChart + useChartTimeBuckets stack).
- */
+// Layout wrapper only; each card owns its query and rendering.
 export function OverviewGoldenSignals({ serviceName }: { serviceName: string }) {
   return (
     <div className="flex flex-col gap-3">
@@ -23,6 +20,7 @@ export function OverviewGoldenSignals({ serviceName }: { serviceName: string }) 
         <ErrorRateSignal serviceName={serviceName} />
         <LatencySignal serviceName={serviceName} />
         <SaturationSignal serviceName={serviceName} />
+        <RequestCountSignal serviceName={serviceName} />
       </div>
     </div>
   );

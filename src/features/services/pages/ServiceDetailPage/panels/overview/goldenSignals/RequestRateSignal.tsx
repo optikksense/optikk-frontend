@@ -8,11 +8,7 @@ import { fmtNum } from "@shared/utils/formatters";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 import { useEndpointRED } from "./useEndpointRED";
 
-/**
- * Request rate golden signal — one line per endpoint, from
- * `red-by-endpoint`. The headline stays the service total so it still
- * reconciles with the service drawer's aggregate sparkline.
- */
+// One line per endpoint; headline is the whole-service rate.
 export function RequestRateSignal({ serviceName }: { serviceName: string }) {
   const query = useEndpointRED(serviceName);
 
