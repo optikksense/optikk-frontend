@@ -62,7 +62,8 @@ export default defineConfig(({ mode }) => {
             groups: [
               {
                 name: "vendor-react",
-                test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+                // Keep the React store shim out of feature chunks to avoid vendor↔app cycles.
+                test: /node_modules[\\/](react|react-dom|scheduler|use-sync-external-store)[\\/]/,
               },
               // Table/virtualizer are used only by lazy feature chunks; keep
               // them out of the eager router+query chunk.
