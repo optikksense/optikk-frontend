@@ -7,13 +7,11 @@ interface Props {
   readonly setDraft: (fn: (prev: CreateMonitorPayload) => CreateMonitorPayload) => void;
 }
 
-const GROUPS = ["service", "host", "status", "none"];
 const WINDOWS = [60, 300, 900, 3600];
 
 export default function LogQuery({ draft, setDraft }: Props) {
   const q: LogQueryShape = draft.query.log ?? {
     query: "",
-    groupBy: "service",
     windowSec: 300,
   };
 
@@ -33,25 +31,6 @@ export default function LogQuery({ draft, setDraft }: Props) {
           placeholder="e.g. @level:error service:payment-svc"
           className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
         />
-      </FieldRow>
-      <FieldRow label="Group by">
-        <div className="flex items-center gap-1.5">
-          {GROUPS.map((g) => {
-            const active = q.groupBy === g;
-            return (
-              <button
-                key={g}
-                type="button"
-                onClick={() => update({ groupBy: g })}
-                className={`rounded px-2 py-0.5 font-mono text-xs ${
-                  active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
-                }`}
-              >
-                {g}
-              </button>
-            );
-          })}
-        </div>
       </FieldRow>
       <FieldRow label="Window">
         <div className="flex items-center gap-1.5">

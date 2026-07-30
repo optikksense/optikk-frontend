@@ -28,7 +28,6 @@ export interface APMQueryShape {
 }
 export interface LogQueryShape {
   readonly query: string;
-  readonly groupBy?: string;
   readonly windowSec: number;
 }
 interface MonitorQuery {

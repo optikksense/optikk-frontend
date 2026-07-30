@@ -11,7 +11,6 @@ const TRACKS: { id: string; label: string; unit: string; desc: string }[] = [
   { id: "errors", label: "Error rate", unit: "%", desc: "5xx + exception spans" },
   { id: "hits", label: "Throughput", unit: "rps", desc: "request count per second" },
   { id: "latency", label: "Latency", unit: "ms", desc: "p99 percentile" },
-  { id: "apdex", label: "Apdex", unit: "0–1", desc: "satisfaction score" },
 ];
 
 const WINDOWS = [60, 300, 900, 3600];

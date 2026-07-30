@@ -74,9 +74,7 @@ function applyTypeDefaults(payload: CreateMonitorPayload, type: MonitorType): Cr
       return {
         ...payload,
         type,
-        query: payload.query.log
-          ? payload.query
-          : { log: { query: "", groupBy: "service", windowSec: 300 } },
+        query: payload.query.log ? payload.query : { log: { query: "", windowSec: 300 } },
       };
   }
 }

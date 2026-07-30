@@ -17,9 +17,8 @@ function formatQuery(m: Monitor): string {
     return `apm(last_${windowSec}s):${track}{service:${service}${res}}`;
   }
   if (m.query.log) {
-    const { query, groupBy, windowSec } = m.query.log;
-    const grp = groupBy && groupBy !== "none" ? `.by("${groupBy}")` : "";
-    return `logs("${query}").rollup("count","last_${windowSec}s")${grp}`;
+    const { query, windowSec } = m.query.log;
+    return `logs("${query}").rollup("count","last_${windowSec}s")`;
   }
   return "—";
 }
