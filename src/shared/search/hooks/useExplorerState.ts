@@ -83,8 +83,13 @@ export function useExplorerState(): ExplorerStateApi {
     [patchSearch]
   );
   const clearAll = useCallback(() => {
-    navigate({ search: {} as never, replace: true });
-  }, [navigate]);
+    patchSearch({
+      filters: undefined,
+      mode: undefined,
+      cursor: undefined,
+      detail: undefined,
+    });
+  }, [patchSearch]);
 
   return {
     filters,

@@ -26,4 +26,12 @@ export interface TranslationWarning {
   readonly message: string;
 }
 
-export type ExplorerScope = "logs" | "traces" | "errors";
+export type ExplorerScope =
+  | "logs"
+  | "traces"
+  | "errors"
+  | "deployments"
+  | "services"
+  | "llm-traces"
+  | "infrastructure-hosts"
+  | "infrastructure-containers";

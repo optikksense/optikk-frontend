@@ -11,7 +11,7 @@ import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tan
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { memo, useMemo, useRef, useState } from "react";
 
-import { Button } from "@shared/components/primitives/ui/button";
+import { ExplorerTableFooter } from "@shared/search/components/chrome/ExplorerTableFooter";
 
 import { useColumnSizing } from "./useColumnSizing";
 
@@ -230,29 +230,17 @@ function DataTableInner<TData, TValue>({
         </Table>
       </div>
       {paginated && (
-        <div className="flex items-center justify-between rounded-b-md border border-border border-t-0 bg-card px-4 py-2">
-          <span className="text-[12.5px] text-foreground-muted">
-            {safePage * pageSize + 1}–{Math.min((safePage + 1) * pageSize, rows.length)} of{" "}
-            {rows.length}
-          </span>
-          <div className="flex gap-1.5">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => goToPage(safePage - 1)}
-              disabled={safePage === 0}
-            >
-              Prev
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => goToPage(safePage + 1)}
-              disabled={(safePage + 1) * pageSize >= rows.length}
-            >
-              Next
-            </Button>
-          </div>
+        <div className="rounded-b-md border border-border border-t-0 bg-card">
+          <ExplorerTableFooter
+            summary={`${safePage * pageSize + 1}–${Math.min(
+              (safePage + 1) * pageSize,
+              rows.length
+            )} of ${rows.length}`}
+            onPrevPage={() => goToPage(safePage - 1)}
+            onNextPage={() => goToPage(safePage + 1)}
+            hasPrevPage={safePage > 0}
+            hasNextPage={(safePage + 1) * pageSize < rows.length}
+          />
         </div>
       )}
     </>

@@ -1,7 +1,7 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
 
-export const SERVICE_HUB_TABS = ["catalog", "map"] as const;
+const SERVICE_HUB_TABS = ["catalog", "map"] as const;
 
 export type ServiceHubTab = (typeof SERVICE_HUB_TABS)[number];
 

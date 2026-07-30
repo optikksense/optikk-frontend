@@ -1,16 +1,88 @@
 import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef } from "react";
 
 import DataTable from "@shared/components/ui/data-display/DataTable";
+import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
+import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
+import { ExplorerTableFooter } from "@shared/search/components/chrome/ExplorerTableFooter";
+import { FacetRail } from "@shared/search/components/facets/FacetRail";
+import {
+  type ClientExplorerDefinition,
+  useClientExplorer,
+} from "@shared/search/hooks/useClientExplorer";
+import { useCursorPager } from "@shared/search/hooks/useCursorPager";
+import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
+import { useExplorerState } from "@shared/search/hooks/useExplorerState";
+import type { ExplorerFilter } from "@shared/search/types/filters";
 import { formatDuration } from "@shared/utils/formatters";
 
-import type { LlmTrace } from "../../../api/llmApi";
+import type { LlmTrace, LlmTracesRequest } from "../../../api/llmApi";
 import { ScorePill } from "../../../components/chips";
 import { useLlmTraces } from "../../../hooks/useLlmQueries";
 import { formatCost } from "../../../utils/llmFormat";
 import { StatusBadge, VendorChip } from "../components/LlmChips";
+
+const LLM_TRACES_EXPLORER: ClientExplorerDefinition<LlmTrace> = {
+  fields: {
+    service: { label: "Service", value: (trace) => trace.service, facet: true },
+    operation: { label: "Operation", value: (trace) => trace.operation, suggest: true },
+    vendor: { label: "Vendor", value: (trace) => trace.vendor, facet: true },
+    model: { label: "Model", value: (trace) => trace.model, facet: true },
+    userId: { label: "User ID", value: (trace) => trace.userId, suggest: true },
+    sessionId: { label: "Session ID", value: (trace) => trace.sessionId, suggest: true },
+    status: {
+      label: "Status",
+      value: (trace) => (trace.hasError ? "error" : "ok"),
+      facet: true,
+    },
+    durationMs: { label: "Duration", value: (trace) => trace.durationMs },
+    cost: { label: "Cost", value: (trace) => trace.cost },
+  },
+  searchText: (trace) =>
+    [
+      trace.operation,
+      trace.service,
+      trace.vendor,
+      trace.model,
+      trace.userId,
+      trace.sessionId,
+      trace.promptPreview,
+    ]
+      .filter(Boolean)
+      .join(" "),
+};
+
+function listValues(filters: readonly ExplorerFilter[], field: string): string[] {
+  return filters
+    .filter((filter) => filter.field === field && (filter.op === "eq" || filter.op === "in"))
+    .flatMap((filter) => filter.value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function buildLlmRequest(
+  filters: readonly ExplorerFilter[],
+  cursor: string | null
+): Omit<LlmTracesRequest, "startTime" | "endTime"> {
+  const durationFloor = filters
+    .filter(
+      (filter) => filter.field === "durationMs" && (filter.op === "gt" || filter.op === "gte")
+    )
+    .reduce((max, filter) => Math.max(max, Number(filter.value) || 0), 0);
+  const statuses = listValues(filters, "status");
+
+  return {
+    limit: 100,
+    cursor: cursor ?? undefined,
+    services: listValues(filters, "service"),
+    vendors: listValues(filters, "vendor"),
+    models: listValues(filters, "model"),
+    status: statuses.length === 1 ? statuses[0].toLowerCase() : undefined,
+    minDurationMs: durationFloor || undefined,
+  };
+}
 
 const columns: ColumnDef<LlmTrace>[] = [
   {
@@ -92,42 +164,78 @@ const columns: ColumnDef<LlmTrace>[] = [
 
 export default function TracesTab() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const tracesQ = useLlmTraces({ limit: 100 });
+  const state = useExplorerState();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const request = useMemo(
+    () => buildLlmRequest(state.filters, state.cursor),
+    [state.filters, state.cursor]
+  );
+  const tracesQ = useLlmTraces(request);
+  const explorer = useClientExplorer({
+    rows: tracesQ.data?.results ?? [],
+    filters: state.filters,
+    definition: LLM_TRACES_EXPLORER,
+  });
+  const pager = useCursorPager(state, tracesQ.data?.pageInfo.nextCursor);
 
-  const rows = useMemo(() => {
-    const all = tracesQ.data?.results ?? [];
-    if (!search.trim()) return all;
-    const q = search.toLowerCase();
-    return all.filter(
-      (t) =>
-        t.operation.toLowerCase().includes(q) ||
-        t.service.toLowerCase().includes(q) ||
-        (t.userId ?? "").toLowerCase().includes(q) ||
-        t.model.toLowerCase().includes(q)
-    );
-  }, [tracesQ.data, search]);
+  useExplorerKeyboard({ onSearchFocus: () => searchInputRef.current?.focus() });
 
   return (
-    <div className="flex flex-col gap-3">
-      <input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Filter traces by operation, service, user or model…"
-        className="w-full max-w-md rounded border border-border bg-surface px-3 py-1.5 text-foreground text-sm outline-none placeholder:text-foreground-muted focus:border-primary"
-      />
-      <DataTable
-        data={{ columns, rows, loading: tracesQ.isPending }}
-        pagination={{ showPagination: false }}
-        config={{
-          emptyText: "No LLM traces in this window.",
-          onRow: (t) => ({
-            onClick: () =>
-              navigate({ to: `/llm/traces/${encodeURIComponent(t.traceId)}` as string & {} }),
-            style: { cursor: "pointer" },
-          }),
-        }}
-      />
-    </div>
+    <ExplorerLayout
+      embedded
+      header={
+        <ExplorerHeader
+          ref={searchInputRef}
+          sticky={false}
+          scope="llm-traces"
+          filters={state.filters}
+          onChangeFilters={state.setFilters}
+          valueSuggestions={explorer.valueSuggestions}
+          searchPlaceholder="Search LLM traces: vendor:openai model:gpt-5 status:error"
+        />
+      }
+      facets={
+        <FacetRail
+          groups={explorer.facetGroups}
+          onInclude={(field, value) => state.addFilter({ field, op: "eq", value })}
+          activeFilterCount={state.filters.length}
+          onClearAll={state.clearAll}
+        />
+      }
+      content={
+        tracesQ.isError ? (
+          <div className="rounded-md border border-error/30 bg-error-subtle px-4 py-5 text-center text-[12.5px] text-error">
+            LLM traces could not be loaded.
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            <DataTable
+              data={{ columns, rows: explorer.rows, loading: tracesQ.isPending }}
+              pagination={{ showPagination: false }}
+              config={{
+                emptyText: "No LLM traces match the current filters.",
+                onRow: (trace) => ({
+                  onClick: () =>
+                    navigate({
+                      to: `/llm/traces/${encodeURIComponent(trace.traceId)}` as string & {},
+                    }),
+                  style: { cursor: "pointer" },
+                }),
+              }}
+            />
+            {explorer.rows.length > 0 || pager.hasNextPage || pager.hasPrevPage ? (
+              <ExplorerTableFooter
+                rowCount={explorer.rows.length}
+                noun={explorer.rows.length === 1 ? "trace" : "traces"}
+                onNextPage={pager.onNextPage}
+                onPrevPage={pager.onPrevPage}
+                hasNextPage={pager.hasNextPage}
+                hasPrevPage={pager.hasPrevPage}
+              />
+            ) : null}
+          </div>
+        )
+      }
+    />
   );
 }

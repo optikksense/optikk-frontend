@@ -13,6 +13,7 @@ import {
   buildDeploymentErrorsHref,
   buildDeploymentTracesHref,
 } from "@shared/observability/deepLinks";
+import { encodeFilters } from "@shared/search/utils/urlState";
 import { formatNumber, formatTimestamp } from "@shared/utils/formatters";
 
 import {
@@ -165,7 +166,9 @@ export default function DeploymentComparePage() {
                     from: search.from,
                     to: search.to,
                     tz: search.tz,
-                    env: search.env,
+                    filters: search.env
+                      ? encodeFilters([{ field: "environment", op: "eq", value: search.env }])
+                      : undefined,
                   },
                 })
               }

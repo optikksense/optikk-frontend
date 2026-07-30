@@ -287,6 +287,71 @@ const ERROR_KNOWN_FIELDS: readonly KnownField[] = [
   },
 ];
 
+function domainField(
+  key: string,
+  label: string,
+  type: FieldType,
+  description: string,
+  category: FieldCategory = "Common"
+): KnownField {
+  return {
+    key,
+    label,
+    type,
+    ops: type === "number" ? NUMBER_OPS : type === "bool" ? BOOL_OPS : STRING_OPS,
+    category,
+    description,
+    typeBadge: type === "number" ? "NUM" : type === "bool" ? "BOOL" : "STR",
+    icon: category === "Resource" ? "resource" : "field",
+  };
+}
+
+const DEPLOYMENT_KNOWN_FIELDS: readonly KnownField[] = [
+  domainField("service", "Service", "string", "Service reporting the version"),
+  domainField("version", "Version", "string", "Reported service.version"),
+  domainField("environment", "Environment", "string", "Deployment environment", "Resource"),
+  domainField("requestCount", "Requests", "number", "Requests served by the deployment"),
+  domainField("trafficShare", "Traffic share", "number", "Percentage of service traffic"),
+  domainField("errorRate", "Error rate", "number", "Percentage of errored requests"),
+  domainField("p95Ms", "P95 latency", "number", "95th percentile latency in milliseconds"),
+];
+
+const SERVICE_KNOWN_FIELDS: readonly KnownField[] = [
+  domainField("service", "Service", "string", "Service name"),
+  domainField("status", "Status", "string", "Derived service health status"),
+  domainField("rps", "RPS", "number", "Requests per second"),
+  domainField("errorRate", "Error rate", "number", "Percentage of errored requests"),
+  domainField("p99Ms", "P99 latency", "number", "99th percentile latency in milliseconds"),
+  domainField("version", "Version", "string", "Reported service.version", "Resource"),
+  domainField("environment", "Environment", "string", "Deployment environment", "Resource"),
+];
+
+const LLM_TRACE_KNOWN_FIELDS: readonly KnownField[] = [
+  domainField("service", "Service", "string", "Service that emitted the LLM trace"),
+  domainField("operation", "Operation", "string", "Root LLM operation"),
+  domainField("vendor", "Vendor", "string", "LLM provider"),
+  domainField("model", "Model", "string", "Requested LLM model"),
+  domainField("userId", "User ID", "string", "Application user identifier", "Identifiers"),
+  domainField("sessionId", "Session ID", "string", "LLM session identifier", "Identifiers"),
+  domainField("status", "Status", "string", "Trace status"),
+  domainField("durationMs", "Duration", "number", "Trace duration in milliseconds"),
+  domainField("cost", "Cost", "number", "Estimated trace cost"),
+];
+
+const INFRASTRUCTURE_HOST_KNOWN_FIELDS: readonly KnownField[] = [
+  domainField("host", "Host", "string", "Infrastructure host", "Resource"),
+  domainField("service", "Service", "string", "Service running on the host"),
+  domainField("status", "Status", "string", "Derived host health status"),
+  domainField("requestCount", "Requests", "number", "Requests observed on the host"),
+  domainField("errorRate", "Error rate", "number", "Percentage of errored requests"),
+  domainField("p95Ms", "P95 latency", "number", "95th percentile latency in milliseconds"),
+];
+
+const INFRASTRUCTURE_CONTAINER_KNOWN_FIELDS: readonly KnownField[] = [
+  domainField("container", "Container", "string", "Kubernetes pod or container name", "Resource"),
+  ...INFRASTRUCTURE_HOST_KNOWN_FIELDS,
+];
+
 export const CATEGORY_ORDER: readonly FieldCategory[] = [
   "Common",
   "Identifiers",
@@ -361,6 +426,50 @@ const QUICK_TEMPLATES_ERRORS: readonly QuickTemplate[] = [
   { label: "By service", query: "service:", description: "Filter by service — type a name" },
   { label: "By exception", query: "exceptionType:", description: "Filter by exception class" },
   { label: "Message contains", query: '"timeout"', description: "Free-text message search" },
+];
+
+const QUICK_TEMPLATES_DEPLOYMENTS: readonly QuickTemplate[] = [
+  {
+    label: "High errors",
+    query: "errorRate:>=2",
+    description: "Deployments at or above 2% errors",
+  },
+  { label: "Slow P95", query: "p95Ms:>=500", description: "Deployments with P95 at least 500ms" },
+  { label: "By environment", query: "environment:", description: "Filter by environment" },
+];
+
+const QUICK_TEMPLATES_SERVICES: readonly QuickTemplate[] = [
+  {
+    label: "Unhealthy",
+    query: "status:(warn OR error)",
+    description: "Services needing attention",
+  },
+  { label: "High errors", query: "errorRate:>=2", description: "Services at or above 2% errors" },
+  {
+    label: "Slow P99",
+    query: "p99Ms:>=1000",
+    description: "Services with P99 at least one second",
+  },
+];
+
+const QUICK_TEMPLATES_LLM_TRACES: readonly QuickTemplate[] = [
+  { label: "Errors only", query: "status:error", description: "Failed LLM traces" },
+  {
+    label: "Slow traces",
+    query: "durationMs:>=1000",
+    description: "LLM traces at least one second",
+  },
+  { label: "By model", query: "model:", description: "Filter by model" },
+];
+
+const QUICK_TEMPLATES_INFRASTRUCTURE: readonly QuickTemplate[] = [
+  {
+    label: "Needs attention",
+    query: "status:(degraded OR unhealthy)",
+    description: "Infrastructure with degraded health",
+  },
+  { label: "High errors", query: "errorRate:>=2", description: "Entities at or above 2% errors" },
+  { label: "By service", query: "service:", description: "Filter by hosted service" },
 ];
 
 const SYNTAX_EXAMPLES_LOGS: readonly QuickTemplate[] = [
@@ -450,6 +559,36 @@ const SCOPE_DSL: Readonly<Record<ExplorerScope, ScopeDsl>> = {
     suggestable: new Set(["service", "operation", "httpStatus", "environment"]),
     templates: QUICK_TEMPLATES_ERRORS,
     syntax: SYNTAX_EXAMPLES_ERRORS,
+  },
+  deployments: {
+    fields: DEPLOYMENT_KNOWN_FIELDS,
+    suggestable: new Set(),
+    templates: QUICK_TEMPLATES_DEPLOYMENTS,
+    syntax: SYNTAX_EXAMPLES_TRACES,
+  },
+  services: {
+    fields: SERVICE_KNOWN_FIELDS,
+    suggestable: new Set(),
+    templates: QUICK_TEMPLATES_SERVICES,
+    syntax: SYNTAX_EXAMPLES_TRACES,
+  },
+  "llm-traces": {
+    fields: LLM_TRACE_KNOWN_FIELDS,
+    suggestable: new Set(),
+    templates: QUICK_TEMPLATES_LLM_TRACES,
+    syntax: SYNTAX_EXAMPLES_TRACES,
+  },
+  "infrastructure-hosts": {
+    fields: INFRASTRUCTURE_HOST_KNOWN_FIELDS,
+    suggestable: new Set(),
+    templates: QUICK_TEMPLATES_INFRASTRUCTURE,
+    syntax: SYNTAX_EXAMPLES_TRACES,
+  },
+  "infrastructure-containers": {
+    fields: INFRASTRUCTURE_CONTAINER_KNOWN_FIELDS,
+    suggestable: new Set(),
+    templates: QUICK_TEMPLATES_INFRASTRUCTURE,
+    syntax: SYNTAX_EXAMPLES_TRACES,
   },
 };
 

@@ -1,13 +1,16 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { HardDrive } from "lucide-react";
 import { Suspense, lazy, useMemo } from "react";
 
+import { PageTabs } from "@shared/components/primitives/ui/page-tabs";
+import { Pill } from "@shared/components/primitives/ui/pill";
+import PageHeader from "@shared/components/ui/layout/PageHeader";
 import { PageShell } from "@shared/components/ui/layout/PageShell";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
 
 import { getNodesSummary } from "../../api/nodesApi";
 import { INFRA_TAB, type InfraTabId, URL_TAB } from "../../constants";
 import type { InfrastructureNodeSummary } from "../../types";
-import { InfrastructureHubHeader } from "./InfrastructureHubHeader";
 
 const HostsTab = lazy(() => import("./tabs/HostsTab"));
 const ContainersTab = lazy(() => import("./tabs/ContainersTab"));
@@ -30,56 +33,6 @@ function useNodesSummary() {
   );
 }
 
-function tabCount(
-  id: InfraTabId,
-  hostCount: number | null,
-  podCount: number | null
-): number | null {
-  if (id === INFRA_TAB.hosts) return hostCount;
-  if (id === INFRA_TAB.containers) return podCount;
-  return null;
-}
-
-function TabsRow({
-  active,
-  hostCount,
-  podCount,
-  onChange,
-}: {
-  active: InfraTabId;
-  hostCount: number | null;
-  podCount: number | null;
-  onChange: (next: InfraTabId) => void;
-}) {
-  return (
-    <nav className="flex border-border border-b">
-      {TAB_ITEMS.map((tab) => {
-        const isActive = active === tab.id;
-        const count = tabCount(tab.id, hostCount, podCount);
-        return (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => onChange(tab.id)}
-            className={`flex items-center gap-1 border-b-2 px-3 py-2 text-[13px] transition-colors ${
-              isActive
-                ? "border-primary text-foreground"
-                : "border-transparent text-foreground-muted hover:text-foreground"
-            }`}
-          >
-            {tab.label}
-            {count != null && (
-              <span className="ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full bg-muted px-1 text-[10px] text-foreground-muted">
-                {count}
-              </span>
-            )}
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
-
 export default function InfrastructureHubPage() {
   const search = useSearch({ from: "/_app/infrastructure/" });
   const navigate = useNavigate();
@@ -99,11 +52,36 @@ export default function InfrastructureHubPage() {
     summary != null ? summary.healthyNodes + summary.degradedNodes + summary.unhealthyNodes : null;
   const podCount = summary?.totalPods ?? null;
   const alertCount = summary?.unhealthyNodes ?? null;
+  const subtitle = [
+    hostCount == null ? null : `${hostCount} hosts`,
+    podCount == null ? null : `${podCount} pods`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <PageShell>
-      <InfrastructureHubHeader hostCount={hostCount} podCount={podCount} alertCount={alertCount} />
-      <TabsRow active={activeTab} hostCount={hostCount} podCount={podCount} onChange={setTab} />
+      <PageHeader
+        title="Infrastructure"
+        icon={<HardDrive size={24} />}
+        subtitle={subtitle}
+        actions={
+          alertCount != null && alertCount > 0 ? (
+            <Pill variant="warning" dot>
+              {alertCount} in alert
+            </Pill>
+          ) : undefined
+        }
+      />
+      <PageTabs
+        activeKey={activeTab}
+        items={TAB_ITEMS.map((tab) => ({
+          key: tab.id,
+          label: tab.label,
+          count: tab.id === INFRA_TAB.hosts ? (hostCount ?? undefined) : (podCount ?? undefined),
+        }))}
+        onChange={(key) => setTab(parseTab(key))}
+      />
       <Suspense
         fallback={
           <div className="flex h-64 items-center justify-center text-[13px] text-foreground-muted">

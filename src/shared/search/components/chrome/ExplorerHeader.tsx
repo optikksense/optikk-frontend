@@ -1,5 +1,6 @@
 import { type ReactNode, forwardRef, memo } from "react";
 
+import { cn } from "@shared/lib/utils";
 import type { ExplorerFilter } from "../../types/filters";
 import type { ExplorerScope } from "../../types/filters";
 import { ExplorerSearchBarDsl } from "./ExplorerSearchBarDsl";
@@ -15,12 +16,20 @@ interface Props {
   readonly scope?: ExplorerScope;
   readonly valueSuggestions?: Readonly<Record<string, readonly SuggestionOption[]>>;
   readonly disableBareFreeTextFallback?: boolean;
+  readonly sticky?: boolean;
+  readonly className?: string;
 }
 
 export const ExplorerHeader = memo(
   forwardRef<HTMLInputElement, Props>(function ExplorerHeader(props, ref) {
     return (
-      <header className="sticky top-0 z-20 flex flex-col gap-2 border-border border-b bg-background px-4 py-3">
+      <header
+        className={cn(
+          "z-20 flex flex-col gap-2 border-border border-b bg-background px-4 py-3",
+          props.sticky !== false && "sticky top-0",
+          props.className
+        )}
+      >
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             <ExplorerSearchBarDsl

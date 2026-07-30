@@ -1,6 +1,9 @@
+import type { ReactNode } from "react";
+
 interface Props {
-  readonly rowCount: number;
+  readonly rowCount?: number;
   readonly noun?: string;
+  readonly summary?: ReactNode;
   readonly onNextPage: () => void;
   readonly onPrevPage: () => void;
   readonly hasNextPage: boolean;
@@ -11,6 +14,7 @@ interface Props {
 export function ExplorerTableFooter({
   rowCount,
   noun = "rows",
+  summary,
   onNextPage,
   onPrevPage,
   hasNextPage,
@@ -22,7 +26,7 @@ export function ExplorerTableFooter({
       style={{ padding: "12px 16px", borderTop: "1px solid var(--line-2)" }}
     >
       <span className="text-[12.5px] text-foreground-muted">
-        {rowCount} {noun}
+        {summary ?? `${rowCount ?? 0} ${noun}`}
       </span>
       <div className="flex gap-2">
         <button

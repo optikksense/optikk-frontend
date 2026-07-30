@@ -1,35 +1,37 @@
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import ServiceDetailDrawer from "@shared/components/ui/drawers/ServiceDetailDrawer";
+import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
+import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
+import { FacetRail } from "@shared/search/components/facets/FacetRail";
+import {
+  type ClientExplorerDefinition,
+  useClientExplorer,
+} from "@shared/search/hooks/useClientExplorer";
+import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
+import { useExplorerState } from "@shared/search/hooks/useExplorerState";
 
 import { CatalogTable } from "../catalog/CatalogTable";
-import { SearchToolbar } from "../catalog/SearchToolbar";
-import type { StatusFilter } from "../catalog/StatusFilterPill";
 import type { CatalogRow } from "../catalog/buildCatalogRows";
 import { useCatalogList } from "../hooks/useCatalogList";
 
-function normalizeStatusFilter(value: string | null): StatusFilter {
-  if (value === "healthy" || value === "warn" || value === "error" || value === "unhealthy") {
-    return value;
-  }
-  return "any";
-}
-
-function matchesStatus(row: CatalogRow, filter: StatusFilter): boolean {
-  if (filter === "any") return true;
-  if (filter === "unhealthy") return row.status === "warn" || row.status === "error";
-  return row.status === filter;
-}
-
-function applyFilters(rows: CatalogRow[], search: string, status: StatusFilter): CatalogRow[] {
-  const needle = search.trim().toLowerCase();
-  return rows.filter((row) => {
-    if (!matchesStatus(row, status)) return false;
-    if (needle && !row.serviceName.toLowerCase().includes(needle)) return false;
-    return true;
-  });
-}
+const SERVICE_EXPLORER: ClientExplorerDefinition<CatalogRow> = {
+  fields: {
+    service: { label: "Service", value: (row) => row.serviceName, facet: true },
+    status: { label: "Status", value: (row) => row.status, facet: true },
+    rps: { label: "RPS", value: (row) => row.rps },
+    errorRate: { label: "Error rate", value: (row) => row.errorRate },
+    p99Ms: { label: "P99 latency", value: (row) => row.p99Ms },
+    version: { label: "Version", value: (row) => row.version, suggest: true },
+    environment: {
+      label: "Environment",
+      value: (row) => row.environment,
+      suggest: true,
+    },
+  },
+  searchText: (row) =>
+    [row.serviceName, row.status, row.version, row.environment, row.lang].join(" "),
+};
 
 function toDrawerInitialData(row: CatalogRow | null): Record<string, unknown> | null {
   if (!row) return null;
@@ -46,56 +48,63 @@ function toDrawerInitialData(row: CatalogRow | null): Record<string, unknown> | 
   };
 }
 
-function EmptyState({ isPending }: { isPending: boolean }) {
-  return (
-    <div className="grid h-[200px] place-items-center text-[12px] text-foreground-muted">
-      {isPending ? "Loading services…" : "No services match the current filters."}
-    </div>
-  );
-}
-
 export function CatalogTab() {
-  const { rows, isPending } = useCatalogList();
-  const { status: statusParam } = useSearch({ from: "/_app/services/" });
-  const navigate = useNavigate();
-  const status = normalizeStatusFilter(statusParam ?? null);
-  const setStatus = (next: StatusFilter) => {
-    navigate({
-      to: "/services",
-      search: (prev) => ({ ...prev, status: next === "any" ? undefined : next }),
-    });
-  };
-  const [search, setSearch] = useState("");
+  const { rows, isPending, isError } = useCatalogList();
+  const state = useExplorerState();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedName, setSelectedName] = useState<string | null>(null);
-
-  const filtered = useMemo(() => applyFilters(rows, search, status), [rows, search, status]);
+  const explorer = useClientExplorer({
+    rows,
+    filters: state.filters,
+    definition: SERVICE_EXPLORER,
+  });
 
   const selected = useMemo(
     () => (selectedName ? (rows.find((r) => r.serviceName === selectedName) ?? null) : null),
     [rows, selectedName]
   );
 
+  useExplorerKeyboard({ onSearchFocus: () => searchInputRef.current?.focus() });
+
   return (
-    <div className="flex flex-col gap-[22px]">
-      <div className="flex min-w-0 flex-1 flex-col gap-[14px] rounded-lg border border-border bg-card p-[22px_24px] shadow-[var(--shadow-md)]">
-        <SearchToolbar
-          value={search}
-          onChange={setSearch}
-          status={status}
-          onStatusChange={setStatus}
-        />
-        {filtered.length === 0 ? (
-          <EmptyState isPending={isPending} />
-        ) : (
-          <CatalogTable rows={filtered} onRowClick={setSelectedName} />
-        )}
-      </div>
+    <>
+      <ExplorerLayout
+        embedded
+        header={
+          <ExplorerHeader
+            ref={searchInputRef}
+            sticky={false}
+            scope="services"
+            filters={state.filters}
+            onChangeFilters={state.setFilters}
+            valueSuggestions={explorer.valueSuggestions}
+            searchPlaceholder="Search services: status:error errorRate:>=2 service:checkout"
+          />
+        }
+        facets={
+          <FacetRail
+            groups={explorer.facetGroups}
+            onInclude={(field, value) => state.addFilter({ field, op: "eq", value })}
+            activeFilterCount={state.filters.length}
+            onClearAll={state.clearAll}
+          />
+        }
+        content={
+          isError ? (
+            <div className="rounded-md border border-error/30 bg-error-subtle px-4 py-5 text-center text-[12.5px] text-error">
+              Services could not be loaded.
+            </div>
+          ) : (
+            <CatalogTable rows={explorer.rows} loading={isPending} onRowClick={setSelectedName} />
+          )
+        }
+      />
       <ServiceDetailDrawer
         open={Boolean(selectedName)}
         serviceName={selectedName ?? ""}
         initialData={toDrawerInitialData(selected)}
         onClose={() => setSelectedName(null)}
       />
-    </div>
+    </>
   );
 }

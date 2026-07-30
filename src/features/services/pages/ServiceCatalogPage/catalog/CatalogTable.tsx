@@ -97,18 +97,21 @@ const COLUMNS: ColumnDef<CatalogRow>[] = [
 
 interface CatalogTableProps {
   readonly rows: CatalogRow[];
+  readonly loading?: boolean;
   readonly onRowClick: (serviceName: string) => void;
 }
 
-export function CatalogTable({ rows, onRowClick }: CatalogTableProps) {
+export function CatalogTable({ rows, loading, onRowClick }: CatalogTableProps) {
   return (
     <DataTable
       data={{
         columns: COLUMNS,
         rows,
+        loading,
       }}
       pagination={{ pageSize: 50 }}
       config={{
+        emptyText: "No services match the current filters.",
         onRow: (record) => ({
           onClick: () => onRowClick(record.serviceName),
           style: { cursor: "pointer" },
