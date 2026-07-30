@@ -7,10 +7,13 @@ interface Props {
   readonly cost: IngestionCost | undefined;
 }
 
-// Quantity reads in its own unit: GB to two decimals, DPM as a whole rate.
+// Quantity reads in its own unit: GB or millions of metric samples.
 function fmtQuantity(line: CostLine): string {
   if (line.unit === "GB") return `${line.quantity.toFixed(2)} GB`;
-  return `${Math.round(line.quantity).toLocaleString()} DPM`;
+  if (line.unit === "million samples") {
+    return `${line.quantity.toLocaleString(undefined, { maximumFractionDigits: 2 })}M samples`;
+  }
+  return `${line.quantity.toLocaleString()} ${line.unit}`;
 }
 
 // Usage-based cost estimate for the current billing month.
@@ -43,8 +46,8 @@ export function CostBreakdown({ cost }: Props) {
         </span>
       </div>
       <p className="mt-3 text-[11.5px] text-foreground-muted leading-relaxed">
-        Logs and traces bill per GB ingested; metrics bill per DPM (data points per minute).
-        Estimate only — final invoice may vary.
+        Logs and traces bill per GB ingested; metrics bill at $0.10 per million samples. Estimate
+        only — final invoice may vary.
       </p>
     </PanelCard>
   );
