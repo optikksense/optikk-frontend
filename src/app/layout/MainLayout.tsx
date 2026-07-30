@@ -1,10 +1,9 @@
 import { Outlet } from "@tanstack/react-router";
 import { useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { DensityProvider } from "@shared/components/primitives/ui/providers/DensityProvider";
-import CommandPalette from "@shared/components/ui/overlay/CommandPalette/CommandPalette";
+import ErrorBoundary from "@shared/components/ui/feedback/ErrorBoundary";
 import ShortcutHelpOverlay from "@shared/components/ui/overlay/ShortcutHelpOverlay";
 import { useAppRefreshSubscriber } from "@shared/hooks/useAppRefreshSubscriber";
 import { useKeyboardShortcuts } from "@shared/hooks/useKeyboardShortcuts";
@@ -16,31 +15,6 @@ import { TrialBanner } from "@/features/onboarding/TrialBanner";
 
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-
-function ErrorFallback({
-  error,
-  resetErrorBoundary,
-}: {
-  error: unknown;
-  resetErrorBoundary: () => void;
-}) {
-  const message = error instanceof Error ? error.message : "An unexpected error occurred";
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
-      <div className="font-medium text-error text-lg">Something went wrong</div>
-      <pre className="max-w-xl overflow-auto whitespace-pre-wrap text-foreground-secondary text-sm">
-        {message}
-      </pre>
-      <button
-        type="button"
-        onClick={resetErrorBoundary}
-        className="rounded-md bg-muted px-4 py-2 text-foreground text-sm transition-colors hover:bg-accent"
-      >
-        Try again
-      </button>
-    </div>
-  );
-}
 
 export default function MainLayout() {
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
@@ -80,7 +54,7 @@ export default function MainLayout() {
               "relative z-[1]"
             )}
           >
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <ErrorBoundary showDetails={import.meta.env.DEV} boundaryName="main-content">
               <Outlet />
             </ErrorBoundary>
           </main>
@@ -90,7 +64,6 @@ export default function MainLayout() {
           onClose={() => setShortcutHelpOpen(false)}
           shortcuts={shortcuts}
         />
-        <CommandPalette />
       </div>
     </DensityProvider>
   );

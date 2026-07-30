@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ROUTES } from "@shared/constants/routes";
 
 import { session } from "@shared/api/auth/session";
-import { LoginBrandPanel } from "./LoginBrandPanel";
+import { AuthPageShell } from "../../components/AuthPageShell";
 import { LoginForm } from "./LoginForm";
 
 export function LoginPage() {
@@ -24,32 +24,16 @@ export function LoginPage() {
       );
   }, [navigate]);
   return (
-    <div className="grid min-h-screen grid-cols-1 bg-surface-canvas text-foreground lg:grid-cols-[1.05fr_1fr]">
-      <LoginBrandPanel />
-      <main className="grid grid-rows-[auto_1fr_auto] px-12 py-7 max-md:px-6 max-md:py-5">
-        <TopBar />
-        <div className="mx-auto w-full max-w-[380px] self-center py-7">
-          <Heading />
-          <LoginForm />
-          <SignupCta />
-        </div>
-        <Footer />
-      </main>
-    </div>
-  );
-}
-
-function TopBar() {
-  return (
-    <div className="flex items-center justify-end gap-2.5 text-[12.5px] text-foreground-muted">
-      <span>New to Optikk?</span>
-      <Link
-        to={ROUTES.signup}
-        className="font-semibold text-[var(--login-link)] no-underline hover:underline"
-      >
-        Create account →
-      </Link>
-    </div>
+    <AuthPageShell
+      title="Sign in to Optikk"
+      subtitle="Welcome back. Pick up where your tenant left off."
+      prompt="New to Optikk?"
+      actionLabel="Create account"
+      actionTo={ROUTES.signup}
+    >
+      <LoginForm />
+      <SignupCta />
+    </AuthPageShell>
   );
 }
 
@@ -69,35 +53,5 @@ function SignupCta() {
         Create an account
       </Link>
     </div>
-  );
-}
-
-function Heading() {
-  return (
-    <header>
-      <h2 className="m-0 mb-1.5 font-bold text-2xl text-foreground tracking-[-0.015em]">
-        Sign in to Optikk
-      </h2>
-      <p className="m-0 mb-[22px] text-[13.5px] text-foreground-muted">
-        Welcome back. Pick up where your tenant left off.
-      </p>
-    </header>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="flex items-center justify-between font-mono text-[11.5px] text-foreground-muted">
-      <span className="inline-flex items-center gap-1.5 text-foreground-secondary">
-        <span className="h-1.5 w-1.5 rounded-full bg-healthy" />
-        All systems operational
-      </span>
-      <a
-        href="#status"
-        className="text-foreground-muted no-underline hover:text-foreground-secondary"
-      >
-        v2026.5 · status →
-      </a>
-    </footer>
   );
 }

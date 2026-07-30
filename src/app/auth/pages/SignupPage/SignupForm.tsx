@@ -1,15 +1,18 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Building2, Lock, Mail, User } from "lucide-react";
+import { Building2, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { ROUTES } from "@shared/constants/routes";
-import { cn } from "@shared/lib/utils";
 
 import { session } from "@shared/api/auth/session";
-
-import type { ReactNode } from "react";
+import {
+  AuthField,
+  AuthFieldError,
+  AuthSubmitButton,
+  PasswordVisibilityButton,
+} from "../../components/AuthFormControls";
 
 const signupSchema = z.object({
   name: z.string().trim().min(1, "Please enter your name"),
@@ -80,8 +83,9 @@ export function SignupForm() {
 
   return (
     <form onSubmit={handleSubmit} autoComplete="off">
-      <Field
+      <AuthField
         id="name"
+        testIdPrefix="signup"
         label="Your name"
         type="text"
         value={name}
@@ -94,8 +98,9 @@ export function SignupForm() {
         autoComplete="name"
         error={errors.name}
       />
-      <Field
+      <AuthField
         id="orgName"
+        testIdPrefix="signup"
         label="Organization"
         type="text"
         value={orgName}
@@ -108,8 +113,9 @@ export function SignupForm() {
         autoComplete="organization"
         error={errors.orgName}
       />
-      <Field
+      <AuthField
         id="email"
+        testIdPrefix="signup"
         label="Work email"
         type="email"
         value={email}
@@ -122,8 +128,9 @@ export function SignupForm() {
         autoComplete="email"
         error={errors.email}
       />
-      <Field
+      <AuthField
         id="password"
+        testIdPrefix="signup"
         label="Password"
         type={showPassword ? "text" : "password"}
         value={password}
@@ -134,7 +141,7 @@ export function SignupForm() {
         placeholder="At least 8 characters"
         icon={<Lock size={15} strokeWidth={2} />}
         autoComplete="new-password"
-        endSlot={<ShowHideToggle show={showPassword} onToggle={setShowPassword} />}
+        endSlot={<PasswordVisibilityButton visible={showPassword} onChange={setShowPassword} />}
         error={errors.password}
       />
       <TermsCheckbox
@@ -145,121 +152,11 @@ export function SignupForm() {
         }}
         error={errors.acceptedTerms}
       />
-      <SubmitButton loading={isSubmitting} />
+      <AuthSubmitButton testIdPrefix="signup" loading={isSubmitting}>
+        Create account
+      </AuthSubmitButton>
       <SignInLine />
     </form>
-  );
-}
-
-interface FieldProps {
-  readonly id: string;
-  readonly label: string;
-  readonly type: string;
-  readonly value: string;
-  readonly onChange: (value: string) => void;
-  readonly placeholder: string;
-  readonly icon: ReactNode;
-  readonly endSlot?: ReactNode;
-  readonly autoComplete?: string;
-  readonly error?: string;
-}
-
-function FieldError({ id, message }: { readonly id: string; readonly message: string }) {
-  return (
-    <p id={`${id}-error`} className="m-0 text-[11.5px] text-error">
-      {message}
-    </p>
-  );
-}
-
-const INPUT_BASE =
-  "h-[42px] w-full rounded-md border border-border bg-card " +
-  "py-0 pl-9 pr-3 font-[inherit] text-[13.5px] text-foreground outline-none " +
-  "transition-[border-color,box-shadow] duration-150 " +
-  "placeholder:text-foreground-muted " +
-  "hover:border-foreground-muted " +
-  "focus:border-primary focus:shadow-[var(--login-focus-ring)]";
-
-function Field({
-  id,
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-  icon,
-  endSlot,
-  autoComplete,
-  error,
-}: FieldProps) {
-  return (
-    <div className="mb-3 grid gap-1.5">
-      <label
-        htmlFor={id}
-        className="font-semibold text-[11.5px] text-foreground-secondary uppercase tracking-[0.04em]"
-      >
-        {label}
-      </label>
-      <div className="relative">
-        <span className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-[11px] text-foreground-muted">
-          {icon}
-        </span>
-        <input
-          id={id}
-          data-testid={`signup-${id}`}
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          autoComplete={autoComplete}
-          aria-invalid={error != null || undefined}
-          aria-describedby={error != null ? `${id}-error` : undefined}
-          className={cn(INPUT_BASE, endSlot && "pr-16", error && "border-error")}
-        />
-        {endSlot}
-      </div>
-      {error && <FieldError id={id} message={error} />}
-    </div>
-  );
-}
-
-function ShowHideToggle({
-  show,
-  onToggle,
-}: {
-  readonly show: boolean;
-  readonly onToggle: (next: boolean) => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={() => onToggle(!show)}
-      tabIndex={-1}
-      aria-label={show ? "Hide password" : "Show password"}
-      className="-translate-y-1/2 absolute top-1/2 right-2 rounded px-1.5 py-1 font-semibold text-[11px] text-foreground-muted uppercase tracking-[0.04em] transition-colors hover:bg-surface-inset hover:text-foreground-secondary"
-    >
-      {show ? "Hide" : "Show"}
-    </button>
-  );
-}
-
-function SubmitButton({ loading }: { readonly loading: boolean }) {
-  return (
-    <button
-      data-testid="signup-submit"
-      type="submit"
-      disabled={loading}
-      className="mt-2 flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-primary bg-primary font-[inherit] font-semibold text-[var(--login-submit-fg)] text-sm transition-[background-color,border-color,transform] duration-150 hover:border-[var(--login-link)] hover:bg-[var(--login-link)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      {loading ? (
-        <span className="h-[16px] w-[16px] animate-[spin_0.6s_linear_infinite] rounded-full border-2 border-transparent border-t-current" />
-      ) : (
-        <>
-          Create account
-          <ArrowRight size={14} strokeWidth={2.2} />
-        </>
-      )}
-    </button>
   );
 }
 
@@ -311,7 +208,7 @@ function TermsCheckbox({
           .
         </span>
       </label>
-      {error && <FieldError id="acceptedTerms" message={error} />}
+      {error && <AuthFieldError id="acceptedTerms" message={error} />}
     </div>
   );
 }

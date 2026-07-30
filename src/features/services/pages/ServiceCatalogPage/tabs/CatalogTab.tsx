@@ -1,15 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
 import ServiceDetailDrawer from "@shared/components/ui/drawers/ServiceDetailDrawer";
-import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
-import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
-import { FacetRail } from "@shared/search/components/facets/FacetRail";
-import {
-  type ClientExplorerDefinition,
-  useClientExplorer,
-} from "@shared/search/hooks/useClientExplorer";
-import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
-import { useExplorerState } from "@shared/search/hooks/useExplorerState";
+import { ClientExplorerLayout } from "@shared/search/components/chrome/ClientExplorerLayout";
+import type { ClientExplorerDefinition } from "@shared/search/hooks/useClientExplorer";
+import { useClientExplorerController } from "@shared/search/hooks/useClientExplorerController";
 
 import { CatalogTable } from "../catalog/CatalogTable";
 import type { CatalogRow } from "../catalog/buildCatalogRows";
@@ -50,45 +44,21 @@ function toDrawerInitialData(row: CatalogRow | null): Record<string, unknown> | 
 
 export function CatalogTab() {
   const { rows, isPending, isError } = useCatalogList();
-  const state = useExplorerState();
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedName, setSelectedName] = useState<string | null>(null);
-  const explorer = useClientExplorer({
-    rows,
-    filters: state.filters,
-    definition: SERVICE_EXPLORER,
-  });
+  const explorer = useClientExplorerController({ rows, definition: SERVICE_EXPLORER });
 
   const selected = useMemo(
     () => (selectedName ? (rows.find((r) => r.serviceName === selectedName) ?? null) : null),
     [rows, selectedName]
   );
 
-  useExplorerKeyboard({ onSearchFocus: () => searchInputRef.current?.focus() });
-
   return (
     <>
-      <ExplorerLayout
+      <ClientExplorerLayout
         embedded
-        header={
-          <ExplorerHeader
-            ref={searchInputRef}
-            sticky={false}
-            scope="services"
-            filters={state.filters}
-            onChangeFilters={state.setFilters}
-            valueSuggestions={explorer.valueSuggestions}
-            searchPlaceholder="Search services: status:error errorRate:>=2 service:checkout"
-          />
-        }
-        facets={
-          <FacetRail
-            groups={explorer.facetGroups}
-            onInclude={(field, value) => state.addFilter({ field, op: "eq", value })}
-            activeFilterCount={state.filters.length}
-            onClearAll={state.clearAll}
-          />
-        }
+        {...explorer}
+        scope="services"
+        searchPlaceholder="Search services: status:error errorRate:>=2 service:checkout"
         content={
           isError ? (
             <div className="rounded-md border border-error/30 bg-error-subtle px-4 py-5 text-center text-[12.5px] text-error">

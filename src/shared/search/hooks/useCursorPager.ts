@@ -9,11 +9,15 @@ import type { ExplorerStateApi } from "./useExplorerState";
  * remembering the cursors already visited. Changing the filters invalidates
  * that trail and returns to page one.
  */
-export function useCursorPager(state: ExplorerStateApi, nextCursor: string | null | undefined) {
+export function useCursorPager(
+  state: ExplorerStateApi,
+  nextCursor: string | null | undefined,
+  resetKey?: unknown
+) {
   const [history, setHistory] = useState<string[]>([]);
   const { cursor, setCursor, filters } = state;
 
-  const filtersKey = JSON.stringify(filters);
+  const filtersKey = JSON.stringify([filters, resetKey]);
   // A cursor arriving in the URL belongs to the filters it shipped with, so
   // only a *change* of filters resets paging — never the first render.
   const lastFiltersKey = useRef(filtersKey);

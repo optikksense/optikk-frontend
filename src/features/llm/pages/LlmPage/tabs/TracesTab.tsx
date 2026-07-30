@@ -4,10 +4,8 @@ import { ChevronRight } from "lucide-react";
 import { useMemo, useRef } from "react";
 
 import DataTable from "@shared/components/ui/data-display/DataTable";
-import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
-import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
+import { ClientExplorerLayout } from "@shared/search/components/chrome/ClientExplorerLayout";
 import { ExplorerTableFooter } from "@shared/search/components/chrome/ExplorerTableFooter";
-import { FacetRail } from "@shared/search/components/facets/FacetRail";
 import {
   type ClientExplorerDefinition,
   useClientExplorer,
@@ -181,27 +179,14 @@ export default function TracesTab() {
   useExplorerKeyboard({ onSearchFocus: () => searchInputRef.current?.focus() });
 
   return (
-    <ExplorerLayout
+    <ClientExplorerLayout
       embedded
-      header={
-        <ExplorerHeader
-          ref={searchInputRef}
-          sticky={false}
-          scope="llm-traces"
-          filters={state.filters}
-          onChangeFilters={state.setFilters}
-          valueSuggestions={explorer.valueSuggestions}
-          searchPlaceholder="Search LLM traces: vendor:openai model:gpt-5 status:error"
-        />
-      }
-      facets={
-        <FacetRail
-          groups={explorer.facetGroups}
-          onInclude={(field, value) => state.addFilter({ field, op: "eq", value })}
-          activeFilterCount={state.filters.length}
-          onClearAll={state.clearAll}
-        />
-      }
+      state={state}
+      searchInputRef={searchInputRef}
+      facetGroups={explorer.facetGroups}
+      valueSuggestions={explorer.valueSuggestions}
+      scope="llm-traces"
+      searchPlaceholder="Search LLM traces: vendor:openai model:gpt-5 status:error"
       content={
         tracesQ.isError ? (
           <div className="rounded-md border border-error/30 bg-error-subtle px-4 py-5 text-center text-[12.5px] text-error">

@@ -1,14 +1,13 @@
 import { useCallback, useMemo } from "react";
 
 import { useAppStore, useResolvedTimeBounds, useTimeRange } from "@app/store/appStore";
+import { ExplorerTableFooter } from "@shared/search/components/chrome/ExplorerTableFooter";
 import { StatPill } from "@shared/search/components/chrome/StatPill";
 import type { ExplorerFilter } from "@shared/search/types/filters";
 import { formatNumber } from "@shared/utils/formatters";
 
 import { LogsTable } from "@shared/logs/components/table/LogsTable";
-import { LogsTableFooter } from "@shared/logs/components/table/LogsTableFooter";
 import { LogsTableToolbar } from "@shared/logs/components/table/LogsTableToolbar";
-import { useLogsExplorerStore } from "@shared/logs/store/logsExplorerStore";
 import type { LogRecord } from "@shared/logs/types/log";
 
 import type { useLogsExplorer } from "../hooks/useLogsExplorer";
@@ -31,9 +30,6 @@ export function LogsExplorerContent({ explorer }: LogsExplorerContentProps) {
   const timeRange = useTimeRange();
   const { startTime, endTime } = useResolvedTimeBounds();
   const setCustomTimeRange = useAppStore((s) => s.setCustomTimeRange);
-
-  const goNextPage = useLogsExplorerStore((s) => s.goNextPage);
-  const goPrevPage = useLogsExplorerStore((s) => s.goPrevPage);
 
   const searchTerm = useMemo(() => extractSearchTerm(state.filters), [state.filters]);
   const onRowClick = useCallback((row: LogRecord) => state.setDetail(row.id), [state]);
@@ -83,16 +79,14 @@ export function LogsExplorerContent({ explorer }: LogsExplorerContentProps) {
             selectedId={state.detail}
             onRowClick={onRowClick}
           />
-          {results.length > 0 || list.hasMore ? (
-            <LogsTableFooter
-              pageIndex={list.pageIndex}
-              pageCount={list.pageCount}
-              pageRows={results.length}
-              loadedRows={results.length}
-              hasMore={list.hasMore}
-              loadingNext={list.isPending && results.length === 0}
-              onPrevious={goPrevPage}
-              onNext={goNextPage}
+          {results.length > 0 || list.hasNextPage || list.hasPrevPage ? (
+            <ExplorerTableFooter
+              rowCount={results.length}
+              noun={results.length === 1 ? "log" : "logs"}
+              onPrevPage={list.onPrevPage}
+              onNextPage={list.onNextPage}
+              hasPrevPage={list.hasPrevPage}
+              hasNextPage={list.hasNextPage}
             />
           ) : null}
         </div>

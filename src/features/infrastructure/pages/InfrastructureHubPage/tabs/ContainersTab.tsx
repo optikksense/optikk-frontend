@@ -1,16 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useRef } from "react";
 
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
-import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
-import { FacetRail } from "@shared/search/components/facets/FacetRail";
-import {
-  type ClientExplorerDefinition,
-  useClientExplorer,
-} from "@shared/search/hooks/useClientExplorer";
-import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
-import { useExplorerState } from "@shared/search/hooks/useExplorerState";
+import { ClientExplorerLayout } from "@shared/search/components/chrome/ClientExplorerLayout";
+import type { ClientExplorerDefinition } from "@shared/search/hooks/useClientExplorer";
+import { useClientExplorerController } from "@shared/search/hooks/useClientExplorerController";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -38,19 +31,13 @@ const CONTAINERS_EXPLORER: ClientExplorerDefinition<FleetPod> = {
 
 export default function ContainersTab() {
   const navigate = useNavigate();
-  const state = useExplorerState();
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const query = useTimeRangeQuery<FleetPod[]>("infrastructure.containers.list", (_tenant, s, e) =>
     getFleetPods(s, e)
   );
 
   const pods = query.data ?? [];
-  const explorer = useClientExplorer({
-    rows: pods,
-    filters: state.filters,
-    definition: CONTAINERS_EXPLORER,
-  });
+  const explorer = useClientExplorerController({ rows: pods, definition: CONTAINERS_EXPLORER });
 
   const onOpenHost = (host: string) => {
     navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(host as string & {})) });
@@ -65,30 +52,12 @@ export default function ContainersTab() {
     });
   };
 
-  useExplorerKeyboard({ onSearchFocus: () => searchInputRef.current?.focus() });
-
   return (
-    <ExplorerLayout
+    <ClientExplorerLayout
       embedded
-      header={
-        <ExplorerHeader
-          ref={searchInputRef}
-          sticky={false}
-          scope="infrastructure-containers"
-          filters={state.filters}
-          onChangeFilters={state.setFilters}
-          valueSuggestions={explorer.valueSuggestions}
-          searchPlaceholder="Search containers: service:checkout host:node-1 errorRate:>=2"
-        />
-      }
-      facets={
-        <FacetRail
-          groups={explorer.facetGroups}
-          onInclude={(field, value) => state.addFilter({ field, op: "eq", value })}
-          activeFilterCount={state.filters.length}
-          onClearAll={state.clearAll}
-        />
-      }
+      {...explorer}
+      scope="infrastructure-containers"
+      searchPlaceholder="Search containers: service:checkout host:node-1 errorRate:>=2"
       content={
         query.isError ? (
           <div className="rounded-md border border-error/30 bg-error-subtle px-4 py-5 text-center text-[12.5px] text-error">

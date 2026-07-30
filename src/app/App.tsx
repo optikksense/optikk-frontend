@@ -1,4 +1,3 @@
-import ErrorBoundary from "@shared/components/ui/feedback/ErrorBoundary";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 
 // Import the generated route tree
@@ -15,9 +14,5 @@ declare module "@tanstack/react-router" {
 }
 
 export default function App(): JSX.Element {
-  return (
-    <ErrorBoundary showDetails={import.meta.env.DEV} boundaryName="app-shell">
-      <RouterProvider router={router} />
-    </ErrorBoundary>
-  );
+  return <RouterProvider router={router} />;
 }

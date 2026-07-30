@@ -1,21 +1,15 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Rocket } from "lucide-react";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 
 import { PageTabs } from "@shared/components/primitives/ui/page-tabs";
 import { Select } from "@shared/components/primitives/ui/select";
 import { KpiCard } from "@shared/components/ui/cards/StatCard";
 import PageHeader from "@shared/components/ui/layout/PageHeader";
 import { PageShell } from "@shared/components/ui/layout/PageShell";
-import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
-import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
-import { FacetRail } from "@shared/search/components/facets/FacetRail";
-import {
-  type ClientExplorerDefinition,
-  useClientExplorer,
-} from "@shared/search/hooks/useClientExplorer";
-import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
-import { useExplorerState } from "@shared/search/hooks/useExplorerState";
+import { ClientExplorerLayout } from "@shared/search/components/chrome/ClientExplorerLayout";
+import type { ClientExplorerDefinition } from "@shared/search/hooks/useClientExplorer";
+import { useClientExplorerController } from "@shared/search/hooks/useClientExplorerController";
 import { formatNumber, formatRelativeTime } from "@shared/utils/formatters";
 
 import type { Deployment } from "../../api/deploymentsApi";
@@ -57,11 +51,8 @@ export default function DeploymentsPage() {
   const query = useDeploymentsList();
   const tab = normalizeTab(search.tab);
   const sort = normalizeSort(search.sort);
-  const state = useExplorerState();
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const explorer = useClientExplorer({
+  const explorer = useClientExplorerController({
     rows: query.data?.results ?? [],
-    filters: state.filters,
     definition: DEPLOYMENTS_EXPLORER,
   });
 
@@ -87,8 +78,6 @@ export default function DeploymentsPage() {
       replace: true,
     });
   };
-
-  useExplorerKeyboard({ onSearchFocus: () => searchInputRef.current?.focus() });
 
   const openDeployment = (deployment: Deployment) => {
     void navigate({
@@ -150,41 +139,25 @@ export default function DeploymentsPage() {
         onChange={(key) => updateSearch({ tab: key === "list" ? undefined : key })}
       />
 
-      <ExplorerLayout
+      <ClientExplorerLayout
         embedded
-        header={
-          <ExplorerHeader
-            ref={searchInputRef}
-            sticky={false}
-            scope="deployments"
-            filters={state.filters}
-            onChangeFilters={state.setFilters}
-            valueSuggestions={explorer.valueSuggestions}
-            searchPlaceholder="Search deployments: service:checkout environment:prod errorRate:>=2"
-            actions={
-              <Select
-                size="sm"
-                className="w-[150px]"
-                value={sort}
-                onChange={(value) =>
-                  updateSearch({ sort: value === "newest" ? undefined : String(value) })
-                }
-                options={[
-                  { label: "Newest first", value: "newest" },
-                  { label: "Oldest first", value: "oldest" },
-                  { label: "Highest traffic", value: "traffic" },
-                  { label: "Highest errors", value: "errors" },
-                ]}
-              />
+        {...explorer}
+        scope="deployments"
+        searchPlaceholder="Search deployments: service:checkout environment:prod errorRate:>=2"
+        actions={
+          <Select
+            size="sm"
+            className="w-[150px]"
+            value={sort}
+            onChange={(value) =>
+              updateSearch({ sort: value === "newest" ? undefined : String(value) })
             }
-          />
-        }
-        facets={
-          <FacetRail
-            groups={explorer.facetGroups}
-            onInclude={(field, value) => state.addFilter({ field, op: "eq", value })}
-            activeFilterCount={state.filters.length}
-            onClearAll={state.clearAll}
+            options={[
+              { label: "Newest first", value: "newest" },
+              { label: "Oldest first", value: "oldest" },
+              { label: "Highest traffic", value: "traffic" },
+              { label: "Highest errors", value: "errors" },
+            ]}
           />
         }
         content={

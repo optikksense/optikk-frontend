@@ -1,18 +1,20 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { ArrowRight, Lock, Mail } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { ROUTES } from "@shared/constants/routes";
-import { cn } from "@shared/lib/utils";
 
 import { safeAuthRedirect } from "@shared/api/auth/redirect";
 import { session } from "@shared/api/auth/session";
 
 import { useAppStore } from "@app/store/appStore";
-
-import type { ReactNode } from "react";
+import {
+  AuthField,
+  AuthSubmitButton,
+  PasswordVisibilityButton,
+} from "../../components/AuthFormControls";
 
 const loginSchema = z.object({
   email: z.string().trim().min(1, "Please enter your email").email("Please enter a valid email"),
@@ -53,8 +55,9 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} autoComplete="off">
-      <Field
+      <AuthField
         id="email"
+        testIdPrefix="login"
         label="Work email"
         type="email"
         value={email}
@@ -64,8 +67,9 @@ export function LoginForm() {
         required
         autoComplete="email"
       />
-      <Field
+      <AuthField
         id="password"
+        testIdPrefix="login"
         label={
           <div className="flex w-full items-center justify-between">
             <span>Password</span>
@@ -84,114 +88,14 @@ export function LoginForm() {
         icon={<Lock size={15} strokeWidth={2} />}
         required
         autoComplete="current-password"
-        endSlot={<ShowHideToggle show={showPassword} onToggle={setShowPassword} />}
+        endSlot={<PasswordVisibilityButton visible={showPassword} onChange={setShowPassword} />}
       />
-      <SubmitButton loading={isSubmitting} />
+      <AuthSubmitButton testIdPrefix="login" loading={isSubmitting}>
+        Sign in
+      </AuthSubmitButton>
       <RequestAccessLine />
       <LegalLine />
     </form>
-  );
-}
-
-interface FieldProps {
-  readonly id: string;
-  readonly label: ReactNode;
-  readonly type: string;
-  readonly value: string;
-  readonly onChange: (value: string) => void;
-  readonly placeholder: string;
-  readonly icon: ReactNode;
-  readonly endSlot?: ReactNode;
-  readonly required?: boolean;
-  readonly autoComplete?: string;
-}
-
-const INPUT_BASE =
-  "h-[42px] w-full rounded-md border border-border bg-card " +
-  "py-0 pl-9 pr-3 font-[inherit] text-[13.5px] text-foreground outline-none " +
-  "transition-[border-color,box-shadow] duration-150 " +
-  "placeholder:text-foreground-muted " +
-  "hover:border-foreground-muted " +
-  "focus:border-primary focus:shadow-[var(--login-focus-ring)]";
-
-function Field({
-  id,
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-  icon,
-  endSlot,
-  required,
-  autoComplete,
-}: FieldProps) {
-  return (
-    <div className="mb-3 grid gap-1.5">
-      <label
-        htmlFor={id}
-        className="flex items-center font-semibold text-[11.5px] text-foreground-secondary uppercase tracking-[0.04em]"
-      >
-        {label}
-      </label>
-      <div className="relative">
-        <span className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-[11px] text-foreground-muted">
-          {icon}
-        </span>
-        <input
-          id={id}
-          data-testid={`login-${id}`}
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          required={required}
-          autoComplete={autoComplete}
-          className={cn(INPUT_BASE, endSlot && "pr-16")}
-        />
-        {endSlot}
-      </div>
-    </div>
-  );
-}
-
-function ShowHideToggle({
-  show,
-  onToggle,
-}: {
-  readonly show: boolean;
-  readonly onToggle: (next: boolean) => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={() => onToggle(!show)}
-      tabIndex={-1}
-      aria-label={show ? "Hide password" : "Show password"}
-      className="-translate-y-1/2 absolute top-1/2 right-2 rounded px-1.5 py-1 font-semibold text-[11px] text-foreground-muted uppercase tracking-[0.04em] transition-colors hover:bg-surface-inset hover:text-foreground-secondary"
-    >
-      {show ? "Hide" : "Show"}
-    </button>
-  );
-}
-
-function SubmitButton({ loading }: { readonly loading: boolean }) {
-  return (
-    <button
-      data-testid="login-submit"
-      type="submit"
-      disabled={loading}
-      className="mt-2 flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-primary bg-primary font-[inherit] font-semibold text-[var(--login-submit-fg)] text-sm transition-[background-color,border-color,transform] duration-150 hover:border-[var(--login-link)] hover:bg-[var(--login-link)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      {loading ? (
-        <span className="h-[16px] w-[16px] animate-[spin_0.6s_linear_infinite] rounded-full border-2 border-transparent border-t-current" />
-      ) : (
-        <>
-          Sign in
-          <ArrowRight size={14} strokeWidth={2.2} />
-        </>
-      )}
-    </button>
   );
 }
 

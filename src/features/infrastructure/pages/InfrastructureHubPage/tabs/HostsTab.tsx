@@ -1,18 +1,11 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useRef } from "react";
 
 import { API_CONFIG } from "@config/apiConfig";
 import { KpiCard } from "@shared/components/ui/cards/StatCard";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
-import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
-import { FacetRail } from "@shared/search/components/facets/FacetRail";
-import {
-  type ClientExplorerDefinition,
-  useClientExplorer,
-} from "@shared/search/hooks/useClientExplorer";
-import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
-import { useExplorerState } from "@shared/search/hooks/useExplorerState";
+import { ClientExplorerLayout } from "@shared/search/components/chrome/ClientExplorerLayout";
+import type { ClientExplorerDefinition } from "@shared/search/hooks/useClientExplorer";
+import { useClientExplorerController } from "@shared/search/hooks/useClientExplorerController";
 
 const V1 = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -42,8 +35,6 @@ const HOSTS_EXPLORER: ClientExplorerDefinition<InfrastructureNode> = {
 
 export default function HostsTab() {
   const navigate = useNavigate();
-  const state = useExplorerState();
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const query = useTimeRangeQuery<readonly InfrastructureNode[]>(
     "infrastructure.hosts.list",
@@ -73,11 +64,7 @@ export default function HostsTab() {
 
   const nodes = query.data ?? [];
   const summary = summaryQ.data;
-  const explorer = useClientExplorer({
-    rows: nodes,
-    filters: state.filters,
-    definition: HOSTS_EXPLORER,
-  });
+  const explorer = useClientExplorerController({ rows: nodes, definition: HOSTS_EXPLORER });
 
   const onOpenNode = (host: string) => {
     navigate({ to: ROUTES.hostDetail.replace("$host", encodeURIComponent(host as string & {})) });
@@ -98,30 +85,12 @@ export default function HostsTab() {
     ? `${(avgMemQ.data.value <= 1 ? avgMemQ.data.value * 100 : avgMemQ.data.value).toFixed(0)}%`
     : "—";
 
-  useExplorerKeyboard({ onSearchFocus: () => searchInputRef.current?.focus() });
-
   return (
-    <ExplorerLayout
+    <ClientExplorerLayout
       embedded
-      header={
-        <ExplorerHeader
-          ref={searchInputRef}
-          sticky={false}
-          scope="infrastructure-hosts"
-          filters={state.filters}
-          onChangeFilters={state.setFilters}
-          valueSuggestions={explorer.valueSuggestions}
-          searchPlaceholder="Search hosts: status:degraded service:checkout errorRate:>=2"
-        />
-      }
-      facets={
-        <FacetRail
-          groups={explorer.facetGroups}
-          onInclude={(field, value) => state.addFilter({ field, op: "eq", value })}
-          activeFilterCount={state.filters.length}
-          onClearAll={state.clearAll}
-        />
-      }
+      {...explorer}
+      scope="infrastructure-hosts"
+      searchPlaceholder="Search hosts: status:degraded service:checkout errorRate:>=2"
       content={
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">

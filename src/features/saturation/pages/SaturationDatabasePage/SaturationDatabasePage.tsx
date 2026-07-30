@@ -1,15 +1,7 @@
-import { useRef } from "react";
-
 import { KpiCard } from "@shared/components/ui/cards/StatCard";
-import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
-import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
-import { FacetRail } from "@shared/search/components/facets/FacetRail";
-import {
-  type ClientExplorerDefinition,
-  useClientExplorer,
-} from "@shared/search/hooks/useClientExplorer";
-import { useExplorerKeyboard } from "@shared/search/hooks/useExplorerKeyboard";
-import { useExplorerState } from "@shared/search/hooks/useExplorerState";
+import { ClientExplorerLayout } from "@shared/search/components/chrome/ClientExplorerLayout";
+import type { ClientExplorerDefinition } from "@shared/search/hooks/useClientExplorer";
+import { useClientExplorerController } from "@shared/search/hooks/useClientExplorerController";
 
 import type { DatastoreSystemRow } from "@/features/saturation/api/datastoresExplorerSchemas";
 import { DatabaseExplorerNav } from "@/features/saturation/components/DatabaseExplorerNav";
@@ -41,42 +33,19 @@ const DATABASE_EXPLORER: ClientExplorerDefinition<DatastoreSystemRow> = {
 export default function SaturationDatabasePage() {
   const systemsQ = useDatastoreSystems();
   const sparklines = useDatabaseSystemSparklines();
-  const state = useExplorerState();
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const systems = systemsQ.data ?? [];
-  const explorer = useClientExplorer({
-    rows: systems,
-    filters: state.filters,
-    definition: DATABASE_EXPLORER,
-  });
+  const explorer = useClientExplorerController({ rows: systems, definition: DATABASE_EXPLORER });
   const healthy = explorer.rows.filter((s) => instanceStatus(s) === "ok").length;
   const attention = explorer.rows.length - healthy;
   const queryCount = explorer.rows.reduce((sum, row) => sum + row.queryCount, 0);
   const loading = systemsQ.isPending && systemsQ.data === undefined;
 
-  useExplorerKeyboard({ onSearchFocus: () => searchInputRef.current?.focus() });
-
   return (
-    <ExplorerLayout
-      header={
-        <ExplorerHeader
-          ref={searchInputRef}
-          scope="database-instances"
-          filters={state.filters}
-          onChangeFilters={state.setFilters}
-          valueSuggestions={explorer.valueSuggestions}
-          searchPlaceholder="Search database systems: status:degraded system:postgresql p95Ms:>=500"
-          actions={<DatabaseExplorerNav active="systems" />}
-        />
-      }
-      facets={
-        <FacetRail
-          groups={explorer.facetGroups}
-          onInclude={(field, value) => state.addFilter({ field, op: "eq", value })}
-          activeFilterCount={state.filters.length}
-          onClearAll={state.clearAll}
-        />
-      }
+    <ClientExplorerLayout
+      {...explorer}
+      scope="database-instances"
+      searchPlaceholder="Search database systems: status:degraded system:postgresql p95Ms:>=500"
+      actions={<DatabaseExplorerNav active="systems" />}
       content={
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
