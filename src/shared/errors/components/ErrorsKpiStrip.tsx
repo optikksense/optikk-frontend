@@ -7,25 +7,25 @@ import type { ErrorsOverview } from "../api/types";
 interface ErrorsKpiStripProps {
   readonly summary: ErrorsOverview["summary"] | undefined;
   readonly trend: ErrorsOverview["trend"] | undefined;
+  readonly unavailable?: boolean;
 }
 
-const EMPTY_SUMMARY: ErrorsOverview["summary"] = {
-  totalErrors: 0,
-  activeIssues: 0,
-  newIssues: 0,
-  servicesAffected: 0,
-};
-
-export function ErrorsKpiStrip({ summary, trend }: ErrorsKpiStripProps): JSX.Element {
-  const kpis = summary ?? EMPTY_SUMMARY;
+export function ErrorsKpiStrip({
+  summary,
+  trend,
+  unavailable = false,
+}: ErrorsKpiStripProps): JSX.Element {
   const series = trend?.map((b) => b.errors) ?? [];
+  const value = (metric: keyof ErrorsOverview["summary"]) =>
+    summary ? formatNumber(summary[metric]) : "—";
+  const subtext = unavailable ? "unavailable" : undefined;
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <KpiCard
         label="Total errors"
-        value={formatNumber(kpis.totalErrors)}
-        subtext="selected range"
+        value={value("totalErrors")}
+        subtext={subtext ?? "selected range"}
         tone="err"
         sparkline={
           series.length >= 2 ? (
@@ -41,20 +41,20 @@ export function ErrorsKpiStrip({ summary, trend }: ErrorsKpiStripProps): JSX.Ele
       />
       <KpiCard
         label="Active issues"
-        value={formatNumber(kpis.activeIssues)}
-        subtext="grouped errors"
+        value={value("activeIssues")}
+        subtext={subtext ?? "grouped errors"}
         tone="warn"
       />
       <KpiCard
         label="New issues"
-        value={formatNumber(kpis.newIssues)}
-        subtext="first seen < 24h"
+        value={value("newIssues")}
+        subtext={subtext ?? "first seen < 24h"}
         tone="neutral"
       />
       <KpiCard
         label="Services affected"
-        value={formatNumber(kpis.servicesAffected)}
-        subtext="with active issues"
+        value={value("servicesAffected")}
+        subtext={subtext ?? "with active issues"}
         tone="neutral"
       />
     </div>

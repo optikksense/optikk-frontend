@@ -352,6 +352,29 @@ const INFRASTRUCTURE_CONTAINER_KNOWN_FIELDS: readonly KnownField[] = [
   ...INFRASTRUCTURE_HOST_KNOWN_FIELDS,
 ];
 
+const DATABASE_INSTANCE_KNOWN_FIELDS: readonly KnownField[] = [
+  domainField("system", "System", "string", "Database engine"),
+  domainField("category", "Category", "string", "Database or cache"),
+  domainField("status", "Status", "string", "Derived system health status"),
+  domainField("queryCount", "Queries", "number", "Queries observed in the selected range"),
+  domainField("avgMs", "Average latency", "number", "Average query latency in milliseconds"),
+  domainField("p95Ms", "P95 latency", "number", "95th percentile query latency in milliseconds"),
+  domainField("errorRate", "Error rate", "number", "Percentage of errored queries"),
+  domainField("connections", "Connections", "number", "Latest open connection count"),
+];
+
+const DATABASE_QUERY_KNOWN_FIELDS: readonly KnownField[] = [
+  domainField("dbSystem", "System", "string", "Database engine"),
+  domainField("collection", "Database", "string", "Database or collection name"),
+  domainField("service", "Service", "string", "Service issuing the query"),
+  domainField("queryText", "Query", "string", "Normalized query text"),
+  domainField("callCount", "Calls", "number", "Executions in the selected range"),
+  domainField("errorCount", "Errors", "number", "Errored executions in the selected range"),
+  domainField("p50Ms", "P50 latency", "number", "Median query latency in milliseconds"),
+  domainField("p95Ms", "P95 latency", "number", "95th percentile query latency in milliseconds"),
+  domainField("p99Ms", "P99 latency", "number", "99th percentile query latency in milliseconds"),
+];
+
 export const CATEGORY_ORDER: readonly FieldCategory[] = [
   "Common",
   "Identifiers",
@@ -472,6 +495,22 @@ const QUICK_TEMPLATES_INFRASTRUCTURE: readonly QuickTemplate[] = [
   { label: "By service", query: "service:", description: "Filter by hosted service" },
 ];
 
+const QUICK_TEMPLATES_DATABASE: readonly QuickTemplate[] = [
+  {
+    label: "Needs attention",
+    query: "status:(degraded OR critical)",
+    description: "Unhealthy systems",
+  },
+  { label: "Slow P95", query: "p95Ms:>=500", description: "P95 latency at least 500ms" },
+  { label: "By system", query: "system:", description: "Filter by database engine" },
+];
+
+const QUICK_TEMPLATES_DATABASE_QUERIES: readonly QuickTemplate[] = [
+  { label: "Slow P99", query: "p99Ms:>=500", description: "P99 latency at least 500ms" },
+  { label: "With errors", query: "errorCount:>0", description: "Queries with errors" },
+  { label: "By system", query: "dbSystem:", description: "Filter by database engine" },
+];
+
 const SYNTAX_EXAMPLES_LOGS: readonly QuickTemplate[] = [
   { label: "Exclude", query: "-severityText:INFO", description: "Leading - negates a filter" },
   {
@@ -588,6 +627,18 @@ const SCOPE_DSL: Readonly<Record<ExplorerScope, ScopeDsl>> = {
     fields: INFRASTRUCTURE_CONTAINER_KNOWN_FIELDS,
     suggestable: new Set(),
     templates: QUICK_TEMPLATES_INFRASTRUCTURE,
+    syntax: SYNTAX_EXAMPLES_TRACES,
+  },
+  "database-instances": {
+    fields: DATABASE_INSTANCE_KNOWN_FIELDS,
+    suggestable: new Set(),
+    templates: QUICK_TEMPLATES_DATABASE,
+    syntax: SYNTAX_EXAMPLES_TRACES,
+  },
+  "database-queries": {
+    fields: DATABASE_QUERY_KNOWN_FIELDS,
+    suggestable: new Set(),
+    templates: QUICK_TEMPLATES_DATABASE_QUERIES,
     syntax: SYNTAX_EXAMPLES_TRACES,
   },
 };

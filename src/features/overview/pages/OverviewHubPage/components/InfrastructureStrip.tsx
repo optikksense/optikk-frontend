@@ -25,7 +25,7 @@ const TILES: readonly InfraTile[] = [
     key: "database",
     label: "Database",
     description: "Connections · queries · replica lag",
-    route: ROUTES.saturationDatabase,
+    route: ROUTES.database,
     icon: <Database size={14} />,
   },
 ];
@@ -41,10 +41,10 @@ export default function InfrastructureStrip() {
         </span>
         <button
           type="button"
-          onClick={() => navigate({ to: ROUTES.saturationDatabase })}
+          onClick={() => navigate({ to: ROUTES.database })}
           className="text-[11px] text-primary hover:underline"
         >
-          Saturation hub →
+          Database explorer →
         </button>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

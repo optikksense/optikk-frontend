@@ -23,7 +23,7 @@ export type SubsystemCardSpec = {
 
 const SUBSYSTEM_ROUTES: Record<SubsystemCardSpec["id"], string> = {
   kafka: ROUTES.saturationKafkaOverview,
-  database: ROUTES.saturationDatabase,
+  database: ROUTES.database,
   redis: ROUTES.saturation,
 };
 

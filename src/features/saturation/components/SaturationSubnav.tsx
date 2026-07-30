@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ROUTES } from "@/shared/constants/routes";
 import { cn } from "@shared/lib/utils";
 
-type SaturationHubTab = "overview" | "kafka" | "database";
+type SaturationHubTab = "overview" | "kafka";
 
 interface SaturationSubnavProps {
   readonly active: SaturationHubTab;
@@ -19,7 +19,6 @@ interface Item {
 const ITEMS: ReadonlyArray<Item> = [
   { id: "overview", label: "Overview", href: ROUTES.saturation },
   { id: "kafka", label: "Kafka", href: ROUTES.saturationKafkaOverview },
-  { id: "database", label: "Database", href: ROUTES.saturationDatabase },
 ];
 
 function Count({ value }: { value: number }) {

@@ -83,10 +83,12 @@ export function useErrorsExplorer(args: UseErrorsExplorerArgs = {}) {
   return {
     state,
     groups: groupsQuery.data?.groups ?? [],
-    error: groupsQuery.error as Error | null,
+    groupsError: groupsQuery.error as Error | null,
     isPending: groupsQuery.isPending && !groupsQuery.data,
     summary: overviewQuery.data?.summary,
     trend: overviewQuery.data?.trend,
+    overviewError: overviewQuery.error as Error | null,
+    refetchOverview: overviewQuery.refetch,
     facetGroups: toFacetGroups(facetsQuery.data),
     onOpenGroup,
     onTimeRangeChange,

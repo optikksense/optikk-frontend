@@ -11,10 +11,7 @@ export default function SaturationPage(): JSX.Element {
   return (
     <div className="flex min-w-0 flex-col gap-5 px-1 pt-1 pb-7 font-[Geist,'Inter_Tight',ui-sans-serif,system-ui,sans-serif] text-[13px] text-[var(--fg-1)] [font-feature-settings:'ss01','cv11','tnum'] [&_*]:box-border [&_.mono]:font-['Geist_Mono','JetBrains_Mono',ui-monospace,monospace] [&_code]:font-['Geist_Mono','JetBrains_Mono',ui-monospace,monospace]">
       <SaturationOverviewHeader summary={model.summary} />
-      <SaturationSubnav
-        active="overview"
-        counts={{ kafka: model.counts.topics, database: model.counts.database }}
-      />
+      <SaturationSubnav active="overview" counts={{ kafka: model.counts.topics }} />
 
       {model.error ? (
         <div

@@ -28,17 +28,37 @@ function toBuckets(trend: ErrorsExplorerModel["trend"]): readonly TrendChartBuck
 export function ErrorsExplorerContent({ model }: { readonly model: ErrorsExplorerModel }) {
   return (
     <>
-      {model.error ? (
+      {model.groupsError ? (
         <div
           className="mb-4 rounded-md border border-error bg-error-subtle px-3 py-2 text-error text-sm"
           role="alert"
         >
-          Could not load error groups: {model.error.message}
+          Could not load error groups: {model.groupsError.message}
+        </div>
+      ) : null}
+
+      {model.overviewError ? (
+        <div
+          className="mb-4 flex items-center justify-between gap-3 rounded-md border border-error bg-error-subtle px-3 py-2 text-error text-sm"
+          role="alert"
+        >
+          <span>Could not load error summary: {model.overviewError.message}</span>
+          <button
+            type="button"
+            className="shrink-0 font-medium text-primary hover:underline"
+            onClick={() => void model.refetchOverview()}
+          >
+            Retry
+          </button>
         </div>
       ) : null}
 
       <div className="mb-4 shrink-0">
-        <ErrorsKpiStrip summary={model.summary} trend={model.trend} />
+        <ErrorsKpiStrip
+          summary={model.summary}
+          trend={model.trend}
+          unavailable={Boolean(model.overviewError)}
+        />
       </div>
 
       <div className="shrink-0">

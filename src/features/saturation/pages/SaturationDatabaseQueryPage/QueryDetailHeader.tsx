@@ -17,7 +17,7 @@ function Breadcrumb() {
     <div className="mb-3 flex items-center gap-1.5 text-[12px] text-foreground-muted">
       <span className="text-foreground">Saturation</span>
       <span aria-hidden="true">/</span>
-      <Link to={ROUTES.saturationDatabase} className="hover:text-foreground">
+      <Link to={ROUTES.databaseQueries} className="hover:text-foreground">
         Database
       </Link>
       <span aria-hidden="true">/</span>

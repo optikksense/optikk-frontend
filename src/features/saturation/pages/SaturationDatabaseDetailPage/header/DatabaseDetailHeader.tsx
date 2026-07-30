@@ -27,7 +27,7 @@ export function DatabaseDetailHeader({ row }: { row: DatastoreSystemRow }) {
   return (
     <header className="flex flex-col gap-3">
       <Link
-        to={ROUTES.saturationDatabase}
+        to={ROUTES.database}
         className="flex w-fit items-center gap-1.5 text-[12px] text-foreground-muted hover:text-foreground"
       >
         <ArrowLeft size={13} />

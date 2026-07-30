@@ -1,4 +1,4 @@
-import { Gauge } from "lucide-react";
+import { Database, Gauge } from "lucide-react";
 
 import type { DomainConfig } from "@/app/registry/domainRegistry";
 import { ROUTES } from "@/shared/constants/routes";
@@ -7,6 +7,12 @@ export const saturationConfig: DomainConfig = {
   key: "saturation",
   label: "Saturation",
   navigation: [
+    {
+      path: ROUTES.database,
+      label: "Database",
+      icon: Database,
+      group: "telemetry",
+    },
     {
       path: ROUTES.saturation,
       label: "Saturation",

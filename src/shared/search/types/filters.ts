@@ -34,4 +34,6 @@ export type ExplorerScope =
   | "services"
   | "llm-traces"
   | "infrastructure-hosts"
-  | "infrastructure-containers";
+  | "infrastructure-containers"
+  | "database-instances"
+  | "database-queries";

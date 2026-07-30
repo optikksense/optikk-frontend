@@ -146,7 +146,7 @@ export function DatabaseInstancesTable({ rows, loading, sparklines }: DatabaseIn
         onRow: (row) => ({
           onClick: () =>
             navigate({
-              to: ROUTES.saturationDatabaseDetail.replace(
+              to: ROUTES.databaseInstance.replace(
                 "$system",
                 encodeURIComponent(row.system)
               ) as never,
