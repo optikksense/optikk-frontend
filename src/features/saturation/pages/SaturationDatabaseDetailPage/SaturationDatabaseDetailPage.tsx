@@ -1,5 +1,4 @@
-import { useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 
 import { PageTabs } from "@shared/components/primitives/ui/page-tabs";
 import { PageShell } from "@shared/components/ui/layout/PageShell";
@@ -19,10 +18,13 @@ const TABS = [
 type TabKey = (typeof TABS)[number]["key"];
 
 export default function SaturationDatabaseDetailPage(): JSX.Element {
+  const navigate = useNavigate();
   const params = useParams({ strict: false });
+  const search = useSearch({ strict: false }) as { tab?: unknown };
   const system = typeof params.system === "string" ? decodeURIComponent(params.system) : "";
   const { row, isPending } = useDatabaseInstance(system);
-  const [tab, setTab] = useState<TabKey>("overview");
+  const tab: TabKey =
+    search.tab === "queries" || search.tab === "collections" ? search.tab : "overview";
 
   if (!row) {
     return (
@@ -38,7 +40,19 @@ export default function SaturationDatabaseDetailPage(): JSX.Element {
     <PageShell>
       <div className="flex flex-col gap-4">
         <DatabaseDetailHeader row={row} />
-        <PageTabs items={TABS} activeKey={tab} onChange={(key) => setTab(key as TabKey)} />
+        <PageTabs
+          items={TABS}
+          activeKey={tab}
+          onChange={(key) =>
+            navigate({
+              search: ((previous: Record<string, unknown>) => ({
+                ...previous,
+                tab: key === "overview" ? undefined : key,
+              })) as never,
+              replace: true,
+            })
+          }
+        />
         {tab === "overview" && <DatabaseOverviewTab system={system} />}
         {tab === "queries" && <DatabaseQueriesTab system={system} />}
         {tab === "collections" && <DatabaseCollectionsTab system={system} />}
