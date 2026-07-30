@@ -6,5 +6,5 @@ import { ROUTES } from "@/shared/constants/routes";
 export const logsConfig: DomainConfig = {
   key: "logs",
   label: "Logs",
-  navigation: [{ path: ROUTES.logs, label: "Logs", icon: FileText, group: "observe" }],
+  navigation: [{ path: ROUTES.logs, label: "Logs", icon: FileText, group: "telemetry" }],
 };

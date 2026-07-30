@@ -11,13 +11,13 @@ export const overviewConfig: DomainConfig = {
       path: ROUTES.overview,
       label: "Overview",
       icon: LayoutDashboard,
-      group: "observe",
+      group: "pinned",
     },
     {
       path: ROUTES.services,
       label: "Service",
       icon: Server,
-      group: "observe",
+      group: "apm",
     },
   ],
 };

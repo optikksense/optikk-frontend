@@ -28,6 +28,8 @@ export const ROUTES = {
   containerDetail: "/infrastructure/containers/$container",
   errors: "/errors",
   errorGroupDetail: "/errors/$groupId",
+  deployments: "/deployments",
+  deploymentDetail: "/deployments/$service/$version",
   saturation: "/saturation",
   saturationDatabase: "/saturation/database",
   saturationDatabaseDetail: "/saturation/database/instance/$system",

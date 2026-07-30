@@ -4,6 +4,7 @@ import type uPlot from "uplot";
 import { cn } from "@shared/lib/utils";
 
 import UPlotChart from "./UPlotChart";
+import type { ChartMarker } from "./chartMarkers";
 import {
   type ThresholdLine,
   defaultAxes,
@@ -46,6 +47,7 @@ interface ObservabilityChartProps {
   plugins?: uPlot.Plugin[];
   /** Horizontal reference lines (e.g. monitor warn/alert thresholds). */
   thresholds?: ThresholdLine[];
+  markers?: readonly ChartMarker[];
   onTimeBrush?: (startMs: number, endMs: number) => void;
   isLoading?: boolean;
 }
@@ -67,6 +69,7 @@ function ObservabilityChart({
   className,
   plugins,
   thresholds,
+  markers,
   onTimeBrush,
   isLoading = false,
 }: ObservabilityChartProps) {
@@ -247,6 +250,7 @@ function ObservabilityChart({
         fillHeight={fillHeight}
         tooltipContent={tooltipContent}
         onTimeBrush={handleTimeBrush}
+        markers={markers}
       />
       {isLoading ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-[2px]">

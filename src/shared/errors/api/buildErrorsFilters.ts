@@ -26,6 +26,7 @@ interface ErrorsFiltersBody {
   limit?: number;
   cursor?: string;
   services?: string[];
+  serviceVersions?: string[];
   excludeServices?: string[];
   operations?: string[];
   httpStatuses?: string[];
@@ -48,6 +49,7 @@ const LIST_FIELDS: Record<
 > = {
   service: { include: "services", exclude: "excludeServices" },
   serviceName: { include: "services", exclude: "excludeServices" },
+  serviceVersion: { include: "serviceVersions" },
   operation: { include: "operations" },
   httpStatus: { include: "httpStatuses" },
   environment: { include: "environments" },

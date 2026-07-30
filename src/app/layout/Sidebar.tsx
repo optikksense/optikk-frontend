@@ -3,7 +3,7 @@ import { ChevronsLeft, ChevronsRight, LogOut, Settings } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
-import { getDomainNavigationItems } from "@/app/registry/domainRegistry";
+import { NAV_GROUPS, getDomainNavigationItems } from "@/app/registry/domainRegistry";
 import { OptikkLogo } from "@/shared/components/brand/OptikkLogo";
 import { ROUTES } from "@/shared/constants/routes";
 import { Tooltip } from "@shared/components/primitives/ui/tooltip";
@@ -32,13 +32,8 @@ export default function Sidebar() {
 
   const navEntries = staticNavEntries;
 
-  const observeItems = useMemo(
-    () => navEntries.filter((entry) => entry.group === "observe"),
-    [navEntries]
-  );
-
-  const operateItems = useMemo(
-    () => navEntries.filter((entry) => entry.group === "operate"),
+  const pinnedItems = useMemo(
+    () => navEntries.filter((entry) => entry.group === "pinned"),
     [navEntries]
   );
 
@@ -69,9 +64,9 @@ export default function Sidebar() {
       extra
     );
 
-  const renderNavGroup = (label: string, items: typeof observeItems) => (
+  const renderNavGroup = (label: string | undefined, items: typeof navEntries) => (
     <div className="mb-[var(--space-xs)]" key={label}>
-      {!sidebarCollapsed && (
+      {!sidebarCollapsed && label && (
         <div className="px-[var(--space-xs)] pt-[var(--space-xs)] pb-[var(--space-2xs)] font-semibold text-[9px] text-[var(--text-caption,var(--text-muted))] uppercase leading-[22px] tracking-[0.7px]">
           {label}
         </div>
@@ -133,8 +128,13 @@ export default function Sidebar() {
           className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-[var(--space-xs)]"
           aria-label="Main navigation"
         >
-          {renderNavGroup("Observe", observeItems)}
-          {renderNavGroup("Operate", operateItems)}
+          {renderNavGroup(undefined, pinnedItems)}
+          {NAV_GROUPS.map((group) =>
+            renderNavGroup(
+              group.label,
+              navEntries.filter((entry) => entry.group === group.key)
+            )
+          )}
         </nav>
 
         <div className="shrink-0 border-border border-t">

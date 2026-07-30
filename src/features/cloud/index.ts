@@ -11,7 +11,7 @@ export const cloudConfig: DomainConfig = {
       path: ROUTES.cloud,
       label: "Cloud",
       icon: Cloud,
-      group: "operate",
+      group: "infrastructure",
     },
   ],
 };

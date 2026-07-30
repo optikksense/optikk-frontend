@@ -53,3 +53,57 @@ export function hostEqualsFilter(host: string): ExplorerFilter {
 export function podEqualsFilter(podName: string): ExplorerFilter {
   return { field: "pod", op: "eq", value: podName };
 }
+
+function buildExplorerHref(
+  route: string,
+  filters: readonly ExplorerFilter[],
+  fromMs: number,
+  toMs: number
+): string {
+  const params = new URLSearchParams({
+    filters: encodeFilters(filters),
+    from: String(fromMs),
+    to: String(toMs),
+  });
+  return `${route}?${params.toString()}`;
+}
+
+/** Deep-link to raw spans for exactly one deployed service version and window. */
+export function buildDeploymentTracesHref(opts: {
+  readonly service: string;
+  readonly version: string;
+  readonly environment: string;
+  readonly fromMs: number;
+  readonly toMs: number;
+}): string {
+  return buildExplorerHref(
+    ROUTES.traces,
+    [
+      { field: "service", op: "eq", value: opts.service },
+      { field: "serviceVersion", op: "eq", value: opts.version },
+      { field: "environment", op: "eq", value: opts.environment },
+    ],
+    opts.fromMs,
+    opts.toMs
+  );
+}
+
+/** Deep-link to error groups for exactly one deployed service version and window. */
+export function buildDeploymentErrorsHref(opts: {
+  readonly service: string;
+  readonly version: string;
+  readonly environment: string;
+  readonly fromMs: number;
+  readonly toMs: number;
+}): string {
+  return buildExplorerHref(
+    ROUTES.errors,
+    [
+      { field: "service", op: "eq", value: opts.service },
+      { field: "serviceVersion", op: "eq", value: opts.version },
+      { field: "environment", op: "eq", value: opts.environment },
+    ],
+    opts.fromMs,
+    opts.toMs
+  );
+}

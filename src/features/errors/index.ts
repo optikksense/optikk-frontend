@@ -6,5 +6,5 @@ import { ROUTES } from "@/shared/constants/routes";
 export const errorsConfig: DomainConfig = {
   key: "errors",
   label: "Errors",
-  navigation: [{ path: ROUTES.errors, label: "Errors", icon: Bug, group: "observe" }],
+  navigation: [{ path: ROUTES.errors, label: "Errors", icon: Bug, group: "apm" }],
 };

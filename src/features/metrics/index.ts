@@ -11,7 +11,7 @@ export const metricsConfig: DomainConfig = {
       path: ROUTES.metrics,
       label: "Metrics",
       icon: BarChart3,
-      group: "observe",
+      group: "telemetry",
     },
   ],
 };

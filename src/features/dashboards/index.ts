@@ -11,7 +11,7 @@ export const dashboardsConfig: DomainConfig = {
       path: ROUTES.dashboards,
       label: "Dashboards",
       icon: LayoutGrid,
-      group: "observe",
+      group: "operate",
     },
   ],
 };

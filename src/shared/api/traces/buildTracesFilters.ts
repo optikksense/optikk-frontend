@@ -26,6 +26,7 @@ interface TracesFiltersBody {
   limit?: number;
   cursor?: string;
   services?: string[];
+  serviceVersions?: string[];
   excludeServices?: string[];
   operations?: string[];
   spanKinds?: string[];
@@ -53,6 +54,7 @@ const LIST_FIELDS: Record<
 > = {
   service: { include: "services", exclude: "excludeServices" },
   serviceName: { include: "services", exclude: "excludeServices" },
+  serviceVersion: { include: "serviceVersions" },
   operation: { include: "operations" },
   spanKind: { include: "spanKinds" },
   httpMethod: { include: "httpMethods" },

@@ -11,7 +11,7 @@ export const saturationConfig: DomainConfig = {
       path: ROUTES.saturation,
       label: "Saturation",
       icon: Gauge,
-      group: "operate",
+      group: "infrastructure",
     },
   ],
 };

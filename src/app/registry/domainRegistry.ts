@@ -1,5 +1,6 @@
 import { cloudConfig } from "@/features/cloud";
 import { dashboardsConfig } from "@/features/dashboards";
+import { deploymentsConfig } from "@/features/deployments";
 import { errorsConfig } from "@/features/errors";
 import { infrastructureConfig } from "@/features/infrastructure";
 import { llmConfig } from "@/features/llm";
@@ -16,7 +17,7 @@ export interface DomainNavigationItem {
   readonly path: string;
   readonly label: string;
   readonly icon: LucideIcon;
-  readonly group: string;
+  readonly group: NavGroupKey | "pinned";
 }
 
 export interface DomainConfig {
@@ -25,16 +26,26 @@ export interface DomainConfig {
   readonly navigation: readonly DomainNavigationItem[];
 }
 
+export const NAV_GROUPS = [
+  { key: "apm", label: "APM" },
+  { key: "telemetry", label: "Telemetry" },
+  { key: "infrastructure", label: "Infrastructure" },
+  { key: "operate", label: "Operate" },
+] as const;
+
+type NavGroupKey = (typeof NAV_GROUPS)[number]["key"];
+
 const domainRegistry: readonly DomainConfig[] = [
   overviewConfig,
-  saturationConfig,
-  metricsConfig,
-  logsConfig,
   tracesConfig,
   errorsConfig,
+  deploymentsConfig,
+  metricsConfig,
+  logsConfig,
   llmConfig,
   infrastructureConfig,
   cloudConfig,
+  saturationConfig,
   monitorsConfig,
   dashboardsConfig,
 ] as const;

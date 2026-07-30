@@ -11,7 +11,7 @@ export const infrastructureConfig: DomainConfig = {
       path: ROUTES.infrastructure,
       label: "Infrastructure",
       icon: HardDrive,
-      group: "operate",
+      group: "infrastructure",
     },
   ],
 };
