@@ -35,6 +35,12 @@ function parsePrefill(): Partial<CreateMonitorPayload> {
     out.type = "apm";
   } else if (from === "logs") {
     out.type = "log";
+  } else if (from === "metrics") {
+    out.type = "metric";
+    const metricName = params.get("metric");
+    if (metricName) {
+      out.query = { metric: { metric: metricName, aggregation: "avg", windowSec: 300 } };
+    }
   }
   if (filters) {
     const tags = filters

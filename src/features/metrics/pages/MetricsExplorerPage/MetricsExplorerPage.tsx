@@ -64,7 +64,16 @@ export default function MetricsExplorerPage() {
         title="Metrics Explorer"
         icon={<BarChart3 size={22} />}
         subtitle="Query, slice and correlate metrics across your services."
-        actions={<MetricsHeaderActions primaryQuery={primaryQuery} primaryResult={primaryResult} />}
+        actions={
+          <MetricsHeaderActions
+            primaryQuery={primaryQuery}
+            primaryResult={primaryResult}
+            queries={queries}
+            formulas={formulas}
+            step={step}
+            spaceAgg={spaceAgg}
+          />
+        }
       />
 
       {}

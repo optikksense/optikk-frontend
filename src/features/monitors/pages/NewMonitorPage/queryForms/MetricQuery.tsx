@@ -1,5 +1,7 @@
 import type { CreateMonitorPayload, MetricQueryShape } from "../../../api/monitorsApi";
 
+import { MetricSelector } from "@shared/metrics/components/MetricQueryBuilder/MetricSelector";
+
 import FieldRow from "./FieldRow";
 
 interface Props {
@@ -26,11 +28,9 @@ export default function MetricQuery({ draft, setDraft }: Props) {
   return (
     <>
       <FieldRow label="Metric">
-        <input
+        <MetricSelector
           value={q.metric}
-          onChange={(e) => update({ metric: e.target.value })}
-          placeholder="e.g. trace.errors.payment_svc"
-          className="w-full rounded border border-border bg-card px-2.5 py-1.5 font-mono text-xs"
+          onChange={(name) => update({ metric: name })}
         />
       </FieldRow>
       <FieldRow label="Aggregation">
