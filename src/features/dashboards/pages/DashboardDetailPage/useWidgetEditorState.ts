@@ -15,7 +15,7 @@ import {
   type WidgetSize,
   type WidgetVizType,
   createDefaultEditorState,
-} from "../../builder/metricsWidget";
+} from "@shared/dashboards/builder/metricsWidget";
 
 let formulaCounter = 0;
 

@@ -5,8 +5,8 @@ import { useMemo, useState } from "react";
 import { ROUTES } from "@/shared/constants/routes";
 import { useAuthUser } from "@app/store/authStore";
 
-import type { DashboardPage } from "../../api/dashboardsApi";
-import { useDashboardPagesList } from "../../hooks/useDashboardPages";
+import type { DashboardPage } from "@shared/dashboards/api/dashboardsApi";
+import { useDashboardPagesList } from "@shared/dashboards/hooks/useDashboardPages";
 import { CreatePageDrawer } from "../DashboardsPage/CreatePageDrawer";
 import { pageIcon } from "../DashboardsPage/pageVisuals";
 

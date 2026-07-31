@@ -1,6 +1,6 @@
 import { MetricSegmentedControl } from "@shared/metrics/components/MetricSegmentedControl";
 
-import type { WidgetDisplayOptions, WidgetSize } from "../../../builder/metricsWidget";
+import type { WidgetDisplayOptions, WidgetSize } from "@shared/dashboards/builder/metricsWidget";
 
 const SIZE_OPTIONS: ReadonlyArray<{ readonly value: WidgetSize; readonly label: string }> = [
   { value: "sm", label: "S" },

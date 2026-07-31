@@ -11,9 +11,9 @@ import type {
   CreateDashboardPagePayload,
   Dashboard,
   DashboardPageDetail,
-} from "../../api/dashboardsApi";
+} from "@shared/dashboards/api/dashboardsApi";
+import { useDashboardPageDetail } from "@shared/dashboards/hooks/useDashboardPages";
 import { useDeleteWidget, useUpdateDashboardPage } from "../../hooks/useDashboardMutations";
-import { useDashboardPageDetail } from "../../hooks/useDashboardPages";
 import { pageIcon } from "../DashboardsPage/pageVisuals";
 import { PagesRail } from "./PagesRail";
 import { WidgetCard } from "./WidgetCard";

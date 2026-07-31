@@ -7,7 +7,7 @@ import { Modal } from "@shared/components/primitives/ui/dialog";
 import { DropdownMenu, DropdownMenuItem } from "@shared/components/primitives/ui/dropdown-menu";
 import { cn } from "@shared/lib/utils";
 
-import type { DashboardPage } from "../../api/dashboardsApi";
+import type { DashboardPage } from "@shared/dashboards/api/dashboardsApi";
 import { useDeleteDashboardPage } from "../../hooks/useDashboardMutations";
 import { pageIcon } from "./pageVisuals";
 

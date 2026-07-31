@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 
 import { MetricQueryBuilder } from "@shared/metrics/components/MetricQueryBuilder/MetricQueryBuilder";
 
-import type { Dashboard } from "../../api/dashboardsApi";
-import { editorStateToPayload, specToEditorState } from "../../builder/metricsWidget";
+import type { Dashboard } from "@shared/dashboards/api/dashboardsApi";
+import { editorStateToPayload, specToEditorState } from "@shared/dashboards/builder/metricsWidget";
 import { useCreateWidget, useUpdateWidget } from "../../hooks/useDashboardMutations";
 import { DataSourceRow } from "./editor/DataSourceRow";
 import { VizTypePicker } from "./editor/VizTypePicker";

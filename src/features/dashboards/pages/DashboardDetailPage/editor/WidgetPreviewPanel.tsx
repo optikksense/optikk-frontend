@@ -3,7 +3,7 @@ import { TIME_STEP_OPTIONS } from "@shared/metrics/constants";
 import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplorerQuery";
 import type { TimeStep } from "@shared/metrics/types";
 
-import type { WidgetEditorState } from "../../../builder/metricsWidget";
+import type { WidgetEditorState } from "@shared/dashboards/builder/metricsWidget";
 import { WidgetVizRenderer } from "../../../components/WidgetVizRenderer";
 
 const PREVIEW_HEIGHT = 260;

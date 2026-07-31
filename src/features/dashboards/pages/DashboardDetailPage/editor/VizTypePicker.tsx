@@ -2,7 +2,7 @@ import { BarChart3, Hash, LineChart, type LucideIcon, Table2 } from "lucide-reac
 
 import { cn } from "@shared/lib/utils";
 
-import type { WidgetVizType } from "../../../builder/metricsWidget";
+import type { WidgetVizType } from "@shared/dashboards/builder/metricsWidget";
 
 const VIZ_OPTIONS: ReadonlyArray<{
   readonly value: WidgetVizType;

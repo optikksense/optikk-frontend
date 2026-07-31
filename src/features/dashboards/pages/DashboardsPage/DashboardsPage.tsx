@@ -6,8 +6,8 @@ import SearchInput from "@shared/components/ui/forms/SearchInput";
 import PageHeader from "@shared/components/ui/layout/PageHeader";
 import { PageShell } from "@shared/components/ui/layout/PageShell";
 
-import type { DashboardPage, ListDashboardPagesParams } from "../../api/dashboardsApi";
-import { useDashboardPagesList } from "../../hooks/useDashboardPages";
+import type { DashboardPage, ListDashboardPagesParams } from "@shared/dashboards/api/dashboardsApi";
+import { useDashboardPagesList } from "@shared/dashboards/hooks/useDashboardPages";
 import { CatalogLeftRail, type CatalogView } from "./CatalogLeftRail";
 import { CreatePageDrawer } from "./CreatePageDrawer";
 import { CreatePageTile, PageCard } from "./PageCard";

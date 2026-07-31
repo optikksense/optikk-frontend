@@ -14,7 +14,7 @@ import { buildSeries } from "@shared/metrics/utils/chartSeries";
 import { formatStatValue } from "@shared/metrics/utils/formatStat";
 import { computeQuerySummary, computeSeriesStats } from "@shared/metrics/utils/seriesStats";
 
-import type { WidgetDisplayOptions, WidgetVizType } from "../builder/metricsWidget";
+import type { WidgetDisplayOptions, WidgetVizType } from "@shared/dashboards/builder/metricsWidget";
 
 const MAX_SERIES = 100;
 

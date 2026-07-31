@@ -5,8 +5,8 @@ import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplore
 import { isMetricsQuerySpec } from "@shared/types/dashboardConfig";
 import type { DashboardPanelSpec } from "@shared/types/dashboardConfig";
 
-import type { Dashboard } from "../../api/dashboardsApi";
-import { panelTypeToViz } from "../../builder/metricsWidget";
+import type { Dashboard } from "@shared/dashboards/api/dashboardsApi";
+import { panelTypeToViz } from "@shared/dashboards/builder/metricsWidget";
 import { WidgetVizRenderer } from "../../components/WidgetVizRenderer";
 
 const ROW_PX = 88;

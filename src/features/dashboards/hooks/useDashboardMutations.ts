@@ -11,7 +11,7 @@ import {
   deleteWidget,
   updateDashboardPage,
   updateWidget,
-} from "../api/dashboardsApi";
+} from "@shared/dashboards/api/dashboardsApi";
 
 const invalidateList = (client: ReturnType<typeof useQueryClient>) =>
   void client.invalidateQueries({ queryKey: ["dashboards", "pages"] });
