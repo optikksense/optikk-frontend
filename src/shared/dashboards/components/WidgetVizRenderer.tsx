@@ -2,6 +2,7 @@ import { AlertCircle, BarChart3 } from "lucide-react";
 import { useMemo } from "react";
 
 import ObservabilityChart from "@shared/components/ui/charts/ObservabilityChart";
+import type { WidgetDisplayOptions, WidgetVizType } from "@shared/dashboards/builder/metricsWidget";
 import { DeltaBadge } from "@shared/metrics/components/DeltaBadge";
 import type {
   FormulaDefinition,
@@ -13,8 +14,6 @@ import type {
 import { buildSeries } from "@shared/metrics/utils/chartSeries";
 import { formatStatValue } from "@shared/metrics/utils/formatStat";
 import { computeQuerySummary, computeSeriesStats } from "@shared/metrics/utils/seriesStats";
-
-import type { WidgetDisplayOptions, WidgetVizType } from "@shared/dashboards/builder/metricsWidget";
 
 const MAX_SERIES = 100;
 

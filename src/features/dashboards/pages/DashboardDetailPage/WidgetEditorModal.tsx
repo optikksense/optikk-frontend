@@ -6,7 +6,7 @@ import { MetricQueryBuilder } from "@shared/metrics/components/MetricQueryBuilde
 
 import type { Dashboard } from "@shared/dashboards/api/dashboardsApi";
 import { editorStateToPayload, specToEditorState } from "@shared/dashboards/builder/metricsWidget";
-import { useCreateWidget, useUpdateWidget } from "../../hooks/useDashboardMutations";
+import { useCreateWidget, useUpdateWidget } from "@shared/dashboards/hooks/useDashboardMutations";
 import { DataSourceRow } from "./editor/DataSourceRow";
 import { VizTypePicker } from "./editor/VizTypePicker";
 import { WidgetEditorControls } from "./editor/WidgetEditorControls";

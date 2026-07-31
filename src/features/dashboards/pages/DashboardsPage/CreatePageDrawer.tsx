@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ROUTES } from "@/shared/constants/routes";
 import { Drawer, DrawerContent } from "@shared/components/primitives/ui/drawer";
 
-import { useCreateDashboardPage } from "../../hooks/useDashboardMutations";
+import { useCreateDashboardPage } from "@shared/dashboards/hooks/useDashboardMutations";
 
 interface CreatePageDrawerProps {
   readonly open: boolean;

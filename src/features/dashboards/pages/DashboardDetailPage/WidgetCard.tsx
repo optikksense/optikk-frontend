@@ -7,7 +7,7 @@ import type { DashboardPanelSpec } from "@shared/types/dashboardConfig";
 
 import type { Dashboard } from "@shared/dashboards/api/dashboardsApi";
 import { panelTypeToViz } from "@shared/dashboards/builder/metricsWidget";
-import { WidgetVizRenderer } from "../../components/WidgetVizRenderer";
+import { WidgetVizRenderer } from "@shared/dashboards/components/WidgetVizRenderer";
 
 const ROW_PX = 88;
 const GAP_PX = 12;

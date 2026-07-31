@@ -4,7 +4,7 @@ import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplore
 import type { TimeStep } from "@shared/metrics/types";
 
 import type { WidgetEditorState } from "@shared/dashboards/builder/metricsWidget";
-import { WidgetVizRenderer } from "../../../components/WidgetVizRenderer";
+import { WidgetVizRenderer } from "@shared/dashboards/components/WidgetVizRenderer";
 
 const PREVIEW_HEIGHT = 260;
 

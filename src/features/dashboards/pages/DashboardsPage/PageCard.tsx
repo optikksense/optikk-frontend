@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuItem } from "@shared/components/primitives/ui
 import { cn } from "@shared/lib/utils";
 
 import type { DashboardPage } from "@shared/dashboards/api/dashboardsApi";
-import { useDeleteDashboardPage } from "../../hooks/useDashboardMutations";
+import { useDeleteDashboardPage } from "@shared/dashboards/hooks/useDashboardMutations";
 import { pageIcon } from "./pageVisuals";
 
 interface PageCardProps {
