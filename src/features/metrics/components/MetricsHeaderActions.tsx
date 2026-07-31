@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { Button } from "@shared/components/primitives/ui/button";
 
+import { SaveGraphDialog } from "@shared/dashboards/components/SaveGraphDialog";
 import type {
   FormulaDefinition,
   MetricQueryDefinition,
@@ -13,7 +14,6 @@ import type {
 } from "@shared/metrics/types";
 import type { MetricQueryResult } from "@shared/metrics/types";
 import { buildBreakdownCsv, downloadCsv } from "../utils/breakdownCsv";
-import { SaveGraphDialog } from "./SaveGraphDialog";
 
 interface MetricsHeaderActionsProps {
   readonly primaryQuery: MetricQueryDefinition | undefined;

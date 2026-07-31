@@ -28,10 +28,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
   return (
     <>
       <FieldRow label="Metric">
-        <MetricSelector
-          value={q.metric}
-          onChange={(name) => update({ metric: name })}
-        />
+        <MetricSelector value={q.metric} onChange={(name) => update({ metric: name })} />
       </FieldRow>
       <FieldRow label="Aggregation">
         <div className="flex flex-wrap items-center gap-1.5">

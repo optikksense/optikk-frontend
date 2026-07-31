@@ -5,16 +5,20 @@ import { toast } from "sonner";
 
 import { Button } from "@shared/components/primitives/ui/button";
 import { Modal } from "@shared/components/primitives/ui/dialog";
-import type { FormulaDefinition, MetricQueryDefinition, MetricSpaceAggregation, TimeStep } from "@shared/metrics/types";
-
 import {
   type CreateDashboardPagePayload,
   type DashboardPage,
   createDashboardPage,
   createWidget,
-} from "@/features/dashboards/api/dashboardsApi";
-import { useDashboardPagesList } from "@/features/dashboards/hooks/useDashboardPages";
-import { editorStateToPayload } from "@/features/dashboards/builder/metricsWidget";
+} from "@shared/dashboards/api/dashboardsApi";
+import { editorStateToPayload } from "@shared/dashboards/builder/metricsWidget";
+import { useDashboardPagesList } from "@shared/dashboards/hooks/useDashboardPages";
+import type {
+  FormulaDefinition,
+  MetricQueryDefinition,
+  MetricSpaceAggregation,
+  TimeStep,
+} from "@shared/metrics/types";
 
 interface SaveGraphDialogProps {
   readonly open: boolean;
@@ -44,29 +48,24 @@ export function SaveGraphDialog({
   const handleSave = useCallback(async () => {
     setSaving(true);
     try {
-      let pageId: number;
+      let targetPageId: number;
 
       if (selectedPageId === "new") {
-        const name = newPageName.trim();
-        if (!name) {
-          toast.error("Enter a name for the new dashboard page");
-          setSaving(false);
-          return;
-        }
-        const payload: CreateDashboardPagePayload = {
-          name,
-          icon: "BarChart3",
-          iconColor: "#8b5cf6",
+        const title = newPageName.trim() || queries[0]?.metricName || "Saved Graph";
+        const pagePayload: CreateDashboardPagePayload = {
+          name: title,
+          icon: "layout-dashboard",
+          iconColor: "var(--color-primary)",
         };
-        const page = await createDashboardPage(payload);
-        pageId = page.id;
+        const page = await createDashboardPage(pagePayload);
+        targetPageId = page.id;
       } else {
-        pageId = selectedPageId;
+        targetPageId = selectedPageId;
       }
 
       const widgetPayload = editorStateToPayload(
         {
-          title: queries.find((q) => q.metricName)?.metricName ?? "Untitled",
+          title: queries[0]?.metricName || "Saved Graph",
           viz: "timeseries",
           queries,
           formulas,
@@ -75,46 +74,41 @@ export function SaveGraphDialog({
           display: { legend: true, smooth: true },
           size: "md",
         },
-        0,
+        0
       );
 
-      await createWidget(pageId, widgetPayload);
-
-      toast.success("Graph saved to dashboard", {
-        action: {
-          label: "Open",
-          onClick: () => navigate({ to: `/dashboards/${pageId}` as string & {} }),
-        },
-      });
+      await createWidget(targetPageId, widgetPayload);
+      toast.success("Graph saved to dashboard");
       onClose();
+      navigate({ to: "/dashboards/$pageId", params: { pageId: String(targetPageId) } });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to save graph";
-      toast.error(msg);
+      toast.error(err instanceof Error ? err.message : "Failed to save graph");
     } finally {
       setSaving(false);
     }
-  }, [selectedPageId, newPageName, queries, formulas, step, spaceAgg, navigate, onClose]);
+  }, [selectedPageId, newPageName, queries, formulas, step, spaceAgg, onClose, navigate]);
 
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title="Save to dashboard"
-      width={440}
+      title="Save Graph to Dashboard"
+      width={520}
       footer={
-        <>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" size="sm" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
-          <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving…" : "Save"}
+
+          <Button variant="primary" size="sm" onClick={handleSave} loading={saving}>
+            Save
           </Button>
-        </>
+        </div>
       }
     >
-      <div className="flex flex-col gap-3">
-        {/* Create new option */}
-        <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-secondary has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+      <div className="flex flex-col gap-4 py-2">
+        {/* Create new page option */}
+        <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2.5 transition-colors hover:bg-secondary has-[:checked]:border-primary has-[:checked]:bg-primary/5">
           <input
             type="radio"
             name="dashboard-page"
@@ -128,7 +122,6 @@ export function SaveGraphDialog({
 
         {selectedPageId === "new" && (
           <input
-            autoFocus
             value={newPageName}
             onChange={(e) => setNewPageName(e.target.value)}
             placeholder="Dashboard page name"
@@ -156,7 +149,7 @@ export function SaveGraphDialog({
                   <LayoutDashboard size={14} className="shrink-0 text-foreground-secondary" />
                   <div className="flex flex-col">
                     <span className="text-sm">{page.name}</span>
-                    <span className="text-foreground-muted text-[11px]">
+                    <span className="text-[11px] text-foreground-muted">
                       {page.widgetCount} widget{page.widgetCount !== 1 ? "s" : ""}
                     </span>
                   </div>
