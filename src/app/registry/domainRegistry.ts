@@ -1,4 +1,3 @@
-import { cloudConfig } from "@/features/cloud";
 import { dashboardsConfig } from "@/features/dashboards";
 import { deploymentsConfig } from "@/features/deployments";
 import { errorsConfig } from "@/features/errors";
@@ -44,7 +43,6 @@ const domainRegistry: readonly DomainConfig[] = [
   logsConfig,
   llmConfig,
   infrastructureConfig,
-  cloudConfig,
   saturationConfig,
   monitorsConfig,
   dashboardsConfig,

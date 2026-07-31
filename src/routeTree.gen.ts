@@ -47,7 +47,6 @@ import { Route as AppSaturationDatabaseInstanceSystemRouteImport } from './route
 
 const AppOverviewLazyRouteImport = createFileRoute('/_app/overview')()
 const AppDeviceLazyRouteImport = createFileRoute('/_app/device')()
-const AppCloudLazyRouteImport = createFileRoute('/_app/cloud')()
 const AppSaturationIndexLazyRouteImport = createFileRoute('/_app/saturation/')()
 const AppMonitorsIndexLazyRouteImport = createFileRoute('/_app/monitors/')()
 const AppDashboardsIndexLazyRouteImport = createFileRoute('/_app/dashboards/')()
@@ -136,11 +135,6 @@ const AppDeviceLazyRoute = AppDeviceLazyRouteImport.update({
   path: '/device',
   getParentRoute: () => AppRoute,
 } as any).lazy(() => import('./routes/_app/device.lazy').then((d) => d.Route))
-const AppCloudLazyRoute = AppCloudLazyRouteImport.update({
-  id: '/cloud',
-  path: '/cloud',
-  getParentRoute: () => AppRoute,
-} as any).lazy(() => import('./routes/_app/cloud.lazy').then((d) => d.Route))
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -425,7 +419,6 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/metrics': typeof AppMetricsRoute
   '/settings': typeof AppSettingsRoute
-  '/cloud': typeof AppCloudLazyRoute
   '/device': typeof AppDeviceLazyRoute
   '/overview': typeof AppOverviewLazyRoute
   '/alerts/new': typeof AppAlertsNewRoute
@@ -476,7 +469,6 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/metrics': typeof AppMetricsRoute
   '/settings': typeof AppSettingsRoute
-  '/cloud': typeof AppCloudLazyRoute
   '/device': typeof AppDeviceLazyRoute
   '/overview': typeof AppOverviewLazyRoute
   '/alerts/new': typeof AppAlertsNewRoute
@@ -529,7 +521,6 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/_app/metrics': typeof AppMetricsRoute
   '/_app/settings': typeof AppSettingsRoute
-  '/_app/cloud': typeof AppCloudLazyRoute
   '/_app/device': typeof AppDeviceLazyRoute
   '/_app/overview': typeof AppOverviewLazyRoute
   '/_app/alerts/new': typeof AppAlertsNewRoute
@@ -582,7 +573,6 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/metrics'
     | '/settings'
-    | '/cloud'
     | '/device'
     | '/overview'
     | '/alerts/new'
@@ -633,7 +623,6 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/metrics'
     | '/settings'
-    | '/cloud'
     | '/device'
     | '/overview'
     | '/alerts/new'
@@ -685,7 +674,6 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/_app/metrics'
     | '/_app/settings'
-    | '/_app/cloud'
     | '/_app/device'
     | '/_app/overview'
     | '/_app/alerts/new'
@@ -808,13 +796,6 @@ declare module '@tanstack/react-router' {
       path: '/device'
       fullPath: '/device'
       preLoaderRoute: typeof AppDeviceLazyRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/cloud': {
-      id: '/_app/cloud'
-      path: '/cloud'
-      fullPath: '/cloud'
-      preLoaderRoute: typeof AppCloudLazyRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/settings': {
@@ -1110,7 +1091,6 @@ const AppMonitorsMonitorIdLazyRouteWithChildren =
 interface AppRouteChildren {
   AppMetricsRoute: typeof AppMetricsRoute
   AppSettingsRoute: typeof AppSettingsRoute
-  AppCloudLazyRoute: typeof AppCloudLazyRoute
   AppDeviceLazyRoute: typeof AppDeviceLazyRoute
   AppOverviewLazyRoute: typeof AppOverviewLazyRoute
   AppAlertsNewRoute: typeof AppAlertsNewRoute
@@ -1154,7 +1134,6 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppMetricsRoute: AppMetricsRoute,
   AppSettingsRoute: AppSettingsRoute,
-  AppCloudLazyRoute: AppCloudLazyRoute,
   AppDeviceLazyRoute: AppDeviceLazyRoute,
   AppOverviewLazyRoute: AppOverviewLazyRoute,
   AppAlertsNewRoute: AppAlertsNewRoute,

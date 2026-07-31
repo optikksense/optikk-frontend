@@ -37,8 +37,6 @@ export const ROUTES = {
   saturation: "/saturation",
   saturationKafkaOverview: "/saturation/kafka",
 
-  cloud: "/cloud",
-
   monitors: "/monitors",
   monitorsNew: "/monitors/new",
   monitorDetail: "/monitors/$monitorId",
