@@ -6,7 +6,7 @@ import { DrawerShell } from "@shared/components/ui/overlay/detail-drawer/DrawerS
 import { DrawerTabs } from "@shared/components/ui/overlay/detail-drawer/DrawerTabs";
 import { useStandardQuery } from "@shared/hooks/useStandardQuery";
 
-import { getLogById } from "../../api/logsExplorerApi";
+import { getLogById } from "../../api/logByIdApi";
 import { getTraceId } from "../../utils/traceCorrelation";
 import { LogDetailEventTab } from "./LogDetailEventTab";
 import { LogDetailFooter } from "./LogDetailFooter";

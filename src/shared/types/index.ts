@@ -1,4 +1,3 @@
-export * from "./common";
 export * from "./dashboardConfig";
 
 export interface RelativeTimeRange {

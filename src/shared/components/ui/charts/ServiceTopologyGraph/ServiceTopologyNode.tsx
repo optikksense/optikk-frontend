@@ -1,6 +1,9 @@
-import { formatPercentage } from "@shared/utils/formatters";
+import {
+  formatDuration as formatMs,
+  formatNumber,
+  formatPercentage,
+} from "@shared/utils/formatters";
 import { Handle, type NodeProps, Position } from "@xyflow/react";
-import { formatMs, formatNumber } from "./format";
 
 import { Tooltip } from "@shared/components/primitives/ui/tooltip";
 
