@@ -20,6 +20,79 @@ export function toRenderType(chartType: ChartType): "line" | "area" | "bar" {
   return "line";
 }
 
+function buildTimestampAxis(
+  queries: readonly MetricQueryDefinition[],
+  results: MetricExplorerResults
+): { timestamps: number[]; indexByTimestamp: ReadonlyMap<number, number> } {
+  const timestamps = [
+    ...new Set(queries.flatMap((query) => results[query.id]?.timestamps ?? [])),
+  ].sort((a, b) => a - b);
+  return {
+    timestamps,
+    indexByTimestamp: new Map(timestamps.map((timestamp, index) => [timestamp, index])),
+  };
+}
+
+function alignValues(
+  sourceTimestamps: readonly number[],
+  sourceValues: readonly (number | null)[],
+  axisLength: number,
+  indexByTimestamp: ReadonlyMap<number, number>
+): Array<number | null> {
+  const values = Array<number | null>(axisLength).fill(null);
+  sourceTimestamps.forEach((timestamp, index) => {
+    const target = indexByTimestamp.get(timestamp);
+    if (target !== undefined) values[target] = sourceValues[index] ?? null;
+  });
+  return values;
+}
+
+function queryChartSeries(
+  queries: readonly MetricQueryDefinition[],
+  results: MetricExplorerResults,
+  timestamps: readonly number[],
+  indexByTimestamp: ReadonlyMap<number, number>,
+  chartType: ChartType
+): ObservabilityChartSeries[] {
+  const output: ObservabilityChartSeries[] = [];
+  for (const query of queries) {
+    const result = results[query.id];
+    if (!result) continue;
+    const baseColor = QUERY_LABEL_COLORS[query.id] ?? getChartColor(output.length);
+    for (const series of result.series) {
+      const tags = Object.values(series.tags).join(", ");
+      const metric = `${query.id}: ${query.aggregation}(${query.metricName})`;
+      output.push({
+        label: tags ? `${metric} [${tags}]` : metric,
+        values: alignValues(result.timestamps, series.values, timestamps.length, indexByTimestamp),
+        color: result.series.length > 1 ? getChartColor(output.length) : baseColor,
+        fill: toRenderType(chartType) === "area",
+      });
+    }
+  }
+  return output;
+}
+
+function formulaChartSeries(
+  formulas: readonly FormulaDefinition[],
+  results: MetricExplorerResults,
+  timestamps: number[]
+): ObservabilityChartSeries[] {
+  return formulas.flatMap((formula) =>
+    formula.expression.trim()
+      ? [
+          {
+            label: `${formula.id}: ${formula.expression}`,
+            values: evaluateFormula(formula.expression, results, timestamps),
+            color: FORMULA_COLOR,
+            fill: false,
+            dash: [6, 3] as [number, number],
+          },
+        ]
+      : []
+  );
+}
+
 /** Maps query + formula results into uPlot-ready timestamps + series. Shared by
  * the metrics explorer chart and dashboard widget renderer for WYSIWYG parity. */
 export function buildSeries(
@@ -28,60 +101,12 @@ export function buildSeries(
   results: MetricExplorerResults,
   chartType: ChartType
 ): { timestamps: number[]; series: ObservabilityChartSeries[] } {
-  const allSeries: ObservabilityChartSeries[] = [];
-  let colorIdx = 0;
-
-  // Build one shared x-axis (union of all result timestamps) so series from
-  // queries with differing/ragged timestamp grids stay correctly aligned.
-  const timestampSet = new Set<number>();
-  for (const query of queries) {
-    const result = results[query.id];
-    if (!result) continue;
-    for (const ts of result.timestamps) timestampSet.add(ts);
-  }
-  const timestamps = [...timestampSet].sort((a, b) => a - b);
-  const indexOfTs = new Map(timestamps.map((ts, i) => [ts, i] as const));
-
-  for (const query of queries) {
-    const result = results[query.id];
-    if (!result) continue;
-
-    const baseColor = QUERY_LABEL_COLORS[query.id] ?? getChartColor(colorIdx);
-
-    for (const series of result.series) {
-      // Remap this series' values onto the shared axis by timestamp.
-      const values: Array<number | null> = timestamps.map(() => null);
-      for (let i = 0; i < result.timestamps.length; i++) {
-        const idx = indexOfTs.get(result.timestamps[i]);
-        if (idx !== undefined) values[idx] = series.values[i] ?? null;
-      }
-
-      const tagLabel = Object.values(series.tags).join(", ");
-      const label = tagLabel
-        ? `${query.id}: ${query.aggregation}(${query.metricName}) [${tagLabel}]`
-        : `${query.id}: ${query.aggregation}(${query.metricName})`;
-
-      allSeries.push({
-        label,
-        values,
-        color: result.series.length > 1 ? getChartColor(colorIdx) : baseColor,
-        fill: toRenderType(chartType) === "area",
-      });
-      colorIdx++;
-    }
-  }
-
-  for (const formula of formulas) {
-    if (!formula.expression.trim()) continue;
-    const values = evaluateFormula(formula.expression, results, timestamps);
-    allSeries.push({
-      label: `${formula.id}: ${formula.expression}`,
-      values,
-      color: FORMULA_COLOR,
-      fill: false,
-      dash: [6, 3],
-    });
-  }
-
-  return { timestamps, series: allSeries };
+  const { timestamps, indexByTimestamp } = buildTimestampAxis(queries, results);
+  return {
+    timestamps,
+    series: [
+      ...queryChartSeries(queries, results, timestamps, indexByTimestamp, chartType),
+      ...formulaChartSeries(formulas, results, timestamps),
+    ],
+  };
 }

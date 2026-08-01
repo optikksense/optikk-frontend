@@ -2,7 +2,7 @@ import { API_CONFIG } from "@config/apiConfig";
 import api from "@shared/api/http/client";
 import { validateResponse } from "@shared/api/utils/validate";
 import { pageInfoSchema } from "@shared/search/schemas/pageInfo";
-import type { TranslationWarning } from "@shared/search/types/filters";
+import type { ExplorerFilter, TranslationWarning } from "@shared/search/types/filters";
 import type { ExplorerQueryRequest } from "@shared/search/types/queries";
 import { z } from "zod";
 
@@ -53,6 +53,60 @@ const NUMBER_FIELDS = {
   p99Ms: ["minP99Ms", "maxP99Ms"],
 } as const;
 
+function warning(field: string, message: string): TranslationWarning {
+  return { code: "unsupported_op", field, message };
+}
+
+function collectSearchFilter(
+  filter: ExplorerFilter,
+  terms: string[],
+  warnings: TranslationWarning[]
+): boolean {
+  if (filter.field !== "search" && filter.field !== "queryText") return false;
+  if (filter.op === "contains" || filter.op === "eq") terms.push(filter.value);
+  else warnings.push(warning(filter.field, `${filter.field} supports contains or exact matching`));
+  return true;
+}
+
+function applyStringFilter(
+  filter: ExplorerFilter,
+  body: QueryPatternsBody,
+  warnings: TranslationWarning[]
+): boolean {
+  const key = STRING_FIELDS[filter.field as keyof typeof STRING_FIELDS];
+  if (!key) return false;
+  if (filter.op !== "eq" && filter.op !== "in") {
+    warnings.push(warning(filter.field, `${filter.field} supports exact or IN matching`));
+    return true;
+  }
+  body[key] = filter.value
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return true;
+}
+
+function applyNumberFilter(
+  filter: ExplorerFilter,
+  body: QueryPatternsBody,
+  warnings: TranslationWarning[]
+): boolean {
+  const keys = NUMBER_FIELDS[filter.field as keyof typeof NUMBER_FIELDS];
+  if (!keys) return false;
+  const value = Number(filter.value);
+  if (!Number.isFinite(value) || !["eq", "gt", "gte", "lt", "lte"].includes(filter.op)) {
+    warnings.push(warning(filter.field, `${filter.field} requires a numeric comparison`));
+    return true;
+  }
+  const [minKey, maxKey] = keys;
+  const step = filter.field === "callCount" || filter.field === "errorCount" ? 1 : 0;
+  if (filter.op === "eq" || filter.op === "gte") body[minKey] = value;
+  if (filter.op === "gt") body[minKey] = value + step;
+  if (filter.op === "eq" || filter.op === "lte") body[maxKey] = value;
+  if (filter.op === "lt") body[maxKey] = value - step;
+  return true;
+}
+
 export function buildDatabaseQueryBody(req: ExplorerQueryRequest): {
   body: QueryPatternsBody;
   warnings: readonly TranslationWarning[];
@@ -67,54 +121,9 @@ export function buildDatabaseQueryBody(req: ExplorerQueryRequest): {
   const searchTerms: string[] = [];
 
   for (const filter of req.filters) {
-    if (filter.field === "search" || filter.field === "queryText") {
-      if (filter.op === "contains" || filter.op === "eq") searchTerms.push(filter.value);
-      else
-        warnings.push({
-          code: "unsupported_op",
-          field: filter.field,
-          message: `${filter.field} supports contains or exact matching`,
-        });
-      continue;
-    }
-
-    const stringKey = STRING_FIELDS[filter.field as keyof typeof STRING_FIELDS];
-    if (stringKey) {
-      if (filter.op === "eq" || filter.op === "in") {
-        body[stringKey] = filter.value
-          .split(",")
-          .map((value) => value.trim())
-          .filter(Boolean);
-      } else {
-        warnings.push({
-          code: "unsupported_op",
-          field: filter.field,
-          message: `${filter.field} supports exact or IN matching`,
-        });
-      }
-      continue;
-    }
-
-    const numberKeys = NUMBER_FIELDS[filter.field as keyof typeof NUMBER_FIELDS];
-    if (numberKeys) {
-      const value = Number(filter.value);
-      if (!Number.isFinite(value) || !["eq", "gt", "gte", "lt", "lte"].includes(filter.op)) {
-        warnings.push({
-          code: "unsupported_op",
-          field: filter.field,
-          message: `${filter.field} requires a numeric comparison`,
-        });
-        continue;
-      }
-      const [minKey, maxKey] = numberKeys;
-      const integerStep = filter.field === "callCount" || filter.field === "errorCount" ? 1 : 0;
-      if (filter.op === "eq" || filter.op === "gte") body[minKey] = value;
-      if (filter.op === "gt") body[minKey] = value + integerStep;
-      if (filter.op === "eq" || filter.op === "lte") body[maxKey] = value;
-      if (filter.op === "lt") body[maxKey] = value - integerStep;
-      continue;
-    }
-
+    if (collectSearchFilter(filter, searchTerms, warnings)) continue;
+    if (applyStringFilter(filter, body, warnings)) continue;
+    if (applyNumberFilter(filter, body, warnings)) continue;
     warnings.push({
       code: "unknown_field",
       field: filter.field,

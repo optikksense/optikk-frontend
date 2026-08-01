@@ -4,21 +4,13 @@ import {
   type BuildResult,
   dispatchCommonFilter,
   finalizeSearch,
+  handleDurationMs,
   handleListField,
   handleSingleValue,
+  initBody,
   pushUnknownField,
   pushUnsupportedOp,
 } from "@shared/search/utils/buildFilters";
-
-/**
- * Single source of truth for translating `ExplorerFilter[]` (FE chip model)
- * into the BE wire body for the traces read endpoints (`/traces/query`,
- * `/traces/facets`, `/traces/trend`). Mirrors the embedded `filter.Filters`
- * shape on the backend (`internal/modules/traces/filter/filter.go`).
- *
- * Filters that cannot be expressed on the wire are reported via `warnings`
- * so the UI can surface them — nothing is dropped silently.
- */
 
 interface TracesFiltersBody {
   startTime: number;
@@ -47,7 +39,6 @@ interface TracesFiltersBody {
 
 export type TracesBuildResult = BuildResult<TracesFiltersBody>;
 
-/** field -> include array, plus optional exclude array for neq/not_in. */
 const LIST_FIELDS: Record<
   string,
   { include: keyof TracesFiltersBody; exclude?: keyof TracesFiltersBody }
@@ -70,15 +61,12 @@ export function buildTracesFilters(
   endTime: number,
   extras: BuildExtras = {}
 ): TracesBuildResult {
-  const body: TracesFiltersBody = { startTime, endTime };
-  if (extras.limit !== undefined) body.limit = extras.limit;
-  if (extras.cursor) body.cursor = extras.cursor;
+  const body = initBody<TracesFiltersBody>(startTime, endTime, extras);
 
   const warnings: TranslationWarning[] = [];
   const searchTerms: string[] = [];
 
   for (const filter of filters) {
-    // Try shared handlers first (attributes, search/body)
     if (dispatchCommonFilter(filter, body, warnings, searchTerms)) continue;
 
     const { field, op, value } = filter;
@@ -97,14 +85,7 @@ export function buildTracesFilters(
         }
         break;
       case "durationMs": {
-        const ms = Number(value);
-        if (Number.isNaN(ms) || !["gte", "gt", "lte", "lt", "eq"].includes(op)) {
-          pushUnsupportedOp(warnings, field, op, "use a numeric value with comparisons or exact");
-          break;
-        }
-        const ns = ms * 1_000_000;
-        if (op === "gte" || op === "gt" || op === "eq") body.minDurationNs = ns;
-        if (op === "lte" || op === "lt" || op === "eq") body.maxDurationNs = ns;
+        handleDurationMs(field, op, value, body, warnings);
         break;
       }
       case "hasError":

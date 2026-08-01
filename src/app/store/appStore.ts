@@ -8,12 +8,7 @@ import { STORAGE_KEYS } from "@config/constants";
 import type { ComparisonMode } from "@shared/components/ui/TimeSelector/constants";
 import type { UserViewPreferenceKey, UserViewPreferences } from "@shared/types/preferences";
 
-import {
-  type PersistedAppState,
-  loadLegacyAppState,
-  migrateTimeRange,
-  pushRecentRange,
-} from "./appStoreMigrations";
+import { type PersistedAppState, pushRecentRange } from "./appStorePersistence";
 
 interface ResolvedTimeBounds {
   readonly startTime: number;
@@ -45,7 +40,36 @@ interface AppState extends PersistedAppState {
   readonly setComparisonMode: (mode: ComparisonMode) => void;
 }
 
-const defaultPersistedState = loadLegacyAppState();
+const defaultPersistedState: PersistedAppState = {
+  selectedTenantId: null,
+  selectedTenantIds: [],
+  timeRange: { kind: "relative", label: "Last 30 minutes", preset: "30m", minutes: 30 },
+  sidebarCollapsed: false,
+  autoRefreshInterval: 10_000,
+  theme: "light",
+  notificationsEnabled: true,
+  viewPreferences: {},
+  recentPages: [],
+  recentTimeRanges: [],
+  timezone: "local",
+  comparisonMode: "off",
+};
+
+function mergePersistedState(persisted: unknown, current: AppState): AppState {
+  const snapshot = persisted as Partial<PersistedAppState> | undefined;
+  if (!snapshot) return current;
+
+  const timeRange = snapshot.timeRange ?? current.timeRange;
+  const selectedTenantIds = snapshot.selectedTenantIds ?? current.selectedTenantIds;
+  return {
+    ...current,
+    ...snapshot,
+    timeRange,
+    resolvedTimeBounds: resolveTimeRangeBounds(timeRange),
+    selectedTenantIds,
+    selectedTenantId: snapshot.selectedTenantId ?? selectedTenantIds[0] ?? null,
+  };
+}
 
 export const useAppStore = create<AppState>()(
   persist(
@@ -58,19 +82,14 @@ export const useAppStore = create<AppState>()(
       // Tenant isolation is carried by the query keys: useStandardQuery
       // appends tenantId to every key, so a scope switch can never render
       // another tenant's cached response.
-      setSelectedTenantId: (tenantId: number | null): void => {
+      setSelectedTenantId: (selectedTenantId) =>
         set({
-          selectedTenantId: tenantId,
-          selectedTenantIds: tenantId != null ? [tenantId] : [],
-        });
-      },
+          selectedTenantId,
+          selectedTenantIds: selectedTenantId == null ? [] : [selectedTenantId],
+        }),
 
-      setSelectedTenantIds: (tenantIds: number[]): void => {
-        set({
-          selectedTenantIds: tenantIds,
-          selectedTenantId: tenantIds[0] ?? null,
-        });
-      },
+      setSelectedTenantIds: (selectedTenantIds) =>
+        set({ selectedTenantIds, selectedTenantId: selectedTenantIds[0] ?? null }),
 
       setTimeRange: (range: TimeRange): void => {
         set((state) => {
@@ -114,9 +133,7 @@ export const useAppStore = create<AppState>()(
         });
       },
 
-      toggleSidebar: (): void => {
-        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed }));
-      },
+      toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
       triggerRefresh: (): void => {
         set((state) => {
@@ -133,17 +150,9 @@ export const useAppStore = create<AppState>()(
         });
       },
 
-      setAutoRefreshInterval: (ms: number): void => {
-        set({ autoRefreshInterval: ms });
-      },
-
-      setTheme: (theme: string): void => {
-        set({ theme });
-      },
-
-      setNotificationsEnabled: (enabled: boolean): void => {
-        set({ notificationsEnabled: enabled });
-      },
+      setAutoRefreshInterval: (autoRefreshInterval) => set({ autoRefreshInterval }),
+      setTheme: (theme) => set({ theme }),
+      setNotificationsEnabled: (notificationsEnabled) => set({ notificationsEnabled }),
 
       setViewPreference: <K extends UserViewPreferenceKey>(
         key: K,
@@ -172,13 +181,8 @@ export const useAppStore = create<AppState>()(
         });
       },
 
-      setTimezone: (tz: string): void => {
-        set({ timezone: tz });
-      },
-
-      setComparisonMode: (mode: ComparisonMode): void => {
-        set({ comparisonMode: mode });
-      },
+      setTimezone: (timezone) => set({ timezone }),
+      setComparisonMode: (comparisonMode) => set({ comparisonMode }),
     }),
     {
       name: STORAGE_KEYS.APP_STATE,
@@ -197,33 +201,7 @@ export const useAppStore = create<AppState>()(
         timezone: state.timezone,
         comparisonMode: state.comparisonMode,
       }),
-      merge: (persisted, current) => {
-        const snapshot = persisted as Partial<PersistedAppState> | undefined;
-        if (!snapshot) {
-          return current;
-        }
-
-        const selectedTenantIds = snapshot.selectedTenantIds ?? current.selectedTenantIds;
-        let selectedTenantId = snapshot.selectedTenantId ?? current.selectedTenantId;
-        if (selectedTenantId == null && selectedTenantIds.length > 0) {
-          selectedTenantId = selectedTenantIds[0] ?? null;
-        }
-
-        const timeRange = migrateTimeRange(snapshot.timeRange);
-        return {
-          ...current,
-          ...snapshot,
-          timeRange,
-          resolvedTimeBounds: resolveTimeRangeBounds(timeRange),
-          selectedTenantIds,
-          selectedTenantId,
-          viewPreferences: snapshot.viewPreferences ?? current.viewPreferences,
-          recentPages: snapshot.recentPages ?? current.recentPages,
-          recentTimeRanges: snapshot.recentTimeRanges ?? current.recentTimeRanges,
-          timezone: snapshot.timezone ?? current.timezone,
-          comparisonMode: snapshot.comparisonMode ?? current.comparisonMode,
-        };
-      },
+      merge: mergePersistedState,
     }
   )
 );

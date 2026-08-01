@@ -5,6 +5,7 @@ type FormulaToken =
   | { readonly type: "number"; readonly value: number }
   | { readonly type: "symbol"; readonly value: string }
   | { readonly type: "operator"; readonly value: Operator };
+type LexToken = FormulaToken | { readonly type: "parenthesis"; readonly value: "(" | ")" };
 
 type ParsedFormula =
   | {
@@ -15,97 +16,144 @@ type ParsedFormula =
   | { readonly tokens: readonly []; readonly symbols: readonly []; readonly error: string };
 
 const precedence: Record<Operator, number> = { "+": 1, "-": 1, "*": 2, "/": 2 };
+const operators = new Set<string>(Object.keys(precedence));
+
+function isOperator(value: string): value is Operator {
+  return operators.has(value);
+}
 
 function invalidFormula(error: string): ParsedFormula {
   return { tokens: [], symbols: [], error };
 }
 
-// Converts the deliberately small formula language to reverse Polish notation.
-// Supporting only numbers, query labels, parentheses, and four binary operators
-// keeps evaluation deterministic without shipping a general math runtime.
-function parseFormula(expression: string, activeQueryIds: readonly string[]): ParsedFormula {
-  const activeIds = new Set(activeQueryIds);
-  const symbols = new Set<string>();
-  const output: FormulaToken[] = [];
-  const operators: Array<Operator | "("> = [];
-  let expectOperand = true;
+function tokenizeFormula(expression: string): LexToken[] | string {
+  const tokens: LexToken[] = [];
   let index = 0;
-
   while (index < expression.length) {
-    const char = expression[index];
-    if (/\s/.test(char)) {
-      index++;
+    const source = expression.slice(index);
+    const whitespace = source.match(/^\s+/)?.[0];
+    if (whitespace) {
+      index += whitespace.length;
       continue;
     }
-
-    const number = expression.slice(index).match(/^(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?/i);
+    const number = source.match(/^(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?/i)?.[0];
     if (number) {
-      if (!expectOperand) return invalidFormula("Invalid expression");
-      const value = Number(number[0]);
-      if (!Number.isFinite(value)) return invalidFormula("Only finite numbers are supported");
-      output.push({ type: "number", value });
-      index += number[0].length;
-      expectOperand = false;
+      const value = Number(number);
+      if (!Number.isFinite(value)) return "Only finite numbers are supported";
+      tokens.push({ type: "number", value });
+      index += number.length;
       continue;
     }
-
-    const identifier = expression.slice(index).match(/^[A-Za-z_][A-Za-z0-9_]*/);
+    const identifier = source.match(/^[A-Za-z_][A-Za-z0-9_]*/)?.[0];
     if (identifier) {
-      if (!expectOperand) return invalidFormula("Invalid expression");
-      const symbol = identifier[0];
-      if (!activeIds.has(symbol)) {
-        return invalidFormula(`Query "${symbol}" has no metric selected`);
-      }
-      symbols.add(symbol);
-      output.push({ type: "symbol", value: symbol });
-      index += symbol.length;
-      expectOperand = false;
+      tokens.push({ type: "symbol", value: identifier });
+      index += identifier.length;
       continue;
     }
-
-    if (char === "(") {
-      if (!expectOperand) return invalidFormula("Invalid expression");
-      operators.push(char);
+    const char = source[0];
+    if (char === "(" || char === ")") {
+      tokens.push({ type: "parenthesis", value: char });
       index++;
       continue;
     }
-
-    if (char === ")") {
-      if (expectOperand) return invalidFormula("Invalid expression");
-      while (operators.length > 0 && operators.at(-1) !== "(") {
-        output.push({ type: "operator", value: operators.pop() as Operator });
-      }
-      if (operators.pop() !== "(") return invalidFormula("Invalid expression");
+    if (isOperator(char)) {
+      tokens.push({ type: "operator", value: char });
       index++;
-      expectOperand = false;
       continue;
     }
-
-    if (char === "+" || char === "-" || char === "*" || char === "/") {
-      if (expectOperand) return invalidFormula(`Unsupported operator: ${char}`);
-      while (
-        operators.length > 0 &&
-        operators.at(-1) !== "(" &&
-        precedence[operators.at(-1) as Operator] >= precedence[char]
-      ) {
-        output.push({ type: "operator", value: operators.pop() as Operator });
-      }
-      operators.push(char);
-      index++;
-      expectOperand = true;
-      continue;
-    }
-
-    return invalidFormula("Only numbers, query labels, and + - * / are supported");
+    return "Only numbers, query labels, and + - * / are supported";
   }
+  return tokens;
+}
 
-  if (expectOperand || output.length === 0) return invalidFormula("Invalid expression");
-  while (operators.length > 0) {
-    const operator = operators.pop();
+interface ParserState {
+  readonly activeIds: ReadonlySet<string>;
+  readonly symbols: Set<string>;
+  readonly output: FormulaToken[];
+  readonly operators: Array<Operator | "(">;
+  expectOperand: boolean;
+}
+
+function pushOperand(state: ParserState, token: Extract<LexToken, { type: "number" | "symbol" }>) {
+  if (!state.expectOperand) return "Invalid expression";
+  if (token.type === "symbol") {
+    if (!state.activeIds.has(token.value)) return `Query "${token.value}" has no metric selected`;
+    state.symbols.add(token.value);
+  }
+  state.output.push(token);
+  state.expectOperand = false;
+  return null;
+}
+
+function pushOperator(state: ParserState, operator: Operator): string | null {
+  if (state.expectOperand) return `Unsupported operator: ${operator}`;
+  while (
+    state.operators.length > 0 &&
+    state.operators.at(-1) !== "(" &&
+    precedence[state.operators.at(-1) as Operator] >= precedence[operator]
+  ) {
+    state.output.push({ type: "operator", value: state.operators.pop() as Operator });
+  }
+  state.operators.push(operator);
+  state.expectOperand = true;
+  return null;
+}
+
+function pushParenthesis(state: ParserState, parenthesis: "(" | ")"): string | null {
+  if (parenthesis === "(") {
+    if (!state.expectOperand) return "Invalid expression";
+    state.operators.push(parenthesis);
+    return null;
+  }
+  if (state.expectOperand) return "Invalid expression";
+  while (state.operators.length && state.operators.at(-1) !== "(") {
+    state.output.push({ type: "operator", value: state.operators.pop() as Operator });
+  }
+  if (state.operators.pop() !== "(") return "Invalid expression";
+  state.expectOperand = false;
+  return null;
+}
+
+function completeFormula(state: ParserState): ParsedFormula {
+  if (state.expectOperand || state.output.length === 0) return invalidFormula("Invalid expression");
+  while (state.operators.length > 0) {
+    const operator = state.operators.pop();
     if (operator === "(") return invalidFormula("Invalid expression");
-    output.push({ type: "operator", value: operator as Operator });
+    state.output.push({ type: "operator", value: operator as Operator });
   }
-  return { tokens: output, symbols: [...symbols], error: null };
+  return { tokens: state.output, symbols: [...state.symbols], error: null };
+}
+
+function toReversePolish(
+  tokens: readonly LexToken[],
+  activeQueryIds: readonly string[]
+): ParsedFormula {
+  const state: ParserState = {
+    activeIds: new Set(activeQueryIds),
+    symbols: new Set(),
+    output: [],
+    operators: [],
+    expectOperand: true,
+  };
+  for (const token of tokens) {
+    let error: string | null;
+    if (token.type === "number" || token.type === "symbol") {
+      error = pushOperand(state, token);
+    } else if (token.type === "operator") {
+      error = pushOperator(state, token.value);
+    } else {
+      error = pushParenthesis(state, token.value);
+    }
+    if (error) return invalidFormula(error);
+  }
+  return completeFormula(state);
+}
+
+function parseFormula(expression: string, activeQueryIds: readonly string[]): ParsedFormula {
+  const tokens = tokenizeFormula(expression);
+  return typeof tokens === "string"
+    ? invalidFormula(tokens)
+    : toReversePolish(tokens, activeQueryIds);
 }
 
 export function validateFormulaExpression(

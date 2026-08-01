@@ -79,60 +79,40 @@ function isInputElement(el: Element | null): boolean {
   return false;
 }
 
+const TIME_SHORTCUTS = {
+  ArrowLeft: () => shiftTimeRange(useAppStore.getState().timeRange, "backward"),
+  ArrowRight: () => shiftTimeRange(useAppStore.getState().timeRange, "forward"),
+  ArrowUp: () => zoomTimeRange(useAppStore.getState().timeRange, "in"),
+  ArrowDown: () => zoomTimeRange(useAppStore.getState().timeRange, "out"),
+} satisfies Record<string, () => { startMs: number; endMs: number }>;
+
+function handleKeyboardShortcut(event: KeyboardEvent): void {
+  if (isInputElement(document.activeElement)) return;
+  const store = useAppStore.getState();
+  const timeShortcut = event.shiftKey ? TIME_SHORTCUTS[event.key] : undefined;
+  if (timeShortcut) {
+    event.preventDefault();
+    const bounds = timeShortcut();
+    store.setCustomTimeRange(bounds.startMs, bounds.endMs);
+    return;
+  }
+  if (event.key === "t" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault();
+    document.querySelector<HTMLButtonElement>('[data-testid="time-range-trigger"]')?.click();
+    return;
+  }
+  if (event.shiftKey && event.key === "R") {
+    event.preventDefault();
+    store.triggerRefresh();
+  }
+}
+
 export function useKeyboardShortcuts(): UseKeyboardShortcutsResult {
   const shortcuts = useMemo(() => BASE_SHORTCUTS, []);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (isInputElement(document.activeElement)) return;
-
-      const { setCustomTimeRange, timeRange, triggerRefresh } = useAppStore.getState();
-
-      if (e.shiftKey && e.key === "ArrowLeft") {
-        e.preventDefault();
-        const bounds = shiftTimeRange(timeRange, "backward");
-        setCustomTimeRange(bounds.startMs, bounds.endMs);
-        return;
-      }
-
-      if (e.shiftKey && e.key === "ArrowRight") {
-        e.preventDefault();
-        const bounds = shiftTimeRange(timeRange, "forward");
-        setCustomTimeRange(bounds.startMs, bounds.endMs);
-        return;
-      }
-
-      if (e.shiftKey && e.key === "ArrowUp") {
-        e.preventDefault();
-        const bounds = zoomTimeRange(timeRange, "in");
-        setCustomTimeRange(bounds.startMs, bounds.endMs);
-        return;
-      }
-
-      if (e.shiftKey && e.key === "ArrowDown") {
-        e.preventDefault();
-        const bounds = zoomTimeRange(timeRange, "out");
-        setCustomTimeRange(bounds.startMs, bounds.endMs);
-        return;
-      }
-
-      if (e.key === "t" && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        e.preventDefault();
-        const trigger = document.querySelector(
-          '[data-testid="time-range-trigger"]'
-        ) as HTMLButtonElement | null;
-        trigger?.click();
-        return;
-      }
-
-      if (e.shiftKey && e.key === "R") {
-        e.preventDefault();
-        triggerRefresh();
-      }
-    };
-
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+    document.addEventListener("keydown", handleKeyboardShortcut);
+    return () => document.removeEventListener("keydown", handleKeyboardShortcut);
   }, []);
 
   return { shortcuts };

@@ -11,6 +11,126 @@ export interface LlmTraceAdapterOptions {
   onSpanIONeeded?: (spanId: string) => void;
 }
 
+function sourceSpans(detail: LlmTraceDetail): LlmSpan[] {
+  if (detail.spans?.length) return detail.spans;
+  return [
+    {
+      spanId: `${detail.traceId}-root`,
+      parentSpanId: "",
+      name: detail.name || detail.service,
+      service: detail.service,
+      operation: detail.name || "chat",
+      kind: "chat",
+      vendor: "gen_ai",
+      model: "",
+      startMs: detail.startMs,
+      durationMs: detail.durationMs,
+      hasError: detail.hasError,
+      inputTokens: detail.inputTokens,
+      outputTokens: detail.outputTokens,
+      cost: detail.cost,
+      prompt: detail.prompt,
+      completion: detail.output,
+    },
+  ];
+}
+
+function toTraceRecord(detail: LlmTraceDetail, span: LlmSpan, index: number): TraceRecord {
+  const durationMs = span.durationMs || 0;
+  return {
+    traceId: detail.traceId,
+    spanId: span.spanId || `span-${index}`,
+    parentSpanId: span.parentSpanId || "",
+    serviceName: span.service || detail.service,
+    operationName: span.name || span.operation || "gen_ai",
+    spanKind: (span.kind || "SPAN").toUpperCase(),
+    startTime: new Date(span.startMs).toISOString(),
+    endTime: new Date(span.startMs + durationMs).toISOString(),
+    durationMs,
+    status: span.hasError ? "ERROR" : "OK",
+    hasError: span.hasError,
+    startNs: (span.startMs || 0) * 1_000_000,
+    statusMessage: span.hasError ? "Error during LLM execution" : "",
+  };
+}
+
+function markTruncated(value: string | undefined, truncated: boolean): string | undefined {
+  return value && truncated ? value + TRUNCATION_MARKER : value;
+}
+
+function genAIAttributes(span: LlmSpan): Record<string, string> {
+  return {
+    "gen_ai.system": span.vendor || "—",
+    "gen_ai.request.model": span.model || "—",
+    "gen_ai.response.model": span.responseModel || span.model || "—",
+    "gen_ai.usage.input_tokens": String(span.inputTokens ?? 0),
+    "gen_ai.usage.output_tokens": String(span.outputTokens ?? 0),
+    "gen_ai.cost": `$${(span.cost ?? 0).toFixed(4)}`,
+    "gen_ai.kind": span.kind || "span",
+  };
+}
+
+function llmResourceAttributes(detail: LlmTraceDetail, span: LlmSpan): Record<string, string> {
+  const attributes: Record<string, string> = { "service.name": span.service || detail.service };
+  if (detail.environment) attributes["deployment.environment"] = detail.environment;
+  if (detail.userId) attributes["user.id"] = detail.userId;
+  if (detail.sessionId) attributes["session.id"] = detail.sessionId;
+  if (detail.release) attributes["service.version"] = detail.release;
+  return attributes;
+}
+
+function resolveSpanIO(detail: LlmTraceDetail, span: LlmSpan, options?: LlmTraceAdapterOptions) {
+  const fullIO = options?.spanIO?.[span.spanId];
+  if ((span.promptTruncated || span.completionTruncated) && !fullIO) {
+    options?.onSpanIONeeded?.(span.spanId);
+  }
+  const prompt = fullIO?.prompt || span.prompt || detail.prompt;
+  const completion = fullIO?.completion || span.completion || detail.output;
+  return {
+    prompt: markTruncated(prompt, !fullIO && !!span.promptTruncated),
+    completion: markTruncated(completion, !fullIO && !!span.completionTruncated),
+  };
+}
+
+function spanAttributes(
+  detail: LlmTraceDetail,
+  span: LlmSpan,
+  options?: LlmTraceAdapterOptions
+): SpanAttributes {
+  const attributes = genAIAttributes(span);
+  const io = resolveSpanIO(detail, span, options);
+  return {
+    spanId: span.spanId,
+    traceId: detail.traceId,
+    operationName: span.name || span.operation,
+    serviceName: span.service || detail.service,
+    attributesString: attributes,
+    resourceAttributes: llmResourceAttributes(detail, span),
+    attributes,
+    exceptionMessage: span.hasError ? "LLM execution returned an error." : undefined,
+    llmPrompt: io.prompt,
+    llmCompletion: io.completion,
+    llmVendor: span.vendor,
+    llmModel: span.responseModel || span.model,
+    llmInputTokens: span.inputTokens,
+    llmOutputTokens: span.outputTokens,
+    llmCost: span.cost,
+    llmScores: detail.scores,
+  };
+}
+
+function spanAttributesGetter(
+  detail: LlmTraceDetail,
+  spans: readonly LlmSpan[],
+  options?: LlmTraceAdapterOptions
+): (spanId: string) => SpanAttributes | null {
+  const byID = new Map(spans.map((span) => [span.spanId, span]));
+  return (spanId) => {
+    const span = byID.get(spanId) ?? spans[0];
+    return span ? spanAttributes(detail, span, options) : null;
+  };
+}
+
 export function adaptLlmTraceToShared(
   detail: LlmTraceDetail,
   options?: LlmTraceAdapterOptions
@@ -29,112 +149,14 @@ export function adaptLlmTraceToShared(
   };
   getSpanAttributes: (spanId: string) => SpanAttributes | null;
 } {
-  const spansSrc =
-    detail.spans && detail.spans.length > 0
-      ? detail.spans
-      : [
-          {
-            spanId: `${detail.traceId}-root`,
-            parentSpanId: "",
-            name: detail.name || detail.service,
-            service: detail.service,
-            operation: detail.name || "chat",
-            kind: "chat",
-            vendor: "gen_ai",
-            model: "",
-            startMs: detail.startMs,
-            durationMs: detail.durationMs,
-            hasError: detail.hasError,
-            inputTokens: detail.inputTokens,
-            outputTokens: detail.outputTokens,
-            cost: detail.cost,
-            prompt: detail.prompt,
-            completion: detail.output,
-          } as LlmSpan,
-        ];
-
+  const spansSrc = sourceSpans(detail);
   const services = new Set<string>();
   let errorCount = 0;
-
-  const spans: TraceRecord[] = spansSrc.map((s, idx) => {
-    services.add(s.service || detail.service);
-    if (s.hasError) errorCount += 1;
-
-    const startIso = new Date(s.startMs).toISOString();
-    const endIso = new Date(s.startMs + (s.durationMs || 0)).toISOString();
-
-    return {
-      traceId: detail.traceId,
-      spanId: s.spanId || `span-${idx}`,
-      parentSpanId: s.parentSpanId || "",
-      serviceName: s.service || detail.service,
-      operationName: s.name || s.operation || "gen_ai",
-      spanKind: (s.kind || "SPAN").toUpperCase(),
-      startTime: startIso,
-      endTime: endIso,
-      durationMs: s.durationMs || 0,
-      status: s.hasError ? "ERROR" : "OK",
-      hasError: s.hasError,
-      startNs: (s.startMs || 0) * 1_000_000,
-      statusMessage: s.hasError ? "Error during LLM execution" : "",
-    };
+  const spans = spansSrc.map((span, index) => {
+    services.add(span.service || detail.service);
+    if (span.hasError) errorCount++;
+    return toTraceRecord(detail, span, index);
   });
-
-  const spanMap = new Map(spansSrc.map((s) => [s.spanId, s]));
-
-  const getSpanAttributes = (spanId: string): SpanAttributes | null => {
-    const s = spanMap.get(spanId) ?? spansSrc[0];
-    if (!s) return null;
-
-    const fullIO = options?.spanIO?.[s.spanId];
-    const isTruncated = Boolean(s.promptTruncated || s.completionTruncated);
-    if (isTruncated && !fullIO) options?.onSpanIONeeded?.(s.spanId);
-
-    let prompt = fullIO?.prompt || s.prompt || detail.prompt;
-    let completion = fullIO?.completion || s.completion || detail.output;
-    if (!fullIO && prompt && s.promptTruncated) prompt += TRUNCATION_MARKER;
-    if (!fullIO && completion && s.completionTruncated) completion += TRUNCATION_MARKER;
-
-    const attrStrings: Record<string, string> = {
-      "gen_ai.system": s.vendor || "—",
-      "gen_ai.request.model": s.model || "—",
-      "gen_ai.response.model": s.responseModel || s.model || "—",
-      "gen_ai.usage.input_tokens": String(s.inputTokens ?? 0),
-      "gen_ai.usage.output_tokens": String(s.outputTokens ?? 0),
-      "gen_ai.cost": `$${(s.cost ?? 0).toFixed(4)}`,
-      "gen_ai.kind": s.kind || "span",
-    };
-
-    const resAttrs: Record<string, string> = {
-      "service.name": s.service || detail.service,
-    };
-    if (detail.environment) resAttrs["deployment.environment"] = detail.environment;
-    if (detail.userId) resAttrs["user.id"] = detail.userId;
-    if (detail.sessionId) resAttrs["session.id"] = detail.sessionId;
-    if (detail.release) resAttrs["service.version"] = detail.release;
-
-    return {
-      spanId: s.spanId,
-      traceId: detail.traceId,
-      operationName: s.name || s.operation,
-      serviceName: s.service || detail.service,
-      attributesString: attrStrings,
-      resourceAttributes: resAttrs,
-      attributes: attrStrings,
-      exceptionMessage: s.hasError ? "LLM execution returned an error." : undefined,
-      llmPrompt: prompt,
-      llmCompletion: completion,
-      llmVendor: s.vendor,
-      llmModel: s.responseModel || s.model,
-      llmInputTokens: s.inputTokens,
-      llmOutputTokens: s.outputTokens,
-      llmCost: s.cost,
-      llmScores: detail.scores,
-    };
-  };
-
-  const startMs = detail.startMs;
-  const endMs = detail.startMs + (detail.durationMs || 0);
 
   return {
     traceId: detail.traceId,
@@ -146,9 +168,9 @@ export function adaptLlmTraceToShared(
       durationMs: detail.durationMs,
     },
     traceTimeBounds: {
-      startMs,
-      endMs,
+      startMs: detail.startMs,
+      endMs: detail.startMs + (detail.durationMs || 0),
     },
-    getSpanAttributes,
+    getSpanAttributes: spanAttributesGetter(detail, spansSrc, options),
   };
 }

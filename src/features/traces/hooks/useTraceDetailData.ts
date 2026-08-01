@@ -1,3 +1,4 @@
+import type { TraceRecord } from "@shared/api/traces/schemas";
 import { tracesService } from "@shared/api/traces/tracesApi";
 import { toApiErrorShape } from "@shared/api/utils/errorNormalization";
 import { useTimeRange } from "@shared/hooks/useTimeRangeQuery";
@@ -8,6 +9,116 @@ import { computeTraceTimeBounds } from "../pages/TraceDetailPage/utils";
 import { calculateTraceStats, normalizeSpan, normalizeTraceLog } from "../utils/traceCalculations";
 import { deriveErrorSpanIds } from "../utils/tracePaths";
 import { useImmutableQuery } from "./useImmutableQuery";
+
+function traceBoundsWithLogs(
+  spans: readonly TraceRecord[],
+  logs: readonly { timestamp?: unknown }[]
+) {
+  const bounds = computeTraceTimeBounds(spans);
+  if (bounds.startMs !== undefined && bounds.endMs !== undefined) return bounds;
+
+  const timestamps = logs
+    .map((log) => (log.timestamp ? new Date(String(log.timestamp)).getTime() : Number.NaN))
+    .filter(Number.isFinite);
+  return timestamps.length
+    ? { startMs: Math.min(...timestamps), endMs: Math.max(...timestamps) }
+    : bounds;
+}
+
+function queryError(
+  spansIsError: boolean,
+  spansError: unknown,
+  logsIsError: boolean,
+  logsError: unknown
+) {
+  if (spansIsError) return toApiErrorShape(spansError);
+  return logsIsError ? toApiErrorShape(logsError) : null;
+}
+
+function useTracePayload(
+  enabled: boolean,
+  tenantID: number | null,
+  traceID: string,
+  startMs: number,
+  endMs: number
+) {
+  const spansQuery = useImmutableQuery({
+    queryKey: ["trace-detail", tenantID, traceID, startMs, endMs],
+    queryFn: ({ signal }) => tracesService.getTraceDetail(traceID, startMs, endMs, signal),
+    enabled,
+  });
+  const logsQuery = useImmutableQuery({
+    queryKey: ["trace-logs", tenantID, traceID, startMs, endMs],
+    queryFn: ({ signal }) => getTraceLogs(traceID, startMs, endMs, undefined, signal),
+    enabled,
+  });
+  const spans = useMemo(() => (spansQuery.data?.spans ?? []).map(normalizeSpan), [spansQuery.data]);
+  const logs = useMemo(() => (logsQuery.data?.logs ?? []).map(normalizeTraceLog), [logsQuery.data]);
+  return { spansQuery, logsQuery, spans, logs };
+}
+
+function useSpanQueries(
+  enabled: boolean,
+  tenantID: number | null,
+  traceID: string,
+  spanID: string | null,
+  startMs: number,
+  endMs: number
+) {
+  const queryEnabled = enabled && spanID !== null && startMs > 0 && endMs >= startMs;
+  const events = useImmutableQuery({
+    queryKey: ["trace-span-events", tenantID, traceID, startMs, endMs],
+    queryFn: ({ signal }) => tracesService.getSpanEvents(traceID, startMs, endMs, signal),
+    enabled: queryEnabled,
+  });
+  const attributes = useImmutableQuery({
+    queryKey: ["span-attributes", tenantID, traceID, spanID, startMs, endMs],
+    queryFn: ({ signal }) =>
+      tracesService.getSpanAttributes(traceID, spanID!, startMs, endMs, signal),
+    enabled: queryEnabled,
+  });
+  return { events, attributes };
+}
+
+function useRelatedTraces(
+  enabled: boolean,
+  tenantID: number | null,
+  traceID: string,
+  context: TraceRecord | null,
+  startMs: number,
+  endMs: number
+) {
+  const key = `${context?.spanId ?? ""}|${context?.serviceName ?? ""}|${context?.operationName ?? ""}`;
+  const [requestedKey, setRequestedKey] = useState<string | null>(null);
+  const requested = requestedKey === key;
+  const query = useImmutableQuery({
+    queryKey: [
+      "trace-related",
+      tenantID,
+      traceID,
+      context?.serviceName,
+      context?.operationName,
+      startMs,
+      endMs,
+    ],
+    queryFn: ({ signal }) =>
+      tracesService.getRelatedTraces(
+        traceID,
+        context?.serviceName,
+        context?.operationName,
+        startMs,
+        endMs,
+        signal
+      ),
+    enabled:
+      enabled &&
+      requested &&
+      Boolean(context?.serviceName && context.operationName) &&
+      startMs > 0 &&
+      endMs > startMs,
+  });
+  return { query, requested, load: () => setRequestedKey(key) };
+}
 
 // One data path for the trace detail page: the base trace payload, trace
 // logs, and the span-scoped queries (events, attributes, related traces).
@@ -23,32 +134,14 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
   const { startTime, endTime } = getTimeRange();
   const startMs = Number(startTime);
   const endMs = Number(endTime);
-
+  const traceEnabled = selectedTenantId !== null && traceIdParam.length > 0;
   const {
-    data: detailData,
-    isPending: spansLoading,
-    isError: spansIsError,
-    error: spansError,
-  } = useImmutableQuery({
-    queryKey: ["trace-detail", selectedTenantId, traceIdParam, startMs, endMs],
-    queryFn: ({ signal }) => tracesService.getTraceDetail(traceIdParam, startMs, endMs, signal),
-    enabled: !!selectedTenantId && !!traceIdParam,
-  });
-
-  const spans = useMemo(() => (detailData?.spans ?? []).map(normalizeSpan), [detailData]);
-
-  const {
-    data: logsData,
-    isPending: logsLoading,
-    isError: logsIsError,
-    error: logsError,
-  } = useImmutableQuery({
-    queryKey: ["trace-logs", selectedTenantId, traceIdParam, startMs, endMs],
-    queryFn: ({ signal }) => getTraceLogs(traceIdParam, startMs, endMs, undefined, signal),
-    enabled: !!selectedTenantId && !!traceIdParam,
-  });
-
-  const traceLogs = useMemo(() => (logsData?.logs ?? []).map(normalizeTraceLog), [logsData]);
+    spansQuery,
+    logsQuery,
+    spans,
+    logs: traceLogs,
+  } = useTracePayload(traceEnabled, selectedTenantId, traceIdParam, startMs, endMs);
+  const detailData = spansQuery.data;
 
   const stats = useMemo(() => calculateTraceStats(spans), [spans]);
   const selectedSpan = useMemo(
@@ -56,91 +149,27 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     [spans, selectedSpanId]
   );
 
-  // Trace bounds come from the spans; sparse traces fall back to log times.
-  const traceTimeBounds = useMemo(() => {
-    const bounds = computeTraceTimeBounds(spans);
-    if (bounds.startMs !== undefined && bounds.endMs !== undefined) return bounds;
-    let minStart = Number.POSITIVE_INFINITY;
-    let maxEnd = Number.NEGATIVE_INFINITY;
-    for (const log of traceLogs) {
-      const t = log.timestamp ? new Date(log.timestamp).getTime() : Number.NaN;
-      if (Number.isFinite(t)) {
-        if (t < minStart) minStart = t;
-        if (t > maxEnd) maxEnd = t;
-      }
-    }
-    if (Number.isFinite(minStart) && Number.isFinite(maxEnd)) {
-      return { startMs: minStart, endMs: maxEnd };
-    }
-    return bounds;
-  }, [spans, traceLogs]);
+  const traceTimeBounds = useMemo(() => traceBoundsWithLogs(spans, traceLogs), [spans, traceLogs]);
 
   const boundsStartMs = traceTimeBounds.startMs ?? 0;
   const boundsEndMs = traceTimeBounds.endMs ?? 0;
-  const hasBounds = boundsStartMs > 0 && boundsEndMs >= boundsStartMs;
-
-  const { data: spanEventsData } = useImmutableQuery({
-    queryKey: ["trace-span-events", selectedTenantId, traceIdParam, boundsStartMs, boundsEndMs],
-    queryFn: ({ signal }) =>
-      tracesService.getSpanEvents(traceIdParam, boundsStartMs, boundsEndMs, signal),
-    enabled: !!selectedTenantId && !!traceIdParam && !!selectedSpanId && hasBounds,
-  });
-
-  const { data: spanAttributesData, isPending: spanAttributesPending } = useImmutableQuery({
-    queryKey: [
-      "span-attributes",
-      selectedTenantId,
-      traceIdParam,
-      selectedSpanId,
-      boundsStartMs,
-      boundsEndMs,
-    ],
-    queryFn: ({ signal }) =>
-      tracesService.getSpanAttributes(
-        traceIdParam,
-        selectedSpanId!,
-        boundsStartMs,
-        boundsEndMs,
-        signal
-      ),
-    enabled: !!selectedTenantId && !!selectedSpanId && hasBounds,
-  });
-
-  // Related traces load on demand only.
+  const spanQueries = useSpanQueries(
+    traceEnabled,
+    selectedTenantId,
+    traceIdParam,
+    selectedSpanId,
+    boundsStartMs,
+    boundsEndMs
+  );
   const relatedContext = selectedSpan ?? spans[0] ?? null;
-  const relatedKey = `${selectedSpanId ?? ""}|${relatedContext?.serviceName ?? ""}|${relatedContext?.operationName ?? ""}`;
-  const [requestedRelatedKey, setRequestedRelatedKey] = useState<string | null>(null);
-  const relatedTracesRequested = requestedRelatedKey === relatedKey;
-  const loadRelatedTraces = () => setRequestedRelatedKey(relatedKey);
-
-  const { data: relatedTracesData, isPending: relatedTracesLoading } = useImmutableQuery({
-    queryKey: [
-      "trace-related",
-      selectedTenantId,
-      traceIdParam,
-      relatedContext?.serviceName,
-      relatedContext?.operationName,
-      boundsStartMs,
-      boundsEndMs,
-    ],
-    queryFn: ({ signal }) =>
-      tracesService.getRelatedTraces(
-        traceIdParam,
-        relatedContext?.serviceName,
-        relatedContext?.operationName,
-        boundsStartMs,
-        boundsEndMs,
-        signal
-      ),
-    enabled:
-      !!selectedTenantId &&
-      !!traceIdParam &&
-      relatedTracesRequested &&
-      !!relatedContext?.serviceName &&
-      !!relatedContext?.operationName &&
-      boundsStartMs > 0 &&
-      boundsEndMs > boundsStartMs,
-  });
+  const related = useRelatedTraces(
+    traceEnabled,
+    selectedTenantId,
+    traceIdParam,
+    relatedContext,
+    boundsStartMs,
+    boundsEndMs
+  );
 
   const criticalPath = detailData?.criticalPath ?? [];
   const criticalPathSpanIds = useMemo(
@@ -156,7 +185,7 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     serviceMap: detailData?.serviceMap,
     errorGroups: detailData?.errors ?? [],
     traceLogs,
-    traceLogsIsSpeculative: logsData?.isSpeculative ?? false,
+    traceLogsIsSpeculative: logsQuery.data?.isSpeculative ?? false,
     stats,
     selectedSpan,
     selectedSpanId,
@@ -164,22 +193,21 @@ export function useTraceDetailData(selectedTenantId: number | null, traceIdParam
     traceTimeBounds,
     criticalPathSpanIds,
     errorPathSpanIds,
-    spanEvents: spanEventsData ?? [],
-    spanAttributes: spanAttributesData
-      ? { ...spanAttributesData, attributes: spanAttributesData.attributes ?? {} }
+    spanEvents: spanQueries.events.data ?? [],
+    spanAttributes: spanQueries.attributes.data
+      ? {
+          ...spanQueries.attributes.data,
+          attributes: spanQueries.attributes.data.attributes ?? {},
+        }
       : null,
-    spanAttributesLoading: spanAttributesPending,
-    relatedTraces: relatedTracesData ?? [],
-    relatedTracesRequested,
-    relatedTracesLoading,
-    loadRelatedTraces,
-    isPending: spansLoading,
-    isError: spansIsError || logsIsError,
-    error: spansIsError
-      ? toApiErrorShape(spansError)
-      : logsIsError
-        ? toApiErrorShape(logsError)
-        : null,
-    logsLoading,
+    spanAttributesLoading: spanQueries.attributes.isPending,
+    relatedTraces: related.query.data ?? [],
+    relatedTracesRequested: related.requested,
+    relatedTracesLoading: related.query.isPending,
+    loadRelatedTraces: related.load,
+    isPending: spansQuery.isPending,
+    isError: spansQuery.isError || logsQuery.isError,
+    error: queryError(spansQuery.isError, spansQuery.error, logsQuery.isError, logsQuery.error),
+    logsLoading: logsQuery.isPending,
   };
 }

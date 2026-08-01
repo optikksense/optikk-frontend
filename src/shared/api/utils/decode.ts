@@ -144,6 +144,77 @@ export function createInvalidApiResponseError(
   });
 }
 
+function payloadType(value: unknown): string {
+  return Array.isArray(value) ? "array" : typeof value;
+}
+
+function throwContractViolation(
+  message: string,
+  context: string,
+  payload: unknown,
+  details: Record<string, unknown>
+): never {
+  const data = { context, ...details, preview: buildPayloadPreview(payload) };
+  if (import.meta.env.DEV) console.error(`[decodeApiResponse] ${message}`, data);
+  throw createContractError(message, data);
+}
+
+function assertExpectedPayload(
+  payload: unknown,
+  options: DecodeApiResponseOptions,
+  message: string
+): void {
+  if (typeof payload === "string") {
+    throwContractViolation(message, options.context, payload, {
+      payloadType: "string",
+      looksLikeHtml: isHtmlLikePayload(payload),
+    });
+  }
+  const receivedType = payloadType(payload);
+  if (options.expectedType === "object" && !isPlainObject(payload)) {
+    throwContractViolation(message, options.context, payload, {
+      expectedType: "object",
+      receivedType,
+    });
+  }
+  if (options.expectedType === "array" && !Array.isArray(payload)) {
+    throwContractViolation(message, options.context, payload, {
+      expectedType: "array",
+      receivedType,
+    });
+  }
+}
+
+function reportSchemaViolation(
+  error: z.ZodError,
+  payload: unknown,
+  options: DecodeApiResponseOptions,
+  message: string
+): never {
+  const details = {
+    context: options.context,
+    payloadType: payloadType(payload),
+    preview: buildPayloadPreview(payload),
+    error,
+  };
+  if (import.meta.env.DEV) console.error(`[decodeApiResponse] ${message}`, details);
+  (
+    window.telemetry ?? {
+      track: (event: string, data: Record<string, unknown>) =>
+        console.log(`[Telemetry Mock] ${event}`, data),
+    }
+  ).track("api_contract_violation", {
+    errors: error.flatten(),
+    endpoint: options.context,
+    version: "1.0.0",
+  });
+  throw createContractError(message, {
+    context: options.context,
+    preview: details.preview,
+    issues: error.issues,
+  });
+}
+
 export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
   schema: TSchema,
   value: unknown,
@@ -151,86 +222,8 @@ export function decodeApiResponse<TSchema extends z.ZodTypeAny>(
 ): z.infer<TSchema> {
   const normalized = unwrapApiPayload(value);
   const message = options.message ?? `Invalid ${options.context} response`;
-
-  if (typeof normalized === "string") {
-    if (import.meta.env.DEV) {
-      console.error(`[decodeApiResponse] ${message}`, {
-        context: options.context,
-        payloadType: "string",
-        preview: buildPayloadPreview(normalized),
-      });
-    }
-
-    throw createContractError(message, {
-      context: options.context,
-      payloadType: "string",
-      preview: buildPayloadPreview(normalized),
-      looksLikeHtml: isHtmlLikePayload(normalized),
-    });
-  }
-
-  if (options.expectedType === "object" && !isPlainObject(normalized)) {
-    if (import.meta.env.DEV) {
-      console.error(`[decodeApiResponse] ${message}`, {
-        context: options.context,
-        payloadType: Array.isArray(normalized) ? "array" : typeof normalized,
-        preview: buildPayloadPreview(normalized),
-      });
-    }
-
-    throw createContractError(message, {
-      context: options.context,
-      expectedType: "object",
-      receivedType: Array.isArray(normalized) ? "array" : typeof normalized,
-      preview: buildPayloadPreview(normalized),
-    });
-  }
-
-  if (options.expectedType === "array" && !Array.isArray(normalized)) {
-    if (import.meta.env.DEV) {
-      console.error(`[decodeApiResponse] ${message}`, {
-        context: options.context,
-        payloadType: typeof normalized,
-        preview: buildPayloadPreview(normalized),
-      });
-    }
-
-    throw createContractError(message, {
-      context: options.context,
-      expectedType: "array",
-      receivedType: typeof normalized,
-      preview: buildPayloadPreview(normalized),
-    });
-  }
-
+  assertExpectedPayload(normalized, options, message);
   const result = schema.safeParse(normalized);
-
-  if (!result.success) {
-    if (import.meta.env.DEV) {
-      console.error(`[decodeApiResponse] ${message}`, {
-        context: options.context,
-        payloadType: Array.isArray(normalized) ? "array" : typeof normalized,
-        preview: buildPayloadPreview(normalized),
-        error: result.error,
-      });
-    }
-
-    // Telemetry hook to capture prod drift silently
-    const telemetry = window.telemetry ?? {
-      track: (e: string, d: Record<string, unknown>) => console.log(`[Telemetry Mock] ${e}`, d),
-    };
-    telemetry.track("api_contract_violation", {
-      errors: result.error.flatten(),
-      endpoint: options.context,
-      version: "1.0.0",
-    });
-
-    throw createContractError(message, {
-      context: options.context,
-      preview: buildPayloadPreview(normalized),
-      issues: result.error.issues,
-    });
-  }
-
+  if (!result.success) reportSchemaViolation(result.error, normalized, options, message);
   return result.data;
 }

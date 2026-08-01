@@ -37,64 +37,82 @@ export interface BuildTreeResult {
   readonly traceEndMs: number;
 }
 
+function spanStartMs(span: TraceRecord): number {
+  return span.startTime ? new Date(span.startTime).getTime() : 0;
+}
+
+function spanEndMs(span: TraceRecord): number {
+  return span.endTime ? new Date(span.endTime).getTime() : spanStartMs(span) + span.durationMs;
+}
+
+function spanBoundEndMs(span: TraceRecord): number {
+  return span.endTime ? new Date(span.endTime).getTime() : spanStartMs(span);
+}
+
+function sortByStart(spans: TraceRecord[]): void {
+  spans.sort((left, right) => spanStartMs(left) - spanStartMs(right));
+}
+
+function indexChildren(spans: readonly TraceRecord[]): {
+  children: ReadonlyMap<string, TraceRecord[]>;
+  roots: TraceRecord[];
+} {
+  const byId = new Map(spans.map((span) => [span.spanId, span]));
+  const children = new Map<string, TraceRecord[]>();
+  for (const span of spans) {
+    const parentID = span.parentSpanId ?? "";
+    if (!parentID || !byId.has(parentID)) continue;
+    const siblings = children.get(parentID) ?? [];
+    siblings.push(span);
+    children.set(parentID, siblings);
+  }
+  for (const siblings of children.values()) sortByStart(siblings);
+  const roots = spans.filter((span) => !span.parentSpanId || !byId.has(span.parentSpanId));
+  sortByStart(roots);
+  return { children, roots };
+}
+
+function traceBounds(
+  spans: readonly TraceRecord[]
+): Pick<BuildTreeResult, "traceStartMs" | "traceEndMs"> {
+  const starts = spans.map(spanStartMs).filter((value) => Number.isFinite(value) && value > 0);
+  const ends = spans.map(spanBoundEndMs).filter(Number.isFinite);
+  return {
+    traceStartMs: starts.length ? Math.min(...starts) : 0,
+    traceEndMs: ends.length ? Math.max(...ends) : 0,
+  };
+}
+
+function flattenTree(
+  roots: readonly TraceRecord[],
+  children: ReadonlyMap<string, readonly TraceRecord[]>,
+  collapsed: ReadonlySet<string>
+): FlatSpan[] {
+  const flat: FlatSpan[] = [];
+  const visit = (span: TraceRecord, depth: number) => {
+    const descendants = children.get(span.spanId) ?? [];
+    flat.push({
+      span,
+      depth,
+      hasChildren: descendants.length > 0,
+      startMs: spanStartMs(span),
+      endMs: spanEndMs(span),
+    });
+    if (!collapsed.has(span.spanId)) {
+      descendants.forEach((child) => visit(child, depth + 1));
+    }
+  };
+  roots.forEach((root) => visit(root, 0));
+  return flat;
+}
+
 export function buildFlatTree(
   spans: readonly TraceRecord[],
   collapsed: ReadonlySet<string>
 ): BuildTreeResult {
   if (spans.length === 0) return { flat: [], traceStartMs: 0, traceEndMs: 0 };
-
-  const byId = new Map<string, TraceRecord>();
-  const children = new Map<string, TraceRecord[]>();
-  let minStart = Number.POSITIVE_INFINITY;
-  let maxEnd = Number.NEGATIVE_INFINITY;
-
-  for (const s of spans) {
-    byId.set(s.spanId, s);
-    const startMs = s.startTime ? new Date(s.startTime).getTime() : 0;
-    const endMs = s.endTime ? new Date(s.endTime).getTime() : startMs;
-    if (Number.isFinite(startMs) && startMs > 0 && startMs < minStart) minStart = startMs;
-    if (Number.isFinite(endMs) && endMs > maxEnd) maxEnd = endMs;
-  }
-
-  for (const s of spans) {
-    const p = s.parentSpanId ?? "";
-    if (p && byId.has(p)) {
-      if (!children.has(p)) children.set(p, []);
-      children.get(p)!.push(s);
-    }
-  }
-
-  for (const arr of children.values()) {
-    arr.sort((a, b) => {
-      const sa = a.startTime ? new Date(a.startTime).getTime() : 0;
-      const sb = b.startTime ? new Date(b.startTime).getTime() : 0;
-      return sa - sb;
-    });
-  }
-
-  const roots = spans.filter((s) => !s.parentSpanId || !byId.has(s.parentSpanId));
-  roots.sort((a, b) => {
-    const sa = a.startTime ? new Date(a.startTime).getTime() : 0;
-    const sb = b.startTime ? new Date(b.startTime).getTime() : 0;
-    return sa - sb;
-  });
-
-  const flat: FlatSpan[] = [];
-  const visit = (s: TraceRecord, depth: number) => {
-    const startMs = s.startTime ? new Date(s.startTime).getTime() : 0;
-    const endMs = s.endTime ? new Date(s.endTime).getTime() : startMs + (s.durationMs ?? 0);
-    const kids = children.get(s.spanId) ?? [];
-    flat.push({ span: s, depth, hasChildren: kids.length > 0, startMs, endMs });
-    if (collapsed.has(s.spanId)) return;
-    for (const k of kids) visit(k, depth + 1);
-  };
-  for (const r of roots) visit(r, 0);
-
-  return {
-    flat,
-    traceStartMs: Number.isFinite(minStart) ? minStart : 0,
-    traceEndMs: Number.isFinite(maxEnd) ? maxEnd : 0,
-  };
+  const { children, roots } = indexChildren(spans);
+  return { flat: flattenTree(roots, children, collapsed), ...traceBounds(spans) };
 }
 
 export function matchesQuery(span: TraceRecord, q: string): boolean {
