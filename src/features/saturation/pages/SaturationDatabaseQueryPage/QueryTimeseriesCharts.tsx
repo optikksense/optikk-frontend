@@ -15,8 +15,7 @@ interface ChartSeries {
 
 function buildSeries(points: QueryTimeseriesPoint[]): ChartSeries {
   const rows = points
-    .map((p) => ({ ts: Math.floor(new Date(p.timeBucket).getTime() / 1000), p }))
-    .filter((r) => Number.isFinite(r.ts))
+    .map((p) => ({ ts: Math.floor(p.timeBucketMs / 1000), p }))
     .sort((a, b) => a.ts - b.ts);
   return {
     timestamps: rows.map((r) => r.ts),

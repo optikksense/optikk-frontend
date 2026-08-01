@@ -31,7 +31,7 @@ async function getComparableJson<S extends z.ZodTypeAny>(
   };
 }
 
-const timestamped = { timestamp: z.string() };
+const timestamped = { timestampMs: z.number() };
 
 interface ServiceNode {
   readonly name: string;

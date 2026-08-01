@@ -17,7 +17,7 @@ type ErrorsExplorerModel = ReturnType<typeof useErrorsExplorer>;
 
 function toBuckets(trend: ErrorsExplorerModel["trend"]): readonly TrendChartBucket[] | undefined {
   if (!trend || trend.length === 0) return undefined;
-  return trend.map((b) => ({ ts: Date.parse(b.timeBucket), counts: { errors: b.errors } }));
+  return trend.map((b) => ({ ts: b.timeBucketMs, counts: { errors: b.errors } }));
 }
 
 /**

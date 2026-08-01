@@ -24,7 +24,7 @@ export function TracesTable({
   const maxDur = useMemo(() => {
     let max = 1;
     for (let i = 0; i < traces.length; i++) {
-      const dur = traces[i].durationNs / 1e6;
+      const dur = traces[i].durationMs;
       if (dur > max) max = dur;
     }
     return max;

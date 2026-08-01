@@ -17,11 +17,11 @@ export interface LogsSummary {
 
 /**
  * Wide-format trend bucket from `POST /api/v1/logs/trend`. One row per
- * `timeBucket` (UTC, display grain) with per-severity counts pre-aggregated
+ * `timeBucketMs` (Unix milliseconds) with per-severity counts pre-aggregated
  * by the backend. Invariant: `total === error + warn + info + debug`.
  */
 export interface LogsTrendBucket {
-  readonly timeBucket: string;
+  readonly timeBucketMs: number;
   readonly total: number;
   readonly error: number;
   readonly warn: number;
@@ -59,7 +59,7 @@ const trendSchema = z
     trend: z
       .array(
         z.object({
-          timeBucket: z.string(),
+          timeBucketMs: z.number(),
           total: z.number(),
           error: z.number(),
           warn: z.number(),

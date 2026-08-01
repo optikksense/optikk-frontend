@@ -5,7 +5,7 @@ import { stringValue } from "./saturationClient";
 const nullableNumber = z.number().nullable();
 
 export const latencySeriesSchema = z.object({
-  timeBucket: stringValue,
+  timeBucketMs: z.number(),
   groupBy: stringValue,
   p50Ms: nullableNumber,
   p95Ms: nullableNumber,
@@ -13,7 +13,7 @@ export const latencySeriesSchema = z.object({
 });
 
 export const opsSeriesSchema = z.object({
-  timeBucket: stringValue,
+  timeBucketMs: z.number(),
   groupBy: stringValue,
   opsPerSec: nullableNumber,
 });

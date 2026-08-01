@@ -138,7 +138,7 @@ export function editorStateToPayload(
     smooth: state.display.smooth,
   };
 
-  return { title, panelType: panelType, layoutVariant: layoutVariant, spec, layout, position };
+  return { spec, position };
 }
 
 /** Rehydrate editor state from a saved metrics widget spec for re-editing. */

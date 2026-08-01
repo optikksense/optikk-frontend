@@ -120,7 +120,7 @@ export default function ErrorGroupDetailPage(): JSX.Element {
   const totalErrors = detail?.errorCount ?? points.reduce((a, p) => a + (p.errorCount ?? 0), 0);
   const cutoff = Date.now() - 3_600_000;
   const lastHour = points.reduce(
-    (a, p) => (new Date(p.timestamp).getTime() >= cutoff ? a + (p.errorCount ?? 0) : a),
+    (a, p) => (p.timestampMs >= cutoff ? a + (p.errorCount ?? 0) : a),
     0
   );
 

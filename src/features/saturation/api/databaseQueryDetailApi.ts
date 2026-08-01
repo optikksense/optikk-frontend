@@ -33,7 +33,7 @@ const queryDetailSummarySchema = z.object({
 export type QueryDetailSummary = z.infer<typeof queryDetailSummarySchema>;
 
 const queryTimeseriesPointSchema = z.object({
-  timeBucket: stringValue,
+  timeBucketMs: z.number(),
   callCount: numericValue,
   errorCount: numericValue,
   avgMs: nullableNumber,

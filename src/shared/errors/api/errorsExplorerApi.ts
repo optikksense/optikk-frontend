@@ -38,7 +38,7 @@ const overviewSchema = z.object({
     servicesAffected: z.number(),
   }),
   trend: z
-    .union([z.array(z.object({ timeBucket: z.string(), errors: z.number() })), z.null()])
+    .union([z.array(z.object({ timeBucketMs: z.number(), errors: z.number() })), z.null()])
     .transform((v) => v ?? []),
 });
 

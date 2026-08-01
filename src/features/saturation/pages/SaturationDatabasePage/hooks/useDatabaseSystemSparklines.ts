@@ -10,8 +10,7 @@ function groupP95BySystem(rows: LatencySeriesPoint[]): Map<string, number[]> {
   const byKey = new Map<string, Array<{ ts: number; v: number }>>();
   for (const row of rows) {
     if (row.p95Ms == null) continue;
-    const ts = new Date(row.timeBucket).getTime();
-    if (!Number.isFinite(ts)) continue;
+    const ts = row.timeBucketMs;
     const list = byKey.get(row.groupBy) ?? [];
     list.push({ ts, v: row.p95Ms });
     byKey.set(row.groupBy, list);

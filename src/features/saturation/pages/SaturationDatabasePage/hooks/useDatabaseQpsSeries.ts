@@ -13,8 +13,7 @@ interface QpsSeries {
 function sumByTimestamp(rows: OpsSeriesPoint[]): QpsSeries {
   const map = new Map<number, number>();
   for (const r of rows) {
-    const ts = Math.floor(new Date(r.timeBucket).getTime() / 1000);
-    if (!Number.isFinite(ts)) continue;
+    const ts = Math.floor(r.timeBucketMs / 1000);
     map.set(ts, (map.get(ts) ?? 0) + (r.opsPerSec ?? 0));
   }
   const timestamps = Array.from(map.keys()).sort((a, b) => a - b);

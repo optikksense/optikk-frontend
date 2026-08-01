@@ -14,7 +14,7 @@ export function sortTraces(
   if (mode === "recent" || rows.length === 0) return rows;
   const copy = rows.slice();
   if (mode === "slowest") {
-    copy.sort((a, b) => b.durationNs - a.durationNs);
+    copy.sort((a, b) => b.durationMs - a.durationMs);
     return copy;
   }
   copy.sort(byErrorsThenRecent);

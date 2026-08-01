@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
-import { tsMs } from "@shared/utils/chartDataUtils";
 
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { useServiceSaturation } from "../../../hooks/useServiceSaturation";
@@ -18,7 +17,7 @@ export function SaturationSignal({ serviceName }: { serviceName: string }) {
   const query = useServiceSaturation(serviceName);
 
   const activeRows = query.data ?? [];
-  const timestamps = useMemo(() => activeRows.map((r) => tsMs(r.timestamp) / 1000), [activeRows]);
+  const timestamps = useMemo(() => activeRows.map((r) => r.timestampMs / 1000), [activeRows]);
   const values = useMemo(() => activeRows.map((r) => r.value), [activeRows]);
 
   const latest = values.length ? values[values.length - 1] : 0;

@@ -13,7 +13,7 @@ export const TraceRow = memo(function TraceRow({
   maxDur: number;
   onRowClick: (t: TraceSummary) => void;
 }) {
-  const durMs = t.durationNs / 1e6;
+  const durMs = t.durationMs;
   const pct = Math.min((durMs / maxDur) * 100, 100);
   const color = getServiceColor(t.rootService);
   const isErr = t.hasError || t.rootStatus?.toUpperCase() === "ERROR";

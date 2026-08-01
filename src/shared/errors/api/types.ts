@@ -18,5 +18,5 @@ export interface ErrorsOverview {
     readonly newIssues: number;
     readonly servicesAffected: number;
   };
-  readonly trend: readonly { readonly timeBucket: string; readonly errors: number }[];
+  readonly trend: readonly { readonly timeBucketMs: number; readonly errors: number }[];
 }

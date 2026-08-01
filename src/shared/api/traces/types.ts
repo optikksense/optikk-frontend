@@ -5,26 +5,28 @@
  */
 import type { ExplorerFilter } from "@shared/search/types/filters";
 import type { ExplorerFacetBucket, ExplorerIncludeFlag } from "@shared/search/types/queries";
+import { z } from "zod";
 
-export interface TraceSummary {
-  readonly traceId: string;
-  readonly tenantId: number;
-  readonly startMs: number;
-  readonly endMs: number;
-  readonly durationNs: number;
-  readonly rootService: string;
-  readonly rootOperation: string;
-  readonly rootStatus: string;
-  readonly rootHttpMethod?: string;
-  readonly rootHttpStatus?: string;
-  readonly rootEndpoint?: string;
-  readonly spanCount: number;
-  readonly hasError: boolean;
-  readonly errorCount: number;
-  readonly environment?: string;
-  readonly serviceSet?: readonly string[];
-  readonly truncated?: boolean;
-}
+export const traceSummarySchema = z.object({
+  traceId: z.string(),
+  startMs: z.number(),
+  endMs: z.number(),
+  durationMs: z.number(),
+  rootService: z.string(),
+  rootOperation: z.string(),
+  rootStatus: z.string().optional(),
+  rootHttpMethod: z.string().optional(),
+  rootHttpStatus: z.string().optional(),
+  rootEndpoint: z.string().optional(),
+  environment: z.string().optional(),
+  spanCount: z.number(),
+  hasError: z.boolean(),
+  errorCount: z.number(),
+  serviceSet: z.array(z.string()).optional(),
+  truncated: z.boolean().optional(),
+});
+
+export type TraceSummary = z.infer<typeof traceSummarySchema>;
 
 export interface TracesQueryRequest {
   readonly startTime: number;

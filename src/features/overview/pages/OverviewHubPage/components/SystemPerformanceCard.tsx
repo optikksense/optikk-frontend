@@ -5,7 +5,6 @@ import ObservabilityChart, {
   type ObservabilityChartSeries,
 } from "@shared/components/ui/charts/ObservabilityChart";
 import ChartNoDataOverlay from "@shared/components/ui/feedback/ChartNoDataOverlay";
-import { tsMs } from "@shared/utils/chartDataUtils";
 import { fmtNum } from "@shared/utils/formatters";
 
 import { useSystemPerformanceQuery } from "../hooks/useOverviewModel";
@@ -19,7 +18,7 @@ export default function SystemPerformanceCard() {
 
   const { timestamps, series } = useMemo(() => {
     const rows = query.data ?? [];
-    const timestamps = rows.map((r) => Math.floor(tsMs(r.timestamp) / 1000));
+    const timestamps = rows.map((r) => Math.floor(r.timestampMs / 1000));
     const series: ObservabilityChartSeries[] = [
       {
         label: "Requests",

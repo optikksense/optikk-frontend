@@ -66,7 +66,7 @@ export function buildDependencyRows(
 
 export function buildLatencyTrendSeries(points: readonly LatencyPercentilesPoint[]) {
   return points.map((point) => ({
-    timestamp: point.timestamp,
+    timestamp: point.timestampMs,
     p50Ms: point.p50Ms,
     p95Ms: point.p95Ms,
     p99Ms: point.p99Ms,
@@ -81,7 +81,7 @@ export function buildRequestTrendSeries(points: readonly StatusTimeseriesPoint[]
       (point.status5xx ?? 0) +
       (point.statusOther ?? 0);
     return {
-      timestamp: point.timestamp,
+      timestamp: point.timestampMs,
       requestCount: total,
     };
   });
@@ -92,7 +92,7 @@ export function buildErrorTrendSeries(points: readonly ErrorTimeSeriesPoint[]) {
     const requests = point.requestCount ?? 0;
     const errors = point.errorCount ?? 0;
     return {
-      timestamp: point.timestamp,
+      timestamp: point.timestampMs,
       requestCount: requests,
       errorCount: errors,
       errorRate: requests > 0 ? (errors / requests) * 100 : 0,

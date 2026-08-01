@@ -18,7 +18,7 @@ export interface ExplorerFacetBucket {
 
 /** Mirrors Go explorer.TrendBucket — traces are only ever OK or errored. */
 export interface ExplorerTrendBucket {
-  readonly timeBucket: string;
+  readonly timeBucketMs: number;
   readonly total: number;
   readonly errors: number;
 }

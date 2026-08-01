@@ -23,7 +23,13 @@ import { validateResponse } from "@shared/api/utils/validate";
 import { pageInfoSchema } from "@shared/search/schemas/pageInfo";
 import { z } from "zod";
 import { buildTracesFilters } from "./buildTracesFilters";
-import type { TraceSummary, TracesFacets, TracesQueryRequest, TracesQueryResponse } from "./types";
+import {
+  type TraceSummary,
+  type TracesFacets,
+  type TracesQueryRequest,
+  type TracesQueryResponse,
+  traceSummarySchema,
+} from "./types";
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
@@ -35,97 +41,35 @@ function extractNextCursor(pageInfo: unknown): string | undefined {
   return undefined;
 }
 
-const rawTraceRowSchema = z.object({
-  traceId: z.string(),
-  startMs: z.number(),
-  endMs: z.number(),
-  durationMs: z.number(),
-  rootService: z.string(),
-  rootOperation: z.string(),
-  rootStatus: z.string().optional(),
-  rootHttpMethod: z.string().optional(),
-  rootHttpStatus: z.string().optional(),
-  spanCount: z.number(),
-  hasError: z.boolean(),
-  errorCount: z.number(),
-  serviceSet: z.array(z.string()).optional(),
-  truncated: z.boolean().optional(),
-});
-
-function normalizeHttpStatus(v: string | undefined): string | undefined {
-  if (v == null || v === "" || v === "0") return undefined;
-  return v;
-}
-
-function normalizeTraceSummary(row: z.infer<typeof rawTraceRowSchema>): TraceSummary {
-  const durationNs = Math.round(row.durationMs * 1_000_000);
-  return {
-    traceId: row.traceId,
-    tenantId: 0,
-    startMs: row.startMs,
-    endMs: row.endMs,
-    durationNs: durationNs,
-    rootService: row.rootService,
-    rootOperation: row.rootOperation,
-    rootStatus: row.rootStatus ?? "",
-    rootHttpMethod: row.rootHttpMethod,
-    rootHttpStatus: normalizeHttpStatus(row.rootHttpStatus),
-    rootEndpoint: undefined,
-    spanCount: row.spanCount,
-    hasError: row.hasError,
-    errorCount: row.errorCount,
-    environment: undefined,
-    serviceSet: row.serviceSet,
-    truncated: row.truncated,
-  };
-}
-
 const facetBucketSchema = z.object({
   value: z.string(),
   count: z.number(),
 });
 
-const facetBucketsArraySchema = z
-  .union([z.array(facetBucketSchema), z.null()])
-  .transform((v) => v ?? []);
-
 const rawFacetsSchema = z
   .object({
-    service: facetBucketsArraySchema.optional(),
-    operation: facetBucketsArraySchema.optional(),
-    httpMethod: facetBucketsArraySchema.optional(),
-    httpStatus: facetBucketsArraySchema.optional(),
-    status: facetBucketsArraySchema.optional(),
+    service: z.array(facetBucketSchema).optional(),
+    operation: z.array(facetBucketSchema).optional(),
+    httpMethod: z.array(facetBucketSchema).optional(),
+    httpStatus: z.array(facetBucketSchema).optional(),
+    status: z.array(facetBucketSchema).optional(),
   })
-  .partial()
-  .nullable()
-  .optional();
-
-function normalizeFacets(raw: z.infer<typeof rawFacetsSchema>): TracesFacets | undefined {
-  if (raw == null) return undefined;
-  const out: Record<string, Array<{ value: string; count: number }>> = {};
-  for (const [k, arr] of Object.entries(raw)) {
-    if (arr.length > 0) {
-      out[k] = arr.map((b) => ({ value: b.value, count: b.count }));
-    }
-  }
-  return Object.keys(out).length > 0 ? out : undefined;
-}
+  .partial();
 
 const rawTrendRowSchema = z.object({
-  timeBucket: z.string(),
+  timeBucketMs: z.number(),
   total: z.number(),
   errors: z.number(),
 });
 
 const tracesQueryResponseSchema = z
   .object({
-    results: z.union([z.array(rawTraceRowSchema), z.null()]).transform((v) => v ?? []),
+    results: z.union([z.array(traceSummarySchema), z.null()]).transform((v) => v ?? []),
     pageInfo: z.unknown().optional(),
   })
   .transform((r) => {
     const out: TracesQueryResponse = {
-      traces: r.results.map(normalizeTraceSummary),
+      traces: r.results,
       nextCursor: extractNextCursor(r.pageInfo),
     };
     return out;
@@ -175,8 +119,8 @@ export async function query(body: TracesQueryRequest): Promise<TracesQueryRespon
 export async function queryFacets(body: TracesQueryRequest) {
   const { body: reqBody } = buildTracesFilters(body.filters, body.startTime, body.endTime);
   const raw = await api.post<unknown>(`${BASE}/traces/facets`, reqBody);
-  const validated = validateResponse(rawFacetsSchema, raw);
-  return normalizeFacets(validated);
+  const facets: TracesFacets = validateResponse(rawFacetsSchema, raw);
+  return Object.keys(facets).length > 0 ? facets : undefined;
 }
 
 export async function queryTrend(body: TracesQueryRequest) {
@@ -184,7 +128,7 @@ export async function queryTrend(body: TracesQueryRequest) {
   const raw = await api.post<unknown>(`${BASE}/traces/trend`, reqBody);
   const validated = validateResponse(z.union([z.array(rawTrendRowSchema), z.null()]), raw) ?? [];
   return validated.map((b) => ({
-    timeBucket: b.timeBucket,
+    timeBucketMs: b.timeBucketMs,
     total: b.total,
     errors: b.errors,
   }));
@@ -196,7 +140,7 @@ const nullableArray = <T extends z.ZodTypeAny>(item: T) =>
 // Consolidated trace detail: summary + span list + server-derived views.
 // summary is null when the trace has no spans in the requested range.
 const traceDetailResponseSchema = z.object({
-  summary: rawTraceRowSchema.nullable(),
+  summary: traceSummarySchema.nullable(),
   spans: nullableArray(spanRecordSchema),
   criticalPath: nullableArray(criticalPathSpanSchema),
   errorPath: nullableArray(errorPathSpanSchema),
@@ -225,7 +169,7 @@ async function getTraceDetail(
   });
   const parsed = validateResponse(traceDetailResponseSchema, data);
   return {
-    summary: parsed.summary ? normalizeTraceSummary(parsed.summary) : null,
+    summary: parsed.summary,
     spans: parsed.spans,
     criticalPath: parsed.criticalPath,
     errorPath: parsed.errorPath,

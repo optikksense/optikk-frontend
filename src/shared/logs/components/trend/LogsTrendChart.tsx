@@ -6,7 +6,6 @@ import {
   type TrendChartSegment,
 } from "@shared/search/components/trend/TrendChart";
 import { memo, useMemo } from "react";
-import { parseBucketMs } from "./logsTrendDataUtils";
 
 interface Props {
   readonly trend: readonly LogsTrendBucket[] | undefined;
@@ -32,8 +31,8 @@ function LogsTrendChartComponent({ trend, onTimeRangeChange, minTimeMs, maxTimeM
   const data = useMemo<readonly TrendChartBucket[] | undefined>(() => {
     if (!trend || trend.length === 0) return undefined;
     return trend
-      .map((b, idx) => ({
-        ts: parseBucketMs(b.timeBucket, idx),
+      .map((b) => ({
+        ts: b.timeBucketMs,
         counts: {
           debug: b.debug,
           info: b.info,

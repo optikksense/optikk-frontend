@@ -30,8 +30,7 @@ function pushValue(map: Map<number, number[]>, key: number, value: number | null
 }
 
 function ingestRow(buckets: Buckets, row: LatencySeriesPoint) {
-  const ts = Math.floor(new Date(row.timeBucket).getTime() / 1000);
-  if (!Number.isFinite(ts)) return;
+  const ts = Math.floor(row.timeBucketMs / 1000);
   pushValue(buckets.p50, ts, row.p50Ms);
   pushValue(buckets.p95, ts, row.p95Ms);
   pushValue(buckets.p99, ts, row.p99Ms);

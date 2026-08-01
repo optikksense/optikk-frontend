@@ -38,6 +38,7 @@ export interface KafkaPageModel {
   topicCount: number;
   consumerGroupCount: number;
   production: ProductionRow[];
+  topics: ProductionRow[];
   consumption: ConsumptionRow[];
   consumerGroups: ConsumerGroupRow[];
 }
@@ -143,6 +144,12 @@ export function buildKafkaPageModel(topo: KafkaTopology, service: string): Kafka
       errorRate: pathway.errorRate,
     }))
     .sort((a, b) => b.rate - a.rate || a.group.localeCompare(b.group));
+  const topics = topo.topics.map((topic) => ({
+    topic: topic.topic,
+    rate: topic.ratePerSec,
+    producerCount: topic.producerCount,
+    consumerGroupCount: topic.consumerGroupCount,
+  }));
 
   return {
     productionRate: producer?.ratePerSec ?? 0,
@@ -154,6 +161,7 @@ export function buildKafkaPageModel(topo: KafkaTopology, service: string): Kafka
     topicCount: topo.topics.length,
     consumerGroupCount: new Set(topo.pathways.map((pathway) => pathway.group)).size,
     production,
+    topics,
     consumption,
     consumerGroups,
   };

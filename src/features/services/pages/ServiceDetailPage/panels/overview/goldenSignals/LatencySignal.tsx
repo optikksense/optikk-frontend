@@ -10,7 +10,6 @@ import {
 } from "@shared/api/red/redApi";
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { useTimeRangeQuery } from "@shared/hooks/useTimeRangeQuery";
-import { tsMs } from "@shared/utils/chartDataUtils";
 import { fmtMs } from "@shared/utils/formatters";
 import { SIGNAL_CHART_HEIGHT, SignalLegend } from "./SignalCardShell";
 
@@ -30,7 +29,7 @@ export function LatencySignal({ serviceName }: { serviceName: string }) {
   const { timestamps, series, latestP99 } = useMemo(() => {
     if (points.length === 0) return { timestamps: [], series: [], latestP99: 0 };
 
-    const ts = points.map((p) => tsMs(p.timestamp) / 1000);
+    const ts = points.map((p) => p.timestampMs / 1000);
     const values = points.map((p) => p.p99Ms);
 
     // Find the latest non-null p99 value

@@ -132,7 +132,7 @@ const errorGroupTraceSchema = z.object({
 
 export interface ErrorTimeSeriesPoint {
   readonly serviceName: string;
-  readonly timestamp: string;
+  readonly timestampMs: number;
   readonly requestCount: number;
   readonly errorCount: number;
 }
@@ -141,7 +141,7 @@ export interface ErrorTimeSeriesPoint {
 // part of the web contract yet; declared so they don't register as drift.
 const errorTimeSeriesPointSchema = z.object({
   serviceName: z.string(),
-  timestamp: z.string(),
+  timestampMs: z.number(),
   requestCount: z.number(),
   errorCount: z.number(),
   errorRate: z.number().nullish(),

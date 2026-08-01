@@ -25,8 +25,8 @@ interface WidgetCardProps {
 }
 
 export function WidgetCard({ widget, editing, onEdit, onRemove }: WidgetCardProps) {
-  const span = clampSpan(widget.layout.w);
-  const rows = Math.max(1, Math.round(widget.layout.h || 4));
+  const span = clampSpan(widget.spec.layout.w);
+  const rows = Math.max(1, Math.round(widget.spec.layout.h || 4));
   const height = rows * ROW_PX + (rows - 1) * GAP_PX;
 
   return (
