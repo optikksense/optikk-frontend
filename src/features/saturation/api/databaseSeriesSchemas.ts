@@ -12,11 +12,4 @@ export const latencySeriesSchema = z.object({
   p99Ms: nullableNumber,
 });
 
-export const opsSeriesSchema = z.object({
-  timeBucketMs: z.number(),
-  groupBy: stringValue,
-  opsPerSec: nullableNumber,
-});
-
 export type LatencySeriesPoint = z.infer<typeof latencySeriesSchema>;
-export type OpsSeriesPoint = z.infer<typeof opsSeriesSchema>;
