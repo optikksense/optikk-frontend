@@ -94,6 +94,8 @@ export function LogsExplorerContent({ explorer }: LogsExplorerContentProps) {
 
       <LogDetailDrawer
         logId={state.detail ?? ""}
+        startTime={startTime}
+        endTime={endTime}
         open={Boolean(state.detail)}
         onClose={closeDetail}
         onPrev={detailIndex > 0 ? () => state.setDetail(results[detailIndex - 1].id) : undefined}

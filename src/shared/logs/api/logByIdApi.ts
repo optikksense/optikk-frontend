@@ -11,8 +11,8 @@ const getByIdSchema = rawLogRowSchema.transform((row) => ({ log: normalizeLogRec
 
 export async function getLogById(
   id: string,
-  startMs?: number,
-  endMs?: number
+  startMs: number,
+  endMs: number
 ): Promise<LogsGetByIdResponse> {
   const raw = await api.get<unknown>(`${V1}/logs/${encodeURIComponent(id)}`, {
     params: { startTime: startMs, endTime: endMs },

@@ -15,6 +15,8 @@ import { LogDetailRelatedTab } from "./LogDetailRelatedTab";
 
 interface Props {
   readonly logId: string;
+  readonly startTime: number;
+  readonly endTime: number;
   readonly open: boolean;
   readonly onClose: () => void;
   readonly onPrev?: () => void;
@@ -23,15 +25,15 @@ interface Props {
 
 type LogTab = "event" | "json" | "related";
 
-function LogDetailDrawerInner({ logId, open, onClose, onPrev, onNext }: Props) {
+function LogDetailDrawerInner({ logId, startTime, endTime, open, onClose, onPrev, onNext }: Props) {
   const [tab, setTab] = useState<LogTab>("event");
   useEffect(() => {
     if (open) setTab("event");
   }, [open]);
 
   const q = useStandardQuery({
-    queryKey: ["logs", "detail", logId],
-    queryFn: () => getLogById(logId),
+    queryKey: ["logs", "detail", logId, startTime, endTime],
+    queryFn: () => getLogById(logId, startTime, endTime),
     enabled: Boolean(logId) && open,
     staleTime: 30_000,
   });
