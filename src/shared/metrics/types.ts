@@ -2,13 +2,15 @@ type DomainRecord = Record<string, unknown>;
 
 // Metrics Explorer Types
 
-type MetricType = "gauge" | "counter" | "histogram" | "summary";
+type MetricType = "gauge" | "counter" | "histogram" | "exponential_histogram" | "summary";
 
 export interface MetricNameEntry {
   readonly name: string;
   readonly type: MetricType;
   readonly unit?: string;
   readonly description?: string;
+  readonly temporality: string;
+  readonly isMonotonic: boolean;
 }
 
 export type MetricAggregation =

@@ -92,8 +92,8 @@ export function useMetricsExplorer() {
   const updateQueryAggregation = (id: string, aggregation: MetricAggregation) =>
     updateQuery(id, { aggregation });
 
-  const updateQueryMetric = (id: string, metricName: string) =>
-    updateQuery(id, { metricName, where: [], groupBy: [] });
+  const updateQueryMetric = (id: string, metricName: string, aggregation: MetricAggregation) =>
+    updateQuery(id, { metricName, aggregation, where: [], groupBy: [] });
 
   const updateQueryWhere = (id: string, where: MetricTagFilter[]) => updateQuery(id, { where });
 

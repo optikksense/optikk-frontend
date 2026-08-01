@@ -1,6 +1,13 @@
 import type { CreateMonitorPayload, MetricQueryShape } from "../../../api/monitorsApi";
 
 import { MetricSelector } from "@shared/metrics/components/MetricQueryBuilder/MetricSelector";
+import { AGGREGATION_OPTIONS } from "@shared/metrics/constants";
+import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";
+import type { MetricAggregation } from "@shared/metrics/types";
+import {
+  getDefaultAggregationForMetric,
+  getValidAggregations,
+} from "@shared/metrics/utils/metricHelpers";
 
 import FieldRow from "./FieldRow";
 
@@ -9,15 +16,20 @@ interface Props {
   readonly setDraft: (fn: (prev: CreateMonitorPayload) => CreateMonitorPayload) => void;
 }
 
-const AGGREGATIONS = ["avg", "sum", "min", "max", "p50", "p95", "p99"];
+const ALL_AGGREGATIONS = AGGREGATION_OPTIONS.map(({ value }) => value);
 const WINDOWS = [60, 300, 900, 3600];
 
 export default function MetricQuery({ draft, setDraft }: Props) {
+  const { data } = useMetricNames("");
   const q: MetricQueryShape = draft.query.metric ?? {
     metric: "",
     aggregation: "avg",
     windowSec: 300,
   };
+
+  const metricEntry = data?.metrics.find((m) => m.name === q.metric);
+  const validAggs = getValidAggregations(metricEntry);
+  const aggregations = ALL_AGGREGATIONS.filter((aggregation) => validAggs.includes(aggregation));
 
   const update = (patch: Partial<MetricQueryShape>) =>
     setDraft((prev) => ({
@@ -25,14 +37,20 @@ export default function MetricQuery({ draft, setDraft }: Props) {
       query: { metric: { ...q, ...patch } },
     }));
 
+  const handleMetricChange = (name: string) => {
+    const entry = data?.metrics.find((m) => m.name === name);
+    const aggregation = getDefaultAggregationForMetric(entry, q.aggregation as MetricAggregation);
+    update({ metric: name, aggregation });
+  };
+
   return (
     <>
       <FieldRow label="Metric">
-        <MetricSelector value={q.metric} onChange={(name) => update({ metric: name })} />
+        <MetricSelector value={q.metric} onChange={handleMetricChange} />
       </FieldRow>
       <FieldRow label="Aggregation">
         <div className="flex flex-wrap items-center gap-1.5">
-          {AGGREGATIONS.map((a) => {
+          {aggregations.map((a) => {
             const active = q.aggregation === a;
             return (
               <button

@@ -18,7 +18,7 @@ interface MetricQueryBuilderProps {
   readonly onAddQuery: () => void;
   readonly onRemoveQuery: (id: string) => void;
   readonly onAggregationChange: (id: string, agg: MetricAggregation) => void;
-  readonly onMetricChange: (id: string, metricName: string) => void;
+  readonly onMetricChange: (id: string, metricName: string, aggregation: MetricAggregation) => void;
   readonly onWhereChange: (id: string, filters: MetricTagFilter[]) => void;
   readonly onGroupByChange: (id: string, groupBy: string[]) => void;
   readonly onAddFormula: () => void;
@@ -51,7 +51,7 @@ export function MetricQueryBuilder({
           query={query}
           canRemove={canRemove}
           onAggregationChange={(agg) => onAggregationChange(query.id, agg)}
-          onMetricChange={(name) => onMetricChange(query.id, name)}
+          onMetricChange={(name, aggregation) => onMetricChange(query.id, name, aggregation)}
           onWhereChange={(filters) => onWhereChange(query.id, filters)}
           onGroupByChange={(gb) => onGroupByChange(query.id, gb)}
           onRemove={() => onRemoveQuery(query.id)}

@@ -5,7 +5,7 @@ import { Popover } from "@shared/components/primitives/ui/popover";
 import { Select } from "@shared/components/primitives/ui/select";
 import { cn } from "@shared/lib/utils";
 
-import { useMetricTags } from "@shared/metrics/hooks/useMetricTags";
+import { useMetricTagValues, useMetricTags } from "@shared/metrics/hooks/useMetricTags";
 import type { MetricFilterOperator, MetricTagFilter } from "@shared/metrics/types";
 
 interface TagFilterProps {
@@ -38,14 +38,15 @@ export function TagFilter({ metricName, filters, onChange }: TagFilterProps) {
   const [selectedValue, setSelectedValue] = useState("");
 
   const { data: tagsData } = useMetricTags(metricName);
+  const { data: valuesData } = useMetricTagValues(metricName, selectedKey);
   const tags = tagsData?.tags ?? [];
 
   const tagKeyOptions = useMemo(() => tags.map((t) => ({ label: t.key, value: t.key })), [tags]);
 
   const tagValueOptions = useMemo(() => {
-    const tag = tags.find((t) => t.key === selectedKey);
-    return (tag?.values ?? []).map((v) => ({ label: v, value: v }));
-  }, [tags, selectedKey]);
+    const vals = valuesData?.tags[0]?.values ?? [];
+    return vals.map((v) => ({ label: v, value: v }));
+  }, [valuesData]);
 
   const handleAdd = useCallback(() => {
     if (!selectedKey || !selectedValue) return;

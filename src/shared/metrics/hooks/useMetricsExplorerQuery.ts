@@ -17,7 +17,7 @@ export function useMetricsExplorerQuery(queries: MetricQueryDefinition[], step: 
     queryKey: ["metrics", "explorer", queriesHash, startTime, endTime, step],
     queryFn: ({ signal }) => {
       return metricsExplorerApi.query(
-        buildExplorerQueryRequest(queries, startTime, endTime, step),
+        buildExplorerQueryRequest(activeQueries, startTime, endTime, step),
         signal
       );
     },

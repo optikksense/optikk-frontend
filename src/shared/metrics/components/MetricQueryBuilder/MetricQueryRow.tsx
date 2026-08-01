@@ -3,11 +3,13 @@ import { X } from "lucide-react";
 import { cn } from "@shared/lib/utils";
 
 import { QUERY_LABEL_COLORS } from "@shared/metrics/constants";
+import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";
 import type {
   MetricAggregation,
   MetricQueryDefinition,
   MetricTagFilter,
 } from "@shared/metrics/types";
+import { getDefaultAggregationForMetric } from "@shared/metrics/utils/metricHelpers";
 import { AggregationPicker } from "./AggregationPicker";
 import { MetricSelector } from "./MetricSelector";
 import { TagFilter } from "./TagFilter";
@@ -17,7 +19,7 @@ interface MetricQueryRowProps {
   readonly query: MetricQueryDefinition;
   readonly canRemove: boolean;
   readonly onAggregationChange: (agg: MetricAggregation) => void;
-  readonly onMetricChange: (metricName: string) => void;
+  readonly onMetricChange: (metricName: string, aggregation: MetricAggregation) => void;
   readonly onWhereChange: (filters: MetricTagFilter[]) => void;
   readonly onGroupByChange: (groupBy: string[]) => void;
   readonly onRemove: () => void;
@@ -33,6 +35,12 @@ export function MetricQueryRow({
   onRemove,
 }: MetricQueryRowProps) {
   const labelColor = QUERY_LABEL_COLORS[query.id] ?? "#6b7280";
+  const { data } = useMetricNames("");
+  const metricEntry = data?.metrics.find((m) => m.name === query.metricName);
+  const selectMetric = (metricName: string) => {
+    const entry = data?.metrics.find((m) => m.name === metricName);
+    onMetricChange(metricName, getDefaultAggregationForMetric(entry, query.aggregation));
+  };
 
   return (
     <div
@@ -43,7 +51,6 @@ export function MetricQueryRow({
         "hover:border-border"
       )}
     >
-      {}
       <div
         className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-semibold text-[11px] text-white"
         style={{ backgroundColor: labelColor }}
@@ -51,15 +58,16 @@ export function MetricQueryRow({
         {query.id}
       </div>
 
-      {}
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        {}
         <div className="flex items-center gap-2">
-          <AggregationPicker value={query.aggregation} onChange={onAggregationChange} />
-          <MetricSelector value={query.metricName} onChange={onMetricChange} />
+          <AggregationPicker
+            value={query.aggregation}
+            onChange={onAggregationChange}
+            metricEntry={metricEntry}
+          />
+          <MetricSelector value={query.metricName} onChange={selectMetric} />
         </div>
 
-        {}
         {query.metricName && (
           <div className="flex flex-wrap items-center gap-3">
             <TagFilter
@@ -77,7 +85,6 @@ export function MetricQueryRow({
         )}
       </div>
 
-      {}
       {canRemove && (
         <button
           type="button"

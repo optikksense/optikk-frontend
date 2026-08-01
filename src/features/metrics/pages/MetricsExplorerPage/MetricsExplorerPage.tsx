@@ -8,6 +8,7 @@ import { MetricQueryBuilder } from "@shared/metrics/components/MetricQueryBuilde
 import { useMetricNames } from "@shared/metrics/hooks/useMetricNames";
 import { useMetricsExplorerQuery } from "@shared/metrics/hooks/useMetricsExplorerQuery";
 import type { MetricExplorerResults } from "@shared/metrics/types";
+import { getDefaultAggregationForMetric } from "@shared/metrics/utils/metricHelpers";
 import { FleetDistributionPanel } from "../../components/FleetDistributionPanel";
 import { GroupByBreakdownTable } from "../../components/GroupByBreakdownTable";
 import { MetricsExplorerChart } from "../../components/MetricsExplorerChart";
@@ -55,7 +56,13 @@ export default function MetricsExplorerPage() {
   );
 
   const reselectMetric = (metricName: string) => {
-    if (primaryQuery) updateQueryMetric(primaryQuery.id, metricName);
+    if (!primaryQuery) return;
+    const entry = metricNames?.metrics.find((metric) => metric.name === metricName);
+    updateQueryMetric(
+      primaryQuery.id,
+      metricName,
+      getDefaultAggregationForMetric(entry, primaryQuery.aggregation)
+    );
   };
 
   return (
@@ -76,7 +83,6 @@ export default function MetricsExplorerPage() {
         }
       />
 
-      {}
       <PageSurface padding="lg" className="relative z-[40] overflow-visible">
         <MetricQueryBuilder
           queries={queries}

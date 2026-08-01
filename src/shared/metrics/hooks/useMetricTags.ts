@@ -13,3 +13,15 @@ export function useMetricTags(metricName: string) {
     staleTime: 60_000,
   });
 }
+
+export function useMetricTagValues(metricName: string, tagKey: string) {
+  const selectedTenantId = useTenantId();
+  const { startTime, endTime } = useResolvedTimeBounds();
+
+  return useStandardQuery({
+    queryKey: ["metrics", "tagValues", metricName, tagKey, startTime, endTime],
+    queryFn: () => metricsExplorerApi.getMetricTags({ metricName, tagKey, startTime, endTime }),
+    enabled: Boolean(selectedTenantId) && Boolean(metricName) && Boolean(tagKey),
+    staleTime: 60_000,
+  });
+}

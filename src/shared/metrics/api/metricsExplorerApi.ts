@@ -29,15 +29,13 @@ export function buildExplorerQueryRequest(
 
 const BASE = API_CONFIG.ENDPOINTS.V1_BASE;
 
-/**
- * Mirrors metrics/explorer FE* models. Only `unit` and `description` are
- * `omitempty`; `normalizeMetricType` narrows type to these four values.
- */
 const metricNameEntrySchema = z.object({
   name: z.string(),
-  type: z.enum(["gauge", "counter", "histogram", "summary"]),
+  type: z.enum(["gauge", "counter", "histogram", "exponential_histogram", "summary"]),
   unit: z.string().optional(),
   description: z.string().optional(),
+  temporality: z.string(),
+  isMonotonic: z.boolean(),
 });
 
 const metricNamesResponseSchema = z.object({
