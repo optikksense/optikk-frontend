@@ -3,9 +3,7 @@ export type VisualizationTab =
   | "flame"
   | "errors"
   | "service_map"
-  | "raw"
-  | "timeline"
-  | "servicemap";
+  | "raw";
 
 export interface SpanEvent {
   readonly spanId: string;

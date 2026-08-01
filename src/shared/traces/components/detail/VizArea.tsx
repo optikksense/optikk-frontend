@@ -1,6 +1,12 @@
 import type { ServiceTopologyResponse } from "@shared/api/topology";
 import type { TraceErrorGroup, TraceRecord } from "@shared/api/traces/schemas";
-import { memo } from "react";
+import {
+  buildTopologyGraph,
+  topologyEdgeTypes,
+  topologyNodeTypes,
+} from "@shared/components/ui/charts/ServiceTopologyGraph/buildGraph";
+import { ServiceTopologyGraph } from "@shared/components/ui/charts/ServiceTopologyGraph/ServiceTopologyGraph";
+import { memo, useMemo } from "react";
 import type { SpanEvent, VisualizationTab } from "../../types/detail";
 import { ErrorsTab } from "../errors/ErrorsTab";
 import { RawJsonTab } from "../json/RawJsonTab";
@@ -22,11 +28,14 @@ interface Props {
 }
 
 function VizAreaComponent(props: Props) {
-  const isWaterfall = props.activeTab === "waterfall" || (props.activeTab as string) === "timeline";
+  const graph = useMemo(
+    () => props.serviceMap ? buildTopologyGraph({ data: props.serviceMap }) : null,
+    [props.serviceMap]
+  );
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {isWaterfall && (
+      {props.activeTab === "waterfall" && (
         <WaterfallView
           spans={props.spans}
           selectedSpanId={props.selectedSpanId}
@@ -36,6 +45,16 @@ function VizAreaComponent(props: Props) {
           spanEvents={props.spanEvents}
           search={props.search}
         />
+      )}
+      {props.activeTab === "service_map" && graph && (
+        <div className="relative flex min-h-[420px] flex-1">
+          <ServiceTopologyGraph
+            nodes={graph.nodes}
+            edges={graph.edges}
+            nodeTypes={topologyNodeTypes}
+            edgeTypes={topologyEdgeTypes}
+          />
+        </div>
       )}
       {props.activeTab === "errors" && (
         <ErrorsTab

@@ -58,10 +58,7 @@ function TraceTabBarComponent({
       <div className="flex">
         {tabs.map((t) => {
           const Icon = t.icon;
-          const isActive =
-            activeTab === t.key ||
-            (t.key === "waterfall" && (activeTab as string) === "timeline") ||
-            (t.key === "service_map" && (activeTab as string) === "servicemap");
+          const isActive = activeTab === t.key;
 
           const errCount = t.key === "errors" ? (t.count ?? 0) : 0;
           return (

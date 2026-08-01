@@ -49,10 +49,10 @@ export function useTraceDetailHotkeys({
           return cycleErrorSpans(e, errorSpanIds, selectedSpanId, onSelectSpan);
         case "1":
           e.preventDefault();
-          return onSetViz("timeline");
+          return onSetViz("waterfall");
         case "2":
           e.preventDefault();
-          return onSetViz("servicemap");
+          return onSetViz("service_map");
         case "ArrowDown":
         case "j":
           return moveSpan(e, spans, selectedSpanId, 1, onSelectSpan);

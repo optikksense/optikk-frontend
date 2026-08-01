@@ -15,12 +15,12 @@ export function useTraceDetailState() {
   const rawActiveTab = useTracesStore((s) => s.visualizationTab);
 
   const activeTab: VisualizationTab =
-    rawActiveTab === "servicemap" ||
-    rawActiveTab === "timeline" ||
+    rawActiveTab === "service_map" ||
+    rawActiveTab === "waterfall" ||
     rawActiveTab === "errors" ||
     rawActiveTab === "raw"
       ? rawActiveTab
-      : "timeline";
+      : "waterfall";
   const setActiveTab = useTracesStore((s) => s.setVisualizationTab);
 
   const data = useTraceDetailData(selectedTenantId, traceIdParam);
@@ -34,7 +34,7 @@ export function useTraceDetailState() {
     selectedTenantId,
     data.serviceMap,
     data.traceTimeBounds,
-    activeTab === "servicemap"
+    activeTab === "service_map"
   );
 
   return {
