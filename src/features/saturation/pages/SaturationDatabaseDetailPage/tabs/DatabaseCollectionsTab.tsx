@@ -1,21 +1,13 @@
-import { useMemo } from "react";
-
 import DataTable from "@shared/components/ui/data-display/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
+import type { QueryPerformanceCollection } from "@/features/saturation/api/databaseQueryPerformanceApi";
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import { fmtMs, fmtNum } from "@shared/utils/formatters";
 
-import { StatusPill } from "@shared/components/ui/data-display/status/StatusPill";
+import { useQueryPerformanceCatalogue } from "../hooks/useQueryPerformance";
 
-import {
-  INSTANCE_HEALTH,
-  STATUS_LABEL,
-} from "@/features/saturation/pages/SaturationDatabasePage/databaseInstanceModel";
-import { type CollectionRow, aggregateCollections } from "../collectionsModel";
-import { useDatabaseSystemQueries } from "../hooks/useDatabaseSystemQueries";
-
-const COLUMNS: ColumnDef<CollectionRow>[] = [
+const COLUMNS: ColumnDef<QueryPerformanceCollection>[] = [
   {
     header: "Collection",
     accessorKey: "name",
@@ -37,52 +29,50 @@ const COLUMNS: ColumnDef<CollectionRow>[] = [
   },
   {
     header: "Calls",
-    accessorKey: "calls",
+    accessorKey: "callCount",
     size: 96,
     meta: { align: "right" },
-    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtNum(row.calls)}</span>,
+    cell: ({ row: { original: row } }) => (
+      <span className="font-mono">{fmtNum(row.callCount)}</span>
+    ),
+  },
+  {
+    header: "p95",
+    accessorKey: "p95Ms",
+    size: 90,
+    meta: { align: "right" },
+    cell: ({ row: { original: row } }) => (
+      <span className="font-mono">{row.p95Ms == null ? "—" : fmtMs(row.p95Ms)}</span>
+    ),
   },
   {
     header: "p99",
     accessorKey: "p99Ms",
     size: 90,
     meta: { align: "right" },
-    cell: ({ row: { original: row } }) => <span className="font-mono">{fmtMs(row.p99Ms)}</span>,
-  },
-  {
-    header: "Total time",
-    accessorKey: "totalMs",
-    size: 110,
-    meta: { align: "right" },
     cell: ({ row: { original: row } }) => (
-      <span className="font-mono font-semibold text-foreground">{fmtMs(row.totalMs)}</span>
-    ),
-  },
-  {
-    header: "Status",
-    accessorKey: "status",
-    size: 110,
-    cell: ({ row: { original: row } }) => (
-      <StatusPill status={INSTANCE_HEALTH[row.status]} label={STATUS_LABEL[row.status]} />
+      <span className="font-mono">{row.p99Ms == null ? "—" : fmtMs(row.p99Ms)}</span>
     ),
   },
 ];
 
 export function DatabaseCollectionsTab({ system }: { system: string }) {
-  const { rows, isPending, error } = useDatabaseSystemQueries(system);
-  const collections = useMemo(() => aggregateCollections(rows), [rows]);
+  const query = useQueryPerformanceCatalogue(system);
+  const collections = query.data?.collections ?? [];
 
   return (
     <PanelCard
       title="Collections"
-      subtitle={`${collections.length} collections · aggregated from query patterns`}
+      subtitle={`${collections.length} collections · query-level rollup data`}
       padded={false}
     >
       <DataTable
-        data={{ columns: COLUMNS, rows: collections, loading: isPending }}
+        data={{ columns: COLUMNS, rows: collections, loading: query.isPending && !query.data }}
         pagination={{ pageSize: 10 }}
         config={{
-          emptyText: error ?? "No collection activity for this instance in the current window.",
+          emptyText: query.isError
+            ? "Unable to load collections for the current window."
+            : "No collection activity for this instance in the current window.",
         }}
       />
     </PanelCard>

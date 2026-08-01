@@ -1,8 +1,4 @@
 import type { QueryDetailSummary } from "@/features/saturation/api/databaseQueryDetailApi";
-import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
-
-// Common shape the header and KPI strip render, filled either from the
-// query-detail summary endpoint or (legacy fallback) a slow-query pattern row.
 export interface QueryDetailView {
   readonly queryText: string;
   readonly collectionName: string;
@@ -37,22 +33,5 @@ export function viewFromSummary(s: QueryDetailSummary): QueryDetailView {
     avgMs: s.avgMs,
     totalTimeMs: s.totalTimeMs,
     avgRows: s.avgRows,
-  };
-}
-
-export function viewFromPatternRow(row: SlowQueryPatternRow): QueryDetailView {
-  return {
-    queryText: row.queryText,
-    collectionName: row.collectionName,
-    operationName: verb(row.queryText),
-    topService: "",
-    callCount: row.callCount,
-    errorCount: row.errorCount,
-    p50Ms: row.p50Ms,
-    p95Ms: row.p95Ms,
-    p99Ms: row.p99Ms,
-    avgMs: null,
-    totalTimeMs: null,
-    avgRows: null,
   };
 }

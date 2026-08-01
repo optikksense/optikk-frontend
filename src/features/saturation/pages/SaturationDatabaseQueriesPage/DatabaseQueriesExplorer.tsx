@@ -8,7 +8,6 @@ import {
 } from "@/features/saturation/api/databaseQueriesExplorerApi";
 import type { SlowQueryPatternRow } from "@/features/saturation/api/databaseSlowQueriesApi";
 import { DatabaseQueriesTable } from "@/features/saturation/pages/SaturationDatabasePage/list/DatabaseQueriesTable";
-import { queryFingerprintId } from "@/features/saturation/utils/queryFingerprintId";
 import { ROUTES } from "@/shared/constants/routes";
 import { ExplorerHeader } from "@shared/search/components/chrome/ExplorerHeader";
 import { ExplorerLayout } from "@shared/search/components/chrome/ExplorerLayout";
@@ -60,10 +59,7 @@ export function DatabaseQueriesExplorer({
 
   const onOpen = (row: SlowQueryPatternRow) => {
     navigate({
-      to: ROUTES.databaseQuery.replace(
-        "$queryId",
-        row.queryHash || queryFingerprintId(row)
-      ) as never,
+      to: ROUTES.databaseQuery.replace("$queryId", row.queryHash) as never,
       search: {
         dbSystem: row.dbSystem || dbSystem || undefined,
         collection: row.collectionName || undefined,

@@ -8,8 +8,7 @@ const nullableNumber = z.number().nullable();
 const scopedString = stringValue.optional().default("");
 
 export const slowQueryPatternSchema = z.object({
-  // Backend fingerprint; defaults to "" when the server is older.
-  queryHash: scopedString,
+  queryHash: z.string().regex(/^[0-9a-f]{16}$/),
   queryText: stringValue,
   dbSystem: scopedString,
   collectionName: stringValue,

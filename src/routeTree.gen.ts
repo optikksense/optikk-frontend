@@ -36,14 +36,11 @@ import { Route as AppLogsTransactionsRouteImport } from './routes/_app/logs/tran
 import { Route as AppLogsPatternsRouteImport } from './routes/_app/logs/patterns'
 import { Route as AppDatabaseQueriesRouteImport } from './routes/_app/database/queries'
 import { Route as AppAlertsNewRouteImport } from './routes/_app/alerts.new'
-import { Route as AppSaturationDatabaseIndexRouteImport } from './routes/_app/saturation/database/index'
 import { Route as AppInfrastructureHostsHostRouteImport } from './routes/_app/infrastructure/hosts/$host'
 import { Route as AppInfrastructureContainersContainerRouteImport } from './routes/_app/infrastructure/containers/$container'
 import { Route as AppDeploymentsServiceVersionRouteImport } from './routes/_app/deployments/$service.$version'
 import { Route as AppDatabaseQueryQueryIdRouteImport } from './routes/_app/database/query/$queryId'
 import { Route as AppDatabaseInstanceSystemRouteImport } from './routes/_app/database/instance/$system'
-import { Route as AppSaturationDatabaseQueryQueryIdRouteImport } from './routes/_app/saturation/database/query/$queryId'
-import { Route as AppSaturationDatabaseInstanceSystemRouteImport } from './routes/_app/saturation/database/instance/$system'
 
 const AppOverviewLazyRouteImport = createFileRoute('/_app/overview')()
 const AppDeviceLazyRouteImport = createFileRoute('/_app/device')()
@@ -307,12 +304,6 @@ const AppAlertsNewRoute = AppAlertsNewRouteImport.update({
   path: '/alerts/new',
   getParentRoute: () => AppRoute,
 } as any)
-const AppSaturationDatabaseIndexRoute =
-  AppSaturationDatabaseIndexRouteImport.update({
-    id: '/saturation/database/',
-    path: '/saturation/database/',
-    getParentRoute: () => AppRoute,
-  } as any)
 const AppMonitorsMonitorIdEditLazyRoute =
   AppMonitorsMonitorIdEditLazyRouteImport.update({
     id: '/edit',
@@ -396,18 +387,6 @@ const AppDatabaseInstanceSystemRoute =
   } as any).lazy(() =>
     import('./routes/_app/database/instance/$system.lazy').then((d) => d.Route),
   )
-const AppSaturationDatabaseQueryQueryIdRoute =
-  AppSaturationDatabaseQueryQueryIdRouteImport.update({
-    id: '/saturation/database/query/$queryId',
-    path: '/saturation/database/query/$queryId',
-    getParentRoute: () => AppRoute,
-  } as any)
-const AppSaturationDatabaseInstanceSystemRoute =
-  AppSaturationDatabaseInstanceSystemRouteImport.update({
-    id: '/saturation/database/instance/$system',
-    path: '/saturation/database/instance/$system',
-    getParentRoute: () => AppRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -455,9 +434,6 @@ export interface FileRoutesByFullPath {
   '/llm/sessions/$sessionId': typeof AppLlmSessionsSessionIdLazyRoute
   '/llm/traces/$traceId': typeof AppLlmTracesTraceIdLazyRoute
   '/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
-  '/saturation/database/': typeof AppSaturationDatabaseIndexRoute
-  '/saturation/database/instance/$system': typeof AppSaturationDatabaseInstanceSystemRoute
-  '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -505,9 +481,6 @@ export interface FileRoutesByTo {
   '/llm/sessions/$sessionId': typeof AppLlmSessionsSessionIdLazyRoute
   '/llm/traces/$traceId': typeof AppLlmTracesTraceIdLazyRoute
   '/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
-  '/saturation/database': typeof AppSaturationDatabaseIndexRoute
-  '/saturation/database/instance/$system': typeof AppSaturationDatabaseInstanceSystemRoute
-  '/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -557,9 +530,6 @@ export interface FileRoutesById {
   '/_app/llm/sessions/$sessionId': typeof AppLlmSessionsSessionIdLazyRoute
   '/_app/llm/traces/$traceId': typeof AppLlmTracesTraceIdLazyRoute
   '/_app/monitors/$monitorId/edit': typeof AppMonitorsMonitorIdEditLazyRoute
-  '/_app/saturation/database/': typeof AppSaturationDatabaseIndexRoute
-  '/_app/saturation/database/instance/$system': typeof AppSaturationDatabaseInstanceSystemRoute
-  '/_app/saturation/database/query/$queryId': typeof AppSaturationDatabaseQueryQueryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -609,9 +579,6 @@ export interface FileRouteTypes {
     | '/llm/sessions/$sessionId'
     | '/llm/traces/$traceId'
     | '/monitors/$monitorId/edit'
-    | '/saturation/database/'
-    | '/saturation/database/instance/$system'
-    | '/saturation/database/query/$queryId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -659,9 +626,6 @@ export interface FileRouteTypes {
     | '/llm/sessions/$sessionId'
     | '/llm/traces/$traceId'
     | '/monitors/$monitorId/edit'
-    | '/saturation/database'
-    | '/saturation/database/instance/$system'
-    | '/saturation/database/query/$queryId'
   id:
     | '__root__'
     | '/'
@@ -710,9 +674,6 @@ export interface FileRouteTypes {
     | '/_app/llm/sessions/$sessionId'
     | '/_app/llm/traces/$traceId'
     | '/_app/monitors/$monitorId/edit'
-    | '/_app/saturation/database/'
-    | '/_app/saturation/database/instance/$system'
-    | '/_app/saturation/database/query/$queryId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -980,13 +941,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAlertsNewRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/saturation/database/': {
-      id: '/_app/saturation/database/'
-      path: '/saturation/database'
-      fullPath: '/saturation/database/'
-      preLoaderRoute: typeof AppSaturationDatabaseIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/monitors/$monitorId/edit': {
       id: '/_app/monitors/$monitorId/edit'
       path: '/edit'
@@ -1057,20 +1011,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDatabaseInstanceSystemRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/saturation/database/query/$queryId': {
-      id: '/_app/saturation/database/query/$queryId'
-      path: '/saturation/database/query/$queryId'
-      fullPath: '/saturation/database/query/$queryId'
-      preLoaderRoute: typeof AppSaturationDatabaseQueryQueryIdRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/saturation/database/instance/$system': {
-      id: '/_app/saturation/database/instance/$system'
-      path: '/saturation/database/instance/$system'
-      fullPath: '/saturation/database/instance/$system'
-      preLoaderRoute: typeof AppSaturationDatabaseInstanceSystemRouteImport
-      parentRoute: typeof AppRoute
-    }
   }
 }
 
@@ -1126,9 +1066,6 @@ interface AppRouteChildren {
   AppLlmPromptsNameLazyRoute: typeof AppLlmPromptsNameLazyRoute
   AppLlmSessionsSessionIdLazyRoute: typeof AppLlmSessionsSessionIdLazyRoute
   AppLlmTracesTraceIdLazyRoute: typeof AppLlmTracesTraceIdLazyRoute
-  AppSaturationDatabaseIndexRoute: typeof AppSaturationDatabaseIndexRoute
-  AppSaturationDatabaseInstanceSystemRoute: typeof AppSaturationDatabaseInstanceSystemRoute
-  AppSaturationDatabaseQueryQueryIdRoute: typeof AppSaturationDatabaseQueryQueryIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -1170,11 +1107,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppLlmPromptsNameLazyRoute: AppLlmPromptsNameLazyRoute,
   AppLlmSessionsSessionIdLazyRoute: AppLlmSessionsSessionIdLazyRoute,
   AppLlmTracesTraceIdLazyRoute: AppLlmTracesTraceIdLazyRoute,
-  AppSaturationDatabaseIndexRoute: AppSaturationDatabaseIndexRoute,
-  AppSaturationDatabaseInstanceSystemRoute:
-    AppSaturationDatabaseInstanceSystemRoute,
-  AppSaturationDatabaseQueryQueryIdRoute:
-    AppSaturationDatabaseQueryQueryIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

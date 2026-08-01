@@ -1,11 +1,11 @@
 import type { ServiceTopologyResponse } from "@shared/api/topology";
 import type { TraceErrorGroup, TraceRecord } from "@shared/api/traces/schemas";
+import { ServiceTopologyGraph } from "@shared/components/ui/charts/ServiceTopologyGraph/ServiceTopologyGraph";
 import {
   buildTopologyGraph,
   topologyEdgeTypes,
   topologyNodeTypes,
 } from "@shared/components/ui/charts/ServiceTopologyGraph/buildGraph";
-import { ServiceTopologyGraph } from "@shared/components/ui/charts/ServiceTopologyGraph/ServiceTopologyGraph";
 import { memo, useMemo } from "react";
 import type { SpanEvent, VisualizationTab } from "../../types/detail";
 import { ErrorsTab } from "../errors/ErrorsTab";
@@ -29,7 +29,7 @@ interface Props {
 
 function VizAreaComponent(props: Props) {
   const graph = useMemo(
-    () => props.serviceMap ? buildTopologyGraph({ data: props.serviceMap }) : null,
+    () => (props.serviceMap ? buildTopologyGraph({ data: props.serviceMap }) : null),
     [props.serviceMap]
   );
 

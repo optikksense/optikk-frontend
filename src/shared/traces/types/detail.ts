@@ -1,9 +1,4 @@
-export type VisualizationTab =
-  | "waterfall"
-  | "flame"
-  | "errors"
-  | "service_map"
-  | "raw";
+export type VisualizationTab = "waterfall" | "flame" | "errors" | "service_map" | "raw";
 
 export interface SpanEvent {
   readonly spanId: string;

@@ -1,12 +1,4 @@
-import {
-  Activity,
-  Boxes,
-  Database,
-  type LucideIcon,
-  MousePointerClick,
-  ScrollText,
-  Sparkles,
-} from "lucide-react";
+import { Activity, type LucideIcon, ScrollText } from "lucide-react";
 
 import { cn } from "@shared/lib/utils";
 
@@ -16,17 +8,13 @@ const SOURCES: ReadonlyArray<{
   readonly enabled: boolean;
 }> = [
   { label: "Metrics", icon: Activity, enabled: true },
-  { label: "APM", icon: Boxes, enabled: false },
-  { label: "Infrastructure", icon: Database, enabled: false },
   { label: "Logs", icon: ScrollText, enabled: false },
-  { label: "Events", icon: Sparkles, enabled: false },
-  { label: "RUM", icon: MousePointerClick, enabled: false },
 ];
 
-/** Data-source row; only Metrics is wired to the query engine for now. */
+/** Data-source selector for widget creation; supports Metrics and Logs. */
 export function DataSourceRow() {
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 gap-2">
       {SOURCES.map(({ label, icon: Icon, enabled }) => (
         <div
           key={label}
@@ -34,8 +22,8 @@ export function DataSourceRow() {
           className={cn(
             "flex items-center gap-2 rounded-lg border px-3 py-2 text-[12px]",
             enabled
-              ? "border-primary bg-[var(--color-primary-subtle-08)] text-foreground"
-              : "border-border text-foreground-muted opacity-50"
+              ? "border-primary bg-[var(--color-primary-subtle-08)] font-medium text-foreground"
+              : "cursor-not-allowed border-border text-foreground-muted opacity-50"
           )}
         >
           <Icon size={14} />
