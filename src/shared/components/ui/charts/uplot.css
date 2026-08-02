@@ -8,14 +8,14 @@
 }
 
 .uplot-shell .u-legend {
-  margin-top: 10px;
+  margin-top: 4px;
   font-size: 12px;
   color: var(--text-secondary);
 }
 
 .uplot-shell .u-legend th,
 .uplot-shell .u-legend td {
-  padding-right: 10px;
+  padding: 2px 10px 2px 0;
 }
 
 .uplot-shell .u-cursor-x,

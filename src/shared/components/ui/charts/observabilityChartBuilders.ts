@@ -49,7 +49,7 @@ export function buildChartOptions({
     y: {
       range: (_u, min, max) => [
         yMin ?? (min != null && min < 0 ? min : 0),
-        yMax ?? (max != null && max > 0 ? Math.ceil(max * 1.25) : 1),
+        yMax ?? (max != null && max > 0 ? max * 1.1 : 1),
       ],
     },
   };
