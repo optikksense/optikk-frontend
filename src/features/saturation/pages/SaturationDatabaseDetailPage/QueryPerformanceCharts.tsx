@@ -25,7 +25,7 @@ export function QueryPerformanceCharts({
     <div className="flex flex-col gap-4">
       <PanelCard
         title="Query latency"
-        subtitle={mode === "collection" ? "p95 dashed · p99 solid" : "p50 / p95 / p99"}
+        subtitle={mode === "collection" ? "p95 / p99 · ≥20 calls/bucket" : "p50 / p95 / p99"}
       >
         {empty ? (
           <EmptyChart />

@@ -6,7 +6,7 @@ export function defaultAxes(config?: { yAxisSize?: number }): uPlot.Axis[] {
   const gridColor = resolveThemeColor("--chart-grid", "rgba(255,255,255,0.10)");
   const labelColor = resolveThemeColor("--chart-axis", "#b9c0cf");
   const font = "11px Inter, sans-serif";
-  const yAxisSize = config?.yAxisSize ?? 60;
+  const yAxisSize = config?.yAxisSize ?? 44;
 
   return [
     {

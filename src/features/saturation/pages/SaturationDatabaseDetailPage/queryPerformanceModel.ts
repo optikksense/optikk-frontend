@@ -35,7 +35,7 @@ function timestampsFor(series: QueryPerformanceSeries[]): number[] {
 function valuesAt(
   query: QueryPerformanceSeries,
   timestamps: number[],
-  value: (point: QueryPerformanceSeries["points"][number]) => number
+  value: (point: QueryPerformanceSeries["points"][number]) => number | null
 ): Array<number | null> {
   const byTimestamp = new Map(
     query.points.map((point) => [Math.floor(point.timeBucketMs / 1000), value(point)])
@@ -87,25 +87,29 @@ export function buildQueryPerformanceCharts(
         : [],
     };
   }
+  const sampledPercentile = (point: QueryPerformanceSeries["points"][number], value: number) =>
+    point.opsPerSec * response.bucketSizeSeconds >= 20 ? value : null;
   return {
     timestamps,
     throughput,
-    latency: queries.flatMap((query) => {
-      const color = colorForQuery(query.queryHash);
-      const label = queryDisplayLabel(query);
-      return [
-        {
-          label: `${label} p95`,
-          values: valuesAt(query, timestamps, (point) => point.p95Ms),
-          color,
-          dash: [6, 4],
-        },
-        {
-          label: `${label} p99`,
-          values: valuesAt(query, timestamps, (point) => point.p99Ms),
-          color,
-        },
-      ];
-    }),
+    latency: queries
+      .flatMap((query) => {
+        const color = colorForQuery(query.queryHash);
+        const label = queryDisplayLabel(query);
+        return [
+          {
+            label: `${label} p95`,
+            values: valuesAt(query, timestamps, (point) => sampledPercentile(point, point.p95Ms)),
+            color,
+            dash: [6, 4],
+          },
+          {
+            label: `${label} p99`,
+            values: valuesAt(query, timestamps, (point) => sampledPercentile(point, point.p99Ms)),
+            color,
+          },
+        ];
+      })
+      .filter((series) => series.values.some((value) => value != null)),
   };
 }

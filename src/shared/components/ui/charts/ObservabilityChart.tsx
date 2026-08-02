@@ -48,7 +48,7 @@ function ObservabilityChart({
   xMax,
   yMin,
   yMax,
-  yAxisSize = 60,
+  yAxisSize = 44,
   yFormatter,
   xFormatter,
   legend = false,
@@ -59,12 +59,7 @@ function ObservabilityChart({
   onTimeBrush,
   isLoading = false,
 }: ObservabilityChartProps) {
-  // Display-only inputs are read through refs so the option/tooltip objects
-  // handed to UPlotChart stay referentially stable across renders. Inline
-  // `yFormatter={(v) => ...}` props (used at most call sites) would otherwise
-  // change identity every render and force a full uPlot destroy+recreate.
-  // Structural inputs (colors, scales, thresholds, type) stay real deps below
-  // so genuine changes still rebuild the chart.
+  // Keep display-only inputs live without rebuilding uPlot for inline formatters.
   const yFormatterRef = useRef(yFormatter);
   yFormatterRef.current = yFormatter;
   const xFormatterRef = useRef(xFormatter);

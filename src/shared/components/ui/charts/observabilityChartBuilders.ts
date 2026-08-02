@@ -71,7 +71,7 @@ export function buildChartOptions({
     }
   }
   return {
-    padding: [10, 16, 6, 12],
+    padding: [10, 16, 6, 4],
     legend: { show: legend },
     axes,
     scales,
