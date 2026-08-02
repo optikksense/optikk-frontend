@@ -1,5 +1,5 @@
 import { CHART_THEME_DEFAULTS } from "@shared/utils/chartTheme";
-import { fmtNum } from "@shared/utils/formatters";
+import { fmtNum, fmtPct } from "@shared/utils/formatters";
 import type { ServiceMapListItem } from "./useTopologyData";
 
 interface Props {
@@ -66,7 +66,7 @@ function DependencyItem({
       </div>
       <div className="text-right">
         <div className="font-medium font-mono text-[11px] text-foreground">
-          {item.errorRate.toFixed(2)}%
+          {fmtPct(item.errorRate)}
         </div>
         <span className="text-[9.5px] text-foreground-muted">err rate</span>
       </div>

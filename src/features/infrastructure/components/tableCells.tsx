@@ -4,7 +4,7 @@
 
 import { ChevronRight } from "lucide-react";
 
-import { fmtMs, formatNumber, formatRelativeTime } from "@shared/utils/formatters";
+import { fmtMs, fmtPct, formatNumber, formatRelativeTime } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { type NodeHealthTier, tierForErrorRate } from "../utils/nodeHealth";
@@ -22,9 +22,9 @@ const RATE_COLOR: Record<NodeHealthTier, string> = {
 };
 
 /** Percentages get more precision the smaller they are, so 0.01% stays 0.01%. */
-function formatErrorRate(errorRate: number): string {
-  const digits = errorRate >= 10 ? 0 : errorRate >= 1 ? 1 : 2;
-  return `${errorRate.toFixed(digits)}%`;
+function formatErrorRate(errorRate: number | null | undefined): string {
+  const digits = errorRate != null && errorRate < 1 && errorRate > 0 ? 2 : 1;
+  return fmtPct(errorRate, digits);
 }
 
 interface EntityNameCellProps {

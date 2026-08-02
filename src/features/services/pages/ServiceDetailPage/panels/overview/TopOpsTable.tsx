@@ -1,6 +1,6 @@
 import DataTable from "@shared/components/ui/data-display/DataTable";
 import { ENDPOINT_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
-import { fmtNum } from "@shared/utils/formatters";
+import { fmtNum, fmtPct, formatPercentage } from "@shared/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
 
 export interface TopOpRow {
@@ -34,7 +34,7 @@ function renderLatencyDelta(val: number | null) {
   return (
     <span className={`font-mono font-semibold text-[11.5px] ${color}`}>
       {sign}
-      {pct.toFixed(1)}%
+      {formatPercentage(pct, 1, false)}
     </span>
   );
 }
@@ -86,7 +86,7 @@ function buildColumns(labelHeader: string): ColumnDef<TopOpRow>[] {
                   : "text-foreground-muted"
             }`}
           >
-            {r.errorRate.toFixed(2)}%
+            {fmtPct(r.errorRate)}
           </span>
         );
       },

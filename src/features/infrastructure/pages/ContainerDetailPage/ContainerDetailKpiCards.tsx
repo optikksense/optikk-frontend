@@ -1,5 +1,5 @@
 import { KpiCard, type KpiTone } from "@shared/components/ui/cards/StatCard";
-import { fmtMs, formatNumber } from "@shared/utils/formatters";
+import { fmtMs, fmtPct, formatNumber } from "@shared/utils/formatters";
 
 import type { PodOverview } from "../../api/podDetailApi";
 
@@ -33,7 +33,7 @@ function buildTiles(overview: PodOverview | null): Tile[] {
     overview.errorRate >= 5 ? "err" : overview.errorRate >= 1 ? "warn" : "ok";
   return [
     { label: "Requests", value: formatNumber(overview.requestCount), tone: "ok" },
-    { label: "Error rate", value: `${overview.errorRate.toFixed(2)}%`, tone: errTone },
+    { label: "Error rate", value: fmtPct(overview.errorRate), tone: errTone },
     { label: "Avg latency", value: fmtMs(overview.avgLatencyMs), tone: "ok" },
     { label: "p95 latency", value: fmtMs(overview.p95LatencyMs), tone: "ok" },
   ];

@@ -67,22 +67,21 @@ export function formatBytes(bytes: number): string {
   return `${formattedVal}${sizes[i] ?? "B"}`;
 }
 
-function normalizePercentage(value: number | string | null | undefined, clamp = true): number {
-  let raw = Number(value);
-  raw = raw === 0 ? 0 : raw;
-  if (!Number.isFinite(raw)) return 0;
-
-  if (!clamp) return raw;
-  return Math.min(Math.max(raw, 0), 100);
-}
-
 export function formatPercentage(
   value: number | string | null | undefined,
   decimals = 2,
   clamp = true
 ): string {
-  const percent = normalizePercentage(value, clamp);
-  return `${percent.toFixed(decimals)}%`;
+  if (value == null) return "N/A";
+  const num = Number(value);
+  if (!Number.isFinite(num)) return "N/A";
+
+  const percent = clamp ? Math.min(Math.max(num, 0), 100) : num;
+  if (Math.abs(percent) < 1e-9) return "0%";
+
+  const formatted = percent.toFixed(decimals);
+  const clean = Number.parseFloat(formatted).toString();
+  return `${clean}%`;
 }
 
 export function formatRelativeTime(timestamp: number | string | Date): string {
@@ -107,8 +106,8 @@ export function formatRelativeTime(timestamp: number | string | Date): string {
 }
 
 // Null-tolerant metric formatters. Unlike the format* functions above, these
-// render "—" for missing/non-finite values instead of a zero value, which is
-// the right default for metric KPIs where "no data" differs from "zero".
+// render "—" or "N/A" for missing/non-finite values instead of a zero value,
+// which is the right default for metric KPIs where "no data" differs from "zero".
 
 export function fmtNum(n: number | null | undefined): string {
   if (n == null || !Number.isFinite(n)) return "—";
@@ -121,7 +120,7 @@ export function fmtMs(ms: number | null | undefined): string {
 }
 
 export function fmtPct(value: number | null | undefined, digits = 2): string {
-  if (value == null || !Number.isFinite(value)) return "—";
+  if (value == null || !Number.isFinite(value)) return "N/A";
   return formatPercentage(value, digits, false);
 }
 

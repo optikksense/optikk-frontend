@@ -2,7 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import StatCard from "@shared/components/ui/cards/StatCard";
 import DataTable from "@shared/components/ui/data-display/DataTable";
-import { formatDuration, formatNumber } from "@shared/utils/formatters";
+import { fmtPct, formatDuration, formatNumber } from "@shared/utils/formatters";
 
 import type { LlmModelUsage } from "../../../api/llmApi";
 import { useLlmModels, useLlmOverview } from "../../../hooks/useLlmQueries";
@@ -91,7 +91,7 @@ export default function DashboardTab() {
           visuals={{ loading }}
         />
         <StatCard
-          metric={{ title: "Error rate", value: `${(cur?.errorRate ?? 0).toFixed(2)}%` }}
+          metric={{ title: "Error rate", value: fmtPct(cur?.errorRate) }}
           visuals={{ loading }}
         />
       </div>

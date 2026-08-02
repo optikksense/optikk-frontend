@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 
 import { Card as Surface } from "@shared/components/primitives/ui/card";
 import { buildServiceDrawerSearch } from "@shared/components/ui/drawers/serviceDrawerState";
-import { formatNumber } from "@shared/utils/formatters";
+import { fmtPct, formatNumber } from "@shared/utils/formatters";
 
 import type { ServiceHealthCell, ServiceHealthStatus } from "../hooks/useOverviewModel";
 
@@ -39,7 +39,7 @@ function Tile({ cell, onOpen }: { readonly cell: ServiceHealthCell; readonly onO
           {formatNumber(cell.requestCount)}
         </span>
         <span className="font-mono text-[10px] opacity-70">
-          {cell.errorRate.toFixed(2)}% · {Math.round(cell.p99Latency)}ms
+          {fmtPct(cell.errorRate)} · {Math.round(cell.p99Latency)}ms
         </span>
       </span>
     </button>
