@@ -49,6 +49,23 @@ export default defineConfig(({ mode }) => {
       outDir: "dist",
       sourcemap: false,
       chunkSizeWarningLimit: 300,
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              { name: "react-vendor", test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/ },
+              {
+                name: "router-vendor",
+                test: /node_modules[\\/]@tanstack[\\/](react-router|router-core|history|store)[\\/]/,
+              },
+              {
+                name: "ui-vendor",
+                test: /node_modules[\\/](@radix-ui|@floating-ui|sonner)[\\/]/,
+              },
+            ],
+          },
+        },
+      },
     },
   };
 });

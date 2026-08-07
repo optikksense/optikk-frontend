@@ -56,6 +56,7 @@ export function useTimeRangeQuery<TData = unknown>(
       queryFn(selectedTenantId, startTime, endTime, signal),
     enabled: Boolean(selectedTenantId) && enabled !== false,
     staleTime: 30_000,
+    gcTime: 30_000,
     placeholderData: keepPreviousData,
     retry: retryUnlessClientError,
     ...queryOptions,

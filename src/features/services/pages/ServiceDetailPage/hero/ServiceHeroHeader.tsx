@@ -6,12 +6,10 @@ import { ServiceAvatar } from "@/features/services/components/ServiceAvatar";
 import { ROUTES } from "@/shared/constants/routes";
 
 import type { HeroData } from "../hooks/useServiceHeroData";
-import { HeroMetaRow } from "./HeroMetaRow";
 
 interface ServiceHeroHeaderProps {
   readonly serviceName: string;
   readonly hero: HeroData;
-  readonly instanceCount: number | null;
 }
 
 function Breadcrumb({ serviceName }: { serviceName: string }) {
@@ -26,7 +24,7 @@ function Breadcrumb({ serviceName }: { serviceName: string }) {
   );
 }
 
-export function ServiceHeroHeader({ serviceName, hero, instanceCount }: ServiceHeroHeaderProps) {
+export function ServiceHeroHeader({ serviceName, hero }: ServiceHeroHeaderProps) {
   return (
     <header>
       <Breadcrumb serviceName={serviceName} />
@@ -39,7 +37,6 @@ export function ServiceHeroHeader({ serviceName, hero, instanceCount }: ServiceH
             </h1>
             <StatusPill status={hero.status} className="uppercase tracking-wide" />
           </div>
-          <HeroMetaRow instanceCount={instanceCount} />
         </div>
       </div>
     </header>

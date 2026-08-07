@@ -1,4 +1,3 @@
-import { CommandPalette } from "@/app/layout/CommandPalette";
 import { Button } from "@/shared/components/primitives/ui/button";
 import Loading from "@/shared/components/ui/feedback/Loading";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
@@ -20,10 +19,5 @@ function RootErrorComponent({ error, reset }: { error: Error; reset: () => void 
 export const Route = createRootRoute({
   pendingComponent: () => <Loading fullscreen />,
   errorComponent: RootErrorComponent,
-  component: () => (
-    <>
-      <CommandPalette />
-      <Outlet />
-    </>
-  ),
+  component: Outlet,
 });

@@ -4,8 +4,6 @@ import { SERVICE_TAB_IDS, type ServiceTabId } from "./useActiveServiceTab";
 
 interface ServiceDetailTabsProps {
   readonly active: ServiceTabId;
-  readonly counts: Partial<Record<ServiceTabId, number>>;
-  readonly errorTabs?: ReadonlyArray<ServiceTabId>;
   readonly onChange: (next: ServiceTabId) => void;
 }
 
@@ -17,34 +15,15 @@ const LABELS: Record<ServiceTabId, string> = {
   dependencies: "Dependencies",
 };
 
-function TabCount({ value, isError }: { value: number; isError: boolean }) {
-  return (
-    <span
-      className={cn(
-        "ml-1 inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10px]",
-        isError
-          ? "bg-[var(--color-error-bg,rgba(239,68,68,0.16))] text-[var(--color-error,#ef4444)]"
-          : "bg-[var(--bg-elevated,rgba(255,255,255,0.06))] text-foreground-muted"
-      )}
-    >
-      {value}
-    </span>
-  );
-}
-
 function TabButton({
   id,
   label,
   active,
-  count,
-  isError,
   onClick,
 }: {
   id: ServiceTabId;
   label: string;
   active: boolean;
-  count: number | undefined;
-  isError: boolean;
   onClick: () => void;
 }) {
   return (
@@ -60,17 +39,11 @@ function TabButton({
       )}
     >
       {label}
-      {count != null && <TabCount value={count} isError={isError} />}
     </button>
   );
 }
 
-export function ServiceDetailTabs({
-  active,
-  counts,
-  errorTabs = ["errors"],
-  onChange,
-}: ServiceDetailTabsProps) {
+export function ServiceDetailTabs({ active, onChange }: ServiceDetailTabsProps) {
   return (
     <nav className="flex border-border border-b">
       {SERVICE_TAB_IDS.map((id) => (
@@ -79,8 +52,6 @@ export function ServiceDetailTabs({
           id={id}
           label={LABELS[id]}
           active={active === id}
-          count={counts[id]}
-          isError={errorTabs.includes(id) && (counts[id] ?? 0) > 0}
           onClick={() => onChange(id)}
         />
       ))}

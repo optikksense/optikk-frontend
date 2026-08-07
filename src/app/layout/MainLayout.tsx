@@ -1,5 +1,5 @@
 import { Outlet } from "@tanstack/react-router";
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { DensityProvider } from "@shared/components/primitives/ui/providers/DensityProvider";
@@ -15,6 +15,10 @@ import { TrialBanner } from "@/features/onboarding/TrialBanner";
 
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+
+const CommandPalette = lazy(() =>
+  import("./CommandPalette").then(({ CommandPalette }) => ({ default: CommandPalette }))
+);
 
 export default function MainLayout() {
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
@@ -34,6 +38,9 @@ export default function MainLayout() {
   return (
     <DensityProvider>
       <div className="h-screen bg-[var(--bg-primary,var(--literal-hex-0a0a0a-2))]">
+        <Suspense fallback={null}>
+          <CommandPalette />
+        </Suspense>
         <Sidebar />
         <div
           className={cn(

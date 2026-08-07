@@ -24,6 +24,8 @@ export function useDataset(id: number | null) {
     queryKey: ["llm", "datasets", "detail", id],
     queryFn: () => getDataset(id ?? 0),
     enabled: id != null && id > 0,
+    refetchInterval: (query) =>
+      query.state.data?.runs?.some((run) => run.status === "running") ? 2_000 : false,
   });
 }
 

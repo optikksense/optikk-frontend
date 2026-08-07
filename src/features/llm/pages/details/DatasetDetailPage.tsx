@@ -128,7 +128,7 @@ export default function DatasetDetailPage() {
             </Field>
           </div>
           <p className="text-[11px] text-foreground-muted">
-            Runs synchronously over up to 50 items using exact-match scoring.
+            Runs in the background over up to 50 items using exact-match scoring.
           </p>
           {run.isError && <p className="text-[11px] text-error">{run.error.message}</p>}
           <div className="flex justify-end gap-2">
@@ -136,7 +136,7 @@ export default function DatasetDetailPage() {
               Cancel
             </Button>
             <Button onClick={startRun} disabled={run.isPending}>
-              {run.isPending ? "Running…" : "Start run"}
+              {run.isPending ? "Starting…" : "Start run"}
             </Button>
           </div>
         </div>
