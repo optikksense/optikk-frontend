@@ -1,4 +1,5 @@
 import type { CreateMonitorPayload, LogQueryShape } from "../../../api/monitorsApi";
+import { EVAL_WINDOWS, formatWindowLabel } from "../../../constants";
 
 import FieldRow from "./FieldRow";
 
@@ -6,8 +7,6 @@ interface Props {
   readonly draft: CreateMonitorPayload;
   readonly setDraft: (fn: (prev: CreateMonitorPayload) => CreateMonitorPayload) => void;
 }
-
-const WINDOWS = [60, 300, 900, 3600];
 
 export default function LogQuery({ draft, setDraft }: Props) {
   const q: LogQueryShape = draft.query.log ?? {
@@ -34,7 +33,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Window">
         <div className="flex items-center gap-1.5">
-          {WINDOWS.map((w) => {
+          {EVAL_WINDOWS.map((w) => {
             const active = q.windowSec === w;
             return (
               <button
@@ -45,7 +44,7 @@ export default function LogQuery({ draft, setDraft }: Props) {
                   active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}
               >
-                {w >= 3600 ? `${w / 3600}h` : `${w / 60}m`}
+                {formatWindowLabel(w)}
               </button>
             );
           })}

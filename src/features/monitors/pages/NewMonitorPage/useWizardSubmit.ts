@@ -11,13 +11,7 @@ export interface TestResult {
   readonly threshold: number;
 }
 
-function errorMessage(err: unknown, fallback: string): string {
-  if (typeof err === "object" && err !== null && "message" in err) {
-    const msg = (err as { message?: string }).message;
-    if (typeof msg === "string" && msg.length > 0) return msg;
-  }
-  return fallback;
-}
+import { getErrorMessage } from "@shared/utils/errorUtils";
 
 // Drives the wizard footer: save (create or update) + test. `editId` switches
 // the surface into edit mode; testing requires a saved monitor id.
@@ -43,7 +37,7 @@ export function useWizardSubmit(editId: number | undefined) {
         navigate({ to: `/monitors/${created.id}` as string & {} });
       }
     } catch (err) {
-      setError(errorMessage(err, "Failed to save monitor"));
+      setError(getErrorMessage(err, "Failed to save monitor"));
     } finally {
       setSaving(false);
     }
@@ -57,7 +51,7 @@ export function useWizardSubmit(editId: number | undefined) {
     try {
       setTestResult(await testMonitor(editId));
     } catch (err) {
-      setTestError(errorMessage(err, "Failed to test monitor"));
+      setTestError(getErrorMessage(err, "Failed to test monitor"));
     } finally {
       setTesting(false);
     }
@@ -65,3 +59,4 @@ export function useWizardSubmit(editId: number | undefined) {
 
   return { saving, error, save, testing, testResult, testError, test };
 }
+

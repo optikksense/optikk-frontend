@@ -9,6 +9,8 @@ import {
   getValidAggregations,
 } from "@shared/metrics/utils/metricHelpers";
 
+import { EVAL_WINDOWS, formatWindowLabel } from "../../../constants";
+
 import FieldRow from "./FieldRow";
 
 interface Props {
@@ -17,7 +19,6 @@ interface Props {
 }
 
 const ALL_AGGREGATIONS = AGGREGATION_OPTIONS.map(({ value }) => value);
-const WINDOWS = [60, 300, 900, 3600];
 
 export default function MetricQuery({ draft, setDraft }: Props) {
   const { data } = useMetricNames("");
@@ -68,7 +69,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
             );
           })}
           <span className="text-foreground-muted text-xs">over</span>
-          {WINDOWS.map((w) => {
+          {EVAL_WINDOWS.map((w) => {
             const active = q.windowSec === w;
             return (
               <button
@@ -81,7 +82,7 @@ export default function MetricQuery({ draft, setDraft }: Props) {
                     : "bg-secondary text-foreground-secondary hover:text-foreground"
                 }`}
               >
-                {w >= 3600 ? `${w / 3600}h` : `${w / 60}m`}
+                {formatWindowLabel(w)}
               </button>
             );
           })}

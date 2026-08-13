@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { PageShell } from "@shared/components/ui/layout/PageShell";
 
 import { ackMonitor, muteMonitor } from "../../api/monitorsApi";
+import { DEFAULT_MUTE_SECONDS } from "../../constants";
 import {
   useMonitorDetail,
   useMonitorEventsQuery,
@@ -35,25 +36,28 @@ export default function MonitorDetailPage() {
   const eventsQ = useMonitorEventsQuery(id, 10);
   const deleteMutation = useDeleteMonitor();
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const handleAck = useCallback(async () => {
     if (id === undefined) return;
+    setActionError(null);
     try {
       await ackMonitor(id);
       detailQ.refetch();
       eventsQ.refetch();
     } catch (err) {
-      console.error("ack failed", err);
+      setActionError(err instanceof Error ? err.message : "Failed to acknowledge monitor");
     }
   }, [id, detailQ, eventsQ]);
 
   const handleMute = useCallback(async () => {
     if (id === undefined) return;
+    setActionError(null);
     try {
-      await muteMonitor(id, 3600);
+      await muteMonitor(id, DEFAULT_MUTE_SECONDS);
       detailQ.refetch();
     } catch (err) {
-      console.error("mute failed", err);
+      setActionError(err instanceof Error ? err.message : "Failed to mute monitor");
     }
   }, [id, detailQ]);
 
@@ -129,6 +133,12 @@ export default function MonitorDetailPage() {
         deleting={deleteMutation.isPending}
         deleteError={deleteError}
       />
+
+      {actionError && (
+        <div className="rounded border border-error bg-error/10 px-4 py-2 text-error text-sm">
+          {actionError}
+        </div>
+      )}
 
       <div className="grid grid-cols-[1.5fr_1fr_1fr] gap-4">
         <EvalChartCard data={seriesQ.data} loading={seriesQ.isPending} />

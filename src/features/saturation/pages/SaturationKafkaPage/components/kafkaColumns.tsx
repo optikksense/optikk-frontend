@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { formatDuration } from "@shared/utils/formatters";
 
 import {
   type ConsumerGroupRow,
   type ConsumptionRow,
   type ProductionRow,
-  formatMilliseconds,
   formatRate,
 } from "../kafkaPageModel";
 import { ErrorRate } from "./KafkaPrimitives";
@@ -58,7 +58,7 @@ export const consumptionColumns: ColumnDef<ConsumptionRow>[] = [
   ...(["p50Ms", "p95Ms", "p99Ms"] as const).map(
     (key): ColumnDef<ConsumptionRow> =>
       metricColumn(key.slice(0, 3).toUpperCase(), (row) => (
-        <span className="tabular-nums">{formatMilliseconds(row[key])}</span>
+        <span className="tabular-nums">{formatDuration(row[key])}</span>
       ))
   ),
   metricColumn("Errors", (row: ConsumptionRow) => <ErrorRate value={row.errorRate} />),

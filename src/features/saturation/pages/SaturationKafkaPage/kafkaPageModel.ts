@@ -90,14 +90,6 @@ export function formatRate(value: number): string {
   return Math.round(value).toLocaleString();
 }
 
-export function formatPercent(value: number): string {
-  return `${value.toFixed(value >= 10 ? 0 : 1)}%`;
-}
-
-export function formatMilliseconds(value: number): string {
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}s`;
-  return `${Math.round(value)}ms`;
-}
 
 export function buildKafkaPageModel(topo: KafkaTopology, service: string): KafkaPageModel {
   const topicsByName = new Map(topo.topics.map((topic) => [topic.topic, topic]));

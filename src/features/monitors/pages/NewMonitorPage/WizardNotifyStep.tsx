@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 
 import type { CreateMonitorPayload } from "../../api/monitorsApi";
 import type { Channel } from "../../api/notificationsApi";
+import { RENOTIFY_WINDOWS, formatWindowLabel } from "../../constants";
 import { useChannels } from "../../hooks/useChannels";
 
 import StepShell from "./StepShell";
@@ -102,9 +103,9 @@ export default function WizardNotifyStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Renotify if unresolved">
         <div className="flex items-center gap-1.5">
-          {[900, 1800, 3600, 7200, 0].map((sec) => {
+          {RENOTIFY_WINDOWS.map((sec) => {
             const active = (draft.renotifyEverySec ?? 0) === sec;
-            const label = sec === 0 ? "never" : sec >= 3600 ? `${sec / 3600}h` : `${sec / 60}m`;
+            const label = formatWindowLabel(sec);
             return (
               <button
                 key={sec}

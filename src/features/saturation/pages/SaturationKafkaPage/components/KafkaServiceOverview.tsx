@@ -4,7 +4,8 @@ import type { KafkaTopology } from "@/features/saturation/api/kafkaTopologySchem
 import { PanelCard } from "@shared/components/ui/PanelCard";
 import DataTable from "@shared/components/ui/data-display/DataTable";
 
-import { buildKafkaPageModel, formatMilliseconds, formatRate } from "../kafkaPageModel";
+import { formatDuration } from "@shared/utils/formatters";
+import { buildKafkaPageModel, formatRate } from "../kafkaPageModel";
 import { ErrorRate, MetricCard, SummaryValue } from "./KafkaPrimitives";
 import { KafkaTopologyGraph } from "./KafkaTopologyGraph";
 import { consumptionColumns, groupColumns, productionColumns } from "./kafkaColumns";
@@ -62,13 +63,13 @@ export function KafkaServiceOverview({
                 <ErrorRate value={model.productionErrorRate} />
               </SummaryValue>
               <SummaryValue label="P50 latency">
-                {formatMilliseconds(model.productionP50Ms)}
+                {formatDuration(model.productionP50Ms)}
               </SummaryValue>
               <SummaryValue label="P95 latency">
-                {formatMilliseconds(model.productionP95Ms)}
+                {formatDuration(model.productionP95Ms)}
               </SummaryValue>
               <SummaryValue label="P99 latency">
-                {formatMilliseconds(model.productionP99Ms)}
+                {formatDuration(model.productionP99Ms)}
               </SummaryValue>
             </div>
           </div>

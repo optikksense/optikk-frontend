@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "@shared/lib/utils";
 
-import { formatPercent, healthFromError } from "../kafkaPageModel";
+import { formatPercentage } from "@shared/utils/formatters";
+import { healthFromError } from "../kafkaPageModel";
 
 export function MetricCard({
   label,
@@ -33,7 +34,7 @@ export function ErrorRate({ value }: { value: number }) {
             : "text-success"
       )}
     >
-      {formatPercent(value)}
+      {formatPercentage(value, 1)}
     </span>
   );
 }

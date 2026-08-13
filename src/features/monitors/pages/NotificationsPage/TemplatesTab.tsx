@@ -19,13 +19,8 @@ function formFromTemplate(t: Template): TemplateForm {
   return { id: t.id, name: t.name, description: t.description ?? "", body: t.body };
 }
 
-function errorMessage(err: unknown, fallback: string): string {
-  if (typeof err === "object" && err !== null && "message" in err) {
-    const msg = (err as { message?: string }).message;
-    if (typeof msg === "string" && msg.length > 0) return msg;
-  }
-  return fallback;
-}
+import { getErrorMessage } from "@shared/utils/errorUtils";
+
 
 export default function TemplatesTab() {
   const q = useTemplates();
@@ -52,7 +47,7 @@ export default function TemplatesTab() {
       }
       setForm(emptyForm());
     } catch (err) {
-      setStatus(errorMessage(err, "Failed to save template"));
+      setStatus(getErrorMessage(err, "Failed to save template"));
     }
   };
 
@@ -62,7 +57,7 @@ export default function TemplatesTab() {
       await remove.mutateAsync(id);
       if (form.id === id) setForm(emptyForm());
     } catch (err) {
-      setStatus(errorMessage(err, "Failed to delete template"));
+      setStatus(getErrorMessage(err, "Failed to delete template"));
     }
   };
 

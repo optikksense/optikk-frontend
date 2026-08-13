@@ -1,4 +1,5 @@
 import type { APMQueryShape, CreateMonitorPayload } from "../../../api/monitorsApi";
+import { EVAL_WINDOWS, formatWindowLabel } from "../../../constants";
 
 import FieldRow from "./FieldRow";
 
@@ -12,8 +13,6 @@ const TRACKS: { id: string; label: string; unit: string; desc: string }[] = [
   { id: "hits", label: "Throughput", unit: "rps", desc: "request count per second" },
   { id: "latency", label: "Latency", unit: "ms", desc: "p99 percentile" },
 ];
-
-const WINDOWS = [60, 300, 900, 3600];
 
 export default function APMQuery({ draft, setDraft }: Props) {
   const q: APMQueryShape = draft.query.apm ?? {
@@ -73,7 +72,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Window">
         <div className="flex items-center gap-1.5">
-          {WINDOWS.map((w) => {
+          {EVAL_WINDOWS.map((w) => {
             const active = q.windowSec === w;
             return (
               <button
@@ -86,7 +85,7 @@ export default function APMQuery({ draft, setDraft }: Props) {
                     : "bg-secondary text-foreground-secondary hover:text-foreground"
                 }`}
               >
-                {w >= 3600 ? `${w / 3600}h` : `${w / 60}m`}
+                {formatWindowLabel(w)}
               </button>
             );
           })}

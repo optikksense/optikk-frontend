@@ -29,13 +29,8 @@ function formFromPolicy(p: Policy): PolicyForm {
   };
 }
 
-function errorMessage(err: unknown, fallback: string): string {
-  if (typeof err === "object" && err !== null && "message" in err) {
-    const msg = (err as { message?: string }).message;
-    if (typeof msg === "string" && msg.length > 0) return msg;
-  }
-  return fallback;
-}
+import { getErrorMessage } from "@shared/utils/errorUtils";
+
 
 function parseActions(json: string): unknown[] {
   const trimmed = json.trim();
@@ -78,7 +73,7 @@ export default function PoliciesTab() {
       }
       setForm(emptyForm());
     } catch (err) {
-      setStatus(errorMessage(err, "Failed to save policy"));
+      setStatus(getErrorMessage(err, "Failed to save policy"));
     }
   };
 
@@ -88,7 +83,7 @@ export default function PoliciesTab() {
       await remove.mutateAsync(id);
       if (form.id === id) setForm(emptyForm());
     } catch (err) {
-      setStatus(errorMessage(err, "Failed to delete policy"));
+      setStatus(getErrorMessage(err, "Failed to delete policy"));
     }
   };
 

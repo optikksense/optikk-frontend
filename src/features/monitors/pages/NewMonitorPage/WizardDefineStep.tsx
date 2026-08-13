@@ -1,4 +1,5 @@
 import type { CreateMonitorPayload, MonitorPriority } from "../../api/monitorsApi";
+import { EVAL_WINDOWS, formatWindowLabel } from "../../constants";
 
 import StepShell from "./StepShell";
 import FieldRow from "./queryForms/FieldRow";
@@ -71,7 +72,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Eval every">
         <div className="flex items-center gap-1.5">
-          {[60, 300, 900, 3600].map((sec) => {
+          {EVAL_WINDOWS.map((sec) => {
             const active = draft.evalEverySec === sec;
             return (
               <button
@@ -82,7 +83,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
                   active ? "bg-primary text-white" : "bg-secondary text-foreground-secondary"
                 }`}
               >
-                {sec >= 3600 ? `${sec / 3600}h` : `${sec / 60}m`}
+                {formatWindowLabel(sec)}
               </button>
             );
           })}
