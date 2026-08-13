@@ -1,5 +1,5 @@
-import type { CreateMonitorPayload, MonitorPriority } from "../../api/monitorsApi";
-import { EVAL_WINDOWS, formatWindowLabel } from "../../constants";
+import type { CreateMonitorPayload } from "../../api/monitorsApi";
+import { EVAL_WINDOWS, MONITOR_PRIORITIES, formatWindowLabel } from "../../constants";
 
 import StepShell from "./StepShell";
 import FieldRow from "./queryForms/FieldRow";
@@ -8,13 +8,6 @@ interface Props {
   readonly draft: CreateMonitorPayload;
   readonly setDraft: (fn: (prev: CreateMonitorPayload) => CreateMonitorPayload) => void;
 }
-
-const PRIORITIES: { id: MonitorPriority; label: string; color: string }[] = [
-  { id: "P1", label: "P1 · page", color: "text-error border-error" },
-  { id: "P2", label: "P2 · ticket", color: "text-warning border-warning" },
-  { id: "P3", label: "P3 · notify", color: "text-foreground-secondary border-border" },
-  { id: "P4", label: "P4 · info", color: "text-foreground-secondary border-border" },
-];
 
 export default function WizardDefineStep({ draft, setDraft }: Props) {
   return (
@@ -29,7 +22,7 @@ export default function WizardDefineStep({ draft, setDraft }: Props) {
       </FieldRow>
       <FieldRow label="Priority">
         <div className="flex items-center gap-1.5">
-          {PRIORITIES.map((p) => {
+          {MONITOR_PRIORITIES.map((p) => {
             const active = draft.priority === p.id;
             return (
               <button

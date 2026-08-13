@@ -1,23 +1,18 @@
 import { memo } from "react";
 
 import type { MonitorPriority } from "../api/monitorsApi";
+import { MONITOR_PRIORITIES } from "../constants";
 
 interface Props {
   readonly priority: MonitorPriority | string;
 }
 
-const COLORS: Record<string, string> = {
-  P1: "text-error",
-  P2: "text-warning",
-  P3: "text-foreground-secondary",
-  P4: "text-foreground-muted",
-};
-
 function PriorityChip({ priority }: Props) {
+  const spec = MONITOR_PRIORITIES.find((p) => p.id === priority);
+  const colorClass = spec?.textColor ?? "text-foreground-muted";
+
   return (
-    <span
-      className={`font-bold font-mono text-[11px] ${COLORS[priority] ?? "text-foreground-muted"}`}
-    >
+    <span className={`font-bold font-mono text-[11px] ${colorClass}`}>
       {priority}
     </span>
   );
