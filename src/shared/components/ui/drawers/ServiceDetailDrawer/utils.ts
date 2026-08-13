@@ -1,9 +1,8 @@
 import type { ErrorTimeSeriesPoint } from "@shared/api/errors";
 import type { LatencyPercentilesPoint, StatusTimeseriesPoint } from "@shared/api/red/redApi";
 import type { ServiceTopologyEdge } from "@shared/api/topology";
-import { SERVICE_HEALTH_THRESHOLDS, classifyHealth } from "@shared/constants/healthThresholds";
-
 import type { DependencyRow, EndpointRow, ServiceSummarySnapshot } from "./types";
+
 
 function normalizeServiceKey(value: string): string {
   return value.trim().toLowerCase();
@@ -100,20 +99,8 @@ export function buildErrorTrendSeries(points: readonly ErrorTimeSeriesPoint[]) {
   });
 }
 
-export function healthVariantForErrorRate(
-  errorRate: number | undefined
-): "success" | "warning" | "error" {
-  const rate = Number(errorRate ?? 0);
-  const health = classifyHealth(rate, SERVICE_HEALTH_THRESHOLDS);
-  if (health === "unhealthy") return "error";
-  if (health === "degraded") return "warning";
-  return "success";
-}
+export { healthVariantForErrorRate, healthLabelForErrorRate } from "@shared/utils/statusUtils";
 
-export function healthLabelForErrorRate(errorRate: number | undefined): string {
-  const rate = Number(errorRate ?? 0);
-  return classifyHealth(rate, SERVICE_HEALTH_THRESHOLDS);
-}
 
 export function formatEndpointLabel(
   row: Pick<EndpointRow, "endpointName" | "operationName">
