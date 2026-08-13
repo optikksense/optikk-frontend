@@ -104,8 +104,9 @@ export function healthVariantForErrorRate(
   errorRate: number | undefined
 ): "success" | "warning" | "error" {
   const rate = Number(errorRate ?? 0);
-  if (rate > SERVICE_HEALTH_THRESHOLDS.unhealthy) return "error";
-  if (rate > SERVICE_HEALTH_THRESHOLDS.degraded) return "warning";
+  const health = classifyHealth(rate, SERVICE_HEALTH_THRESHOLDS);
+  if (health === "unhealthy") return "error";
+  if (health === "degraded") return "warning";
   return "success";
 }
 

@@ -1,10 +1,9 @@
+import { type ServiceHealth, classifyServiceHealth } from "@/features/services/utils/serviceHealth";
 import type {
   RedServiceRow,
   RequestRateSeries,
   ServiceCatalogRedSummary,
 } from "@shared/api/red/redApi";
-
-type CatalogStatus = "healthy" | "warn" | "error" | "unknown";
 
 export interface CatalogRow {
   readonly serviceName: string;
@@ -16,7 +15,7 @@ export interface CatalogRow {
   readonly p95Ms: number;
   readonly p99Ms: number;
   readonly p99DeltaPct: number | null;
-  readonly status: CatalogStatus;
+  readonly status: ServiceHealth;
   readonly sparkline: number[];
   readonly version: string;
   readonly environment: string;
@@ -24,12 +23,6 @@ export interface CatalogRow {
   readonly tenant: string;
   readonly lang: string;
   readonly instances: number | null;
-}
-
-function classifyStatus(errorRate: number, p99Ms: number): CatalogStatus {
-  if (errorRate >= 2 || p99Ms >= 2000) return "error";
-  if (errorRate >= 0.5 || p99Ms >= 1000) return "warn";
-  return "healthy";
 }
 
 function deltaPct(now: number, prev: number | undefined): number | null {
@@ -75,7 +68,7 @@ function buildCatalogRow(
     p95Ms: row.p95Latency,
     p99Ms: row.p99Latency,
     p99DeltaPct: deltaPct(row.p99Latency, prevP99.get(row.serviceName)),
-    status: classifyStatus(errorRate, row.p99Latency),
+    status: classifyServiceHealth(errorRate, row.p99Latency),
     sparkline: spark.get(row.serviceName) ?? [],
     version: "—",
     environment: "—",

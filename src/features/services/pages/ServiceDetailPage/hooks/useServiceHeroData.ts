@@ -1,26 +1,23 @@
+import { type ServiceHealth, classifyServiceHealth } from "@/features/services/utils/serviceHealth";
 import type { ServiceSummary } from "./useServiceSummary";
 import { useServiceSummary } from "./useServiceSummary";
 
-type HeroStatus = "healthy" | "warn" | "error" | "unknown";
-
 export interface HeroData {
   readonly summary: ServiceSummary | null;
-  readonly status: HeroStatus;
+  readonly status: ServiceHealth;
   readonly loading: boolean;
 }
 
-function classifyStatus(summary: ServiceSummary | null): HeroStatus {
+function statusForSummary(summary: ServiceSummary | null): ServiceHealth {
   if (!summary) return "unknown";
-  if (summary.errorRate >= 2 || summary.p99Ms >= 2000) return "error";
-  if (summary.errorRate >= 0.5 || summary.p99Ms >= 1000) return "warn";
-  return "healthy";
+  return classifyServiceHealth(summary.errorRate, summary.p99Ms);
 }
 
 export function useServiceHeroData(serviceName: string, windowMs: number): HeroData {
   const summaryQ = useServiceSummary(serviceName, windowMs);
   return {
     summary: summaryQ.summary,
-    status: classifyStatus(summaryQ.summary),
+    status: statusForSummary(summaryQ.summary),
     loading: summaryQ.isPending,
   };
 }
